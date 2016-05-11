@@ -11,6 +11,7 @@
 #include "mojo/public/c/environment/logger.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
+#include "mojo/public/cpp/application/connection_context.h"
 #include "mojo/public/cpp/system/time.h"
 #include "mojo/services/log/interfaces/entry.mojom.h"
 #include "mojo/services/log/interfaces/log.mojom.h"
@@ -27,18 +28,28 @@ using LogImplTest = mojo::test::ApplicationTestBase;
 // We need to supply a ApplicationConnection to LogImpl::Create().
 class TestApplicationConnection : public ApplicationConnection {
  public:
+  TestApplicationConnection()
+      : connection_context_(ConnectionContext::Type::INCOMING,
+                            "mojo:log_impl_unittest",
+                            "mojo:log") {}
+
+  const ConnectionContext& GetConnectionContext() const override {
+    return connection_context_;
+  }
+
   const std::string& GetConnectionURL() override {
-    static std::string kConnectionURL = "mojo:log";
-    return kConnectionURL;
+    return connection_context_.connection_url;
   }
 
   const std::string& GetRemoteApplicationURL() override {
-    static std::string kRemoteApplicationURL = "mojo:log_impl_unittest";
-    return kRemoteApplicationURL;
+    return connection_context_.remote_url;
   }
 
   void SetServiceConnectorForName(ServiceConnector* service_connector,
                                   const std::string& name) override {}
+
+ private:
+  const ConnectionContext connection_context_;
 };
 
 // Tests the Log service implementation by calling its AddEntry and verifying
