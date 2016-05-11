@@ -20,6 +20,55 @@ part 'mojom_finder.dart';
 
 const String mojoTestPackage = '_mojo_for_test_only';
 
+// A class for running as many generation tasks in parallel as there are cores
+// on the machine. Supposing `tasks` is a list of functions of type
+// `Future f()`, used as:
+//   var runner = new _GenerationTaskRunner(tasks);
+//   await runner.run();
+// No result is returned.
+class _GenerationTaskRunner {
+  List<Function> _tasks;
+  List<Future> _futures;
+  Completer _completer;
+  int _numCpus;
+  int _nextTaskIndex;
+  int _futuresOutstanding;
+
+  _GenerationTaskRunner(this._tasks) {
+    _numCpus = Platform.numberOfProcessors;
+    _futures = new List<Future>();
+    _completer = new Completer();
+    _nextTaskIndex = 0;
+    _futuresOutstanding = 0;
+  }
+
+  Future run() {
+    while ((_nextTaskIndex < _numCpus) && (_nextTaskIndex < _tasks.length)) {
+      int idx = _nextTaskIndex;
+      _futures.add(_tasks[_nextTaskIndex]().then((_) {
+        _addNewTask(idx);
+      }));
+      _nextTaskIndex++;
+      _futuresOutstanding++;
+    }
+    return _completer.future;
+  }
+
+  void _addNewTask(int idx) {
+    if (_nextTaskIndex < _tasks.length) {
+      _futures[idx] = _tasks[_nextTaskIndex]().then((_) {
+        _addNewTask(idx);
+      });
+      _nextTaskIndex++;
+    } else {
+      _futuresOutstanding--;
+      if (_futuresOutstanding == 0) {
+        _completer.complete(null);
+      }
+    }
+  }
+}
+
 class MojomGenerator {
   static dev.Counter _genMs;
   final bool _errorOnDuplicate;
@@ -71,10 +120,14 @@ class MojomGenerator {
     // newer than the oldest .mojom.dart file, then regenerate.
     if (_force || (mojomDartCount < mojomCount) ||
         _shouldRegenerate(newestMojomTime, oldestMojomDartTime)) {
+      var tasks = new List();
       for (File mojom in info.mojomFiles) {
-        await _generateForMojom(
-            mojom, info.importDir, info.packageDir, info.name);
+        tasks.add(() => _generateForMojom(
+            mojom, info.importDir, info.packageDir, info.name));
       }
+      var runner = new _GenerationTaskRunner(tasks);
+      await runner.run();
+
       // Delete any .mojom.dart files that are still older than mojomTime.
       await _deleteOldMojomDart(info.packageDir, newestMojomTime);
     }
