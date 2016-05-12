@@ -34,9 +34,9 @@ class LogApp : public ApplicationDelegate, public InterfaceFactory<Log> {
 
   // |InterfaceFactory<Log>| implementation:
   // We maintain a separate |LogImpl| for each incoming connection.
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<Log> request) override {
-    LogImpl::Create(connection, std::move(request),
+    LogImpl::Create(connection_context, std::move(request),
                     [](const std::string& message) {
                       fprintf(stderr, "%s\n", message.c_str());
                     });

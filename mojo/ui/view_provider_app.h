@@ -22,18 +22,17 @@ namespace ui {
 //
 // It is not necessary to use this class to implement all ViewProviders.
 // This class is merely intended to make the simple apps easier to write.
-class ViewProviderApp : public mojo::ApplicationDelegate,
-                        public mojo::InterfaceFactory<mojo::ui::ViewProvider> {
+class ViewProviderApp : public ApplicationDelegate,
+                        public InterfaceFactory<ui::ViewProvider> {
  public:
   ViewProviderApp();
   ~ViewProviderApp() override;
 
-  mojo::ApplicationImpl* app_impl() { return app_impl_; }
+  ApplicationImpl* app_impl() { return app_impl_; }
 
   // |ApplicationDelegate|:
-  void Initialize(mojo::ApplicationImpl* app) override;
-  bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override;
+  void Initialize(ApplicationImpl* app) override;
+  bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
 
   // Called by the ViewProvider to create a view.
   // This method may be called multiple times in the case where the
@@ -51,26 +50,25 @@ class ViewProviderApp : public mojo::ApplicationDelegate,
   // the view from the caller.
   virtual void CreateView(
       const std::string& view_provider_url,
-      mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
-      mojo::InterfaceRequest<mojo::ServiceProvider> services,
-      mojo::InterfaceHandle<mojo::ServiceProvider> exposed_services) = 0;
+      InterfaceRequest<ViewOwner> view_owner_request,
+      InterfaceRequest<ServiceProvider> services,
+      InterfaceHandle<ServiceProvider> exposed_services) = 0;
 
  private:
   class DelegatingViewProvider;
 
-  // |InterfaceFactory<mojo::ui::ViewProvider>|:
-  void Create(mojo::ApplicationConnection* connection,
-              mojo::InterfaceRequest<mojo::ui::ViewProvider> request) override;
+  // |InterfaceFactory<ViewProvider>|:
+  void Create(const ConnectionContext& connection_context,
+              InterfaceRequest<ViewProvider> request) override;
 
-  void CreateView(
-      DelegatingViewProvider* provider,
-      const std::string& view_provider_url,
-      mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
-      mojo::InterfaceRequest<mojo::ServiceProvider> services,
-      mojo::InterfaceHandle<mojo::ServiceProvider> exposed_services);
+  void CreateView(DelegatingViewProvider* provider,
+                  const std::string& view_provider_url,
+                  InterfaceRequest<ViewOwner> view_owner_request,
+                  InterfaceRequest<ServiceProvider> services,
+                  InterfaceHandle<ServiceProvider> exposed_services);
 
-  mojo::ApplicationImpl* app_impl_ = nullptr;
-  mojo::StrongBindingSet<mojo::ui::ViewProvider> bindings_;
+  ApplicationImpl* app_impl_ = nullptr;
+  StrongBindingSet<ViewProvider> bindings_;
 
   MOJO_DISALLOW_COPY_AND_ASSIGN(ViewProviderApp);
 };

@@ -30,11 +30,10 @@ bool URLResponseDiskCacheApp::ConfigureIncomingConnection(
 }
 
 void URLResponseDiskCacheApp::Create(
-    ApplicationConnection* connection,
+    const ConnectionContext& connection_context,
     InterfaceRequest<URLResponseDiskCache> request) {
   new URLResponseDiskCacheImpl(task_runner_, delegate_, db_,
-                               connection->GetRemoteApplicationURL(),
-                               request.Pass());
+                               connection_context.remote_url, request.Pass());
 }
 
 }  // namespace mojo

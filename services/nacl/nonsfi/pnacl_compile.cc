@@ -54,7 +54,7 @@ class MultiPexeCompiler : public ApplicationDelegate,
   }
 
   // From InterfaceFactory
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<PexeCompilerInit> request) override {
     new StrongBindingPexeCompilerImpl(request.Pass());
   }

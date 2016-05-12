@@ -25,42 +25,16 @@ namespace {
 using base::MessageLoop;
 using LogImplTest = mojo::test::ApplicationTestBase;
 
-// We need to supply a ApplicationConnection to LogImpl::Create().
-class TestApplicationConnection : public ApplicationConnection {
- public:
-  TestApplicationConnection()
-      : connection_context_(ConnectionContext::Type::INCOMING,
-                            "mojo:log_impl_unittest",
-                            "mojo:log") {}
-
-  const ConnectionContext& GetConnectionContext() const override {
-    return connection_context_;
-  }
-
-  const std::string& GetConnectionURL() override {
-    return connection_context_.connection_url;
-  }
-
-  const std::string& GetRemoteApplicationURL() override {
-    return connection_context_.remote_url;
-  }
-
-  void SetServiceConnectorForName(ServiceConnector* service_connector,
-                                  const std::string& name) override {}
-
- private:
-  const ConnectionContext connection_context_;
-};
-
 // Tests the Log service implementation by calling its AddEntry and verifying
 // the log message that it "prints".
 TEST_F(LogImplTest, AddEntryOutput) {
   std::vector<std::string> messages;
 
   LogPtr log;
-  TestApplicationConnection app_connection;
+  ConnectionContext connection_context(ConnectionContext::Type::INCOMING,
+                                       "mojo:log_impl_unittest", "mojo:log");
   LogImpl::Create(
-      &app_connection, GetProxy(&log),
+      connection_context, GetProxy(&log),
       [&messages](const std::string& message) { messages.push_back(message); });
 
   Entry entry;

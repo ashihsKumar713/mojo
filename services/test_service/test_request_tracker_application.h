@@ -31,15 +31,15 @@ class TestRequestTrackerApplication
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
 
   // InterfaceFactory<TestTimeService> methods:
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<TestTimeService> request) override;
 
   // InterfaceFactory<TestRequestTracker> methods:
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<TestRequestTracker> request) override;
 
   // InterfaceFactory<TestTrackedRequestService> methods:
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<TestTrackedRequestService> request) override;
 
  private:

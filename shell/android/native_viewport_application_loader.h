@@ -42,11 +42,11 @@ class NativeViewportApplicationLoader
       mojo::ApplicationConnection* connection) override;
 
   // mojo::InterfaceFactory<mojo::NativeViewport> implementation.
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<mojo::NativeViewport> request) override;
 
   // mojo::InterfaceFactory<mojo::Gpu> implementation.
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<mojo::Gpu> request) override;
 
   scoped_refptr<gles2::GpuState> gpu_state_;

@@ -59,23 +59,24 @@ void NativeViewportAppDelegate::Initialize(mojo::ApplicationImpl* application) {
 }
 
 bool NativeViewportAppDelegate::ConfigureIncomingConnection(
-    ApplicationConnection* connection) {
-  connection->AddService<NativeViewport>(this);
-  connection->AddService<Gpu>(this);
+    mojo::ApplicationConnection* connection) {
+  connection->AddService<mojo::NativeViewport>(this);
+  connection->AddService<mojo::Gpu>(this);
   return true;
 }
 
 void NativeViewportAppDelegate::Create(
-    ApplicationConnection* connection,
-    mojo::InterfaceRequest<NativeViewport> request) {
+    const mojo::ConnectionContext& connection_context,
+    mojo::InterfaceRequest<mojo::NativeViewport> request) {
   if (!gpu_state_.get())
     gpu_state_ = new gles2::GpuState;
   new NativeViewportImpl(application_, is_headless_, gpu_state_,
                          request.Pass());
 }
 
-void NativeViewportAppDelegate::Create(ApplicationConnection* connection,
-                                       mojo::InterfaceRequest<Gpu> request) {
+void NativeViewportAppDelegate::Create(
+    const mojo::ConnectionContext& connection_context,
+    mojo::InterfaceRequest<mojo::Gpu> request) {
   if (!gpu_state_.get())
     gpu_state_ = new gles2::GpuState;
   new gles2::GpuImpl(request.Pass(), gpu_state_);

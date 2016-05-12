@@ -29,9 +29,9 @@ bool AuthenticatingURLLoaderInterceptorApp::ConfigureIncomingConnection(
 }
 
 void AuthenticatingURLLoaderInterceptorApp::Create(
-    ApplicationConnection* connection,
+    const mojo::ConnectionContext& connection_context,
     InterfaceRequest<AuthenticatingURLLoaderInterceptorMetaFactory> request) {
-  GURL app_url(connection->GetRemoteApplicationURL());
+  GURL app_url(connection_context.remote_url);
   GURL app_origin;
   if (app_url.is_valid()) {
     app_origin = app_url.GetOrigin();

@@ -14,13 +14,14 @@
 
 namespace mojo {
 
-class ApplicationConnection;
+struct ConnectionContext;
 
 namespace files {
 
 class FilesImpl : public Files {
  public:
-  FilesImpl(ApplicationConnection* connection, InterfaceRequest<Files> request);
+  FilesImpl(const ConnectionContext& connection_context,
+            InterfaceRequest<Files> request);
   ~FilesImpl() override;
 
   // |Files| implementation:

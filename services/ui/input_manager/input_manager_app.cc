@@ -39,7 +39,7 @@ bool InputManagerApp::ConfigureIncomingConnection(
 }
 
 void InputManagerApp::Create(
-    mojo::ApplicationConnection* connection,
+    const mojo::ConnectionContext& connection_context,
     mojo::InterfaceRequest<mojo::ui::ViewAssociate> request) {
   input_associates.AddBinding(new InputAssociate(), request.Pass());
 }

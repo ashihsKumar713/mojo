@@ -57,10 +57,10 @@ bool ViewProviderApp::ConfigureIncomingConnection(
 }
 
 void ViewProviderApp::Create(
-    mojo::ApplicationConnection* connection,
+    const mojo::ConnectionContext& connection_context,
     mojo::InterfaceRequest<mojo::ui::ViewProvider> request) {
   bindings_.AddBinding(
-      new DelegatingViewProvider(this, connection->GetConnectionURL()),
+      new DelegatingViewProvider(this, connection_context.connection_url),
       request.Pass());
 }
 

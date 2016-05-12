@@ -51,7 +51,7 @@ class ContentHandlerFactory : public InterfaceFactory<ContentHandler> {
 
  private:
   // From InterfaceFactory:
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<ContentHandler> request) override;
 
   Delegate* delegate_;

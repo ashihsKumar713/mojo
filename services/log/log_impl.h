@@ -16,7 +16,7 @@
 
 namespace mojo {
 
-class ApplicationConnection;
+struct ConnectionContext;
 
 namespace log {
 
@@ -34,7 +34,7 @@ class LogImpl : public Log {
 
   // Note that |print_log_message_function| may be called many times, for the
   // lifetime of the created object.
-  static void Create(ApplicationConnection* connection,
+  static void Create(const ConnectionContext& connection_context,
                      InterfaceRequest<Log> request,
                      PrintLogMessageFunction print_log_message_function);
 

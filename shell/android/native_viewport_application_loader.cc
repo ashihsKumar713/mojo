@@ -9,6 +9,7 @@
 #include "services/native_viewport/native_viewport_impl.h"
 
 using mojo::ApplicationConnection;
+using mojo::ConnectionContext;
 using mojo::InterfaceRequest;
 
 namespace shell {
@@ -34,7 +35,7 @@ bool NativeViewportApplicationLoader::ConfigureIncomingConnection(
 }
 
 void NativeViewportApplicationLoader::Create(
-    ApplicationConnection* connection,
+    const ConnectionContext& connection_context,
     InterfaceRequest<mojo::NativeViewport> request) {
   if (!gpu_state_)
     gpu_state_ = new gles2::GpuState;
@@ -43,7 +44,7 @@ void NativeViewportApplicationLoader::Create(
 }
 
 void NativeViewportApplicationLoader::Create(
-    ApplicationConnection* connection,
+    const ConnectionContext& connection_context,
     InterfaceRequest<mojo::Gpu> request) {
   if (!gpu_state_)
     gpu_state_ = new gles2::GpuState;

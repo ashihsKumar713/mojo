@@ -29,7 +29,7 @@ class ICUDataImpl : public mojo::ApplicationDelegate,
   }
 
   // mojo::InterfaceFactory<mojo::ICUData> implementation.
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection,
               mojo::InterfaceRequest<ICUData> request) override {
     bindings_.AddBinding(this, request.Pass());
   }

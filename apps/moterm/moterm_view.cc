@@ -53,7 +53,11 @@ MotermView::MotermView(
   // TODO(vtl): |service_provider_impl_|'s ctor doesn't like an invalid request,
   // so we have to conditionally, explicitly bind.
   if (service_provider_request.is_pending()) {
-    service_provider_impl_.Bind(service_provider_request.Pass());
+    // TODO(vtl): The connection context should probably be plumbed here, which
+    // means that mojo::ui::ViewProviderApp::CreateView() should probably have a
+    // connection context argument.
+    service_provider_impl_.Bind(mojo::ConnectionContext(),
+                                service_provider_request.Pass());
     service_provider_impl_.AddService<mojo::terminal::Terminal>(this);
   }
 
@@ -130,7 +134,7 @@ void MotermView::OnDestroyed() {
 }
 
 void MotermView::Create(
-    mojo::ApplicationConnection* connection,
+    const mojo::ConnectionContext& connection_context,
     mojo::InterfaceRequest<mojo::terminal::Terminal> request) {
   terminal_bindings_.AddBinding(this, request.Pass());
 }

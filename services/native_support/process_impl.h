@@ -16,7 +16,7 @@
 #include "mojo/services/native_support/interfaces/process.mojom.h"
 
 namespace mojo {
-class ApplicationConnection;
+struct ConnectionContext;
 }
 
 namespace native_support {
@@ -26,7 +26,7 @@ class ProcessIORedirection;
 class ProcessImpl : public Process {
  public:
   ProcessImpl(scoped_refptr<base::TaskRunner> worker_runner,
-              mojo::ApplicationConnection* connection,
+              const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<Process> request);
   ~ProcessImpl() override;
 

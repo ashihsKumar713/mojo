@@ -41,7 +41,7 @@ class PredictionServiceDelegate
       mojo::ApplicationConnection* connection) override;
 
   // mojo::InterfaceRequest<PredictionService> implementation
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<PredictionService> request) override;
 };
 

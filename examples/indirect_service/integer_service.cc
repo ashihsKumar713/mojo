@@ -40,7 +40,7 @@ class IntegerServiceAppDelegate : public ApplicationDelegate,
 
  private:
   // InterfaceFactory<IntegerService>
-  void Create(ApplicationConnection* app,
+  void Create(const mojo::ConnectionContext& connection_context,
               InterfaceRequest<IntegerService> request) override {
     new IntegerServiceImpl(request.Pass());
   }

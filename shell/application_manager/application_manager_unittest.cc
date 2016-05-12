@@ -27,6 +27,7 @@ using mojo::ApplicationConnection;
 using mojo::ApplicationDelegate;
 using mojo::ApplicationImpl;
 using mojo::Callback;
+using mojo::ConnectionContext;
 using mojo::InterfaceFactory;
 using mojo::InterfaceRequest;
 using mojo::StrongBinding;
@@ -129,7 +130,7 @@ class TestApplicationLoader : public ApplicationLoader,
   }
 
   // InterfaceFactory implementation.
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<TestService> request) override {
     new TestServiceImpl(context_, request.Pass());
   }
@@ -277,9 +278,7 @@ class TestAImpl : public TestA {
 
 class TestBImpl : public TestB {
  public:
-  TestBImpl(ApplicationConnection* connection,
-            TesterContext* test_context,
-            InterfaceRequest<TestB> request)
+  TestBImpl(TesterContext* test_context, InterfaceRequest<TestB> request)
       : test_context_(test_context), binding_(this, request.Pass()) {}
 
   ~TestBImpl() override {
@@ -330,7 +329,7 @@ class Tester : public ApplicationDelegate,
     return true;
   }
 
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<TestA> request) override {
     mojo::InterfaceHandle<mojo::ServiceProvider> incoming_sp_handle;
     app_->shell()->ConnectToApplication(kTestBURLString,
@@ -339,9 +338,9 @@ class Tester : public ApplicationDelegate,
         new TestAImpl(incoming_sp_handle.Pass(), context_, request.Pass()));
   }
 
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<TestB> request) override {
-    new TestBImpl(connection, context_, request.Pass());
+    new TestBImpl(context_, request.Pass());
   }
 
   TesterContext* context_;

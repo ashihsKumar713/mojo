@@ -19,7 +19,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/sha1.h"
 #include "base/strings/string_number_conversions.h"
-#include "mojo/public/cpp/application/application_connection.h"
+#include "mojo/public/cpp/application/connection_context.h"
 #include "services/files/directory_impl.h"
 
 namespace mojo {
@@ -99,9 +99,9 @@ base::ScopedFD OpenMojoDebugDirectory() {
 
 }  // namespace
 
-FilesImpl::FilesImpl(ApplicationConnection* connection,
+FilesImpl::FilesImpl(const ConnectionContext& connection_context,
                      InterfaceRequest<Files> request)
-    : client_url_(connection->GetRemoteApplicationURL()),
+    : client_url_(connection_context.remote_url),
       binding_(this, request.Pass()) {}
 
 FilesImpl::~FilesImpl() {}

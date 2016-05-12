@@ -34,13 +34,13 @@ bool TestServiceApplication::ConfigureIncomingConnection(
   return true;
 }
 
-void TestServiceApplication::Create(ApplicationConnection* connection,
+void TestServiceApplication::Create(const ConnectionContext& connection_context,
                                     InterfaceRequest<TestService> request) {
   new TestServiceImpl(app_impl_, this, request.Pass());
   AddRef();
 }
 
-void TestServiceApplication::Create(ApplicationConnection* connection,
+void TestServiceApplication::Create(const ConnectionContext& connection_context,
                                     InterfaceRequest<TestTimeService> request) {
   new TestTimeServiceImpl(app_impl_, request.Pass());
 }

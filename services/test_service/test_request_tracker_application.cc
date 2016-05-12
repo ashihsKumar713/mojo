@@ -36,19 +36,19 @@ bool TestRequestTrackerApplication::ConfigureIncomingConnection(
 }
 
 void TestRequestTrackerApplication::Create(
-    ApplicationConnection* connection,
+    const ConnectionContext& connection_context,
     InterfaceRequest<TestTimeService> request) {
   new TestTimeServiceImpl(app_impl_, request.Pass());
 }
 
 void TestRequestTrackerApplication::Create(
-    ApplicationConnection* connection,
+    const ConnectionContext& connection_context,
     InterfaceRequest<TestRequestTracker> request) {
   new TestRequestTrackerImpl(request.Pass(), &context_);
 }
 
 void TestRequestTrackerApplication::Create(
-    ApplicationConnection* connection,
+    const ConnectionContext& connection_context,
     InterfaceRequest<TestTrackedRequestService> request) {
   new TestTrackedRequestServiceImpl(request.Pass(), &context_);
 }

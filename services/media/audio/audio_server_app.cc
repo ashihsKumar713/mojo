@@ -31,7 +31,7 @@ bool AudioServerApp::ConfigureIncomingConnection(
 void AudioServerApp::Quit() {
 }
 
-void AudioServerApp::Create(ApplicationConnection* connection,
+void AudioServerApp::Create(const ConnectionContext& connection_context,
                             InterfaceRequest<AudioServer> request) {
   bindings_.AddBinding(&server_impl_, request.Pass());
 }

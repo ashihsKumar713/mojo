@@ -28,7 +28,7 @@ class AssetBundleApp : public ApplicationDelegate,
   }
 
   // |InterfaceFactory<AssetUnpacker>| implementation:
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<AssetUnpacker> request) override {
     // Lazily initialize |sequenced_worker_pool_|. (We can't create it in the
     // constructor, since AtExitManager is only created in

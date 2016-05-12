@@ -31,7 +31,7 @@ class ViewManagerApp : public mojo::ApplicationDelegate,
       mojo::ApplicationConnection* connection) override;
 
   // |InterfaceFactory<ViewManager>|:
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<mojo::ui::ViewManager> request) override;
 
   void OnCompositorConnectionError();

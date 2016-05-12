@@ -35,11 +35,11 @@ class TracingApp : public mojo::ApplicationDelegate,
       mojo::ApplicationConnection* connection) override;
 
   // mojo::InterfaceFactory<TraceCollector> implementation.
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<TraceCollector> request) override;
 
   // mojo::InterfaceFactory<TraceProviderRegistry> implementation.
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<TraceProviderRegistry> request) override;
 
   // TraceCollector implementation.

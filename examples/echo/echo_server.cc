@@ -64,7 +64,7 @@ class MultiServer : public mojo::ApplicationDelegate,
   }
 
   // From InterfaceFactory<Echo>
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<Echo> request) override {
     // This object will be deleted automatically because of the use of
     // StrongBinding<> for the declaration of |strong_binding_|.
@@ -87,7 +87,7 @@ class SingletonServer : public mojo::ApplicationDelegate,
   }
 
   // From InterfaceFactory<Echo>
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<Echo> request) override {
     // All channels will connect to this singleton object, so just
     // add the binding to our collection.
@@ -119,7 +119,7 @@ class OneAtATimeServer : public mojo::ApplicationDelegate,
   }
 
   // From InterfaceFactory<Echo>
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<Echo> request) override {
     binding_.Bind(request.Pass());
   }

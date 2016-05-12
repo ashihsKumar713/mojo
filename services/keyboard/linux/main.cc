@@ -52,9 +52,8 @@ class KeyboardServiceApp
   }
 
   // |InterfaceFactory<KeyboardService>| implementation:
-  void Create(
-      mojo::ApplicationConnection* connection,
-      mojo::InterfaceRequest<KeyboardServiceFactory> request) override {
+  void Create(const mojo::ConnectionContext& connection_context,
+              mojo::InterfaceRequest<KeyboardServiceFactory> request) override {
     new KeyboardServiceFactoryImpl(request.Pass());
   }
 

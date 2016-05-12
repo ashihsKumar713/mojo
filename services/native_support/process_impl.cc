@@ -51,8 +51,9 @@ class SetsidPreExecDelegate : public base::LaunchOptions::PreExecDelegate {
 
 }  // namespace
 
+// TODO(vtl): This should do something with the |connection_context|.
 ProcessImpl::ProcessImpl(scoped_refptr<base::TaskRunner> worker_runner,
-                         mojo::ApplicationConnection* connection,
+                         const mojo::ConnectionContext& connection_context,
                          mojo::InterfaceRequest<Process> request)
     : worker_runner_(worker_runner.Pass()), binding_(this, request.Pass()) {}
 

@@ -19,9 +19,9 @@ namespace device_info {
 
 // This is a native Mojo application which implements |DeviceInfo| interface for
 // Linux.
-class DeviceInfo : public mojo::ApplicationDelegate,
+class DeviceInfo : public ApplicationDelegate,
                    public mojo::DeviceInfo,
-                   public mojo::InterfaceFactory<mojo::DeviceInfo> {
+                   public InterfaceFactory<mojo::DeviceInfo> {
  public:
   // We look for the 'DISPLAY' environment variable. If present, then we assume
   // it to be a desktop, else we assume it to be a commandline
@@ -38,8 +38,8 @@ class DeviceInfo : public mojo::ApplicationDelegate,
   }
 
   // |InterfaceFactory<DeviceInfo>| implementation.
-  void Create(mojo::ApplicationConnection* connection,
-              mojo::InterfaceRequest<mojo::DeviceInfo> request) override {
+  void Create(const ConnectionContext& connection_context,
+              InterfaceRequest<mojo::DeviceInfo> request) override {
     binding_.AddBinding(this, request.Pass());
   }
 

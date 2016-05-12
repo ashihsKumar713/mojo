@@ -15,10 +15,9 @@ namespace mojo {
 namespace media {
 namespace audio {
 
-class AudioServerApp : public ApplicationDelegate
-                     , public InterfaceFactory<AudioServer> {
+class AudioServerApp : public ApplicationDelegate,
+                       public InterfaceFactory<AudioServer> {
  public:
-  // Constructor/Destructor
   AudioServerApp();
   ~AudioServerApp() override;
 
@@ -28,12 +27,12 @@ class AudioServerApp : public ApplicationDelegate
   void Quit() override;
 
   // InterfaceFactory<AudioServer>
-  void Create(mojo::ApplicationConnection* connection,
-              mojo::InterfaceRequest<AudioServer> request) override;
+  void Create(const ConnectionContext& connection_context,
+              InterfaceRequest<AudioServer> request) override;
 
  private:
-  AudioServerImpl           server_impl_;
-  BindingSet<AudioServer>   bindings_;
+  AudioServerImpl server_impl_;
+  BindingSet<AudioServer> bindings_;
 };
 
 }  // namespace audio

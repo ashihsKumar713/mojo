@@ -23,7 +23,7 @@ bool ExampleServiceApplication::ConfigureIncomingConnection(
 }
 
 void ExampleServiceApplication::Create(
-    ApplicationConnection* connection,
+    const ConnectionContext& connection_context,
     InterfaceRequest<ExampleService> request) {
   // Not leaked: ExampleServiceImpl is strongly bound to the pipe.
   new ExampleServiceImpl(request.Pass());

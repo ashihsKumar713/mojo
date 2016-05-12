@@ -39,7 +39,7 @@ class GoogleAccountManagerApp
     return true;
   }
 
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<AuthenticationService> request) override {
     mojo::files::Error error = mojo::files::Error::INTERNAL;
     mojo::files::DirectoryPtr directory;

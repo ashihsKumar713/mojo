@@ -30,7 +30,7 @@ class LauncherApp : public mojo::ApplicationDelegate,
       mojo::ApplicationConnection* connection) override;
 
   // mojo::InterfaceRequest<Launcher> implementation
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<Launcher> request) override;
 
   // |Launcher|:

@@ -27,9 +27,9 @@ class FilesApp : public ApplicationDelegate, public InterfaceFactory<Files> {
   }
 
   // |InterfaceFactory<Files>| implementation:
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<Files> request) override {
-    new FilesImpl(connection, request.Pass());
+    new FilesImpl(connection_context, request.Pass());
   }
 
   DISALLOW_COPY_AND_ASSIGN(FilesApp);

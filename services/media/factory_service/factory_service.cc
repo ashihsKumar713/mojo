@@ -34,7 +34,7 @@ bool MediaFactoryService::ConfigureIncomingConnection(
   return true;
 }
 
-void MediaFactoryService::Create(ApplicationConnection* connection,
+void MediaFactoryService::Create(const ConnectionContext& connection_context,
                                  InterfaceRequest<MediaFactory> request) {
   bindings_.AddBinding(this, request.Pass());
 }

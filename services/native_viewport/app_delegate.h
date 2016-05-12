@@ -22,15 +22,12 @@
 #include "ui/events/event_switches.h"
 #include "ui/gl/gl_surface.h"
 
-using mojo::ApplicationConnection;
-using mojo::Gpu;
-using mojo::NativeViewport;
-
 namespace native_viewport {
 
-class NativeViewportAppDelegate : public mojo::ApplicationDelegate,
-                                  public mojo::InterfaceFactory<NativeViewport>,
-                                  public mojo::InterfaceFactory<Gpu> {
+class NativeViewportAppDelegate
+    : public mojo::ApplicationDelegate,
+      public mojo::InterfaceFactory<mojo::NativeViewport>,
+      public mojo::InterfaceFactory<mojo::Gpu> {
  public:
   NativeViewportAppDelegate();
   ~NativeViewportAppDelegate() override;
@@ -38,15 +35,16 @@ class NativeViewportAppDelegate : public mojo::ApplicationDelegate,
   // mojo::ApplicationDelegate implementation.
   void Initialize(mojo::ApplicationImpl* application) override;
 
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
+  bool ConfigureIncomingConnection(
+      mojo::ApplicationConnection* connection) override;
 
-  // mojo::InterfaceFactory<NativeViewport> implementation.
-  void Create(ApplicationConnection* connection,
-              mojo::InterfaceRequest<NativeViewport> request) override;
+  // mojo::InterfaceFactory<mojo::NativeViewport> implementation.
+  void Create(const mojo::ConnectionContext& connection_context,
+              mojo::InterfaceRequest<mojo::NativeViewport> request) override;
 
-  // mojo::InterfaceFactory<Gpu> implementation.
-  void Create(ApplicationConnection* connection,
-              mojo::InterfaceRequest<Gpu> request) override;
+  // mojo::InterfaceFactory<mojo::Gpu> implementation.
+  void Create(const mojo::ConnectionContext& connection_context,
+              mojo::InterfaceRequest<mojo::Gpu> request) override;
 
  private:
   void InitLogging(mojo::ApplicationImpl* application);

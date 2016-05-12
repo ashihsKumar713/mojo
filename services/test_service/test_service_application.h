@@ -29,11 +29,11 @@ class TestServiceApplication : public ApplicationDelegate,
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
 
   // InterfaceFactory<TestService> implementation.
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<TestService> request) override;
 
   // InterfaceFactory<TestTimeService> implementation.
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<TestTimeService> request) override;
 
   void AddRef();

@@ -129,7 +129,7 @@ void ContentHandlerFactory::ManagedDelegate::RunApplication(
     loop.Run();
 }
 
-void ContentHandlerFactory::Create(ApplicationConnection* connection,
+void ContentHandlerFactory::Create(const ConnectionContext& connection_context,
                                    InterfaceRequest<ContentHandler> request) {
   new ContentHandlerImpl(delegate_, request.Pass());
 }

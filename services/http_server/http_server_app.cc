@@ -32,7 +32,7 @@ class HttpServerApp : public mojo::ApplicationDelegate,
   }
 
   // InterfaceFactory<HttpServerFactory>:
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<HttpServerFactory> request) override {
     if (!http_server_factory_) {
       http_server_factory_.reset(new HttpServerFactoryImpl(app_));

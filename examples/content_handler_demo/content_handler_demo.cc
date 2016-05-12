@@ -105,7 +105,7 @@ class ContentHandlerApp : public ApplicationDelegate,
     return true;
   }
 
-  void Create(ApplicationConnection* app,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<ContentHandler> request) override {
     new ContentHandlerImpl(request.Pass());
   }

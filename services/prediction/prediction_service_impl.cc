@@ -48,7 +48,7 @@ bool PredictionServiceDelegate::ConfigureIncomingConnection(
 
 // mojo::InterfaceRequest<PredictionService> implementation
 void PredictionServiceDelegate::Create(
-    mojo::ApplicationConnection* connection,
+    const mojo::ConnectionContext& connection_context,
     mojo::InterfaceRequest<PredictionService> request) {
   new PredictionServiceImpl(request.Pass());
 }

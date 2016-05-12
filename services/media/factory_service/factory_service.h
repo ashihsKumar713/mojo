@@ -80,7 +80,7 @@ class MediaFactoryService : public ApplicationDelegate,
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
 
   // InterfaceFactory<MediaFactory> implementation.
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<MediaFactory> request) override;
 
   // MediaFactory implementation.

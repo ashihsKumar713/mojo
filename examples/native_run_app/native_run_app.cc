@@ -243,7 +243,7 @@ class NativeRunApp : public mojo::ApplicationDelegate,
   }
 
   // |InterfaceFactory<TerminalClient>| implementation:
-  void Create(mojo::ApplicationConnection* /*connection*/,
+  void Create(const mojo::ConnectionContext& /*connection_context*/,
               mojo::InterfaceRequest<TerminalClient> request) override {
     new TerminalClientImpl(request.Pass(), native_support_process_.get());
   }

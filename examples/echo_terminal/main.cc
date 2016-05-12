@@ -114,7 +114,7 @@ class EchoTerminalApp
 
   // |InterfaceFactory<mojo::terminal::TerminalClient>| implementation:
   void Create(
-      mojo::ApplicationConnection* connection,
+      const mojo::ConnectionContext& connection_context,
       mojo::InterfaceRequest<mojo::terminal::TerminalClient> request) override {
     terminal_clients_.AddBinding(this, request.Pass());
   }

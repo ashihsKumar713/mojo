@@ -8,7 +8,7 @@
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "mojo/public/cpp/application/application_connection.h"
+#include "mojo/public/cpp/application/connection_context.h"
 #include "mojo/services/log/interfaces/entry.mojom.h"
 
 namespace mojo {
@@ -47,13 +47,12 @@ LogImpl::LogImpl(const std::string& remote_url,
 LogImpl::~LogImpl() {}
 
 // static
-void LogImpl::Create(ApplicationConnection* connection,
+void LogImpl::Create(const ConnectionContext& connection_context,
                      InterfaceRequest<Log> request,
                      PrintLogMessageFunction print_log_message_function) {
-  DCHECK(connection);
   DCHECK(print_log_message_function);
 
-  const std::string& remote_url = connection->GetRemoteApplicationURL();
+  const std::string& remote_url = connection_context.remote_url;
   if (remote_url.empty()) {
     LOG(ERROR) << "No remote URL.";
     return;

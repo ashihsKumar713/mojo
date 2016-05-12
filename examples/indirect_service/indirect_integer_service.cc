@@ -61,7 +61,7 @@ class IndirectIntegerServiceAppDelegate
 
  private:
   // InterfaceFactory<IndirectIntegerService>
-  void Create(ApplicationConnection* app,
+  void Create(const mojo::ConnectionContext& connection_context,
               InterfaceRequest<IndirectIntegerService> request) override {
     new IndirectIntegerServiceImpl(request.Pass());
   }

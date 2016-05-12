@@ -52,7 +52,7 @@ class HelloMojoServerApp : public mojo::ApplicationDelegate,
   }
 
   // |mojo::InterfaceFactory<HelloMojo>| implementation:
-  void Create(mojo::ApplicationConnection* application_connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<HelloMojo> hello_mojo_request) override {
     new HelloMojoImpl(std::move(hello_mojo_request));  // Owns itself.
   }

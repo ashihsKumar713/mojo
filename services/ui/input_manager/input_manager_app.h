@@ -30,7 +30,7 @@ class InputManagerApp : public mojo::ApplicationDelegate,
       mojo::ApplicationConnection* connection) override;
 
   // |InterfaceFactory<ViewAssociate>|:
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<mojo::ui::ViewAssociate> request) override;
 
   mojo::ApplicationImpl* app_impl_;

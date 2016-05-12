@@ -54,10 +54,10 @@ bool ContentViewerApp::ConfigureIncomingConnection(
 }
 
 void ContentViewerApp::Create(
-    mojo::ApplicationConnection* connection,
+    const mojo::ConnectionContext& connection_context,
     mojo::InterfaceRequest<mojo::ContentHandler> request) {
   bindings_.AddBinding(
-      new DelegatingContentHandler(this, connection->GetConnectionURL()),
+      new DelegatingContentHandler(this, connection_context.connection_url),
       request.Pass());
 }
 

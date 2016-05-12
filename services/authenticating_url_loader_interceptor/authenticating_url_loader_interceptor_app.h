@@ -27,7 +27,7 @@ class AuthenticatingURLLoaderInterceptorApp
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
 
   // InterfaceFactory<AuthenticatingURLLoaderInterceptorMetaFactory>
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<AuthenticatingURLLoaderInterceptorMetaFactory>
                   request) override;
 

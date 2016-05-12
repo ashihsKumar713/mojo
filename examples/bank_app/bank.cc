@@ -82,7 +82,7 @@ class BankApp : public mojo::ApplicationDelegate,
     return true;
   }
 
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<Bank> request) override {
     bindings_.AddBinding(&bank_impl_, request.Pass());
   }

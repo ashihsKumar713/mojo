@@ -21,7 +21,7 @@ bool TracingApp::ConfigureIncomingConnection(
   return true;
 }
 
-void TracingApp::Create(mojo::ApplicationConnection* connection,
+void TracingApp::Create(const mojo::ConnectionContext& connection_context,
                         mojo::InterfaceRequest<TraceCollector> request) {
   if (collector_binding_.is_bound()) {
     LOG(ERROR) << "Another application is already connected to tracing.";
@@ -31,7 +31,7 @@ void TracingApp::Create(mojo::ApplicationConnection* connection,
   collector_binding_.Bind(request.Pass());
 }
 
-void TracingApp::Create(mojo::ApplicationConnection* connection,
+void TracingApp::Create(const mojo::ConnectionContext& connection_context,
                         mojo::InterfaceRequest<TraceProviderRegistry> request) {
   provider_registry_bindings_.AddBinding(this, request.Pass());
 }

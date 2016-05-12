@@ -45,7 +45,7 @@ bool LauncherApp::ConfigureIncomingConnection(
   return true;
 }
 
-void LauncherApp::Create(mojo::ApplicationConnection* connection,
+void LauncherApp::Create(const mojo::ConnectionContext& connection_context,
                          mojo::InterfaceRequest<Launcher> request) {
   bindings_.AddBinding(this, request.Pass());
 }

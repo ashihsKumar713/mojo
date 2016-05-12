@@ -37,13 +37,13 @@ class NativeSupportApp : public mojo::ApplicationDelegate,
   }
 
   // |InterfaceFactory<Process>| implementation:
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<Process> request) override {
     if (!worker_pool_) {
       worker_pool_ = new base::SequencedWorkerPool(kMaxWorkerThreads,
                                                    "NativeSupportWorker");
     }
-    new ProcessImpl(worker_pool_, connection, request.Pass());
+    new ProcessImpl(worker_pool_, connection_context, request.Pass());
   }
 
   scoped_refptr<base::SequencedWorkerPool> worker_pool_;

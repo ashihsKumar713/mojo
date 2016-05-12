@@ -62,7 +62,7 @@ class MotermView : public mojo::ui::GaneshView,
 
   // |mojo::InterfaceFactory<mojo::terminal::Terminal>|:
   void Create(
-      mojo::ApplicationConnection* connection,
+      const mojo::ConnectionContext& connection_context,
       mojo::InterfaceRequest<mojo::terminal::Terminal> request) override;
 
   // |mojo::terminal::Terminal| implementation:

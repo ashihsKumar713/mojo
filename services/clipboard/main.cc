@@ -23,7 +23,7 @@ class Delegate : public mojo::ApplicationDelegate,
   }
 
   // mojo::InterfaceFactory<mojo::Clipboard> implementation.
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<mojo::Clipboard> request) override {
     // TODO(erg): Write native implementations of the clipboard. For now, we
     // just build a clipboard which doesn't interact with the system.

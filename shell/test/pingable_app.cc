@@ -58,9 +58,10 @@ class PingableApp : public mojo::ApplicationDelegate,
   }
 
   // InterfaceFactory<Pingable>:
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<Pingable> request) override {
-    new PingableImpl(request.Pass(), app_url_, connection->GetConnectionURL());
+    new PingableImpl(request.Pass(), app_url_,
+                     connection_context.connection_url);
   }
 
   std::string app_url_;

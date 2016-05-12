@@ -51,7 +51,7 @@ class MultiPexeLinker : public ApplicationDelegate,
   }
 
   // From InterfaceFactory
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<PexeLinkerInit> request) override {
     new StrongBindingPexeLinkerImpl(request.Pass());
   }

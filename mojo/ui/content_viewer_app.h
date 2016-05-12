@@ -19,18 +19,17 @@ namespace ui {
 // TODO(jeffbrown): Support creating the view provider application in a
 // separate thread if desired (often not the case).  This is one reason
 // we are not using the ContentHandlerFactory here.
-class ContentViewerApp : public mojo::ApplicationDelegate,
-                         public mojo::InterfaceFactory<mojo::ContentHandler> {
+class ContentViewerApp : public ApplicationDelegate,
+                         public InterfaceFactory<ContentHandler> {
  public:
   ContentViewerApp();
   ~ContentViewerApp() override;
 
-  mojo::ApplicationImpl* app_impl() { return app_impl_; }
+  ApplicationImpl* app_impl() { return app_impl_; }
 
   // |ApplicationDelegate|:
-  void Initialize(mojo::ApplicationImpl* app) override;
-  bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override;
+  void Initialize(ApplicationImpl* app) override;
+  bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
 
   // Called to create the view provider application to view the content.
   //
@@ -46,22 +45,21 @@ class ContentViewerApp : public mojo::ApplicationDelegate,
   // Returns the view provider application delegate to view the content,
   // or nullptr if the content could not be loaded.
   virtual ViewProviderApp* LoadContent(const std::string& content_handler_url,
-                                       mojo::URLResponsePtr response) = 0;
+                                       URLResponsePtr response) = 0;
 
  private:
   class DelegatingContentHandler;
 
   // |InterfaceFactory<ContentHandler>|:
-  void Create(mojo::ApplicationConnection* connection,
-              mojo::InterfaceRequest<mojo::ContentHandler> request) override;
+  void Create(const ConnectionContext& connection_context,
+              InterfaceRequest<ContentHandler> request) override;
 
-  void StartViewer(
-      const std::string& content_handler_url,
-      mojo::InterfaceRequest<mojo::Application> application_request,
-      mojo::URLResponsePtr response);
+  void StartViewer(const std::string& content_handler_url,
+                   InterfaceRequest<Application> application_request,
+                   URLResponsePtr response);
 
-  mojo::ApplicationImpl* app_impl_ = nullptr;
-  mojo::StrongBindingSet<mojo::ContentHandler> bindings_;
+  ApplicationImpl* app_impl_ = nullptr;
+  StrongBindingSet<ContentHandler> bindings_;
 
   MOJO_DISALLOW_COPY_AND_ASSIGN(ContentViewerApp);
 };

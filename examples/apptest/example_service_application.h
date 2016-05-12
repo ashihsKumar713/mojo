@@ -26,7 +26,7 @@ class ExampleServiceApplication : public ApplicationDelegate,
       ApplicationConnection* connection) override;
 
   // InterfaceFactory<ExampleService> implementation.
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<ExampleService> request) override;
 
   MOJO_DISALLOW_COPY_AND_ASSIGN(ExampleServiceApplication);

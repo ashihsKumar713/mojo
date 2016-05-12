@@ -33,7 +33,7 @@ class CompositorApp
       mojo::ApplicationConnection* connection) override;
 
   // |InterfaceFactory<Compositor>|:
-  void Create(mojo::ApplicationConnection* connection,
+  void Create(const mojo::ConnectionContext& connection_context,
               mojo::InterfaceRequest<mojo::gfx::composition::Compositor>
                   request) override;
 

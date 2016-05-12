@@ -32,7 +32,7 @@ class URLResponseDiskCacheApp : public ApplicationDelegate,
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
 
   // InterfaceFactory<URLResponseDiskCache>:
-  void Create(ApplicationConnection* connection,
+  void Create(const ConnectionContext& connection_context,
               InterfaceRequest<URLResponseDiskCache> request) override;
 
   scoped_refptr<base::TaskRunner> task_runner_;

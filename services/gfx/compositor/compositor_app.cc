@@ -41,7 +41,7 @@ bool CompositorApp::ConfigureIncomingConnection(
 }
 
 void CompositorApp::Create(
-    mojo::ApplicationConnection* connection,
+    const mojo::ConnectionContext& connection_context,
     mojo::InterfaceRequest<mojo::gfx::composition::Compositor> request) {
   compositor_bindings_.AddBinding(new CompositorImpl(engine_.get()),
                                   request.Pass());

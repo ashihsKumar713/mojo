@@ -66,7 +66,7 @@ bool ViewManagerApp::ConfigureIncomingConnection(
 }
 
 void ViewManagerApp::Create(
-    mojo::ApplicationConnection* connection,
+    const mojo::ConnectionContext& connection_context,
     mojo::InterfaceRequest<mojo::ui::ViewManager> request) {
   DCHECK(registry_);
   view_managers_.AddBinding(new ViewManagerImpl(registry_.get()),
