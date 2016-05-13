@@ -11,8 +11,6 @@
 
 namespace mojo {
 
-class ApplicationConnection;
-
 class ExampleServiceApplication : public ApplicationDelegate {
  public:
   ExampleServiceApplication();

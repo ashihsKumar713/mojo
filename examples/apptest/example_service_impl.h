@@ -11,8 +11,6 @@
 
 namespace mojo {
 
-class ApplicationConnection;
-
 class ExampleServiceImpl : public ExampleService {
  public:
   explicit ExampleServiceImpl(InterfaceRequest<ExampleService> request);

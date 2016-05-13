@@ -12,9 +12,6 @@
 #include "services/test_service/test_service.mojom.h"
 
 namespace mojo {
-
-class ApplicationConnection;
-
 namespace test {
 
 class TrackedService;

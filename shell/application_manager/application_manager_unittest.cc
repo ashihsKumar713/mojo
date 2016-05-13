@@ -22,7 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using mojo::Application;
-using mojo::ApplicationConnection;
 using mojo::ApplicationDelegate;
 using mojo::ApplicationImpl;
 using mojo::Callback;

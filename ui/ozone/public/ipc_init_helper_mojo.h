@@ -15,11 +15,11 @@ class IpcInitHelperMojo : public IpcInitHelperOzone {
  public:
   virtual void HostInitialize(mojo::ApplicationImpl* application) = 0;
   virtual bool HostConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) = 0;
+      mojo::ServiceProviderImpl* service_provider_impl) = 0;
 
   virtual void GpuInitialize(mojo::ApplicationImpl* application) = 0;
   virtual bool GpuConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) = 0;
+      mojo::ServiceProviderImpl* service_provider_impl) = 0;
 };
 
 }  // namespace ui

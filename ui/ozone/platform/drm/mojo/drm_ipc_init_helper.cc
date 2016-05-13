@@ -21,11 +21,11 @@ class DrmIpcInitHelperMojo : public IpcInitHelperMojo {
 
   void HostInitialize(mojo::ApplicationImpl* application) override;
   bool HostConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override;
+      mojo::ServiceProviderImpl* service_provider_impl) override;
 
   void GpuInitialize(mojo::ApplicationImpl* application) override;
   bool GpuConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override;
+      mojo::ServiceProviderImpl* service_provider_impl) override;
 
  private:
   mojo::OzoneDrmHostPtr ozone_drm_host_;
@@ -49,8 +49,8 @@ void DrmIpcInitHelperMojo::GpuInitialize(mojo::ApplicationImpl* application) {
 }
 
 bool DrmIpcInitHelperMojo::HostConfigureIncomingConnection(
-    mojo::ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl().AddService<mojo::OzoneDrmHost>(
+    mojo::ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<mojo::OzoneDrmHost>(
       [](const mojo::ConnectionContext& connection_context,
          mojo::InterfaceRequest<mojo::OzoneDrmHost> request) {
         new MojoDrmHostImpl(request.Pass());
@@ -59,8 +59,8 @@ bool DrmIpcInitHelperMojo::HostConfigureIncomingConnection(
 }
 
 bool DrmIpcInitHelperMojo::GpuConfigureIncomingConnection(
-    mojo::ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl().AddService<mojo::OzoneDrmGpu>(
+    mojo::ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<mojo::OzoneDrmGpu>(
       [](const mojo::ConnectionContext& connection_context,
          mojo::InterfaceRequest<mojo::OzoneDrmGpu> request) {
         new MojoDrmGpuImpl(request.Pass());

@@ -34,7 +34,6 @@ namespace python {
 namespace content_handler {
 
 using mojo::Application;
-using mojo::ApplicationConnection;
 using mojo::ApplicationDelegate;
 using mojo::ContentHandlerFactory;
 using mojo::InterfaceRequest;

@@ -11,7 +11,6 @@
 #include "services/test_service/test_request_tracker.mojom.h"
 
 namespace mojo {
-class ApplicationConnection;
 namespace test {
 
 typedef std::map<uint64_t, std::vector<ServiceStats> > AllRecordsMap;

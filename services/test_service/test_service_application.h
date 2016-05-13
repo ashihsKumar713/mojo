@@ -9,9 +9,8 @@
 #include "mojo/public/cpp/system/macros.h"
 
 namespace mojo {
-class ApplicationConnection;
-
 namespace test {
+
 class TestService;
 class TestTimeService;
 

@@ -8,7 +8,6 @@
 #include "services/gles2/gpu_state.h"
 #include "services/native_viewport/native_viewport_impl.h"
 
-using mojo::ApplicationConnection;
 using mojo::ConnectionContext;
 using mojo::InterfaceRequest;
 
