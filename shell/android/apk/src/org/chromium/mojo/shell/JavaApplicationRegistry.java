@@ -105,9 +105,6 @@ public class JavaApplicationRegistry {
                 "mojo:native_viewport_support", new NativeViewportSupportApplicationDelegate());
         registry.registerApplicationDelegate("mojo:nfc", new NfcApplicationDelegate());
         registry.registerApplicationDelegate("mojo:sharing", new SharingApplicationDelegate());
-        registry.registerApplicationDelegate(
-                "mojo:vsync", new ServiceProviderFactoryApplicationDelegate(
-                                      new VsyncFactory(registry.mHandlerThread.getLooper())));
         return registry;
     }
 
