@@ -6,7 +6,6 @@
 #define SERVICES_KEYBOARD_LINUX_KEYBOARD_SERVICE_IMPL_H_
 
 #include "base/macros.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/public/interfaces/application/shell.mojom.h"
 #include "mojo/services/keyboard/interfaces/keyboard.mojom.h"

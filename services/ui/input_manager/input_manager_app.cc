@@ -34,14 +34,14 @@ void InputManagerApp::Initialize(mojo::ApplicationImpl* app_impl) {
 
 bool InputManagerApp::ConfigureIncomingConnection(
     mojo::ApplicationConnection* connection) {
-  connection->AddService<mojo::ui::ViewAssociate>(this);
+  connection->GetServiceProviderImpl().AddService<mojo::ui::ViewAssociate>(
+      [this](const mojo::ConnectionContext& connection_context,
+             mojo::InterfaceRequest<mojo::ui::ViewAssociate>
+                 view_associate_request) {
+        input_associates_.AddBinding(new InputAssociate(),
+                                     view_associate_request.Pass());
+      });
   return true;
-}
-
-void InputManagerApp::Create(
-    const mojo::ConnectionContext& connection_context,
-    mojo::InterfaceRequest<mojo::ui::ViewAssociate> request) {
-  input_associates.AddBinding(new InputAssociate(), request.Pass());
 }
 
 }  // namespace input_manager

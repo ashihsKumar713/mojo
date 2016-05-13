@@ -11,14 +11,12 @@
 #include "mojo/common/strong_binding_set.h"
 #include "mojo/common/tracing_impl.h"
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/services/ui/views/interfaces/view_associates.mojom.h"
 
 namespace input_manager {
 
 // Input manager application entry point.
-class InputManagerApp : public mojo::ApplicationDelegate,
-                        public mojo::InterfaceFactory<mojo::ui::ViewAssociate> {
+class InputManagerApp : public mojo::ApplicationDelegate {
  public:
   InputManagerApp();
   ~InputManagerApp() override;
@@ -29,14 +27,10 @@ class InputManagerApp : public mojo::ApplicationDelegate,
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override;
 
-  // |InterfaceFactory<ViewAssociate>|:
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<mojo::ui::ViewAssociate> request) override;
-
   mojo::ApplicationImpl* app_impl_;
   mojo::TracingImpl tracing_;
 
-  mojo::StrongBindingSet<mojo::ui::ViewAssociate> input_associates;
+  mojo::StrongBindingSet<mojo::ui::ViewAssociate> input_associates_;
 
   DISALLOW_COPY_AND_ASSIGN(InputManagerApp);
 };

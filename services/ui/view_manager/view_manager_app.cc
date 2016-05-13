@@ -61,16 +61,14 @@ void ViewManagerApp::Initialize(mojo::ApplicationImpl* app_impl) {
 
 bool ViewManagerApp::ConfigureIncomingConnection(
     mojo::ApplicationConnection* connection) {
-  connection->AddService<mojo::ui::ViewManager>(this);
+  connection->GetServiceProviderImpl().AddService<mojo::ui::ViewManager>([this](
+      const mojo::ConnectionContext& connection_context,
+      mojo::InterfaceRequest<mojo::ui::ViewManager> view_manager_request) {
+    DCHECK(registry_);
+    view_managers_.AddBinding(new ViewManagerImpl(registry_.get()),
+                              view_manager_request.Pass());
+  });
   return true;
-}
-
-void ViewManagerApp::Create(
-    const mojo::ConnectionContext& connection_context,
-    mojo::InterfaceRequest<mojo::ui::ViewManager> request) {
-  DCHECK(registry_);
-  view_managers_.AddBinding(new ViewManagerImpl(registry_.get()),
-                            request.Pass());
 }
 
 void ViewManagerApp::OnCompositorConnectionError() {

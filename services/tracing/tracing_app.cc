@@ -17,23 +17,24 @@ TracingApp::~TracingApp() {}
 
 bool TracingApp::ConfigureIncomingConnection(
     mojo::ApplicationConnection* connection) {
-  connection->AddService<TraceCollector>(this);
+  connection->GetServiceProviderImpl().AddService<TraceCollector>(
+      [this](const mojo::ConnectionContext& connection_context,
+             mojo::InterfaceRequest<TraceCollector> trace_collector_request) {
+        if (collector_binding_.is_bound()) {
+          LOG(ERROR) << "Another application is already connected to tracing.";
+          return;
+        }
+
+        collector_binding_.Bind(trace_collector_request.Pass());
+      });
+  connection->GetServiceProviderImpl().AddService<TraceProviderRegistry>(
+      [this](const mojo::ConnectionContext& connection_context,
+             mojo::InterfaceRequest<TraceProviderRegistry>
+                 trace_provider_registry_request) {
+        provider_registry_bindings_.AddBinding(
+            this, trace_provider_registry_request.Pass());
+      });
   return true;
-}
-
-void TracingApp::Create(const mojo::ConnectionContext& connection_context,
-                        mojo::InterfaceRequest<TraceCollector> request) {
-  if (collector_binding_.is_bound()) {
-    LOG(ERROR) << "Another application is already connected to tracing.";
-    return;
-  }
-
-  collector_binding_.Bind(request.Pass());
-}
-
-void TracingApp::Create(const mojo::ConnectionContext& connection_context,
-                        mojo::InterfaceRequest<TraceProviderRegistry> request) {
-  provider_registry_bindings_.AddBinding(this, request.Pass());
 }
 
 void TracingApp::Start(mojo::ScopedDataPipeProducerHandle stream,

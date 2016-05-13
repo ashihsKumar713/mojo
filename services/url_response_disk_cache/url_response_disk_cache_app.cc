@@ -25,15 +25,13 @@ void URLResponseDiskCacheApp::Initialize(ApplicationImpl* app) {
 
 bool URLResponseDiskCacheApp::ConfigureIncomingConnection(
     ApplicationConnection* connection) {
-  connection->AddService<URLResponseDiskCache>(this);
+  connection->GetServiceProviderImpl().AddService<URLResponseDiskCache>([this](
+      const ConnectionContext& connection_context,
+      InterfaceRequest<URLResponseDiskCache> request) {
+    new URLResponseDiskCacheImpl(task_runner_, delegate_, db_,
+                                 connection_context.remote_url, request.Pass());
+  });
   return true;
-}
-
-void URLResponseDiskCacheApp::Create(
-    const ConnectionContext& connection_context,
-    InterfaceRequest<URLResponseDiskCache> request) {
-  new URLResponseDiskCacheImpl(task_runner_, delegate_, db_,
-                               connection_context.remote_url, request.Pass());
 }
 
 }  // namespace mojo

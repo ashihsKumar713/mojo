@@ -42,14 +42,13 @@ bool LauncherApp::ConfigureIncomingConnection(
   if (connection->GetServiceProviderImpl()
           .connection_context()
           .remote_url.empty()) {
-    connection->AddService<Launcher>(this);
+    connection->GetServiceProviderImpl().AddService<Launcher>(
+        [this](const mojo::ConnectionContext& connection_context,
+               mojo::InterfaceRequest<Launcher> launcher_request) {
+          bindings_.AddBinding(this, launcher_request.Pass());
+        });
   }
   return true;
-}
-
-void LauncherApp::Create(const mojo::ConnectionContext& connection_context,
-                         mojo::InterfaceRequest<Launcher> request) {
-  bindings_.AddBinding(this, request.Pass());
 }
 
 void LauncherApp::Launch(const mojo::String& application_url) {

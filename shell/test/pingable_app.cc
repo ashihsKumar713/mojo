@@ -8,7 +8,6 @@
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_runner.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/public/cpp/bindings/callback.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
@@ -39,8 +38,7 @@ class PingableImpl : public Pingable {
   std::string connection_url_;
 };
 
-class PingableApp : public mojo::ApplicationDelegate,
-                    public mojo::InterfaceFactory<Pingable> {
+class PingableApp : public mojo::ApplicationDelegate {
  public:
   PingableApp() {}
   ~PingableApp() override {}
@@ -53,15 +51,13 @@ class PingableApp : public mojo::ApplicationDelegate,
 
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    connection->AddService(this);
+    connection->GetServiceProviderImpl().AddService<Pingable>(
+        [this](const mojo::ConnectionContext& connection_context,
+               mojo::InterfaceRequest<Pingable> pingable_request) {
+          new PingableImpl(pingable_request.Pass(), app_url_,
+                           connection_context.connection_url);
+        });
     return true;
-  }
-
-  // InterfaceFactory<Pingable>:
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<Pingable> request) override {
-    new PingableImpl(request.Pass(), app_url_,
-                     connection_context.connection_url);
   }
 
   std::string app_url_;

@@ -12,7 +12,6 @@
 #include "mojo/converters/geometry/geometry_type_converters.h"
 #include "mojo/converters/native_viewport/surface_configuration_type_converters.h"
 #include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "services/gles2/gpu_state.h"
 #include "services/native_viewport/platform_viewport_headless.h"
 #include "ui/events/event.h"

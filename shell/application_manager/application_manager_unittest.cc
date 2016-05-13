@@ -15,7 +15,6 @@
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/public/interfaces/application/service_provider.mojom.h"
 #include "shell/application_manager/application_loader.h"
@@ -28,7 +27,6 @@ using mojo::ApplicationDelegate;
 using mojo::ApplicationImpl;
 using mojo::Callback;
 using mojo::ConnectionContext;
-using mojo::InterfaceFactory;
 using mojo::InterfaceRequest;
 using mojo::StrongBinding;
 
@@ -100,8 +98,7 @@ class TestClient {
 };
 
 class TestApplicationLoader : public ApplicationLoader,
-                              public ApplicationDelegate,
-                              public InterfaceFactory<TestService> {
+                              public ApplicationDelegate {
  public:
   TestApplicationLoader() : context_(nullptr), num_loads_(0) {}
 
@@ -125,14 +122,12 @@ class TestApplicationLoader : public ApplicationLoader,
 
   // ApplicationDelegate implementation.
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    connection->AddService(this);
+    connection->GetServiceProviderImpl().AddService<TestService>(
+        [this](const ConnectionContext& connection_context,
+               InterfaceRequest<TestService> request) {
+          new TestServiceImpl(context_, request.Pass());
+        });
     return true;
-  }
-
-  // InterfaceFactory implementation.
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<TestService> request) override {
-    new TestServiceImpl(context_, request.Pass());
   }
 
   scoped_ptr<ApplicationImpl> test_app_;
@@ -298,10 +293,7 @@ class TestBImpl : public TestB {
   StrongBinding<TestB> binding_;
 };
 
-class Tester : public ApplicationDelegate,
-               public ApplicationLoader,
-               public InterfaceFactory<TestA>,
-               public InterfaceFactory<TestB> {
+class Tester : public ApplicationDelegate, public ApplicationLoader {
  public:
   Tester(TesterContext* context, const std::string& requestor_url)
       : context_(context), requestor_url_(requestor_url) {}
@@ -323,25 +315,24 @@ class Tester : public ApplicationDelegate,
       return false;
     }
     // If we're coming from A, then add B, otherwise A.
-    if (remote_url == kTestAURLString)
-      connection->AddService<TestB>(this);
-    else
-      connection->AddService<TestA>(this);
+    if (remote_url == kTestAURLString) {
+      connection->GetServiceProviderImpl().AddService<TestB>(
+          [this](const ConnectionContext& connection_context,
+                 InterfaceRequest<TestB> test_b_request) {
+            new TestBImpl(context_, test_b_request.Pass());
+          });
+    } else {
+      connection->GetServiceProviderImpl().AddService<TestA>(
+          [this](const ConnectionContext& connection_context,
+                 InterfaceRequest<TestA> test_a_request) {
+            mojo::InterfaceHandle<mojo::ServiceProvider> incoming_sp_handle;
+            app_->shell()->ConnectToApplication(
+                kTestBURLString, GetProxy(&incoming_sp_handle), nullptr);
+            a_bindings_.push_back(new TestAImpl(
+                incoming_sp_handle.Pass(), context_, test_a_request.Pass()));
+          });
+    }
     return true;
-  }
-
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<TestA> request) override {
-    mojo::InterfaceHandle<mojo::ServiceProvider> incoming_sp_handle;
-    app_->shell()->ConnectToApplication(kTestBURLString,
-                                        GetProxy(&incoming_sp_handle), nullptr);
-    a_bindings_.push_back(
-        new TestAImpl(incoming_sp_handle.Pass(), context_, request.Pass()));
-  }
-
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<TestB> request) override {
-    new TestBImpl(context_, request.Pass());
   }
 
   TesterContext* context_;

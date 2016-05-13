@@ -21,8 +21,6 @@
 namespace tracing {
 
 class TracingApp : public mojo::ApplicationDelegate,
-                   public mojo::InterfaceFactory<TraceCollector>,
-                   public mojo::InterfaceFactory<TraceProviderRegistry>,
                    public TraceCollector,
                    public TraceProviderRegistry {
  public:
@@ -33,14 +31,6 @@ class TracingApp : public mojo::ApplicationDelegate,
   // mojo::ApplicationDelegate implementation.
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override;
-
-  // mojo::InterfaceFactory<TraceCollector> implementation.
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<TraceCollector> request) override;
-
-  // mojo::InterfaceFactory<TraceProviderRegistry> implementation.
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<TraceProviderRegistry> request) override;
 
   // TraceCollector implementation.
   void Start(mojo::ScopedDataPipeProducerHandle stream,

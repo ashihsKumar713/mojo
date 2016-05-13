@@ -16,9 +16,7 @@
 
 namespace launcher {
 
-class LauncherApp : public mojo::ApplicationDelegate,
-                    public mojo::InterfaceFactory<Launcher>,
-                    public Launcher {
+class LauncherApp : public mojo::ApplicationDelegate, public Launcher {
  public:
   LauncherApp();
   ~LauncherApp() override;
@@ -28,10 +26,6 @@ class LauncherApp : public mojo::ApplicationDelegate,
   void Initialize(mojo::ApplicationImpl* app_impl) override;
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override;
-
-  // mojo::InterfaceRequest<Launcher> implementation
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<Launcher> request) override;
 
   // |Launcher|:
   void Launch(const mojo::String& application_url) override;

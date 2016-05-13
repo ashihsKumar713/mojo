@@ -6,7 +6,6 @@
 #define MOJO_SHELL_ANDROID_NATIVE_VIEWPORT_APPLICATION_LOADER_H_
 
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/services/gpu/interfaces/gpu.mojom.h"
 #include "mojo/services/native_viewport/interfaces/native_viewport.mojom.h"
 #include "services/gles2/gpu_impl.h"
@@ -22,11 +21,8 @@ class ApplicationImpl;
 
 namespace shell {
 
-class NativeViewportApplicationLoader
-    : public ApplicationLoader,
-      public mojo::ApplicationDelegate,
-      public mojo::InterfaceFactory<mojo::NativeViewport>,
-      public mojo::InterfaceFactory<mojo::Gpu> {
+class NativeViewportApplicationLoader : public ApplicationLoader,
+                                        public mojo::ApplicationDelegate {
  public:
   NativeViewportApplicationLoader();
   ~NativeViewportApplicationLoader();
@@ -40,14 +36,6 @@ class NativeViewportApplicationLoader
   // mojo::ApplicationDelegate implementation.
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override;
-
-  // mojo::InterfaceFactory<mojo::NativeViewport> implementation.
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<mojo::NativeViewport> request) override;
-
-  // mojo::InterfaceFactory<mojo::Gpu> implementation.
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<mojo::Gpu> request) override;
 
   scoped_refptr<gles2::GpuState> gpu_state_;
   scoped_ptr<mojo::ApplicationImpl> app_;

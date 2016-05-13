@@ -14,24 +14,6 @@
 
 namespace ui {
 
-class InterfaceFactoryDrmHost
-    : public mojo::InterfaceFactory<mojo::OzoneDrmHost> {
-  // mojo::InterfaceFactory implementation.
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<mojo::OzoneDrmHost> request) override {
-    new MojoDrmHostImpl(request.Pass());
-  }
-};
-
-class InterfaceFactoryDrmGpu
-    : public mojo::InterfaceFactory<mojo::OzoneDrmGpu> {
-  // mojo::InterfaceFactory<OzoneDrmGpu> implementation.
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<mojo::OzoneDrmGpu> request) override {
-    new MojoDrmGpuImpl(request.Pass());
-  }
-};
-
 class DrmIpcInitHelperMojo : public IpcInitHelperMojo {
  public:
   DrmIpcInitHelperMojo();
@@ -68,13 +50,21 @@ void DrmIpcInitHelperMojo::GpuInitialize(mojo::ApplicationImpl* application) {
 
 bool DrmIpcInitHelperMojo::HostConfigureIncomingConnection(
     mojo::ApplicationConnection* connection) {
-  connection->AddService<mojo::OzoneDrmHost>(new InterfaceFactoryDrmHost());
+  connection->GetServiceProviderImpl().AddService<mojo::OzoneDrmHost>(
+      [](const mojo::ConnectionContext& connection_context,
+         mojo::InterfaceRequest<mojo::OzoneDrmHost> request) {
+        new MojoDrmHostImpl(request.Pass());
+      });
   return true;
 }
 
 bool DrmIpcInitHelperMojo::GpuConfigureIncomingConnection(
     mojo::ApplicationConnection* connection) {
-  connection->AddService<mojo::OzoneDrmGpu>(new InterfaceFactoryDrmGpu());
+  connection->GetServiceProviderImpl().AddService<mojo::OzoneDrmGpu>(
+      [](const mojo::ConnectionContext& connection_context,
+         mojo::InterfaceRequest<mojo::OzoneDrmGpu> request) {
+        new MojoDrmGpuImpl(request.Pass());
+      });
   return true;
 }
 

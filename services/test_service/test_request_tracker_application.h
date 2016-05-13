@@ -6,7 +6,6 @@
 #define SERVICES_TEST_SERVICE_TEST_REQUEST_TRACKER_APPLICATION_H_
 
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "services/test_service/test_request_tracker_impl.h"
 
@@ -16,11 +15,7 @@ namespace test {
 class TestTimeService;
 
 // Embeds TestRequestTracker mojo services into an application.
-class TestRequestTrackerApplication
-    : public ApplicationDelegate,
-      public InterfaceFactory<TestTimeService>,
-      public InterfaceFactory<TestRequestTracker>,
-      public InterfaceFactory<TestTrackedRequestService> {
+class TestRequestTrackerApplication : public ApplicationDelegate {
  public:
   TestRequestTrackerApplication();
   ~TestRequestTrackerApplication() override;
@@ -29,18 +24,6 @@ class TestRequestTrackerApplication
 
   // ApplicationDelegate methods:
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
-
-  // InterfaceFactory<TestTimeService> methods:
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<TestTimeService> request) override;
-
-  // InterfaceFactory<TestRequestTracker> methods:
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<TestRequestTracker> request) override;
-
-  // InterfaceFactory<TestTrackedRequestService> methods:
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<TestTrackedRequestService> request) override;
 
  private:
   ApplicationImpl* app_impl_;

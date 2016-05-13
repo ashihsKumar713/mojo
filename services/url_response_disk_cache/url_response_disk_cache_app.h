@@ -12,15 +12,13 @@
 #include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/services/url_response_disk_cache/interfaces/url_response_disk_cache.mojom.h"
 #include "services/url_response_disk_cache/url_response_disk_cache_db.h"
 #include "services/url_response_disk_cache/url_response_disk_cache_delegate.h"
 
 namespace mojo {
 
-class URLResponseDiskCacheApp : public ApplicationDelegate,
-                                public InterfaceFactory<URLResponseDiskCache> {
+class URLResponseDiskCacheApp : public ApplicationDelegate {
  public:
   explicit URLResponseDiskCacheApp(scoped_refptr<base::TaskRunner> task_runner,
                                    URLResponseDiskCacheDelegate* delegate);
@@ -30,10 +28,6 @@ class URLResponseDiskCacheApp : public ApplicationDelegate,
   // ApplicationDelegate:
   void Initialize(ApplicationImpl* app) override;
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
-
-  // InterfaceFactory<URLResponseDiskCache>:
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<URLResponseDiskCache> request) override;
 
   scoped_refptr<base::TaskRunner> task_runner_;
   scoped_refptr<URLResponseDiskCacheDB> db_;

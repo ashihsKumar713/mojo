@@ -6,7 +6,6 @@
 #define SERVICES_TEST_SERVICE_TEST_SERVICE_APPLICATION_H_
 
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/public/cpp/system/macros.h"
 
 namespace mojo {
@@ -16,9 +15,7 @@ namespace test {
 class TestService;
 class TestTimeService;
 
-class TestServiceApplication : public ApplicationDelegate,
-                               public InterfaceFactory<TestService>,
-                               public InterfaceFactory<TestTimeService> {
+class TestServiceApplication : public ApplicationDelegate {
  public:
   TestServiceApplication();
   ~TestServiceApplication() override;
@@ -27,14 +24,6 @@ class TestServiceApplication : public ApplicationDelegate,
 
   // ApplicationDelegate implementation.
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
-
-  // InterfaceFactory<TestService> implementation.
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<TestService> request) override;
-
-  // InterfaceFactory<TestTimeService> implementation.
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<TestTimeService> request) override;
 
   void AddRef();
   void ReleaseRef();

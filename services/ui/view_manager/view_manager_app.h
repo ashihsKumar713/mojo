@@ -18,8 +18,7 @@
 namespace view_manager {
 
 // View manager application entry point.
-class ViewManagerApp : public mojo::ApplicationDelegate,
-                       public mojo::InterfaceFactory<mojo::ui::ViewManager> {
+class ViewManagerApp : public mojo::ApplicationDelegate {
  public:
   ViewManagerApp();
   ~ViewManagerApp() override;
@@ -29,10 +28,6 @@ class ViewManagerApp : public mojo::ApplicationDelegate,
   void Initialize(mojo::ApplicationImpl* app_impl) override;
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override;
-
-  // |InterfaceFactory<ViewManager>|:
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<mojo::ui::ViewManager> request) override;
 
   void OnCompositorConnectionError();
   void OnAssociateConnectionError(const std::string& url);
