@@ -7,15 +7,13 @@
 
 #include "examples/apptest/example_service_impl.h"
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/public/cpp/system/macros.h"
 
 namespace mojo {
 
 class ApplicationConnection;
 
-class ExampleServiceApplication : public ApplicationDelegate,
-                                  public InterfaceFactory<ExampleService> {
+class ExampleServiceApplication : public ApplicationDelegate {
  public:
   ExampleServiceApplication();
   ~ExampleServiceApplication() override;
@@ -24,10 +22,6 @@ class ExampleServiceApplication : public ApplicationDelegate,
   // ApplicationDelegate implementation.
   bool ConfigureIncomingConnection(
       ApplicationConnection* connection) override;
-
-  // InterfaceFactory<ExampleService> implementation.
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<ExampleService> request) override;
 
   MOJO_DISALLOW_COPY_AND_ASSIGN(ExampleServiceApplication);
 };

@@ -18,15 +18,13 @@ ExampleServiceApplication::~ExampleServiceApplication() {}
 
 bool ExampleServiceApplication::ConfigureIncomingConnection(
     ApplicationConnection* connection) {
-  connection->AddService<ExampleService>(this);
+  connection->GetServiceProviderImpl().AddService<ExampleService>(
+      [](const ConnectionContext& connection_context,
+         InterfaceRequest<ExampleService> example_service_request) {
+        // Not leaked: ExampleServiceImpl is strongly bound to the pipe.
+        new ExampleServiceImpl(example_service_request.Pass());
+      });
   return true;
-}
-
-void ExampleServiceApplication::Create(
-    const ConnectionContext& connection_context,
-    InterfaceRequest<ExampleService> request) {
-  // Not leaked: ExampleServiceImpl is strongly bound to the pipe.
-  new ExampleServiceImpl(request.Pass());
 }
 
 }  // namespace mojo

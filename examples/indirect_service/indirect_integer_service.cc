@@ -49,21 +49,16 @@ private:
   StrongBinding<IndirectIntegerService> binding_;
 };
 
-class IndirectIntegerServiceAppDelegate
-    : public ApplicationDelegate,
-      public InterfaceFactory<IndirectIntegerService> {
+class IndirectIntegerServiceAppDelegate : public ApplicationDelegate {
  public:
   bool ConfigureIncomingConnection(
       ApplicationConnection* connection) override {
-    connection->AddService(this);
+    connection->GetServiceProviderImpl().AddService<IndirectIntegerService>(
+        [](const ConnectionContext& connection_context,
+           InterfaceRequest<IndirectIntegerService> request) {
+          new IndirectIntegerServiceImpl(request.Pass());
+        });
     return true;
-  }
-
- private:
-  // InterfaceFactory<IndirectIntegerService>
-  void Create(const mojo::ConnectionContext& connection_context,
-              InterfaceRequest<IndirectIntegerService> request) override {
-    new IndirectIntegerServiceImpl(request.Pass());
   }
 };
 

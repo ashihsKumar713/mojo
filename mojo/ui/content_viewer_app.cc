@@ -49,16 +49,14 @@ void ContentViewerApp::Initialize(mojo::ApplicationImpl* app_impl) {
 
 bool ContentViewerApp::ConfigureIncomingConnection(
     mojo::ApplicationConnection* connection) {
-  connection->AddService<mojo::ContentHandler>(this);
+  connection->GetServiceProviderImpl().AddService<ContentHandler>([this](
+      const ConnectionContext& connection_context,
+      InterfaceRequest<ContentHandler> content_handler_request) {
+    bindings_.AddBinding(
+        new DelegatingContentHandler(this, connection_context.connection_url),
+        content_handler_request.Pass());
+  });
   return true;
-}
-
-void ContentViewerApp::Create(
-    const mojo::ConnectionContext& connection_context,
-    mojo::InterfaceRequest<mojo::ContentHandler> request) {
-  bindings_.AddBinding(
-      new DelegatingContentHandler(this, connection_context.connection_url),
-      request.Pass());
 }
 
 void ContentViewerApp::StartViewer(

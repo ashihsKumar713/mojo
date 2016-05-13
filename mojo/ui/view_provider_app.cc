@@ -52,16 +52,14 @@ void ViewProviderApp::Initialize(mojo::ApplicationImpl* app_impl) {
 
 bool ViewProviderApp::ConfigureIncomingConnection(
     mojo::ApplicationConnection* connection) {
-  connection->AddService<mojo::ui::ViewProvider>(this);
+  connection->GetServiceProviderImpl().AddService<ViewProvider>(
+      [this](const ConnectionContext& connection_context,
+             InterfaceRequest<ViewProvider> view_provider_request) {
+        bindings_.AddBinding(
+            new DelegatingViewProvider(this, connection_context.connection_url),
+            view_provider_request.Pass());
+      });
   return true;
-}
-
-void ViewProviderApp::Create(
-    const mojo::ConnectionContext& connection_context,
-    mojo::InterfaceRequest<mojo::ui::ViewProvider> request) {
-  bindings_.AddBinding(
-      new DelegatingViewProvider(this, connection_context.connection_url),
-      request.Pass());
 }
 
 void ViewProviderApp::CreateView(

@@ -22,8 +22,7 @@ namespace ui {
 //
 // It is not necessary to use this class to implement all ViewProviders.
 // This class is merely intended to make the simple apps easier to write.
-class ViewProviderApp : public ApplicationDelegate,
-                        public InterfaceFactory<ui::ViewProvider> {
+class ViewProviderApp : public ApplicationDelegate {
  public:
   ViewProviderApp();
   ~ViewProviderApp() override;
@@ -56,10 +55,6 @@ class ViewProviderApp : public ApplicationDelegate,
 
  private:
   class DelegatingViewProvider;
-
-  // |InterfaceFactory<ViewProvider>|:
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<ViewProvider> request) override;
 
   void CreateView(DelegatingViewProvider* provider,
                   const std::string& view_provider_url,

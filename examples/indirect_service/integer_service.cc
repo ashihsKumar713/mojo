@@ -29,20 +29,16 @@ class IntegerServiceImpl : public IntegerService {
   StrongBinding<IntegerService> binding_;
 };
 
-class IntegerServiceAppDelegate : public ApplicationDelegate,
-                                  public InterfaceFactory<IntegerService> {
+class IntegerServiceAppDelegate : public ApplicationDelegate {
  public:
   bool ConfigureIncomingConnection(
       ApplicationConnection* connection) override {
-    connection->AddService(this);
+    connection->GetServiceProviderImpl().AddService<IntegerService>(
+        [](const ConnectionContext& connection_context,
+           InterfaceRequest<IntegerService> request) {
+          new IntegerServiceImpl(request.Pass());
+        });
     return true;
-  }
-
- private:
-  // InterfaceFactory<IntegerService>
-  void Create(const mojo::ConnectionContext& connection_context,
-              InterfaceRequest<IntegerService> request) override {
-    new IntegerServiceImpl(request.Pass());
   }
 };
 

@@ -19,8 +19,7 @@ namespace ui {
 // TODO(jeffbrown): Support creating the view provider application in a
 // separate thread if desired (often not the case).  This is one reason
 // we are not using the ContentHandlerFactory here.
-class ContentViewerApp : public ApplicationDelegate,
-                         public InterfaceFactory<ContentHandler> {
+class ContentViewerApp : public ApplicationDelegate {
  public:
   ContentViewerApp();
   ~ContentViewerApp() override;
@@ -49,10 +48,6 @@ class ContentViewerApp : public ApplicationDelegate,
 
  private:
   class DelegatingContentHandler;
-
-  // |InterfaceFactory<ContentHandler>|:
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<ContentHandler> request) override;
 
   void StartViewer(const std::string& content_handler_url,
                    InterfaceRequest<Application> application_request,

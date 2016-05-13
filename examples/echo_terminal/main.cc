@@ -13,7 +13,6 @@
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/services/files/interfaces/file.mojom.h"
 #include "mojo/services/files/interfaces/types.mojom.h"
 #include "mojo/services/terminal/interfaces/terminal_client.mojom.h"
@@ -98,7 +97,6 @@ class TerminalEchoer {
 
 class EchoTerminalApp
     : public mojo::ApplicationDelegate,
-      public mojo::InterfaceFactory<mojo::terminal::TerminalClient>,
       public mojo::terminal::TerminalClient {
  public:
   EchoTerminalApp() {}
@@ -108,15 +106,14 @@ class EchoTerminalApp
   // |ApplicationDelegate| override:
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    connection->AddService<mojo::terminal::TerminalClient>(this);
+    connection->GetServiceProviderImpl()
+        .AddService<mojo::terminal::TerminalClient>([this](
+            const mojo::ConnectionContext& connection_context,
+            mojo::InterfaceRequest<mojo::terminal::TerminalClient>
+                terminal_client_request) {
+          terminal_clients_.AddBinding(this, terminal_client_request.Pass());
+        });
     return true;
-  }
-
-  // |InterfaceFactory<mojo::terminal::TerminalClient>| implementation:
-  void Create(
-      const mojo::ConnectionContext& connection_context,
-      mojo::InterfaceRequest<mojo::terminal::TerminalClient> request) override {
-    terminal_clients_.AddBinding(this, request.Pass());
   }
 
   // |mojo::terminal::TerminalClient| implementation:

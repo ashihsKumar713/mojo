@@ -11,7 +11,6 @@
 #include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_runner.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/public/cpp/system/macros.h"
@@ -38,8 +37,7 @@ class HelloMojoImpl : public HelloMojo {
   MOJO_DISALLOW_COPY_AND_ASSIGN(HelloMojoImpl);
 };
 
-class HelloMojoServerApp : public mojo::ApplicationDelegate,
-                           public mojo::InterfaceFactory<HelloMojo> {
+class HelloMojoServerApp : public mojo::ApplicationDelegate {
  public:
   HelloMojoServerApp() {}
   ~HelloMojoServerApp() override {}
@@ -47,14 +45,12 @@ class HelloMojoServerApp : public mojo::ApplicationDelegate,
   // |mojo::ApplicationDelegate| implementation:
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* application_connection) override {
-    application_connection->AddService<HelloMojo>(this);
+    application_connection->GetServiceProviderImpl().AddService<HelloMojo>(
+        [](const mojo::ConnectionContext& connection_context,
+           mojo::InterfaceRequest<HelloMojo> hello_mojo_request) {
+          new HelloMojoImpl(std::move(hello_mojo_request));  // Owns itself.
+        });
     return true;
-  }
-
-  // |mojo::InterfaceFactory<HelloMojo>| implementation:
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<HelloMojo> hello_mojo_request) override {
-    new HelloMojoImpl(std::move(hello_mojo_request));  // Owns itself.
   }
 
  private:

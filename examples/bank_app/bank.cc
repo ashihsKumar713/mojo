@@ -12,7 +12,6 @@
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_runner.h"
 #include "mojo/public/cpp/application/connect.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/public/cpp/utility/run_loop.h"
 #include "mojo/services/vanadium/security/interfaces/principal.mojom.h"
@@ -46,8 +45,7 @@ class BankUser {
   std::string *user_;
 };
 
-class BankApp : public mojo::ApplicationDelegate,
-                public mojo::InterfaceFactory<Bank> {
+class BankApp : public mojo::ApplicationDelegate {
  public:
   BankApp() {}
 
@@ -79,13 +77,12 @@ class BankApp : public mojo::ApplicationDelegate,
       }
       MOJO_LOG(INFO) << "Customer " << user << " accessing bank";
     }
-    connection->AddService(this);
+    connection->GetServiceProviderImpl().AddService<Bank>(
+        [this](const mojo::ConnectionContext& connection_context,
+               mojo::InterfaceRequest<Bank> bank_request) {
+          bindings_.AddBinding(&bank_impl_, bank_request.Pass());
+        });
     return true;
-  }
-
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<Bank> request) override {
-    bindings_.AddBinding(&bank_impl_, request.Pass());
   }
 
  private:

@@ -10,7 +10,6 @@
 #include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_runner.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 
 namespace mojo {
@@ -25,8 +24,8 @@ namespace examples {
 //    StrongBinding.
 // 2. SingletonServer -- all requests are handled by one object. Connections are
 //    tracked using BindingSet.
-// 3. OneAtATimeServer -- each Create call from InterfaceFactory<> closes the
-//    old interface pipe and binds the new interface pipe.
+// 3. OneAtATimeServer -- each request "replaces" any previous request. Any old
+//    interface pipe is closed and the new interface pipe is bound.
 
 // EchoImpl defines our implementation of the Echo interface.
 // It is used by all three server variants.
@@ -51,47 +50,41 @@ class StrongBindingEchoImpl : public EchoImpl {
 };
 
 // MultiServer creates a new object to handle each message pipe.
-class MultiServer : public mojo::ApplicationDelegate,
-                    public mojo::InterfaceFactory<Echo> {
+class MultiServer : public mojo::ApplicationDelegate {
  public:
   MultiServer() {}
 
   // From ApplicationDelegate
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    connection->AddService<Echo>(this);
+    connection->GetServiceProviderImpl().AddService<Echo>(
+        [](const mojo::ConnectionContext& connection_context,
+           mojo::InterfaceRequest<Echo> echo_request) {
+          // This object will be deleted automatically because of the use of
+          // StrongBinding<> for the declaration of |strong_binding_|.
+          new StrongBindingEchoImpl(echo_request.Pass());
+        });
     return true;
-  }
-
-  // From InterfaceFactory<Echo>
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<Echo> request) override {
-    // This object will be deleted automatically because of the use of
-    // StrongBinding<> for the declaration of |strong_binding_|.
-    new StrongBindingEchoImpl(request.Pass());
   }
 };
 
 // SingletonServer uses the same object to handle all message pipes. Useful
 // for stateless operation.
-class SingletonServer : public mojo::ApplicationDelegate,
-                        public mojo::InterfaceFactory<Echo> {
+class SingletonServer : public mojo::ApplicationDelegate {
  public:
   SingletonServer() {}
 
   // From ApplicationDelegate
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    connection->AddService<Echo>(this);
+    connection->GetServiceProviderImpl().AddService<Echo>(
+        [this](const mojo::ConnectionContext& connection_context,
+               mojo::InterfaceRequest<Echo> echo_request) {
+          // All channels will connect to this singleton object, so just
+          // add the binding to our collection.
+          bindings_.AddBinding(&echo_impl_, echo_request.Pass());
+        });
     return true;
-  }
-
-  // From InterfaceFactory<Echo>
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<Echo> request) override {
-    // All channels will connect to this singleton object, so just
-    // add the binding to our collection.
-    bindings_.AddBinding(&echo_impl_, request.Pass());
   }
 
  private:
@@ -106,22 +99,19 @@ class SingletonServer : public mojo::ApplicationDelegate,
 // not reliable. There's a race condition because a second client could bind
 // to the server before the first client called EchoString(). Therefore, this
 // is an example of how not to write your code.
-class OneAtATimeServer : public mojo::ApplicationDelegate,
-                         public mojo::InterfaceFactory<Echo> {
+class OneAtATimeServer : public mojo::ApplicationDelegate {
  public:
   OneAtATimeServer() : binding_(&echo_impl_) {}
 
   // From ApplicationDelegate
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    connection->AddService<Echo>(this);
+    connection->GetServiceProviderImpl().AddService<Echo>(
+        [this](const mojo::ConnectionContext& connection_context,
+               mojo::InterfaceRequest<Echo> echo_request) {
+          binding_.Bind(echo_request.Pass());
+        });
     return true;
-  }
-
-  // From InterfaceFactory<Echo>
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<Echo> request) override {
-    binding_.Bind(request.Pass());
   }
 
  private:

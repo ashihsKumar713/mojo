@@ -127,23 +127,22 @@ means it has a `MojoMain` function, an `ApplicationRunner`, and an
 
 echo_server.cc contains three different types of servers, though only one can be
 used at a time. To try changing the server, uncomment one of the lines in
-MojoMain. These different `ApplicationDelegate` derivations demonstrate how
-differently the `InterfaceFactory` can be created.  Each server derives from
-`InterfaceFactory`, which implements an interface and binds it to incoming
-requests.
+MojoMain. These different `ApplicationDelegate` derivations demonstrate
+different ways in which incoming requests can be handled.
 
 All three servers, being `ApplicationDelegate` derivations, implement
 `ConfigureIncomingConnection` in the same way:
 
 ```
-connection->AddService<Echo>(this);
+connection->GetServiceProviderImpl().AddService<Echo>(
+    [this](const mojo::ConnectionContext& connection_context,
+           mojo::InterfaceRequest<Echo> echo_request) {
+      ...
+    });
 ```
 
-This should be read as "For any incoming connections to this server, use `this`
-as a factory to create the Echo interface".
-
-Each server's `Create` method will now be called when a new connection wants
-to access the Echo interface.
+This should be read as "For any incoming connections to this server, use the
+given lambda function use `this` to create the Echo interface".
 
 ### EchoImpl: The Interface Implementation
 

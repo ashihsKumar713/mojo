@@ -92,8 +92,7 @@ class ContentHandlerImpl : public ContentHandler {
   MOJO_DISALLOW_COPY_AND_ASSIGN(ContentHandlerImpl);
 };
 
-class ContentHandlerApp : public ApplicationDelegate,
-                          public InterfaceFactory<ContentHandler> {
+class ContentHandlerApp : public ApplicationDelegate {
  public:
   ContentHandlerApp() {}
   ~ContentHandlerApp() override {}
@@ -101,13 +100,12 @@ class ContentHandlerApp : public ApplicationDelegate,
   void Initialize(ApplicationImpl* app) override {}
 
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    connection->AddService(this);
+    connection->GetServiceProviderImpl().AddService<ContentHandler>(
+        [](const ConnectionContext& connection_context,
+           InterfaceRequest<ContentHandler> content_handler_request) {
+          new ContentHandlerImpl(content_handler_request.Pass());
+        });
     return true;
-  }
-
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<ContentHandler> request) override {
-    new ContentHandlerImpl(request.Pass());
   }
 
  private:

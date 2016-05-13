@@ -28,7 +28,6 @@
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/services/files/interfaces/files.mojom.h"
@@ -221,8 +220,7 @@ class TerminalClientImpl : public TerminalClient {
   DISALLOW_COPY_AND_ASSIGN(TerminalClientImpl);
 };
 
-class NativeRunApp : public mojo::ApplicationDelegate,
-                     public mojo::InterfaceFactory<TerminalClient> {
+class NativeRunApp : public mojo::ApplicationDelegate {
  public:
   NativeRunApp() : application_impl_(nullptr) {}
   ~NativeRunApp() override {}
@@ -238,14 +236,13 @@ class NativeRunApp : public mojo::ApplicationDelegate,
 
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    connection->AddService<TerminalClient>(this);
+    connection->GetServiceProviderImpl().AddService<TerminalClient>(
+        [this](const mojo::ConnectionContext& connection_context,
+               mojo::InterfaceRequest<TerminalClient> terminal_client_request) {
+          new TerminalClientImpl(terminal_client_request.Pass(),
+                                 native_support_process_.get());
+        });
     return true;
-  }
-
-  // |InterfaceFactory<TerminalClient>| implementation:
-  void Create(const mojo::ConnectionContext& /*connection_context*/,
-              mojo::InterfaceRequest<TerminalClient> request) override {
-    new TerminalClientImpl(request.Pass(), native_support_process_.get());
   }
 
   mojo::ApplicationImpl* application_impl_;

@@ -8,14 +8,12 @@
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "services/asset_bundle/asset_unpacker_impl.h"
 
 namespace mojo {
 namespace asset_bundle {
 
-class AssetBundleApp : public ApplicationDelegate,
-                       public InterfaceFactory<AssetUnpacker> {
+class AssetBundleApp : public ApplicationDelegate {
  public:
   AssetBundleApp() {}
   ~AssetBundleApp() override {}
@@ -23,27 +21,25 @@ class AssetBundleApp : public ApplicationDelegate,
  private:
   // |ApplicationDelegate| override:
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    connection->AddService<AssetUnpacker>(this);
+    connection->GetServiceProviderImpl().AddService<AssetUnpacker>(
+        [this](const ConnectionContext& connection_context,
+               InterfaceRequest<AssetUnpacker> asset_unpacker_request) {
+          // Lazily initialize |sequenced_worker_pool_|. (We can't create it in
+          // the constructor, since AtExitManager is only created in
+          // ApplicationRunnerChromium::Run().)
+          if (!sequenced_worker_pool_) {
+            // TODO(vtl): What's the "right" way to choose the maximum number of
+            // threads?
+            sequenced_worker_pool_ =
+                new base::SequencedWorkerPool(4, "AssetBundleWorker");
+          }
+
+          new AssetUnpackerImpl(
+              asset_unpacker_request.Pass(),
+              sequenced_worker_pool_->GetTaskRunnerWithShutdownBehavior(
+                  base::SequencedWorkerPool::SKIP_ON_SHUTDOWN));
+        });
     return true;
-  }
-
-  // |InterfaceFactory<AssetUnpacker>| implementation:
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<AssetUnpacker> request) override {
-    // Lazily initialize |sequenced_worker_pool_|. (We can't create it in the
-    // constructor, since AtExitManager is only created in
-    // ApplicationRunnerChromium::Run().)
-    if (!sequenced_worker_pool_) {
-      // TODO(vtl): What's the "right" way to choose the maximum number of
-      // threads?
-      sequenced_worker_pool_ =
-          new base::SequencedWorkerPool(4, "AssetBundleWorker");
-    }
-
-    new AssetUnpackerImpl(
-        request.Pass(),
-        sequenced_worker_pool_->GetTaskRunnerWithShutdownBehavior(
-            base::SequencedWorkerPool::SKIP_ON_SHUTDOWN));
   }
 
   // We don't really need the "sequenced" part, but we need to be able to shut
