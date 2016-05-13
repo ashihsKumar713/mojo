@@ -190,6 +190,15 @@ def GetTestList(config, verbose_count=0):
              "mojo", "dart", "packages", "mojom", "test",
              "generate_test.dart")])
 
+    if ShouldRunTest(Config.TEST_TYPE_DEFAULT):
+      AddEntry("Dart mojo package can be imported by a non-mojo embedder",
+          [os.path.join("third_party", "dart-sdk", "dart-sdk", "bin", "dart"),
+           "--checked",
+           "-p", os.path.join(build_dir, "gen", "dart-pkg", "packages"),
+           os.path.join(
+             "mojo", "dart", "packages", "mojo", "test",
+             "standalone_test.dart")])
+
     # Tests of Dart examples.
     if ShouldRunTest(Config.TEST_TYPE_DEFAULT):
       AddEntry("Dart examples tests",
