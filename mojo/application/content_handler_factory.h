@@ -6,14 +6,17 @@
 #define MOJO_APPLICATION_CONTENT_HANDLER_FACTORY_H_
 
 #include "base/memory/scoped_ptr.h"
-#include "mojo/public/cpp/application/interface_factory.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/interfaces/application/shell.mojom.h"
 #include "mojo/services/content_handler/interfaces/content_handler.mojom.h"
 #include "mojo/services/network/interfaces/url_loader.mojom.h"
 
 namespace mojo {
 
-class ContentHandlerFactory : public InterfaceFactory<ContentHandler> {
+struct ConnectionContext;
+
+// TODO(vtl): Should this even be a class, now that InterfaceFactory is no more?
+class ContentHandlerFactory {
  public:
   class HandledApplicationHolder {
    public:
@@ -47,13 +50,17 @@ class ContentHandlerFactory : public InterfaceFactory<ContentHandler> {
   };
 
   explicit ContentHandlerFactory(Delegate* delegate);
-  ~ContentHandlerFactory() override;
+  ~ContentHandlerFactory();
+
+  // Creates a content handler for the given connection (context and request).
+  void Create(const ConnectionContext& connection_context,
+              InterfaceRequest<ContentHandler> content_handler_request);
+
+  // For use with |ServiceProviderImpl::AddService<ContentHandler>()|.
+  ServiceProviderImpl::InterfaceRequestHandler<ContentHandler>
+  GetInterfaceRequestHandler();
 
  private:
-  // From InterfaceFactory:
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<ContentHandler> request) override;
-
   Delegate* delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentHandlerFactory);

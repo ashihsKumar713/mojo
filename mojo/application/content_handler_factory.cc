@@ -113,10 +113,22 @@ class ContentHandlerImpl : public ContentHandler {
 }  // namespace
 
 ContentHandlerFactory::ContentHandlerFactory(Delegate* delegate)
-    : delegate_(delegate) {
+    : delegate_(delegate) {}
+
+ContentHandlerFactory::~ContentHandlerFactory() {}
+
+void ContentHandlerFactory::Create(
+    const ConnectionContext& connection_context,
+    InterfaceRequest<ContentHandler> content_handler_request) {
+  new ContentHandlerImpl(delegate_, content_handler_request.Pass());
 }
 
-ContentHandlerFactory::~ContentHandlerFactory() {
+ServiceProviderImpl::InterfaceRequestHandler<ContentHandler>
+ContentHandlerFactory::GetInterfaceRequestHandler() {
+  return [this](const ConnectionContext& connection_context,
+                InterfaceRequest<ContentHandler> content_handler_request) {
+    Create(connection_context, content_handler_request.Pass());
+  };
 }
 
 void ContentHandlerFactory::ManagedDelegate::RunApplication(
@@ -127,11 +139,6 @@ void ContentHandlerFactory::ManagedDelegate::RunApplication(
       this->CreateApplication(application_request.Pass(), response.Pass());
   if (application)
     loop.Run();
-}
-
-void ContentHandlerFactory::Create(const ConnectionContext& connection_context,
-                                   InterfaceRequest<ContentHandler> request) {
-  new ContentHandlerImpl(delegate_, request.Pass());
 }
 
 }  // namespace mojo

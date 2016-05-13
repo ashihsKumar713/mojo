@@ -242,9 +242,11 @@ class DartContentHandlerApp : public mojo::ApplicationDelegate {
                                           .connection_context()
                                           .connection_url);
     if (default_strict_ || strict) {
-      connection->AddService(&strict_content_handler_factory_);
+      connection->GetServiceProviderImpl().AddService<mojo::ContentHandler>(
+          strict_content_handler_factory_.GetInterfaceRequestHandler());
     } else {
-      connection->AddService(&content_handler_factory_);
+      connection->GetServiceProviderImpl().AddService<mojo::ContentHandler>(
+          content_handler_factory_.GetInterfaceRequestHandler());
     }
     return true;
   }

@@ -32,7 +32,8 @@ class JsContentHandler : public mojo::ApplicationDelegate,
   // Overridden from ApplicationDelegate:
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    connection->AddService(&content_handler_factory_);
+    connection->GetServiceProviderImpl().AddService<mojo::ContentHandler>(
+        content_handler_factory_.GetInterfaceRequestHandler());
     return true;
   }
 

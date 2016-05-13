@@ -24,7 +24,8 @@ class RecursiveContentHandler : public ApplicationDelegate,
   // Overridden from ApplicationDelegate:
   bool ConfigureIncomingConnection(
       ApplicationConnection* connection) override {
-    connection->AddService(&content_handler_factory_);
+    connection->GetServiceProviderImpl().AddService<ContentHandler>(
+        content_handler_factory_.GetInterfaceRequestHandler());
     return true;
   }
 
