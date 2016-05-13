@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/prediction/prediction_service_impl.h"
+
 #include "mojo/application/application_runner_chromium.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_connection.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
-#include "services/prediction/dictionary_service.h"
-#include "services/prediction/prediction_service_impl.h"
 
 namespace prediction {
 
@@ -23,7 +21,6 @@ PredictionServiceImpl::PredictionServiceImpl(
 PredictionServiceImpl::~PredictionServiceImpl() {
 }
 
-// PredictionService implementation
 void PredictionServiceImpl::GetPredictionList(
     PredictionInfoPtr prediction_info,
     const GetPredictionListCallback& callback) {
@@ -33,24 +30,18 @@ void PredictionServiceImpl::GetPredictionList(
   callback.Run(prediction_list.Pass());
 }
 
-PredictionServiceDelegate::PredictionServiceDelegate() {
-}
+PredictionServiceDelegate::PredictionServiceDelegate() {}
 
-PredictionServiceDelegate::~PredictionServiceDelegate() {
-}
+PredictionServiceDelegate::~PredictionServiceDelegate() {}
 
-// mojo::ApplicationDelegate implementation
 bool PredictionServiceDelegate::ConfigureIncomingConnection(
     mojo::ApplicationConnection* connection) {
-  connection->AddService<PredictionService>(this);
+  connection->GetServiceProviderImpl().AddService<PredictionService>(
+      [](const mojo::ConnectionContext& connection_context,
+         mojo::InterfaceRequest<PredictionService> prediction_service_request) {
+        new PredictionServiceImpl(prediction_service_request.Pass());
+      });
   return true;
-}
-
-// mojo::InterfaceRequest<PredictionService> implementation
-void PredictionServiceDelegate::Create(
-    const mojo::ConnectionContext& connection_context,
-    mojo::InterfaceRequest<PredictionService> request) {
-  new PredictionServiceImpl(request.Pass());
 }
 
 }  // namespace prediction

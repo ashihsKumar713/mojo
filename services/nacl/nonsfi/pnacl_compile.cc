@@ -11,7 +11,6 @@
 #include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_runner.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/nacl/nonsfi/kPnaclTranslatorCompile.h"
 #include "services/nacl/nonsfi/pnacl_compile.mojom.h"
@@ -42,21 +41,18 @@ class StrongBindingPexeCompilerImpl : public PexeCompilerImpl {
   StrongBinding<PexeCompilerInit> strong_binding_;
 };
 
-class MultiPexeCompiler : public ApplicationDelegate,
-                          public InterfaceFactory<PexeCompilerInit> {
+class MultiPexeCompiler : public ApplicationDelegate {
  public:
   MultiPexeCompiler() {}
 
   // From ApplicationDelegate
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    connection->AddService<PexeCompilerInit>(this);
+    connection->GetServiceProviderImpl().AddService<PexeCompilerInit>(
+        [](const ConnectionContext& connection_context,
+           InterfaceRequest<PexeCompilerInit> request) {
+          new StrongBindingPexeCompilerImpl(request.Pass());
+        });
     return true;
-  }
-
-  // From InterfaceFactory
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<PexeCompilerInit> request) override {
-    new StrongBindingPexeCompilerImpl(request.Pass());
   }
 };
 

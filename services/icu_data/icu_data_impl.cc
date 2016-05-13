@@ -7,16 +7,13 @@
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/public/cpp/bindings/interface_ptr.h"
 #include "mojo/services/icu_data/interfaces/icu_data.mojom.h"
 #include "services/icu_data/kICUData.h"
 
 namespace icu_data {
 
-class ICUDataImpl : public mojo::ApplicationDelegate,
-                    public ICUData,
-                    public mojo::InterfaceFactory<ICUData> {
+class ICUDataImpl : public mojo::ApplicationDelegate, public ICUData {
  public:
   ICUDataImpl() {}
   ~ICUDataImpl() override {}
@@ -24,14 +21,13 @@ class ICUDataImpl : public mojo::ApplicationDelegate,
   // mojo::ApplicationDelegate implementation.
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    connection->AddService(this);
-    return true;
-  }
+    connection->GetServiceProviderImpl().AddService<ICUData>(
+        [this](const mojo::ConnectionContext& connection_context,
+               mojo::InterfaceRequest<ICUData> icu_data_request) {
+          bindings_.AddBinding(this, icu_data_request.Pass());
+        });
 
-  // mojo::InterfaceFactory<mojo::ICUData> implementation.
-  void Create(const mojo::ConnectionContext& connection,
-              mojo::InterfaceRequest<ICUData> request) override {
-    bindings_.AddBinding(this, request.Pass());
+    return true;
   }
 
   void Map(const mojo::String& sha1hash,

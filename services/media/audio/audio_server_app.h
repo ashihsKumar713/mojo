@@ -7,7 +7,6 @@
 
 #include "mojo/common/binding_set.h"
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/services/media/audio/interfaces/audio_server.mojom.h"
 #include "services/media/audio/audio_server_impl.h"
 
@@ -15,8 +14,7 @@ namespace mojo {
 namespace media {
 namespace audio {
 
-class AudioServerApp : public ApplicationDelegate,
-                       public InterfaceFactory<AudioServer> {
+class AudioServerApp : public ApplicationDelegate {
  public:
   AudioServerApp();
   ~AudioServerApp() override;
@@ -25,10 +23,6 @@ class AudioServerApp : public ApplicationDelegate,
   void Initialize(ApplicationImpl* app) override;
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
   void Quit() override;
-
-  // InterfaceFactory<AudioServer>
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<AudioServer> request) override;
 
  private:
   AudioServerImpl server_impl_;

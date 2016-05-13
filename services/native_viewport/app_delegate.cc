@@ -5,6 +5,7 @@
 #include "services/native_viewport/app_delegate.h"
 
 #include <vector>
+
 #include "gpu/config/gpu_util.h"
 
 namespace native_viewport {
@@ -60,26 +61,24 @@ void NativeViewportAppDelegate::Initialize(mojo::ApplicationImpl* application) {
 
 bool NativeViewportAppDelegate::ConfigureIncomingConnection(
     mojo::ApplicationConnection* connection) {
-  connection->AddService<mojo::NativeViewport>(this);
-  connection->AddService<mojo::Gpu>(this);
+  connection->GetServiceProviderImpl().AddService<mojo::NativeViewport>([this](
+      const mojo::ConnectionContext& connection_context,
+      mojo::InterfaceRequest<mojo::NativeViewport> native_viewport_request) {
+    if (!gpu_state_.get())
+      gpu_state_ = new gles2::GpuState();
+    new NativeViewportImpl(application_, is_headless_, gpu_state_,
+                           native_viewport_request.Pass());
+  });
+
+  connection->GetServiceProviderImpl().AddService<mojo::Gpu>(
+      [this](const mojo::ConnectionContext& connection_context,
+             mojo::InterfaceRequest<mojo::Gpu> gpu_request) {
+        if (!gpu_state_.get())
+          gpu_state_ = new gles2::GpuState();
+        new gles2::GpuImpl(gpu_request.Pass(), gpu_state_);
+      });
+
   return true;
-}
-
-void NativeViewportAppDelegate::Create(
-    const mojo::ConnectionContext& connection_context,
-    mojo::InterfaceRequest<mojo::NativeViewport> request) {
-  if (!gpu_state_.get())
-    gpu_state_ = new gles2::GpuState;
-  new NativeViewportImpl(application_, is_headless_, gpu_state_,
-                         request.Pass());
-}
-
-void NativeViewportAppDelegate::Create(
-    const mojo::ConnectionContext& connection_context,
-    mojo::InterfaceRequest<mojo::Gpu> request) {
-  if (!gpu_state_.get())
-    gpu_state_ = new gles2::GpuState;
-  new gles2::GpuImpl(request.Pass(), gpu_state_);
 }
 
 }  // namespace native_viewport

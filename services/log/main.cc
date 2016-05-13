@@ -10,7 +10,6 @@
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "mojo/services/log/interfaces/log.mojom.h"
 #include "services/log/log_impl.h"
@@ -20,7 +19,7 @@ namespace log {
 
 // Provides the mojo.log.Log service.  Binds a new Log implementation for each
 // Log interface request.
-class LogApp : public ApplicationDelegate, public InterfaceFactory<Log> {
+class LogApp : public ApplicationDelegate {
  public:
   LogApp() {}
   ~LogApp() override {}
@@ -28,18 +27,15 @@ class LogApp : public ApplicationDelegate, public InterfaceFactory<Log> {
  private:
   // |ApplicationDelegate| override:
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    connection->AddService<Log>(this);
+    connection->GetServiceProviderImpl().AddService<Log>(
+        [](const ConnectionContext& connection_context,
+           InterfaceRequest<Log> log_request) {
+          LogImpl::Create(connection_context, std::move(log_request),
+                          [](const std::string& message) {
+                            fprintf(stderr, "%s\n", message.c_str());
+                          });
+        });
     return true;
-  }
-
-  // |InterfaceFactory<Log>| implementation:
-  // We maintain a separate |LogImpl| for each incoming connection.
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<Log> request) override {
-    LogImpl::Create(connection_context, std::move(request),
-                    [](const std::string& message) {
-                      fprintf(stderr, "%s\n", message.c_str());
-                    });
   }
 
   MOJO_DISALLOW_COPY_AND_ASSIGN(LogApp);

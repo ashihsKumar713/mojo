@@ -24,10 +24,7 @@
 
 namespace native_viewport {
 
-class NativeViewportAppDelegate
-    : public mojo::ApplicationDelegate,
-      public mojo::InterfaceFactory<mojo::NativeViewport>,
-      public mojo::InterfaceFactory<mojo::Gpu> {
+class NativeViewportAppDelegate : public mojo::ApplicationDelegate {
  public:
   NativeViewportAppDelegate();
   ~NativeViewportAppDelegate() override;
@@ -37,14 +34,6 @@ class NativeViewportAppDelegate
 
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override;
-
-  // mojo::InterfaceFactory<mojo::NativeViewport> implementation.
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<mojo::NativeViewport> request) override;
-
-  // mojo::InterfaceFactory<mojo::Gpu> implementation.
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<mojo::Gpu> request) override;
 
  private:
   void InitLogging(mojo::ApplicationImpl* application);

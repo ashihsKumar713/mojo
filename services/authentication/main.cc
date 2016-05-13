@@ -9,7 +9,6 @@
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "mojo/services/authentication/interfaces/authentication.mojom.h"
@@ -18,9 +17,7 @@
 
 namespace authentication {
 
-class GoogleAccountManagerApp
-    : public mojo::ApplicationDelegate,
-      public mojo::InterfaceFactory<AuthenticationService> {
+class GoogleAccountManagerApp : public mojo::ApplicationDelegate {
  public:
   GoogleAccountManagerApp() {}
   ~GoogleAccountManagerApp() override {}
@@ -35,22 +32,21 @@ class GoogleAccountManagerApp
 
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    connection->AddService<AuthenticationService>(this);
+    connection->GetServiceProviderImpl().AddService<AuthenticationService>(
+        [this](const mojo::ConnectionContext& connection_context,
+               mojo::InterfaceRequest<AuthenticationService> request) {
+          mojo::files::Error error = mojo::files::Error::INTERNAL;
+          mojo::files::DirectoryPtr directory;
+          files_->OpenFileSystem("app_persistent_cache", GetProxy(&directory),
+                                 [&error](mojo::files::Error e) { error = e; });
+          CHECK(files_.WaitForIncomingResponse());
+          if (mojo::files::Error::OK != error) {
+            LOG(FATAL) << "Unable to initialize accounts DB";
+          }
+          new authentication::GoogleAuthenticationServiceImpl(
+              request.Pass(), app_url_, network_service_, directory);
+        });
     return true;
-  }
-
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<AuthenticationService> request) override {
-    mojo::files::Error error = mojo::files::Error::INTERNAL;
-    mojo::files::DirectoryPtr directory;
-    files_->OpenFileSystem("app_persistent_cache", GetProxy(&directory),
-                           [&error](mojo::files::Error e) { error = e; });
-    CHECK(files_.WaitForIncomingResponse());
-    if (mojo::files::Error::OK != error) {
-      LOG(FATAL) << "Unable to initialize accounts DB";
-    }
-    new authentication::GoogleAuthenticationServiceImpl(
-        request.Pass(), app_url_, network_service_, directory);
   }
 
  private:

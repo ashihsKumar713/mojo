@@ -10,7 +10,6 @@
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/services/native_support/interfaces/process.mojom.h"
 #include "services/native_support/process_impl.h"
 
@@ -19,8 +18,7 @@ namespace native_support {
 // TODO(vtl): Having to manually choose an arbitrary number is dumb.
 const size_t kMaxWorkerThreads = 16;
 
-class NativeSupportApp : public mojo::ApplicationDelegate,
-                         public mojo::InterfaceFactory<Process> {
+class NativeSupportApp : public mojo::ApplicationDelegate {
  public:
   NativeSupportApp() {}
   ~NativeSupportApp() override {
@@ -32,18 +30,16 @@ class NativeSupportApp : public mojo::ApplicationDelegate,
   // |mojo::ApplicationDelegate| override:
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    connection->AddService<Process>(this);
+    connection->GetServiceProviderImpl().AddService<Process>([this](
+        const mojo::ConnectionContext& connection_context,
+        mojo::InterfaceRequest<Process> process_request) {
+      if (!worker_pool_) {
+        worker_pool_ = new base::SequencedWorkerPool(kMaxWorkerThreads,
+                                                     "NativeSupportWorker");
+      }
+      new ProcessImpl(worker_pool_, connection_context, process_request.Pass());
+    });
     return true;
-  }
-
-  // |InterfaceFactory<Process>| implementation:
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<Process> request) override {
-    if (!worker_pool_) {
-      worker_pool_ = new base::SequencedWorkerPool(kMaxWorkerThreads,
-                                                   "NativeSupportWorker");
-    }
-    new ProcessImpl(worker_pool_, connection_context, request.Pass());
   }
 
   scoped_refptr<base::SequencedWorkerPool> worker_pool_;

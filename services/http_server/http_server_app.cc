@@ -8,15 +8,13 @@
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_runner.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/services/http_server/interfaces/http_server_factory.mojom.h"
 #include "services/http_server/http_server_factory_impl.h"
 #include "services/http_server/http_server_impl.h"
 
 namespace http_server {
 
-class HttpServerApp : public mojo::ApplicationDelegate,
-                      public mojo::InterfaceFactory<HttpServerFactory> {
+class HttpServerApp : public mojo::ApplicationDelegate {
  public:
   HttpServerApp() {}
   ~HttpServerApp() override {}
@@ -27,18 +25,15 @@ class HttpServerApp : public mojo::ApplicationDelegate,
   // ApplicationDelegate:
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    connection->AddService(this);
+    connection->GetServiceProviderImpl().AddService<HttpServerFactory>([this](
+        const mojo::ConnectionContext& connection_context,
+        mojo::InterfaceRequest<HttpServerFactory> http_server_factory_request) {
+      if (!http_server_factory_)
+        http_server_factory_.reset(new HttpServerFactoryImpl(app_));
+
+      http_server_factory_->AddBinding(http_server_factory_request.Pass());
+    });
     return true;
-  }
-
-  // InterfaceFactory<HttpServerFactory>:
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<HttpServerFactory> request) override {
-    if (!http_server_factory_) {
-      http_server_factory_.reset(new HttpServerFactoryImpl(app_));
-    }
-
-    http_server_factory_->AddBinding(request.Pass());
   }
 
   mojo::ApplicationImpl* app_;

@@ -6,11 +6,9 @@
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "services/clipboard/clipboard_standalone_impl.h"
 
-class Delegate : public mojo::ApplicationDelegate,
-                 public mojo::InterfaceFactory<mojo::Clipboard> {
+class Delegate : public mojo::ApplicationDelegate {
  public:
   Delegate() {}
   ~Delegate() override {}
@@ -18,16 +16,14 @@ class Delegate : public mojo::ApplicationDelegate,
   // mojo::ApplicationDelegate implementation.
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    connection->AddService(this);
+    connection->GetServiceProviderImpl().AddService<mojo::Clipboard>(
+        [](const mojo::ConnectionContext& connection_context,
+           mojo::InterfaceRequest<mojo::Clipboard> clipboard_request) {
+          // TODO(erg): Write native implementations of the clipboard. For now,
+          // we just build a clipboard which doesn't interact with the system.
+          new clipboard::ClipboardStandaloneImpl(clipboard_request.Pass());
+        });
     return true;
-  }
-
-  // mojo::InterfaceFactory<mojo::Clipboard> implementation.
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<mojo::Clipboard> request) override {
-    // TODO(erg): Write native implementations of the clipboard. For now, we
-    // just build a clipboard which doesn't interact with the system.
-    new clipboard::ClipboardStandaloneImpl(request.Pass());
   }
 };
 

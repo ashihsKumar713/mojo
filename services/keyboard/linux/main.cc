@@ -10,7 +10,6 @@
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/services/native_viewport/interfaces/native_viewport_event_dispatcher.mojom.h"
 #include "services/keyboard/linux/keyboard_service_impl.h"
 
@@ -22,7 +21,7 @@ public:
       mojo::InterfaceRequest<KeyboardServiceFactory> request)
     : binding_(this, request.Pass()) {}
 
-  // |InterfaceFactory<KeyboardService>| implementation:
+  // |keyboard::KeyboardServiceFactory| implementation:
   void CreateKeyboardService(
       mojo::InterfaceRequest<mojo::NativeViewportEventDispatcher> dispatcher,
       mojo::InterfaceRequest<KeyboardService> request) override {
@@ -35,9 +34,7 @@ private:
   DISALLOW_COPY_AND_ASSIGN(KeyboardServiceFactoryImpl);
 };
 
-class KeyboardServiceApp
-  : public mojo::ApplicationDelegate,
-    public mojo::InterfaceFactory<KeyboardServiceFactory> {
+class KeyboardServiceApp : public mojo::ApplicationDelegate {
  public:
   KeyboardServiceApp() {}
   ~KeyboardServiceApp() override {}
@@ -47,18 +44,16 @@ class KeyboardServiceApp
   // |ApplicationDelegate| override:
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    connection->AddService<KeyboardServiceFactory>(this);
+    connection->GetServiceProviderImpl().AddService<KeyboardServiceFactory>([](
+        const mojo::ConnectionContext& connection_context,
+        mojo::InterfaceRequest<KeyboardServiceFactory>
+            keyboard_service_factory_request) {
+      new KeyboardServiceFactoryImpl(keyboard_service_factory_request.Pass());
+    });
     return true;
   }
 
-  // |InterfaceFactory<KeyboardService>| implementation:
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<KeyboardServiceFactory> request) override {
-    new KeyboardServiceFactoryImpl(request.Pass());
-  }
-
  private:
-
   DISALLOW_COPY_AND_ASSIGN(KeyboardServiceApp);
 };
 

@@ -8,15 +8,12 @@
 #include "base/macros.h"
 #include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/services/authenticating_url_loader_interceptor/interfaces/authenticating_url_loader_interceptor_meta_factory.mojom.h"
 #include "services/authenticating_url_loader_interceptor/authenticating_url_loader_interceptor_meta_factory_impl.h"
 
 namespace mojo {
 
-class AuthenticatingURLLoaderInterceptorApp
-    : public ApplicationDelegate,
-      public InterfaceFactory<AuthenticatingURLLoaderInterceptorMetaFactory> {
+class AuthenticatingURLLoaderInterceptorApp : public ApplicationDelegate {
  public:
   AuthenticatingURLLoaderInterceptorApp();
   ~AuthenticatingURLLoaderInterceptorApp() override;
@@ -25,11 +22,6 @@ class AuthenticatingURLLoaderInterceptorApp
   // ApplicationDelegate
   void Initialize(ApplicationImpl* app) override;
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
-
-  // InterfaceFactory<AuthenticatingURLLoaderInterceptorMetaFactory>
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<AuthenticatingURLLoaderInterceptorMetaFactory>
-                  request) override;
 
   ApplicationImpl* app_;
   // Cache received tokens per origin of the connecting app and origin of the

@@ -6,7 +6,10 @@
 #define SERVICES_PREDICTION_PREDICTION_SERVICE_IMPL_H_
 
 #include "base/memory/scoped_ptr.h"
+#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/services/prediction/interfaces/prediction.mojom.h"
+#include "services/prediction/dictionary_service.h"
 
 namespace prediction {
 
@@ -29,9 +32,7 @@ class PredictionServiceImpl : public PredictionService {
   DISALLOW_COPY_AND_ASSIGN(PredictionServiceImpl);
 };
 
-class PredictionServiceDelegate
-    : public mojo::ApplicationDelegate,
-      public mojo::InterfaceFactory<PredictionService> {
+class PredictionServiceDelegate : public mojo::ApplicationDelegate {
  public:
   PredictionServiceDelegate();
   ~PredictionServiceDelegate() override;
@@ -39,10 +40,6 @@ class PredictionServiceDelegate
   // mojo::ApplicationDelegate implementation
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override;
-
-  // mojo::InterfaceRequest<PredictionService> implementation
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<PredictionService> request) override;
 };
 
 }  // namespace prediction

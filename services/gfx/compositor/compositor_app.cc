@@ -36,15 +36,15 @@ void CompositorApp::Initialize(mojo::ApplicationImpl* app_impl) {
 
 bool CompositorApp::ConfigureIncomingConnection(
     mojo::ApplicationConnection* connection) {
-  connection->AddService<mojo::gfx::composition::Compositor>(this);
+  connection->GetServiceProviderImpl()
+      .AddService<mojo::gfx::composition::Compositor>(
+          [this](const mojo::ConnectionContext& connection_context,
+                 mojo::InterfaceRequest<mojo::gfx::composition::Compositor>
+                     compositor_request) {
+            compositor_bindings_.AddBinding(new CompositorImpl(engine_.get()),
+                                            compositor_request.Pass());
+          });
   return true;
-}
-
-void CompositorApp::Create(
-    const mojo::ConnectionContext& connection_context,
-    mojo::InterfaceRequest<mojo::gfx::composition::Compositor> request) {
-  compositor_bindings_.AddBinding(new CompositorImpl(engine_.get()),
-                                  request.Pass());
 }
 
 }  // namespace compositor

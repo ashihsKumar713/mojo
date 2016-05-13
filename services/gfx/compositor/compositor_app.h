@@ -12,16 +12,13 @@
 #include "mojo/common/strong_binding_set.h"
 #include "mojo/common/tracing_impl.h"
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/services/gfx/composition/interfaces/compositor.mojom.h"
 #include "services/gfx/compositor/compositor_engine.h"
 
 namespace compositor {
 
 // Compositor application entry point.
-class CompositorApp
-    : public mojo::ApplicationDelegate,
-      public mojo::InterfaceFactory<mojo::gfx::composition::Compositor> {
+class CompositorApp : public mojo::ApplicationDelegate {
  public:
   CompositorApp();
   ~CompositorApp() override;
@@ -31,11 +28,6 @@ class CompositorApp
   void Initialize(mojo::ApplicationImpl* app_impl) override;
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override;
-
-  // |InterfaceFactory<Compositor>|:
-  void Create(const mojo::ConnectionContext& connection_context,
-              mojo::InterfaceRequest<mojo::gfx::composition::Compositor>
-                  request) override;
 
   mojo::ApplicationImpl* app_impl_;
   mojo::TracingImpl tracing_;

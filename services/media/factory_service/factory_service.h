@@ -16,7 +16,6 @@ namespace mojo {
 namespace media {
 
 class MediaFactoryService : public ApplicationDelegate,
-                            public InterfaceFactory<MediaFactory>,
                             public MediaFactory {
  public:
   // Provides common behavior for all objects created by the factory service.
@@ -78,10 +77,6 @@ class MediaFactoryService : public ApplicationDelegate,
   void Initialize(ApplicationImpl* app) override;
 
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
-
-  // InterfaceFactory<MediaFactory> implementation.
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<MediaFactory> request) override;
 
   // MediaFactory implementation.
   void CreatePlayer(InterfaceHandle<SeekingReader> reader,

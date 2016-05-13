@@ -7,14 +7,13 @@
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/services/files/interfaces/files.mojom.h"
 #include "services/files/files_impl.h"
 
 namespace mojo {
 namespace files {
 
-class FilesApp : public ApplicationDelegate, public InterfaceFactory<Files> {
+class FilesApp : public ApplicationDelegate {
  public:
   FilesApp() {}
   ~FilesApp() override {}
@@ -22,14 +21,12 @@ class FilesApp : public ApplicationDelegate, public InterfaceFactory<Files> {
  private:
   // |ApplicationDelegate| override:
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    connection->AddService<Files>(this);
+    connection->GetServiceProviderImpl().AddService<Files>(
+        [](const ConnectionContext& connection_context,
+           InterfaceRequest<Files> files_request) {
+          new FilesImpl(connection_context, files_request.Pass());
+        });
     return true;
-  }
-
-  // |InterfaceFactory<Files>| implementation:
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<Files> request) override {
-    new FilesImpl(connection_context, request.Pass());
   }
 
   DISALLOW_COPY_AND_ASSIGN(FilesApp);

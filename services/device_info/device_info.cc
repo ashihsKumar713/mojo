@@ -10,7 +10,6 @@
 #include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_runner.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/services/device_info/interfaces/device_info.mojom.h"
 
 namespace mojo {
@@ -19,9 +18,7 @@ namespace device_info {
 
 // This is a native Mojo application which implements |DeviceInfo| interface for
 // Linux.
-class DeviceInfo : public ApplicationDelegate,
-                   public mojo::DeviceInfo,
-                   public InterfaceFactory<mojo::DeviceInfo> {
+class DeviceInfo : public ApplicationDelegate, public mojo::DeviceInfo {
  public:
   // We look for the 'DISPLAY' environment variable. If present, then we assume
   // it to be a desktop, else we assume it to be a commandline
@@ -33,14 +30,12 @@ class DeviceInfo : public ApplicationDelegate,
   // |ApplicationDelegate| override.
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    connection->AddService<mojo::DeviceInfo>(this);
+    connection->GetServiceProviderImpl().AddService<mojo::DeviceInfo>(
+        [this](const ConnectionContext& connection_context,
+               InterfaceRequest<mojo::DeviceInfo> device_info_request) {
+          binding_.AddBinding(this, device_info_request.Pass());
+        });
     return true;
-  }
-
-  // |InterfaceFactory<DeviceInfo>| implementation.
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<mojo::DeviceInfo> request) override {
-    binding_.AddBinding(this, request.Pass());
   }
 
  private:
