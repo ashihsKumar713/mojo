@@ -58,7 +58,11 @@ MotermView::MotermView(
     // connection context argument.
     service_provider_impl_.Bind(mojo::ConnectionContext(),
                                 service_provider_request.Pass());
-    service_provider_impl_.AddService<mojo::terminal::Terminal>(this);
+    service_provider_impl_.AddService<mojo::terminal::Terminal>([this](
+        const mojo::ConnectionContext& connection_context,
+        mojo::InterfaceRequest<mojo::terminal::Terminal> terminal_request) {
+      terminal_bindings_.AddBinding(this, terminal_request.Pass());
+    });
   }
 
   regular_typeface_ = skia::AdoptRef(SkTypeface::CreateFromStream(
@@ -131,12 +135,6 @@ void MotermView::OnDestroyed() {
     std::swap(callback, on_closed_callback_);
     callback.Run();
   }
-}
-
-void MotermView::Create(
-    const mojo::ConnectionContext& connection_context,
-    mojo::InterfaceRequest<mojo::terminal::Terminal> request) {
-  terminal_bindings_.AddBinding(this, request.Pass());
 }
 
 void MotermView::Connect(

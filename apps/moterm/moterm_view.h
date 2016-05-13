@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/common/binding_set.h"
-#include "mojo/public/cpp/application/interface_factory.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/bindings/callback.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
@@ -30,7 +29,6 @@ class MotermView : public mojo::ui::GaneshView,
                    public mojo::ui::InputListener,
                    public MotermModel::Delegate,
                    public MotermDriver::Client,
-                   public mojo::InterfaceFactory<mojo::terminal::Terminal>,
                    public mojo::terminal::Terminal {
  public:
   MotermView(
@@ -59,11 +57,6 @@ class MotermView : public mojo::ui::GaneshView,
   void OnDataReceived(const void* bytes, size_t num_bytes) override;
   void OnClosed() override;
   void OnDestroyed() override;
-
-  // |mojo::InterfaceFactory<mojo::terminal::Terminal>|:
-  void Create(
-      const mojo::ConnectionContext& connection_context,
-      mojo::InterfaceRequest<mojo::terminal::Terminal> request) override;
 
   // |mojo::terminal::Terminal| implementation:
   void Connect(mojo::InterfaceRequest<mojo::files::File> terminal_file,
