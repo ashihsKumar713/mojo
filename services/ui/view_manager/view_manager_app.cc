@@ -13,9 +13,9 @@
 #include "mojo/application/application_runner_chromium.h"
 #include "mojo/common/tracing_impl.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/ui/view_manager/view_manager_impl.h"
 
 namespace view_manager {

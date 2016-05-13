@@ -8,8 +8,8 @@
 
 #include "mojo/application/application_runner_chromium.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "mojo/services/log/interfaces/log.mojom.h"
 #include "services/log/log_impl.h"

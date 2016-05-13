@@ -7,9 +7,9 @@
 #include "mojo/application/application_runner_chromium.h"
 #include "mojo/application/content_handler_factory.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/services/content_handler/interfaces/content_handler.mojom.h"
 
 namespace mojo {

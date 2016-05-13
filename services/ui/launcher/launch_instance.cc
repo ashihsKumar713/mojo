@@ -9,7 +9,6 @@
 #include "base/trace_event/trace_event.h"
 #include "mojo/application/application_runner_chromium.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/services/ui/views/interfaces/view_provider.mojom.h"

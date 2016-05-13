@@ -9,7 +9,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/task_runner.h"
 #include "base/threading/sequenced_worker_pool.h"
-#include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/services/url_response_disk_cache/interfaces/url_response_disk_cache.mojom.h"

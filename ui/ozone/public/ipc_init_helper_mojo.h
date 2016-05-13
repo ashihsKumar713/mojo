@@ -5,8 +5,8 @@
 #ifndef UI_OZONE_PUBLIC_IPC_INIT_HELPER_MOJO_H_
 #define UI_OZONE_PUBLIC_IPC_INIT_HELPER_MOJO_H_
 
-#include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "ui/ozone/public/ipc_init_helper_ozone.h"
 
 namespace ui {

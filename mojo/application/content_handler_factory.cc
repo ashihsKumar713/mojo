@@ -14,7 +14,6 @@
 #include "base/trace_event/trace_event.h"
 #include "mojo/application/application_runner_chromium.h"
 #include "mojo/message_pump/message_pump_mojo.h"
-#include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"

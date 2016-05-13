@@ -22,7 +22,6 @@
 #include "base/trace_event/trace_event.h"
 #include "crypto/random.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
-#include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/bindings/lib/fixed_buffer.h"
 #include "mojo/public/interfaces/network/http_header.mojom.h"
 #include "services/url_response_disk_cache/url_response_disk_cache_entry.mojom.h"

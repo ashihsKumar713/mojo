@@ -26,7 +26,6 @@
 #include "mojo/edk/embedder/embedder.h"
 #include "mojo/edk/embedder/multiprocess_embedder.h"
 #include "mojo/edk/embedder/simple_platform_support.h"
-#include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"

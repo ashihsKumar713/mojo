@@ -6,8 +6,8 @@
 #include "base/threading/sequenced_worker_pool.h"
 #include "mojo/application/application_runner_chromium.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/asset_bundle/asset_unpacker_impl.h"
 
 namespace mojo {

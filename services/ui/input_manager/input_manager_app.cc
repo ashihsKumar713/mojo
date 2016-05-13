@@ -10,8 +10,8 @@
 #include "mojo/application/application_runner_chromium.h"
 #include "mojo/common/tracing_impl.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/ui/input_manager/input_associate.h"
 
 namespace input_manager {

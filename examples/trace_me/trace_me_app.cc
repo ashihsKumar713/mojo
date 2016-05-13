@@ -11,10 +11,10 @@
 #include "mojo/application/application_runner_chromium.h"
 #include "mojo/common/tracing_impl.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 
 // This is an example app that uses implementation of tracing from mojo/common
 // to participate in the tracing ecosystem.

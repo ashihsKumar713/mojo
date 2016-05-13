@@ -7,9 +7,9 @@
 
 #include "mojo/common/binding_set.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/services/device_info/interfaces/device_info.mojom.h"
 
 namespace mojo {

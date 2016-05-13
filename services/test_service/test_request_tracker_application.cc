@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/test_service/test_time_service_impl.h"
 
 namespace mojo {

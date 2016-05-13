@@ -9,8 +9,8 @@
 
 #include "mojo/common/strong_binding_set.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_connection.h"
 #include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "mojo/services/ui/views/interfaces/view_provider.mojom.h"
 
