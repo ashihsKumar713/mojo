@@ -39,7 +39,7 @@ class PredictionServiceDelegate : public mojo::ApplicationDelegate {
 
   // mojo::ApplicationDelegate implementation
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override;
+      mojo::ServiceProviderImpl* service_provider_impl) override;
 };
 
 }  // namespace prediction

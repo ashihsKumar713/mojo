@@ -56,8 +56,8 @@ class MultiServer : public mojo::ApplicationDelegate {
 
   // From ApplicationDelegate
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<Echo>(
+      ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<Echo>(
         [](const mojo::ConnectionContext& connection_context,
            mojo::InterfaceRequest<Echo> echo_request) {
           // This object will be deleted automatically because of the use of
@@ -76,8 +76,8 @@ class SingletonServer : public mojo::ApplicationDelegate {
 
   // From ApplicationDelegate
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<Echo>(
+      ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<Echo>(
         [this](const mojo::ConnectionContext& connection_context,
                mojo::InterfaceRequest<Echo> echo_request) {
           // All channels will connect to this singleton object, so just
@@ -105,8 +105,8 @@ class OneAtATimeServer : public mojo::ApplicationDelegate {
 
   // From ApplicationDelegate
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<Echo>(
+      ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<Echo>(
         [this](const mojo::ConnectionContext& connection_context,
                mojo::InterfaceRequest<Echo> echo_request) {
           binding_.Bind(echo_request.Pass());

@@ -70,11 +70,6 @@ class MediaTestApp : public mojo::ApplicationDelegate {
     Poll();
   }
 
-  bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    return true;
-  }
-
  private:
   static const char* kHome;
   static const char* kClearLine;

@@ -28,7 +28,8 @@ class ContentViewerApp : public ApplicationDelegate {
 
   // |ApplicationDelegate|:
   void Initialize(ApplicationImpl* app) override;
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
+  bool ConfigureIncomingConnection(
+      ServiceProviderImpl* service_provider_impl) override;
 
   // Called to create the view provider application to view the content.
   //

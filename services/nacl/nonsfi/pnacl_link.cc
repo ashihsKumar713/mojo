@@ -43,8 +43,9 @@ class MultiPexeLinker : public ApplicationDelegate {
   MultiPexeLinker() {}
 
   // From ApplicationDelegate
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<PexeLinkerInit>(
+  bool ConfigureIncomingConnection(
+      ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<PexeLinkerInit>(
         [](const ConnectionContext& connection_context,
            InterfaceRequest<PexeLinkerInit> request) {
           new StrongBindingPexeLinkerImpl(request.Pass());

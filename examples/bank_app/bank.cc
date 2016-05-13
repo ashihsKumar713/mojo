@@ -56,9 +56,8 @@ class BankApp : public mojo::ApplicationDelegate {
 
   // From ApplicationDelegate
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    std::string url =
-        connection->GetServiceProviderImpl().connection_context().remote_url;
+      mojo::ServiceProviderImpl* service_provider_impl) override {
+    std::string url = service_provider_impl->connection_context().remote_url;
     if (url.length() > 0) {
       vanadium::AppInstanceNamePtr app(vanadium::AppInstanceName::New());
       app->url = url;
@@ -77,7 +76,7 @@ class BankApp : public mojo::ApplicationDelegate {
       }
       MOJO_LOG(INFO) << "Customer " << user << " accessing bank";
     }
-    connection->GetServiceProviderImpl().AddService<Bank>(
+    service_provider_impl->AddService<Bank>(
         [this](const mojo::ConnectionContext& connection_context,
                mojo::InterfaceRequest<Bank> bank_request) {
           bindings_.AddBinding(&bank_impl_, bank_request.Pass());

@@ -76,7 +76,8 @@ class MediaFactoryService : public ApplicationDelegate,
   // ApplicationDelegate implementation.
   void Initialize(ApplicationImpl* app) override;
 
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
+  bool ConfigureIncomingConnection(
+      ServiceProviderImpl* service_provider_impl) override;
 
   // MediaFactory implementation.
   void CreatePlayer(InterfaceHandle<SeekingReader> reader,

@@ -15,8 +15,8 @@ class Delegate : public mojo::ApplicationDelegate {
 
   // mojo::ApplicationDelegate implementation.
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<mojo::Clipboard>(
+      mojo::ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<mojo::Clipboard>(
         [](const mojo::ConnectionContext& connection_context,
            mojo::InterfaceRequest<mojo::Clipboard> clipboard_request) {
           // TODO(erg): Write native implementations of the clipboard. For now,

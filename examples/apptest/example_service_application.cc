@@ -17,8 +17,8 @@ ExampleServiceApplication::ExampleServiceApplication() {}
 ExampleServiceApplication::~ExampleServiceApplication() {}
 
 bool ExampleServiceApplication::ConfigureIncomingConnection(
-    ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl().AddService<ExampleService>(
+    ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<ExampleService>(
       [](const ConnectionContext& connection_context,
          InterfaceRequest<ExampleService> example_service_request) {
         // Not leaked: ExampleServiceImpl is strongly bound to the pipe.

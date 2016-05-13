@@ -46,8 +46,9 @@ class MultiPexeCompiler : public ApplicationDelegate {
   MultiPexeCompiler() {}
 
   // From ApplicationDelegate
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<PexeCompilerInit>(
+  bool ConfigureIncomingConnection(
+      ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<PexeCompilerInit>(
         [](const ConnectionContext& connection_context,
            InterfaceRequest<PexeCompilerInit> request) {
           new StrongBindingPexeCompilerImpl(request.Pass());

@@ -31,8 +31,8 @@ class GoogleAccountManagerApp : public mojo::ApplicationDelegate {
   }
 
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<AuthenticationService>(
+      mojo::ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<AuthenticationService>(
         [this](const mojo::ConnectionContext& connection_context,
                mojo::InterfaceRequest<AuthenticationService> request) {
           mojo::files::Error error = mojo::files::Error::INTERNAL;

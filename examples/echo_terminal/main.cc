@@ -105,12 +105,11 @@ class EchoTerminalApp
  private:
   // |ApplicationDelegate| override:
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl()
-        .AddService<mojo::terminal::TerminalClient>([this](
-            const mojo::ConnectionContext& connection_context,
-            mojo::InterfaceRequest<mojo::terminal::TerminalClient>
-                terminal_client_request) {
+      mojo::ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<mojo::terminal::TerminalClient>(
+        [this](const mojo::ConnectionContext& connection_context,
+               mojo::InterfaceRequest<mojo::terminal::TerminalClient>
+                   terminal_client_request) {
           terminal_clients_.AddBinding(this, terminal_client_request.Pass());
         });
     return true;

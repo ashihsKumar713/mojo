@@ -26,8 +26,9 @@ class LogApp : public ApplicationDelegate {
 
  private:
   // |ApplicationDelegate| override:
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<Log>(
+  bool ConfigureIncomingConnection(
+      ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<Log>(
         [](const ConnectionContext& connection_context,
            InterfaceRequest<Log> log_request) {
           LogImpl::Create(connection_context, std::move(log_request),

@@ -32,8 +32,8 @@ class IntegerServiceImpl : public IntegerService {
 class IntegerServiceAppDelegate : public ApplicationDelegate {
  public:
   bool ConfigureIncomingConnection(
-      ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<IntegerService>(
+      ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<IntegerService>(
         [](const ConnectionContext& connection_context,
            InterfaceRequest<IntegerService> request) {
           new IntegerServiceImpl(request.Pass());

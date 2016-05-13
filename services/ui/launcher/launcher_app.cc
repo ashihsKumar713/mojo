@@ -37,12 +37,10 @@ void LauncherApp::Initialize(mojo::ApplicationImpl* app_impl) {
 }
 
 bool LauncherApp::ConfigureIncomingConnection(
-    mojo::ApplicationConnection* connection) {
+    mojo::ServiceProviderImpl* service_provider_impl) {
   // Only present the launcher interface to the shell.
-  if (connection->GetServiceProviderImpl()
-          .connection_context()
-          .remote_url.empty()) {
-    connection->GetServiceProviderImpl().AddService<Launcher>(
+  if (service_provider_impl->connection_context().remote_url.empty()) {
+    service_provider_impl->AddService<Launcher>(
         [this](const mojo::ConnectionContext& connection_context,
                mojo::InterfaceRequest<Launcher> launcher_request) {
           bindings_.AddBinding(this, launcher_request.Pass());

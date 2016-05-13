@@ -21,7 +21,7 @@ class ExampleServiceApplication : public ApplicationDelegate {
  private:
   // ApplicationDelegate implementation.
   bool ConfigureIncomingConnection(
-      ApplicationConnection* connection) override;
+      ServiceProviderImpl* service_provider_impl) override;
 
   MOJO_DISALLOW_COPY_AND_ASSIGN(ExampleServiceApplication);
 };

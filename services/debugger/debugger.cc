@@ -69,11 +69,6 @@ class Debugger : public mojo::ApplicationDelegate,
                              [](bool result) { DCHECK(result); });
   }
 
-  bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    return true;
-  }
-
   // http_server::HttpHandler:
   void HandleRequest(http_server::HttpRequestPtr request,
                      const HandleRequestCallback& callback) override {

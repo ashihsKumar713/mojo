@@ -43,8 +43,8 @@ class KeyboardServiceApp : public mojo::ApplicationDelegate {
 
   // |ApplicationDelegate| override:
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<KeyboardServiceFactory>([](
+      mojo::ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<KeyboardServiceFactory>([](
         const mojo::ConnectionContext& connection_context,
         mojo::InterfaceRequest<KeyboardServiceFactory>
             keyboard_service_factory_request) {

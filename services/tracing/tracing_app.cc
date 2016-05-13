@@ -16,8 +16,8 @@ TracingApp::TracingApp() : collector_binding_(this), tracing_active_(false) {}
 TracingApp::~TracingApp() {}
 
 bool TracingApp::ConfigureIncomingConnection(
-    mojo::ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl().AddService<TraceCollector>(
+    mojo::ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<TraceCollector>(
       [this](const mojo::ConnectionContext& connection_context,
              mojo::InterfaceRequest<TraceCollector> trace_collector_request) {
         if (collector_binding_.is_bound()) {
@@ -27,7 +27,7 @@ bool TracingApp::ConfigureIncomingConnection(
 
         collector_binding_.Bind(trace_collector_request.Pass());
       });
-  connection->GetServiceProviderImpl().AddService<TraceProviderRegistry>(
+  service_provider_impl->AddService<TraceProviderRegistry>(
       [this](const mojo::ConnectionContext& connection_context,
              mojo::InterfaceRequest<TraceProviderRegistry>
                  trace_provider_registry_request) {

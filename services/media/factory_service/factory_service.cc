@@ -29,8 +29,8 @@ void MediaFactoryService::Initialize(ApplicationImpl* app) {
 }
 
 bool MediaFactoryService::ConfigureIncomingConnection(
-    ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl().AddService<MediaFactory>(
+    ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<MediaFactory>(
       [this](const ConnectionContext& connection_context,
              InterfaceRequest<MediaFactory> media_factory_request) {
         bindings_.AddBinding(this, media_factory_request.Pass());

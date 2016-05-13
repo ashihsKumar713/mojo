@@ -15,7 +15,8 @@ class NativeViewportOzoneAppDelegate : public NativeViewportAppDelegate {
   using NativeViewportAppDelegate::Create;
 
   void Initialize(mojo::ApplicationImpl* application) override;
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
+  bool ConfigureIncomingConnection(
+      mojo::ServiceProviderImpl* service_provider_impl) override;
 
  private:
   std::unique_ptr<DisplayManager> display_manager_;

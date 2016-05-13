@@ -60,8 +60,8 @@ void NativeViewportAppDelegate::Initialize(mojo::ApplicationImpl* application) {
 }
 
 bool NativeViewportAppDelegate::ConfigureIncomingConnection(
-    mojo::ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl().AddService<mojo::NativeViewport>([this](
+    mojo::ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<mojo::NativeViewport>([this](
       const mojo::ConnectionContext& connection_context,
       mojo::InterfaceRequest<mojo::NativeViewport> native_viewport_request) {
     if (!gpu_state_.get())
@@ -70,7 +70,7 @@ bool NativeViewportAppDelegate::ConfigureIncomingConnection(
                            native_viewport_request.Pass());
   });
 
-  connection->GetServiceProviderImpl().AddService<mojo::Gpu>(
+  service_provider_impl->AddService<mojo::Gpu>(
       [this](const mojo::ConnectionContext& connection_context,
              mojo::InterfaceRequest<mojo::Gpu> gpu_request) {
         if (!gpu_state_.get())

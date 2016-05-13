@@ -48,8 +48,8 @@ void ContentViewerApp::Initialize(mojo::ApplicationImpl* app_impl) {
 }
 
 bool ContentViewerApp::ConfigureIncomingConnection(
-    mojo::ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl().AddService<ContentHandler>([this](
+    ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<ContentHandler>([this](
       const ConnectionContext& connection_context,
       InterfaceRequest<ContentHandler> content_handler_request) {
     bindings_.AddBinding(

@@ -21,7 +21,8 @@ class AuthenticatingURLLoaderInterceptorApp : public ApplicationDelegate {
  private:
   // ApplicationDelegate
   void Initialize(ApplicationImpl* app) override;
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
+  bool ConfigureIncomingConnection(
+      ServiceProviderImpl* service_provider_impl) override;
 
   ApplicationImpl* app_;
   // Cache received tokens per origin of the connecting app and origin of the

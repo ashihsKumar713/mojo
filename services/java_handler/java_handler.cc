@@ -119,8 +119,8 @@ void JavaHandler::GetApplication(base::FilePath* archive_path,
 }
 
 bool JavaHandler::ConfigureIncomingConnection(
-    mojo::ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl().AddService<mojo::ContentHandler>(
+    mojo::ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<mojo::ContentHandler>(
       content_handler_factory_.GetInterfaceRequestHandler());
   return true;
 }

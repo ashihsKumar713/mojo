@@ -28,14 +28,14 @@ void TestServiceApplication::Initialize(ApplicationImpl* app) {
 }
 
 bool TestServiceApplication::ConfigureIncomingConnection(
-    ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl().AddService<TestService>(
+    ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<TestService>(
       [this](const ConnectionContext& connection_context,
              InterfaceRequest<TestService> request) {
         new TestServiceImpl(app_impl_, this, request.Pass());
         AddRef();
       });
-  connection->GetServiceProviderImpl().AddService<TestTimeService>(
+  service_provider_impl->AddService<TestTimeService>(
       [this](const ConnectionContext& connection_context,
              InterfaceRequest<TestTimeService> request) {
         new TestTimeServiceImpl(app_impl_, request.Pass());

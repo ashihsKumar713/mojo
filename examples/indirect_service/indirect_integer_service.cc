@@ -52,8 +52,8 @@ private:
 class IndirectIntegerServiceAppDelegate : public ApplicationDelegate {
  public:
   bool ConfigureIncomingConnection(
-      ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<IndirectIntegerService>(
+      ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<IndirectIntegerService>(
         [](const ConnectionContext& connection_context,
            InterfaceRequest<IndirectIntegerService> request) {
           new IndirectIntegerServiceImpl(request.Pass());

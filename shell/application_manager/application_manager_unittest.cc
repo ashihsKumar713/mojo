@@ -121,8 +121,9 @@ class TestApplicationLoader : public ApplicationLoader,
   }
 
   // ApplicationDelegate implementation.
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<TestService>(
+  bool ConfigureIncomingConnection(
+      mojo::ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<TestService>(
         [this](const ConnectionContext& connection_context,
                InterfaceRequest<TestService> request) {
           new TestServiceImpl(context_, request.Pass());
@@ -305,9 +306,10 @@ class Tester : public ApplicationDelegate, public ApplicationLoader {
     app_.reset(new ApplicationImpl(this, application_request.Pass()));
   }
 
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
+  bool ConfigureIncomingConnection(
+      mojo::ServiceProviderImpl* service_provider_impl) override {
     const std::string& remote_url =
-        connection->GetServiceProviderImpl().connection_context().remote_url;
+        service_provider_impl->connection_context().remote_url;
     if (!requestor_url_.empty() && requestor_url_ != remote_url) {
       context_->set_tester_called_quit();
       context_->QuitSoon();
@@ -316,13 +318,13 @@ class Tester : public ApplicationDelegate, public ApplicationLoader {
     }
     // If we're coming from A, then add B, otherwise A.
     if (remote_url == kTestAURLString) {
-      connection->GetServiceProviderImpl().AddService<TestB>(
+      service_provider_impl->AddService<TestB>(
           [this](const ConnectionContext& connection_context,
                  InterfaceRequest<TestB> test_b_request) {
             new TestBImpl(context_, test_b_request.Pass());
           });
     } else {
-      connection->GetServiceProviderImpl().AddService<TestA>(
+      service_provider_impl->AddService<TestA>(
           [this](const ConnectionContext& connection_context,
                  InterfaceRequest<TestA> test_a_request) {
             mojo::InterfaceHandle<mojo::ServiceProvider> incoming_sp_handle;
@@ -376,7 +378,8 @@ class TestExternal : public ApplicationDelegate {
     base::MessageLoop::current()->Quit();
   }
 
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
+  bool ConfigureIncomingConnection(
+      mojo::ServiceProviderImpl* service_provider_impl) override {
     configure_incoming_connection_called_ = true;
     base::MessageLoop::current()->Quit();
     return true;

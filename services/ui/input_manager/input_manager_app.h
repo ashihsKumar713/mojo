@@ -25,7 +25,7 @@ class InputManagerApp : public mojo::ApplicationDelegate {
   // |ApplicationDelegate|:
   void Initialize(mojo::ApplicationImpl* app_impl) override;
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override;
+      mojo::ServiceProviderImpl* service_provider_impl) override;
 
   mojo::ApplicationImpl* app_impl_;
   mojo::TracingImpl tracing_;

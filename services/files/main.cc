@@ -20,8 +20,9 @@ class FilesApp : public ApplicationDelegate {
 
  private:
   // |ApplicationDelegate| override:
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<Files>(
+  bool ConfigureIncomingConnection(
+      ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<Files>(
         [](const ConnectionContext& connection_context,
            InterfaceRequest<Files> files_request) {
           new FilesImpl(connection_context, files_request.Pass());

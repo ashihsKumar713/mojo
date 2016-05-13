@@ -24,8 +24,8 @@ class HttpServerApp : public mojo::ApplicationDelegate {
  private:
   // ApplicationDelegate:
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<HttpServerFactory>([this](
+      mojo::ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<HttpServerFactory>([this](
         const mojo::ConnectionContext& connection_context,
         mojo::InterfaceRequest<HttpServerFactory> http_server_factory_request) {
       if (!http_server_factory_)

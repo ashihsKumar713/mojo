@@ -29,8 +29,8 @@ class NativeSupportApp : public mojo::ApplicationDelegate {
  private:
   // |mojo::ApplicationDelegate| override:
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<Process>([this](
+      mojo::ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<Process>([this](
         const mojo::ConnectionContext& connection_context,
         mojo::InterfaceRequest<Process> process_request) {
       if (!worker_pool_) {

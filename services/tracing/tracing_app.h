@@ -30,7 +30,7 @@ class TracingApp : public mojo::ApplicationDelegate,
  private:
   // mojo::ApplicationDelegate implementation.
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override;
+      mojo::ServiceProviderImpl* service_provider_impl) override;
 
   // TraceCollector implementation.
   void Start(mojo::ScopedDataPipeProducerHandle stream,

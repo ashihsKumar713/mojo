@@ -35,7 +35,7 @@ class NativeViewportApplicationLoader : public ApplicationLoader,
 
   // mojo::ApplicationDelegate implementation.
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override;
+      mojo::ServiceProviderImpl* service_provider_impl) override;
 
   scoped_refptr<gles2::GpuState> gpu_state_;
   scoped_ptr<mojo::ApplicationImpl> app_;

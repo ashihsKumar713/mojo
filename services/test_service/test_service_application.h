@@ -23,7 +23,8 @@ class TestServiceApplication : public ApplicationDelegate {
   void Initialize(ApplicationImpl* app) override;
 
   // ApplicationDelegate implementation.
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
+  bool ConfigureIncomingConnection(
+      ServiceProviderImpl* service_provider_impl) override;
 
   void AddRef();
   void ReleaseRef();

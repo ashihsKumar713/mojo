@@ -28,7 +28,7 @@ class JavaHandler : public mojo::ApplicationDelegate,
   // ApplicationDelegate:
   void Initialize(mojo::ApplicationImpl* app) override;
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override;
+      mojo::ServiceProviderImpl* service_provider_impl) override;
 
   // ContentHandlerFactory::Delegate:
   void RunApplication(

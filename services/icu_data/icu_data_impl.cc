@@ -20,8 +20,8 @@ class ICUDataImpl : public mojo::ApplicationDelegate, public ICUData {
 
   // mojo::ApplicationDelegate implementation.
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<ICUData>(
+      mojo::ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<ICUData>(
         [this](const mojo::ConnectionContext& connection_context,
                mojo::InterfaceRequest<ICUData> icu_data_request) {
           bindings_.AddBinding(this, icu_data_request.Pass());

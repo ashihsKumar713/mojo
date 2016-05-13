@@ -235,8 +235,8 @@ class NativeRunApp : public mojo::ApplicationDelegate {
   }
 
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<TerminalClient>(
+      mojo::ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<TerminalClient>(
         [this](const mojo::ConnectionContext& connection_context,
                mojo::InterfaceRequest<TerminalClient> terminal_client_request) {
           new TerminalClientImpl(terminal_client_request.Pass(),

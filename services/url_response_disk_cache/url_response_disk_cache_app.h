@@ -27,7 +27,8 @@ class URLResponseDiskCacheApp : public ApplicationDelegate {
  private:
   // ApplicationDelegate:
   void Initialize(ApplicationImpl* app) override;
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
+  bool ConfigureIncomingConnection(
+      ServiceProviderImpl* service_provider_impl) override;
 
   scoped_refptr<base::TaskRunner> task_runner_;
   scoped_refptr<URLResponseDiskCacheDB> db_;

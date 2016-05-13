@@ -35,15 +35,14 @@ void CompositorApp::Initialize(mojo::ApplicationImpl* app_impl) {
 }
 
 bool CompositorApp::ConfigureIncomingConnection(
-    mojo::ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl()
-      .AddService<mojo::gfx::composition::Compositor>(
-          [this](const mojo::ConnectionContext& connection_context,
-                 mojo::InterfaceRequest<mojo::gfx::composition::Compositor>
-                     compositor_request) {
-            compositor_bindings_.AddBinding(new CompositorImpl(engine_.get()),
-                                            compositor_request.Pass());
-          });
+    mojo::ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<mojo::gfx::composition::Compositor>(
+      [this](const mojo::ConnectionContext& connection_context,
+             mojo::InterfaceRequest<mojo::gfx::composition::Compositor>
+                 compositor_request) {
+        compositor_bindings_.AddBinding(new CompositorImpl(engine_.get()),
+                                        compositor_request.Pass());
+      });
   return true;
 }
 

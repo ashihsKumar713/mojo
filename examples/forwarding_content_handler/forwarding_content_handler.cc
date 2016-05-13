@@ -58,8 +58,9 @@ class ForwardingContentHandler : public ApplicationDelegate,
 
  private:
   // Overridden from ApplicationDelegate:
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<ContentHandler>(
+  bool ConfigureIncomingConnection(
+      ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<ContentHandler>(
         content_handler_factory_.GetInterfaceRequestHandler());
     return true;
   }

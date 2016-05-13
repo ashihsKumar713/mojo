@@ -44,8 +44,8 @@ class HelloMojoServerApp : public mojo::ApplicationDelegate {
 
   // |mojo::ApplicationDelegate| implementation:
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* application_connection) override {
-    application_connection->GetServiceProviderImpl().AddService<HelloMojo>(
+      mojo::ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<HelloMojo>(
         [](const mojo::ConnectionContext& connection_context,
            mojo::InterfaceRequest<HelloMojo> hello_mojo_request) {
           new HelloMojoImpl(std::move(hello_mojo_request));  // Owns itself.

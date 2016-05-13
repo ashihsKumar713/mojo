@@ -27,7 +27,7 @@ class ViewManagerApp : public mojo::ApplicationDelegate {
   // |ApplicationDelegate|:
   void Initialize(mojo::ApplicationImpl* app_impl) override;
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override;
+      mojo::ServiceProviderImpl* service_provider_impl) override;
 
   void OnCompositorConnectionError();
   void OnAssociateConnectionError(const std::string& url);

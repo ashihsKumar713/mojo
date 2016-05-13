@@ -33,14 +33,13 @@ void InputManagerApp::Initialize(mojo::ApplicationImpl* app_impl) {
 }
 
 bool InputManagerApp::ConfigureIncomingConnection(
-    mojo::ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl().AddService<mojo::ui::ViewAssociate>(
-      [this](const mojo::ConnectionContext& connection_context,
-             mojo::InterfaceRequest<mojo::ui::ViewAssociate>
-                 view_associate_request) {
-        input_associates_.AddBinding(new InputAssociate(),
-                                     view_associate_request.Pass());
-      });
+    mojo::ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<mojo::ui::ViewAssociate>([this](
+      const mojo::ConnectionContext& connection_context,
+      mojo::InterfaceRequest<mojo::ui::ViewAssociate> view_associate_request) {
+    input_associates_.AddBinding(new InputAssociate(),
+                                 view_associate_request.Pass());
+  });
   return true;
 }
 

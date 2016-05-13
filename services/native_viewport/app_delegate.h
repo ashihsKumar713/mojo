@@ -33,7 +33,7 @@ class NativeViewportAppDelegate : public mojo::ApplicationDelegate {
   void Initialize(mojo::ApplicationImpl* application) override;
 
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override;
+      mojo::ServiceProviderImpl* service_provider_impl) override;
 
  private:
   void InitLogging(mojo::ApplicationImpl* application);

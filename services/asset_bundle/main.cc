@@ -20,8 +20,9 @@ class AssetBundleApp : public ApplicationDelegate {
 
  private:
   // |ApplicationDelegate| override:
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<AssetUnpacker>(
+  bool ConfigureIncomingConnection(
+      ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<AssetUnpacker>(
         [this](const ConnectionContext& connection_context,
                InterfaceRequest<AssetUnpacker> asset_unpacker_request) {
           // Lazily initialize |sequenced_worker_pool_|. (We can't create it in

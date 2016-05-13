@@ -23,20 +23,19 @@ void AuthenticatingURLLoaderInterceptorApp::Initialize(ApplicationImpl* app) {
 }
 
 bool AuthenticatingURLLoaderInterceptorApp::ConfigureIncomingConnection(
-    ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl()
-      .AddService<AuthenticatingURLLoaderInterceptorMetaFactory>(
-          [this](const ConnectionContext& connection_context,
-                 InterfaceRequest<AuthenticatingURLLoaderInterceptorMetaFactory>
-                     request) {
-            GURL app_url(connection_context.remote_url);
-            GURL app_origin;
-            if (app_url.is_valid()) {
-              app_origin = app_url.GetOrigin();
-            }
-            new AuthenticatingURLLoaderInterceptorMetaFactoryImpl(
-                request.Pass(), app_, &tokens_[app_origin]);
-          });
+    ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<
+      AuthenticatingURLLoaderInterceptorMetaFactory>([this](
+      const ConnectionContext& connection_context,
+      InterfaceRequest<AuthenticatingURLLoaderInterceptorMetaFactory> request) {
+    GURL app_url(connection_context.remote_url);
+    GURL app_origin;
+    if (app_url.is_valid()) {
+      app_origin = app_url.GetOrigin();
+    }
+    new AuthenticatingURLLoaderInterceptorMetaFactoryImpl(request.Pass(), app_,
+                                                          &tokens_[app_origin]);
+  });
   return true;
 }
 

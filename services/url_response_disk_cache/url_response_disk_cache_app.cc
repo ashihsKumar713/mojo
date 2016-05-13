@@ -24,8 +24,8 @@ void URLResponseDiskCacheApp::Initialize(ApplicationImpl* app) {
 }
 
 bool URLResponseDiskCacheApp::ConfigureIncomingConnection(
-    ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl().AddService<URLResponseDiskCache>([this](
+    ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<URLResponseDiskCache>([this](
       const ConnectionContext& connection_context,
       InterfaceRequest<URLResponseDiskCache> request) {
     new URLResponseDiskCacheImpl(task_runner_, delegate_, db_,

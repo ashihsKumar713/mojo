@@ -35,8 +35,8 @@ PredictionServiceDelegate::PredictionServiceDelegate() {}
 PredictionServiceDelegate::~PredictionServiceDelegate() {}
 
 bool PredictionServiceDelegate::ConfigureIncomingConnection(
-    mojo::ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl().AddService<PredictionService>(
+    mojo::ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<PredictionService>(
       [](const mojo::ConnectionContext& connection_context,
          mojo::InterfaceRequest<PredictionService> prediction_service_request) {
         new PredictionServiceImpl(prediction_service_request.Pass());

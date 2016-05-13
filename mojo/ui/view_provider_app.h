@@ -31,7 +31,8 @@ class ViewProviderApp : public ApplicationDelegate {
 
   // |ApplicationDelegate|:
   void Initialize(ApplicationImpl* app) override;
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
+  bool ConfigureIncomingConnection(
+      ServiceProviderImpl* service_provider_impl) override;
 
   // Called by the ViewProvider to create a view.
   // This method may be called multiple times in the case where the

@@ -99,8 +99,9 @@ class ContentHandlerApp : public ApplicationDelegate {
 
   void Initialize(ApplicationImpl* app) override {}
 
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<ContentHandler>(
+  bool ConfigureIncomingConnection(
+      ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<ContentHandler>(
         [](const ConnectionContext& connection_context,
            InterfaceRequest<ContentHandler> content_handler_request) {
           new ContentHandlerImpl(content_handler_request.Pass());

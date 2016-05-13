@@ -21,7 +21,8 @@ class AudioServerApp : public ApplicationDelegate {
 
   // ApplicationDelegate
   void Initialize(ApplicationImpl* app) override;
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
+  bool ConfigureIncomingConnection(
+      ServiceProviderImpl* service_provider_impl) override;
   void Quit() override;
 
  private:

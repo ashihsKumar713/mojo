@@ -21,8 +21,8 @@ void AudioServerApp::Initialize(ApplicationImpl* app) {
 }
 
 bool AudioServerApp::ConfigureIncomingConnection(
-    ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl().AddService<AudioServer>(
+    ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<AudioServer>(
       [this](const ConnectionContext& connection_context,
              InterfaceRequest<AudioServer> audio_server_request) {
         bindings_.AddBinding(&server_impl_, audio_server_request.Pass());

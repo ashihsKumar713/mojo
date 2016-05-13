@@ -212,14 +212,13 @@ class PythonContentHandlerApp : public ApplicationDelegate {
 
  private:
   // Overridden from ApplicationDelegate:
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    if (IsDebug(connection->GetServiceProviderImpl()
-                    .connection_context()
-                    .connection_url)) {
-      connection->GetServiceProviderImpl().AddService<mojo::ContentHandler>(
+  bool ConfigureIncomingConnection(
+      mojo::ServiceProviderImpl* service_provider_impl) override {
+    if (IsDebug(service_provider_impl->connection_context().connection_url)) {
+      service_provider_impl->AddService<mojo::ContentHandler>(
           debug_content_handler_factory_.GetInterfaceRequestHandler());
     } else {
-      connection->GetServiceProviderImpl().AddService<mojo::ContentHandler>(
+      service_provider_impl->AddService<mojo::ContentHandler>(
           content_handler_factory_.GetInterfaceRequestHandler());
     }
     return true;

@@ -64,7 +64,7 @@ class TraceMeApp : public mojo::ApplicationDelegate {
 
   // mojo:ApplicationDelegate:
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
+      mojo::ServiceProviderImpl* service_provider_impl) override {
     TRACE_EVENT0("trace_me", "connected");
     return true;
   }

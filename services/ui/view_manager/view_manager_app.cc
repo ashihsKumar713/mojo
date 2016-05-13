@@ -60,8 +60,8 @@ void ViewManagerApp::Initialize(mojo::ApplicationImpl* app_impl) {
 }
 
 bool ViewManagerApp::ConfigureIncomingConnection(
-    mojo::ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl().AddService<mojo::ui::ViewManager>([this](
+    mojo::ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<mojo::ui::ViewManager>([this](
       const mojo::ConnectionContext& connection_context,
       mojo::InterfaceRequest<mojo::ui::ViewManager> view_manager_request) {
     DCHECK(registry_);

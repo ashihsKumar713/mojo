@@ -51,8 +51,8 @@ void ViewProviderApp::Initialize(mojo::ApplicationImpl* app_impl) {
 }
 
 bool ViewProviderApp::ConfigureIncomingConnection(
-    mojo::ApplicationConnection* connection) {
-  connection->GetServiceProviderImpl().AddService<ViewProvider>(
+    ServiceProviderImpl* service_provider_impl) {
+  service_provider_impl->AddService<ViewProvider>(
       [this](const ConnectionContext& connection_context,
              InterfaceRequest<ViewProvider> view_provider_request) {
         bindings_.AddBinding(

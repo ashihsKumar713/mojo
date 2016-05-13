@@ -29,7 +29,7 @@ class AndroidHandler : public mojo::ApplicationDelegate,
   // mojo::ApplicationDelegate:
   void Initialize(mojo::ApplicationImpl* app) override;
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override;
+      mojo::ServiceProviderImpl* service_provider_impl) override;
 
   // mojo::ContentHandlerFactory::Delegate:
   void RunApplication(

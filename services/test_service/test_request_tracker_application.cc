@@ -26,20 +26,20 @@ void TestRequestTrackerApplication::Initialize(ApplicationImpl* app) {
 }
 
 bool TestRequestTrackerApplication::ConfigureIncomingConnection(
-    ApplicationConnection* connection) {
+    ServiceProviderImpl* service_provider_impl) {
   // Every instance of the service and recorder shares the context.
   // Note, this app is single-threaded, so this is thread safe.
-  connection->GetServiceProviderImpl().AddService<TestTimeService>(
+  service_provider_impl->AddService<TestTimeService>(
       [this](const ConnectionContext& connection_context,
              InterfaceRequest<TestTimeService> request) {
         new TestTimeServiceImpl(app_impl_, request.Pass());
       });
-  connection->GetServiceProviderImpl().AddService<TestRequestTracker>(
+  service_provider_impl->AddService<TestRequestTracker>(
       [this](const ConnectionContext& connection_context,
              InterfaceRequest<TestRequestTracker> request) {
         new TestRequestTrackerImpl(request.Pass(), &context_);
       });
-  connection->GetServiceProviderImpl().AddService<TestTrackedRequestService>(
+  service_provider_impl->AddService<TestTrackedRequestService>(
       [this](const ConnectionContext& connection_context,
              InterfaceRequest<TestTrackedRequestService> request) {
         new TestTrackedRequestServiceImpl(request.Pass(), &context_);

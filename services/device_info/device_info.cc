@@ -29,8 +29,8 @@ class DeviceInfo : public ApplicationDelegate, public mojo::DeviceInfo {
 
   // |ApplicationDelegate| override.
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<mojo::DeviceInfo>(
+      ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<mojo::DeviceInfo>(
         [this](const ConnectionContext& connection_context,
                InterfaceRequest<mojo::DeviceInfo> device_info_request) {
           binding_.AddBinding(this, device_info_request.Pass());

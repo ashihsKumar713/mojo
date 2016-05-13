@@ -50,8 +50,8 @@ class PingableApp : public mojo::ApplicationDelegate {
   }
 
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override {
-    connection->GetServiceProviderImpl().AddService<Pingable>(
+      mojo::ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<Pingable>(
         [this](const mojo::ConnectionContext& connection_context,
                mojo::InterfaceRequest<Pingable> pingable_request) {
           new PingableImpl(pingable_request.Pass(), app_url_,

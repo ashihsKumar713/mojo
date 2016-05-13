@@ -23,7 +23,8 @@ class TestRequestTrackerApplication : public ApplicationDelegate {
   void Initialize(ApplicationImpl* app) override;
 
   // ApplicationDelegate methods:
-  bool ConfigureIncomingConnection(ApplicationConnection* connection) override;
+  bool ConfigureIncomingConnection(
+      ServiceProviderImpl* service_provider_impl) override;
 
  private:
   ApplicationImpl* app_impl_;

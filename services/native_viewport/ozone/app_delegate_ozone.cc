@@ -24,8 +24,9 @@ void NativeViewportOzoneAppDelegate::Initialize(
 }
 
 bool NativeViewportOzoneAppDelegate::ConfigureIncomingConnection(
-    ApplicationConnection* connection) {
-  if (!NativeViewportAppDelegate::ConfigureIncomingConnection(connection))
+    ServiceProviderImpl* service_provider_impl) {
+  if (!NativeViewportAppDelegate::ConfigureIncomingConnection(
+          service_provider_impl))
     return false;
 
   auto ipc_init_helper = static_cast<ui::IpcInitHelperMojo*>(

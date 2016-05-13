@@ -25,7 +25,7 @@ class LauncherApp : public mojo::ApplicationDelegate, public Launcher {
   // |ApplicationDelegate|:
   void Initialize(mojo::ApplicationImpl* app_impl) override;
   bool ConfigureIncomingConnection(
-      mojo::ApplicationConnection* connection) override;
+      mojo::ServiceProviderImpl* service_provider_impl) override;
 
   // |Launcher|:
   void Launch(const mojo::String& application_url) override;

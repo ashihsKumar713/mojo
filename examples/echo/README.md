@@ -134,7 +134,7 @@ All three servers, being `ApplicationDelegate` derivations, implement
 `ConfigureIncomingConnection` in the same way:
 
 ```
-connection->GetServiceProviderImpl().AddService<Echo>(
+service_provider_impl->AddService<Echo>(
     [this](const mojo::ConnectionContext& connection_context,
            mojo::InterfaceRequest<Echo> echo_request) {
       ...
