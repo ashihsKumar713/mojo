@@ -1295,24 +1295,22 @@ abstract class MediaProducer {
 }
 
 
-class _MediaProducerProxyImpl extends bindings.Proxy {
-  _MediaProducerProxyImpl.fromEndpoint(
+class _MediaProducerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _MediaProducerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _MediaProducerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _MediaProducerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _MediaProducerProxyImpl.unbound() : super.unbound();
-
-  static _MediaProducerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _MediaProducerProxyImpl"));
-    return new _MediaProducerProxyImpl.fromEndpoint(endpoint);
-  }
+  _MediaProducerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _MediaProducerServiceDescription();
+      new _MediaProducerServiceDescription();
 
+  String get serviceName => MediaProducer.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaProducerMethodConnectName:
@@ -1342,59 +1340,30 @@ class _MediaProducerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_MediaProducerProxyImpl($superString)";
+    return "_MediaProducerProxyControl($superString)";
   }
 }
 
 
-class _MediaProducerProxyCalls implements MediaProducer {
-  _MediaProducerProxyImpl _proxyImpl;
-
-  _MediaProducerProxyCalls(this._proxyImpl);
-    dynamic connect(Object consumer,[Function responseFactory = null]) {
-      var params = new _MediaProducerConnectParams();
-      params.consumer = consumer;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaProducerMethodConnectName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void disconnect() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaProducerDisconnectParams();
-      _proxyImpl.sendMessage(params, _mediaProducerMethodDisconnectName);
-    }
-}
-
-
-class MediaProducerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  MediaProducer ptr;
-
-  MediaProducerProxy(_MediaProducerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _MediaProducerProxyCalls(proxyImpl);
-
+class MediaProducerProxy extends bindings.Proxy
+                              implements MediaProducer {
   MediaProducerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _MediaProducerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _MediaProducerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _MediaProducerProxyControl.fromEndpoint(endpoint));
 
-  MediaProducerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _MediaProducerProxyImpl.fromHandle(handle) {
-    ptr = new _MediaProducerProxyCalls(impl);
-  }
+  MediaProducerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _MediaProducerProxyControl.fromHandle(handle));
 
-  MediaProducerProxy.unbound() :
-      impl = new _MediaProducerProxyImpl.unbound() {
-    ptr = new _MediaProducerProxyCalls(impl);
+  MediaProducerProxy.unbound()
+      : super(new _MediaProducerProxyControl.unbound());
+
+  static MediaProducerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaProducerProxy"));
+    return new MediaProducerProxy.fromEndpoint(endpoint);
   }
 
   factory MediaProducerProxy.connectToService(
@@ -1404,30 +1373,24 @@ class MediaProducerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static MediaProducerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaProducerProxy"));
-    return new MediaProducerProxy.fromEndpoint(endpoint);
+
+  dynamic connect(Object consumer,[Function responseFactory = null]) {
+    var params = new _MediaProducerConnectParams();
+    params.consumer = consumer;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaProducerMethodConnectName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => MediaProducer.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "MediaProducerProxy($impl)";
+  void disconnect() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaProducerDisconnectParams();
+    ctrl.sendMessage(params,
+        _mediaProducerMethodDisconnectName);
   }
 }
 
@@ -1561,24 +1524,22 @@ abstract class MediaPullModeProducer {
 }
 
 
-class _MediaPullModeProducerProxyImpl extends bindings.Proxy {
-  _MediaPullModeProducerProxyImpl.fromEndpoint(
+class _MediaPullModeProducerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _MediaPullModeProducerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _MediaPullModeProducerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _MediaPullModeProducerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _MediaPullModeProducerProxyImpl.unbound() : super.unbound();
-
-  static _MediaPullModeProducerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _MediaPullModeProducerProxyImpl"));
-    return new _MediaPullModeProducerProxyImpl.fromEndpoint(endpoint);
-  }
+  _MediaPullModeProducerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _MediaPullModeProducerServiceDescription();
+      new _MediaPullModeProducerServiceDescription();
 
+  String get serviceName => MediaPullModeProducer.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaPullModeProducerMethodGetBufferName:
@@ -1628,68 +1589,30 @@ class _MediaPullModeProducerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_MediaPullModeProducerProxyImpl($superString)";
+    return "_MediaPullModeProducerProxyControl($superString)";
   }
 }
 
 
-class _MediaPullModeProducerProxyCalls implements MediaPullModeProducer {
-  _MediaPullModeProducerProxyImpl _proxyImpl;
-
-  _MediaPullModeProducerProxyCalls(this._proxyImpl);
-    dynamic getBuffer([Function responseFactory = null]) {
-      var params = new _MediaPullModeProducerGetBufferParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaPullModeProducerMethodGetBufferName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic pullPacket(MediaPacket toRelease,[Function responseFactory = null]) {
-      var params = new _MediaPullModeProducerPullPacketParams();
-      params.toRelease = toRelease;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaPullModeProducerMethodPullPacketName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void releasePacket(MediaPacket toRelease) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaPullModeProducerReleasePacketParams();
-      params.toRelease = toRelease;
-      _proxyImpl.sendMessage(params, _mediaPullModeProducerMethodReleasePacketName);
-    }
-}
-
-
-class MediaPullModeProducerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  MediaPullModeProducer ptr;
-
-  MediaPullModeProducerProxy(_MediaPullModeProducerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _MediaPullModeProducerProxyCalls(proxyImpl);
-
+class MediaPullModeProducerProxy extends bindings.Proxy
+                              implements MediaPullModeProducer {
   MediaPullModeProducerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _MediaPullModeProducerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _MediaPullModeProducerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _MediaPullModeProducerProxyControl.fromEndpoint(endpoint));
 
-  MediaPullModeProducerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _MediaPullModeProducerProxyImpl.fromHandle(handle) {
-    ptr = new _MediaPullModeProducerProxyCalls(impl);
-  }
+  MediaPullModeProducerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _MediaPullModeProducerProxyControl.fromHandle(handle));
 
-  MediaPullModeProducerProxy.unbound() :
-      impl = new _MediaPullModeProducerProxyImpl.unbound() {
-    ptr = new _MediaPullModeProducerProxyCalls(impl);
+  MediaPullModeProducerProxy.unbound()
+      : super(new _MediaPullModeProducerProxyControl.unbound());
+
+  static MediaPullModeProducerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaPullModeProducerProxy"));
+    return new MediaPullModeProducerProxy.fromEndpoint(endpoint);
   }
 
   factory MediaPullModeProducerProxy.connectToService(
@@ -1699,30 +1622,33 @@ class MediaPullModeProducerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static MediaPullModeProducerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaPullModeProducerProxy"));
-    return new MediaPullModeProducerProxy.fromEndpoint(endpoint);
+
+  dynamic getBuffer([Function responseFactory = null]) {
+    var params = new _MediaPullModeProducerGetBufferParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaPullModeProducerMethodGetBufferName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => MediaPullModeProducer.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic pullPacket(MediaPacket toRelease,[Function responseFactory = null]) {
+    var params = new _MediaPullModeProducerPullPacketParams();
+    params.toRelease = toRelease;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaPullModeProducerMethodPullPacketName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "MediaPullModeProducerProxy($impl)";
+  void releasePacket(MediaPacket toRelease) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaPullModeProducerReleasePacketParams();
+    params.toRelease = toRelease;
+    ctrl.sendMessage(params,
+        _mediaPullModeProducerMethodReleasePacketName);
   }
 }
 
@@ -1939,24 +1865,22 @@ abstract class MediaConsumer {
 }
 
 
-class _MediaConsumerProxyImpl extends bindings.Proxy {
-  _MediaConsumerProxyImpl.fromEndpoint(
+class _MediaConsumerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _MediaConsumerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _MediaConsumerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _MediaConsumerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _MediaConsumerProxyImpl.unbound() : super.unbound();
-
-  static _MediaConsumerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _MediaConsumerProxyImpl"));
-    return new _MediaConsumerProxyImpl.fromEndpoint(endpoint);
-  }
+  _MediaConsumerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _MediaConsumerServiceDescription();
+      new _MediaConsumerServiceDescription();
 
+  String get serviceName => MediaConsumer.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaConsumerMethodSetBufferName:
@@ -2046,76 +1970,30 @@ class _MediaConsumerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_MediaConsumerProxyImpl($superString)";
+    return "_MediaConsumerProxyControl($superString)";
   }
 }
 
 
-class _MediaConsumerProxyCalls implements MediaConsumer {
-  _MediaConsumerProxyImpl _proxyImpl;
-
-  _MediaConsumerProxyCalls(this._proxyImpl);
-    dynamic setBuffer(core.MojoSharedBuffer buffer,[Function responseFactory = null]) {
-      var params = new _MediaConsumerSetBufferParams();
-      params.buffer = buffer;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaConsumerMethodSetBufferName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic sendPacket(MediaPacket packet,[Function responseFactory = null]) {
-      var params = new _MediaConsumerSendPacketParams();
-      params.packet = packet;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaConsumerMethodSendPacketName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic prime([Function responseFactory = null]) {
-      var params = new _MediaConsumerPrimeParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaConsumerMethodPrimeName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic flush([Function responseFactory = null]) {
-      var params = new _MediaConsumerFlushParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaConsumerMethodFlushName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class MediaConsumerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  MediaConsumer ptr;
-
-  MediaConsumerProxy(_MediaConsumerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _MediaConsumerProxyCalls(proxyImpl);
-
+class MediaConsumerProxy extends bindings.Proxy
+                              implements MediaConsumer {
   MediaConsumerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _MediaConsumerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _MediaConsumerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _MediaConsumerProxyControl.fromEndpoint(endpoint));
 
-  MediaConsumerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _MediaConsumerProxyImpl.fromHandle(handle) {
-    ptr = new _MediaConsumerProxyCalls(impl);
-  }
+  MediaConsumerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _MediaConsumerProxyControl.fromHandle(handle));
 
-  MediaConsumerProxy.unbound() :
-      impl = new _MediaConsumerProxyImpl.unbound() {
-    ptr = new _MediaConsumerProxyCalls(impl);
+  MediaConsumerProxy.unbound()
+      : super(new _MediaConsumerProxyControl.unbound());
+
+  static MediaConsumerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaConsumerProxy"));
+    return new MediaConsumerProxy.fromEndpoint(endpoint);
   }
 
   factory MediaConsumerProxy.connectToService(
@@ -2125,30 +2003,40 @@ class MediaConsumerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static MediaConsumerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaConsumerProxy"));
-    return new MediaConsumerProxy.fromEndpoint(endpoint);
+
+  dynamic setBuffer(core.MojoSharedBuffer buffer,[Function responseFactory = null]) {
+    var params = new _MediaConsumerSetBufferParams();
+    params.buffer = buffer;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaConsumerMethodSetBufferName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => MediaConsumer.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic sendPacket(MediaPacket packet,[Function responseFactory = null]) {
+    var params = new _MediaConsumerSendPacketParams();
+    params.packet = packet;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaConsumerMethodSendPacketName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "MediaConsumerProxy($impl)";
+  dynamic prime([Function responseFactory = null]) {
+    var params = new _MediaConsumerPrimeParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaConsumerMethodPrimeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic flush([Function responseFactory = null]) {
+    var params = new _MediaConsumerFlushParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaConsumerMethodFlushName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

@@ -667,24 +667,22 @@ abstract class UrlResponseDiskCache {
 }
 
 
-class _UrlResponseDiskCacheProxyImpl extends bindings.Proxy {
-  _UrlResponseDiskCacheProxyImpl.fromEndpoint(
+class _UrlResponseDiskCacheProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _UrlResponseDiskCacheProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _UrlResponseDiskCacheProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _UrlResponseDiskCacheProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _UrlResponseDiskCacheProxyImpl.unbound() : super.unbound();
-
-  static _UrlResponseDiskCacheProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _UrlResponseDiskCacheProxyImpl"));
-    return new _UrlResponseDiskCacheProxyImpl.fromEndpoint(endpoint);
-  }
+  _UrlResponseDiskCacheProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _UrlResponseDiskCacheServiceDescription();
+      new _UrlResponseDiskCacheServiceDescription();
 
+  String get serviceName => UrlResponseDiskCache.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _urlResponseDiskCacheMethodGetName:
@@ -754,87 +752,30 @@ class _UrlResponseDiskCacheProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_UrlResponseDiskCacheProxyImpl($superString)";
+    return "_UrlResponseDiskCacheProxyControl($superString)";
   }
 }
 
 
-class _UrlResponseDiskCacheProxyCalls implements UrlResponseDiskCache {
-  _UrlResponseDiskCacheProxyImpl _proxyImpl;
-
-  _UrlResponseDiskCacheProxyCalls(this._proxyImpl);
-    dynamic get(String url,[Function responseFactory = null]) {
-      var params = new _UrlResponseDiskCacheGetParams();
-      params.url = url;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _urlResponseDiskCacheMethodGetName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void validate(String url) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _UrlResponseDiskCacheValidateParams();
-      params.url = url;
-      _proxyImpl.sendMessage(params, _urlResponseDiskCacheMethodValidateName);
-    }
-    void update(url_response_mojom.UrlResponse response) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _UrlResponseDiskCacheUpdateParams();
-      params.response = response;
-      _proxyImpl.sendMessage(params, _urlResponseDiskCacheMethodUpdateName);
-    }
-    dynamic updateAndGet(url_response_mojom.UrlResponse response,[Function responseFactory = null]) {
-      var params = new _UrlResponseDiskCacheUpdateAndGetParams();
-      params.response = response;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _urlResponseDiskCacheMethodUpdateAndGetName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic updateAndGetExtracted(url_response_mojom.UrlResponse response,[Function responseFactory = null]) {
-      var params = new _UrlResponseDiskCacheUpdateAndGetExtractedParams();
-      params.response = response;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _urlResponseDiskCacheMethodUpdateAndGetExtractedName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class UrlResponseDiskCacheProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  UrlResponseDiskCache ptr;
-
-  UrlResponseDiskCacheProxy(_UrlResponseDiskCacheProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _UrlResponseDiskCacheProxyCalls(proxyImpl);
-
+class UrlResponseDiskCacheProxy extends bindings.Proxy
+                              implements UrlResponseDiskCache {
   UrlResponseDiskCacheProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _UrlResponseDiskCacheProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _UrlResponseDiskCacheProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _UrlResponseDiskCacheProxyControl.fromEndpoint(endpoint));
 
-  UrlResponseDiskCacheProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _UrlResponseDiskCacheProxyImpl.fromHandle(handle) {
-    ptr = new _UrlResponseDiskCacheProxyCalls(impl);
-  }
+  UrlResponseDiskCacheProxy.fromHandle(core.MojoHandle handle)
+      : super(new _UrlResponseDiskCacheProxyControl.fromHandle(handle));
 
-  UrlResponseDiskCacheProxy.unbound() :
-      impl = new _UrlResponseDiskCacheProxyImpl.unbound() {
-    ptr = new _UrlResponseDiskCacheProxyCalls(impl);
+  UrlResponseDiskCacheProxy.unbound()
+      : super(new _UrlResponseDiskCacheProxyControl.unbound());
+
+  static UrlResponseDiskCacheProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For UrlResponseDiskCacheProxy"));
+    return new UrlResponseDiskCacheProxy.fromEndpoint(endpoint);
   }
 
   factory UrlResponseDiskCacheProxy.connectToService(
@@ -844,30 +785,53 @@ class UrlResponseDiskCacheProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static UrlResponseDiskCacheProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For UrlResponseDiskCacheProxy"));
-    return new UrlResponseDiskCacheProxy.fromEndpoint(endpoint);
+
+  dynamic get(String url,[Function responseFactory = null]) {
+    var params = new _UrlResponseDiskCacheGetParams();
+    params.url = url;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _urlResponseDiskCacheMethodGetName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => UrlResponseDiskCache.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void validate(String url) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _UrlResponseDiskCacheValidateParams();
+    params.url = url;
+    ctrl.sendMessage(params,
+        _urlResponseDiskCacheMethodValidateName);
   }
-
-  String toString() {
-    return "UrlResponseDiskCacheProxy($impl)";
+  void update(url_response_mojom.UrlResponse response) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _UrlResponseDiskCacheUpdateParams();
+    params.response = response;
+    ctrl.sendMessage(params,
+        _urlResponseDiskCacheMethodUpdateName);
+  }
+  dynamic updateAndGet(url_response_mojom.UrlResponse response,[Function responseFactory = null]) {
+    var params = new _UrlResponseDiskCacheUpdateAndGetParams();
+    params.response = response;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _urlResponseDiskCacheMethodUpdateAndGetName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic updateAndGetExtracted(url_response_mojom.UrlResponse response,[Function responseFactory = null]) {
+    var params = new _UrlResponseDiskCacheUpdateAndGetExtractedParams();
+    params.response = response;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _urlResponseDiskCacheMethodUpdateAndGetExtractedName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

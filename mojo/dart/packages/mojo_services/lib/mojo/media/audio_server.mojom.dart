@@ -100,24 +100,22 @@ abstract class AudioServer {
 }
 
 
-class _AudioServerProxyImpl extends bindings.Proxy {
-  _AudioServerProxyImpl.fromEndpoint(
+class _AudioServerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _AudioServerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _AudioServerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _AudioServerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _AudioServerProxyImpl.unbound() : super.unbound();
-
-  static _AudioServerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _AudioServerProxyImpl"));
-    return new _AudioServerProxyImpl.fromEndpoint(endpoint);
-  }
+  _AudioServerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _AudioServerServiceDescription();
+      new _AudioServerServiceDescription();
 
+  String get serviceName => AudioServer.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -127,51 +125,30 @@ class _AudioServerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_AudioServerProxyImpl($superString)";
+    return "_AudioServerProxyControl($superString)";
   }
 }
 
 
-class _AudioServerProxyCalls implements AudioServer {
-  _AudioServerProxyImpl _proxyImpl;
-
-  _AudioServerProxyCalls(this._proxyImpl);
-    void createTrack(Object track) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _AudioServerCreateTrackParams();
-      params.track = track;
-      _proxyImpl.sendMessage(params, _audioServerMethodCreateTrackName);
-    }
-}
-
-
-class AudioServerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  AudioServer ptr;
-
-  AudioServerProxy(_AudioServerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _AudioServerProxyCalls(proxyImpl);
-
+class AudioServerProxy extends bindings.Proxy
+                              implements AudioServer {
   AudioServerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _AudioServerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _AudioServerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _AudioServerProxyControl.fromEndpoint(endpoint));
 
-  AudioServerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _AudioServerProxyImpl.fromHandle(handle) {
-    ptr = new _AudioServerProxyCalls(impl);
-  }
+  AudioServerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _AudioServerProxyControl.fromHandle(handle));
 
-  AudioServerProxy.unbound() :
-      impl = new _AudioServerProxyImpl.unbound() {
-    ptr = new _AudioServerProxyCalls(impl);
+  AudioServerProxy.unbound()
+      : super(new _AudioServerProxyControl.unbound());
+
+  static AudioServerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For AudioServerProxy"));
+    return new AudioServerProxy.fromEndpoint(endpoint);
   }
 
   factory AudioServerProxy.connectToService(
@@ -181,30 +158,16 @@ class AudioServerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static AudioServerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For AudioServerProxy"));
-    return new AudioServerProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => AudioServer.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "AudioServerProxy($impl)";
+  void createTrack(Object track) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _AudioServerCreateTrackParams();
+    params.track = track;
+    ctrl.sendMessage(params,
+        _audioServerMethodCreateTrackName);
   }
 }
 

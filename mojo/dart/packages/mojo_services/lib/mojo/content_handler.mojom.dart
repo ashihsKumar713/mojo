@@ -115,24 +115,22 @@ abstract class ContentHandler {
 }
 
 
-class _ContentHandlerProxyImpl extends bindings.Proxy {
-  _ContentHandlerProxyImpl.fromEndpoint(
+class _ContentHandlerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ContentHandlerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ContentHandlerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ContentHandlerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ContentHandlerProxyImpl.unbound() : super.unbound();
-
-  static _ContentHandlerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ContentHandlerProxyImpl"));
-    return new _ContentHandlerProxyImpl.fromEndpoint(endpoint);
-  }
+  _ContentHandlerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ContentHandlerServiceDescription();
+      new _ContentHandlerServiceDescription();
 
+  String get serviceName => ContentHandler.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -142,52 +140,30 @@ class _ContentHandlerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ContentHandlerProxyImpl($superString)";
+    return "_ContentHandlerProxyControl($superString)";
   }
 }
 
 
-class _ContentHandlerProxyCalls implements ContentHandler {
-  _ContentHandlerProxyImpl _proxyImpl;
-
-  _ContentHandlerProxyCalls(this._proxyImpl);
-    void startApplication(Object application, url_response_mojom.UrlResponse response) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ContentHandlerStartApplicationParams();
-      params.application = application;
-      params.response = response;
-      _proxyImpl.sendMessage(params, _contentHandlerMethodStartApplicationName);
-    }
-}
-
-
-class ContentHandlerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ContentHandler ptr;
-
-  ContentHandlerProxy(_ContentHandlerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ContentHandlerProxyCalls(proxyImpl);
-
+class ContentHandlerProxy extends bindings.Proxy
+                              implements ContentHandler {
   ContentHandlerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ContentHandlerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ContentHandlerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ContentHandlerProxyControl.fromEndpoint(endpoint));
 
-  ContentHandlerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ContentHandlerProxyImpl.fromHandle(handle) {
-    ptr = new _ContentHandlerProxyCalls(impl);
-  }
+  ContentHandlerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ContentHandlerProxyControl.fromHandle(handle));
 
-  ContentHandlerProxy.unbound() :
-      impl = new _ContentHandlerProxyImpl.unbound() {
-    ptr = new _ContentHandlerProxyCalls(impl);
+  ContentHandlerProxy.unbound()
+      : super(new _ContentHandlerProxyControl.unbound());
+
+  static ContentHandlerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ContentHandlerProxy"));
+    return new ContentHandlerProxy.fromEndpoint(endpoint);
   }
 
   factory ContentHandlerProxy.connectToService(
@@ -197,30 +173,17 @@ class ContentHandlerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ContentHandlerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ContentHandlerProxy"));
-    return new ContentHandlerProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => ContentHandler.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ContentHandlerProxy($impl)";
+  void startApplication(Object application, url_response_mojom.UrlResponse response) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ContentHandlerStartApplicationParams();
+    params.application = application;
+    params.response = response;
+    ctrl.sendMessage(params,
+        _contentHandlerMethodStartApplicationName);
   }
 }
 

@@ -455,24 +455,22 @@ abstract class Calculator {
 }
 
 
-class _CalculatorProxyImpl extends bindings.Proxy {
-  _CalculatorProxyImpl.fromEndpoint(
+class _CalculatorProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _CalculatorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _CalculatorProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _CalculatorProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _CalculatorProxyImpl.unbound() : super.unbound();
-
-  static _CalculatorProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _CalculatorProxyImpl"));
-    return new _CalculatorProxyImpl.fromEndpoint(endpoint);
-  }
+  _CalculatorProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _CalculatorServiceDescription();
+      new _CalculatorServiceDescription();
 
+  String get serviceName => Calculator.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _calculatorMethodClearName:
@@ -542,68 +540,30 @@ class _CalculatorProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_CalculatorProxyImpl($superString)";
+    return "_CalculatorProxyControl($superString)";
   }
 }
 
 
-class _CalculatorProxyCalls implements Calculator {
-  _CalculatorProxyImpl _proxyImpl;
-
-  _CalculatorProxyCalls(this._proxyImpl);
-    dynamic clear([Function responseFactory = null]) {
-      var params = new _CalculatorClearParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _calculatorMethodClearName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic add(double value,[Function responseFactory = null]) {
-      var params = new _CalculatorAddParams();
-      params.value = value;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _calculatorMethodAddName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic multiply(double value,[Function responseFactory = null]) {
-      var params = new _CalculatorMultiplyParams();
-      params.value = value;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _calculatorMethodMultiplyName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class CalculatorProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Calculator ptr;
-
-  CalculatorProxy(_CalculatorProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _CalculatorProxyCalls(proxyImpl);
-
+class CalculatorProxy extends bindings.Proxy
+                              implements Calculator {
   CalculatorProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _CalculatorProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _CalculatorProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _CalculatorProxyControl.fromEndpoint(endpoint));
 
-  CalculatorProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _CalculatorProxyImpl.fromHandle(handle) {
-    ptr = new _CalculatorProxyCalls(impl);
-  }
+  CalculatorProxy.fromHandle(core.MojoHandle handle)
+      : super(new _CalculatorProxyControl.fromHandle(handle));
 
-  CalculatorProxy.unbound() :
-      impl = new _CalculatorProxyImpl.unbound() {
-    ptr = new _CalculatorProxyCalls(impl);
+  CalculatorProxy.unbound()
+      : super(new _CalculatorProxyControl.unbound());
+
+  static CalculatorProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For CalculatorProxy"));
+    return new CalculatorProxy.fromEndpoint(endpoint);
   }
 
   factory CalculatorProxy.connectToService(
@@ -613,30 +573,32 @@ class CalculatorProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static CalculatorProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For CalculatorProxy"));
-    return new CalculatorProxy.fromEndpoint(endpoint);
+
+  dynamic clear([Function responseFactory = null]) {
+    var params = new _CalculatorClearParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _calculatorMethodClearName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => Calculator.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic add(double value,[Function responseFactory = null]) {
+    var params = new _CalculatorAddParams();
+    params.value = value;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _calculatorMethodAddName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "CalculatorProxy($impl)";
+  dynamic multiply(double value,[Function responseFactory = null]) {
+    var params = new _CalculatorMultiplyParams();
+    params.value = value;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _calculatorMethodMultiplyName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -810,7 +772,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xXTWvyQBA2+r4Q9f3w/WhNb0IvXup6lJ4sRSiUgodehILEZFtT8mHzUeg/6c/z2GOPvbWbZlbXaRYjKNqSgWGa7Q6Z5+GZJ6gVkqhBbUPF57yqqOJ7HeFZEe414O7loN8bnvcGx44ejlunum1Eth56vgb3476S0NcU+sV4Qc9d9NxG568QZ4X0+MuywnI+UXJeZ/mbJRr3A24V+q9ijCzJ2HMo8SPTcyyX+sTxbj0S+EbyxyQa2ZZBLDek/rVu0ICMLNe03JuAhDQIAxK/bmjMXteKu5w0vjkv/4G3AvBYFP5fEvr635L6WE7nd8r5VbLxi6MpOf/J8nvMr011PwVHGWbeNH8NpNspqstwch3J8O8B1necRz69i9g8KXh5bBqvKtlHDc2hIh1gfp6V9fCzz/KXwE8w8dyAbo8fzEs3xcf4TmWJde3JvW5HVLIn9S3wIupFEeaR+YdaWuRtGS8KpIyXKvjYiWmmfncqW/aPde3HP8DKcAruke9H1v2owPd6V/Zj03qJv/s/ZnrhbprrZRW9HH4iPy1m5KUIKeOlBrNcRHZoTewHzEv1i/ipBpg4Tm6q+X5k248qeMyu+ukT+r2SVS8dCR8HLP8s6mVuqrmvrqSb5g7p5i0AAP//5ns7IOgQAAA=";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xXTY/TMBBtU5CyLR/lc8OtEpdeWO9xxWkRWgkJIXHgsqfKm5pskBOHOEGCX8uxR/4BOGTcOtOYflDasMpIo2kcW5n3+ual9TplDKGeQsXrurqo4n1nxnXX2DeCvR8u319M3l5cvoxodn3ymnI/5zQTqQf7i3M949zYOF+JbvXyHN0+Res/Id506uOhyr7KRUfl+rHK+ypRu0u4XTgfqJyoJLlMCRc+5SQQIuCMXIuIkW8pJZH4JIhM/fJDkl/x0CdhnLH0I/WZJFdhPA3jQJKMyUyS4skTf/7kk+JUtPR8zc9j4E9T5Bj3e8b3ldwq6/ejep5nGpezHs84xpb1uypvFzxzRtMa/RxBz/vicYR0PEN1FV6tKxsPTwDzb7wvUvY5V83U4NaxL9yuZU491I+LdIF50gL7W56eqrxn8CQTEUt2eJ4wP+c1PldjR9bY1fx8oTxnlvk5PiA/HrLoYefP/jLqVflbxU8X0sbPAHzu1XRa+37qN8RfdjU3jwCzwmu4Szs3m85NH97zTZubf62f4vfCnbl+tOu2+tlGP8//Q9911uTHgbTxM4Re3uU8CxP+FfMzuGG+6wE2jVebbzs3m83NADyo6b77A/0fWlc/ZxZenql8UNXPwnxb/91KR+MG6uhXAAAA//+Vb42mYBEAAA==";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

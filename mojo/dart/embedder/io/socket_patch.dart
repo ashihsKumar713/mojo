@@ -150,7 +150,7 @@ class _MojoRawSocket extends Stream<RawSocketEvent> implements RawSocket {
   static Future<_MojoRawSocket> _connect(NetAddress source,
                                          NetAddress dest) async {
     var rawSocket = new _MojoRawSocket();
-    var networkService = _getNetworkService().ptr;
+    var networkService = _getNetworkService();
     assert(networkService != null);
     var response =
         await networkService.createTcpBoundSocket(source,
@@ -172,7 +172,7 @@ class _MojoRawSocket extends Stream<RawSocketEvent> implements RawSocket {
 
     // connect here.
     response =
-        await rawSocket._tcpBoundSocket.ptr.connect(
+        await rawSocket._tcpBoundSocket.connect(
             dest,
             rawSocket._pipeOut.consumer,
             rawSocket._pipeIn.producer,

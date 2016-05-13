@@ -158,24 +158,22 @@ abstract class VSyncProvider {
 }
 
 
-class _VSyncProviderProxyImpl extends bindings.Proxy {
-  _VSyncProviderProxyImpl.fromEndpoint(
+class _VSyncProviderProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _VSyncProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _VSyncProviderProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _VSyncProviderProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _VSyncProviderProxyImpl.unbound() : super.unbound();
-
-  static _VSyncProviderProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _VSyncProviderProxyImpl"));
-    return new _VSyncProviderProxyImpl.fromEndpoint(endpoint);
-  }
+  _VSyncProviderProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _VSyncProviderServiceDescription();
+      new _VSyncProviderServiceDescription();
 
+  String get serviceName => VSyncProvider.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _vSyncProviderMethodAwaitVSyncName:
@@ -205,50 +203,30 @@ class _VSyncProviderProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_VSyncProviderProxyImpl($superString)";
+    return "_VSyncProviderProxyControl($superString)";
   }
 }
 
 
-class _VSyncProviderProxyCalls implements VSyncProvider {
-  _VSyncProviderProxyImpl _proxyImpl;
-
-  _VSyncProviderProxyCalls(this._proxyImpl);
-    dynamic awaitVSync([Function responseFactory = null]) {
-      var params = new _VSyncProviderAwaitVSyncParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _vSyncProviderMethodAwaitVSyncName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class VSyncProviderProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  VSyncProvider ptr;
-
-  VSyncProviderProxy(_VSyncProviderProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _VSyncProviderProxyCalls(proxyImpl);
-
+class VSyncProviderProxy extends bindings.Proxy
+                              implements VSyncProvider {
   VSyncProviderProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _VSyncProviderProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _VSyncProviderProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _VSyncProviderProxyControl.fromEndpoint(endpoint));
 
-  VSyncProviderProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _VSyncProviderProxyImpl.fromHandle(handle) {
-    ptr = new _VSyncProviderProxyCalls(impl);
-  }
+  VSyncProviderProxy.fromHandle(core.MojoHandle handle)
+      : super(new _VSyncProviderProxyControl.fromHandle(handle));
 
-  VSyncProviderProxy.unbound() :
-      impl = new _VSyncProviderProxyImpl.unbound() {
-    ptr = new _VSyncProviderProxyCalls(impl);
+  VSyncProviderProxy.unbound()
+      : super(new _VSyncProviderProxyControl.unbound());
+
+  static VSyncProviderProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For VSyncProviderProxy"));
+    return new VSyncProviderProxy.fromEndpoint(endpoint);
   }
 
   factory VSyncProviderProxy.connectToService(
@@ -258,30 +236,14 @@ class VSyncProviderProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static VSyncProviderProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For VSyncProviderProxy"));
-    return new VSyncProviderProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => VSyncProvider.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "VSyncProviderProxy($impl)";
+  dynamic awaitVSync([Function responseFactory = null]) {
+    var params = new _VSyncProviderAwaitVSyncParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _vSyncProviderMethodAwaitVSyncName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

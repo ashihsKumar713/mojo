@@ -96,7 +96,7 @@ class EchoTracingApp extends Application {
   }
 
   Future _echo(int idx, String s) {
-    return _echoProxies[idx].ptr.echoString(s);
+    return _echoProxies[idx].echoString(s);
   }
 
   _errorHandler(Object e) {

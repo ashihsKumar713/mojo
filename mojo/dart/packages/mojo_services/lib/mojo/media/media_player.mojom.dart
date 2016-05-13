@@ -491,24 +491,22 @@ abstract class MediaPlayer {
 }
 
 
-class _MediaPlayerProxyImpl extends bindings.Proxy {
-  _MediaPlayerProxyImpl.fromEndpoint(
+class _MediaPlayerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _MediaPlayerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _MediaPlayerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _MediaPlayerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _MediaPlayerProxyImpl.unbound() : super.unbound();
-
-  static _MediaPlayerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _MediaPlayerProxyImpl"));
-    return new _MediaPlayerProxyImpl.fromEndpoint(endpoint);
-  }
+  _MediaPlayerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _MediaPlayerServiceDescription();
+      new _MediaPlayerServiceDescription();
 
+  String get serviceName => MediaPlayer.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaPlayerMethodGetStatusName:
@@ -538,76 +536,30 @@ class _MediaPlayerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_MediaPlayerProxyImpl($superString)";
+    return "_MediaPlayerProxyControl($superString)";
   }
 }
 
 
-class _MediaPlayerProxyCalls implements MediaPlayer {
-  _MediaPlayerProxyImpl _proxyImpl;
-
-  _MediaPlayerProxyCalls(this._proxyImpl);
-    void play() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaPlayerPlayParams();
-      _proxyImpl.sendMessage(params, _mediaPlayerMethodPlayName);
-    }
-    void pause() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaPlayerPauseParams();
-      _proxyImpl.sendMessage(params, _mediaPlayerMethodPauseName);
-    }
-    void seek(int position) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaPlayerSeekParams();
-      params.position = position;
-      _proxyImpl.sendMessage(params, _mediaPlayerMethodSeekName);
-    }
-    dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
-      var params = new _MediaPlayerGetStatusParams();
-      params.versionLastSeen = versionLastSeen;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaPlayerMethodGetStatusName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class MediaPlayerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  MediaPlayer ptr;
-
-  MediaPlayerProxy(_MediaPlayerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _MediaPlayerProxyCalls(proxyImpl);
-
+class MediaPlayerProxy extends bindings.Proxy
+                              implements MediaPlayer {
   MediaPlayerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _MediaPlayerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _MediaPlayerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _MediaPlayerProxyControl.fromEndpoint(endpoint));
 
-  MediaPlayerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _MediaPlayerProxyImpl.fromHandle(handle) {
-    ptr = new _MediaPlayerProxyCalls(impl);
-  }
+  MediaPlayerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _MediaPlayerProxyControl.fromHandle(handle));
 
-  MediaPlayerProxy.unbound() :
-      impl = new _MediaPlayerProxyImpl.unbound() {
-    ptr = new _MediaPlayerProxyCalls(impl);
+  MediaPlayerProxy.unbound()
+      : super(new _MediaPlayerProxyControl.unbound());
+
+  static MediaPlayerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaPlayerProxy"));
+    return new MediaPlayerProxy.fromEndpoint(endpoint);
   }
 
   factory MediaPlayerProxy.connectToService(
@@ -617,30 +569,43 @@ class MediaPlayerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static MediaPlayerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaPlayerProxy"));
-    return new MediaPlayerProxy.fromEndpoint(endpoint);
+
+  void play() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaPlayerPlayParams();
+    ctrl.sendMessage(params,
+        _mediaPlayerMethodPlayName);
   }
-
-  String get serviceName => MediaPlayer.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void pause() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaPlayerPauseParams();
+    ctrl.sendMessage(params,
+        _mediaPlayerMethodPauseName);
   }
-
-  String toString() {
-    return "MediaPlayerProxy($impl)";
+  void seek(int position) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaPlayerSeekParams();
+    params.position = position;
+    ctrl.sendMessage(params,
+        _mediaPlayerMethodSeekName);
+  }
+  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
+    var params = new _MediaPlayerGetStatusParams();
+    params.versionLastSeen = versionLastSeen;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaPlayerMethodGetStatusName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

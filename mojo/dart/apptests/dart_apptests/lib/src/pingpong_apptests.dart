@@ -37,18 +37,18 @@ pingpongApptests(Application application, String url) {
     // and sends responses to our client.
     test('Ping Service To Pong Client', () async {
       var pingPongServiceProxy = new PingPongServiceProxy.unbound();
-      pingPongServiceProxy.errorFuture.then((e) => fail('$e'));
+      pingPongServiceProxy.ctrl.errorFuture.then((e) => fail('$e'));
       application.connectToService(
           "mojo:dart_pingpong", pingPongServiceProxy);
 
       var pingPongClient = new _TestingPingPongClient.unbound();
-      pingPongServiceProxy.ptr.setClient(pingPongClient.stub);
+      pingPongServiceProxy.setClient(pingPongClient.stub);
 
-      pingPongServiceProxy.ptr.ping(1);
+      pingPongServiceProxy.ping(1);
       var pongValue = await pingPongClient.waitForPong();
       expect(pongValue, equals(2));
 
-      pingPongServiceProxy.ptr.ping(100);
+      pingPongServiceProxy.ping(100);
       pongValue = await pingPongClient.waitForPong();
       expect(pongValue, equals(101));
 
@@ -61,11 +61,11 @@ pingpongApptests(Application application, String url) {
     // target.ping() => client.pong() methods have executed 9 times.
     test('Ping Target URL', () async {
       var pingPongServiceProxy = new PingPongServiceProxy.unbound();
-      pingPongServiceProxy.errorFuture.then((e) => fail('$e'));
+      pingPongServiceProxy.ctrl.errorFuture.then((e) => fail('$e'));
       application.connectToService(
           "mojo:dart_pingpong", pingPongServiceProxy);
 
-      var r = await pingPongServiceProxy.ptr.pingTargetUrl(
+      var r = await pingPongServiceProxy.pingTargetUrl(
           "mojo:dart_pingpong_target", 9);
       expect(r.ok, equals(true));
 
@@ -76,21 +76,21 @@ pingpongApptests(Application application, String url) {
     // pingpong_target.dart URL, we provide a connection to its PingPongService.
     test('Ping Target Service', () async {
       var pingPongServiceProxy = new PingPongServiceProxy.unbound();
-      pingPongServiceProxy.errorFuture.then((e) => fail('$e'));
+      pingPongServiceProxy.ctrl.errorFuture.then((e) => fail('$e'));
       application.connectToService(
           "mojo:dart_pingpong", pingPongServiceProxy);
 
       var targetServiceProxy = new PingPongServiceProxy.unbound();
-      targetServiceProxy.errorFuture.then((e) => fail('$e'));
+      targetServiceProxy.ctrl.errorFuture.then((e) => fail('$e'));
       application.connectToService(
           "mojo:dart_pingpong_target", targetServiceProxy);
 
-      var r = await pingPongServiceProxy.ptr.pingTargetService(
-          targetServiceProxy.impl, 9);
+      var r = await pingPongServiceProxy.pingTargetService(
+          targetServiceProxy, 9);
       expect(r.ok, equals(true));
       // This side no longer has access to the pipe.
-      expect(targetServiceProxy.impl.isOpen, equals(false));
-      expect(targetServiceProxy.impl.isBound, equals(false));
+      expect(targetServiceProxy.ctrl.isOpen, equals(false));
+      expect(targetServiceProxy.ctrl.isBound, equals(false));
 
       await pingPongServiceProxy.close();
     });
@@ -98,22 +98,22 @@ pingpongApptests(Application application, String url) {
     // Verify that Dart can implement an interface "request" parameter.
     test('Get Target Service', () async {
       var pingPongServiceProxy = new PingPongServiceProxy.unbound();
-      pingPongServiceProxy.errorFuture.then((e) => fail('$e'));
+      pingPongServiceProxy.ctrl.errorFuture.then((e) => fail('$e'));
       application.connectToService(
           "mojo:dart_pingpong", pingPongServiceProxy);
 
       var targetServiceProxy = new PingPongServiceProxy.unbound();
-      targetServiceProxy.errorFuture.then((e) => fail('$e'));
-      pingPongServiceProxy.ptr.getPingPongService(targetServiceProxy);
+      targetServiceProxy.ctrl.errorFuture.then((e) => fail('$e'));
+      pingPongServiceProxy.getPingPongService(targetServiceProxy);
 
       var pingPongClient = new _TestingPingPongClient.unbound();
-      targetServiceProxy.ptr.setClient(pingPongClient.stub);
+      targetServiceProxy.setClient(pingPongClient.stub);
 
-      targetServiceProxy.ptr.ping(1);
+      targetServiceProxy.ping(1);
       var pongValue = await pingPongClient.waitForPong();
       expect(pongValue, equals(2));
 
-      targetServiceProxy.ptr.ping(100);
+      targetServiceProxy.ping(100);
       pongValue = await pingPongClient.waitForPong();
       expect(pongValue, equals(101));
 
@@ -127,22 +127,22 @@ pingpongApptests(Application application, String url) {
     // delay.
     test('Get Target Service Delayed', () async {
       var pingPongServiceProxy = new PingPongServiceProxy.unbound();
-      pingPongServiceProxy.errorFuture.then((e) => fail('$e'));
+      pingPongServiceProxy.ctrl.errorFuture.then((e) => fail('$e'));
       application.connectToService(
           "mojo:dart_pingpong", pingPongServiceProxy);
 
       var targetServiceProxy = new PingPongServiceProxy.unbound();
-      targetServiceProxy.errorFuture.then((e) => fail('$e'));
-      pingPongServiceProxy.ptr.getPingPongServiceDelayed(targetServiceProxy);
+      targetServiceProxy.ctrl.errorFuture.then((e) => fail('$e'));
+      pingPongServiceProxy.getPingPongServiceDelayed(targetServiceProxy);
 
       var pingPongClient = new _TestingPingPongClient.unbound();
-      targetServiceProxy.ptr.setClient(pingPongClient.stub);
+      targetServiceProxy.setClient(pingPongClient.stub);
 
-      targetServiceProxy.ptr.ping(1);
+      targetServiceProxy.ping(1);
       var pongValue = await pingPongClient.waitForPong();
       expect(pongValue, equals(2));
 
-      targetServiceProxy.ptr.ping(100);
+      targetServiceProxy.ping(100);
       pongValue = await pingPongClient.waitForPong();
       expect(pongValue, equals(101));
 

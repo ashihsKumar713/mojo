@@ -180,24 +180,22 @@ abstract class Echo {
 }
 
 
-class _EchoProxyImpl extends bindings.Proxy {
-  _EchoProxyImpl.fromEndpoint(
+class _EchoProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _EchoProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _EchoProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _EchoProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _EchoProxyImpl.unbound() : super.unbound();
-
-  static _EchoProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _EchoProxyImpl"));
-    return new _EchoProxyImpl.fromEndpoint(endpoint);
-  }
+  _EchoProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _EchoServiceDescription();
+      new _EchoServiceDescription();
 
+  String get serviceName => Echo.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _echoMethodEchoStringName:
@@ -227,51 +225,30 @@ class _EchoProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_EchoProxyImpl($superString)";
+    return "_EchoProxyControl($superString)";
   }
 }
 
 
-class _EchoProxyCalls implements Echo {
-  _EchoProxyImpl _proxyImpl;
-
-  _EchoProxyCalls(this._proxyImpl);
-    dynamic echoString(String value,[Function responseFactory = null]) {
-      var params = new _EchoEchoStringParams();
-      params.value = value;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _echoMethodEchoStringName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class EchoProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Echo ptr;
-
-  EchoProxy(_EchoProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _EchoProxyCalls(proxyImpl);
-
+class EchoProxy extends bindings.Proxy
+                              implements Echo {
   EchoProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _EchoProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _EchoProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _EchoProxyControl.fromEndpoint(endpoint));
 
-  EchoProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _EchoProxyImpl.fromHandle(handle) {
-    ptr = new _EchoProxyCalls(impl);
-  }
+  EchoProxy.fromHandle(core.MojoHandle handle)
+      : super(new _EchoProxyControl.fromHandle(handle));
 
-  EchoProxy.unbound() :
-      impl = new _EchoProxyImpl.unbound() {
-    ptr = new _EchoProxyCalls(impl);
+  EchoProxy.unbound()
+      : super(new _EchoProxyControl.unbound());
+
+  static EchoProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For EchoProxy"));
+    return new EchoProxy.fromEndpoint(endpoint);
   }
 
   factory EchoProxy.connectToService(
@@ -281,30 +258,15 @@ class EchoProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static EchoProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For EchoProxy"));
-    return new EchoProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => Echo.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "EchoProxy($impl)";
+  dynamic echoString(String value,[Function responseFactory = null]) {
+    var params = new _EchoEchoStringParams();
+    params.value = value;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _echoMethodEchoStringName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -426,7 +388,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/5JggAABKN0BpdHFLZD4jEDMAeXLALEIEOfmZ+VbWaVWJOYW5KQWW1m5JmfkY1OvDMTSQBwSGeAa7+0aaQXSqAfTpwfThmG/Aw77STGPEaqfGUm/BpRWgNIejBA6AUozoNkPC4cZUHoBlP4PBRsYsAN0dytgCWd2JHFhIOYG4uDUorLM5FS/xNxUosKbB4hZgBjGlwJiIah6LMGCEc6cQMwFxJZAbAjE+hn5uan6RaUp+bmZealF+iBz9IuLkvVhZumnAs0CE3oguVwi0wW6vTA+DzSccIUbenydgNFM2OMLBgzQ+KC4wiYOA0LQcAC5N7ikKDMvHXt4gdQwUSG80NMD3F+MxPsHBCxw+AeWDhD+0S1KLSxNLS7B7i8YoNRf6PHngKM8ucBAHCA2XjVw6OcFYlYgLkvMKU3FEZ+iVPI3A1JaRg8HCSQ3MSKpp3U6kIaWLSjpoLggP684dTQdoKUDjQFMB4AAAAD//1YHjLGYBwAA";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/5JggAABKN0BpdHFLZD4jEDMAeXLALEIEOfmZ+VbWaVWJOYW5KQWW1m5JmfkY1OvDMTSQBwSGeAa7+0aaQXSqAfTpwfThmG/Aw77STGPEaqfGUm/BpRWgNIBjBA6A0ozoNkPC4cZUHoBlP4PBRsYsAN0dytgCWd2JHFhIOYG4uDUorLM5FS/xNxUosKbB4hZgBjGlwJiIah6LMGCEc6cQMwFxC5AbAPE+qXFRfo5+cmJOfrp+fnpOan6Gfm5qfpVRYn6ICP1i4uS9WHG6qcCjQUTeiC5XGLci24/jM8DDS9c4Ycebxeg9AMm7PEGAwZofFCcYROHASFoeIDcG1xSlJmXjj3cQGqYqBhu6OkD5r8bjMT7CwQscPgLli4Q/tItSi0sTS0uwe4/GKCW/9Dj0wFHOXODgThAbDxr4NDPC8SsQFyWmFOaiiN+RansfwakNI4eHhJIbmNEUk/rdCENLXtQ0kVxQX5ecepousCRLjQGQboABAAA///YBJ9/yAcAAA==";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

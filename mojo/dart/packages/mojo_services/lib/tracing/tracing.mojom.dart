@@ -386,24 +386,22 @@ abstract class TraceProvider {
 }
 
 
-class _TraceProviderProxyImpl extends bindings.Proxy {
-  _TraceProviderProxyImpl.fromEndpoint(
+class _TraceProviderProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _TraceProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _TraceProviderProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _TraceProviderProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _TraceProviderProxyImpl.unbound() : super.unbound();
-
-  static _TraceProviderProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _TraceProviderProxyImpl"));
-    return new _TraceProviderProxyImpl.fromEndpoint(endpoint);
-  }
+  _TraceProviderProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _TraceProviderServiceDescription();
+      new _TraceProviderServiceDescription();
 
+  String get serviceName => TraceProvider.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -413,60 +411,30 @@ class _TraceProviderProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_TraceProviderProxyImpl($superString)";
+    return "_TraceProviderProxyControl($superString)";
   }
 }
 
 
-class _TraceProviderProxyCalls implements TraceProvider {
-  _TraceProviderProxyImpl _proxyImpl;
-
-  _TraceProviderProxyCalls(this._proxyImpl);
-    void startTracing(String categories, Object recorder) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _TraceProviderStartTracingParams();
-      params.categories = categories;
-      params.recorder = recorder;
-      _proxyImpl.sendMessage(params, _traceProviderMethodStartTracingName);
-    }
-    void stopTracing() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _TraceProviderStopTracingParams();
-      _proxyImpl.sendMessage(params, _traceProviderMethodStopTracingName);
-    }
-}
-
-
-class TraceProviderProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  TraceProvider ptr;
-
-  TraceProviderProxy(_TraceProviderProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _TraceProviderProxyCalls(proxyImpl);
-
+class TraceProviderProxy extends bindings.Proxy
+                              implements TraceProvider {
   TraceProviderProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _TraceProviderProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _TraceProviderProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _TraceProviderProxyControl.fromEndpoint(endpoint));
 
-  TraceProviderProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _TraceProviderProxyImpl.fromHandle(handle) {
-    ptr = new _TraceProviderProxyCalls(impl);
-  }
+  TraceProviderProxy.fromHandle(core.MojoHandle handle)
+      : super(new _TraceProviderProxyControl.fromHandle(handle));
 
-  TraceProviderProxy.unbound() :
-      impl = new _TraceProviderProxyImpl.unbound() {
-    ptr = new _TraceProviderProxyCalls(impl);
+  TraceProviderProxy.unbound()
+      : super(new _TraceProviderProxyControl.unbound());
+
+  static TraceProviderProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TraceProviderProxy"));
+    return new TraceProviderProxy.fromEndpoint(endpoint);
   }
 
   factory TraceProviderProxy.connectToService(
@@ -476,30 +444,26 @@ class TraceProviderProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static TraceProviderProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TraceProviderProxy"));
-    return new TraceProviderProxy.fromEndpoint(endpoint);
+
+  void startTracing(String categories, Object recorder) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _TraceProviderStartTracingParams();
+    params.categories = categories;
+    params.recorder = recorder;
+    ctrl.sendMessage(params,
+        _traceProviderMethodStartTracingName);
   }
-
-  String get serviceName => TraceProvider.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "TraceProviderProxy($impl)";
+  void stopTracing() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _TraceProviderStopTracingParams();
+    ctrl.sendMessage(params,
+        _traceProviderMethodStopTracingName);
   }
 }
 
@@ -608,24 +572,22 @@ abstract class TraceRecorder {
 }
 
 
-class _TraceRecorderProxyImpl extends bindings.Proxy {
-  _TraceRecorderProxyImpl.fromEndpoint(
+class _TraceRecorderProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _TraceRecorderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _TraceRecorderProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _TraceRecorderProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _TraceRecorderProxyImpl.unbound() : super.unbound();
-
-  static _TraceRecorderProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _TraceRecorderProxyImpl"));
-    return new _TraceRecorderProxyImpl.fromEndpoint(endpoint);
-  }
+  _TraceRecorderProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _TraceRecorderServiceDescription();
+      new _TraceRecorderServiceDescription();
 
+  String get serviceName => TraceRecorder.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -635,51 +597,30 @@ class _TraceRecorderProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_TraceRecorderProxyImpl($superString)";
+    return "_TraceRecorderProxyControl($superString)";
   }
 }
 
 
-class _TraceRecorderProxyCalls implements TraceRecorder {
-  _TraceRecorderProxyImpl _proxyImpl;
-
-  _TraceRecorderProxyCalls(this._proxyImpl);
-    void record(String json) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _TraceRecorderRecordParams();
-      params.json = json;
-      _proxyImpl.sendMessage(params, _traceRecorderMethodRecordName);
-    }
-}
-
-
-class TraceRecorderProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  TraceRecorder ptr;
-
-  TraceRecorderProxy(_TraceRecorderProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _TraceRecorderProxyCalls(proxyImpl);
-
+class TraceRecorderProxy extends bindings.Proxy
+                              implements TraceRecorder {
   TraceRecorderProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _TraceRecorderProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _TraceRecorderProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _TraceRecorderProxyControl.fromEndpoint(endpoint));
 
-  TraceRecorderProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _TraceRecorderProxyImpl.fromHandle(handle) {
-    ptr = new _TraceRecorderProxyCalls(impl);
-  }
+  TraceRecorderProxy.fromHandle(core.MojoHandle handle)
+      : super(new _TraceRecorderProxyControl.fromHandle(handle));
 
-  TraceRecorderProxy.unbound() :
-      impl = new _TraceRecorderProxyImpl.unbound() {
-    ptr = new _TraceRecorderProxyCalls(impl);
+  TraceRecorderProxy.unbound()
+      : super(new _TraceRecorderProxyControl.unbound());
+
+  static TraceRecorderProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TraceRecorderProxy"));
+    return new TraceRecorderProxy.fromEndpoint(endpoint);
   }
 
   factory TraceRecorderProxy.connectToService(
@@ -689,30 +630,16 @@ class TraceRecorderProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static TraceRecorderProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TraceRecorderProxy"));
-    return new TraceRecorderProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => TraceRecorder.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "TraceRecorderProxy($impl)";
+  void record(String json) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _TraceRecorderRecordParams();
+    params.json = json;
+    ctrl.sendMessage(params,
+        _traceRecorderMethodRecordName);
   }
 }
 
@@ -820,24 +747,22 @@ abstract class TraceCollector {
 }
 
 
-class _TraceCollectorProxyImpl extends bindings.Proxy {
-  _TraceCollectorProxyImpl.fromEndpoint(
+class _TraceCollectorProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _TraceCollectorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _TraceCollectorProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _TraceCollectorProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _TraceCollectorProxyImpl.unbound() : super.unbound();
-
-  static _TraceCollectorProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _TraceCollectorProxyImpl"));
-    return new _TraceCollectorProxyImpl.fromEndpoint(endpoint);
-  }
+  _TraceCollectorProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _TraceCollectorServiceDescription();
+      new _TraceCollectorServiceDescription();
 
+  String get serviceName => TraceCollector.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -847,60 +772,30 @@ class _TraceCollectorProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_TraceCollectorProxyImpl($superString)";
+    return "_TraceCollectorProxyControl($superString)";
   }
 }
 
 
-class _TraceCollectorProxyCalls implements TraceCollector {
-  _TraceCollectorProxyImpl _proxyImpl;
-
-  _TraceCollectorProxyCalls(this._proxyImpl);
-    void start(core.MojoDataPipeProducer stream, String categories) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _TraceCollectorStartParams();
-      params.stream = stream;
-      params.categories = categories;
-      _proxyImpl.sendMessage(params, _traceCollectorMethodStartName);
-    }
-    void stopAndFlush() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _TraceCollectorStopAndFlushParams();
-      _proxyImpl.sendMessage(params, _traceCollectorMethodStopAndFlushName);
-    }
-}
-
-
-class TraceCollectorProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  TraceCollector ptr;
-
-  TraceCollectorProxy(_TraceCollectorProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _TraceCollectorProxyCalls(proxyImpl);
-
+class TraceCollectorProxy extends bindings.Proxy
+                              implements TraceCollector {
   TraceCollectorProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _TraceCollectorProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _TraceCollectorProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _TraceCollectorProxyControl.fromEndpoint(endpoint));
 
-  TraceCollectorProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _TraceCollectorProxyImpl.fromHandle(handle) {
-    ptr = new _TraceCollectorProxyCalls(impl);
-  }
+  TraceCollectorProxy.fromHandle(core.MojoHandle handle)
+      : super(new _TraceCollectorProxyControl.fromHandle(handle));
 
-  TraceCollectorProxy.unbound() :
-      impl = new _TraceCollectorProxyImpl.unbound() {
-    ptr = new _TraceCollectorProxyCalls(impl);
+  TraceCollectorProxy.unbound()
+      : super(new _TraceCollectorProxyControl.unbound());
+
+  static TraceCollectorProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TraceCollectorProxy"));
+    return new TraceCollectorProxy.fromEndpoint(endpoint);
   }
 
   factory TraceCollectorProxy.connectToService(
@@ -910,30 +805,26 @@ class TraceCollectorProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static TraceCollectorProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TraceCollectorProxy"));
-    return new TraceCollectorProxy.fromEndpoint(endpoint);
+
+  void start(core.MojoDataPipeProducer stream, String categories) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _TraceCollectorStartParams();
+    params.stream = stream;
+    params.categories = categories;
+    ctrl.sendMessage(params,
+        _traceCollectorMethodStartName);
   }
-
-  String get serviceName => TraceCollector.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "TraceCollectorProxy($impl)";
+  void stopAndFlush() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _TraceCollectorStopAndFlushParams();
+    ctrl.sendMessage(params,
+        _traceCollectorMethodStopAndFlushName);
   }
 }
 

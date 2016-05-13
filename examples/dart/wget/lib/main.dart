@@ -47,7 +47,7 @@ class WGet extends Application {
       ..url = url
       ..autoFollowRedirects = true;
 
-    var urlResponse = await _urlLoader.ptr.start(urlRequest);
+    var urlResponse = await _urlLoader.start(urlRequest);
     print(">>> Headers <<<");
     print(urlResponse.response.headers.join('\n'));
 
@@ -61,7 +61,7 @@ class WGet extends Application {
     }
     if (_urlLoader == null) {
       _urlLoader = new UrlLoaderProxy.unbound();
-      _networkService.ptr.createUrlLoader(_urlLoader);
+      _networkService.createUrlLoader(_urlLoader);
     }
   }
 

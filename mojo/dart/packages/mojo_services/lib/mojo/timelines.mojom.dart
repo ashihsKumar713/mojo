@@ -343,24 +343,22 @@ abstract class TimelineConsumer {
 }
 
 
-class _TimelineConsumerProxyImpl extends bindings.Proxy {
-  _TimelineConsumerProxyImpl.fromEndpoint(
+class _TimelineConsumerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _TimelineConsumerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _TimelineConsumerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _TimelineConsumerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _TimelineConsumerProxyImpl.unbound() : super.unbound();
-
-  static _TimelineConsumerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _TimelineConsumerProxyImpl"));
-    return new _TimelineConsumerProxyImpl.fromEndpoint(endpoint);
-  }
+  _TimelineConsumerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _TimelineConsumerServiceDescription();
+      new _TimelineConsumerServiceDescription();
 
+  String get serviceName => TimelineConsumer.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _timelineConsumerMethodSetTimelineTransformName:
@@ -390,55 +388,30 @@ class _TimelineConsumerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_TimelineConsumerProxyImpl($superString)";
+    return "_TimelineConsumerProxyControl($superString)";
   }
 }
 
 
-class _TimelineConsumerProxyCalls implements TimelineConsumer {
-  _TimelineConsumerProxyImpl _proxyImpl;
-
-  _TimelineConsumerProxyCalls(this._proxyImpl);
-    dynamic setTimelineTransform(int subjectTime,int referenceDelta,int subjectDelta,int effectiveReferenceTime,int effectiveSubjectTime,[Function responseFactory = null]) {
-      var params = new _TimelineConsumerSetTimelineTransformParams();
-      params.subjectTime = subjectTime;
-      params.referenceDelta = referenceDelta;
-      params.subjectDelta = subjectDelta;
-      params.effectiveReferenceTime = effectiveReferenceTime;
-      params.effectiveSubjectTime = effectiveSubjectTime;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _timelineConsumerMethodSetTimelineTransformName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class TimelineConsumerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  TimelineConsumer ptr;
-
-  TimelineConsumerProxy(_TimelineConsumerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _TimelineConsumerProxyCalls(proxyImpl);
-
+class TimelineConsumerProxy extends bindings.Proxy
+                              implements TimelineConsumer {
   TimelineConsumerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _TimelineConsumerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _TimelineConsumerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _TimelineConsumerProxyControl.fromEndpoint(endpoint));
 
-  TimelineConsumerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _TimelineConsumerProxyImpl.fromHandle(handle) {
-    ptr = new _TimelineConsumerProxyCalls(impl);
-  }
+  TimelineConsumerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _TimelineConsumerProxyControl.fromHandle(handle));
 
-  TimelineConsumerProxy.unbound() :
-      impl = new _TimelineConsumerProxyImpl.unbound() {
-    ptr = new _TimelineConsumerProxyCalls(impl);
+  TimelineConsumerProxy.unbound()
+      : super(new _TimelineConsumerProxyControl.unbound());
+
+  static TimelineConsumerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TimelineConsumerProxy"));
+    return new TimelineConsumerProxy.fromEndpoint(endpoint);
   }
 
   factory TimelineConsumerProxy.connectToService(
@@ -448,30 +421,19 @@ class TimelineConsumerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static TimelineConsumerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TimelineConsumerProxy"));
-    return new TimelineConsumerProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => TimelineConsumer.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "TimelineConsumerProxy($impl)";
+  dynamic setTimelineTransform(int subjectTime,int referenceDelta,int subjectDelta,int effectiveReferenceTime,int effectiveSubjectTime,[Function responseFactory = null]) {
+    var params = new _TimelineConsumerSetTimelineTransformParams();
+    params.subjectTime = subjectTime;
+    params.referenceDelta = referenceDelta;
+    params.subjectDelta = subjectDelta;
+    params.effectiveReferenceTime = effectiveReferenceTime;
+    params.effectiveSubjectTime = effectiveSubjectTime;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _timelineConsumerMethodSetTimelineTransformName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

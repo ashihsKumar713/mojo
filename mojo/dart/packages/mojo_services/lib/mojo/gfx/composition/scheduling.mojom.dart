@@ -273,24 +273,22 @@ abstract class SceneScheduler {
 }
 
 
-class _SceneSchedulerProxyImpl extends bindings.Proxy {
-  _SceneSchedulerProxyImpl.fromEndpoint(
+class _SceneSchedulerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _SceneSchedulerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _SceneSchedulerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _SceneSchedulerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _SceneSchedulerProxyImpl.unbound() : super.unbound();
-
-  static _SceneSchedulerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _SceneSchedulerProxyImpl"));
-    return new _SceneSchedulerProxyImpl.fromEndpoint(endpoint);
-  }
+  _SceneSchedulerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _SceneSchedulerServiceDescription();
+      new _SceneSchedulerServiceDescription();
 
+  String get serviceName => SceneScheduler.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _sceneSchedulerMethodScheduleFrameName:
@@ -320,50 +318,30 @@ class _SceneSchedulerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_SceneSchedulerProxyImpl($superString)";
+    return "_SceneSchedulerProxyControl($superString)";
   }
 }
 
 
-class _SceneSchedulerProxyCalls implements SceneScheduler {
-  _SceneSchedulerProxyImpl _proxyImpl;
-
-  _SceneSchedulerProxyCalls(this._proxyImpl);
-    dynamic scheduleFrame([Function responseFactory = null]) {
-      var params = new _SceneSchedulerScheduleFrameParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _sceneSchedulerMethodScheduleFrameName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class SceneSchedulerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  SceneScheduler ptr;
-
-  SceneSchedulerProxy(_SceneSchedulerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _SceneSchedulerProxyCalls(proxyImpl);
-
+class SceneSchedulerProxy extends bindings.Proxy
+                              implements SceneScheduler {
   SceneSchedulerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _SceneSchedulerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _SceneSchedulerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _SceneSchedulerProxyControl.fromEndpoint(endpoint));
 
-  SceneSchedulerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _SceneSchedulerProxyImpl.fromHandle(handle) {
-    ptr = new _SceneSchedulerProxyCalls(impl);
-  }
+  SceneSchedulerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _SceneSchedulerProxyControl.fromHandle(handle));
 
-  SceneSchedulerProxy.unbound() :
-      impl = new _SceneSchedulerProxyImpl.unbound() {
-    ptr = new _SceneSchedulerProxyCalls(impl);
+  SceneSchedulerProxy.unbound()
+      : super(new _SceneSchedulerProxyControl.unbound());
+
+  static SceneSchedulerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SceneSchedulerProxy"));
+    return new SceneSchedulerProxy.fromEndpoint(endpoint);
   }
 
   factory SceneSchedulerProxy.connectToService(
@@ -373,30 +351,14 @@ class SceneSchedulerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static SceneSchedulerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SceneSchedulerProxy"));
-    return new SceneSchedulerProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => SceneScheduler.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "SceneSchedulerProxy($impl)";
+  dynamic scheduleFrame([Function responseFactory = null]) {
+    var params = new _SceneSchedulerScheduleFrameParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _sceneSchedulerMethodScheduleFrameName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

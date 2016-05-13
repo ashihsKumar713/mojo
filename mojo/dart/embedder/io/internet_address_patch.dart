@@ -199,7 +199,7 @@ class _MojoInternetAddress {
   static Future _lookup(String host, InternetAddressType type) async {
     HostResolverProxy hostResolver = _getHostResolver();
     var family = _internetAddressTypeToAddressFamily(type);
-    var response = await hostResolver.ptr.getHostAddresses(host, family);
+    var response = await hostResolver.getHostAddresses(host, family);
     _NetworkService._throwOnError(response.result);
     var numAddresses = response.addresses.length;
     var r = new List(numAddresses);

@@ -255,24 +255,22 @@ abstract class AssetBundle {
 }
 
 
-class _AssetBundleProxyImpl extends bindings.Proxy {
-  _AssetBundleProxyImpl.fromEndpoint(
+class _AssetBundleProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _AssetBundleProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _AssetBundleProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _AssetBundleProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _AssetBundleProxyImpl.unbound() : super.unbound();
-
-  static _AssetBundleProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _AssetBundleProxyImpl"));
-    return new _AssetBundleProxyImpl.fromEndpoint(endpoint);
-  }
+  _AssetBundleProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _AssetBundleServiceDescription();
+      new _AssetBundleServiceDescription();
 
+  String get serviceName => AssetBundle.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _assetBundleMethodGetAsStreamName:
@@ -302,51 +300,30 @@ class _AssetBundleProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_AssetBundleProxyImpl($superString)";
+    return "_AssetBundleProxyControl($superString)";
   }
 }
 
 
-class _AssetBundleProxyCalls implements AssetBundle {
-  _AssetBundleProxyImpl _proxyImpl;
-
-  _AssetBundleProxyCalls(this._proxyImpl);
-    dynamic getAsStream(String assetName,[Function responseFactory = null]) {
-      var params = new _AssetBundleGetAsStreamParams();
-      params.assetName = assetName;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _assetBundleMethodGetAsStreamName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class AssetBundleProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  AssetBundle ptr;
-
-  AssetBundleProxy(_AssetBundleProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _AssetBundleProxyCalls(proxyImpl);
-
+class AssetBundleProxy extends bindings.Proxy
+                              implements AssetBundle {
   AssetBundleProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _AssetBundleProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _AssetBundleProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _AssetBundleProxyControl.fromEndpoint(endpoint));
 
-  AssetBundleProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _AssetBundleProxyImpl.fromHandle(handle) {
-    ptr = new _AssetBundleProxyCalls(impl);
-  }
+  AssetBundleProxy.fromHandle(core.MojoHandle handle)
+      : super(new _AssetBundleProxyControl.fromHandle(handle));
 
-  AssetBundleProxy.unbound() :
-      impl = new _AssetBundleProxyImpl.unbound() {
-    ptr = new _AssetBundleProxyCalls(impl);
+  AssetBundleProxy.unbound()
+      : super(new _AssetBundleProxyControl.unbound());
+
+  static AssetBundleProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For AssetBundleProxy"));
+    return new AssetBundleProxy.fromEndpoint(endpoint);
   }
 
   factory AssetBundleProxy.connectToService(
@@ -356,30 +333,15 @@ class AssetBundleProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static AssetBundleProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For AssetBundleProxy"));
-    return new AssetBundleProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => AssetBundle.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "AssetBundleProxy($impl)";
+  dynamic getAsStream(String assetName,[Function responseFactory = null]) {
+    var params = new _AssetBundleGetAsStreamParams();
+    params.assetName = assetName;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _assetBundleMethodGetAsStreamName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -507,24 +469,22 @@ abstract class AssetUnpacker {
 }
 
 
-class _AssetUnpackerProxyImpl extends bindings.Proxy {
-  _AssetUnpackerProxyImpl.fromEndpoint(
+class _AssetUnpackerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _AssetUnpackerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _AssetUnpackerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _AssetUnpackerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _AssetUnpackerProxyImpl.unbound() : super.unbound();
-
-  static _AssetUnpackerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _AssetUnpackerProxyImpl"));
-    return new _AssetUnpackerProxyImpl.fromEndpoint(endpoint);
-  }
+  _AssetUnpackerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _AssetUnpackerServiceDescription();
+      new _AssetUnpackerServiceDescription();
 
+  String get serviceName => AssetUnpacker.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -534,52 +494,30 @@ class _AssetUnpackerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_AssetUnpackerProxyImpl($superString)";
+    return "_AssetUnpackerProxyControl($superString)";
   }
 }
 
 
-class _AssetUnpackerProxyCalls implements AssetUnpacker {
-  _AssetUnpackerProxyImpl _proxyImpl;
-
-  _AssetUnpackerProxyCalls(this._proxyImpl);
-    void unpackZipStream(core.MojoDataPipeConsumer zippedAssets, Object assetBundle) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _AssetUnpackerUnpackZipStreamParams();
-      params.zippedAssets = zippedAssets;
-      params.assetBundle = assetBundle;
-      _proxyImpl.sendMessage(params, _assetUnpackerMethodUnpackZipStreamName);
-    }
-}
-
-
-class AssetUnpackerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  AssetUnpacker ptr;
-
-  AssetUnpackerProxy(_AssetUnpackerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _AssetUnpackerProxyCalls(proxyImpl);
-
+class AssetUnpackerProxy extends bindings.Proxy
+                              implements AssetUnpacker {
   AssetUnpackerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _AssetUnpackerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _AssetUnpackerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _AssetUnpackerProxyControl.fromEndpoint(endpoint));
 
-  AssetUnpackerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _AssetUnpackerProxyImpl.fromHandle(handle) {
-    ptr = new _AssetUnpackerProxyCalls(impl);
-  }
+  AssetUnpackerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _AssetUnpackerProxyControl.fromHandle(handle));
 
-  AssetUnpackerProxy.unbound() :
-      impl = new _AssetUnpackerProxyImpl.unbound() {
-    ptr = new _AssetUnpackerProxyCalls(impl);
+  AssetUnpackerProxy.unbound()
+      : super(new _AssetUnpackerProxyControl.unbound());
+
+  static AssetUnpackerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For AssetUnpackerProxy"));
+    return new AssetUnpackerProxy.fromEndpoint(endpoint);
   }
 
   factory AssetUnpackerProxy.connectToService(
@@ -589,30 +527,17 @@ class AssetUnpackerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static AssetUnpackerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For AssetUnpackerProxy"));
-    return new AssetUnpackerProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => AssetUnpacker.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "AssetUnpackerProxy($impl)";
+  void unpackZipStream(core.MojoDataPipeConsumer zippedAssets, Object assetBundle) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _AssetUnpackerUnpackZipStreamParams();
+    params.zippedAssets = zippedAssets;
+    params.assetBundle = assetBundle;
+    ctrl.sendMessage(params,
+        _assetUnpackerMethodUnpackZipStreamName);
   }
 }
 

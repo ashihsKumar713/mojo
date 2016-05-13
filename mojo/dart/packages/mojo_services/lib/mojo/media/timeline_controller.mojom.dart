@@ -941,24 +941,22 @@ abstract class MediaTimelineController {
 }
 
 
-class _MediaTimelineControllerProxyImpl extends bindings.Proxy {
-  _MediaTimelineControllerProxyImpl.fromEndpoint(
+class _MediaTimelineControllerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _MediaTimelineControllerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _MediaTimelineControllerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _MediaTimelineControllerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _MediaTimelineControllerProxyImpl.unbound() : super.unbound();
-
-  static _MediaTimelineControllerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _MediaTimelineControllerProxyImpl"));
-    return new _MediaTimelineControllerProxyImpl.fromEndpoint(endpoint);
-  }
+  _MediaTimelineControllerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _MediaTimelineControllerServiceDescription();
+      new _MediaTimelineControllerServiceDescription();
 
+  String get serviceName => MediaTimelineController.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaTimelineControllerMethodGetStatusName:
@@ -1008,82 +1006,30 @@ class _MediaTimelineControllerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_MediaTimelineControllerProxyImpl($superString)";
+    return "_MediaTimelineControllerProxyControl($superString)";
   }
 }
 
 
-class _MediaTimelineControllerProxyCalls implements MediaTimelineController {
-  _MediaTimelineControllerProxyImpl _proxyImpl;
-
-  _MediaTimelineControllerProxyCalls(this._proxyImpl);
-    void addControlSite(Object controlSite) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaTimelineControllerAddControlSiteParams();
-      params.controlSite = controlSite;
-      _proxyImpl.sendMessage(params, _mediaTimelineControllerMethodAddControlSiteName);
-    }
-    dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
-      var params = new _MediaTimelineControllerGetStatusParams();
-      params.versionLastSeen = versionLastSeen;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaTimelineControllerMethodGetStatusName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic setTimelineTransform(int subjectTime,int subjectDelta,int referenceDelta,int effectiveSubjectTime,int effectiveReferenceTime,[Function responseFactory = null]) {
-      var params = new _MediaTimelineControllerSetTimelineTransformParams();
-      params.subjectTime = subjectTime;
-      params.subjectDelta = subjectDelta;
-      params.referenceDelta = referenceDelta;
-      params.effectiveSubjectTime = effectiveSubjectTime;
-      params.effectiveReferenceTime = effectiveReferenceTime;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaTimelineControllerMethodSetTimelineTransformName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void getControlSite(Object controlSite) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaTimelineControllerGetControlSiteParams();
-      params.controlSite = controlSite;
-      _proxyImpl.sendMessage(params, _mediaTimelineControllerMethodGetControlSiteName);
-    }
-}
-
-
-class MediaTimelineControllerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  MediaTimelineController ptr;
-
-  MediaTimelineControllerProxy(_MediaTimelineControllerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _MediaTimelineControllerProxyCalls(proxyImpl);
-
+class MediaTimelineControllerProxy extends bindings.Proxy
+                              implements MediaTimelineController {
   MediaTimelineControllerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _MediaTimelineControllerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _MediaTimelineControllerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _MediaTimelineControllerProxyControl.fromEndpoint(endpoint));
 
-  MediaTimelineControllerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _MediaTimelineControllerProxyImpl.fromHandle(handle) {
-    ptr = new _MediaTimelineControllerProxyCalls(impl);
-  }
+  MediaTimelineControllerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _MediaTimelineControllerProxyControl.fromHandle(handle));
 
-  MediaTimelineControllerProxy.unbound() :
-      impl = new _MediaTimelineControllerProxyImpl.unbound() {
-    ptr = new _MediaTimelineControllerProxyCalls(impl);
+  MediaTimelineControllerProxy.unbound()
+      : super(new _MediaTimelineControllerProxyControl.unbound());
+
+  static MediaTimelineControllerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaTimelineControllerProxy"));
+    return new MediaTimelineControllerProxy.fromEndpoint(endpoint);
   }
 
   factory MediaTimelineControllerProxy.connectToService(
@@ -1093,30 +1039,48 @@ class MediaTimelineControllerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static MediaTimelineControllerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaTimelineControllerProxy"));
-    return new MediaTimelineControllerProxy.fromEndpoint(endpoint);
+
+  void addControlSite(Object controlSite) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaTimelineControllerAddControlSiteParams();
+    params.controlSite = controlSite;
+    ctrl.sendMessage(params,
+        _mediaTimelineControllerMethodAddControlSiteName);
   }
-
-  String get serviceName => MediaTimelineController.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
+    var params = new _MediaTimelineControllerGetStatusParams();
+    params.versionLastSeen = versionLastSeen;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaTimelineControllerMethodGetStatusName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "MediaTimelineControllerProxy($impl)";
+  dynamic setTimelineTransform(int subjectTime,int subjectDelta,int referenceDelta,int effectiveSubjectTime,int effectiveReferenceTime,[Function responseFactory = null]) {
+    var params = new _MediaTimelineControllerSetTimelineTransformParams();
+    params.subjectTime = subjectTime;
+    params.subjectDelta = subjectDelta;
+    params.referenceDelta = referenceDelta;
+    params.effectiveSubjectTime = effectiveSubjectTime;
+    params.effectiveReferenceTime = effectiveReferenceTime;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaTimelineControllerMethodSetTimelineTransformName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  void getControlSite(Object controlSite) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaTimelineControllerGetControlSiteParams();
+    params.controlSite = controlSite;
+    ctrl.sendMessage(params,
+        _mediaTimelineControllerMethodGetControlSiteName);
   }
 }
 
@@ -1285,24 +1249,22 @@ abstract class MediaTimelineControlSite {
 }
 
 
-class _MediaTimelineControlSiteProxyImpl extends bindings.Proxy {
-  _MediaTimelineControlSiteProxyImpl.fromEndpoint(
+class _MediaTimelineControlSiteProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _MediaTimelineControlSiteProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _MediaTimelineControlSiteProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _MediaTimelineControlSiteProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _MediaTimelineControlSiteProxyImpl.unbound() : super.unbound();
-
-  static _MediaTimelineControlSiteProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _MediaTimelineControlSiteProxyImpl"));
-    return new _MediaTimelineControlSiteProxyImpl.fromEndpoint(endpoint);
-  }
+  _MediaTimelineControlSiteProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _MediaTimelineControlSiteServiceDescription();
+      new _MediaTimelineControlSiteServiceDescription();
 
+  String get serviceName => MediaTimelineControlSite.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaTimelineControlSiteMethodGetStatusName:
@@ -1332,60 +1294,30 @@ class _MediaTimelineControlSiteProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_MediaTimelineControlSiteProxyImpl($superString)";
+    return "_MediaTimelineControlSiteProxyControl($superString)";
   }
 }
 
 
-class _MediaTimelineControlSiteProxyCalls implements MediaTimelineControlSite {
-  _MediaTimelineControlSiteProxyImpl _proxyImpl;
-
-  _MediaTimelineControlSiteProxyCalls(this._proxyImpl);
-    dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
-      var params = new _MediaTimelineControlSiteGetStatusParams();
-      params.versionLastSeen = versionLastSeen;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaTimelineControlSiteMethodGetStatusName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void getTimelineConsumer(Object timelineConsumer) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaTimelineControlSiteGetTimelineConsumerParams();
-      params.timelineConsumer = timelineConsumer;
-      _proxyImpl.sendMessage(params, _mediaTimelineControlSiteMethodGetTimelineConsumerName);
-    }
-}
-
-
-class MediaTimelineControlSiteProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  MediaTimelineControlSite ptr;
-
-  MediaTimelineControlSiteProxy(_MediaTimelineControlSiteProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _MediaTimelineControlSiteProxyCalls(proxyImpl);
-
+class MediaTimelineControlSiteProxy extends bindings.Proxy
+                              implements MediaTimelineControlSite {
   MediaTimelineControlSiteProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _MediaTimelineControlSiteProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _MediaTimelineControlSiteProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _MediaTimelineControlSiteProxyControl.fromEndpoint(endpoint));
 
-  MediaTimelineControlSiteProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _MediaTimelineControlSiteProxyImpl.fromHandle(handle) {
-    ptr = new _MediaTimelineControlSiteProxyCalls(impl);
-  }
+  MediaTimelineControlSiteProxy.fromHandle(core.MojoHandle handle)
+      : super(new _MediaTimelineControlSiteProxyControl.fromHandle(handle));
 
-  MediaTimelineControlSiteProxy.unbound() :
-      impl = new _MediaTimelineControlSiteProxyImpl.unbound() {
-    ptr = new _MediaTimelineControlSiteProxyCalls(impl);
+  MediaTimelineControlSiteProxy.unbound()
+      : super(new _MediaTimelineControlSiteProxyControl.unbound());
+
+  static MediaTimelineControlSiteProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaTimelineControlSiteProxy"));
+    return new MediaTimelineControlSiteProxy.fromEndpoint(endpoint);
   }
 
   factory MediaTimelineControlSiteProxy.connectToService(
@@ -1395,30 +1327,25 @@ class MediaTimelineControlSiteProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static MediaTimelineControlSiteProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaTimelineControlSiteProxy"));
-    return new MediaTimelineControlSiteProxy.fromEndpoint(endpoint);
+
+  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
+    var params = new _MediaTimelineControlSiteGetStatusParams();
+    params.versionLastSeen = versionLastSeen;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaTimelineControlSiteMethodGetStatusName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => MediaTimelineControlSite.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "MediaTimelineControlSiteProxy($impl)";
+  void getTimelineConsumer(Object timelineConsumer) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaTimelineControlSiteGetTimelineConsumerParams();
+    params.timelineConsumer = timelineConsumer;
+    ctrl.sendMessage(params,
+        _mediaTimelineControlSiteMethodGetTimelineConsumerName);
   }
 }
 

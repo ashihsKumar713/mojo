@@ -325,24 +325,22 @@ abstract class NavigatorHost {
 }
 
 
-class _NavigatorHostProxyImpl extends bindings.Proxy {
-  _NavigatorHostProxyImpl.fromEndpoint(
+class _NavigatorHostProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _NavigatorHostProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _NavigatorHostProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _NavigatorHostProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _NavigatorHostProxyImpl.unbound() : super.unbound();
-
-  static _NavigatorHostProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _NavigatorHostProxyImpl"));
-    return new _NavigatorHostProxyImpl.fromEndpoint(endpoint);
-  }
+  _NavigatorHostProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _NavigatorHostServiceDescription();
+      new _NavigatorHostServiceDescription();
 
+  String get serviceName => NavigatorHost.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -352,70 +350,30 @@ class _NavigatorHostProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_NavigatorHostProxyImpl($superString)";
+    return "_NavigatorHostProxyControl($superString)";
   }
 }
 
 
-class _NavigatorHostProxyCalls implements NavigatorHost {
-  _NavigatorHostProxyImpl _proxyImpl;
-
-  _NavigatorHostProxyCalls(this._proxyImpl);
-    void requestNavigate(Target target, url_request_mojom.UrlRequest request) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NavigatorHostRequestNavigateParams();
-      params.target = target;
-      params.request = request;
-      _proxyImpl.sendMessage(params, _navigatorHostMethodRequestNavigateName);
-    }
-    void requestNavigateHistory(int delta) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NavigatorHostRequestNavigateHistoryParams();
-      params.delta = delta;
-      _proxyImpl.sendMessage(params, _navigatorHostMethodRequestNavigateHistoryName);
-    }
-    void didNavigateLocally(String url) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NavigatorHostDidNavigateLocallyParams();
-      params.url = url;
-      _proxyImpl.sendMessage(params, _navigatorHostMethodDidNavigateLocallyName);
-    }
-}
-
-
-class NavigatorHostProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  NavigatorHost ptr;
-
-  NavigatorHostProxy(_NavigatorHostProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _NavigatorHostProxyCalls(proxyImpl);
-
+class NavigatorHostProxy extends bindings.Proxy
+                              implements NavigatorHost {
   NavigatorHostProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _NavigatorHostProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _NavigatorHostProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _NavigatorHostProxyControl.fromEndpoint(endpoint));
 
-  NavigatorHostProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _NavigatorHostProxyImpl.fromHandle(handle) {
-    ptr = new _NavigatorHostProxyCalls(impl);
-  }
+  NavigatorHostProxy.fromHandle(core.MojoHandle handle)
+      : super(new _NavigatorHostProxyControl.fromHandle(handle));
 
-  NavigatorHostProxy.unbound() :
-      impl = new _NavigatorHostProxyImpl.unbound() {
-    ptr = new _NavigatorHostProxyCalls(impl);
+  NavigatorHostProxy.unbound()
+      : super(new _NavigatorHostProxyControl.unbound());
+
+  static NavigatorHostProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For NavigatorHostProxy"));
+    return new NavigatorHostProxy.fromEndpoint(endpoint);
   }
 
   factory NavigatorHostProxy.connectToService(
@@ -425,30 +383,37 @@ class NavigatorHostProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static NavigatorHostProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For NavigatorHostProxy"));
-    return new NavigatorHostProxy.fromEndpoint(endpoint);
+
+  void requestNavigate(Target target, url_request_mojom.UrlRequest request) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NavigatorHostRequestNavigateParams();
+    params.target = target;
+    params.request = request;
+    ctrl.sendMessage(params,
+        _navigatorHostMethodRequestNavigateName);
   }
-
-  String get serviceName => NavigatorHost.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void requestNavigateHistory(int delta) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NavigatorHostRequestNavigateHistoryParams();
+    params.delta = delta;
+    ctrl.sendMessage(params,
+        _navigatorHostMethodRequestNavigateHistoryName);
   }
-
-  String toString() {
-    return "NavigatorHostProxy($impl)";
+  void didNavigateLocally(String url) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NavigatorHostDidNavigateLocallyParams();
+    params.url = url;
+    ctrl.sendMessage(params,
+        _navigatorHostMethodDidNavigateLocallyName);
   }
 }
 

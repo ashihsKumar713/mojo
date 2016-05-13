@@ -43,14 +43,14 @@ class DartSideImpl implements DartSide {
     });
   }
 
-  void setClient(bindings.ProxyBase proxy) {
+  void setClient(bindings.Proxy proxy) {
     assert(cppSide == null);
     cppSide = proxy;
-    cppSide.ptr.startTest();
+    cppSide.startTest();
   }
 
   void ping() {
-    cppSide.ptr.pingResponse();
+    cppSide.pingResponse();
     _completer.complete(null);
     cppSide.close();
   }
@@ -92,14 +92,14 @@ class DartSideImpl implements DartSide {
       messagePipe1.endpoints[1].write(_sampleMessage.buffer.asByteData());
       messagePipe2.endpoints[1].write(_sampleMessage.buffer.asByteData());
 
-      cppSide.ptr.echoResponse(createEchoArgsList([arg, specialArg]));
+      cppSide.echoResponse(createEchoArgsList([arg, specialArg]));
 
       dataPipe1.producer.handle.close();
       dataPipe2.producer.handle.close();
       messagePipe1.endpoints[1].handle.close();
       messagePipe2.endpoints[1].handle.close();
     }
-    cppSide.ptr.testFinished();
+    cppSide.testFinished();
     _completer.complete(null);
     cppSide.close();
   }

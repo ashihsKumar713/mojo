@@ -2345,7 +2345,7 @@ class _FileServiceDescription implements service_describer.ServiceDescription {
 
 abstract class File {
   static const String serviceName = null;
-  dynamic close([Function responseFactory = null]);
+  dynamic close_([Function responseFactory = null]);
   dynamic read(int numBytesToRead,int offset,types_mojom.Whence whence,[Function responseFactory = null]);
   dynamic write(List<int> bytesToWrite,int offset,types_mojom.Whence whence,[Function responseFactory = null]);
   dynamic readToStream(core.MojoDataPipeProducer source,int offset,types_mojom.Whence whence,int numBytesToRead,[Function responseFactory = null]);
@@ -2362,24 +2362,22 @@ abstract class File {
 }
 
 
-class _FileProxyImpl extends bindings.Proxy {
-  _FileProxyImpl.fromEndpoint(
+class _FileProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _FileProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _FileProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _FileProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _FileProxyImpl.unbound() : super.unbound();
-
-  static _FileProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _FileProxyImpl"));
-    return new _FileProxyImpl.fromEndpoint(endpoint);
-  }
+  _FileProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _FileServiceDescription();
+      new _FileServiceDescription();
 
+  String get serviceName => File.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _fileMethodCloseName:
@@ -2669,177 +2667,30 @@ class _FileProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_FileProxyImpl($superString)";
+    return "_FileProxyControl($superString)";
   }
 }
 
 
-class _FileProxyCalls implements File {
-  _FileProxyImpl _proxyImpl;
-
-  _FileProxyCalls(this._proxyImpl);
-    dynamic close([Function responseFactory = null]) {
-      var params = new _FileCloseParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _fileMethodCloseName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic read(int numBytesToRead,int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
-      var params = new _FileReadParams();
-      params.numBytesToRead = numBytesToRead;
-      params.offset = offset;
-      params.whence = whence;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _fileMethodReadName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic write(List<int> bytesToWrite,int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
-      var params = new _FileWriteParams();
-      params.bytesToWrite = bytesToWrite;
-      params.offset = offset;
-      params.whence = whence;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _fileMethodWriteName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic readToStream(core.MojoDataPipeProducer source,int offset,types_mojom.Whence whence,int numBytesToRead,[Function responseFactory = null]) {
-      var params = new _FileReadToStreamParams();
-      params.source = source;
-      params.offset = offset;
-      params.whence = whence;
-      params.numBytesToRead = numBytesToRead;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _fileMethodReadToStreamName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic writeFromStream(core.MojoDataPipeConsumer sink,int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
-      var params = new _FileWriteFromStreamParams();
-      params.sink = sink;
-      params.offset = offset;
-      params.whence = whence;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _fileMethodWriteFromStreamName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic tell([Function responseFactory = null]) {
-      var params = new _FileTellParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _fileMethodTellName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic seek(int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
-      var params = new _FileSeekParams();
-      params.offset = offset;
-      params.whence = whence;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _fileMethodSeekName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic stat([Function responseFactory = null]) {
-      var params = new _FileStatParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _fileMethodStatName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic truncate(int size,[Function responseFactory = null]) {
-      var params = new _FileTruncateParams();
-      params.size = size;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _fileMethodTruncateName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]) {
-      var params = new _FileTouchParams();
-      params.atime = atime;
-      params.mtime = mtime;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _fileMethodTouchName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic dup(Object file,[Function responseFactory = null]) {
-      var params = new _FileDupParams();
-      params.file = file;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _fileMethodDupName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic reopen(Object file,int openFlags,[Function responseFactory = null]) {
-      var params = new _FileReopenParams();
-      params.file = file;
-      params.openFlags = openFlags;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _fileMethodReopenName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic asBuffer([Function responseFactory = null]) {
-      var params = new _FileAsBufferParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _fileMethodAsBufferName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic ioctl(int request,List<int> inValues,[Function responseFactory = null]) {
-      var params = new _FileIoctlParams();
-      params.request = request;
-      params.inValues = inValues;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _fileMethodIoctlName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class FileProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  File ptr;
-
-  FileProxy(_FileProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _FileProxyCalls(proxyImpl);
-
+class FileProxy extends bindings.Proxy
+                              implements File {
   FileProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _FileProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _FileProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _FileProxyControl.fromEndpoint(endpoint));
 
-  FileProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _FileProxyImpl.fromHandle(handle) {
-    ptr = new _FileProxyCalls(impl);
-  }
+  FileProxy.fromHandle(core.MojoHandle handle)
+      : super(new _FileProxyControl.fromHandle(handle));
 
-  FileProxy.unbound() :
-      impl = new _FileProxyImpl.unbound() {
-    ptr = new _FileProxyCalls(impl);
+  FileProxy.unbound()
+      : super(new _FileProxyControl.unbound());
+
+  static FileProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For FileProxy"));
+    return new FileProxy.fromEndpoint(endpoint);
   }
 
   factory FileProxy.connectToService(
@@ -2849,30 +2700,141 @@ class FileProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static FileProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For FileProxy"));
-    return new FileProxy.fromEndpoint(endpoint);
+
+  dynamic close_([Function responseFactory = null]) {
+    var params = new _FileCloseParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _fileMethodCloseName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => File.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic read(int numBytesToRead,int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
+    var params = new _FileReadParams();
+    params.numBytesToRead = numBytesToRead;
+    params.offset = offset;
+    params.whence = whence;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _fileMethodReadName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "FileProxy($impl)";
+  dynamic write(List<int> bytesToWrite,int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
+    var params = new _FileWriteParams();
+    params.bytesToWrite = bytesToWrite;
+    params.offset = offset;
+    params.whence = whence;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _fileMethodWriteName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic readToStream(core.MojoDataPipeProducer source,int offset,types_mojom.Whence whence,int numBytesToRead,[Function responseFactory = null]) {
+    var params = new _FileReadToStreamParams();
+    params.source = source;
+    params.offset = offset;
+    params.whence = whence;
+    params.numBytesToRead = numBytesToRead;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _fileMethodReadToStreamName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic writeFromStream(core.MojoDataPipeConsumer sink,int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
+    var params = new _FileWriteFromStreamParams();
+    params.sink = sink;
+    params.offset = offset;
+    params.whence = whence;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _fileMethodWriteFromStreamName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic tell([Function responseFactory = null]) {
+    var params = new _FileTellParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _fileMethodTellName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic seek(int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
+    var params = new _FileSeekParams();
+    params.offset = offset;
+    params.whence = whence;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _fileMethodSeekName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic stat([Function responseFactory = null]) {
+    var params = new _FileStatParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _fileMethodStatName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic truncate(int size,[Function responseFactory = null]) {
+    var params = new _FileTruncateParams();
+    params.size = size;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _fileMethodTruncateName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]) {
+    var params = new _FileTouchParams();
+    params.atime = atime;
+    params.mtime = mtime;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _fileMethodTouchName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic dup(Object file,[Function responseFactory = null]) {
+    var params = new _FileDupParams();
+    params.file = file;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _fileMethodDupName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic reopen(Object file,int openFlags,[Function responseFactory = null]) {
+    var params = new _FileReopenParams();
+    params.file = file;
+    params.openFlags = openFlags;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _fileMethodReopenName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic asBuffer([Function responseFactory = null]) {
+    var params = new _FileAsBufferParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _fileMethodAsBufferName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic ioctl(int request,List<int> inValues,[Function responseFactory = null]) {
+    var params = new _FileIoctlParams();
+    params.request = request;
+    params.inValues = inValues;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _fileMethodIoctlName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -2990,7 +2952,7 @@ class FileStub extends bindings.Stub {
     }
     switch (message.header.type) {
       case _fileMethodCloseName:
-        var response = _impl.close(_fileCloseResponseParamsFactory);
+        var response = _impl.close_(_fileCloseResponseParamsFactory);
         if (response is Future) {
           return response.then((response) {
             if (response != null) {

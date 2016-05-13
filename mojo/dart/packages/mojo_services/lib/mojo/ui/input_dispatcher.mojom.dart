@@ -102,24 +102,22 @@ abstract class InputDispatcher {
 }
 
 
-class _InputDispatcherProxyImpl extends bindings.Proxy {
-  _InputDispatcherProxyImpl.fromEndpoint(
+class _InputDispatcherProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _InputDispatcherProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _InputDispatcherProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _InputDispatcherProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _InputDispatcherProxyImpl.unbound() : super.unbound();
-
-  static _InputDispatcherProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _InputDispatcherProxyImpl"));
-    return new _InputDispatcherProxyImpl.fromEndpoint(endpoint);
-  }
+  _InputDispatcherProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _InputDispatcherServiceDescription();
+      new _InputDispatcherServiceDescription();
 
+  String get serviceName => InputDispatcher.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -129,51 +127,30 @@ class _InputDispatcherProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_InputDispatcherProxyImpl($superString)";
+    return "_InputDispatcherProxyControl($superString)";
   }
 }
 
 
-class _InputDispatcherProxyCalls implements InputDispatcher {
-  _InputDispatcherProxyImpl _proxyImpl;
-
-  _InputDispatcherProxyCalls(this._proxyImpl);
-    void dispatchEvent(input_events_mojom.Event event) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _InputDispatcherDispatchEventParams();
-      params.event = event;
-      _proxyImpl.sendMessage(params, _inputDispatcherMethodDispatchEventName);
-    }
-}
-
-
-class InputDispatcherProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  InputDispatcher ptr;
-
-  InputDispatcherProxy(_InputDispatcherProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _InputDispatcherProxyCalls(proxyImpl);
-
+class InputDispatcherProxy extends bindings.Proxy
+                              implements InputDispatcher {
   InputDispatcherProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _InputDispatcherProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _InputDispatcherProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _InputDispatcherProxyControl.fromEndpoint(endpoint));
 
-  InputDispatcherProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _InputDispatcherProxyImpl.fromHandle(handle) {
-    ptr = new _InputDispatcherProxyCalls(impl);
-  }
+  InputDispatcherProxy.fromHandle(core.MojoHandle handle)
+      : super(new _InputDispatcherProxyControl.fromHandle(handle));
 
-  InputDispatcherProxy.unbound() :
-      impl = new _InputDispatcherProxyImpl.unbound() {
-    ptr = new _InputDispatcherProxyCalls(impl);
+  InputDispatcherProxy.unbound()
+      : super(new _InputDispatcherProxyControl.unbound());
+
+  static InputDispatcherProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For InputDispatcherProxy"));
+    return new InputDispatcherProxy.fromEndpoint(endpoint);
   }
 
   factory InputDispatcherProxy.connectToService(
@@ -183,30 +160,16 @@ class InputDispatcherProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static InputDispatcherProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For InputDispatcherProxy"));
-    return new InputDispatcherProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => InputDispatcher.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "InputDispatcherProxy($impl)";
+  void dispatchEvent(input_events_mojom.Event event) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _InputDispatcherDispatchEventParams();
+    params.event = event;
+    ctrl.sendMessage(params,
+        _inputDispatcherMethodDispatchEventName);
   }
 }
 

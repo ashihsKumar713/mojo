@@ -1191,24 +1191,22 @@ abstract class Directory {
 }
 
 
-class _DirectoryProxyImpl extends bindings.Proxy {
-  _DirectoryProxyImpl.fromEndpoint(
+class _DirectoryProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _DirectoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _DirectoryProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _DirectoryProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _DirectoryProxyImpl.unbound() : super.unbound();
-
-  static _DirectoryProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _DirectoryProxyImpl"));
-    return new _DirectoryProxyImpl.fromEndpoint(endpoint);
-  }
+  _DirectoryProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _DirectoryServiceDescription();
+      new _DirectoryServiceDescription();
 
+  String get serviceName => Directory.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _directoryMethodReadName:
@@ -1358,110 +1356,30 @@ class _DirectoryProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_DirectoryProxyImpl($superString)";
+    return "_DirectoryProxyControl($superString)";
   }
 }
 
 
-class _DirectoryProxyCalls implements Directory {
-  _DirectoryProxyImpl _proxyImpl;
-
-  _DirectoryProxyCalls(this._proxyImpl);
-    dynamic read([Function responseFactory = null]) {
-      var params = new _DirectoryReadParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _directoryMethodReadName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic stat([Function responseFactory = null]) {
-      var params = new _DirectoryStatParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _directoryMethodStatName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]) {
-      var params = new _DirectoryTouchParams();
-      params.atime = atime;
-      params.mtime = mtime;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _directoryMethodTouchName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic openFile(String path,Object file,int openFlags,[Function responseFactory = null]) {
-      var params = new _DirectoryOpenFileParams();
-      params.path = path;
-      params.file = file;
-      params.openFlags = openFlags;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _directoryMethodOpenFileName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic openDirectory(String path,Object directory,int openFlags,[Function responseFactory = null]) {
-      var params = new _DirectoryOpenDirectoryParams();
-      params.path = path;
-      params.directory = directory;
-      params.openFlags = openFlags;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _directoryMethodOpenDirectoryName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic rename(String path,String newPath,[Function responseFactory = null]) {
-      var params = new _DirectoryRenameParams();
-      params.path = path;
-      params.newPath = newPath;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _directoryMethodRenameName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic delete(String path,int deleteFlags,[Function responseFactory = null]) {
-      var params = new _DirectoryDeleteParams();
-      params.path = path;
-      params.deleteFlags = deleteFlags;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _directoryMethodDeleteName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class DirectoryProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Directory ptr;
-
-  DirectoryProxy(_DirectoryProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _DirectoryProxyCalls(proxyImpl);
-
+class DirectoryProxy extends bindings.Proxy
+                              implements Directory {
   DirectoryProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _DirectoryProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _DirectoryProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _DirectoryProxyControl.fromEndpoint(endpoint));
 
-  DirectoryProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _DirectoryProxyImpl.fromHandle(handle) {
-    ptr = new _DirectoryProxyCalls(impl);
-  }
+  DirectoryProxy.fromHandle(core.MojoHandle handle)
+      : super(new _DirectoryProxyControl.fromHandle(handle));
 
-  DirectoryProxy.unbound() :
-      impl = new _DirectoryProxyImpl.unbound() {
-    ptr = new _DirectoryProxyCalls(impl);
+  DirectoryProxy.unbound()
+      : super(new _DirectoryProxyControl.unbound());
+
+  static DirectoryProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For DirectoryProxy"));
+    return new DirectoryProxy.fromEndpoint(endpoint);
   }
 
   factory DirectoryProxy.connectToService(
@@ -1471,30 +1389,74 @@ class DirectoryProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static DirectoryProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For DirectoryProxy"));
-    return new DirectoryProxy.fromEndpoint(endpoint);
+
+  dynamic read([Function responseFactory = null]) {
+    var params = new _DirectoryReadParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _directoryMethodReadName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => Directory.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic stat([Function responseFactory = null]) {
+    var params = new _DirectoryStatParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _directoryMethodStatName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "DirectoryProxy($impl)";
+  dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]) {
+    var params = new _DirectoryTouchParams();
+    params.atime = atime;
+    params.mtime = mtime;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _directoryMethodTouchName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic openFile(String path,Object file,int openFlags,[Function responseFactory = null]) {
+    var params = new _DirectoryOpenFileParams();
+    params.path = path;
+    params.file = file;
+    params.openFlags = openFlags;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _directoryMethodOpenFileName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic openDirectory(String path,Object directory,int openFlags,[Function responseFactory = null]) {
+    var params = new _DirectoryOpenDirectoryParams();
+    params.path = path;
+    params.directory = directory;
+    params.openFlags = openFlags;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _directoryMethodOpenDirectoryName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic rename(String path,String newPath,[Function responseFactory = null]) {
+    var params = new _DirectoryRenameParams();
+    params.path = path;
+    params.newPath = newPath;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _directoryMethodRenameName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic delete(String path,int deleteFlags,[Function responseFactory = null]) {
+    var params = new _DirectoryDeleteParams();
+    params.path = path;
+    params.deleteFlags = deleteFlags;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _directoryMethodDeleteName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

@@ -24,7 +24,7 @@ class EchoClientApplication extends Application {
     final server = (arguments.length > 0) ? arguments[1] : "dart_echo_server";
     connectToService(url.replaceAll("dart_echo_client", server), _echoProxy);
 
-    _echoProxy.ptr.echoString("hello world").then((response) {
+    _echoProxy.echoString("hello world").then((response) {
       print("${response.value}");
     }).whenComplete(_closeHandles);
   }

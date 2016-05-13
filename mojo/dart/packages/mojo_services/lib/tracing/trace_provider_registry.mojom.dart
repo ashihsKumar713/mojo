@@ -100,24 +100,22 @@ abstract class TraceProviderRegistry {
 }
 
 
-class _TraceProviderRegistryProxyImpl extends bindings.Proxy {
-  _TraceProviderRegistryProxyImpl.fromEndpoint(
+class _TraceProviderRegistryProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _TraceProviderRegistryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _TraceProviderRegistryProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _TraceProviderRegistryProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _TraceProviderRegistryProxyImpl.unbound() : super.unbound();
-
-  static _TraceProviderRegistryProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _TraceProviderRegistryProxyImpl"));
-    return new _TraceProviderRegistryProxyImpl.fromEndpoint(endpoint);
-  }
+  _TraceProviderRegistryProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _TraceProviderRegistryServiceDescription();
+      new _TraceProviderRegistryServiceDescription();
 
+  String get serviceName => TraceProviderRegistry.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -127,51 +125,30 @@ class _TraceProviderRegistryProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_TraceProviderRegistryProxyImpl($superString)";
+    return "_TraceProviderRegistryProxyControl($superString)";
   }
 }
 
 
-class _TraceProviderRegistryProxyCalls implements TraceProviderRegistry {
-  _TraceProviderRegistryProxyImpl _proxyImpl;
-
-  _TraceProviderRegistryProxyCalls(this._proxyImpl);
-    void registerTraceProvider(Object traceProvider) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _TraceProviderRegistryRegisterTraceProviderParams();
-      params.traceProvider = traceProvider;
-      _proxyImpl.sendMessage(params, _traceProviderRegistryMethodRegisterTraceProviderName);
-    }
-}
-
-
-class TraceProviderRegistryProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  TraceProviderRegistry ptr;
-
-  TraceProviderRegistryProxy(_TraceProviderRegistryProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _TraceProviderRegistryProxyCalls(proxyImpl);
-
+class TraceProviderRegistryProxy extends bindings.Proxy
+                              implements TraceProviderRegistry {
   TraceProviderRegistryProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _TraceProviderRegistryProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _TraceProviderRegistryProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _TraceProviderRegistryProxyControl.fromEndpoint(endpoint));
 
-  TraceProviderRegistryProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _TraceProviderRegistryProxyImpl.fromHandle(handle) {
-    ptr = new _TraceProviderRegistryProxyCalls(impl);
-  }
+  TraceProviderRegistryProxy.fromHandle(core.MojoHandle handle)
+      : super(new _TraceProviderRegistryProxyControl.fromHandle(handle));
 
-  TraceProviderRegistryProxy.unbound() :
-      impl = new _TraceProviderRegistryProxyImpl.unbound() {
-    ptr = new _TraceProviderRegistryProxyCalls(impl);
+  TraceProviderRegistryProxy.unbound()
+      : super(new _TraceProviderRegistryProxyControl.unbound());
+
+  static TraceProviderRegistryProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TraceProviderRegistryProxy"));
+    return new TraceProviderRegistryProxy.fromEndpoint(endpoint);
   }
 
   factory TraceProviderRegistryProxy.connectToService(
@@ -181,30 +158,16 @@ class TraceProviderRegistryProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static TraceProviderRegistryProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TraceProviderRegistryProxy"));
-    return new TraceProviderRegistryProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => TraceProviderRegistry.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "TraceProviderRegistryProxy($impl)";
+  void registerTraceProvider(Object traceProvider) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _TraceProviderRegistryRegisterTraceProviderParams();
+    params.traceProvider = traceProvider;
+    ctrl.sendMessage(params,
+        _traceProviderRegistryMethodRegisterTraceProviderName);
   }
 }
 

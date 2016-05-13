@@ -361,24 +361,22 @@ abstract class ImportedInterface {
 }
 
 
-class _ImportedInterfaceProxyImpl extends bindings.Proxy {
-  _ImportedInterfaceProxyImpl.fromEndpoint(
+class _ImportedInterfaceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ImportedInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ImportedInterfaceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ImportedInterfaceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ImportedInterfaceProxyImpl.unbound() : super.unbound();
-
-  static _ImportedInterfaceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ImportedInterfaceProxyImpl"));
-    return new _ImportedInterfaceProxyImpl.fromEndpoint(endpoint);
-  }
+  _ImportedInterfaceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ImportedInterfaceServiceDescription();
+      new _ImportedInterfaceServiceDescription();
 
+  String get serviceName => ImportedInterface.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -388,50 +386,30 @@ class _ImportedInterfaceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ImportedInterfaceProxyImpl($superString)";
+    return "_ImportedInterfaceProxyControl($superString)";
   }
 }
 
 
-class _ImportedInterfaceProxyCalls implements ImportedInterface {
-  _ImportedInterfaceProxyImpl _proxyImpl;
-
-  _ImportedInterfaceProxyCalls(this._proxyImpl);
-    void doSomething() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ImportedInterfaceDoSomethingParams();
-      _proxyImpl.sendMessage(params, _importedInterfaceMethodDoSomethingName);
-    }
-}
-
-
-class ImportedInterfaceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ImportedInterface ptr;
-
-  ImportedInterfaceProxy(_ImportedInterfaceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ImportedInterfaceProxyCalls(proxyImpl);
-
+class ImportedInterfaceProxy extends bindings.Proxy
+                              implements ImportedInterface {
   ImportedInterfaceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ImportedInterfaceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ImportedInterfaceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ImportedInterfaceProxyControl.fromEndpoint(endpoint));
 
-  ImportedInterfaceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ImportedInterfaceProxyImpl.fromHandle(handle) {
-    ptr = new _ImportedInterfaceProxyCalls(impl);
-  }
+  ImportedInterfaceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ImportedInterfaceProxyControl.fromHandle(handle));
 
-  ImportedInterfaceProxy.unbound() :
-      impl = new _ImportedInterfaceProxyImpl.unbound() {
-    ptr = new _ImportedInterfaceProxyCalls(impl);
+  ImportedInterfaceProxy.unbound()
+      : super(new _ImportedInterfaceProxyControl.unbound());
+
+  static ImportedInterfaceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ImportedInterfaceProxy"));
+    return new ImportedInterfaceProxy.fromEndpoint(endpoint);
   }
 
   factory ImportedInterfaceProxy.connectToService(
@@ -441,30 +419,15 @@ class ImportedInterfaceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ImportedInterfaceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ImportedInterfaceProxy"));
-    return new ImportedInterfaceProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => ImportedInterface.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ImportedInterfaceProxy($impl)";
+  void doSomething() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ImportedInterfaceDoSomethingParams();
+    ctrl.sendMessage(params,
+        _importedInterfaceMethodDoSomethingName);
   }
 }
 
@@ -562,7 +525,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/8yYzW7TQBCA10kLKU2LEf1vARcKBBBxjxWnViUiERWK2hxSLv2LIUb1D7YjwRvwGDwKj9Mjx95gHc9ie7yb2ChxutJoY+84u/PtzHi8KyRoMvTb0OP7rC+hHusRKfyfaSoVuF2H3ob+B/Q/oX9G5SGV1nGzdvK+dvxGN2zL8bROdc+0vK7mHHXPbI2QV1TnCVevAT8apqc5n84utP7/PqKyzNVvWrrpDRgPJnxBxza548eaF19av7XBbhnZ7V8XqfyaCq99VNulOD97Nn5ducfnfA39Lom3bXT/D7Qm4bcFKmUq2JQHVBapCLYhsZ77YPdHKodU1K5laKrT61iGbmqOalhfLNV1LoIfdu/8Ur9QdbZVrnqumx3d/OyqnuZ6ruqeGfaldhLMXvWfMYJ5FODI5t8Ff2sWgBcJ9WJ+C3p3MnJrC7j52zLj21rbb+19eHdQg/vPwee43KqhNubn70MhB37MDxkHzAu32SG8dlL62TyVW1T2G4f7Pqwt+ntDyIlpJf1sMSdOw7iUR8RFhlzaOmz0HYPlQT4XppXksjRhLrIUvxZxqSMupwIuqxBj/KxOyGMqa1FOAkXMaQt8f9yc8LwrEb+R0P5Lkfcp5nsl4CPiSyJ8efdJJF/7sf3WOqIAvC61ibvupzn5lYI4XaE+jb1+2xHYuw42R+x97Whfe3RV/DoG2rjtLgn8YAWto0T4nH6z54vZ8tGugNMcvMeD6ijIK/PROIMBzMt/593OKa4K0bpUitu9g9Y1TdK1tPFUETw/A/v3TVAXK7CH4+aTlcPUf3CQUnD4LuCwmROHQfFU4ORlOWW+yRpHrF5OxBEM4Plnc6qjK7D3Cqqj61BHN4uD62n2EpNG9B0iqqcV2KM4t7CQxvzKOdfRUso6upDRr+op6+jEdxoqoDGfuRtSPxdHxAPXz+x7HvH4VzhjHvMT4iHDvNcj5lGGuD7YO2pF6x7Egw0neNydUL2noDgR7avonGZc5yPLwASf9iTyElLA61md0PlIHRJUe8j5CKujFjJyO82Yz1/Ct5uIWxU9gDmu5ZzfF1Lm98UxnZMkzpMwL1DEnNZvSJ5fysilnTLPs3NZIZfwqITrRxs58fkbAAD//3QI2/tgFwAA";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/8yYX3PSQBDAL9AqtbTi2D/0j5pq1aoj8bHjUzuVEcaOwwAP8OAUSiOJAwSTMKN+Aj9GP4ofxY/QR9/0QvYk2dxBojRwMztHckty+7vdvc1lidsy0L+CHt9nfQr1WI9Io+csUjmA2wXo+9B/h/4S+idU7lOp1kv5s3f5+mu92zdMW73IHfcMW1PNitbsq4S8oDqPuHpF+FHs2ar5sdlSh899QGWTq18y9J49Ztx94TM6tscdr6u2f2rDVgO7M8hu5zpJ5efC6NpBpaX8/H4s+68v74znfET8ja0fu/8bWonw2xqVNBVsyj0q61QEyxCYz12w2xn7QEUZWKbSMVrNjtI2jHZHVTSjqyrfzKbSNT4ZimW23B/9wXlHbyk6WzVLOdd7F3qvbSm2atmWYjW7/Y565k4k5/ynS58vA082jwLwaCTcnvmdjP0Y9G6RaPxqAn7O8ixRKedPqsfv357m4f5T8D0uv9xIG3N01iMRI0fml4wH5obb8gRuhyH9bpXKDSonxfKJA22f/t4V8mJaQb9bj5nXJD7pKfHJQI6tlotDR2H5kc+HaQX5bMwJn6zkvxbxKSA+DQGfLYg9ftYn5CGVbS8vgSLmtQ+xEBcv/P6sx48k5A+SZ9/FnK8EnESciYcz7z7x5HUn5t8YFWq3rVGDuNwex+xnMuJ1hfowdjvtUGD3DtjusfulqX4e0Cnx92NocdmfEvhFFs0nhfyEjf9ifpSMlq+OBLxWYP93qyo376x64w8GMDdnj7wZc7wlvPGG6qhDNL9FEq6FjbMDwf+XYB2/COpqGdYyLk5ReSz8Aw8pBI+vAh57MfMYF2cJTv7OhMxHUeOL1d+B+IIB/P7lmOvyA/AFGdXlNajLteT4+jwl+T5v/vv7RlSfy7BWfn6jwhxzTM+oLpdC1uWJiH5WCFmXB74DUUGOOa3MWT2enBIXXI+zcwPE5W8hjrmszphLhvmINF0uaYj30+NK1Vs3IS5sOMDl9ozrRhnFj2idRedD13Uuswls8ClTIG8hBTyfrRmfy5SAhzbhXIbVYWsR834jYt5/Dt+GIn459AfMc3tG+8BayH1g/ZrOZwLnWZgbKGJeO3O2H2xE5FMLuR+wc2Ihn9ERDdevdmPm9CcAAP//jmet5PgXAAA=";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

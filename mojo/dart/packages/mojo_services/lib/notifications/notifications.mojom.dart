@@ -503,24 +503,22 @@ abstract class NotificationClient {
 }
 
 
-class _NotificationClientProxyImpl extends bindings.Proxy {
-  _NotificationClientProxyImpl.fromEndpoint(
+class _NotificationClientProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _NotificationClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _NotificationClientProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _NotificationClientProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _NotificationClientProxyImpl.unbound() : super.unbound();
-
-  static _NotificationClientProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _NotificationClientProxyImpl"));
-    return new _NotificationClientProxyImpl.fromEndpoint(endpoint);
-  }
+  _NotificationClientProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _NotificationClientServiceDescription();
+      new _NotificationClientServiceDescription();
 
+  String get serviceName => NotificationClient.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -530,58 +528,30 @@ class _NotificationClientProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_NotificationClientProxyImpl($superString)";
+    return "_NotificationClientProxyControl($superString)";
   }
 }
 
 
-class _NotificationClientProxyCalls implements NotificationClient {
-  _NotificationClientProxyImpl _proxyImpl;
-
-  _NotificationClientProxyCalls(this._proxyImpl);
-    void onSelected() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NotificationClientOnSelectedParams();
-      _proxyImpl.sendMessage(params, _notificationClientMethodOnSelectedName);
-    }
-    void onDismissed() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NotificationClientOnDismissedParams();
-      _proxyImpl.sendMessage(params, _notificationClientMethodOnDismissedName);
-    }
-}
-
-
-class NotificationClientProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  NotificationClient ptr;
-
-  NotificationClientProxy(_NotificationClientProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _NotificationClientProxyCalls(proxyImpl);
-
+class NotificationClientProxy extends bindings.Proxy
+                              implements NotificationClient {
   NotificationClientProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _NotificationClientProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _NotificationClientProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _NotificationClientProxyControl.fromEndpoint(endpoint));
 
-  NotificationClientProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _NotificationClientProxyImpl.fromHandle(handle) {
-    ptr = new _NotificationClientProxyCalls(impl);
-  }
+  NotificationClientProxy.fromHandle(core.MojoHandle handle)
+      : super(new _NotificationClientProxyControl.fromHandle(handle));
 
-  NotificationClientProxy.unbound() :
-      impl = new _NotificationClientProxyImpl.unbound() {
-    ptr = new _NotificationClientProxyCalls(impl);
+  NotificationClientProxy.unbound()
+      : super(new _NotificationClientProxyControl.unbound());
+
+  static NotificationClientProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For NotificationClientProxy"));
+    return new NotificationClientProxy.fromEndpoint(endpoint);
   }
 
   factory NotificationClientProxy.connectToService(
@@ -591,30 +561,24 @@ class NotificationClientProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static NotificationClientProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For NotificationClientProxy"));
-    return new NotificationClientProxy.fromEndpoint(endpoint);
+
+  void onSelected() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NotificationClientOnSelectedParams();
+    ctrl.sendMessage(params,
+        _notificationClientMethodOnSelectedName);
   }
-
-  String get serviceName => NotificationClient.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "NotificationClientProxy($impl)";
+  void onDismissed() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NotificationClientOnDismissedParams();
+    ctrl.sendMessage(params,
+        _notificationClientMethodOnDismissedName);
   }
 }
 
@@ -723,24 +687,22 @@ abstract class Notification {
 }
 
 
-class _NotificationProxyImpl extends bindings.Proxy {
-  _NotificationProxyImpl.fromEndpoint(
+class _NotificationProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _NotificationProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _NotificationProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _NotificationProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _NotificationProxyImpl.unbound() : super.unbound();
-
-  static _NotificationProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _NotificationProxyImpl"));
-    return new _NotificationProxyImpl.fromEndpoint(endpoint);
-  }
+  _NotificationProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _NotificationServiceDescription();
+      new _NotificationServiceDescription();
 
+  String get serviceName => Notification.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -750,59 +712,30 @@ class _NotificationProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_NotificationProxyImpl($superString)";
+    return "_NotificationProxyControl($superString)";
   }
 }
 
 
-class _NotificationProxyCalls implements Notification {
-  _NotificationProxyImpl _proxyImpl;
-
-  _NotificationProxyCalls(this._proxyImpl);
-    void update(NotificationData notificationData) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NotificationUpdateParams();
-      params.notificationData = notificationData;
-      _proxyImpl.sendMessage(params, _notificationMethodUpdateName);
-    }
-    void cancel() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NotificationCancelParams();
-      _proxyImpl.sendMessage(params, _notificationMethodCancelName);
-    }
-}
-
-
-class NotificationProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Notification ptr;
-
-  NotificationProxy(_NotificationProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _NotificationProxyCalls(proxyImpl);
-
+class NotificationProxy extends bindings.Proxy
+                              implements Notification {
   NotificationProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _NotificationProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _NotificationProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _NotificationProxyControl.fromEndpoint(endpoint));
 
-  NotificationProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _NotificationProxyImpl.fromHandle(handle) {
-    ptr = new _NotificationProxyCalls(impl);
-  }
+  NotificationProxy.fromHandle(core.MojoHandle handle)
+      : super(new _NotificationProxyControl.fromHandle(handle));
 
-  NotificationProxy.unbound() :
-      impl = new _NotificationProxyImpl.unbound() {
-    ptr = new _NotificationProxyCalls(impl);
+  NotificationProxy.unbound()
+      : super(new _NotificationProxyControl.unbound());
+
+  static NotificationProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For NotificationProxy"));
+    return new NotificationProxy.fromEndpoint(endpoint);
   }
 
   factory NotificationProxy.connectToService(
@@ -812,30 +745,25 @@ class NotificationProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static NotificationProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For NotificationProxy"));
-    return new NotificationProxy.fromEndpoint(endpoint);
+
+  void update(NotificationData notificationData) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NotificationUpdateParams();
+    params.notificationData = notificationData;
+    ctrl.sendMessage(params,
+        _notificationMethodUpdateName);
   }
-
-  String get serviceName => Notification.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "NotificationProxy($impl)";
+  void cancel() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NotificationCancelParams();
+    ctrl.sendMessage(params,
+        _notificationMethodCancelName);
   }
 }
 
@@ -944,24 +872,22 @@ abstract class NotificationService {
 }
 
 
-class _NotificationServiceProxyImpl extends bindings.Proxy {
-  _NotificationServiceProxyImpl.fromEndpoint(
+class _NotificationServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _NotificationServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _NotificationServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _NotificationServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _NotificationServiceProxyImpl.unbound() : super.unbound();
-
-  static _NotificationServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _NotificationServiceProxyImpl"));
-    return new _NotificationServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _NotificationServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _NotificationServiceServiceDescription();
+      new _NotificationServiceServiceDescription();
 
+  String get serviceName => NotificationService.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -971,53 +897,30 @@ class _NotificationServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_NotificationServiceProxyImpl($superString)";
+    return "_NotificationServiceProxyControl($superString)";
   }
 }
 
 
-class _NotificationServiceProxyCalls implements NotificationService {
-  _NotificationServiceProxyImpl _proxyImpl;
-
-  _NotificationServiceProxyCalls(this._proxyImpl);
-    void post(NotificationData notificationData, Object client, Object notification) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NotificationServicePostParams();
-      params.notificationData = notificationData;
-      params.client = client;
-      params.notification = notification;
-      _proxyImpl.sendMessage(params, _notificationServiceMethodPostName);
-    }
-}
-
-
-class NotificationServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  NotificationService ptr;
-
-  NotificationServiceProxy(_NotificationServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _NotificationServiceProxyCalls(proxyImpl);
-
+class NotificationServiceProxy extends bindings.Proxy
+                              implements NotificationService {
   NotificationServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _NotificationServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _NotificationServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _NotificationServiceProxyControl.fromEndpoint(endpoint));
 
-  NotificationServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _NotificationServiceProxyImpl.fromHandle(handle) {
-    ptr = new _NotificationServiceProxyCalls(impl);
-  }
+  NotificationServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _NotificationServiceProxyControl.fromHandle(handle));
 
-  NotificationServiceProxy.unbound() :
-      impl = new _NotificationServiceProxyImpl.unbound() {
-    ptr = new _NotificationServiceProxyCalls(impl);
+  NotificationServiceProxy.unbound()
+      : super(new _NotificationServiceProxyControl.unbound());
+
+  static NotificationServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For NotificationServiceProxy"));
+    return new NotificationServiceProxy.fromEndpoint(endpoint);
   }
 
   factory NotificationServiceProxy.connectToService(
@@ -1027,30 +930,18 @@ class NotificationServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static NotificationServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For NotificationServiceProxy"));
-    return new NotificationServiceProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => NotificationService.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "NotificationServiceProxy($impl)";
+  void post(NotificationData notificationData, Object client, Object notification) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NotificationServicePostParams();
+    params.notificationData = notificationData;
+    params.client = client;
+    params.notification = notification;
+    ctrl.sendMessage(params,
+        _notificationServiceMethodPostName);
   }
 }
 

@@ -894,24 +894,22 @@ abstract class CppSide {
 }
 
 
-class _CppSideProxyImpl extends bindings.Proxy {
-  _CppSideProxyImpl.fromEndpoint(
+class _CppSideProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _CppSideProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _CppSideProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _CppSideProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _CppSideProxyImpl.unbound() : super.unbound();
-
-  static _CppSideProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _CppSideProxyImpl"));
-    return new _CppSideProxyImpl.fromEndpoint(endpoint);
-  }
+  _CppSideProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _CppSideServiceDescription();
+      new _CppSideServiceDescription();
 
+  String get serviceName => CppSide.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -921,75 +919,30 @@ class _CppSideProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_CppSideProxyImpl($superString)";
+    return "_CppSideProxyControl($superString)";
   }
 }
 
 
-class _CppSideProxyCalls implements CppSide {
-  _CppSideProxyImpl _proxyImpl;
-
-  _CppSideProxyCalls(this._proxyImpl);
-    void startTest() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _CppSideStartTestParams();
-      _proxyImpl.sendMessage(params, _cppSideMethodStartTestName);
-    }
-    void testFinished() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _CppSideTestFinishedParams();
-      _proxyImpl.sendMessage(params, _cppSideMethodTestFinishedName);
-    }
-    void pingResponse() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _CppSidePingResponseParams();
-      _proxyImpl.sendMessage(params, _cppSideMethodPingResponseName);
-    }
-    void echoResponse(EchoArgsList list) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _CppSideEchoResponseParams();
-      params.list = list;
-      _proxyImpl.sendMessage(params, _cppSideMethodEchoResponseName);
-    }
-}
-
-
-class CppSideProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  CppSide ptr;
-
-  CppSideProxy(_CppSideProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _CppSideProxyCalls(proxyImpl);
-
+class CppSideProxy extends bindings.Proxy
+                              implements CppSide {
   CppSideProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _CppSideProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _CppSideProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _CppSideProxyControl.fromEndpoint(endpoint));
 
-  CppSideProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _CppSideProxyImpl.fromHandle(handle) {
-    ptr = new _CppSideProxyCalls(impl);
-  }
+  CppSideProxy.fromHandle(core.MojoHandle handle)
+      : super(new _CppSideProxyControl.fromHandle(handle));
 
-  CppSideProxy.unbound() :
-      impl = new _CppSideProxyImpl.unbound() {
-    ptr = new _CppSideProxyCalls(impl);
+  CppSideProxy.unbound()
+      : super(new _CppSideProxyControl.unbound());
+
+  static CppSideProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For CppSideProxy"));
+    return new CppSideProxy.fromEndpoint(endpoint);
   }
 
   factory CppSideProxy.connectToService(
@@ -999,30 +952,43 @@ class CppSideProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static CppSideProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For CppSideProxy"));
-    return new CppSideProxy.fromEndpoint(endpoint);
+
+  void startTest() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _CppSideStartTestParams();
+    ctrl.sendMessage(params,
+        _cppSideMethodStartTestName);
   }
-
-  String get serviceName => CppSide.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void testFinished() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _CppSideTestFinishedParams();
+    ctrl.sendMessage(params,
+        _cppSideMethodTestFinishedName);
   }
-
-  String toString() {
-    return "CppSideProxy($impl)";
+  void pingResponse() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _CppSidePingResponseParams();
+    ctrl.sendMessage(params,
+        _cppSideMethodPingResponseName);
+  }
+  void echoResponse(EchoArgsList list) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _CppSideEchoResponseParams();
+    params.list = list;
+    ctrl.sendMessage(params,
+        _cppSideMethodEchoResponseName);
   }
 }
 
@@ -1141,24 +1107,22 @@ abstract class DartSide {
 }
 
 
-class _DartSideProxyImpl extends bindings.Proxy {
-  _DartSideProxyImpl.fromEndpoint(
+class _DartSideProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _DartSideProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _DartSideProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _DartSideProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _DartSideProxyImpl.unbound() : super.unbound();
-
-  static _DartSideProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _DartSideProxyImpl"));
-    return new _DartSideProxyImpl.fromEndpoint(endpoint);
-  }
+  _DartSideProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _DartSideServiceDescription();
+      new _DartSideServiceDescription();
 
+  String get serviceName => DartSide.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -1168,69 +1132,30 @@ class _DartSideProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_DartSideProxyImpl($superString)";
+    return "_DartSideProxyControl($superString)";
   }
 }
 
 
-class _DartSideProxyCalls implements DartSide {
-  _DartSideProxyImpl _proxyImpl;
-
-  _DartSideProxyCalls(this._proxyImpl);
-    void setClient(Object cppSide) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _DartSideSetClientParams();
-      params.cppSide = cppSide;
-      _proxyImpl.sendMessage(params, _dartSideMethodSetClientName);
-    }
-    void ping() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _DartSidePingParams();
-      _proxyImpl.sendMessage(params, _dartSideMethodPingName);
-    }
-    void echo(int numIterations, EchoArgs arg) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _DartSideEchoParams();
-      params.numIterations = numIterations;
-      params.arg = arg;
-      _proxyImpl.sendMessage(params, _dartSideMethodEchoName);
-    }
-}
-
-
-class DartSideProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  DartSide ptr;
-
-  DartSideProxy(_DartSideProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _DartSideProxyCalls(proxyImpl);
-
+class DartSideProxy extends bindings.Proxy
+                              implements DartSide {
   DartSideProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _DartSideProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _DartSideProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _DartSideProxyControl.fromEndpoint(endpoint));
 
-  DartSideProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _DartSideProxyImpl.fromHandle(handle) {
-    ptr = new _DartSideProxyCalls(impl);
-  }
+  DartSideProxy.fromHandle(core.MojoHandle handle)
+      : super(new _DartSideProxyControl.fromHandle(handle));
 
-  DartSideProxy.unbound() :
-      impl = new _DartSideProxyImpl.unbound() {
-    ptr = new _DartSideProxyCalls(impl);
+  DartSideProxy.unbound()
+      : super(new _DartSideProxyControl.unbound());
+
+  static DartSideProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For DartSideProxy"));
+    return new DartSideProxy.fromEndpoint(endpoint);
   }
 
   factory DartSideProxy.connectToService(
@@ -1240,30 +1165,36 @@ class DartSideProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static DartSideProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For DartSideProxy"));
-    return new DartSideProxy.fromEndpoint(endpoint);
+
+  void setClient(Object cppSide) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _DartSideSetClientParams();
+    params.cppSide = cppSide;
+    ctrl.sendMessage(params,
+        _dartSideMethodSetClientName);
   }
-
-  String get serviceName => DartSide.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void ping() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _DartSidePingParams();
+    ctrl.sendMessage(params,
+        _dartSideMethodPingName);
   }
-
-  String toString() {
-    return "DartSideProxy($impl)";
+  void echo(int numIterations, EchoArgs arg) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _DartSideEchoParams();
+    params.numIterations = numIterations;
+    params.arg = arg;
+    ctrl.sendMessage(params,
+        _dartSideMethodEchoName);
   }
 }
 
@@ -1371,7 +1302,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/9yaz2/bNhTHJdlObMdOnMTNvK3rPKDFsmKN0x8ojJ08dBkyrBiMtSjak6vGrK3Blj1JHrJbjjvu2D9lf8L+hByz2467FNitJdtHh6VJmRIs0YmAB1oxY/H74ePT45NqxvujAu0+tPzfaZvnWr7fKbS72LLY6nDegvY5tCfQXsd2FdvjZ+2Dzo8Hz77p2l7QCUado/F478F4/MjpItLvBrbPZP2+w5+hY2i/g6P+6Fuv5+Pvv8L2xbx+Dx0/gHEegh6iM4Otyeh+d752fm4SnTsfnv9185yLwXChx3/ceYs7p/NCr/sGjkNDfGxgW8VGEX6KP29jk+CdmUfCsYjtCbafsDX6oyFqeJPuaOi4yGsMR7+MGr539P4D+dXGxHWCAPmB30DDF6jbRV6HnOLO7EVJ/+Hs9eqMPxHOzScPc2/OXueMf17nTGy8P+1awCULXFbEfM84LuR3w/jy/fYlfDexFbA9CrC2x2jqJ7yuL7FZCXKsc9c949p5OqkfNSU6PwatU523PPTrRK6XHknpzRsfris+DhlcfJrnD+98TIUT7meG+EMVW4nEEzzy7x3X8fuoK+Jz84L7w1XQyupkXeKi+wOJN6qcLAV/aDtu72fkj0euj0R8bl0Sf2B1XiZ/MCP4Q0bBH0hqEeYPe5r8oW0t1h9YnTr9gfeDFpdHke/JBP9rqB0qfFi/4o8S5DEDR8xjDxgmPf+GJP9i/ZRNgaPmy2Hrz2Sum1Y+XIGx0K0C9VPJNmJmXm5ryoersL+g3Czm+wwzzhPodJxTvM9F9Oe5eTAKHgwc5Mrywjua4lrLWnAeTHVqzoOXLa7R/eYR7ClF81/VENdqkv2wat0hbhw75fOICJxNhfsHybdEfnc35XV2yrWq60wlb77IeSQ//1YEPpbC/JNbrojLPU3zf5hZ7PwTfTrnvwYcp/VPUx5nDYi1i4yzMj5XsJWxuZPhD3joduDgDFviB+UE+US93+RjcAiLg2uQ/9hez5Ctgxsa7zc036SpsWpdOizeWMw5vw5pvrxbXWy+TIcmypeZYc/wL8D9Nin+r/BvbmH7E673B6zPEwi0xxCPxlAf7sMCfQ514qersO8F0O0CtEVooZ7fLkFbhnYd/n8DrguCX22Gx4eVlPeXvnP/nmheijCvacaFsPi46Lhwrv/uHZH+NU36syHjjarfUtJ/+75If0mT/oxkvOsx9GcU7gu+0xTeF8oJxyWZ/mJInI2qP6sw/xPJ+l+H2Jy2/oJkvLUY+nNK+sXrf0OT/nxIvTSq/hUl/eL1X9GkfzWkbhBV/6rC+p9I1v+mpvhnScZbj6E/r1CPezkY2UHnN3sgqU9tLRmH6zE4FJQ5OO5LCYftJeOwG4NDUZmDa7sSDlVNHEzJuPdjcFgL4bAF9+DuaPJigM4XBs/hiqb4KOPQjMGhpM5hujB4DjtLxqEVg0NZncN0YfAcPtLAwQypoxzG4LCukC+49lD43KuW8HOviqQ+zvKwBM8D6dGOwWND4Tm9H3iO2+vYnmf/LuJCnwclXV8yYcx8XUi2b2C5ZUO4fR2DWyWE2w7sLYbI9+0e6vRttztAs9w+AZZp+JMZg8vTGFw2Q7hsQ07atQN7CkXgT+T9zGspcbHm1BlJbOxL6oz/Q/v3nHp/i6szthXq/ewrBHW4puw1A57ftYT39fzzgLG5XO+TuOhY+Jzkc/icRpxK8n0S3c8bKGcnQEMR5zr0SZtzWs8b3gYAAP//ZmL1wygwAAA=";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/9yaPWzbRhTHSUqyJVmy5a9EbdNUBRLULWrT+UAgdFKRunDRDEYTFPGkMNJFYiGRKkkVaaeMHTtmzNgxY8eOGTtmTLeMWQJkc++qR/l8vjudCIU6iMDD6cxLeO/H/717d8eqMboqUO5Dyf49LvNMybZ7CeUOtiy2GtQbUD6A8gmUV7Bdwnbv+Oig+f3B8VdtJ4iakd9sDQZ7tweDu24bkXZXsX0savcN/g0Npe0OWl3/66AT4vufY/t0Urs7bhhBPw/BH+JnBlud8pvUX66c1k1szy6ere/snnIxKC7jyzxbbTC34/cSP/cErkODf61hW8YWI/wI/97EJsB77j0SjkVsDrZjbPYwDOye33J6dsf3Oz1kd/0+sn8LHLvv/+TbYdAa/SAPsIeeG0UojEIb9R+idhsFTVJFgU0/n7TvC3RUo/5OuNd/vJM7efU2Z/z7NmdiY/V1aI3KQXZUPl3i837DcCL/r4w3225fwHsdWwHb3Qg7eA+NdcP69Rk2K0WuNaYfb5hykt+xzuoCvz8A38d+7wbo56HY//hKy/+8cXYcsnHLYNpN0sv/GlThhtuZEr1sYSuR+IO7/63ruWEXtXm8vlgwvVwC32m/acksml5IvFLlZino5cj1Oj+gcOB7IeLx2l1QvdB+L7JezCn0klHQC0llZHrZ00QvA2u2eqH91kkvrE4aTF5H7hMBvDPULhVetO7YqwR5VM/l89kDpmnrwxDkg7Su6RR92nxeNl5N6rlp5esV6Eu8lIl1LFjmnHtP1zTJ17dgPRQjsqj7GerfPYdGL3KK8+iUep+Yp6Pods9FnihPva5JXHxgzThPj/3WLE/XLS7G6+cWrJF5+tjSIC5WBet91X2VpHHwtSAcqnA3FeYjku/xdHljzuPyNVOqjkuVvH6R8lpWH9YUvCwFfZApncfppib6eJyZrT6Ivzrpowqcx/O/KY7bBsTuWcZtEa9tbGVs3rD/He6/E7l4BSDQSTlFXtPOZ/kEXGRxdQXyLyfoGKJxc1Wj+SzOh+PUXXVfXxavLKrOjtt4Aru/Pdt8Pu4aL5+nun3ufRRgPk/rfTzFtoHtj7gOPJ5B4P4T4tlz2F//Cwb037DP/mJ5VP4D4F8VII8tUoGb+FcG/qvAdQ3278Hx39fheRvyeLKU8vo4dG/d5L2nIrznecYRWXyddRw55XHjOo/HiiY8spL+T8vDUuJx7RaPR0kTHhlB/1cT8MgozDOhW+fOM+WU45qIR1ESt6flkVXQx1AQP1Yh1s+bR0HQ/2oCHjklHvz4saYJj7xkf3laHktKPPjxo6IJj2XJPsm0PJYV4sdQED/WNYmnlqD/tQQ88gr7lY96vhM1f3F6gv26Dc25XEnApaDMxfUeCbhsas5lJwGXojIXz/EEXLY04WIK/NhPwGVFwmUD5vy2P3zYQ6cDieWyrUm8FXGpJ+BSUucyHkgslwuac2kk4FJW5zIeSCyXixpwMSX7SIcJuKwq5Cue0+eeQ1ZTPoesCM4faD6WRDhHCfisKXx3EUaB63WaThA4v/I4xedxae+3meADu08mWvfQHLMSjl8m4FiRcLwAa6M+CkOng5pdx2v30HmOHwLbeejNTMDpfgJO6xJOm5Azt53IGUPi6I18/3t5TpysCfuyJNZ2BfuyeeD4bsJ5SoPZlz1SOE+hPwmpwTNFn42wPC+nvI/Bnrc8MfX6fshDj7nnUp/A73nEuff5/dC8z3Ni7m6E+qLvcUoacE/rPOe/AAAA//9qGb5tyDIAAA==";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

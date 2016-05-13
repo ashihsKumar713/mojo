@@ -528,24 +528,22 @@ abstract class View {
 }
 
 
-class _ViewProxyImpl extends bindings.Proxy {
-  _ViewProxyImpl.fromEndpoint(
+class _ViewProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ViewProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ViewProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ViewProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ViewProxyImpl.unbound() : super.unbound();
-
-  static _ViewProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ViewProxyImpl"));
-    return new _ViewProxyImpl.fromEndpoint(endpoint);
-  }
+  _ViewProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ViewServiceDescription();
+      new _ViewServiceDescription();
 
+  String get serviceName => View.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewMethodGetTokenName:
@@ -575,77 +573,30 @@ class _ViewProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ViewProxyImpl($superString)";
+    return "_ViewProxyControl($superString)";
   }
 }
 
 
-class _ViewProxyCalls implements View {
-  _ViewProxyImpl _proxyImpl;
-
-  _ViewProxyCalls(this._proxyImpl);
-    dynamic getToken([Function responseFactory = null]) {
-      var params = new _ViewGetTokenParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _viewMethodGetTokenName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void getServiceProvider(Object serviceProvider) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ViewGetServiceProviderParams();
-      params.serviceProvider = serviceProvider;
-      _proxyImpl.sendMessage(params, _viewMethodGetServiceProviderName);
-    }
-    void createScene(Object scene) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ViewCreateSceneParams();
-      params.scene = scene;
-      _proxyImpl.sendMessage(params, _viewMethodCreateSceneName);
-    }
-    void getContainer(Object container) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ViewGetContainerParams();
-      params.container = container;
-      _proxyImpl.sendMessage(params, _viewMethodGetContainerName);
-    }
-}
-
-
-class ViewProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  View ptr;
-
-  ViewProxy(_ViewProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ViewProxyCalls(proxyImpl);
-
+class ViewProxy extends bindings.Proxy
+                              implements View {
   ViewProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ViewProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ViewProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ViewProxyControl.fromEndpoint(endpoint));
 
-  ViewProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ViewProxyImpl.fromHandle(handle) {
-    ptr = new _ViewProxyCalls(impl);
-  }
+  ViewProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ViewProxyControl.fromHandle(handle));
 
-  ViewProxy.unbound() :
-      impl = new _ViewProxyImpl.unbound() {
-    ptr = new _ViewProxyCalls(impl);
+  ViewProxy.unbound()
+      : super(new _ViewProxyControl.unbound());
+
+  static ViewProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewProxy"));
+    return new ViewProxy.fromEndpoint(endpoint);
   }
 
   factory ViewProxy.connectToService(
@@ -655,30 +606,44 @@ class ViewProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ViewProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewProxy"));
-    return new ViewProxy.fromEndpoint(endpoint);
+
+  dynamic getToken([Function responseFactory = null]) {
+    var params = new _ViewGetTokenParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _viewMethodGetTokenName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => View.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void getServiceProvider(Object serviceProvider) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewGetServiceProviderParams();
+    params.serviceProvider = serviceProvider;
+    ctrl.sendMessage(params,
+        _viewMethodGetServiceProviderName);
   }
-
-  String toString() {
-    return "ViewProxy($impl)";
+  void createScene(Object scene) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewCreateSceneParams();
+    params.scene = scene;
+    ctrl.sendMessage(params,
+        _viewMethodCreateSceneName);
+  }
+  void getContainer(Object container) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewGetContainerParams();
+    params.container = container;
+    ctrl.sendMessage(params,
+        _viewMethodGetContainerName);
   }
 }
 
@@ -819,24 +784,22 @@ abstract class ViewListener {
 }
 
 
-class _ViewListenerProxyImpl extends bindings.Proxy {
-  _ViewListenerProxyImpl.fromEndpoint(
+class _ViewListenerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ViewListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ViewListenerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ViewListenerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ViewListenerProxyImpl.unbound() : super.unbound();
-
-  static _ViewListenerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ViewListenerProxyImpl"));
-    return new _ViewListenerProxyImpl.fromEndpoint(endpoint);
-  }
+  _ViewListenerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ViewListenerServiceDescription();
+      new _ViewListenerServiceDescription();
 
+  String get serviceName => ViewListener.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewListenerMethodOnPropertiesChangedName:
@@ -866,52 +829,30 @@ class _ViewListenerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ViewListenerProxyImpl($superString)";
+    return "_ViewListenerProxyControl($superString)";
   }
 }
 
 
-class _ViewListenerProxyCalls implements ViewListener {
-  _ViewListenerProxyImpl _proxyImpl;
-
-  _ViewListenerProxyCalls(this._proxyImpl);
-    dynamic onPropertiesChanged(int sceneVersion,view_properties_mojom.ViewProperties properties,[Function responseFactory = null]) {
-      var params = new _ViewListenerOnPropertiesChangedParams();
-      params.sceneVersion = sceneVersion;
-      params.properties = properties;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _viewListenerMethodOnPropertiesChangedName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class ViewListenerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ViewListener ptr;
-
-  ViewListenerProxy(_ViewListenerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ViewListenerProxyCalls(proxyImpl);
-
+class ViewListenerProxy extends bindings.Proxy
+                              implements ViewListener {
   ViewListenerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ViewListenerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ViewListenerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ViewListenerProxyControl.fromEndpoint(endpoint));
 
-  ViewListenerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ViewListenerProxyImpl.fromHandle(handle) {
-    ptr = new _ViewListenerProxyCalls(impl);
-  }
+  ViewListenerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ViewListenerProxyControl.fromHandle(handle));
 
-  ViewListenerProxy.unbound() :
-      impl = new _ViewListenerProxyImpl.unbound() {
-    ptr = new _ViewListenerProxyCalls(impl);
+  ViewListenerProxy.unbound()
+      : super(new _ViewListenerProxyControl.unbound());
+
+  static ViewListenerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewListenerProxy"));
+    return new ViewListenerProxy.fromEndpoint(endpoint);
   }
 
   factory ViewListenerProxy.connectToService(
@@ -921,30 +862,16 @@ class ViewListenerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ViewListenerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewListenerProxy"));
-    return new ViewListenerProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => ViewListener.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ViewListenerProxy($impl)";
+  dynamic onPropertiesChanged(int sceneVersion,view_properties_mojom.ViewProperties properties,[Function responseFactory = null]) {
+    var params = new _ViewListenerOnPropertiesChangedParams();
+    params.sceneVersion = sceneVersion;
+    params.properties = properties;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _viewListenerMethodOnPropertiesChangedName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

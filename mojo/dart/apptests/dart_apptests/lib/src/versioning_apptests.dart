@@ -27,7 +27,7 @@ tests(Application application, String url) {
       // know about the birthday field).
       bool retrieveFingerPrint = true;
       var response =
-          await databaseProxy.ptr.queryEmployee(1, retrieveFingerPrint);
+          await databaseProxy.queryEmployee(1, retrieveFingerPrint);
       expect(response.employee.employeeId, equals(1));
       expect(response.employee.name, equals("Homer Simpson"));
       expect(response.employee.department, equals(Department.dev));
@@ -39,12 +39,12 @@ tests(Application application, String url) {
       newEmployee.employeeId = 2;
       newEmployee.name = "Marge Simpson";
       newEmployee.department = Department.sales;
-      response = await databaseProxy.ptr.addEmployee(newEmployee);
+      response = await databaseProxy.addEmployee(newEmployee);
       expect(response.success, isTrue);
 
       // Query for employee #2.
       retrieveFingerPrint = false;
-      response = await databaseProxy.ptr.queryEmployee(2, retrieveFingerPrint);
+      response = await databaseProxy.queryEmployee(2, retrieveFingerPrint);
       expect(response.employee.employeeId, equals(2));
       expect(response.employee.name, equals("Marge Simpson"));
       expect(response.employee.department, equals(Department.sales));
@@ -60,7 +60,7 @@ tests(Application application, String url) {
       application.connectToService(
           "mojo:versioning_test_service", databaseProxy);
       // Query the version.
-      var version = await databaseProxy.queryVersion();
+      var version = await databaseProxy.ctrl.queryVersion();
       // Expect it to be 1.
       expect(version, equals(1));
       // Disconnect from database.
@@ -74,26 +74,26 @@ tests(Application application, String url) {
           "mojo:versioning_test_service", databaseProxy);
 
       // Require version 1.
-      databaseProxy.requireVersion(1);
-      expect(databaseProxy.version, equals(1));
+      databaseProxy.ctrl.requireVersion(1);
+      expect(databaseProxy.ctrl.version, equals(1));
 
       // Query for employee #3.
       var retrieveFingerPrint = false;
       var response =
-          await databaseProxy.ptr.queryEmployee(3, retrieveFingerPrint);
+          await databaseProxy.queryEmployee(3, retrieveFingerPrint);
 
       // Got some kind of response.
       expect(response, isNotNull);
 
       // Require version 3 (which cannot be satisfied).
-      databaseProxy.requireVersion(3);
-      expect(databaseProxy.version, equals(3));
+      databaseProxy.ctrl.requireVersion(3);
+      expect(databaseProxy.ctrl.version, equals(3));
 
       // Query for employee #1, observe that the call fails.
       bool exceptionCaught = false;
       try {
         response = await databaseProxy.responseOrError(
-            databaseProxy.ptr.queryEmployee(1, retrieveFingerPrint));
+            databaseProxy.queryEmployee(1, retrieveFingerPrint));
         fail('Exception should be thrown.');
       } catch (e) {
         exceptionCaught = true;
@@ -117,7 +117,7 @@ tests(Application application, String url) {
       // Although the client side doesn't know whether the service side supports
       // version 1, calling a version 1 method succeeds as long as the service
       // side supports version 1.
-      var response = await databaseProxy.ptr.attachFingerPrint(1, fingerPrint);
+      var response = await databaseProxy.attachFingerPrint(1, fingerPrint);
       expect(response.success, isTrue);
 
       // Calling a version 2 method (which the service side doesn't support)
@@ -125,7 +125,7 @@ tests(Application application, String url) {
       bool exceptionCaught = false;
       try {
         response = await databaseProxy
-            .responseOrError(databaseProxy.ptr.listEmployeeIds());
+            .responseOrError(databaseProxy.listEmployeeIds());
         fail('Exception should be thrown.');
       } catch (e) {
         exceptionCaught = true;

@@ -934,29 +934,27 @@ abstract class WebSocket {
   void connect(String url, List<String> protocols, String origin, core.MojoDataPipeConsumer sendStream, Object client);
   void send(bool fin, WebSocketMessageType type, int numBytes);
   void flowControl(int quota);
-  void close(int code, String reason);
+  void close_(int code, String reason);
   static const int kAbnormalCloseCode = 1006;
 }
 
 
-class _WebSocketProxyImpl extends bindings.Proxy {
-  _WebSocketProxyImpl.fromEndpoint(
+class _WebSocketProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _WebSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _WebSocketProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _WebSocketProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _WebSocketProxyImpl.unbound() : super.unbound();
-
-  static _WebSocketProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _WebSocketProxyImpl"));
-    return new _WebSocketProxyImpl.fromEndpoint(endpoint);
-  }
+  _WebSocketProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _WebSocketServiceDescription();
+      new _WebSocketServiceDescription();
 
+  String get serviceName => WebSocket.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -966,85 +964,30 @@ class _WebSocketProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_WebSocketProxyImpl($superString)";
+    return "_WebSocketProxyControl($superString)";
   }
 }
 
 
-class _WebSocketProxyCalls implements WebSocket {
-  _WebSocketProxyImpl _proxyImpl;
-
-  _WebSocketProxyCalls(this._proxyImpl);
-    void connect(String url, List<String> protocols, String origin, core.MojoDataPipeConsumer sendStream, Object client) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _WebSocketConnectParams();
-      params.url = url;
-      params.protocols = protocols;
-      params.origin = origin;
-      params.sendStream = sendStream;
-      params.client = client;
-      _proxyImpl.sendMessage(params, _webSocketMethodConnectName);
-    }
-    void send(bool fin, WebSocketMessageType type, int numBytes) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _WebSocketSendParams();
-      params.fin = fin;
-      params.type = type;
-      params.numBytes = numBytes;
-      _proxyImpl.sendMessage(params, _webSocketMethodSendName);
-    }
-    void flowControl(int quota) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _WebSocketFlowControlParams();
-      params.quota = quota;
-      _proxyImpl.sendMessage(params, _webSocketMethodFlowControlName);
-    }
-    void close(int code, String reason) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _WebSocketCloseParams();
-      params.code = code;
-      params.reason = reason;
-      _proxyImpl.sendMessage(params, _webSocketMethodCloseName);
-    }
-}
-
-
-class WebSocketProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  WebSocket ptr;
-
-  WebSocketProxy(_WebSocketProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _WebSocketProxyCalls(proxyImpl);
-
+class WebSocketProxy extends bindings.Proxy
+                              implements WebSocket {
   WebSocketProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _WebSocketProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _WebSocketProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _WebSocketProxyControl.fromEndpoint(endpoint));
 
-  WebSocketProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _WebSocketProxyImpl.fromHandle(handle) {
-    ptr = new _WebSocketProxyCalls(impl);
-  }
+  WebSocketProxy.fromHandle(core.MojoHandle handle)
+      : super(new _WebSocketProxyControl.fromHandle(handle));
 
-  WebSocketProxy.unbound() :
-      impl = new _WebSocketProxyImpl.unbound() {
-    ptr = new _WebSocketProxyCalls(impl);
+  WebSocketProxy.unbound()
+      : super(new _WebSocketProxyControl.unbound());
+
+  static WebSocketProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For WebSocketProxy"));
+    return new WebSocketProxy.fromEndpoint(endpoint);
   }
 
   factory WebSocketProxy.connectToService(
@@ -1054,30 +997,53 @@ class WebSocketProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static WebSocketProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For WebSocketProxy"));
-    return new WebSocketProxy.fromEndpoint(endpoint);
+
+  void connect(String url, List<String> protocols, String origin, core.MojoDataPipeConsumer sendStream, Object client) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _WebSocketConnectParams();
+    params.url = url;
+    params.protocols = protocols;
+    params.origin = origin;
+    params.sendStream = sendStream;
+    params.client = client;
+    ctrl.sendMessage(params,
+        _webSocketMethodConnectName);
   }
-
-  String get serviceName => WebSocket.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void send(bool fin, WebSocketMessageType type, int numBytes) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _WebSocketSendParams();
+    params.fin = fin;
+    params.type = type;
+    params.numBytes = numBytes;
+    ctrl.sendMessage(params,
+        _webSocketMethodSendName);
   }
-
-  String toString() {
-    return "WebSocketProxy($impl)";
+  void flowControl(int quota) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _WebSocketFlowControlParams();
+    params.quota = quota;
+    ctrl.sendMessage(params,
+        _webSocketMethodFlowControlName);
+  }
+  void close_(int code, String reason) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _WebSocketCloseParams();
+    params.code = code;
+    params.reason = reason;
+    ctrl.sendMessage(params,
+        _webSocketMethodCloseName);
   }
 }
 
@@ -1135,7 +1101,7 @@ class WebSocketStub extends bindings.Stub {
       case _webSocketMethodCloseName:
         var params = _WebSocketCloseParams.deserialize(
             message.payload);
-        _impl.close(params.code, params.reason);
+        _impl.close_(params.code, params.reason);
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
@@ -1206,24 +1172,22 @@ abstract class WebSocketClient {
 }
 
 
-class _WebSocketClientProxyImpl extends bindings.Proxy {
-  _WebSocketClientProxyImpl.fromEndpoint(
+class _WebSocketClientProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _WebSocketClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _WebSocketClientProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _WebSocketClientProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _WebSocketClientProxyImpl.unbound() : super.unbound();
-
-  static _WebSocketClientProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _WebSocketClientProxyImpl"));
-    return new _WebSocketClientProxyImpl.fromEndpoint(endpoint);
-  }
+  _WebSocketClientProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _WebSocketClientServiceDescription();
+      new _WebSocketClientServiceDescription();
 
+  String get serviceName => WebSocketClient.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -1233,93 +1197,30 @@ class _WebSocketClientProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_WebSocketClientProxyImpl($superString)";
+    return "_WebSocketClientProxyControl($superString)";
   }
 }
 
 
-class _WebSocketClientProxyCalls implements WebSocketClient {
-  _WebSocketClientProxyImpl _proxyImpl;
-
-  _WebSocketClientProxyCalls(this._proxyImpl);
-    void didConnect(String selectedSubprotocol, String extensions, core.MojoDataPipeConsumer receiveStream) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _WebSocketClientDidConnectParams();
-      params.selectedSubprotocol = selectedSubprotocol;
-      params.extensions = extensions;
-      params.receiveStream = receiveStream;
-      _proxyImpl.sendMessage(params, _webSocketClientMethodDidConnectName);
-    }
-    void didReceiveData(bool fin, WebSocketMessageType type, int numBytes) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _WebSocketClientDidReceiveDataParams();
-      params.fin = fin;
-      params.type = type;
-      params.numBytes = numBytes;
-      _proxyImpl.sendMessage(params, _webSocketClientMethodDidReceiveDataName);
-    }
-    void didReceiveFlowControl(int quota) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _WebSocketClientDidReceiveFlowControlParams();
-      params.quota = quota;
-      _proxyImpl.sendMessage(params, _webSocketClientMethodDidReceiveFlowControlName);
-    }
-    void didFail(String message) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _WebSocketClientDidFailParams();
-      params.message = message;
-      _proxyImpl.sendMessage(params, _webSocketClientMethodDidFailName);
-    }
-    void didClose(bool wasClean, int code, String reason) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _WebSocketClientDidCloseParams();
-      params.wasClean = wasClean;
-      params.code = code;
-      params.reason = reason;
-      _proxyImpl.sendMessage(params, _webSocketClientMethodDidCloseName);
-    }
-}
-
-
-class WebSocketClientProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  WebSocketClient ptr;
-
-  WebSocketClientProxy(_WebSocketClientProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _WebSocketClientProxyCalls(proxyImpl);
-
+class WebSocketClientProxy extends bindings.Proxy
+                              implements WebSocketClient {
   WebSocketClientProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _WebSocketClientProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _WebSocketClientProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _WebSocketClientProxyControl.fromEndpoint(endpoint));
 
-  WebSocketClientProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _WebSocketClientProxyImpl.fromHandle(handle) {
-    ptr = new _WebSocketClientProxyCalls(impl);
-  }
+  WebSocketClientProxy.fromHandle(core.MojoHandle handle)
+      : super(new _WebSocketClientProxyControl.fromHandle(handle));
 
-  WebSocketClientProxy.unbound() :
-      impl = new _WebSocketClientProxyImpl.unbound() {
-    ptr = new _WebSocketClientProxyCalls(impl);
+  WebSocketClientProxy.unbound()
+      : super(new _WebSocketClientProxyControl.unbound());
+
+  static WebSocketClientProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For WebSocketClientProxy"));
+    return new WebSocketClientProxy.fromEndpoint(endpoint);
   }
 
   factory WebSocketClientProxy.connectToService(
@@ -1329,30 +1230,62 @@ class WebSocketClientProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static WebSocketClientProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For WebSocketClientProxy"));
-    return new WebSocketClientProxy.fromEndpoint(endpoint);
+
+  void didConnect(String selectedSubprotocol, String extensions, core.MojoDataPipeConsumer receiveStream) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _WebSocketClientDidConnectParams();
+    params.selectedSubprotocol = selectedSubprotocol;
+    params.extensions = extensions;
+    params.receiveStream = receiveStream;
+    ctrl.sendMessage(params,
+        _webSocketClientMethodDidConnectName);
   }
-
-  String get serviceName => WebSocketClient.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void didReceiveData(bool fin, WebSocketMessageType type, int numBytes) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _WebSocketClientDidReceiveDataParams();
+    params.fin = fin;
+    params.type = type;
+    params.numBytes = numBytes;
+    ctrl.sendMessage(params,
+        _webSocketClientMethodDidReceiveDataName);
   }
-
-  String toString() {
-    return "WebSocketClientProxy($impl)";
+  void didReceiveFlowControl(int quota) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _WebSocketClientDidReceiveFlowControlParams();
+    params.quota = quota;
+    ctrl.sendMessage(params,
+        _webSocketClientMethodDidReceiveFlowControlName);
+  }
+  void didFail(String message) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _WebSocketClientDidFailParams();
+    params.message = message;
+    ctrl.sendMessage(params,
+        _webSocketClientMethodDidFailName);
+  }
+  void didClose(bool wasClean, int code, String reason) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _WebSocketClientDidCloseParams();
+    params.wasClean = wasClean;
+    params.code = code;
+    params.reason = reason;
+    ctrl.sendMessage(params,
+        _webSocketClientMethodDidCloseName);
   }
 }
 

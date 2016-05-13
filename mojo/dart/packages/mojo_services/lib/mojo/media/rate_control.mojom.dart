@@ -877,24 +877,22 @@ abstract class RateControl {
 }
 
 
-class _RateControlProxyImpl extends bindings.Proxy {
-  _RateControlProxyImpl.fromEndpoint(
+class _RateControlProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _RateControlProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _RateControlProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _RateControlProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _RateControlProxyImpl.unbound() : super.unbound();
-
-  static _RateControlProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _RateControlProxyImpl"));
-    return new _RateControlProxyImpl.fromEndpoint(endpoint);
-  }
+  _RateControlProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _RateControlServiceDescription();
+      new _RateControlServiceDescription();
 
+  String get serviceName => RateControl.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _rateControlMethodGetCurrentTransformName:
@@ -924,108 +922,30 @@ class _RateControlProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_RateControlProxyImpl($superString)";
+    return "_RateControlProxyControl($superString)";
   }
 }
 
 
-class _RateControlProxyCalls implements RateControl {
-  _RateControlProxyImpl _proxyImpl;
-
-  _RateControlProxyCalls(this._proxyImpl);
-    dynamic getCurrentTransform([Function responseFactory = null]) {
-      var params = new _RateControlGetCurrentTransformParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _rateControlMethodGetCurrentTransformName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void setCurrentQuad(TimelineQuad quad) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _RateControlSetCurrentQuadParams();
-      params.quad = quad;
-      _proxyImpl.sendMessage(params, _rateControlMethodSetCurrentQuadName);
-    }
-    void setTargetTimelineId(int id) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _RateControlSetTargetTimelineIdParams();
-      params.id = id;
-      _proxyImpl.sendMessage(params, _rateControlMethodSetTargetTimelineIdName);
-    }
-    void setRate(int referenceDelta, int targetDelta) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _RateControlSetRateParams();
-      params.referenceDelta = referenceDelta;
-      params.targetDelta = targetDelta;
-      _proxyImpl.sendMessage(params, _rateControlMethodSetRateName);
-    }
-    void setRateAtReferenceTime(int referenceDelta, int targetDelta, int referenceTime) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _RateControlSetRateAtReferenceTimeParams();
-      params.referenceDelta = referenceDelta;
-      params.targetDelta = targetDelta;
-      params.referenceTime = referenceTime;
-      _proxyImpl.sendMessage(params, _rateControlMethodSetRateAtReferenceTimeName);
-    }
-    void setRateAtTargetTime(int referenceDelta, int targetDelta, int targetTime) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _RateControlSetRateAtTargetTimeParams();
-      params.referenceDelta = referenceDelta;
-      params.targetDelta = targetDelta;
-      params.targetTime = targetTime;
-      _proxyImpl.sendMessage(params, _rateControlMethodSetRateAtTargetTimeName);
-    }
-    void cancelPendingChanges() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _RateControlCancelPendingChangesParams();
-      _proxyImpl.sendMessage(params, _rateControlMethodCancelPendingChangesName);
-    }
-}
-
-
-class RateControlProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  RateControl ptr;
-
-  RateControlProxy(_RateControlProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _RateControlProxyCalls(proxyImpl);
-
+class RateControlProxy extends bindings.Proxy
+                              implements RateControl {
   RateControlProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _RateControlProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _RateControlProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _RateControlProxyControl.fromEndpoint(endpoint));
 
-  RateControlProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _RateControlProxyImpl.fromHandle(handle) {
-    ptr = new _RateControlProxyCalls(impl);
-  }
+  RateControlProxy.fromHandle(core.MojoHandle handle)
+      : super(new _RateControlProxyControl.fromHandle(handle));
 
-  RateControlProxy.unbound() :
-      impl = new _RateControlProxyImpl.unbound() {
-    ptr = new _RateControlProxyCalls(impl);
+  RateControlProxy.unbound()
+      : super(new _RateControlProxyControl.unbound());
+
+  static RateControlProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For RateControlProxy"));
+    return new RateControlProxy.fromEndpoint(endpoint);
   }
 
   factory RateControlProxy.connectToService(
@@ -1035,30 +955,78 @@ class RateControlProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static RateControlProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For RateControlProxy"));
-    return new RateControlProxy.fromEndpoint(endpoint);
+
+  dynamic getCurrentTransform([Function responseFactory = null]) {
+    var params = new _RateControlGetCurrentTransformParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _rateControlMethodGetCurrentTransformName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => RateControl.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void setCurrentQuad(TimelineQuad quad) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _RateControlSetCurrentQuadParams();
+    params.quad = quad;
+    ctrl.sendMessage(params,
+        _rateControlMethodSetCurrentQuadName);
   }
-
-  String toString() {
-    return "RateControlProxy($impl)";
+  void setTargetTimelineId(int id) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _RateControlSetTargetTimelineIdParams();
+    params.id = id;
+    ctrl.sendMessage(params,
+        _rateControlMethodSetTargetTimelineIdName);
+  }
+  void setRate(int referenceDelta, int targetDelta) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _RateControlSetRateParams();
+    params.referenceDelta = referenceDelta;
+    params.targetDelta = targetDelta;
+    ctrl.sendMessage(params,
+        _rateControlMethodSetRateName);
+  }
+  void setRateAtReferenceTime(int referenceDelta, int targetDelta, int referenceTime) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _RateControlSetRateAtReferenceTimeParams();
+    params.referenceDelta = referenceDelta;
+    params.targetDelta = targetDelta;
+    params.referenceTime = referenceTime;
+    ctrl.sendMessage(params,
+        _rateControlMethodSetRateAtReferenceTimeName);
+  }
+  void setRateAtTargetTime(int referenceDelta, int targetDelta, int targetTime) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _RateControlSetRateAtTargetTimeParams();
+    params.referenceDelta = referenceDelta;
+    params.targetDelta = targetDelta;
+    params.targetTime = targetTime;
+    ctrl.sendMessage(params,
+        _rateControlMethodSetRateAtTargetTimeName);
+  }
+  void cancelPendingChanges() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _RateControlCancelPendingChangesParams();
+    ctrl.sendMessage(params,
+        _rateControlMethodCancelPendingChangesName);
   }
 }
 

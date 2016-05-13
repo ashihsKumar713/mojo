@@ -1943,24 +1943,22 @@ abstract class CheckMethodWithEmptyResponse {
 }
 
 
-class _CheckMethodWithEmptyResponseProxyImpl extends bindings.Proxy {
-  _CheckMethodWithEmptyResponseProxyImpl.fromEndpoint(
+class _CheckMethodWithEmptyResponseProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _CheckMethodWithEmptyResponseProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _CheckMethodWithEmptyResponseProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _CheckMethodWithEmptyResponseProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _CheckMethodWithEmptyResponseProxyImpl.unbound() : super.unbound();
-
-  static _CheckMethodWithEmptyResponseProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _CheckMethodWithEmptyResponseProxyImpl"));
-    return new _CheckMethodWithEmptyResponseProxyImpl.fromEndpoint(endpoint);
-  }
+  _CheckMethodWithEmptyResponseProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _CheckMethodWithEmptyResponseServiceDescription();
+      new _CheckMethodWithEmptyResponseServiceDescription();
 
+  String get serviceName => CheckMethodWithEmptyResponse.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _checkMethodWithEmptyResponseMethodWithoutParameterAndEmptyResponseName:
@@ -2010,59 +2008,30 @@ class _CheckMethodWithEmptyResponseProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_CheckMethodWithEmptyResponseProxyImpl($superString)";
+    return "_CheckMethodWithEmptyResponseProxyControl($superString)";
   }
 }
 
 
-class _CheckMethodWithEmptyResponseProxyCalls implements CheckMethodWithEmptyResponse {
-  _CheckMethodWithEmptyResponseProxyImpl _proxyImpl;
-
-  _CheckMethodWithEmptyResponseProxyCalls(this._proxyImpl);
-    dynamic withoutParameterAndEmptyResponse([Function responseFactory = null]) {
-      var params = new _CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _checkMethodWithEmptyResponseMethodWithoutParameterAndEmptyResponseName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic withParameterAndEmptyResponse(bool b,[Function responseFactory = null]) {
-      var params = new _CheckMethodWithEmptyResponseWithParameterAndEmptyResponseParams();
-      params.b = b;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _checkMethodWithEmptyResponseMethodWithParameterAndEmptyResponseName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class CheckMethodWithEmptyResponseProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  CheckMethodWithEmptyResponse ptr;
-
-  CheckMethodWithEmptyResponseProxy(_CheckMethodWithEmptyResponseProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _CheckMethodWithEmptyResponseProxyCalls(proxyImpl);
-
+class CheckMethodWithEmptyResponseProxy extends bindings.Proxy
+                              implements CheckMethodWithEmptyResponse {
   CheckMethodWithEmptyResponseProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _CheckMethodWithEmptyResponseProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _CheckMethodWithEmptyResponseProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _CheckMethodWithEmptyResponseProxyControl.fromEndpoint(endpoint));
 
-  CheckMethodWithEmptyResponseProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _CheckMethodWithEmptyResponseProxyImpl.fromHandle(handle) {
-    ptr = new _CheckMethodWithEmptyResponseProxyCalls(impl);
-  }
+  CheckMethodWithEmptyResponseProxy.fromHandle(core.MojoHandle handle)
+      : super(new _CheckMethodWithEmptyResponseProxyControl.fromHandle(handle));
 
-  CheckMethodWithEmptyResponseProxy.unbound() :
-      impl = new _CheckMethodWithEmptyResponseProxyImpl.unbound() {
-    ptr = new _CheckMethodWithEmptyResponseProxyCalls(impl);
+  CheckMethodWithEmptyResponseProxy.unbound()
+      : super(new _CheckMethodWithEmptyResponseProxyControl.unbound());
+
+  static CheckMethodWithEmptyResponseProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For CheckMethodWithEmptyResponseProxy"));
+    return new CheckMethodWithEmptyResponseProxy.fromEndpoint(endpoint);
   }
 
   factory CheckMethodWithEmptyResponseProxy.connectToService(
@@ -2072,30 +2041,23 @@ class CheckMethodWithEmptyResponseProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static CheckMethodWithEmptyResponseProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For CheckMethodWithEmptyResponseProxy"));
-    return new CheckMethodWithEmptyResponseProxy.fromEndpoint(endpoint);
+
+  dynamic withoutParameterAndEmptyResponse([Function responseFactory = null]) {
+    var params = new _CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _checkMethodWithEmptyResponseMethodWithoutParameterAndEmptyResponseName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => CheckMethodWithEmptyResponse.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "CheckMethodWithEmptyResponseProxy($impl)";
+  dynamic withParameterAndEmptyResponse(bool b,[Function responseFactory = null]) {
+    var params = new _CheckMethodWithEmptyResponseWithParameterAndEmptyResponseParams();
+    params.b = b;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _checkMethodWithEmptyResponseMethodWithParameterAndEmptyResponseName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -2246,24 +2208,22 @@ abstract class CheckNameCollision {
 }
 
 
-class _CheckNameCollisionProxyImpl extends bindings.Proxy {
-  _CheckNameCollisionProxyImpl.fromEndpoint(
+class _CheckNameCollisionProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _CheckNameCollisionProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _CheckNameCollisionProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _CheckNameCollisionProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _CheckNameCollisionProxyImpl.unbound() : super.unbound();
-
-  static _CheckNameCollisionProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _CheckNameCollisionProxyImpl"));
-    return new _CheckNameCollisionProxyImpl.fromEndpoint(endpoint);
-  }
+  _CheckNameCollisionProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _CheckNameCollisionServiceDescription();
+      new _CheckNameCollisionServiceDescription();
 
+  String get serviceName => CheckNameCollision.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _checkNameCollisionMethodWithNameCollisionName:
@@ -2293,52 +2253,30 @@ class _CheckNameCollisionProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_CheckNameCollisionProxyImpl($superString)";
+    return "_CheckNameCollisionProxyControl($superString)";
   }
 }
 
 
-class _CheckNameCollisionProxyCalls implements CheckNameCollision {
-  _CheckNameCollisionProxyImpl _proxyImpl;
-
-  _CheckNameCollisionProxyCalls(this._proxyImpl);
-    dynamic withNameCollision(bool message,bool response,[Function responseFactory = null]) {
-      var params = new _CheckNameCollisionWithNameCollisionParams();
-      params.message = message;
-      params.response = response;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _checkNameCollisionMethodWithNameCollisionName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class CheckNameCollisionProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  CheckNameCollision ptr;
-
-  CheckNameCollisionProxy(_CheckNameCollisionProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _CheckNameCollisionProxyCalls(proxyImpl);
-
+class CheckNameCollisionProxy extends bindings.Proxy
+                              implements CheckNameCollision {
   CheckNameCollisionProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _CheckNameCollisionProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _CheckNameCollisionProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _CheckNameCollisionProxyControl.fromEndpoint(endpoint));
 
-  CheckNameCollisionProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _CheckNameCollisionProxyImpl.fromHandle(handle) {
-    ptr = new _CheckNameCollisionProxyCalls(impl);
-  }
+  CheckNameCollisionProxy.fromHandle(core.MojoHandle handle)
+      : super(new _CheckNameCollisionProxyControl.fromHandle(handle));
 
-  CheckNameCollisionProxy.unbound() :
-      impl = new _CheckNameCollisionProxyImpl.unbound() {
-    ptr = new _CheckNameCollisionProxyCalls(impl);
+  CheckNameCollisionProxy.unbound()
+      : super(new _CheckNameCollisionProxyControl.unbound());
+
+  static CheckNameCollisionProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For CheckNameCollisionProxy"));
+    return new CheckNameCollisionProxy.fromEndpoint(endpoint);
   }
 
   factory CheckNameCollisionProxy.connectToService(
@@ -2348,30 +2286,16 @@ class CheckNameCollisionProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static CheckNameCollisionProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For CheckNameCollisionProxy"));
-    return new CheckNameCollisionProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => CheckNameCollision.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "CheckNameCollisionProxy($impl)";
+  dynamic withNameCollision(bool message,bool response,[Function responseFactory = null]) {
+    var params = new _CheckNameCollisionWithNameCollisionParams();
+    params.message = message;
+    params.response = response;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _checkNameCollisionMethodWithNameCollisionName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -2500,24 +2424,22 @@ abstract class CheckEnumCaps {
 }
 
 
-class _CheckEnumCapsProxyImpl extends bindings.Proxy {
-  _CheckEnumCapsProxyImpl.fromEndpoint(
+class _CheckEnumCapsProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _CheckEnumCapsProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _CheckEnumCapsProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _CheckEnumCapsProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _CheckEnumCapsProxyImpl.unbound() : super.unbound();
-
-  static _CheckEnumCapsProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _CheckEnumCapsProxyImpl"));
-    return new _CheckEnumCapsProxyImpl.fromEndpoint(endpoint);
-  }
+  _CheckEnumCapsProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _CheckEnumCapsServiceDescription();
+      new _CheckEnumCapsServiceDescription();
 
+  String get serviceName => CheckEnumCaps.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -2527,51 +2449,30 @@ class _CheckEnumCapsProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_CheckEnumCapsProxyImpl($superString)";
+    return "_CheckEnumCapsProxyControl($superString)";
   }
 }
 
 
-class _CheckEnumCapsProxyCalls implements CheckEnumCaps {
-  _CheckEnumCapsProxyImpl _proxyImpl;
-
-  _CheckEnumCapsProxyCalls(this._proxyImpl);
-    void setEnumWithInternalAllCaps(EnumWithInternalAllCaps e) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _CheckEnumCapsSetEnumWithInternalAllCapsParams();
-      params.e = e;
-      _proxyImpl.sendMessage(params, _checkEnumCapsMethodSetEnumWithInternalAllCapsName);
-    }
-}
-
-
-class CheckEnumCapsProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  CheckEnumCaps ptr;
-
-  CheckEnumCapsProxy(_CheckEnumCapsProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _CheckEnumCapsProxyCalls(proxyImpl);
-
+class CheckEnumCapsProxy extends bindings.Proxy
+                              implements CheckEnumCaps {
   CheckEnumCapsProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _CheckEnumCapsProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _CheckEnumCapsProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _CheckEnumCapsProxyControl.fromEndpoint(endpoint));
 
-  CheckEnumCapsProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _CheckEnumCapsProxyImpl.fromHandle(handle) {
-    ptr = new _CheckEnumCapsProxyCalls(impl);
-  }
+  CheckEnumCapsProxy.fromHandle(core.MojoHandle handle)
+      : super(new _CheckEnumCapsProxyControl.fromHandle(handle));
 
-  CheckEnumCapsProxy.unbound() :
-      impl = new _CheckEnumCapsProxyImpl.unbound() {
-    ptr = new _CheckEnumCapsProxyCalls(impl);
+  CheckEnumCapsProxy.unbound()
+      : super(new _CheckEnumCapsProxyControl.unbound());
+
+  static CheckEnumCapsProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For CheckEnumCapsProxy"));
+    return new CheckEnumCapsProxy.fromEndpoint(endpoint);
   }
 
   factory CheckEnumCapsProxy.connectToService(
@@ -2581,30 +2482,16 @@ class CheckEnumCapsProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static CheckEnumCapsProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For CheckEnumCapsProxy"));
-    return new CheckEnumCapsProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => CheckEnumCaps.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "CheckEnumCapsProxy($impl)";
+  void setEnumWithInternalAllCaps(EnumWithInternalAllCaps e) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _CheckEnumCapsSetEnumWithInternalAllCapsParams();
+    params.e = e;
+    ctrl.sendMessage(params,
+        _checkEnumCapsMethodSetEnumWithInternalAllCapsName);
   }
 }
 
@@ -2710,24 +2597,22 @@ abstract class TestInterface {
 }
 
 
-class _TestInterfaceProxyImpl extends bindings.Proxy {
-  _TestInterfaceProxyImpl.fromEndpoint(
+class _TestInterfaceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _TestInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _TestInterfaceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _TestInterfaceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _TestInterfaceProxyImpl.unbound() : super.unbound();
-
-  static _TestInterfaceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _TestInterfaceProxyImpl"));
-    return new _TestInterfaceProxyImpl.fromEndpoint(endpoint);
-  }
+  _TestInterfaceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _TestInterfaceServiceDescription();
+      new _TestInterfaceServiceDescription();
 
+  String get serviceName => TestInterface.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -2737,50 +2622,30 @@ class _TestInterfaceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_TestInterfaceProxyImpl($superString)";
+    return "_TestInterfaceProxyControl($superString)";
   }
 }
 
 
-class _TestInterfaceProxyCalls implements TestInterface {
-  _TestInterfaceProxyImpl _proxyImpl;
-
-  _TestInterfaceProxyCalls(this._proxyImpl);
-    void someMessage() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _TestInterfaceSomeMessageParams();
-      _proxyImpl.sendMessage(params, _testInterfaceMethodSomeMessageName);
-    }
-}
-
-
-class TestInterfaceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  TestInterface ptr;
-
-  TestInterfaceProxy(_TestInterfaceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _TestInterfaceProxyCalls(proxyImpl);
-
+class TestInterfaceProxy extends bindings.Proxy
+                              implements TestInterface {
   TestInterfaceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _TestInterfaceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _TestInterfaceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _TestInterfaceProxyControl.fromEndpoint(endpoint));
 
-  TestInterfaceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _TestInterfaceProxyImpl.fromHandle(handle) {
-    ptr = new _TestInterfaceProxyCalls(impl);
-  }
+  TestInterfaceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _TestInterfaceProxyControl.fromHandle(handle));
 
-  TestInterfaceProxy.unbound() :
-      impl = new _TestInterfaceProxyImpl.unbound() {
-    ptr = new _TestInterfaceProxyCalls(impl);
+  TestInterfaceProxy.unbound()
+      : super(new _TestInterfaceProxyControl.unbound());
+
+  static TestInterfaceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TestInterfaceProxy"));
+    return new TestInterfaceProxy.fromEndpoint(endpoint);
   }
 
   factory TestInterfaceProxy.connectToService(
@@ -2790,30 +2655,15 @@ class TestInterfaceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static TestInterfaceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TestInterfaceProxy"));
-    return new TestInterfaceProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => TestInterface.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "TestInterfaceProxy($impl)";
+  void someMessage() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _TestInterfaceSomeMessageParams();
+    ctrl.sendMessage(params,
+        _testInterfaceMethodSomeMessageName);
   }
 }
 
@@ -2917,24 +2767,22 @@ abstract class Regression551 {
 }
 
 
-class _Regression551ProxyImpl extends bindings.Proxy {
-  _Regression551ProxyImpl.fromEndpoint(
+class _Regression551ProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _Regression551ProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _Regression551ProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _Regression551ProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _Regression551ProxyImpl.unbound() : super.unbound();
-
-  static _Regression551ProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _Regression551ProxyImpl"));
-    return new _Regression551ProxyImpl.fromEndpoint(endpoint);
-  }
+  _Regression551ProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _Regression551ServiceDescription();
+      new _Regression551ServiceDescription();
 
+  String get serviceName => Regression551.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _regression551MethodGetName:
@@ -2964,51 +2812,30 @@ class _Regression551ProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_Regression551ProxyImpl($superString)";
+    return "_Regression551ProxyControl($superString)";
   }
 }
 
 
-class _Regression551ProxyCalls implements Regression551 {
-  _Regression551ProxyImpl _proxyImpl;
-
-  _Regression551ProxyCalls(this._proxyImpl);
-    dynamic get(List<String> keyPrefixes,[Function responseFactory = null]) {
-      var params = new _Regression551GetParams();
-      params.keyPrefixes = keyPrefixes;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _regression551MethodGetName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class Regression551Proxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Regression551 ptr;
-
-  Regression551Proxy(_Regression551ProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _Regression551ProxyCalls(proxyImpl);
-
+class Regression551Proxy extends bindings.Proxy
+                              implements Regression551 {
   Regression551Proxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _Regression551ProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _Regression551ProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _Regression551ProxyControl.fromEndpoint(endpoint));
 
-  Regression551Proxy.fromHandle(core.MojoHandle handle) :
-      impl = new _Regression551ProxyImpl.fromHandle(handle) {
-    ptr = new _Regression551ProxyCalls(impl);
-  }
+  Regression551Proxy.fromHandle(core.MojoHandle handle)
+      : super(new _Regression551ProxyControl.fromHandle(handle));
 
-  Regression551Proxy.unbound() :
-      impl = new _Regression551ProxyImpl.unbound() {
-    ptr = new _Regression551ProxyCalls(impl);
+  Regression551Proxy.unbound()
+      : super(new _Regression551ProxyControl.unbound());
+
+  static Regression551Proxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For Regression551Proxy"));
+    return new Regression551Proxy.fromEndpoint(endpoint);
   }
 
   factory Regression551Proxy.connectToService(
@@ -3018,30 +2845,15 @@ class Regression551Proxy implements bindings.ProxyBase {
     return p;
   }
 
-  static Regression551Proxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For Regression551Proxy"));
-    return new Regression551Proxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => Regression551.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "Regression551Proxy($impl)";
+  dynamic get(List<String> keyPrefixes,[Function responseFactory = null]) {
+    var params = new _Regression551GetParams();
+    params.keyPrefixes = keyPrefixes;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _regression551MethodGetName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -3169,24 +2981,22 @@ abstract class ServiceName {
 }
 
 
-class _ServiceNameProxyImpl extends bindings.Proxy {
-  _ServiceNameProxyImpl.fromEndpoint(
+class _ServiceNameProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ServiceNameProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ServiceNameProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ServiceNameProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ServiceNameProxyImpl.unbound() : super.unbound();
-
-  static _ServiceNameProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ServiceNameProxyImpl"));
-    return new _ServiceNameProxyImpl.fromEndpoint(endpoint);
-  }
+  _ServiceNameProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ServiceNameServiceDescription();
+      new _ServiceNameServiceDescription();
 
+  String get serviceName => ServiceName.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _serviceNameMethodServiceNameName:
@@ -3216,50 +3026,30 @@ class _ServiceNameProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ServiceNameProxyImpl($superString)";
+    return "_ServiceNameProxyControl($superString)";
   }
 }
 
 
-class _ServiceNameProxyCalls implements ServiceName {
-  _ServiceNameProxyImpl _proxyImpl;
-
-  _ServiceNameProxyCalls(this._proxyImpl);
-    dynamic serviceName_([Function responseFactory = null]) {
-      var params = new _ServiceNameServiceNameParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _serviceNameMethodServiceNameName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class ServiceNameProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ServiceName ptr;
-
-  ServiceNameProxy(_ServiceNameProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ServiceNameProxyCalls(proxyImpl);
-
+class ServiceNameProxy extends bindings.Proxy
+                              implements ServiceName {
   ServiceNameProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ServiceNameProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ServiceNameProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ServiceNameProxyControl.fromEndpoint(endpoint));
 
-  ServiceNameProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ServiceNameProxyImpl.fromHandle(handle) {
-    ptr = new _ServiceNameProxyCalls(impl);
-  }
+  ServiceNameProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ServiceNameProxyControl.fromHandle(handle));
 
-  ServiceNameProxy.unbound() :
-      impl = new _ServiceNameProxyImpl.unbound() {
-    ptr = new _ServiceNameProxyCalls(impl);
+  ServiceNameProxy.unbound()
+      : super(new _ServiceNameProxyControl.unbound());
+
+  static ServiceNameProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ServiceNameProxy"));
+    return new ServiceNameProxy.fromEndpoint(endpoint);
   }
 
   factory ServiceNameProxy.connectToService(
@@ -3269,30 +3059,14 @@ class ServiceNameProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ServiceNameProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ServiceNameProxy"));
-    return new ServiceNameProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => ServiceName.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ServiceNameProxy($impl)";
+  dynamic serviceName_([Function responseFactory = null]) {
+    var params = new _ServiceNameServiceNameParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _serviceNameMethodServiceNameName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -3412,7 +3186,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "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";
+  var serializedRuntimeTypeInfo = "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";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

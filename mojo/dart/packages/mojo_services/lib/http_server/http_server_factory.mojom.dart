@@ -115,24 +115,22 @@ abstract class HttpServerFactory {
 }
 
 
-class _HttpServerFactoryProxyImpl extends bindings.Proxy {
-  _HttpServerFactoryProxyImpl.fromEndpoint(
+class _HttpServerFactoryProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _HttpServerFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _HttpServerFactoryProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _HttpServerFactoryProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _HttpServerFactoryProxyImpl.unbound() : super.unbound();
-
-  static _HttpServerFactoryProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _HttpServerFactoryProxyImpl"));
-    return new _HttpServerFactoryProxyImpl.fromEndpoint(endpoint);
-  }
+  _HttpServerFactoryProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _HttpServerFactoryServiceDescription();
+      new _HttpServerFactoryServiceDescription();
 
+  String get serviceName => HttpServerFactory.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -142,52 +140,30 @@ class _HttpServerFactoryProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_HttpServerFactoryProxyImpl($superString)";
+    return "_HttpServerFactoryProxyControl($superString)";
   }
 }
 
 
-class _HttpServerFactoryProxyCalls implements HttpServerFactory {
-  _HttpServerFactoryProxyImpl _proxyImpl;
-
-  _HttpServerFactoryProxyCalls(this._proxyImpl);
-    void createHttpServer(Object serverRequest, net_address_mojom.NetAddress localAddress) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _HttpServerFactoryCreateHttpServerParams();
-      params.serverRequest = serverRequest;
-      params.localAddress = localAddress;
-      _proxyImpl.sendMessage(params, _httpServerFactoryMethodCreateHttpServerName);
-    }
-}
-
-
-class HttpServerFactoryProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  HttpServerFactory ptr;
-
-  HttpServerFactoryProxy(_HttpServerFactoryProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _HttpServerFactoryProxyCalls(proxyImpl);
-
+class HttpServerFactoryProxy extends bindings.Proxy
+                              implements HttpServerFactory {
   HttpServerFactoryProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _HttpServerFactoryProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _HttpServerFactoryProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _HttpServerFactoryProxyControl.fromEndpoint(endpoint));
 
-  HttpServerFactoryProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _HttpServerFactoryProxyImpl.fromHandle(handle) {
-    ptr = new _HttpServerFactoryProxyCalls(impl);
-  }
+  HttpServerFactoryProxy.fromHandle(core.MojoHandle handle)
+      : super(new _HttpServerFactoryProxyControl.fromHandle(handle));
 
-  HttpServerFactoryProxy.unbound() :
-      impl = new _HttpServerFactoryProxyImpl.unbound() {
-    ptr = new _HttpServerFactoryProxyCalls(impl);
+  HttpServerFactoryProxy.unbound()
+      : super(new _HttpServerFactoryProxyControl.unbound());
+
+  static HttpServerFactoryProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HttpServerFactoryProxy"));
+    return new HttpServerFactoryProxy.fromEndpoint(endpoint);
   }
 
   factory HttpServerFactoryProxy.connectToService(
@@ -197,30 +173,17 @@ class HttpServerFactoryProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static HttpServerFactoryProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HttpServerFactoryProxy"));
-    return new HttpServerFactoryProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => HttpServerFactory.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "HttpServerFactoryProxy($impl)";
+  void createHttpServer(Object serverRequest, net_address_mojom.NetAddress localAddress) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _HttpServerFactoryCreateHttpServerParams();
+    params.serverRequest = serverRequest;
+    params.localAddress = localAddress;
+    ctrl.sendMessage(params,
+        _httpServerFactoryMethodCreateHttpServerName);
   }
 }
 

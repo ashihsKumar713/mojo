@@ -446,24 +446,22 @@ abstract class MailboxTextureCallback {
 }
 
 
-class _MailboxTextureCallbackProxyImpl extends bindings.Proxy {
-  _MailboxTextureCallbackProxyImpl.fromEndpoint(
+class _MailboxTextureCallbackProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _MailboxTextureCallbackProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _MailboxTextureCallbackProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _MailboxTextureCallbackProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _MailboxTextureCallbackProxyImpl.unbound() : super.unbound();
-
-  static _MailboxTextureCallbackProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _MailboxTextureCallbackProxyImpl"));
-    return new _MailboxTextureCallbackProxyImpl.fromEndpoint(endpoint);
-  }
+  _MailboxTextureCallbackProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _MailboxTextureCallbackServiceDescription();
+      new _MailboxTextureCallbackServiceDescription();
 
+  String get serviceName => MailboxTextureCallback.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -473,50 +471,30 @@ class _MailboxTextureCallbackProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_MailboxTextureCallbackProxyImpl($superString)";
+    return "_MailboxTextureCallbackProxyControl($superString)";
   }
 }
 
 
-class _MailboxTextureCallbackProxyCalls implements MailboxTextureCallback {
-  _MailboxTextureCallbackProxyImpl _proxyImpl;
-
-  _MailboxTextureCallbackProxyCalls(this._proxyImpl);
-    void onMailboxTextureReleased() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MailboxTextureCallbackOnMailboxTextureReleasedParams();
-      _proxyImpl.sendMessage(params, _mailboxTextureCallbackMethodOnMailboxTextureReleasedName);
-    }
-}
-
-
-class MailboxTextureCallbackProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  MailboxTextureCallback ptr;
-
-  MailboxTextureCallbackProxy(_MailboxTextureCallbackProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _MailboxTextureCallbackProxyCalls(proxyImpl);
-
+class MailboxTextureCallbackProxy extends bindings.Proxy
+                              implements MailboxTextureCallback {
   MailboxTextureCallbackProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _MailboxTextureCallbackProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _MailboxTextureCallbackProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _MailboxTextureCallbackProxyControl.fromEndpoint(endpoint));
 
-  MailboxTextureCallbackProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _MailboxTextureCallbackProxyImpl.fromHandle(handle) {
-    ptr = new _MailboxTextureCallbackProxyCalls(impl);
-  }
+  MailboxTextureCallbackProxy.fromHandle(core.MojoHandle handle)
+      : super(new _MailboxTextureCallbackProxyControl.fromHandle(handle));
 
-  MailboxTextureCallbackProxy.unbound() :
-      impl = new _MailboxTextureCallbackProxyImpl.unbound() {
-    ptr = new _MailboxTextureCallbackProxyCalls(impl);
+  MailboxTextureCallbackProxy.unbound()
+      : super(new _MailboxTextureCallbackProxyControl.unbound());
+
+  static MailboxTextureCallbackProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MailboxTextureCallbackProxy"));
+    return new MailboxTextureCallbackProxy.fromEndpoint(endpoint);
   }
 
   factory MailboxTextureCallbackProxy.connectToService(
@@ -526,30 +504,15 @@ class MailboxTextureCallbackProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static MailboxTextureCallbackProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MailboxTextureCallbackProxy"));
-    return new MailboxTextureCallbackProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => MailboxTextureCallback.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "MailboxTextureCallbackProxy($impl)";
+  void onMailboxTextureReleased() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MailboxTextureCallbackOnMailboxTextureReleasedParams();
+    ctrl.sendMessage(params,
+        _mailboxTextureCallbackMethodOnMailboxTextureReleasedName);
   }
 }
 

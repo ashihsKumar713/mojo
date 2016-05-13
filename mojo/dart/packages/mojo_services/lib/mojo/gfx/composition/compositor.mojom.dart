@@ -289,24 +289,22 @@ abstract class Compositor {
 }
 
 
-class _CompositorProxyImpl extends bindings.Proxy {
-  _CompositorProxyImpl.fromEndpoint(
+class _CompositorProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _CompositorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _CompositorProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _CompositorProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _CompositorProxyImpl.unbound() : super.unbound();
-
-  static _CompositorProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _CompositorProxyImpl"));
-    return new _CompositorProxyImpl.fromEndpoint(endpoint);
-  }
+  _CompositorProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _CompositorServiceDescription();
+      new _CompositorServiceDescription();
 
+  String get serviceName => Compositor.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _compositorMethodCreateSceneName:
@@ -336,63 +334,30 @@ class _CompositorProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_CompositorProxyImpl($superString)";
+    return "_CompositorProxyControl($superString)";
   }
 }
 
 
-class _CompositorProxyCalls implements Compositor {
-  _CompositorProxyImpl _proxyImpl;
-
-  _CompositorProxyCalls(this._proxyImpl);
-    dynamic createScene(Object scene,String label,[Function responseFactory = null]) {
-      var params = new _CompositorCreateSceneParams();
-      params.scene = scene;
-      params.label = label;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _compositorMethodCreateSceneName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void createRenderer(Object contextProvider, Object renderer, String label) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _CompositorCreateRendererParams();
-      params.contextProvider = contextProvider;
-      params.renderer = renderer;
-      params.label = label;
-      _proxyImpl.sendMessage(params, _compositorMethodCreateRendererName);
-    }
-}
-
-
-class CompositorProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Compositor ptr;
-
-  CompositorProxy(_CompositorProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _CompositorProxyCalls(proxyImpl);
-
+class CompositorProxy extends bindings.Proxy
+                              implements Compositor {
   CompositorProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _CompositorProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _CompositorProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _CompositorProxyControl.fromEndpoint(endpoint));
 
-  CompositorProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _CompositorProxyImpl.fromHandle(handle) {
-    ptr = new _CompositorProxyCalls(impl);
-  }
+  CompositorProxy.fromHandle(core.MojoHandle handle)
+      : super(new _CompositorProxyControl.fromHandle(handle));
 
-  CompositorProxy.unbound() :
-      impl = new _CompositorProxyImpl.unbound() {
-    ptr = new _CompositorProxyCalls(impl);
+  CompositorProxy.unbound()
+      : super(new _CompositorProxyControl.unbound());
+
+  static CompositorProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For CompositorProxy"));
+    return new CompositorProxy.fromEndpoint(endpoint);
   }
 
   factory CompositorProxy.connectToService(
@@ -402,30 +367,28 @@ class CompositorProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static CompositorProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For CompositorProxy"));
-    return new CompositorProxy.fromEndpoint(endpoint);
+
+  dynamic createScene(Object scene,String label,[Function responseFactory = null]) {
+    var params = new _CompositorCreateSceneParams();
+    params.scene = scene;
+    params.label = label;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _compositorMethodCreateSceneName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => Compositor.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "CompositorProxy($impl)";
+  void createRenderer(Object contextProvider, Object renderer, String label) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _CompositorCreateRendererParams();
+    params.contextProvider = contextProvider;
+    params.renderer = renderer;
+    params.label = label;
+    ctrl.sendMessage(params,
+        _compositorMethodCreateRendererName);
   }
 }
 

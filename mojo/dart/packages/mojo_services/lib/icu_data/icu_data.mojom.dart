@@ -171,24 +171,22 @@ abstract class IcuData {
 }
 
 
-class _IcuDataProxyImpl extends bindings.Proxy {
-  _IcuDataProxyImpl.fromEndpoint(
+class _IcuDataProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _IcuDataProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _IcuDataProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _IcuDataProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _IcuDataProxyImpl.unbound() : super.unbound();
-
-  static _IcuDataProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _IcuDataProxyImpl"));
-    return new _IcuDataProxyImpl.fromEndpoint(endpoint);
-  }
+  _IcuDataProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _IcuDataServiceDescription();
+      new _IcuDataServiceDescription();
 
+  String get serviceName => IcuData.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _icuDataMethodMapName:
@@ -218,51 +216,30 @@ class _IcuDataProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_IcuDataProxyImpl($superString)";
+    return "_IcuDataProxyControl($superString)";
   }
 }
 
 
-class _IcuDataProxyCalls implements IcuData {
-  _IcuDataProxyImpl _proxyImpl;
-
-  _IcuDataProxyCalls(this._proxyImpl);
-    dynamic map(String sha1hash,[Function responseFactory = null]) {
-      var params = new _IcuDataMapParams();
-      params.sha1hash = sha1hash;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _icuDataMethodMapName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class IcuDataProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  IcuData ptr;
-
-  IcuDataProxy(_IcuDataProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _IcuDataProxyCalls(proxyImpl);
-
+class IcuDataProxy extends bindings.Proxy
+                              implements IcuData {
   IcuDataProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _IcuDataProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _IcuDataProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _IcuDataProxyControl.fromEndpoint(endpoint));
 
-  IcuDataProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _IcuDataProxyImpl.fromHandle(handle) {
-    ptr = new _IcuDataProxyCalls(impl);
-  }
+  IcuDataProxy.fromHandle(core.MojoHandle handle)
+      : super(new _IcuDataProxyControl.fromHandle(handle));
 
-  IcuDataProxy.unbound() :
-      impl = new _IcuDataProxyImpl.unbound() {
-    ptr = new _IcuDataProxyCalls(impl);
+  IcuDataProxy.unbound()
+      : super(new _IcuDataProxyControl.unbound());
+
+  static IcuDataProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For IcuDataProxy"));
+    return new IcuDataProxy.fromEndpoint(endpoint);
   }
 
   factory IcuDataProxy.connectToService(
@@ -272,30 +249,15 @@ class IcuDataProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static IcuDataProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For IcuDataProxy"));
-    return new IcuDataProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => IcuData.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "IcuDataProxy($impl)";
+  dynamic map(String sha1hash,[Function responseFactory = null]) {
+    var params = new _IcuDataMapParams();
+    params.sha1hash = sha1hash;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _icuDataMethodMapName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

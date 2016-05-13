@@ -26,24 +26,22 @@ abstract class TcpConnectedSocket {
 }
 
 
-class _TcpConnectedSocketProxyImpl extends bindings.Proxy {
-  _TcpConnectedSocketProxyImpl.fromEndpoint(
+class _TcpConnectedSocketProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _TcpConnectedSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _TcpConnectedSocketProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _TcpConnectedSocketProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _TcpConnectedSocketProxyImpl.unbound() : super.unbound();
-
-  static _TcpConnectedSocketProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _TcpConnectedSocketProxyImpl"));
-    return new _TcpConnectedSocketProxyImpl.fromEndpoint(endpoint);
-  }
+  _TcpConnectedSocketProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _TcpConnectedSocketServiceDescription();
+      new _TcpConnectedSocketServiceDescription();
 
+  String get serviceName => TcpConnectedSocket.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -53,40 +51,30 @@ class _TcpConnectedSocketProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_TcpConnectedSocketProxyImpl($superString)";
+    return "_TcpConnectedSocketProxyControl($superString)";
   }
 }
 
 
-class _TcpConnectedSocketProxyCalls implements TcpConnectedSocket {
-  _TcpConnectedSocketProxyCalls(_TcpConnectedSocketProxyImpl _);
-}
-
-
-class TcpConnectedSocketProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  TcpConnectedSocket ptr;
-
-  TcpConnectedSocketProxy(_TcpConnectedSocketProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _TcpConnectedSocketProxyCalls(proxyImpl);
-
+class TcpConnectedSocketProxy extends bindings.Proxy
+                              implements TcpConnectedSocket {
   TcpConnectedSocketProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _TcpConnectedSocketProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _TcpConnectedSocketProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _TcpConnectedSocketProxyControl.fromEndpoint(endpoint));
 
-  TcpConnectedSocketProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _TcpConnectedSocketProxyImpl.fromHandle(handle) {
-    ptr = new _TcpConnectedSocketProxyCalls(impl);
-  }
+  TcpConnectedSocketProxy.fromHandle(core.MojoHandle handle)
+      : super(new _TcpConnectedSocketProxyControl.fromHandle(handle));
 
-  TcpConnectedSocketProxy.unbound() :
-      impl = new _TcpConnectedSocketProxyImpl.unbound() {
-    ptr = new _TcpConnectedSocketProxyCalls(impl);
+  TcpConnectedSocketProxy.unbound()
+      : super(new _TcpConnectedSocketProxyControl.unbound());
+
+  static TcpConnectedSocketProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TcpConnectedSocketProxy"));
+    return new TcpConnectedSocketProxy.fromEndpoint(endpoint);
   }
 
   factory TcpConnectedSocketProxy.connectToService(
@@ -96,31 +84,7 @@ class TcpConnectedSocketProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static TcpConnectedSocketProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TcpConnectedSocketProxy"));
-    return new TcpConnectedSocketProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => TcpConnectedSocket.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "TcpConnectedSocketProxy($impl)";
-  }
 }
 
 

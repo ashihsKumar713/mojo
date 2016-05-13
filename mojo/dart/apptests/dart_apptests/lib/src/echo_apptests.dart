@@ -18,10 +18,10 @@ echoApptests(Application application, String url) {
       var echoProxy =
           new EchoServiceProxy.connectToService(application, "mojo:dart_echo");
 
-      var v = await echoProxy.ptr.echoString("foo");
+      var v = await echoProxy.echoString("foo");
       expect(v.value, equals("foo"));
 
-      var q = await echoProxy.ptr.echoString("quit");
+      var q = await echoProxy.echoString("quit");
       expect(q.value, equals("quit"));
 
       await echoProxy.close();
@@ -31,10 +31,10 @@ echoApptests(Application application, String url) {
       var echoProxy =
           new EchoServiceProxy.connectToService(application, "mojo:dart_echo");
 
-      var v = await echoProxy.ptr.echoString("");
+      var v = await echoProxy.echoString("");
       expect(v.value, equals(""));
 
-      var q = await echoProxy.ptr.echoString("quit");
+      var q = await echoProxy.echoString("quit");
       expect(q.value, equals("quit"));
 
       await echoProxy.close();
@@ -44,10 +44,10 @@ echoApptests(Application application, String url) {
       var echoProxy =
           new EchoServiceProxy.connectToService(application, "mojo:dart_echo");
 
-      var v = await echoProxy.ptr.echoString(null);
+      var v = await echoProxy.echoString(null);
       expect(v.value, equals(null));
 
-      var q = await echoProxy.ptr.echoString("quit");
+      var q = await echoProxy.echoString("quit");
       expect(q.value, equals("quit"));
 
       await echoProxy.close();
@@ -59,12 +59,12 @@ echoApptests(Application application, String url) {
 
       var milliseconds = 100;
       var watch = new Stopwatch()..start();
-      var v = await echoProxy.ptr.delayedEchoString("foo", milliseconds);
+      var v = await echoProxy.delayedEchoString("foo", milliseconds);
       var elapsed = watch.elapsedMilliseconds;
       expect(v.value, equals("foo"));
       expect(elapsed, greaterThanOrEqualTo(milliseconds));
 
-      var q = await echoProxy.ptr.echoString("quit");
+      var q = await echoProxy.echoString("quit");
       expect(q.value, equals("quit"));
 
       await echoProxy.close();
@@ -75,7 +75,7 @@ echoApptests(Application application, String url) {
           new EchoServiceProxy.connectToService(application, "mojo:dart_echo");
 
       var milliseconds = 100;
-      echoProxy.responseOrError(echoProxy.ptr.delayedEchoString(
+      echoProxy.responseOrError(echoProxy.delayedEchoString(
           "quit", milliseconds)).then((result) {
         fail('This future should not complete.');
       }, onError: (e) {
@@ -92,26 +92,26 @@ echoApptests(Application application, String url) {
 
       for (int i = 0; i < 10; i++) {
         var v =
-            await echoProxy.responseOrError(echoProxy.ptr.echoString("foo"));
+            await echoProxy.responseOrError(echoProxy.echoString("foo"));
         expect(v.value, equals("foo"));
       }
 
-      echoProxy.impl.errorFuture.then((e) {
+      echoProxy.ctrl.errorFuture.then((e) {
         fail("echoProxy: $e");
       });
 
       // Trigger an implementation swap in the echo server.
-      echoProxy.ptr.swap();
+      echoProxy.swap();
 
-      expect(echoProxy.impl.isBound, isTrue);
+      expect(echoProxy.ctrl.isBound, isTrue);
 
       for (int i = 0; i < 10; i++) {
         var v =
-            await echoProxy.responseOrError(echoProxy.ptr.echoString("foo"));
+            await echoProxy.responseOrError(echoProxy.echoString("foo"));
         expect(v.value, equals("foo"));
       }
 
-      var q = await echoProxy.responseOrError(echoProxy.ptr.echoString("quit"));
+      var q = await echoProxy.responseOrError(echoProxy.echoString("quit"));
       expect(q.value, equals("quit"));
 
       await echoProxy.close();
@@ -123,7 +123,7 @@ echoApptests(Application application, String url) {
 
       List<Future> futures = [];
       for (int i = 0; i < 100; i++) {
-        var f = echoProxy.responseOrError(echoProxy.ptr.echoString("foo"))
+        var f = echoProxy.responseOrError(echoProxy.echoString("foo"))
                          .then((r) {
           expect(r.value, equals("foo"));
         }, onError: (e) {
@@ -142,7 +142,7 @@ echoApptests(Application application, String url) {
       var milliseconds = 100;
       for (int i = 0; i < 100; i++) {
         var f = echoProxy.responseOrError(
-            echoProxy.ptr.delayedEchoString("foo", milliseconds)).then((_) {
+            echoProxy.delayedEchoString("foo", milliseconds)).then((_) {
           fail('This call should fail');
         }, onError: (e) {
           expect(e is ProxyError, isTrue);
@@ -157,14 +157,14 @@ echoApptests(Application application, String url) {
           new EchoServiceProxy.connectToService(application, "mojo:dart_echo");
 
       // Do a normal call.
-      var v = await echoProxy.ptr.echoString("foo");
+      var v = await echoProxy.echoString("foo");
       expect(v.value, equals("foo"));
 
       // Close the proxy.
       await echoProxy.close();
 
       // Try to do another call, which should not return.
-      echoProxy.ptr.echoString("foo").then((_) {
+      echoProxy.echoString("foo").then((_) {
         fail('This should be unreachable');
       });
     });
@@ -174,7 +174,7 @@ echoApptests(Application application, String url) {
           new EchoServiceProxy.connectToService(application, "mojo:dart_echo");
 
       // Do a normal call.
-      var v = await echoProxy.ptr.echoString("foo");
+      var v = await echoProxy.echoString("foo");
       expect(v.value, equals("foo"));
 
       // Close the proxy.
@@ -183,7 +183,7 @@ echoApptests(Application application, String url) {
       // Try to do another call, which should fail.
       bool caughtException = false;
       try {
-        v = await echoProxy.responseOrError(echoProxy.ptr.echoString("foo"));
+        v = await echoProxy.responseOrError(echoProxy.echoString("foo"));
         fail('This should be unreachable');
       } on ProxyError catch (e) {
         caughtException = true;
@@ -196,7 +196,7 @@ echoApptests(Application application, String url) {
           new EchoServiceProxy.connectToService(application, "mojo:dart_echo");
 
       // Do a normal call.
-      var v = await echoProxy.ptr.echoString("foo");
+      var v = await echoProxy.echoString("foo");
       expect(v.value, equals("foo"));
 
       // Close the proxy.
@@ -205,7 +205,7 @@ echoApptests(Application application, String url) {
       // Try to do another call, which should fail.
       bool caughtException = false;
       try {
-        v = await echoProxy.responseOrError(echoProxy.ptr.echoString("foo"));
+        v = await echoProxy.responseOrError(echoProxy.echoString("foo"));
         fail('This should be unreachable');
       } on ProxyError catch (e) {
         caughtException = true;
@@ -215,7 +215,7 @@ echoApptests(Application application, String url) {
       // Make sure we can catch an error more than once.
       caughtException = false;
       try {
-        v = await echoProxy.responseOrError(echoProxy.ptr.echoString("foo"));
+        v = await echoProxy.responseOrError(echoProxy.echoString("foo"));
         fail('This should be unreachable');
       } on ProxyError catch (e) {
         caughtException = true;
@@ -228,21 +228,21 @@ echoApptests(Application application, String url) {
           new EchoServiceProxy.connectToService(application, "mojo:dart_echo");
 
       // Do a normal call.
-      var v = await echoProxy.ptr.echoString("foo");
+      var v = await echoProxy.echoString("foo");
       expect(v.value, equals("foo"));
 
       // Close the proxy.
       await echoProxy.close();
 
       // Queue up two calls after the close, and make sure they both fail.
-      var f1 = echoProxy.responseOrError(echoProxy.ptr.echoString("foo"))
+      var f1 = echoProxy.responseOrError(echoProxy.echoString("foo"))
                         .then((_) {
         fail('This should be unreachable');
       }, onError: (e) {
         expect(e is ProxyError, isTrue);
       });
 
-      var f2 = echoProxy.responseOrError(echoProxy.ptr.echoString("foo"))
+      var f2 = echoProxy.responseOrError(echoProxy.echoString("foo"))
                         .then((_) {
         fail('This should be unreachable');
       }, onError: (e) {
@@ -256,10 +256,10 @@ echoApptests(Application application, String url) {
       var echoProxy =
           new EchoServiceProxy.connectToService(application, "mojo:dart_echo");
 
-      var r = await echoProxy.responseOrError(echoProxy.ptr.echoString("foo"));
+      var r = await echoProxy.responseOrError(echoProxy.echoString("foo"));
       expect(r.value, equals("foo"));
 
-      var endpoint = echoProxy.impl.unbind();
+      var endpoint = echoProxy.ctrl.unbind();
       await echoProxy.close();
       endpoint.close();
     });
@@ -268,13 +268,13 @@ echoApptests(Application application, String url) {
       var echoProxy =
           new EchoServiceProxy.connectToService(application, "mojo:dart_echo");
 
-      var r = await echoProxy.responseOrError(echoProxy.ptr.echoString("foo"));
+      var r = await echoProxy.responseOrError(echoProxy.echoString("foo"));
       expect(r.value, equals("foo"));
 
-      var endpoint = echoProxy.impl.unbind();
-      echoProxy.impl.bind(endpoint);
+      var endpoint = echoProxy.ctrl.unbind();
+      echoProxy.ctrl.bind(endpoint);
 
-      r = await echoProxy.responseOrError(echoProxy.ptr.echoString("foo"));
+      r = await echoProxy.responseOrError(echoProxy.echoString("foo"));
       expect(r.value, equals("foo"));
 
       await echoProxy.close();
@@ -284,14 +284,14 @@ echoApptests(Application application, String url) {
       var echoProxy =
           new EchoServiceProxy.connectToService(application, "mojo:dart_echo");
 
-      var r = await echoProxy.responseOrError(echoProxy.ptr.echoString("foo"));
+      var r = await echoProxy.responseOrError(echoProxy.echoString("foo"));
       expect(r.value, equals("foo"));
 
-      var endpoint = echoProxy.impl.unbind();
+      var endpoint = echoProxy.ctrl.unbind();
       var differentEchoProxy = new EchoServiceProxy.fromEndpoint(endpoint);
 
       r = await differentEchoProxy.responseOrError(
-          differentEchoProxy.ptr.echoString("foo"));
+          differentEchoProxy.echoString("foo"));
       expect(r.value, equals("foo"));
 
       await differentEchoProxy.close();
@@ -301,15 +301,15 @@ echoApptests(Application application, String url) {
       var echoProxy =
           new EchoServiceProxy.connectToService(application, "mojo:dart_echo");
 
-      var r = await echoProxy.responseOrError(echoProxy.ptr.echoString("foo"));
+      var r = await echoProxy.responseOrError(echoProxy.echoString("foo"));
       expect(r.value, equals("foo"));
 
-      var endpoint = echoProxy.impl.unbind();
+      var endpoint = echoProxy.ctrl.unbind();
       var differentEchoProxy = new EchoServiceProxy.fromEndpoint(endpoint);
       await echoProxy.close();
 
       r = await differentEchoProxy.responseOrError(
-          differentEchoProxy.ptr.echoString("foo"));
+          differentEchoProxy.echoString("foo"));
       expect(r.value, equals("foo"));
 
       await differentEchoProxy.close();

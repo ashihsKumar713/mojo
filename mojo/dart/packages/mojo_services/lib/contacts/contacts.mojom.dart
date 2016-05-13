@@ -769,24 +769,22 @@ abstract class ContactsService {
 }
 
 
-class _ContactsServiceProxyImpl extends bindings.Proxy {
-  _ContactsServiceProxyImpl.fromEndpoint(
+class _ContactsServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ContactsServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ContactsServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ContactsServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ContactsServiceProxyImpl.unbound() : super.unbound();
-
-  static _ContactsServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ContactsServiceProxyImpl"));
-    return new _ContactsServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _ContactsServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ContactsServiceServiceDescription();
+      new _ContactsServiceServiceDescription();
 
+  String get serviceName => ContactsService.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _contactsServiceMethodGetCountName:
@@ -876,81 +874,30 @@ class _ContactsServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ContactsServiceProxyImpl($superString)";
+    return "_ContactsServiceProxyControl($superString)";
   }
 }
 
 
-class _ContactsServiceProxyCalls implements ContactsService {
-  _ContactsServiceProxyImpl _proxyImpl;
-
-  _ContactsServiceProxyCalls(this._proxyImpl);
-    dynamic getCount(String filter,[Function responseFactory = null]) {
-      var params = new _ContactsServiceGetCountParams();
-      params.filter = filter;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _contactsServiceMethodGetCountName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic get(String filter,int offset,int limit,[Function responseFactory = null]) {
-      var params = new _ContactsServiceGetParams();
-      params.filter = filter;
-      params.offset = offset;
-      params.limit = limit;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _contactsServiceMethodGetName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic getEmails(int id,[Function responseFactory = null]) {
-      var params = new _ContactsServiceGetEmailsParams();
-      params.id = id;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _contactsServiceMethodGetEmailsName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic getPhoto(int id,bool highResolution,[Function responseFactory = null]) {
-      var params = new _ContactsServiceGetPhotoParams();
-      params.id = id;
-      params.highResolution = highResolution;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _contactsServiceMethodGetPhotoName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class ContactsServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ContactsService ptr;
-
-  ContactsServiceProxy(_ContactsServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ContactsServiceProxyCalls(proxyImpl);
-
+class ContactsServiceProxy extends bindings.Proxy
+                              implements ContactsService {
   ContactsServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ContactsServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ContactsServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ContactsServiceProxyControl.fromEndpoint(endpoint));
 
-  ContactsServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ContactsServiceProxyImpl.fromHandle(handle) {
-    ptr = new _ContactsServiceProxyCalls(impl);
-  }
+  ContactsServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ContactsServiceProxyControl.fromHandle(handle));
 
-  ContactsServiceProxy.unbound() :
-      impl = new _ContactsServiceProxyImpl.unbound() {
-    ptr = new _ContactsServiceProxyCalls(impl);
+  ContactsServiceProxy.unbound()
+      : super(new _ContactsServiceProxyControl.unbound());
+
+  static ContactsServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ContactsServiceProxy"));
+    return new ContactsServiceProxy.fromEndpoint(endpoint);
   }
 
   factory ContactsServiceProxy.connectToService(
@@ -960,30 +907,45 @@ class ContactsServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ContactsServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ContactsServiceProxy"));
-    return new ContactsServiceProxy.fromEndpoint(endpoint);
+
+  dynamic getCount(String filter,[Function responseFactory = null]) {
+    var params = new _ContactsServiceGetCountParams();
+    params.filter = filter;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _contactsServiceMethodGetCountName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => ContactsService.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic get(String filter,int offset,int limit,[Function responseFactory = null]) {
+    var params = new _ContactsServiceGetParams();
+    params.filter = filter;
+    params.offset = offset;
+    params.limit = limit;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _contactsServiceMethodGetName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "ContactsServiceProxy($impl)";
+  dynamic getEmails(int id,[Function responseFactory = null]) {
+    var params = new _ContactsServiceGetEmailsParams();
+    params.id = id;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _contactsServiceMethodGetEmailsName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic getPhoto(int id,bool highResolution,[Function responseFactory = null]) {
+    var params = new _ContactsServiceGetPhotoParams();
+    params.id = id;
+    params.highResolution = highResolution;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _contactsServiceMethodGetPhotoName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

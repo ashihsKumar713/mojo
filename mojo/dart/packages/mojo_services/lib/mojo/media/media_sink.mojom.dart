@@ -475,24 +475,22 @@ abstract class MediaSink {
 }
 
 
-class _MediaSinkProxyImpl extends bindings.Proxy {
-  _MediaSinkProxyImpl.fromEndpoint(
+class _MediaSinkProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _MediaSinkProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _MediaSinkProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _MediaSinkProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _MediaSinkProxyImpl.unbound() : super.unbound();
-
-  static _MediaSinkProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _MediaSinkProxyImpl"));
-    return new _MediaSinkProxyImpl.fromEndpoint(endpoint);
-  }
+  _MediaSinkProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _MediaSinkServiceDescription();
+      new _MediaSinkServiceDescription();
 
+  String get serviceName => MediaSink.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaSinkMethodGetStatusName:
@@ -522,76 +520,30 @@ class _MediaSinkProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_MediaSinkProxyImpl($superString)";
+    return "_MediaSinkProxyControl($superString)";
   }
 }
 
 
-class _MediaSinkProxyCalls implements MediaSink {
-  _MediaSinkProxyImpl _proxyImpl;
-
-  _MediaSinkProxyCalls(this._proxyImpl);
-    void getConsumer(Object consumer) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaSinkGetConsumerParams();
-      params.consumer = consumer;
-      _proxyImpl.sendMessage(params, _mediaSinkMethodGetConsumerName);
-    }
-    dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
-      var params = new _MediaSinkGetStatusParams();
-      params.versionLastSeen = versionLastSeen;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaSinkMethodGetStatusName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void play() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaSinkPlayParams();
-      _proxyImpl.sendMessage(params, _mediaSinkMethodPlayName);
-    }
-    void pause() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaSinkPauseParams();
-      _proxyImpl.sendMessage(params, _mediaSinkMethodPauseName);
-    }
-}
-
-
-class MediaSinkProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  MediaSink ptr;
-
-  MediaSinkProxy(_MediaSinkProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _MediaSinkProxyCalls(proxyImpl);
-
+class MediaSinkProxy extends bindings.Proxy
+                              implements MediaSink {
   MediaSinkProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _MediaSinkProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _MediaSinkProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _MediaSinkProxyControl.fromEndpoint(endpoint));
 
-  MediaSinkProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _MediaSinkProxyImpl.fromHandle(handle) {
-    ptr = new _MediaSinkProxyCalls(impl);
-  }
+  MediaSinkProxy.fromHandle(core.MojoHandle handle)
+      : super(new _MediaSinkProxyControl.fromHandle(handle));
 
-  MediaSinkProxy.unbound() :
-      impl = new _MediaSinkProxyImpl.unbound() {
-    ptr = new _MediaSinkProxyCalls(impl);
+  MediaSinkProxy.unbound()
+      : super(new _MediaSinkProxyControl.unbound());
+
+  static MediaSinkProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaSinkProxy"));
+    return new MediaSinkProxy.fromEndpoint(endpoint);
   }
 
   factory MediaSinkProxy.connectToService(
@@ -601,30 +553,43 @@ class MediaSinkProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static MediaSinkProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaSinkProxy"));
-    return new MediaSinkProxy.fromEndpoint(endpoint);
+
+  void getConsumer(Object consumer) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaSinkGetConsumerParams();
+    params.consumer = consumer;
+    ctrl.sendMessage(params,
+        _mediaSinkMethodGetConsumerName);
   }
-
-  String get serviceName => MediaSink.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
+    var params = new _MediaSinkGetStatusParams();
+    params.versionLastSeen = versionLastSeen;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaSinkMethodGetStatusName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "MediaSinkProxy($impl)";
+  void play() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaSinkPlayParams();
+    ctrl.sendMessage(params,
+        _mediaSinkMethodPlayName);
+  }
+  void pause() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaSinkPauseParams();
+    ctrl.sendMessage(params,
+        _mediaSinkMethodPauseName);
   }
 }
 

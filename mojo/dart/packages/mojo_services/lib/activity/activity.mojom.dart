@@ -1690,24 +1690,22 @@ abstract class Activity {
 }
 
 
-class _ActivityProxyImpl extends bindings.Proxy {
-  _ActivityProxyImpl.fromEndpoint(
+class _ActivityProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ActivityProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ActivityProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ActivityProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ActivityProxyImpl.unbound() : super.unbound();
-
-  static _ActivityProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ActivityProxyImpl"));
-    return new _ActivityProxyImpl.fromEndpoint(endpoint);
-  }
+  _ActivityProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ActivityServiceDescription();
+      new _ActivityServiceDescription();
 
+  String get serviceName => Activity.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -1717,95 +1715,30 @@ class _ActivityProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ActivityProxyImpl($superString)";
+    return "_ActivityProxyControl($superString)";
   }
 }
 
 
-class _ActivityProxyCalls implements Activity {
-  _ActivityProxyImpl _proxyImpl;
-
-  _ActivityProxyCalls(this._proxyImpl);
-    void getUserFeedback(Object userFeedback) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ActivityGetUserFeedbackParams();
-      params.userFeedback = userFeedback;
-      _proxyImpl.sendMessage(params, _activityMethodGetUserFeedbackName);
-    }
-    void startActivity(Intent intent) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ActivityStartActivityParams();
-      params.intent = intent;
-      _proxyImpl.sendMessage(params, _activityMethodStartActivityName);
-    }
-    void finishCurrentActivity() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ActivityFinishCurrentActivityParams();
-      _proxyImpl.sendMessage(params, _activityMethodFinishCurrentActivityName);
-    }
-    void setTaskDescription(TaskDescription description) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ActivitySetTaskDescriptionParams();
-      params.description = description;
-      _proxyImpl.sendMessage(params, _activityMethodSetTaskDescriptionName);
-    }
-    void setSystemUiVisibility(SystemUiVisibility visibility) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ActivitySetSystemUiVisibilityParams();
-      params.visibility = visibility;
-      _proxyImpl.sendMessage(params, _activityMethodSetSystemUiVisibilityName);
-    }
-    void setRequestedOrientation(ScreenOrientation orientation) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ActivitySetRequestedOrientationParams();
-      params.orientation = orientation;
-      _proxyImpl.sendMessage(params, _activityMethodSetRequestedOrientationName);
-    }
-}
-
-
-class ActivityProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Activity ptr;
-
-  ActivityProxy(_ActivityProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ActivityProxyCalls(proxyImpl);
-
+class ActivityProxy extends bindings.Proxy
+                              implements Activity {
   ActivityProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ActivityProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ActivityProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ActivityProxyControl.fromEndpoint(endpoint));
 
-  ActivityProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ActivityProxyImpl.fromHandle(handle) {
-    ptr = new _ActivityProxyCalls(impl);
-  }
+  ActivityProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ActivityProxyControl.fromHandle(handle));
 
-  ActivityProxy.unbound() :
-      impl = new _ActivityProxyImpl.unbound() {
-    ptr = new _ActivityProxyCalls(impl);
+  ActivityProxy.unbound()
+      : super(new _ActivityProxyControl.unbound());
+
+  static ActivityProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ActivityProxy"));
+    return new ActivityProxy.fromEndpoint(endpoint);
   }
 
   factory ActivityProxy.connectToService(
@@ -1815,30 +1748,65 @@ class ActivityProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ActivityProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ActivityProxy"));
-    return new ActivityProxy.fromEndpoint(endpoint);
+
+  void getUserFeedback(Object userFeedback) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ActivityGetUserFeedbackParams();
+    params.userFeedback = userFeedback;
+    ctrl.sendMessage(params,
+        _activityMethodGetUserFeedbackName);
   }
-
-  String get serviceName => Activity.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void startActivity(Intent intent) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ActivityStartActivityParams();
+    params.intent = intent;
+    ctrl.sendMessage(params,
+        _activityMethodStartActivityName);
   }
-
-  String toString() {
-    return "ActivityProxy($impl)";
+  void finishCurrentActivity() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ActivityFinishCurrentActivityParams();
+    ctrl.sendMessage(params,
+        _activityMethodFinishCurrentActivityName);
+  }
+  void setTaskDescription(TaskDescription description) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ActivitySetTaskDescriptionParams();
+    params.description = description;
+    ctrl.sendMessage(params,
+        _activityMethodSetTaskDescriptionName);
+  }
+  void setSystemUiVisibility(SystemUiVisibility visibility) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ActivitySetSystemUiVisibilityParams();
+    params.visibility = visibility;
+    ctrl.sendMessage(params,
+        _activityMethodSetSystemUiVisibilityName);
+  }
+  void setRequestedOrientation(ScreenOrientation orientation) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ActivitySetRequestedOrientationParams();
+    params.orientation = orientation;
+    ctrl.sendMessage(params,
+        _activityMethodSetRequestedOrientationName);
   }
 }
 
@@ -1971,24 +1939,22 @@ abstract class PathService {
 }
 
 
-class _PathServiceProxyImpl extends bindings.Proxy {
-  _PathServiceProxyImpl.fromEndpoint(
+class _PathServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _PathServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _PathServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _PathServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _PathServiceProxyImpl.unbound() : super.unbound();
-
-  static _PathServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _PathServiceProxyImpl"));
-    return new _PathServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _PathServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _PathServiceServiceDescription();
+      new _PathServiceServiceDescription();
 
+  String get serviceName => PathService.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _pathServiceMethodGetAppDataDirName:
@@ -2058,66 +2024,30 @@ class _PathServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_PathServiceProxyImpl($superString)";
+    return "_PathServiceProxyControl($superString)";
   }
 }
 
 
-class _PathServiceProxyCalls implements PathService {
-  _PathServiceProxyImpl _proxyImpl;
-
-  _PathServiceProxyCalls(this._proxyImpl);
-    dynamic getAppDataDir([Function responseFactory = null]) {
-      var params = new _PathServiceGetAppDataDirParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _pathServiceMethodGetAppDataDirName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic getFilesDir([Function responseFactory = null]) {
-      var params = new _PathServiceGetFilesDirParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _pathServiceMethodGetFilesDirName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic getCacheDir([Function responseFactory = null]) {
-      var params = new _PathServiceGetCacheDirParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _pathServiceMethodGetCacheDirName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class PathServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  PathService ptr;
-
-  PathServiceProxy(_PathServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _PathServiceProxyCalls(proxyImpl);
-
+class PathServiceProxy extends bindings.Proxy
+                              implements PathService {
   PathServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _PathServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _PathServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _PathServiceProxyControl.fromEndpoint(endpoint));
 
-  PathServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _PathServiceProxyImpl.fromHandle(handle) {
-    ptr = new _PathServiceProxyCalls(impl);
-  }
+  PathServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _PathServiceProxyControl.fromHandle(handle));
 
-  PathServiceProxy.unbound() :
-      impl = new _PathServiceProxyImpl.unbound() {
-    ptr = new _PathServiceProxyCalls(impl);
+  PathServiceProxy.unbound()
+      : super(new _PathServiceProxyControl.unbound());
+
+  static PathServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For PathServiceProxy"));
+    return new PathServiceProxy.fromEndpoint(endpoint);
   }
 
   factory PathServiceProxy.connectToService(
@@ -2127,30 +2057,30 @@ class PathServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static PathServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For PathServiceProxy"));
-    return new PathServiceProxy.fromEndpoint(endpoint);
+
+  dynamic getAppDataDir([Function responseFactory = null]) {
+    var params = new _PathServiceGetAppDataDirParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _pathServiceMethodGetAppDataDirName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => PathService.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic getFilesDir([Function responseFactory = null]) {
+    var params = new _PathServiceGetFilesDirParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _pathServiceMethodGetFilesDirName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "PathServiceProxy($impl)";
+  dynamic getCacheDir([Function responseFactory = null]) {
+    var params = new _PathServiceGetCacheDirParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _pathServiceMethodGetCacheDirName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -2328,24 +2258,22 @@ abstract class UserFeedback {
 }
 
 
-class _UserFeedbackProxyImpl extends bindings.Proxy {
-  _UserFeedbackProxyImpl.fromEndpoint(
+class _UserFeedbackProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _UserFeedbackProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _UserFeedbackProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _UserFeedbackProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _UserFeedbackProxyImpl.unbound() : super.unbound();
-
-  static _UserFeedbackProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _UserFeedbackProxyImpl"));
-    return new _UserFeedbackProxyImpl.fromEndpoint(endpoint);
-  }
+  _UserFeedbackProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _UserFeedbackServiceDescription();
+      new _UserFeedbackServiceDescription();
 
+  String get serviceName => UserFeedback.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -2355,60 +2283,30 @@ class _UserFeedbackProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_UserFeedbackProxyImpl($superString)";
+    return "_UserFeedbackProxyControl($superString)";
   }
 }
 
 
-class _UserFeedbackProxyCalls implements UserFeedback {
-  _UserFeedbackProxyImpl _proxyImpl;
-
-  _UserFeedbackProxyCalls(this._proxyImpl);
-    void performHapticFeedback(HapticFeedbackType type) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _UserFeedbackPerformHapticFeedbackParams();
-      params.type = type;
-      _proxyImpl.sendMessage(params, _userFeedbackMethodPerformHapticFeedbackName);
-    }
-    void performAuralFeedback(AuralFeedbackType type) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _UserFeedbackPerformAuralFeedbackParams();
-      params.type = type;
-      _proxyImpl.sendMessage(params, _userFeedbackMethodPerformAuralFeedbackName);
-    }
-}
-
-
-class UserFeedbackProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  UserFeedback ptr;
-
-  UserFeedbackProxy(_UserFeedbackProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _UserFeedbackProxyCalls(proxyImpl);
-
+class UserFeedbackProxy extends bindings.Proxy
+                              implements UserFeedback {
   UserFeedbackProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _UserFeedbackProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _UserFeedbackProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _UserFeedbackProxyControl.fromEndpoint(endpoint));
 
-  UserFeedbackProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _UserFeedbackProxyImpl.fromHandle(handle) {
-    ptr = new _UserFeedbackProxyCalls(impl);
-  }
+  UserFeedbackProxy.fromHandle(core.MojoHandle handle)
+      : super(new _UserFeedbackProxyControl.fromHandle(handle));
 
-  UserFeedbackProxy.unbound() :
-      impl = new _UserFeedbackProxyImpl.unbound() {
-    ptr = new _UserFeedbackProxyCalls(impl);
+  UserFeedbackProxy.unbound()
+      : super(new _UserFeedbackProxyControl.unbound());
+
+  static UserFeedbackProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For UserFeedbackProxy"));
+    return new UserFeedbackProxy.fromEndpoint(endpoint);
   }
 
   factory UserFeedbackProxy.connectToService(
@@ -2418,30 +2316,26 @@ class UserFeedbackProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static UserFeedbackProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For UserFeedbackProxy"));
-    return new UserFeedbackProxy.fromEndpoint(endpoint);
+
+  void performHapticFeedback(HapticFeedbackType type) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _UserFeedbackPerformHapticFeedbackParams();
+    params.type = type;
+    ctrl.sendMessage(params,
+        _userFeedbackMethodPerformHapticFeedbackName);
   }
-
-  String get serviceName => UserFeedback.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "UserFeedbackProxy($impl)";
+  void performAuralFeedback(AuralFeedbackType type) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _UserFeedbackPerformAuralFeedbackParams();
+    params.type = type;
+    ctrl.sendMessage(params,
+        _userFeedbackMethodPerformAuralFeedbackName);
   }
 }
 

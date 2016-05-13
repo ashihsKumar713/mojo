@@ -820,24 +820,22 @@ abstract class Process {
 }
 
 
-class _ProcessProxyImpl extends bindings.Proxy {
-  _ProcessProxyImpl.fromEndpoint(
+class _ProcessProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ProcessProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ProcessProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ProcessProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ProcessProxyImpl.unbound() : super.unbound();
-
-  static _ProcessProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ProcessProxyImpl"));
-    return new _ProcessProxyImpl.fromEndpoint(endpoint);
-  }
+  _ProcessProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ProcessServiceDescription();
+      new _ProcessServiceDescription();
 
+  String get serviceName => Process.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _processMethodSpawnName:
@@ -887,70 +885,30 @@ class _ProcessProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ProcessProxyImpl($superString)";
+    return "_ProcessProxyControl($superString)";
   }
 }
 
 
-class _ProcessProxyCalls implements Process {
-  _ProcessProxyImpl _proxyImpl;
-
-  _ProcessProxyCalls(this._proxyImpl);
-    dynamic spawn(List<int> path,List<List<int>> argv,List<List<int>> envp,Object stdinFile,Object stdoutFile,Object stderrFile,Object processController,[Function responseFactory = null]) {
-      var params = new _ProcessSpawnParams();
-      params.path = path;
-      params.argv = argv;
-      params.envp = envp;
-      params.stdinFile = stdinFile;
-      params.stdoutFile = stdoutFile;
-      params.stderrFile = stderrFile;
-      params.processController = processController;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _processMethodSpawnName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic spawnWithTerminal(List<int> path,List<List<int>> argv,List<List<int>> envp,Object terminalFile,Object processController,[Function responseFactory = null]) {
-      var params = new _ProcessSpawnWithTerminalParams();
-      params.path = path;
-      params.argv = argv;
-      params.envp = envp;
-      params.terminalFile = terminalFile;
-      params.processController = processController;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _processMethodSpawnWithTerminalName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class ProcessProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Process ptr;
-
-  ProcessProxy(_ProcessProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ProcessProxyCalls(proxyImpl);
-
+class ProcessProxy extends bindings.Proxy
+                              implements Process {
   ProcessProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ProcessProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ProcessProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ProcessProxyControl.fromEndpoint(endpoint));
 
-  ProcessProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ProcessProxyImpl.fromHandle(handle) {
-    ptr = new _ProcessProxyCalls(impl);
-  }
+  ProcessProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ProcessProxyControl.fromHandle(handle));
 
-  ProcessProxy.unbound() :
-      impl = new _ProcessProxyImpl.unbound() {
-    ptr = new _ProcessProxyCalls(impl);
+  ProcessProxy.unbound()
+      : super(new _ProcessProxyControl.unbound());
+
+  static ProcessProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ProcessProxy"));
+    return new ProcessProxy.fromEndpoint(endpoint);
   }
 
   factory ProcessProxy.connectToService(
@@ -960,30 +918,34 @@ class ProcessProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ProcessProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ProcessProxy"));
-    return new ProcessProxy.fromEndpoint(endpoint);
+
+  dynamic spawn(List<int> path,List<List<int>> argv,List<List<int>> envp,Object stdinFile,Object stdoutFile,Object stderrFile,Object processController,[Function responseFactory = null]) {
+    var params = new _ProcessSpawnParams();
+    params.path = path;
+    params.argv = argv;
+    params.envp = envp;
+    params.stdinFile = stdinFile;
+    params.stdoutFile = stdoutFile;
+    params.stderrFile = stderrFile;
+    params.processController = processController;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _processMethodSpawnName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => Process.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ProcessProxy($impl)";
+  dynamic spawnWithTerminal(List<int> path,List<List<int>> argv,List<List<int>> envp,Object terminalFile,Object processController,[Function responseFactory = null]) {
+    var params = new _ProcessSpawnWithTerminalParams();
+    params.path = path;
+    params.argv = argv;
+    params.envp = envp;
+    params.terminalFile = terminalFile;
+    params.processController = processController;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _processMethodSpawnWithTerminalName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -1140,24 +1102,22 @@ abstract class ProcessController {
 }
 
 
-class _ProcessControllerProxyImpl extends bindings.Proxy {
-  _ProcessControllerProxyImpl.fromEndpoint(
+class _ProcessControllerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ProcessControllerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ProcessControllerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ProcessControllerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ProcessControllerProxyImpl.unbound() : super.unbound();
-
-  static _ProcessControllerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ProcessControllerProxyImpl"));
-    return new _ProcessControllerProxyImpl.fromEndpoint(endpoint);
-  }
+  _ProcessControllerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ProcessControllerServiceDescription();
+      new _ProcessControllerServiceDescription();
 
+  String get serviceName => ProcessController.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _processControllerMethodWaitName:
@@ -1207,59 +1167,30 @@ class _ProcessControllerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ProcessControllerProxyImpl($superString)";
+    return "_ProcessControllerProxyControl($superString)";
   }
 }
 
 
-class _ProcessControllerProxyCalls implements ProcessController {
-  _ProcessControllerProxyImpl _proxyImpl;
-
-  _ProcessControllerProxyCalls(this._proxyImpl);
-    dynamic wait([Function responseFactory = null]) {
-      var params = new _ProcessControllerWaitParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _processControllerMethodWaitName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic kill(int signal,[Function responseFactory = null]) {
-      var params = new _ProcessControllerKillParams();
-      params.signal = signal;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _processControllerMethodKillName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class ProcessControllerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ProcessController ptr;
-
-  ProcessControllerProxy(_ProcessControllerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ProcessControllerProxyCalls(proxyImpl);
-
+class ProcessControllerProxy extends bindings.Proxy
+                              implements ProcessController {
   ProcessControllerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ProcessControllerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ProcessControllerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ProcessControllerProxyControl.fromEndpoint(endpoint));
 
-  ProcessControllerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ProcessControllerProxyImpl.fromHandle(handle) {
-    ptr = new _ProcessControllerProxyCalls(impl);
-  }
+  ProcessControllerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ProcessControllerProxyControl.fromHandle(handle));
 
-  ProcessControllerProxy.unbound() :
-      impl = new _ProcessControllerProxyImpl.unbound() {
-    ptr = new _ProcessControllerProxyCalls(impl);
+  ProcessControllerProxy.unbound()
+      : super(new _ProcessControllerProxyControl.unbound());
+
+  static ProcessControllerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ProcessControllerProxy"));
+    return new ProcessControllerProxy.fromEndpoint(endpoint);
   }
 
   factory ProcessControllerProxy.connectToService(
@@ -1269,30 +1200,23 @@ class ProcessControllerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ProcessControllerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ProcessControllerProxy"));
-    return new ProcessControllerProxy.fromEndpoint(endpoint);
+
+  dynamic wait([Function responseFactory = null]) {
+    var params = new _ProcessControllerWaitParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _processControllerMethodWaitName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => ProcessController.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ProcessControllerProxy($impl)";
+  dynamic kill(int signal,[Function responseFactory = null]) {
+    var params = new _ProcessControllerKillParams();
+    params.signal = signal;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _processControllerMethodKillName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

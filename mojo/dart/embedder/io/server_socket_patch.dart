@@ -45,7 +45,7 @@ class _MojoRawServerSocket extends Stream<RawSocket>
                                             bool v6Only,
                                             bool shared) async {
     final rawServerSocket = new _MojoRawServerSocket(v6Only);
-    final networkService = _getNetworkService().ptr;
+    final networkService = _getNetworkService();
     assert(networkService != null);
     var response =
         await networkService.createTcpBoundSocket(
@@ -59,7 +59,7 @@ class _MojoRawServerSocket extends Stream<RawSocket>
         _NetworkServiceCodec._fromNetAddress(response.boundTo);
     rawServerSocket._boundPort =
         _NetworkServiceCodec._portFromNetAddress(response.boundTo);
-    final boundSocket = rawServerSocket._tcpBoundSocket.ptr;
+    final boundSocket = rawServerSocket._tcpBoundSocket;
     response =
         await boundSocket.startListening(rawServerSocket._tcpServerSocket);
     if (!_NetworkService._okay(response.result)) {
@@ -103,9 +103,9 @@ class _MojoRawServerSocket extends Stream<RawSocket>
     var response;
     try {
       response = await _tcpServerSocket.responseOrError(
-          _tcpServerSocket.ptr.accept(rawSocket._pipeOut.consumer,
-                                      rawSocket._pipeIn.producer,
-                                      rawSocket._tcpConnectedSocket));
+          _tcpServerSocket.accept(rawSocket._pipeOut.consumer,
+                                  rawSocket._pipeIn.producer,
+                                  rawSocket._tcpConnectedSocket));
     } on ProxyError catch (e) {
       rawSocket.destroy();
       await _destroy();

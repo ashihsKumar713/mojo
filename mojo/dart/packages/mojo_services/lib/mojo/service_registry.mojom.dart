@@ -128,24 +128,22 @@ abstract class ServiceRegistry {
 }
 
 
-class _ServiceRegistryProxyImpl extends bindings.Proxy {
-  _ServiceRegistryProxyImpl.fromEndpoint(
+class _ServiceRegistryProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ServiceRegistryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ServiceRegistryProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ServiceRegistryProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ServiceRegistryProxyImpl.unbound() : super.unbound();
-
-  static _ServiceRegistryProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ServiceRegistryProxyImpl"));
-    return new _ServiceRegistryProxyImpl.fromEndpoint(endpoint);
-  }
+  _ServiceRegistryProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ServiceRegistryServiceDescription();
+      new _ServiceRegistryServiceDescription();
 
+  String get serviceName => ServiceRegistry.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -155,52 +153,30 @@ class _ServiceRegistryProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ServiceRegistryProxyImpl($superString)";
+    return "_ServiceRegistryProxyControl($superString)";
   }
 }
 
 
-class _ServiceRegistryProxyCalls implements ServiceRegistry {
-  _ServiceRegistryProxyImpl _proxyImpl;
-
-  _ServiceRegistryProxyCalls(this._proxyImpl);
-    void addServices(List<String> interfaceNames, Object serviceProvider) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ServiceRegistryAddServicesParams();
-      params.interfaceNames = interfaceNames;
-      params.serviceProvider = serviceProvider;
-      _proxyImpl.sendMessage(params, _serviceRegistryMethodAddServicesName);
-    }
-}
-
-
-class ServiceRegistryProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ServiceRegistry ptr;
-
-  ServiceRegistryProxy(_ServiceRegistryProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ServiceRegistryProxyCalls(proxyImpl);
-
+class ServiceRegistryProxy extends bindings.Proxy
+                              implements ServiceRegistry {
   ServiceRegistryProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ServiceRegistryProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ServiceRegistryProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ServiceRegistryProxyControl.fromEndpoint(endpoint));
 
-  ServiceRegistryProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ServiceRegistryProxyImpl.fromHandle(handle) {
-    ptr = new _ServiceRegistryProxyCalls(impl);
-  }
+  ServiceRegistryProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ServiceRegistryProxyControl.fromHandle(handle));
 
-  ServiceRegistryProxy.unbound() :
-      impl = new _ServiceRegistryProxyImpl.unbound() {
-    ptr = new _ServiceRegistryProxyCalls(impl);
+  ServiceRegistryProxy.unbound()
+      : super(new _ServiceRegistryProxyControl.unbound());
+
+  static ServiceRegistryProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ServiceRegistryProxy"));
+    return new ServiceRegistryProxy.fromEndpoint(endpoint);
   }
 
   factory ServiceRegistryProxy.connectToService(
@@ -210,30 +186,17 @@ class ServiceRegistryProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ServiceRegistryProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ServiceRegistryProxy"));
-    return new ServiceRegistryProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => ServiceRegistry.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ServiceRegistryProxy($impl)";
+  void addServices(List<String> interfaceNames, Object serviceProvider) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ServiceRegistryAddServicesParams();
+    params.interfaceNames = interfaceNames;
+    params.serviceProvider = serviceProvider;
+    ctrl.sendMessage(params,
+        _serviceRegistryMethodAddServicesName);
   }
 }
 

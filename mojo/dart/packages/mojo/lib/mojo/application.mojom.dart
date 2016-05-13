@@ -316,24 +316,22 @@ abstract class Application {
 }
 
 
-class _ApplicationProxyImpl extends bindings.Proxy {
-  _ApplicationProxyImpl.fromEndpoint(
+class _ApplicationProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ApplicationProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ApplicationProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ApplicationProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ApplicationProxyImpl.unbound() : super.unbound();
-
-  static _ApplicationProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ApplicationProxyImpl"));
-    return new _ApplicationProxyImpl.fromEndpoint(endpoint);
-  }
+  _ApplicationProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ApplicationServiceDescription();
+      new _ApplicationServiceDescription();
 
+  String get serviceName => Application.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -343,73 +341,30 @@ class _ApplicationProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ApplicationProxyImpl($superString)";
+    return "_ApplicationProxyControl($superString)";
   }
 }
 
 
-class _ApplicationProxyCalls implements Application {
-  _ApplicationProxyImpl _proxyImpl;
-
-  _ApplicationProxyCalls(this._proxyImpl);
-    void initialize(Object shell, List<String> args, String url) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ApplicationInitializeParams();
-      params.shell = shell;
-      params.args = args;
-      params.url = url;
-      _proxyImpl.sendMessage(params, _applicationMethodInitializeName);
-    }
-    void acceptConnection(String requestorUrl, Object services, Object exposedServices, String resolvedUrl) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ApplicationAcceptConnectionParams();
-      params.requestorUrl = requestorUrl;
-      params.services = services;
-      params.exposedServices = exposedServices;
-      params.resolvedUrl = resolvedUrl;
-      _proxyImpl.sendMessage(params, _applicationMethodAcceptConnectionName);
-    }
-    void requestQuit() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ApplicationRequestQuitParams();
-      _proxyImpl.sendMessage(params, _applicationMethodRequestQuitName);
-    }
-}
-
-
-class ApplicationProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Application ptr;
-
-  ApplicationProxy(_ApplicationProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ApplicationProxyCalls(proxyImpl);
-
+class ApplicationProxy extends bindings.Proxy
+                              implements Application {
   ApplicationProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ApplicationProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ApplicationProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ApplicationProxyControl.fromEndpoint(endpoint));
 
-  ApplicationProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ApplicationProxyImpl.fromHandle(handle) {
-    ptr = new _ApplicationProxyCalls(impl);
-  }
+  ApplicationProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ApplicationProxyControl.fromHandle(handle));
 
-  ApplicationProxy.unbound() :
-      impl = new _ApplicationProxyImpl.unbound() {
-    ptr = new _ApplicationProxyCalls(impl);
+  ApplicationProxy.unbound()
+      : super(new _ApplicationProxyControl.unbound());
+
+  static ApplicationProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ApplicationProxy"));
+    return new ApplicationProxy.fromEndpoint(endpoint);
   }
 
   factory ApplicationProxy.connectToService(
@@ -419,30 +374,40 @@ class ApplicationProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ApplicationProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ApplicationProxy"));
-    return new ApplicationProxy.fromEndpoint(endpoint);
+
+  void initialize(Object shell, List<String> args, String url) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ApplicationInitializeParams();
+    params.shell = shell;
+    params.args = args;
+    params.url = url;
+    ctrl.sendMessage(params,
+        _applicationMethodInitializeName);
   }
-
-  String get serviceName => Application.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void acceptConnection(String requestorUrl, Object services, Object exposedServices, String resolvedUrl) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ApplicationAcceptConnectionParams();
+    params.requestorUrl = requestorUrl;
+    params.services = services;
+    params.exposedServices = exposedServices;
+    params.resolvedUrl = resolvedUrl;
+    ctrl.sendMessage(params,
+        _applicationMethodAcceptConnectionName);
   }
-
-  String toString() {
-    return "ApplicationProxy($impl)";
+  void requestQuit() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ApplicationRequestQuitParams();
+    ctrl.sendMessage(params,
+        _applicationMethodRequestQuitName);
   }
 }
 

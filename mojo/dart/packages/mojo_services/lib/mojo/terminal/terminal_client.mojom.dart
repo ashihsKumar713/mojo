@@ -100,24 +100,22 @@ abstract class TerminalClient {
 }
 
 
-class _TerminalClientProxyImpl extends bindings.Proxy {
-  _TerminalClientProxyImpl.fromEndpoint(
+class _TerminalClientProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _TerminalClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _TerminalClientProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _TerminalClientProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _TerminalClientProxyImpl.unbound() : super.unbound();
-
-  static _TerminalClientProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _TerminalClientProxyImpl"));
-    return new _TerminalClientProxyImpl.fromEndpoint(endpoint);
-  }
+  _TerminalClientProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _TerminalClientServiceDescription();
+      new _TerminalClientServiceDescription();
 
+  String get serviceName => TerminalClient.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -127,51 +125,30 @@ class _TerminalClientProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_TerminalClientProxyImpl($superString)";
+    return "_TerminalClientProxyControl($superString)";
   }
 }
 
 
-class _TerminalClientProxyCalls implements TerminalClient {
-  _TerminalClientProxyImpl _proxyImpl;
-
-  _TerminalClientProxyCalls(this._proxyImpl);
-    void connectToTerminal(Object terminal) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _TerminalClientConnectToTerminalParams();
-      params.terminal = terminal;
-      _proxyImpl.sendMessage(params, _terminalClientMethodConnectToTerminalName);
-    }
-}
-
-
-class TerminalClientProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  TerminalClient ptr;
-
-  TerminalClientProxy(_TerminalClientProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _TerminalClientProxyCalls(proxyImpl);
-
+class TerminalClientProxy extends bindings.Proxy
+                              implements TerminalClient {
   TerminalClientProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _TerminalClientProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _TerminalClientProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _TerminalClientProxyControl.fromEndpoint(endpoint));
 
-  TerminalClientProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _TerminalClientProxyImpl.fromHandle(handle) {
-    ptr = new _TerminalClientProxyCalls(impl);
-  }
+  TerminalClientProxy.fromHandle(core.MojoHandle handle)
+      : super(new _TerminalClientProxyControl.fromHandle(handle));
 
-  TerminalClientProxy.unbound() :
-      impl = new _TerminalClientProxyImpl.unbound() {
-    ptr = new _TerminalClientProxyCalls(impl);
+  TerminalClientProxy.unbound()
+      : super(new _TerminalClientProxyControl.unbound());
+
+  static TerminalClientProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TerminalClientProxy"));
+    return new TerminalClientProxy.fromEndpoint(endpoint);
   }
 
   factory TerminalClientProxy.connectToService(
@@ -181,30 +158,16 @@ class TerminalClientProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static TerminalClientProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TerminalClientProxy"));
-    return new TerminalClientProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => TerminalClient.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "TerminalClientProxy($impl)";
+  void connectToTerminal(Object terminal) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _TerminalClientConnectToTerminalParams();
+    params.terminal = terminal;
+    ctrl.sendMessage(params,
+        _terminalClientMethodConnectToTerminalName);
   }
 }
 

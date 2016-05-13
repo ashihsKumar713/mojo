@@ -113,24 +113,22 @@ abstract class HttpServerDelegate {
 }
 
 
-class _HttpServerDelegateProxyImpl extends bindings.Proxy {
-  _HttpServerDelegateProxyImpl.fromEndpoint(
+class _HttpServerDelegateProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _HttpServerDelegateProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _HttpServerDelegateProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _HttpServerDelegateProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _HttpServerDelegateProxyImpl.unbound() : super.unbound();
-
-  static _HttpServerDelegateProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _HttpServerDelegateProxyImpl"));
-    return new _HttpServerDelegateProxyImpl.fromEndpoint(endpoint);
-  }
+  _HttpServerDelegateProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _HttpServerDelegateServiceDescription();
+      new _HttpServerDelegateServiceDescription();
 
+  String get serviceName => HttpServerDelegate.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -140,52 +138,30 @@ class _HttpServerDelegateProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_HttpServerDelegateProxyImpl($superString)";
+    return "_HttpServerDelegateProxyControl($superString)";
   }
 }
 
 
-class _HttpServerDelegateProxyCalls implements HttpServerDelegate {
-  _HttpServerDelegateProxyImpl _proxyImpl;
-
-  _HttpServerDelegateProxyCalls(this._proxyImpl);
-    void onConnected(Object connection, Object delegate) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _HttpServerDelegateOnConnectedParams();
-      params.connection = connection;
-      params.delegate = delegate;
-      _proxyImpl.sendMessage(params, _httpServerDelegateMethodOnConnectedName);
-    }
-}
-
-
-class HttpServerDelegateProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  HttpServerDelegate ptr;
-
-  HttpServerDelegateProxy(_HttpServerDelegateProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _HttpServerDelegateProxyCalls(proxyImpl);
-
+class HttpServerDelegateProxy extends bindings.Proxy
+                              implements HttpServerDelegate {
   HttpServerDelegateProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _HttpServerDelegateProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _HttpServerDelegateProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _HttpServerDelegateProxyControl.fromEndpoint(endpoint));
 
-  HttpServerDelegateProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _HttpServerDelegateProxyImpl.fromHandle(handle) {
-    ptr = new _HttpServerDelegateProxyCalls(impl);
-  }
+  HttpServerDelegateProxy.fromHandle(core.MojoHandle handle)
+      : super(new _HttpServerDelegateProxyControl.fromHandle(handle));
 
-  HttpServerDelegateProxy.unbound() :
-      impl = new _HttpServerDelegateProxyImpl.unbound() {
-    ptr = new _HttpServerDelegateProxyCalls(impl);
+  HttpServerDelegateProxy.unbound()
+      : super(new _HttpServerDelegateProxyControl.unbound());
+
+  static HttpServerDelegateProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HttpServerDelegateProxy"));
+    return new HttpServerDelegateProxy.fromEndpoint(endpoint);
   }
 
   factory HttpServerDelegateProxy.connectToService(
@@ -195,30 +171,17 @@ class HttpServerDelegateProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static HttpServerDelegateProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HttpServerDelegateProxy"));
-    return new HttpServerDelegateProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => HttpServerDelegate.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "HttpServerDelegateProxy($impl)";
+  void onConnected(Object connection, Object delegate) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _HttpServerDelegateOnConnectedParams();
+    params.connection = connection;
+    params.delegate = delegate;
+    ctrl.sendMessage(params,
+        _httpServerDelegateMethodOnConnectedName);
   }
 }
 

@@ -50,23 +50,23 @@ testQueryVersion() async {
   var ps = buildConnectedProxyAndStub();
   var proxy = ps[0];
   // The version starts at 0.
-  Expect.equals(0, proxy.version);
+  Expect.equals(0, proxy.ctrl.version);
   // We are talking to an implementation that supports version maxVersion.
-  var providedVersion = await proxy.queryVersion();
+  var providedVersion = await proxy.ctrl.queryVersion();
   Expect.equals(maxVersion, providedVersion);
   // The proxy's version has been updated.
-  Expect.equals(providedVersion, proxy.version);
+  Expect.equals(providedVersion, proxy.ctrl.version);
   closeProxyAndStub(ps);
 }
 
 testRequireVersionSuccess() async {
   var ps = buildConnectedProxyAndStub();
   var proxy = ps[0];
-  Expect.equals(0, proxy.version);
+  Expect.equals(0, proxy.ctrl.version);
   // Require version maxVersion.
-  proxy.requireVersion(maxVersion);
+  proxy.ctrl.requireVersion(maxVersion);
   // Make a request and get a response.
-  var response = await proxy.ptr.getInteger();
+  var response = await proxy.getInteger();
   Expect.equals(0, response.data);
   closeProxyAndStub(ps);
 }
@@ -74,23 +74,23 @@ testRequireVersionSuccess() async {
 testRequireVersionDisconnect() async {
   var ps = buildConnectedProxyAndStub();
   var proxy = ps[0];
-  Expect.equals(0, proxy.version);
+  Expect.equals(0, proxy.ctrl.version);
   // Require version maxVersion.
-  proxy.requireVersion(maxVersion);
-  Expect.equals(maxVersion, proxy.version);
+  proxy.ctrl.requireVersion(maxVersion);
+  Expect.equals(maxVersion, proxy.ctrl.version);
   // Set integer.
-  proxy.ptr.setInteger(34, sample.Enum.value);
+  proxy.setInteger(34, sample.Enum.value);
   // Get integer.
-  var response = await proxy.ptr.getInteger();
+  var response = await proxy.getInteger();
   Expect.equals(34, response.data);
   // Require version maxVersion + 1
-  proxy.requireVersion(maxVersion + 1);
+  proxy.ctrl.requireVersion(maxVersion + 1);
   // Version number is updated synchronously.
-  Expect.equals(maxVersion + 1, proxy.version);
+  Expect.equals(maxVersion + 1, proxy.ctrl.version);
   // Get integer, expect a failure.
   bool exceptionCaught = false;
   try {
-    response = await proxy.ptr.getInteger();
+    response = await proxy.getInteger();
     Expect.fail('Should have an exception.');
   } catch(e) {
     exceptionCaught = true;

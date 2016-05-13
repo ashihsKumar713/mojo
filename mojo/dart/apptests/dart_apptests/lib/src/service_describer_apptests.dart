@@ -25,26 +25,25 @@ tests(Application application, String url) {
     test('PingPong Service Verification', () async {
       var serviceDescriberProxy = new service_describer.ServiceDescriberProxy.
           unbound();
-      serviceDescriberProxy.errorFuture.then((v) =>
+      serviceDescriberProxy.ctrl.errorFuture.then((v) =>
           fail('There was an error $v'));
       application.connectToService("mojo:dart_pingpong", serviceDescriberProxy);
 
       var serviceDescriptionProxy =
           new service_describer.ServiceDescriptionProxy.unbound();
-      serviceDescriptionProxy.errorFuture.then(
+      serviceDescriptionProxy.ctrl.errorFuture.then(
           (v) => fail('There was an error $v'));
 
-      serviceDescriberProxy.ptr.describeService(
+      serviceDescriberProxy.describeService(
           "test::PingPongService", serviceDescriptionProxy);
 
       // Compare the service description obtained by the service describer and
       // the expected description taken from the pingpong service import.
-      var serviceDescription = serviceDescriptionProxy.ptr;
+      var serviceDescription = serviceDescriptionProxy;
       var serviceDescription2 = pingpong_service.PingPongServiceStub.
         serviceDescription;
 
       Function identity = (v) => v;
-
 
       // Top-level Mojom Interfaces must match.
       mojom_types.MojomInterface interfaceA =

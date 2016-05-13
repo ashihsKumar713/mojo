@@ -362,24 +362,22 @@ abstract class TcpBoundSocket {
 }
 
 
-class _TcpBoundSocketProxyImpl extends bindings.Proxy {
-  _TcpBoundSocketProxyImpl.fromEndpoint(
+class _TcpBoundSocketProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _TcpBoundSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _TcpBoundSocketProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _TcpBoundSocketProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _TcpBoundSocketProxyImpl.unbound() : super.unbound();
-
-  static _TcpBoundSocketProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _TcpBoundSocketProxyImpl"));
-    return new _TcpBoundSocketProxyImpl.fromEndpoint(endpoint);
-  }
+  _TcpBoundSocketProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _TcpBoundSocketServiceDescription();
+      new _TcpBoundSocketServiceDescription();
 
+  String get serviceName => TcpBoundSocket.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _tcpBoundSocketMethodStartListeningName:
@@ -429,63 +427,30 @@ class _TcpBoundSocketProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_TcpBoundSocketProxyImpl($superString)";
+    return "_TcpBoundSocketProxyControl($superString)";
   }
 }
 
 
-class _TcpBoundSocketProxyCalls implements TcpBoundSocket {
-  _TcpBoundSocketProxyImpl _proxyImpl;
-
-  _TcpBoundSocketProxyCalls(this._proxyImpl);
-    dynamic startListening(Object server,[Function responseFactory = null]) {
-      var params = new _TcpBoundSocketStartListeningParams();
-      params.server = server;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _tcpBoundSocketMethodStartListeningName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]) {
-      var params = new _TcpBoundSocketConnectParams();
-      params.remoteAddress = remoteAddress;
-      params.sendStream = sendStream;
-      params.receiveStream = receiveStream;
-      params.clientSocket = clientSocket;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _tcpBoundSocketMethodConnectName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class TcpBoundSocketProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  TcpBoundSocket ptr;
-
-  TcpBoundSocketProxy(_TcpBoundSocketProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _TcpBoundSocketProxyCalls(proxyImpl);
-
+class TcpBoundSocketProxy extends bindings.Proxy
+                              implements TcpBoundSocket {
   TcpBoundSocketProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _TcpBoundSocketProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _TcpBoundSocketProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _TcpBoundSocketProxyControl.fromEndpoint(endpoint));
 
-  TcpBoundSocketProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _TcpBoundSocketProxyImpl.fromHandle(handle) {
-    ptr = new _TcpBoundSocketProxyCalls(impl);
-  }
+  TcpBoundSocketProxy.fromHandle(core.MojoHandle handle)
+      : super(new _TcpBoundSocketProxyControl.fromHandle(handle));
 
-  TcpBoundSocketProxy.unbound() :
-      impl = new _TcpBoundSocketProxyImpl.unbound() {
-    ptr = new _TcpBoundSocketProxyCalls(impl);
+  TcpBoundSocketProxy.unbound()
+      : super(new _TcpBoundSocketProxyControl.unbound());
+
+  static TcpBoundSocketProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TcpBoundSocketProxy"));
+    return new TcpBoundSocketProxy.fromEndpoint(endpoint);
   }
 
   factory TcpBoundSocketProxy.connectToService(
@@ -495,30 +460,27 @@ class TcpBoundSocketProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static TcpBoundSocketProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TcpBoundSocketProxy"));
-    return new TcpBoundSocketProxy.fromEndpoint(endpoint);
+
+  dynamic startListening(Object server,[Function responseFactory = null]) {
+    var params = new _TcpBoundSocketStartListeningParams();
+    params.server = server;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _tcpBoundSocketMethodStartListeningName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => TcpBoundSocket.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "TcpBoundSocketProxy($impl)";
+  dynamic connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]) {
+    var params = new _TcpBoundSocketConnectParams();
+    params.remoteAddress = remoteAddress;
+    params.sendStream = sendStream;
+    params.receiveStream = receiveStream;
+    params.clientSocket = clientSocket;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _tcpBoundSocketMethodConnectName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

@@ -731,24 +731,22 @@ abstract class Scene {
 }
 
 
-class _SceneProxyImpl extends bindings.Proxy {
-  _SceneProxyImpl.fromEndpoint(
+class _SceneProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _SceneProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _SceneProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _SceneProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _SceneProxyImpl.unbound() : super.unbound();
-
-  static _SceneProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _SceneProxyImpl"));
-    return new _SceneProxyImpl.fromEndpoint(endpoint);
-  }
+  _SceneProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _SceneServiceDescription();
+      new _SceneServiceDescription();
 
+  String get serviceName => Scene.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -758,78 +756,30 @@ class _SceneProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_SceneProxyImpl($superString)";
+    return "_SceneProxyControl($superString)";
   }
 }
 
 
-class _SceneProxyCalls implements Scene {
-  _SceneProxyImpl _proxyImpl;
-
-  _SceneProxyCalls(this._proxyImpl);
-    void setListener(Object listener) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SceneSetListenerParams();
-      params.listener = listener;
-      _proxyImpl.sendMessage(params, _sceneMethodSetListenerName);
-    }
-    void update(SceneUpdate update) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SceneUpdateParams();
-      params.update = update;
-      _proxyImpl.sendMessage(params, _sceneMethodUpdateName);
-    }
-    void publish(SceneMetadata metadata) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ScenePublishParams();
-      params.metadata = metadata;
-      _proxyImpl.sendMessage(params, _sceneMethodPublishName);
-    }
-    void getScheduler(Object scheduler) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SceneGetSchedulerParams();
-      params.scheduler = scheduler;
-      _proxyImpl.sendMessage(params, _sceneMethodGetSchedulerName);
-    }
-}
-
-
-class SceneProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Scene ptr;
-
-  SceneProxy(_SceneProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _SceneProxyCalls(proxyImpl);
-
+class SceneProxy extends bindings.Proxy
+                              implements Scene {
   SceneProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _SceneProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _SceneProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _SceneProxyControl.fromEndpoint(endpoint));
 
-  SceneProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _SceneProxyImpl.fromHandle(handle) {
-    ptr = new _SceneProxyCalls(impl);
-  }
+  SceneProxy.fromHandle(core.MojoHandle handle)
+      : super(new _SceneProxyControl.fromHandle(handle));
 
-  SceneProxy.unbound() :
-      impl = new _SceneProxyImpl.unbound() {
-    ptr = new _SceneProxyCalls(impl);
+  SceneProxy.unbound()
+      : super(new _SceneProxyControl.unbound());
+
+  static SceneProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SceneProxy"));
+    return new SceneProxy.fromEndpoint(endpoint);
   }
 
   factory SceneProxy.connectToService(
@@ -839,30 +789,46 @@ class SceneProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static SceneProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SceneProxy"));
-    return new SceneProxy.fromEndpoint(endpoint);
+
+  void setListener(Object listener) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SceneSetListenerParams();
+    params.listener = listener;
+    ctrl.sendMessage(params,
+        _sceneMethodSetListenerName);
   }
-
-  String get serviceName => Scene.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void update(SceneUpdate update) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SceneUpdateParams();
+    params.update = update;
+    ctrl.sendMessage(params,
+        _sceneMethodUpdateName);
   }
-
-  String toString() {
-    return "SceneProxy($impl)";
+  void publish(SceneMetadata metadata) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ScenePublishParams();
+    params.metadata = metadata;
+    ctrl.sendMessage(params,
+        _sceneMethodPublishName);
+  }
+  void getScheduler(Object scheduler) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SceneGetSchedulerParams();
+    params.scheduler = scheduler;
+    ctrl.sendMessage(params,
+        _sceneMethodGetSchedulerName);
   }
 }
 
@@ -983,24 +949,22 @@ abstract class SceneListener {
 }
 
 
-class _SceneListenerProxyImpl extends bindings.Proxy {
-  _SceneListenerProxyImpl.fromEndpoint(
+class _SceneListenerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _SceneListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _SceneListenerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _SceneListenerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _SceneListenerProxyImpl.unbound() : super.unbound();
-
-  static _SceneListenerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _SceneListenerProxyImpl"));
-    return new _SceneListenerProxyImpl.fromEndpoint(endpoint);
-  }
+  _SceneListenerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _SceneListenerServiceDescription();
+      new _SceneListenerServiceDescription();
 
+  String get serviceName => SceneListener.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _sceneListenerMethodOnResourceUnavailableName:
@@ -1030,51 +994,30 @@ class _SceneListenerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_SceneListenerProxyImpl($superString)";
+    return "_SceneListenerProxyControl($superString)";
   }
 }
 
 
-class _SceneListenerProxyCalls implements SceneListener {
-  _SceneListenerProxyImpl _proxyImpl;
-
-  _SceneListenerProxyCalls(this._proxyImpl);
-    dynamic onResourceUnavailable(int resourceId,[Function responseFactory = null]) {
-      var params = new _SceneListenerOnResourceUnavailableParams();
-      params.resourceId = resourceId;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _sceneListenerMethodOnResourceUnavailableName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class SceneListenerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  SceneListener ptr;
-
-  SceneListenerProxy(_SceneListenerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _SceneListenerProxyCalls(proxyImpl);
-
+class SceneListenerProxy extends bindings.Proxy
+                              implements SceneListener {
   SceneListenerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _SceneListenerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _SceneListenerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _SceneListenerProxyControl.fromEndpoint(endpoint));
 
-  SceneListenerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _SceneListenerProxyImpl.fromHandle(handle) {
-    ptr = new _SceneListenerProxyCalls(impl);
-  }
+  SceneListenerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _SceneListenerProxyControl.fromHandle(handle));
 
-  SceneListenerProxy.unbound() :
-      impl = new _SceneListenerProxyImpl.unbound() {
-    ptr = new _SceneListenerProxyCalls(impl);
+  SceneListenerProxy.unbound()
+      : super(new _SceneListenerProxyControl.unbound());
+
+  static SceneListenerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SceneListenerProxy"));
+    return new SceneListenerProxy.fromEndpoint(endpoint);
   }
 
   factory SceneListenerProxy.connectToService(
@@ -1084,30 +1027,15 @@ class SceneListenerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static SceneListenerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SceneListenerProxy"));
-    return new SceneListenerProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => SceneListener.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "SceneListenerProxy($impl)";
+  dynamic onResourceUnavailable(int resourceId,[Function responseFactory = null]) {
+    var params = new _SceneListenerOnResourceUnavailableParams();
+    params.resourceId = resourceId;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _sceneListenerMethodOnResourceUnavailableName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

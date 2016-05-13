@@ -1103,24 +1103,22 @@ abstract class NamedObject {
 }
 
 
-class _NamedObjectProxyImpl extends bindings.Proxy {
-  _NamedObjectProxyImpl.fromEndpoint(
+class _NamedObjectProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _NamedObjectProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _NamedObjectProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _NamedObjectProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _NamedObjectProxyImpl.unbound() : super.unbound();
-
-  static _NamedObjectProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _NamedObjectProxyImpl"));
-    return new _NamedObjectProxyImpl.fromEndpoint(endpoint);
-  }
+  _NamedObjectProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _NamedObjectServiceDescription();
+      new _NamedObjectServiceDescription();
 
+  String get serviceName => NamedObject.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _namedObjectMethodGetNameName:
@@ -1150,59 +1148,30 @@ class _NamedObjectProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_NamedObjectProxyImpl($superString)";
+    return "_NamedObjectProxyControl($superString)";
   }
 }
 
 
-class _NamedObjectProxyCalls implements NamedObject {
-  _NamedObjectProxyImpl _proxyImpl;
-
-  _NamedObjectProxyCalls(this._proxyImpl);
-    void setName(String name) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NamedObjectSetNameParams();
-      params.name = name;
-      _proxyImpl.sendMessage(params, _namedObjectMethodSetNameName);
-    }
-    dynamic getName([Function responseFactory = null]) {
-      var params = new _NamedObjectGetNameParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _namedObjectMethodGetNameName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class NamedObjectProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  NamedObject ptr;
-
-  NamedObjectProxy(_NamedObjectProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _NamedObjectProxyCalls(proxyImpl);
-
+class NamedObjectProxy extends bindings.Proxy
+                              implements NamedObject {
   NamedObjectProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _NamedObjectProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _NamedObjectProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _NamedObjectProxyControl.fromEndpoint(endpoint));
 
-  NamedObjectProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _NamedObjectProxyImpl.fromHandle(handle) {
-    ptr = new _NamedObjectProxyCalls(impl);
-  }
+  NamedObjectProxy.fromHandle(core.MojoHandle handle)
+      : super(new _NamedObjectProxyControl.fromHandle(handle));
 
-  NamedObjectProxy.unbound() :
-      impl = new _NamedObjectProxyImpl.unbound() {
-    ptr = new _NamedObjectProxyCalls(impl);
+  NamedObjectProxy.unbound()
+      : super(new _NamedObjectProxyControl.unbound());
+
+  static NamedObjectProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For NamedObjectProxy"));
+    return new NamedObjectProxy.fromEndpoint(endpoint);
   }
 
   factory NamedObjectProxy.connectToService(
@@ -1212,30 +1181,24 @@ class NamedObjectProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static NamedObjectProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For NamedObjectProxy"));
-    return new NamedObjectProxy.fromEndpoint(endpoint);
+
+  void setName(String name) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NamedObjectSetNameParams();
+    params.name = name;
+    ctrl.sendMessage(params,
+        _namedObjectMethodSetNameName);
   }
-
-  String get serviceName => NamedObject.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "NamedObjectProxy($impl)";
+  dynamic getName([Function responseFactory = null]) {
+    var params = new _NamedObjectGetNameParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _namedObjectMethodGetNameName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -1374,24 +1337,22 @@ abstract class Factory {
 }
 
 
-class _FactoryProxyImpl extends bindings.Proxy {
-  _FactoryProxyImpl.fromEndpoint(
+class _FactoryProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _FactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _FactoryProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _FactoryProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _FactoryProxyImpl.unbound() : super.unbound();
-
-  static _FactoryProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _FactoryProxyImpl"));
-    return new _FactoryProxyImpl.fromEndpoint(endpoint);
-  }
+  _FactoryProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _FactoryServiceDescription();
+      new _FactoryServiceDescription();
 
+  String get serviceName => Factory.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _factoryMethodDoStuffName:
@@ -1481,88 +1442,30 @@ class _FactoryProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_FactoryProxyImpl($superString)";
+    return "_FactoryProxyControl($superString)";
   }
 }
 
 
-class _FactoryProxyCalls implements Factory {
-  _FactoryProxyImpl _proxyImpl;
-
-  _FactoryProxyCalls(this._proxyImpl);
-    dynamic doStuff(Request request,core.MojoMessagePipeEndpoint pipe,[Function responseFactory = null]) {
-      var params = new _FactoryDoStuffParams();
-      params.request = request;
-      params.pipe = pipe;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _factoryMethodDoStuffName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic doStuff2(core.MojoDataPipeConsumer pipe,[Function responseFactory = null]) {
-      var params = new _FactoryDoStuff2Params();
-      params.pipe = pipe;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _factoryMethodDoStuff2Name,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void createNamedObject(Object obj) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _FactoryCreateNamedObjectParams();
-      params.obj = obj;
-      _proxyImpl.sendMessage(params, _factoryMethodCreateNamedObjectName);
-    }
-    dynamic requestImportedInterface(Object obj,[Function responseFactory = null]) {
-      var params = new _FactoryRequestImportedInterfaceParams();
-      params.obj = obj;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _factoryMethodRequestImportedInterfaceName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic takeImportedInterface(Object obj,[Function responseFactory = null]) {
-      var params = new _FactoryTakeImportedInterfaceParams();
-      params.obj = obj;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _factoryMethodTakeImportedInterfaceName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class FactoryProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Factory ptr;
-
-  FactoryProxy(_FactoryProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _FactoryProxyCalls(proxyImpl);
-
+class FactoryProxy extends bindings.Proxy
+                              implements Factory {
   FactoryProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _FactoryProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _FactoryProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _FactoryProxyControl.fromEndpoint(endpoint));
 
-  FactoryProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _FactoryProxyImpl.fromHandle(handle) {
-    ptr = new _FactoryProxyCalls(impl);
-  }
+  FactoryProxy.fromHandle(core.MojoHandle handle)
+      : super(new _FactoryProxyControl.fromHandle(handle));
 
-  FactoryProxy.unbound() :
-      impl = new _FactoryProxyImpl.unbound() {
-    ptr = new _FactoryProxyCalls(impl);
+  FactoryProxy.unbound()
+      : super(new _FactoryProxyControl.unbound());
+
+  static FactoryProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For FactoryProxy"));
+    return new FactoryProxy.fromEndpoint(endpoint);
   }
 
   factory FactoryProxy.connectToService(
@@ -1572,30 +1475,53 @@ class FactoryProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static FactoryProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For FactoryProxy"));
-    return new FactoryProxy.fromEndpoint(endpoint);
+
+  dynamic doStuff(Request request,core.MojoMessagePipeEndpoint pipe,[Function responseFactory = null]) {
+    var params = new _FactoryDoStuffParams();
+    params.request = request;
+    params.pipe = pipe;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _factoryMethodDoStuffName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => Factory.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic doStuff2(core.MojoDataPipeConsumer pipe,[Function responseFactory = null]) {
+    var params = new _FactoryDoStuff2Params();
+    params.pipe = pipe;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _factoryMethodDoStuff2Name,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "FactoryProxy($impl)";
+  void createNamedObject(Object obj) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _FactoryCreateNamedObjectParams();
+    params.obj = obj;
+    ctrl.sendMessage(params,
+        _factoryMethodCreateNamedObjectName);
+  }
+  dynamic requestImportedInterface(Object obj,[Function responseFactory = null]) {
+    var params = new _FactoryRequestImportedInterfaceParams();
+    params.obj = obj;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _factoryMethodRequestImportedInterfaceName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic takeImportedInterface(Object obj,[Function responseFactory = null]) {
+    var params = new _FactoryTakeImportedInterfaceParams();
+    params.obj = obj;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _factoryMethodTakeImportedInterfaceName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -1804,7 +1730,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xaSZPbRBTW4qmYJYknU8QiJDMekgyZohiZcMA1p1RBSFJUQQpzIMVhxkubaIgsIcmUuXHMT+DIkZ+QI8f8jBw55pgbtKzXdrvVrcXR5mBVdbWlkab7ff19771eNCm4GlA/hZp93qHuZVzqcP8BLju4uD3TfoKOj7/pmWj4bf8MDTzu+9fhm+8fPbx78vXdR8fBh0fsd2z7z6C+hUsNlxbTrx+gtqHew6XJaeer3sCznN8S90P0f75Dv0yQ6836oXH/7trW2EX3ob++HSqDo3//fG8ZV+1w+b6jL+yWKLvJ9ZK5v8Pctxmc/oWLfY9cF3E5hwvB6TL+fWE+vnP4QuOzj8vbuPyISxcX/bFlIt2ZDC3TGCNHN60zS3edQfDDnvSfGAPdGHvIGfUGyNX7xnhojH9ydQ+j6upBcyejoLkj/yOTywuCy1VctuC3j5sC+NYoHLao9x8CIf8+D/zZDurnTT7eL6Ce1pLhLVF40/9PhPeXVtebjEYh+z4EW/LGtcXonth7qia307/aAjubYCvY+YkD+mHtJVcRPFKodk/lZTtpnW5xdCa6suKDCB+fD5cK5IPEtK8x/SR+MM5P8nCtReBaXwFXOQLXd6E927ARz4/4uH5aAK4NykfJnPioUX1WqPu89alBXxb6DOLXRp9hHdRn+uTjcx3yobL1SfpJ8pC4POWOIM8rWp8emno8ffq43ihQn5Ig3xXpU5QvaOpC71ngRMYVdHqbxelGyfnCrPHs/dFtkjCU5Y9YHqSNZ1n7obh45vPgoGC9KDF6kan3Wf78Q/xKSv50BPi8j8v2Mn8CRyeY31aJR3IJPBL5XZ9Hn1fM78qc+V9LMB9WUuCkUOMg4tMXDup5iF0lCON2syQ/TOw/Takj0XrAPtgesns+g6u+norMD9+BdQerfybkxX6BvFCY9snzHegry+Sk62Kvq88/IS9SU+CuRuiT5Lcw33xg2pbjoeEDghw7Dgcl63OakT5vQRsiu9chb6qSPg8Kincifbap9YgruBgwoEehkQ3e+xg0O9drzAer5mevoP49JW/vC8bhEPxgBG/XJl+rEn8/Kijvrzp/4+JOLcV41CLizjVc3vP73/sZ8XrM2694E+LOTbCdazeVG250m0y3/neflbhuWNW4kzVvfd+4G8FbEnQ2vE3G20PwBf933rLxxoYF36cyfzzIeP4B9V8Mf59FrP/S/Wlx8qNznHleFzm/GoPZBD7RuQ3R/PAK7D8KpoUhflwt6FxAnD1axD6JQo0nu+/UUaPX9/Pa/+0ibzZWbL+vvSHr++Q8ANhZ+nmAqq7LjkGwPB5sr9G6LOHPKznb/TCil3sCveyWrJcXUrZ6uVcRvdQT8EGKiFN57Rcu8Cn3/MK6+ZNd4FhV/YloXvByKxqftOceyXkl5twjeRzC7Tx8lzdu7LnXFjjQNujnsSrmmSQtzkbmzbO3YNymgnW7CzDWeeOVdn++ltN5FtH+/EV4VvR5Mx4uCrW+m8U5H4XznFyXYD5gWg468cFx+Tzx670C47YMfSc8qXPihrzCfLyxAn7qa8zHd8CXF4lbVebjS/5REC9aajbxgj1fR/Iz5lhdaHwuFxQv2HlsQ16P+NDcxIc5LmXEh7jzjuT9/wIAAP//4cQFxDg0AAA=";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xaT3PbRBTXH4eaf6nTDI0oberQNrgwRKYcyOTUGShNhhnIEA7kQkZ21omDbQlJZgwnjjlyzEfgI+Rj8DFy5MgNVtFbe73alSxHltYZ78zOWooU7fu93/uzu89QwlaB8RxG9v42da3iXobrD3Bfxd2zuk4H7ex8a3XR8XeNM9T0uc8/gXd+ONx/dfTNq8Od8MUt9j32+5cw1nAv4V5l5vUjjA6Mj3Ff43zna6vp2+5vE89D9H++R7/0kedfz8Pg/t1z7J6HdmG+gRw6g2NwfVEdx7X28fi1Ux/JrVByk/Yvc/2Sua4zOP0HjX2OtLu438Gd4HQf/14e6ncIX0Q/G7i/hXsL959wN/uea3bsptUxT2z7pIPMU7uLzN9dy+zaZ7bpuc3wh9NvdNpNs93zkduymsgzG+3ecbt34pk+Btgzwy8ftcIvbwUvdaPfJ/g8xH0Jfgf4aYBzicJjiXr+HIhZXQ7Hv1fC8dTg434F40VpMtwVCnf6/4lw/8o+8PutVkS+D0GWvPCtMn6AyD3QJ5c3aHWBvGsgM8j7qQv2xMpNWp680qjvn6rj8tL2u8SxP1HLih8inAJ+3CuAHwozD4OZL/GTSX6Uh28pBt/yFPiqMfi+A99z2g7ixZ8A389yxLdC+TCVE0cNau4adT1ruzVgLiO7DePcwm75rQI6E+H0BPInWeyWzJfkL0n5zUtBfpi33fpo4PPsNsD3aQF2qwjyZZHdivKMuj7yA1ngRfQL9vuCxeupJHlGRZuJv3pBEo2i/RXLi7TxL2s/lRT/Al5sFmRHWoIdqdQ8WT79Q65T8mlbgNP7uK+M8yl0hIJ1s4y8Ugvglcg/B7z6QlL/rHLWl1XBultLgZdG6UPEry9dZPmI3Y2I4vesYH9NcHBS2pdo/2EDMIjIP1whzo+d5Zlnvg37HHbjTMiTjQJ4ojHzIPdXYc4swyfdl7up3V5CXqWnwF+PsVuSJ8N6dq/r2K6PjvcIbKw+NiWx2/OM7LYGGIjkn6e8Sya73cw5Porstk7tgzzAvQ0K3opoOnzuE7DloR0nvDBtfkcWRn+m5PGuQB/PwU/G8Hju8j2Z+PxRzusI2fmcFJ9KKfRSiolPj3B/L5i/9TPizZh3nnKb4tMzwIArP5VbLuw5nT0H730uwf6lrPEpax4HvnM9hsckOC14nI7Hz8FHLHjMj0sDkmepfL0QvV7A+BfD58uY/Wh6PlVOXnWHs248QO6v7eb1BsFEdSii9eYDODcVLDMjPHmYc51DklxGzDmORumVPR/b1+PPHWZ1fn2A/GudsfN+dMvOHUh9A8grTX2DrPvDPTBkHi9W5nB/mPCprGV7fkfs6LXAjtYlsaMrJVs7ei2ZHZUn4IcSE9dmdc45wkmOuox58zfrwDnZ/Y1onWG8EY9T2jpQUp/F1IGS2xH83oX38sKPrQeukbofsKs/dDHvFGVUKzpr3r0J+hsI9g2XQed54Za23qCUc73dXbhXVL0dDx+NDuQZ1DVpnPuk3YN1Rtd20VEAksfnTTA+LiDeqyAD4U2ZE2fUKdb9lSlw1G+w7l8Fn18EfrKs+2n/KYor23o2cYWtLyT5HVNWGNHT/ZzjCrteNtT5iCNrizgS2Q8pMo4k1X+S5/8PAAD//wmWKGaINQAA";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

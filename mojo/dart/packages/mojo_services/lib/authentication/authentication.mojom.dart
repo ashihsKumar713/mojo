@@ -812,24 +812,22 @@ abstract class AuthenticationService {
 }
 
 
-class _AuthenticationServiceProxyImpl extends bindings.Proxy {
-  _AuthenticationServiceProxyImpl.fromEndpoint(
+class _AuthenticationServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _AuthenticationServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _AuthenticationServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _AuthenticationServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _AuthenticationServiceProxyImpl.unbound() : super.unbound();
-
-  static _AuthenticationServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _AuthenticationServiceProxyImpl"));
-    return new _AuthenticationServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _AuthenticationServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _AuthenticationServiceServiceDescription();
+      new _AuthenticationServiceServiceDescription();
 
+  String get serviceName => AuthenticationService.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _authenticationServiceMethodSelectAccountName:
@@ -919,88 +917,30 @@ class _AuthenticationServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_AuthenticationServiceProxyImpl($superString)";
+    return "_AuthenticationServiceProxyControl($superString)";
   }
 }
 
 
-class _AuthenticationServiceProxyCalls implements AuthenticationService {
-  _AuthenticationServiceProxyImpl _proxyImpl;
-
-  _AuthenticationServiceProxyCalls(this._proxyImpl);
-    dynamic selectAccount(bool returnLastSelected,[Function responseFactory = null]) {
-      var params = new _AuthenticationServiceSelectAccountParams();
-      params.returnLastSelected = returnLastSelected;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _authenticationServiceMethodSelectAccountName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic getOAuth2Token(String username,List<String> scopes,[Function responseFactory = null]) {
-      var params = new _AuthenticationServiceGetOAuth2TokenParams();
-      params.username = username;
-      params.scopes = scopes;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _authenticationServiceMethodGetOAuth2TokenName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void clearOAuth2Token(String token) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _AuthenticationServiceClearOAuth2TokenParams();
-      params.token = token;
-      _proxyImpl.sendMessage(params, _authenticationServiceMethodClearOAuth2TokenName);
-    }
-    dynamic getOAuth2DeviceCode(List<String> scopes,[Function responseFactory = null]) {
-      var params = new _AuthenticationServiceGetOAuth2DeviceCodeParams();
-      params.scopes = scopes;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _authenticationServiceMethodGetOAuth2DeviceCodeName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic addAccount(String deviceCode,[Function responseFactory = null]) {
-      var params = new _AuthenticationServiceAddAccountParams();
-      params.deviceCode = deviceCode;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _authenticationServiceMethodAddAccountName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class AuthenticationServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  AuthenticationService ptr;
-
-  AuthenticationServiceProxy(_AuthenticationServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _AuthenticationServiceProxyCalls(proxyImpl);
-
+class AuthenticationServiceProxy extends bindings.Proxy
+                              implements AuthenticationService {
   AuthenticationServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _AuthenticationServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _AuthenticationServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _AuthenticationServiceProxyControl.fromEndpoint(endpoint));
 
-  AuthenticationServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _AuthenticationServiceProxyImpl.fromHandle(handle) {
-    ptr = new _AuthenticationServiceProxyCalls(impl);
-  }
+  AuthenticationServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _AuthenticationServiceProxyControl.fromHandle(handle));
 
-  AuthenticationServiceProxy.unbound() :
-      impl = new _AuthenticationServiceProxyImpl.unbound() {
-    ptr = new _AuthenticationServiceProxyCalls(impl);
+  AuthenticationServiceProxy.unbound()
+      : super(new _AuthenticationServiceProxyControl.unbound());
+
+  static AuthenticationServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For AuthenticationServiceProxy"));
+    return new AuthenticationServiceProxy.fromEndpoint(endpoint);
   }
 
   factory AuthenticationServiceProxy.connectToService(
@@ -1010,30 +950,53 @@ class AuthenticationServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static AuthenticationServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For AuthenticationServiceProxy"));
-    return new AuthenticationServiceProxy.fromEndpoint(endpoint);
+
+  dynamic selectAccount(bool returnLastSelected,[Function responseFactory = null]) {
+    var params = new _AuthenticationServiceSelectAccountParams();
+    params.returnLastSelected = returnLastSelected;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _authenticationServiceMethodSelectAccountName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => AuthenticationService.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic getOAuth2Token(String username,List<String> scopes,[Function responseFactory = null]) {
+    var params = new _AuthenticationServiceGetOAuth2TokenParams();
+    params.username = username;
+    params.scopes = scopes;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _authenticationServiceMethodGetOAuth2TokenName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "AuthenticationServiceProxy($impl)";
+  void clearOAuth2Token(String token) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _AuthenticationServiceClearOAuth2TokenParams();
+    params.token = token;
+    ctrl.sendMessage(params,
+        _authenticationServiceMethodClearOAuth2TokenName);
+  }
+  dynamic getOAuth2DeviceCode(List<String> scopes,[Function responseFactory = null]) {
+    var params = new _AuthenticationServiceGetOAuth2DeviceCodeParams();
+    params.scopes = scopes;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _authenticationServiceMethodGetOAuth2DeviceCodeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic addAccount(String deviceCode,[Function responseFactory = null]) {
+    var params = new _AuthenticationServiceAddAccountParams();
+    params.deviceCode = deviceCode;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _authenticationServiceMethodAddAccountName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

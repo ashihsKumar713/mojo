@@ -723,24 +723,22 @@ abstract class Terminal {
 }
 
 
-class _TerminalProxyImpl extends bindings.Proxy {
-  _TerminalProxyImpl.fromEndpoint(
+class _TerminalProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _TerminalProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _TerminalProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _TerminalProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _TerminalProxyImpl.unbound() : super.unbound();
-
-  static _TerminalProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _TerminalProxyImpl"));
-    return new _TerminalProxyImpl.fromEndpoint(endpoint);
-  }
+  _TerminalProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _TerminalServiceDescription();
+      new _TerminalServiceDescription();
 
+  String get serviceName => Terminal.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _terminalMethodConnectName:
@@ -830,81 +828,30 @@ class _TerminalProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_TerminalProxyImpl($superString)";
+    return "_TerminalProxyControl($superString)";
   }
 }
 
 
-class _TerminalProxyCalls implements Terminal {
-  _TerminalProxyImpl _proxyImpl;
-
-  _TerminalProxyCalls(this._proxyImpl);
-    dynamic connect(Object terminalFile,bool force,[Function responseFactory = null]) {
-      var params = new _TerminalConnectParams();
-      params.terminalFile = terminalFile;
-      params.force = force;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _terminalMethodConnectName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic connectToClient(Object terminalClient,bool force,[Function responseFactory = null]) {
-      var params = new _TerminalConnectToClientParams();
-      params.terminalClient = terminalClient;
-      params.force = force;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _terminalMethodConnectToClientName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic getSize([Function responseFactory = null]) {
-      var params = new _TerminalGetSizeParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _terminalMethodGetSizeName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic setSize(int rows,int columns,bool reset,[Function responseFactory = null]) {
-      var params = new _TerminalSetSizeParams();
-      params.rows = rows;
-      params.columns = columns;
-      params.reset = reset;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _terminalMethodSetSizeName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class TerminalProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Terminal ptr;
-
-  TerminalProxy(_TerminalProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _TerminalProxyCalls(proxyImpl);
-
+class TerminalProxy extends bindings.Proxy
+                              implements Terminal {
   TerminalProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _TerminalProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _TerminalProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _TerminalProxyControl.fromEndpoint(endpoint));
 
-  TerminalProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _TerminalProxyImpl.fromHandle(handle) {
-    ptr = new _TerminalProxyCalls(impl);
-  }
+  TerminalProxy.fromHandle(core.MojoHandle handle)
+      : super(new _TerminalProxyControl.fromHandle(handle));
 
-  TerminalProxy.unbound() :
-      impl = new _TerminalProxyImpl.unbound() {
-    ptr = new _TerminalProxyCalls(impl);
+  TerminalProxy.unbound()
+      : super(new _TerminalProxyControl.unbound());
+
+  static TerminalProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TerminalProxy"));
+    return new TerminalProxy.fromEndpoint(endpoint);
   }
 
   factory TerminalProxy.connectToService(
@@ -914,30 +861,45 @@ class TerminalProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static TerminalProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TerminalProxy"));
-    return new TerminalProxy.fromEndpoint(endpoint);
+
+  dynamic connect(Object terminalFile,bool force,[Function responseFactory = null]) {
+    var params = new _TerminalConnectParams();
+    params.terminalFile = terminalFile;
+    params.force = force;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _terminalMethodConnectName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => Terminal.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic connectToClient(Object terminalClient,bool force,[Function responseFactory = null]) {
+    var params = new _TerminalConnectToClientParams();
+    params.terminalClient = terminalClient;
+    params.force = force;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _terminalMethodConnectToClientName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "TerminalProxy($impl)";
+  dynamic getSize([Function responseFactory = null]) {
+    var params = new _TerminalGetSizeParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _terminalMethodGetSizeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic setSize(int rows,int columns,bool reset,[Function responseFactory = null]) {
+    var params = new _TerminalSetSizeParams();
+    params.rows = rows;
+    params.columns = columns;
+    params.reset = reset;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _terminalMethodSetSizeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

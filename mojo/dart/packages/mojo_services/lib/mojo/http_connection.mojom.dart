@@ -636,24 +636,22 @@ abstract class HttpConnection {
 }
 
 
-class _HttpConnectionProxyImpl extends bindings.Proxy {
-  _HttpConnectionProxyImpl.fromEndpoint(
+class _HttpConnectionProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _HttpConnectionProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _HttpConnectionProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _HttpConnectionProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _HttpConnectionProxyImpl.unbound() : super.unbound();
-
-  static _HttpConnectionProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _HttpConnectionProxyImpl"));
-    return new _HttpConnectionProxyImpl.fromEndpoint(endpoint);
-  }
+  _HttpConnectionProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _HttpConnectionServiceDescription();
+      new _HttpConnectionServiceDescription();
 
+  String get serviceName => HttpConnection.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _httpConnectionMethodSetSendBufferSizeName:
@@ -703,60 +701,30 @@ class _HttpConnectionProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_HttpConnectionProxyImpl($superString)";
+    return "_HttpConnectionProxyControl($superString)";
   }
 }
 
 
-class _HttpConnectionProxyCalls implements HttpConnection {
-  _HttpConnectionProxyImpl _proxyImpl;
-
-  _HttpConnectionProxyCalls(this._proxyImpl);
-    dynamic setSendBufferSize(int size,[Function responseFactory = null]) {
-      var params = new _HttpConnectionSetSendBufferSizeParams();
-      params.size = size;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _httpConnectionMethodSetSendBufferSizeName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic setReceiveBufferSize(int size,[Function responseFactory = null]) {
-      var params = new _HttpConnectionSetReceiveBufferSizeParams();
-      params.size = size;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _httpConnectionMethodSetReceiveBufferSizeName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class HttpConnectionProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  HttpConnection ptr;
-
-  HttpConnectionProxy(_HttpConnectionProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _HttpConnectionProxyCalls(proxyImpl);
-
+class HttpConnectionProxy extends bindings.Proxy
+                              implements HttpConnection {
   HttpConnectionProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _HttpConnectionProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _HttpConnectionProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _HttpConnectionProxyControl.fromEndpoint(endpoint));
 
-  HttpConnectionProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _HttpConnectionProxyImpl.fromHandle(handle) {
-    ptr = new _HttpConnectionProxyCalls(impl);
-  }
+  HttpConnectionProxy.fromHandle(core.MojoHandle handle)
+      : super(new _HttpConnectionProxyControl.fromHandle(handle));
 
-  HttpConnectionProxy.unbound() :
-      impl = new _HttpConnectionProxyImpl.unbound() {
-    ptr = new _HttpConnectionProxyCalls(impl);
+  HttpConnectionProxy.unbound()
+      : super(new _HttpConnectionProxyControl.unbound());
+
+  static HttpConnectionProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HttpConnectionProxy"));
+    return new HttpConnectionProxy.fromEndpoint(endpoint);
   }
 
   factory HttpConnectionProxy.connectToService(
@@ -766,30 +734,24 @@ class HttpConnectionProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static HttpConnectionProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HttpConnectionProxy"));
-    return new HttpConnectionProxy.fromEndpoint(endpoint);
+
+  dynamic setSendBufferSize(int size,[Function responseFactory = null]) {
+    var params = new _HttpConnectionSetSendBufferSizeParams();
+    params.size = size;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _httpConnectionMethodSetSendBufferSizeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => HttpConnection.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "HttpConnectionProxy($impl)";
+  dynamic setReceiveBufferSize(int size,[Function responseFactory = null]) {
+    var params = new _HttpConnectionSetReceiveBufferSizeParams();
+    params.size = size;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _httpConnectionMethodSetReceiveBufferSizeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -946,24 +908,22 @@ abstract class HttpConnectionDelegate {
 }
 
 
-class _HttpConnectionDelegateProxyImpl extends bindings.Proxy {
-  _HttpConnectionDelegateProxyImpl.fromEndpoint(
+class _HttpConnectionDelegateProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _HttpConnectionDelegateProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _HttpConnectionDelegateProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _HttpConnectionDelegateProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _HttpConnectionDelegateProxyImpl.unbound() : super.unbound();
-
-  static _HttpConnectionDelegateProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _HttpConnectionDelegateProxyImpl"));
-    return new _HttpConnectionDelegateProxyImpl.fromEndpoint(endpoint);
-  }
+  _HttpConnectionDelegateProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _HttpConnectionDelegateServiceDescription();
+      new _HttpConnectionDelegateServiceDescription();
 
+  String get serviceName => HttpConnectionDelegate.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _httpConnectionDelegateMethodOnReceivedRequestName:
@@ -1013,60 +973,30 @@ class _HttpConnectionDelegateProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_HttpConnectionDelegateProxyImpl($superString)";
+    return "_HttpConnectionDelegateProxyControl($superString)";
   }
 }
 
 
-class _HttpConnectionDelegateProxyCalls implements HttpConnectionDelegate {
-  _HttpConnectionDelegateProxyImpl _proxyImpl;
-
-  _HttpConnectionDelegateProxyCalls(this._proxyImpl);
-    dynamic onReceivedRequest(http_message_mojom.HttpRequest request,[Function responseFactory = null]) {
-      var params = new _HttpConnectionDelegateOnReceivedRequestParams();
-      params.request = request;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _httpConnectionDelegateMethodOnReceivedRequestName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic onReceivedWebSocketRequest(http_message_mojom.HttpRequest request,[Function responseFactory = null]) {
-      var params = new _HttpConnectionDelegateOnReceivedWebSocketRequestParams();
-      params.request = request;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _httpConnectionDelegateMethodOnReceivedWebSocketRequestName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class HttpConnectionDelegateProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  HttpConnectionDelegate ptr;
-
-  HttpConnectionDelegateProxy(_HttpConnectionDelegateProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _HttpConnectionDelegateProxyCalls(proxyImpl);
-
+class HttpConnectionDelegateProxy extends bindings.Proxy
+                              implements HttpConnectionDelegate {
   HttpConnectionDelegateProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _HttpConnectionDelegateProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _HttpConnectionDelegateProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _HttpConnectionDelegateProxyControl.fromEndpoint(endpoint));
 
-  HttpConnectionDelegateProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _HttpConnectionDelegateProxyImpl.fromHandle(handle) {
-    ptr = new _HttpConnectionDelegateProxyCalls(impl);
-  }
+  HttpConnectionDelegateProxy.fromHandle(core.MojoHandle handle)
+      : super(new _HttpConnectionDelegateProxyControl.fromHandle(handle));
 
-  HttpConnectionDelegateProxy.unbound() :
-      impl = new _HttpConnectionDelegateProxyImpl.unbound() {
-    ptr = new _HttpConnectionDelegateProxyCalls(impl);
+  HttpConnectionDelegateProxy.unbound()
+      : super(new _HttpConnectionDelegateProxyControl.unbound());
+
+  static HttpConnectionDelegateProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HttpConnectionDelegateProxy"));
+    return new HttpConnectionDelegateProxy.fromEndpoint(endpoint);
   }
 
   factory HttpConnectionDelegateProxy.connectToService(
@@ -1076,30 +1006,24 @@ class HttpConnectionDelegateProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static HttpConnectionDelegateProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HttpConnectionDelegateProxy"));
-    return new HttpConnectionDelegateProxy.fromEndpoint(endpoint);
+
+  dynamic onReceivedRequest(http_message_mojom.HttpRequest request,[Function responseFactory = null]) {
+    var params = new _HttpConnectionDelegateOnReceivedRequestParams();
+    params.request = request;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _httpConnectionDelegateMethodOnReceivedRequestName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => HttpConnectionDelegate.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "HttpConnectionDelegateProxy($impl)";
+  dynamic onReceivedWebSocketRequest(http_message_mojom.HttpRequest request,[Function responseFactory = null]) {
+    var params = new _HttpConnectionDelegateOnReceivedWebSocketRequestParams();
+    params.request = request;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _httpConnectionDelegateMethodOnReceivedWebSocketRequestName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

@@ -1191,24 +1191,22 @@ abstract class MediaSource {
 }
 
 
-class _MediaSourceProxyImpl extends bindings.Proxy {
-  _MediaSourceProxyImpl.fromEndpoint(
+class _MediaSourceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _MediaSourceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _MediaSourceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _MediaSourceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _MediaSourceProxyImpl.unbound() : super.unbound();
-
-  static _MediaSourceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _MediaSourceProxyImpl"));
-    return new _MediaSourceProxyImpl.fromEndpoint(endpoint);
-  }
+  _MediaSourceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _MediaSourceServiceDescription();
+      new _MediaSourceServiceDescription();
 
+  String get serviceName => MediaSource.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaSourceMethodGetStreamsName:
@@ -1338,112 +1336,30 @@ class _MediaSourceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_MediaSourceProxyImpl($superString)";
+    return "_MediaSourceProxyControl($superString)";
   }
 }
 
 
-class _MediaSourceProxyCalls implements MediaSource {
-  _MediaSourceProxyImpl _proxyImpl;
-
-  _MediaSourceProxyCalls(this._proxyImpl);
-    dynamic getStreams([Function responseFactory = null]) {
-      var params = new _MediaSourceGetStreamsParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaSourceMethodGetStreamsName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void getProducer(int streamIndex, Object producer) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaSourceGetProducerParams();
-      params.streamIndex = streamIndex;
-      params.producer = producer;
-      _proxyImpl.sendMessage(params, _mediaSourceMethodGetProducerName);
-    }
-    void getPullModeProducer(int streamIndex, Object producer) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaSourceGetPullModeProducerParams();
-      params.streamIndex = streamIndex;
-      params.producer = producer;
-      _proxyImpl.sendMessage(params, _mediaSourceMethodGetPullModeProducerName);
-    }
-    dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
-      var params = new _MediaSourceGetStatusParams();
-      params.versionLastSeen = versionLastSeen;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaSourceMethodGetStatusName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic prepare([Function responseFactory = null]) {
-      var params = new _MediaSourcePrepareParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaSourceMethodPrepareName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic prime([Function responseFactory = null]) {
-      var params = new _MediaSourcePrimeParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaSourceMethodPrimeName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic flush([Function responseFactory = null]) {
-      var params = new _MediaSourceFlushParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaSourceMethodFlushName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic seek(int position,[Function responseFactory = null]) {
-      var params = new _MediaSourceSeekParams();
-      params.position = position;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaSourceMethodSeekName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class MediaSourceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  MediaSource ptr;
-
-  MediaSourceProxy(_MediaSourceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _MediaSourceProxyCalls(proxyImpl);
-
+class MediaSourceProxy extends bindings.Proxy
+                              implements MediaSource {
   MediaSourceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _MediaSourceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _MediaSourceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _MediaSourceProxyControl.fromEndpoint(endpoint));
 
-  MediaSourceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _MediaSourceProxyImpl.fromHandle(handle) {
-    ptr = new _MediaSourceProxyCalls(impl);
-  }
+  MediaSourceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _MediaSourceProxyControl.fromHandle(handle));
 
-  MediaSourceProxy.unbound() :
-      impl = new _MediaSourceProxyImpl.unbound() {
-    ptr = new _MediaSourceProxyCalls(impl);
+  MediaSourceProxy.unbound()
+      : super(new _MediaSourceProxyControl.unbound());
+
+  static MediaSourceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaSourceProxy"));
+    return new MediaSourceProxy.fromEndpoint(endpoint);
   }
 
   factory MediaSourceProxy.connectToService(
@@ -1453,30 +1369,78 @@ class MediaSourceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static MediaSourceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaSourceProxy"));
-    return new MediaSourceProxy.fromEndpoint(endpoint);
+
+  dynamic getStreams([Function responseFactory = null]) {
+    var params = new _MediaSourceGetStreamsParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaSourceMethodGetStreamsName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => MediaSource.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void getProducer(int streamIndex, Object producer) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaSourceGetProducerParams();
+    params.streamIndex = streamIndex;
+    params.producer = producer;
+    ctrl.sendMessage(params,
+        _mediaSourceMethodGetProducerName);
   }
-
-  String toString() {
-    return "MediaSourceProxy($impl)";
+  void getPullModeProducer(int streamIndex, Object producer) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaSourceGetPullModeProducerParams();
+    params.streamIndex = streamIndex;
+    params.producer = producer;
+    ctrl.sendMessage(params,
+        _mediaSourceMethodGetPullModeProducerName);
+  }
+  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
+    var params = new _MediaSourceGetStatusParams();
+    params.versionLastSeen = versionLastSeen;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaSourceMethodGetStatusName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic prepare([Function responseFactory = null]) {
+    var params = new _MediaSourcePrepareParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaSourceMethodPrepareName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic prime([Function responseFactory = null]) {
+    var params = new _MediaSourcePrimeParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaSourceMethodPrimeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic flush([Function responseFactory = null]) {
+    var params = new _MediaSourceFlushParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaSourceMethodFlushName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic seek(int position,[Function responseFactory = null]) {
+    var params = new _MediaSourceSeekParams();
+    params.position = position;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaSourceMethodSeekName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

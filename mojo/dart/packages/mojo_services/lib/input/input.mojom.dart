@@ -215,24 +215,22 @@ abstract class InputClient {
 }
 
 
-class _InputClientProxyImpl extends bindings.Proxy {
-  _InputClientProxyImpl.fromEndpoint(
+class _InputClientProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _InputClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _InputClientProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _InputClientProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _InputClientProxyImpl.unbound() : super.unbound();
-
-  static _InputClientProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _InputClientProxyImpl"));
-    return new _InputClientProxyImpl.fromEndpoint(endpoint);
-  }
+  _InputClientProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _InputClientServiceDescription();
+      new _InputClientServiceDescription();
 
+  String get serviceName => InputClient.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _inputClientMethodOnBackButtonName:
@@ -262,50 +260,30 @@ class _InputClientProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_InputClientProxyImpl($superString)";
+    return "_InputClientProxyControl($superString)";
   }
 }
 
 
-class _InputClientProxyCalls implements InputClient {
-  _InputClientProxyImpl _proxyImpl;
-
-  _InputClientProxyCalls(this._proxyImpl);
-    dynamic onBackButton([Function responseFactory = null]) {
-      var params = new _InputClientOnBackButtonParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _inputClientMethodOnBackButtonName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class InputClientProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  InputClient ptr;
-
-  InputClientProxy(_InputClientProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _InputClientProxyCalls(proxyImpl);
-
+class InputClientProxy extends bindings.Proxy
+                              implements InputClient {
   InputClientProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _InputClientProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _InputClientProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _InputClientProxyControl.fromEndpoint(endpoint));
 
-  InputClientProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _InputClientProxyImpl.fromHandle(handle) {
-    ptr = new _InputClientProxyCalls(impl);
-  }
+  InputClientProxy.fromHandle(core.MojoHandle handle)
+      : super(new _InputClientProxyControl.fromHandle(handle));
 
-  InputClientProxy.unbound() :
-      impl = new _InputClientProxyImpl.unbound() {
-    ptr = new _InputClientProxyCalls(impl);
+  InputClientProxy.unbound()
+      : super(new _InputClientProxyControl.unbound());
+
+  static InputClientProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For InputClientProxy"));
+    return new InputClientProxy.fromEndpoint(endpoint);
   }
 
   factory InputClientProxy.connectToService(
@@ -315,30 +293,14 @@ class InputClientProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static InputClientProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For InputClientProxy"));
-    return new InputClientProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => InputClient.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "InputClientProxy($impl)";
+  dynamic onBackButton([Function responseFactory = null]) {
+    var params = new _InputClientOnBackButtonParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _inputClientMethodOnBackButtonName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -463,24 +425,22 @@ abstract class InputService {
 }
 
 
-class _InputServiceProxyImpl extends bindings.Proxy {
-  _InputServiceProxyImpl.fromEndpoint(
+class _InputServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _InputServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _InputServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _InputServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _InputServiceProxyImpl.unbound() : super.unbound();
-
-  static _InputServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _InputServiceProxyImpl"));
-    return new _InputServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _InputServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _InputServiceServiceDescription();
+      new _InputServiceServiceDescription();
 
+  String get serviceName => InputService.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -490,51 +450,30 @@ class _InputServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_InputServiceProxyImpl($superString)";
+    return "_InputServiceProxyControl($superString)";
   }
 }
 
 
-class _InputServiceProxyCalls implements InputService {
-  _InputServiceProxyImpl _proxyImpl;
-
-  _InputServiceProxyCalls(this._proxyImpl);
-    void setClient(Object client) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _InputServiceSetClientParams();
-      params.client = client;
-      _proxyImpl.sendMessage(params, _inputServiceMethodSetClientName);
-    }
-}
-
-
-class InputServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  InputService ptr;
-
-  InputServiceProxy(_InputServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _InputServiceProxyCalls(proxyImpl);
-
+class InputServiceProxy extends bindings.Proxy
+                              implements InputService {
   InputServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _InputServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _InputServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _InputServiceProxyControl.fromEndpoint(endpoint));
 
-  InputServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _InputServiceProxyImpl.fromHandle(handle) {
-    ptr = new _InputServiceProxyCalls(impl);
-  }
+  InputServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _InputServiceProxyControl.fromHandle(handle));
 
-  InputServiceProxy.unbound() :
-      impl = new _InputServiceProxyImpl.unbound() {
-    ptr = new _InputServiceProxyCalls(impl);
+  InputServiceProxy.unbound()
+      : super(new _InputServiceProxyControl.unbound());
+
+  static InputServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For InputServiceProxy"));
+    return new InputServiceProxy.fromEndpoint(endpoint);
   }
 
   factory InputServiceProxy.connectToService(
@@ -544,30 +483,16 @@ class InputServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static InputServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For InputServiceProxy"));
-    return new InputServiceProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => InputService.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "InputServiceProxy($impl)";
+  void setClient(Object client) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _InputServiceSetClientParams();
+    params.client = client;
+    ctrl.sendMessage(params,
+        _inputServiceMethodSetClientName);
   }
 }
 

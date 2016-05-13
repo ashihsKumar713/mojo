@@ -200,24 +200,22 @@ abstract class Shell {
 }
 
 
-class _ShellProxyImpl extends bindings.Proxy {
-  _ShellProxyImpl.fromEndpoint(
+class _ShellProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ShellProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ShellProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ShellProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ShellProxyImpl.unbound() : super.unbound();
-
-  static _ShellProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ShellProxyImpl"));
-    return new _ShellProxyImpl.fromEndpoint(endpoint);
-  }
+  _ShellProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ShellServiceDescription();
+      new _ShellServiceDescription();
 
+  String get serviceName => Shell.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -227,62 +225,30 @@ class _ShellProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ShellProxyImpl($superString)";
+    return "_ShellProxyControl($superString)";
   }
 }
 
 
-class _ShellProxyCalls implements Shell {
-  _ShellProxyImpl _proxyImpl;
-
-  _ShellProxyCalls(this._proxyImpl);
-    void connectToApplication(String applicationUrl, Object services, Object exposedServices) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ShellConnectToApplicationParams();
-      params.applicationUrl = applicationUrl;
-      params.services = services;
-      params.exposedServices = exposedServices;
-      _proxyImpl.sendMessage(params, _shellMethodConnectToApplicationName);
-    }
-    void createApplicationConnector(Object applicationConnectorRequest) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ShellCreateApplicationConnectorParams();
-      params.applicationConnectorRequest = applicationConnectorRequest;
-      _proxyImpl.sendMessage(params, _shellMethodCreateApplicationConnectorName);
-    }
-}
-
-
-class ShellProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Shell ptr;
-
-  ShellProxy(_ShellProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ShellProxyCalls(proxyImpl);
-
+class ShellProxy extends bindings.Proxy
+                              implements Shell {
   ShellProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ShellProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ShellProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ShellProxyControl.fromEndpoint(endpoint));
 
-  ShellProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ShellProxyImpl.fromHandle(handle) {
-    ptr = new _ShellProxyCalls(impl);
-  }
+  ShellProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ShellProxyControl.fromHandle(handle));
 
-  ShellProxy.unbound() :
-      impl = new _ShellProxyImpl.unbound() {
-    ptr = new _ShellProxyCalls(impl);
+  ShellProxy.unbound()
+      : super(new _ShellProxyControl.unbound());
+
+  static ShellProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ShellProxy"));
+    return new ShellProxy.fromEndpoint(endpoint);
   }
 
   factory ShellProxy.connectToService(
@@ -292,30 +258,28 @@ class ShellProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ShellProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ShellProxy"));
-    return new ShellProxy.fromEndpoint(endpoint);
+
+  void connectToApplication(String applicationUrl, Object services, Object exposedServices) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ShellConnectToApplicationParams();
+    params.applicationUrl = applicationUrl;
+    params.services = services;
+    params.exposedServices = exposedServices;
+    ctrl.sendMessage(params,
+        _shellMethodConnectToApplicationName);
   }
-
-  String get serviceName => Shell.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ShellProxy($impl)";
+  void createApplicationConnector(Object applicationConnectorRequest) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ShellCreateApplicationConnectorParams();
+    params.applicationConnectorRequest = applicationConnectorRequest;
+    ctrl.sendMessage(params,
+        _shellMethodCreateApplicationConnectorName);
   }
 }
 

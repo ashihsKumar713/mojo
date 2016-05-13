@@ -806,24 +806,22 @@ abstract class HumanResourceDatabase {
 }
 
 
-class _HumanResourceDatabaseProxyImpl extends bindings.Proxy {
-  _HumanResourceDatabaseProxyImpl.fromEndpoint(
+class _HumanResourceDatabaseProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _HumanResourceDatabaseProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _HumanResourceDatabaseProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _HumanResourceDatabaseProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _HumanResourceDatabaseProxyImpl.unbound() : super.unbound();
-
-  static _HumanResourceDatabaseProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _HumanResourceDatabaseProxyImpl"));
-    return new _HumanResourceDatabaseProxyImpl.fromEndpoint(endpoint);
-  }
+  _HumanResourceDatabaseProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _HumanResourceDatabaseServiceDescription();
+      new _HumanResourceDatabaseServiceDescription();
 
+  String get serviceName => HumanResourceDatabase.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _humanResourceDatabaseMethodAddEmployeeName:
@@ -913,79 +911,30 @@ class _HumanResourceDatabaseProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_HumanResourceDatabaseProxyImpl($superString)";
+    return "_HumanResourceDatabaseProxyControl($superString)";
   }
 }
 
 
-class _HumanResourceDatabaseProxyCalls implements HumanResourceDatabase {
-  _HumanResourceDatabaseProxyImpl _proxyImpl;
-
-  _HumanResourceDatabaseProxyCalls(this._proxyImpl);
-    dynamic addEmployee(Employee employee,[Function responseFactory = null]) {
-      var params = new _HumanResourceDatabaseAddEmployeeParams();
-      params.employee = employee;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _humanResourceDatabaseMethodAddEmployeeName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic queryEmployee(int id,bool retrieveFingerPrint,[Function responseFactory = null]) {
-      var params = new _HumanResourceDatabaseQueryEmployeeParams();
-      params.id = id;
-      params.retrieveFingerPrint = retrieveFingerPrint;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _humanResourceDatabaseMethodQueryEmployeeName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic attachFingerPrint(int id,List<int> fingerPrint,[Function responseFactory = null]) {
-      var params = new _HumanResourceDatabaseAttachFingerPrintParams();
-      params.id = id;
-      params.fingerPrint = fingerPrint;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _humanResourceDatabaseMethodAttachFingerPrintName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic listEmployeeIds([Function responseFactory = null]) {
-      var params = new _HumanResourceDatabaseListEmployeeIdsParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _humanResourceDatabaseMethodListEmployeeIdsName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class HumanResourceDatabaseProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  HumanResourceDatabase ptr;
-
-  HumanResourceDatabaseProxy(_HumanResourceDatabaseProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _HumanResourceDatabaseProxyCalls(proxyImpl);
-
+class HumanResourceDatabaseProxy extends bindings.Proxy
+                              implements HumanResourceDatabase {
   HumanResourceDatabaseProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _HumanResourceDatabaseProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _HumanResourceDatabaseProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _HumanResourceDatabaseProxyControl.fromEndpoint(endpoint));
 
-  HumanResourceDatabaseProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _HumanResourceDatabaseProxyImpl.fromHandle(handle) {
-    ptr = new _HumanResourceDatabaseProxyCalls(impl);
-  }
+  HumanResourceDatabaseProxy.fromHandle(core.MojoHandle handle)
+      : super(new _HumanResourceDatabaseProxyControl.fromHandle(handle));
 
-  HumanResourceDatabaseProxy.unbound() :
-      impl = new _HumanResourceDatabaseProxyImpl.unbound() {
-    ptr = new _HumanResourceDatabaseProxyCalls(impl);
+  HumanResourceDatabaseProxy.unbound()
+      : super(new _HumanResourceDatabaseProxyControl.unbound());
+
+  static HumanResourceDatabaseProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HumanResourceDatabaseProxy"));
+    return new HumanResourceDatabaseProxy.fromEndpoint(endpoint);
   }
 
   factory HumanResourceDatabaseProxy.connectToService(
@@ -995,30 +944,43 @@ class HumanResourceDatabaseProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static HumanResourceDatabaseProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HumanResourceDatabaseProxy"));
-    return new HumanResourceDatabaseProxy.fromEndpoint(endpoint);
+
+  dynamic addEmployee(Employee employee,[Function responseFactory = null]) {
+    var params = new _HumanResourceDatabaseAddEmployeeParams();
+    params.employee = employee;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _humanResourceDatabaseMethodAddEmployeeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => HumanResourceDatabase.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic queryEmployee(int id,bool retrieveFingerPrint,[Function responseFactory = null]) {
+    var params = new _HumanResourceDatabaseQueryEmployeeParams();
+    params.id = id;
+    params.retrieveFingerPrint = retrieveFingerPrint;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _humanResourceDatabaseMethodQueryEmployeeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "HumanResourceDatabaseProxy($impl)";
+  dynamic attachFingerPrint(int id,List<int> fingerPrint,[Function responseFactory = null]) {
+    var params = new _HumanResourceDatabaseAttachFingerPrintParams();
+    params.id = id;
+    params.fingerPrint = fingerPrint;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _humanResourceDatabaseMethodAttachFingerPrintName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic listEmployeeIds([Function responseFactory = null]) {
+    var params = new _HumanResourceDatabaseListEmployeeIdsParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _humanResourceDatabaseMethodListEmployeeIdsName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -1220,7 +1182,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xaT4/bRBS3nS1rtlRd+i+GwjYLAqJC4wqEFKWXXbFBRRQUWFRRcQheZ0qM1nawnVV64yNw5MhH6JEjx34EjnyEPfZGZ5o39WQ8YzuJ106kHenJa8eZmfeb937ze7MxlGnbhuvfcOWf95h7FZsO959ju4PN9X/1O50IhVGnc4KC0PE9x/ul07k/di3vexT648BGB1ZkHVkhEvRzD9tn2H541Ov2v+4+6pAOW6S/VtxdS9Zbcr7P4NrAVmM+34PrEK53sTUzxz1AIyuIXORFLfzuh5nvd93Rsf8EoeX9asP8qV9Nbh3+rMX35M+/dPH66eqs/wrjP/v8f2g/KuJ2BdsWthiR6fOPsN2COEiBLzGvi9guYLOx/YTNHPouMoPxwHcdDwUm6c8MA3v6x2h8dOzYpuNFKHhs2Sg0jxxvgIcITTJmaMaD9smDvn3skEUjX3Zf4aIx499VZ3FtKOlNhl87J36XwN/D/QfdQ8idD7Jxa9H3efzeAH/Kwi8LJ7UgnC5CPB90H768/xjb+zlwou/zOF0qGacGx6M0//7dmA+fngSfbeBOyjQkht6V4RPTUQIXct0sGReWj5uUl7RZXNrcPLeUfE2Gq8LgKnpO21WIPQSQ9Z2BMJ7exPZ6ibiJcCHQPZf4oS+Ai8rkN98Iz5DQ9SwXifC4UjIe2xL/WHwusIQkyJ958dFS4obuiwNuX+RxugpcVDYP8X43MvbzeXURr+cMZswaMx6/fzyF9fkPrppkPZ9yuo7y42kKP7LzaQh07SbznOb9IQpOHBt9C2G+sL4lXHwdm+zzT7HdlvG1XA4m4qkO61dWPC2KhyGJPwN4haaqBvHShOf0Pf01iJ/LUI/cEMcTjYc/amezL+wPBsxumvTLqFhnUP+HWn6/SWtL/L4JvjN+3wnQb2M8GaH/tJW5D7B5LtsHnhesH5oZuozqB1F81FeA/w2Jjpy3vk3jfVWS72yc6gXF6TvYriXiNBz5XojWJU7nacvG6WXY/8Kxjd0JhTx2u0J8ZHEk4/t/NvLVn7zelfH9ddBp341R8CSlfnp7Rfh+Uismj6humfGbYfyq84g/vzHUcutGWT5twbygXBTGSb3iejGt6ZLzG/r9iSR/fl9Cf9eY8Wgd8o3jPZz6NhuPAYoCB52g/mPsMwr6o8DxIgnOZoXx2MjgL4PTukbG/nhaUF7vYLshyGu6Q65aXk/U9dBzN0F3lM3/6hnpORHeZF3uq8XyxuSMeeManFlxdKGI1u9eRetHsKDz2OTqx2X5hNdJewDYs434nEXNuV5aCTz/Fpyp7keRZQ+/fLlqPbpognXbqVh3Uf7pzcnPexIcdwGDhP8z1fa5/lpUf+1Arlepv7SU8+hFz+tl9Ute/iO4fFLReYSI/9LqwDS9RPNxWysmH98DLSnKx/hU4fxcYd5zBRJvX6zBuUIb8vRnLf4fhpZzv6wVoG+0jP2yDlg/cMKIqrevBkm8d1fkfOJUKaaOuQW+c36/2iWrzkc9B48pKetPcWoWdC7agL6TeE1ZbB34Syux3qO/O3FwLon4fRd+61R1vbCVI85YfnsRAAD//xqidsPoJwAA";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xaT2/jRBS3nUJDl9WW/VfDQtcFAdHCxhUIKcpeWtGgRSwoULRiT5HrTBujxA62U3U57ZEjH4PjHvcj8BE47pEjx95gZv0GT8YztpO4sSN1pKepXccz7zfv/d5vJtGVqG1C/wJ6/n6XuVax1eH6C2z3sY28n712O0RB2G6fIj9wPNdxT9rth5OR5f6AAm/i2+jACq0jK0CC9zzA9jm2H590O71vOk/a5IVN8r5m/Lqm7G3J+f4JvYGtxvx/D/oB9LvYGpnjHqCx5Ycj5IZN/OxHmc93RuOh9xShxf1qwfypXw1uHZ7X4mvy51918fptqtP+K4z/7P1/of2kiNt1bBvYYkSi+x9juwtxkAJfYl5XsL2GzcV2jM2cBL459GxraJ543skQmQNvhMxffcskrzYD347+GE+Oho5tOm6I/GPLRoF55Lh9PFpgkuEDMx6/R2707KFD1o98eBThozHzaKnT+BpKepPh2MqJ41Xw+3D/UecQcujDbPya9HkexzfBn2XjmIWXWhBeVyC+DzqPX11/gu2DHHjR53m8rpaEl8HzKwB0vjYbTl0JTpvAqZSBSEy9J8MppqkkX2BbLwkflq93AZ+uNo1Pi5vvhpKvyfBVGHxF92m7AbGIALqe0xfG11vY3igBPxE+KpuIXKvPgY/K8CTfCA+RUHatERLhcr0kXDYlfrI4ET6uq/K8mhUnLSWOaB3tc3WUx+sGcFVZPMX7b2TogFn1FK8DdWbMGjMeX2dewDr9Db0mWdfnnB6k/PlPCn+y8zEEeniduU/54BD5p46NvoOwn1sXE66+hU32/8+w3ZPxuVxGJuJqC9Zv2XE1Ly66JA514BtKcRrETQPu0+d2X4/6365F/cvb4rg6h/6P2sXUjf1+n6m6Sb/0iugSisOZlt9/0loS/+8ABoz/9330ywTPRIgDbWXUCTb/ZXVCVk/n1RuNDD1H9YYoXrYqVB90iQ6ddd+cVhdUCQ+wcasXFLfvYruZiNtg7LkBWrW4naUtGrfXoE4GExv7Egh57l4FcJLFlawuvFzLt6/l9bKsLtwCfff9BPlPU/Zj71SsLvxeKya/qN6Z8p+pDFXJL/68yFCXux+V5dkGzAu2ocK42arIPjSt1SXnRfTzZ5K8eraAjq8x49H9zLeO+zhybDo+fRT6DjpFvWPsMPJ7Y99xQwneZhXiM4PfdE4z6xn1tL5WTL5vY7styHdaUaua78/U1dCDd0CvlFUn1AvSgyLcyfp01WL55OyC+eQmnJFxNKKI1vFByetIMKHzWef2p4vyDK+vHtLznLX4PEfNuW7aEurA23Cmux+Glj346tXqdeniCdZvuyJ6jTo2mFGv7Unw3AEsEjhM7eYvdduium0bOKAKuk1LORef9/sD2X4oLz8SfD4t+dxDxI9p+8s0nUXz1NCKydP3QYuK8jQ+vbg8v5j3/ILE35crdH6xB/E11uLvVrSc9bVWgC7SMurrFmD+yAlCqvq+7idx36nYOci5Usy+6C5gwPn/f1WtSp7Wc/CckhIPFK9WQeezBrw7iVvEcqvEb9oS95H09zQOzjFRHdiB33RVZf+xkSPuWP77LwAA///UgNHD2CgAAA==";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

@@ -41,14 +41,14 @@ class PingPongServiceImpl implements PingPongService {
     _stub.impl = this;
   }
 
-  void setClient(ProxyBase proxyBase) {
+  void setClient(Proxy proxy) {
     assert(_pingPongClient == null);
-    _pingPongClient = proxyBase;
+    _pingPongClient = proxy;
   }
 
   void ping(int pingValue) {
     if (_pingPongClient != null) {
-      _pingPongClient.ptr.pong(pingValue + 1);
+      _pingPongClient.pong(pingValue + 1);
     }
   }
 
@@ -62,10 +62,10 @@ class PingPongServiceImpl implements PingPongService {
     _application.connectToService(url, pingPongService);
 
     var pingPongClient = new PingPongClientImpl.unbound(count, completer);
-    pingPongService.ptr.setClient(pingPongClient.stub);
+    pingPongService.setClient(pingPongClient.stub);
 
     for (var i = 0; i < count; i++) {
-      pingPongService.ptr.ping(i);
+      pingPongService.ping(i);
     }
     await completer.future;
     await pingPongService.close();
@@ -73,15 +73,15 @@ class PingPongServiceImpl implements PingPongService {
     return responseFactory(true);
   }
 
-  Future pingTargetService(ProxyBase proxyBase, int count,
+  Future pingTargetService(Proxy proxy, int count,
       [Function responseFactory]) async {
-    var pingPongService = proxyBase;
+    var pingPongService = proxy;
     var completer = new Completer();
     var client = new PingPongClientImpl.unbound(count, completer);
-    pingPongService.ptr.setClient(client.stub);
+    pingPongService.setClient(client.stub);
 
     for (var i = 0; i < count; i++) {
-      pingPongService.ptr.ping(i);
+      pingPongService.ping(i);
     }
     await completer.future;
     await pingPongService.close();
@@ -96,7 +96,7 @@ class PingPongServiceImpl implements PingPongService {
 
     // Pass along the interface request to another implementation of the
     // service.
-    targetServiceProxy.ptr.getPingPongService(serviceStub);
+    targetServiceProxy.getPingPongService(serviceStub);
     targetServiceProxy.close();
   }
 
@@ -111,7 +111,7 @@ class PingPongServiceImpl implements PingPongService {
         // Pass along the interface request to another implementation of the
         // service.
         serviceStub.bind(endpoint);
-        targetServiceProxy.ptr.getPingPongService(serviceStub);
+        targetServiceProxy.getPingPongService(serviceStub);
         targetServiceProxy.close();
       });
     });

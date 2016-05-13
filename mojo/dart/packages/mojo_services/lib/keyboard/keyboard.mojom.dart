@@ -1466,24 +1466,22 @@ abstract class KeyboardClient {
 }
 
 
-class _KeyboardClientProxyImpl extends bindings.Proxy {
-  _KeyboardClientProxyImpl.fromEndpoint(
+class _KeyboardClientProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _KeyboardClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _KeyboardClientProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _KeyboardClientProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _KeyboardClientProxyImpl.unbound() : super.unbound();
-
-  static _KeyboardClientProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _KeyboardClientProxyImpl"));
-    return new _KeyboardClientProxyImpl.fromEndpoint(endpoint);
-  }
+  _KeyboardClientProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _KeyboardClientServiceDescription();
+      new _KeyboardClientServiceDescription();
 
+  String get serviceName => KeyboardClient.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -1493,119 +1491,30 @@ class _KeyboardClientProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_KeyboardClientProxyImpl($superString)";
+    return "_KeyboardClientProxyControl($superString)";
   }
 }
 
 
-class _KeyboardClientProxyCalls implements KeyboardClient {
-  _KeyboardClientProxyImpl _proxyImpl;
-
-  _KeyboardClientProxyCalls(this._proxyImpl);
-    void commitCompletion(CompletionData completion) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _KeyboardClientCommitCompletionParams();
-      params.completion = completion;
-      _proxyImpl.sendMessage(params, _keyboardClientMethodCommitCompletionName);
-    }
-    void commitCorrection(CorrectionData correction) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _KeyboardClientCommitCorrectionParams();
-      params.correction = correction;
-      _proxyImpl.sendMessage(params, _keyboardClientMethodCommitCorrectionName);
-    }
-    void commitText(String text, int newCursorPosition) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _KeyboardClientCommitTextParams();
-      params.text = text;
-      params.newCursorPosition = newCursorPosition;
-      _proxyImpl.sendMessage(params, _keyboardClientMethodCommitTextName);
-    }
-    void deleteSurroundingText(int beforeLength, int afterLength) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _KeyboardClientDeleteSurroundingTextParams();
-      params.beforeLength = beforeLength;
-      params.afterLength = afterLength;
-      _proxyImpl.sendMessage(params, _keyboardClientMethodDeleteSurroundingTextName);
-    }
-    void setComposingRegion(int start, int end) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _KeyboardClientSetComposingRegionParams();
-      params.start = start;
-      params.end = end;
-      _proxyImpl.sendMessage(params, _keyboardClientMethodSetComposingRegionName);
-    }
-    void setComposingText(String text, int newCursorPosition) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _KeyboardClientSetComposingTextParams();
-      params.text = text;
-      params.newCursorPosition = newCursorPosition;
-      _proxyImpl.sendMessage(params, _keyboardClientMethodSetComposingTextName);
-    }
-    void setSelection(int start, int end) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _KeyboardClientSetSelectionParams();
-      params.start = start;
-      params.end = end;
-      _proxyImpl.sendMessage(params, _keyboardClientMethodSetSelectionName);
-    }
-    void submit(SubmitAction action) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _KeyboardClientSubmitParams();
-      params.action = action;
-      _proxyImpl.sendMessage(params, _keyboardClientMethodSubmitName);
-    }
-}
-
-
-class KeyboardClientProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  KeyboardClient ptr;
-
-  KeyboardClientProxy(_KeyboardClientProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _KeyboardClientProxyCalls(proxyImpl);
-
+class KeyboardClientProxy extends bindings.Proxy
+                              implements KeyboardClient {
   KeyboardClientProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _KeyboardClientProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _KeyboardClientProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _KeyboardClientProxyControl.fromEndpoint(endpoint));
 
-  KeyboardClientProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _KeyboardClientProxyImpl.fromHandle(handle) {
-    ptr = new _KeyboardClientProxyCalls(impl);
-  }
+  KeyboardClientProxy.fromHandle(core.MojoHandle handle)
+      : super(new _KeyboardClientProxyControl.fromHandle(handle));
 
-  KeyboardClientProxy.unbound() :
-      impl = new _KeyboardClientProxyImpl.unbound() {
-    ptr = new _KeyboardClientProxyCalls(impl);
+  KeyboardClientProxy.unbound()
+      : super(new _KeyboardClientProxyControl.unbound());
+
+  static KeyboardClientProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For KeyboardClientProxy"));
+    return new KeyboardClientProxy.fromEndpoint(endpoint);
   }
 
   factory KeyboardClientProxy.connectToService(
@@ -1615,30 +1524,91 @@ class KeyboardClientProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static KeyboardClientProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For KeyboardClientProxy"));
-    return new KeyboardClientProxy.fromEndpoint(endpoint);
+
+  void commitCompletion(CompletionData completion) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _KeyboardClientCommitCompletionParams();
+    params.completion = completion;
+    ctrl.sendMessage(params,
+        _keyboardClientMethodCommitCompletionName);
   }
-
-  String get serviceName => KeyboardClient.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void commitCorrection(CorrectionData correction) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _KeyboardClientCommitCorrectionParams();
+    params.correction = correction;
+    ctrl.sendMessage(params,
+        _keyboardClientMethodCommitCorrectionName);
   }
-
-  String toString() {
-    return "KeyboardClientProxy($impl)";
+  void commitText(String text, int newCursorPosition) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _KeyboardClientCommitTextParams();
+    params.text = text;
+    params.newCursorPosition = newCursorPosition;
+    ctrl.sendMessage(params,
+        _keyboardClientMethodCommitTextName);
+  }
+  void deleteSurroundingText(int beforeLength, int afterLength) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _KeyboardClientDeleteSurroundingTextParams();
+    params.beforeLength = beforeLength;
+    params.afterLength = afterLength;
+    ctrl.sendMessage(params,
+        _keyboardClientMethodDeleteSurroundingTextName);
+  }
+  void setComposingRegion(int start, int end) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _KeyboardClientSetComposingRegionParams();
+    params.start = start;
+    params.end = end;
+    ctrl.sendMessage(params,
+        _keyboardClientMethodSetComposingRegionName);
+  }
+  void setComposingText(String text, int newCursorPosition) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _KeyboardClientSetComposingTextParams();
+    params.text = text;
+    params.newCursorPosition = newCursorPosition;
+    ctrl.sendMessage(params,
+        _keyboardClientMethodSetComposingTextName);
+  }
+  void setSelection(int start, int end) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _KeyboardClientSetSelectionParams();
+    params.start = start;
+    params.end = end;
+    ctrl.sendMessage(params,
+        _keyboardClientMethodSetSelectionName);
+  }
+  void submit(SubmitAction action) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _KeyboardClientSubmitParams();
+    params.action = action;
+    ctrl.sendMessage(params,
+        _keyboardClientMethodSubmitName);
   }
 }
 
@@ -1787,24 +1757,22 @@ abstract class KeyboardService {
 }
 
 
-class _KeyboardServiceProxyImpl extends bindings.Proxy {
-  _KeyboardServiceProxyImpl.fromEndpoint(
+class _KeyboardServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _KeyboardServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _KeyboardServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _KeyboardServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _KeyboardServiceProxyImpl.unbound() : super.unbound();
-
-  static _KeyboardServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _KeyboardServiceProxyImpl"));
-    return new _KeyboardServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _KeyboardServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _KeyboardServiceServiceDescription();
+      new _KeyboardServiceServiceDescription();
 
+  String get serviceName => KeyboardService.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -1814,87 +1782,30 @@ class _KeyboardServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_KeyboardServiceProxyImpl($superString)";
+    return "_KeyboardServiceProxyControl($superString)";
   }
 }
 
 
-class _KeyboardServiceProxyCalls implements KeyboardService {
-  _KeyboardServiceProxyImpl _proxyImpl;
-
-  _KeyboardServiceProxyCalls(this._proxyImpl);
-    void show(Object client, KeyboardType type) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _KeyboardServiceShowParams();
-      params.client = client;
-      params.type = type;
-      _proxyImpl.sendMessage(params, _keyboardServiceMethodShowName);
-    }
-    void showByRequest() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _KeyboardServiceShowByRequestParams();
-      _proxyImpl.sendMessage(params, _keyboardServiceMethodShowByRequestName);
-    }
-    void hide() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _KeyboardServiceHideParams();
-      _proxyImpl.sendMessage(params, _keyboardServiceMethodHideName);
-    }
-    void setText(String text) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _KeyboardServiceSetTextParams();
-      params.text = text;
-      _proxyImpl.sendMessage(params, _keyboardServiceMethodSetTextName);
-    }
-    void setSelection(int start, int end) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _KeyboardServiceSetSelectionParams();
-      params.start = start;
-      params.end = end;
-      _proxyImpl.sendMessage(params, _keyboardServiceMethodSetSelectionName);
-    }
-}
-
-
-class KeyboardServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  KeyboardService ptr;
-
-  KeyboardServiceProxy(_KeyboardServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _KeyboardServiceProxyCalls(proxyImpl);
-
+class KeyboardServiceProxy extends bindings.Proxy
+                              implements KeyboardService {
   KeyboardServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _KeyboardServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _KeyboardServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _KeyboardServiceProxyControl.fromEndpoint(endpoint));
 
-  KeyboardServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _KeyboardServiceProxyImpl.fromHandle(handle) {
-    ptr = new _KeyboardServiceProxyCalls(impl);
-  }
+  KeyboardServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _KeyboardServiceProxyControl.fromHandle(handle));
 
-  KeyboardServiceProxy.unbound() :
-      impl = new _KeyboardServiceProxyImpl.unbound() {
-    ptr = new _KeyboardServiceProxyCalls(impl);
+  KeyboardServiceProxy.unbound()
+      : super(new _KeyboardServiceProxyControl.unbound());
+
+  static KeyboardServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For KeyboardServiceProxy"));
+    return new KeyboardServiceProxy.fromEndpoint(endpoint);
   }
 
   factory KeyboardServiceProxy.connectToService(
@@ -1904,30 +1815,56 @@ class KeyboardServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static KeyboardServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For KeyboardServiceProxy"));
-    return new KeyboardServiceProxy.fromEndpoint(endpoint);
+
+  void show(Object client, KeyboardType type) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _KeyboardServiceShowParams();
+    params.client = client;
+    params.type = type;
+    ctrl.sendMessage(params,
+        _keyboardServiceMethodShowName);
   }
-
-  String get serviceName => KeyboardService.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void showByRequest() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _KeyboardServiceShowByRequestParams();
+    ctrl.sendMessage(params,
+        _keyboardServiceMethodShowByRequestName);
   }
-
-  String toString() {
-    return "KeyboardServiceProxy($impl)";
+  void hide() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _KeyboardServiceHideParams();
+    ctrl.sendMessage(params,
+        _keyboardServiceMethodHideName);
+  }
+  void setText(String text) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _KeyboardServiceSetTextParams();
+    params.text = text;
+    ctrl.sendMessage(params,
+        _keyboardServiceMethodSetTextName);
+  }
+  void setSelection(int start, int end) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _KeyboardServiceSetSelectionParams();
+    params.start = start;
+    params.end = end;
+    ctrl.sendMessage(params,
+        _keyboardServiceMethodSetSelectionName);
   }
 }
 
@@ -2049,24 +1986,22 @@ abstract class KeyboardServiceFactory {
 }
 
 
-class _KeyboardServiceFactoryProxyImpl extends bindings.Proxy {
-  _KeyboardServiceFactoryProxyImpl.fromEndpoint(
+class _KeyboardServiceFactoryProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _KeyboardServiceFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _KeyboardServiceFactoryProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _KeyboardServiceFactoryProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _KeyboardServiceFactoryProxyImpl.unbound() : super.unbound();
-
-  static _KeyboardServiceFactoryProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _KeyboardServiceFactoryProxyImpl"));
-    return new _KeyboardServiceFactoryProxyImpl.fromEndpoint(endpoint);
-  }
+  _KeyboardServiceFactoryProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _KeyboardServiceFactoryServiceDescription();
+      new _KeyboardServiceFactoryServiceDescription();
 
+  String get serviceName => KeyboardServiceFactory.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -2076,52 +2011,30 @@ class _KeyboardServiceFactoryProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_KeyboardServiceFactoryProxyImpl($superString)";
+    return "_KeyboardServiceFactoryProxyControl($superString)";
   }
 }
 
 
-class _KeyboardServiceFactoryProxyCalls implements KeyboardServiceFactory {
-  _KeyboardServiceFactoryProxyImpl _proxyImpl;
-
-  _KeyboardServiceFactoryProxyCalls(this._proxyImpl);
-    void createKeyboardService(Object keyEventDispatcher, Object serviceRequest) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _KeyboardServiceFactoryCreateKeyboardServiceParams();
-      params.keyEventDispatcher = keyEventDispatcher;
-      params.serviceRequest = serviceRequest;
-      _proxyImpl.sendMessage(params, _keyboardServiceFactoryMethodCreateKeyboardServiceName);
-    }
-}
-
-
-class KeyboardServiceFactoryProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  KeyboardServiceFactory ptr;
-
-  KeyboardServiceFactoryProxy(_KeyboardServiceFactoryProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _KeyboardServiceFactoryProxyCalls(proxyImpl);
-
+class KeyboardServiceFactoryProxy extends bindings.Proxy
+                              implements KeyboardServiceFactory {
   KeyboardServiceFactoryProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _KeyboardServiceFactoryProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _KeyboardServiceFactoryProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _KeyboardServiceFactoryProxyControl.fromEndpoint(endpoint));
 
-  KeyboardServiceFactoryProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _KeyboardServiceFactoryProxyImpl.fromHandle(handle) {
-    ptr = new _KeyboardServiceFactoryProxyCalls(impl);
-  }
+  KeyboardServiceFactoryProxy.fromHandle(core.MojoHandle handle)
+      : super(new _KeyboardServiceFactoryProxyControl.fromHandle(handle));
 
-  KeyboardServiceFactoryProxy.unbound() :
-      impl = new _KeyboardServiceFactoryProxyImpl.unbound() {
-    ptr = new _KeyboardServiceFactoryProxyCalls(impl);
+  KeyboardServiceFactoryProxy.unbound()
+      : super(new _KeyboardServiceFactoryProxyControl.unbound());
+
+  static KeyboardServiceFactoryProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For KeyboardServiceFactoryProxy"));
+    return new KeyboardServiceFactoryProxy.fromEndpoint(endpoint);
   }
 
   factory KeyboardServiceFactoryProxy.connectToService(
@@ -2131,30 +2044,17 @@ class KeyboardServiceFactoryProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static KeyboardServiceFactoryProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For KeyboardServiceFactoryProxy"));
-    return new KeyboardServiceFactoryProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => KeyboardServiceFactory.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "KeyboardServiceFactoryProxy($impl)";
+  void createKeyboardService(Object keyEventDispatcher, Object serviceRequest) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _KeyboardServiceFactoryCreateKeyboardServiceParams();
+    params.keyEventDispatcher = keyEventDispatcher;
+    params.serviceRequest = serviceRequest;
+    ctrl.sendMessage(params,
+        _keyboardServiceFactoryMethodCreateKeyboardServiceName);
   }
 }
 

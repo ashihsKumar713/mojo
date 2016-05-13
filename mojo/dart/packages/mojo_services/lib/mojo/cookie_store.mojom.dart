@@ -332,24 +332,22 @@ abstract class CookieStore {
 }
 
 
-class _CookieStoreProxyImpl extends bindings.Proxy {
-  _CookieStoreProxyImpl.fromEndpoint(
+class _CookieStoreProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _CookieStoreProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _CookieStoreProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _CookieStoreProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _CookieStoreProxyImpl.unbound() : super.unbound();
-
-  static _CookieStoreProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _CookieStoreProxyImpl"));
-    return new _CookieStoreProxyImpl.fromEndpoint(endpoint);
-  }
+  _CookieStoreProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _CookieStoreServiceDescription();
+      new _CookieStoreServiceDescription();
 
+  String get serviceName => CookieStore.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _cookieStoreMethodGetName:
@@ -399,61 +397,30 @@ class _CookieStoreProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_CookieStoreProxyImpl($superString)";
+    return "_CookieStoreProxyControl($superString)";
   }
 }
 
 
-class _CookieStoreProxyCalls implements CookieStore {
-  _CookieStoreProxyImpl _proxyImpl;
-
-  _CookieStoreProxyCalls(this._proxyImpl);
-    dynamic get(String url,[Function responseFactory = null]) {
-      var params = new _CookieStoreGetParams();
-      params.url = url;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _cookieStoreMethodGetName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic set(String url,String cookie,[Function responseFactory = null]) {
-      var params = new _CookieStoreSetParams();
-      params.url = url;
-      params.cookie = cookie;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _cookieStoreMethodSetName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class CookieStoreProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  CookieStore ptr;
-
-  CookieStoreProxy(_CookieStoreProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _CookieStoreProxyCalls(proxyImpl);
-
+class CookieStoreProxy extends bindings.Proxy
+                              implements CookieStore {
   CookieStoreProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _CookieStoreProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _CookieStoreProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _CookieStoreProxyControl.fromEndpoint(endpoint));
 
-  CookieStoreProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _CookieStoreProxyImpl.fromHandle(handle) {
-    ptr = new _CookieStoreProxyCalls(impl);
-  }
+  CookieStoreProxy.fromHandle(core.MojoHandle handle)
+      : super(new _CookieStoreProxyControl.fromHandle(handle));
 
-  CookieStoreProxy.unbound() :
-      impl = new _CookieStoreProxyImpl.unbound() {
-    ptr = new _CookieStoreProxyCalls(impl);
+  CookieStoreProxy.unbound()
+      : super(new _CookieStoreProxyControl.unbound());
+
+  static CookieStoreProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For CookieStoreProxy"));
+    return new CookieStoreProxy.fromEndpoint(endpoint);
   }
 
   factory CookieStoreProxy.connectToService(
@@ -463,30 +430,25 @@ class CookieStoreProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static CookieStoreProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For CookieStoreProxy"));
-    return new CookieStoreProxy.fromEndpoint(endpoint);
+
+  dynamic get(String url,[Function responseFactory = null]) {
+    var params = new _CookieStoreGetParams();
+    params.url = url;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _cookieStoreMethodGetName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => CookieStore.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "CookieStoreProxy($impl)";
+  dynamic set(String url,String cookie,[Function responseFactory = null]) {
+    var params = new _CookieStoreSetParams();
+    params.url = url;
+    params.cookie = cookie;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _cookieStoreMethodSetName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

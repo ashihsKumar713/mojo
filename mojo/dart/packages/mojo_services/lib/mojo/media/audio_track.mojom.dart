@@ -587,24 +587,22 @@ abstract class AudioTrack {
 }
 
 
-class _AudioTrackProxyImpl extends bindings.Proxy {
-  _AudioTrackProxyImpl.fromEndpoint(
+class _AudioTrackProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _AudioTrackProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _AudioTrackProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _AudioTrackProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _AudioTrackProxyImpl.unbound() : super.unbound();
-
-  static _AudioTrackProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _AudioTrackProxyImpl"));
-    return new _AudioTrackProxyImpl.fromEndpoint(endpoint);
-  }
+  _AudioTrackProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _AudioTrackServiceDescription();
+      new _AudioTrackServiceDescription();
 
+  String get serviceName => AudioTrack.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _audioTrackMethodDescribeName:
@@ -634,78 +632,30 @@ class _AudioTrackProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_AudioTrackProxyImpl($superString)";
+    return "_AudioTrackProxyControl($superString)";
   }
 }
 
 
-class _AudioTrackProxyCalls implements AudioTrack {
-  _AudioTrackProxyImpl _proxyImpl;
-
-  _AudioTrackProxyCalls(this._proxyImpl);
-    dynamic describe([Function responseFactory = null]) {
-      var params = new _AudioTrackDescribeParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _audioTrackMethodDescribeName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void configure(AudioTrackConfiguration configuration, Object pipe) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _AudioTrackConfigureParams();
-      params.configuration = configuration;
-      params.pipe = pipe;
-      _proxyImpl.sendMessage(params, _audioTrackMethodConfigureName);
-    }
-    void getRateControl(Object rateControl) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _AudioTrackGetRateControlParams();
-      params.rateControl = rateControl;
-      _proxyImpl.sendMessage(params, _audioTrackMethodGetRateControlName);
-    }
-    void setGain(double dbGain) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _AudioTrackSetGainParams();
-      params.dbGain = dbGain;
-      _proxyImpl.sendMessage(params, _audioTrackMethodSetGainName);
-    }
-}
-
-
-class AudioTrackProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  AudioTrack ptr;
-
-  AudioTrackProxy(_AudioTrackProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _AudioTrackProxyCalls(proxyImpl);
-
+class AudioTrackProxy extends bindings.Proxy
+                              implements AudioTrack {
   AudioTrackProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _AudioTrackProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _AudioTrackProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _AudioTrackProxyControl.fromEndpoint(endpoint));
 
-  AudioTrackProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _AudioTrackProxyImpl.fromHandle(handle) {
-    ptr = new _AudioTrackProxyCalls(impl);
-  }
+  AudioTrackProxy.fromHandle(core.MojoHandle handle)
+      : super(new _AudioTrackProxyControl.fromHandle(handle));
 
-  AudioTrackProxy.unbound() :
-      impl = new _AudioTrackProxyImpl.unbound() {
-    ptr = new _AudioTrackProxyCalls(impl);
+  AudioTrackProxy.unbound()
+      : super(new _AudioTrackProxyControl.unbound());
+
+  static AudioTrackProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For AudioTrackProxy"));
+    return new AudioTrackProxy.fromEndpoint(endpoint);
   }
 
   factory AudioTrackProxy.connectToService(
@@ -715,30 +665,45 @@ class AudioTrackProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static AudioTrackProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For AudioTrackProxy"));
-    return new AudioTrackProxy.fromEndpoint(endpoint);
+
+  dynamic describe([Function responseFactory = null]) {
+    var params = new _AudioTrackDescribeParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _audioTrackMethodDescribeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => AudioTrack.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void configure(AudioTrackConfiguration configuration, Object pipe) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _AudioTrackConfigureParams();
+    params.configuration = configuration;
+    params.pipe = pipe;
+    ctrl.sendMessage(params,
+        _audioTrackMethodConfigureName);
   }
-
-  String toString() {
-    return "AudioTrackProxy($impl)";
+  void getRateControl(Object rateControl) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _AudioTrackGetRateControlParams();
+    params.rateControl = rateControl;
+    ctrl.sendMessage(params,
+        _audioTrackMethodGetRateControlName);
+  }
+  void setGain(double dbGain) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _AudioTrackSetGainParams();
+    params.dbGain = dbGain;
+    ctrl.sendMessage(params,
+        _audioTrackMethodSetGainName);
   }
 }
 

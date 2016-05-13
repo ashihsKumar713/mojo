@@ -58,10 +58,10 @@ Future<bool> testCallResponse() {
   var client = new sample.ProviderProxy.fromEndpoint(pipe.endpoints[0]);
   var c = new Completer();
   Isolate.spawn(providerIsolate, pipe.endpoints[1]).then((_) {
-    client.ptr.echoString("hello!").then((echoStringResponse) {
+    client.echoString("hello!").then((echoStringResponse) {
       Expect.equals("hello!", echoStringResponse.a);
     }).then((_) {
-      client.ptr.echoStrings("hello", "mojo!").then((echoStringsResponse) {
+      client.echoStrings("hello", "mojo!").then((echoStringsResponse) {
         Expect.equals("hello", echoStringsResponse.a);
         Expect.equals("mojo!", echoStringsResponse.b);
         client.close().then((_) {
@@ -78,10 +78,10 @@ Future testAwaitCallResponse() async {
   var client = new sample.ProviderProxy.fromEndpoint(pipe.endpoints[0]);
   var isolate = await Isolate.spawn(providerIsolate, pipe.endpoints[1]);
 
-  var echoStringResponse = await client.ptr.echoString("hello!");
+  var echoStringResponse = await client.echoString("hello!");
   Expect.equals("hello!", echoStringResponse.a);
 
-  var echoStringsResponse = await client.ptr.echoStrings("hello", "mojo!");
+  var echoStringsResponse = await client.echoStrings("hello", "mojo!");
   Expect.equals("hello", echoStringsResponse.a);
   Expect.equals("mojo!", echoStringsResponse.b);
 
@@ -283,7 +283,7 @@ testCheckEnumCapsImpl() {
       new regression.CheckEnumCapsProxy.fromEndpoint(pipe.endpoints[0]);
   var c = new Completer();
   Isolate.spawn(checkEnumCapsIsolate, pipe.endpoints[1]).then((_) {
-    client.ptr.setEnumWithInternalAllCaps(
+    client.setEnumWithInternalAllCaps(
         regression.EnumWithInternalAllCaps.standard);
     client.close().then((_) {
       c.complete(null);
@@ -320,7 +320,7 @@ Future<bool> runOnClosedTest() {
   var testCompleter = new Completer();
   var pipe = new core.MojoMessagePipe();
   var proxy = new sample.ProviderProxy.fromEndpoint(pipe.endpoints[0]);
-  proxy.impl.onError = (_) => testCompleter.complete(true);
+  proxy.ctrl.onError = (_) => testCompleter.complete(true);
   Isolate.spawn(closingProviderIsolate, pipe.endpoints[1]);
   return testCompleter.future.then((b) {
     Expect.isTrue(b);
@@ -347,7 +347,7 @@ Future<bool> testRegression551() {
   var client = new regression.Regression551Proxy.fromEndpoint(pipe.endpoints[0]);
   var c = new Completer();
   Isolate.spawn(regression551Isolate, pipe.endpoints[1]).then((_) {
-    client.ptr.get(["hello!"]).then((response) {
+    client.get(["hello!"]).then((response) {
       Expect.equals(0, response.result);
       client.close().then((_) {
         c.complete(true);
@@ -377,7 +377,7 @@ Future<bool> testServiceName() {
   var client = new regression.ServiceNameProxy.fromEndpoint(pipe.endpoints[0]);
   var c = new Completer();
   Isolate.spawn(serviceNameIsolate, pipe.endpoints[1]).then((_) {
-    client.ptr.serviceName_().then((response) {
+    client.serviceName_().then((response) {
       Expect.equals(ServiceName.serviceName, response.serviceName_);
       client.close().then((_) {
         c.complete(true);
@@ -654,13 +654,13 @@ testValidateInterfaceType() {
   _checkMojomInterface(mi, shortName, fullIdentifier, methodMap);
 
   // The proxy and stub need to have a valid serviceDescription.
-  var boundsCheckProxyImpl =
-      new validation.BoundsCheckTestInterfaceProxy.unbound().impl;
+  var boundsCheckProxyController =
+      new validation.BoundsCheckTestInterfaceProxy.unbound().ctrl;
   var boundsCheckStubDescription =
       validation.BoundsCheckTestInterfaceStub.serviceDescription;
 
   _checkServiceDescription(
-      boundsCheckProxyImpl.serviceDescription, interfaceID, shortName,
+      boundsCheckProxyController.serviceDescription, interfaceID, shortName,
       fullIdentifier, methodMap);
   _checkServiceDescription(
       boundsCheckStubDescription, interfaceID, shortName, fullIdentifier,

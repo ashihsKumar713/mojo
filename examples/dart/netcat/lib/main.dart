@@ -65,7 +65,7 @@ class Connector {
 
       NetAddress local_address = makeIPv4NetAddress([0, 0, 0, 0], 0);
       var boundSocket = new TcpBoundSocketProxy.unbound();
-      await networkService.ptr.createTcpBoundSocket(local_address, boundSocket);
+      await networkService.createTcpBoundSocket(local_address, boundSocket);
       await networkService.close();
 
       var sendDataPipe = new MojoDataPipe();
@@ -73,7 +73,7 @@ class Connector {
       var receiveDataPipe = new MojoDataPipe();
       _socketReceiver = receiveDataPipe.consumer;
       _socket = new TcpConnectedSocketProxy.unbound();
-      await boundSocket.ptr.connect(remote_address, sendDataPipe.consumer,
+      await boundSocket.connect(remote_address, sendDataPipe.consumer,
           receiveDataPipe.producer, _socket);
       await boundSocket.close();
 
@@ -91,7 +91,7 @@ class Connector {
 
   void _startReadingFromTerminal() {
     // TODO(vtl): Do we have to do something on error?
-    _terminal.ptr
+    _terminal
         .read(_writeBuffer.lengthInBytes, 0, files.Whence.fromCurrent)
         .then(_onReadFromTerminal)
         .catchError((e) {
@@ -129,7 +129,7 @@ class Connector {
       var numBytesRead = _socketReceiver.read(_readBuffer);
       if (_socketReceiver.status == MojoResult.kOk) {
         assert(numBytesRead > 0);
-        _terminal.ptr
+        _terminal
             .write(_readBuffer.buffer.asUint8List(0, numBytesRead), 0,
                 files.Whence.fromCurrent)
             .catchError((e) {
@@ -188,7 +188,7 @@ class TerminalClientImpl implements TerminalClient {
       remote_address = _getNetAddressFromUrl(url);
     } catch (e) {
       fputs(
-          terminal.ptr,
+          terminal,
           'HALP: Add a query: ?host=<host>&port=<port>\n'
               '(<host> must be "localhost" or n1.n2.n3.n4)\n\n'
               'Got query parameters:\n' +
@@ -199,7 +199,7 @@ class TerminalClientImpl implements TerminalClient {
 
     // TODO(vtl): Currently, we only do IPv4, so this should work.
     fputs(
-        terminal.ptr,
+        terminal,
         'Connecting to: ' +
             remote_address.ipv4.addr.join('.') +
             ':' +

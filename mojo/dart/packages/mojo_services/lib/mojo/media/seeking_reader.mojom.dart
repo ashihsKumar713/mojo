@@ -354,24 +354,22 @@ abstract class SeekingReader {
 }
 
 
-class _SeekingReaderProxyImpl extends bindings.Proxy {
-  _SeekingReaderProxyImpl.fromEndpoint(
+class _SeekingReaderProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _SeekingReaderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _SeekingReaderProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _SeekingReaderProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _SeekingReaderProxyImpl.unbound() : super.unbound();
-
-  static _SeekingReaderProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _SeekingReaderProxyImpl"));
-    return new _SeekingReaderProxyImpl.fromEndpoint(endpoint);
-  }
+  _SeekingReaderProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _SeekingReaderServiceDescription();
+      new _SeekingReaderServiceDescription();
 
+  String get serviceName => SeekingReader.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _seekingReaderMethodDescribeName:
@@ -421,59 +419,30 @@ class _SeekingReaderProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_SeekingReaderProxyImpl($superString)";
+    return "_SeekingReaderProxyControl($superString)";
   }
 }
 
 
-class _SeekingReaderProxyCalls implements SeekingReader {
-  _SeekingReaderProxyImpl _proxyImpl;
-
-  _SeekingReaderProxyCalls(this._proxyImpl);
-    dynamic describe([Function responseFactory = null]) {
-      var params = new _SeekingReaderDescribeParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _seekingReaderMethodDescribeName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic readAt(int position,[Function responseFactory = null]) {
-      var params = new _SeekingReaderReadAtParams();
-      params.position = position;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _seekingReaderMethodReadAtName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class SeekingReaderProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  SeekingReader ptr;
-
-  SeekingReaderProxy(_SeekingReaderProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _SeekingReaderProxyCalls(proxyImpl);
-
+class SeekingReaderProxy extends bindings.Proxy
+                              implements SeekingReader {
   SeekingReaderProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _SeekingReaderProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _SeekingReaderProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _SeekingReaderProxyControl.fromEndpoint(endpoint));
 
-  SeekingReaderProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _SeekingReaderProxyImpl.fromHandle(handle) {
-    ptr = new _SeekingReaderProxyCalls(impl);
-  }
+  SeekingReaderProxy.fromHandle(core.MojoHandle handle)
+      : super(new _SeekingReaderProxyControl.fromHandle(handle));
 
-  SeekingReaderProxy.unbound() :
-      impl = new _SeekingReaderProxyImpl.unbound() {
-    ptr = new _SeekingReaderProxyCalls(impl);
+  SeekingReaderProxy.unbound()
+      : super(new _SeekingReaderProxyControl.unbound());
+
+  static SeekingReaderProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SeekingReaderProxy"));
+    return new SeekingReaderProxy.fromEndpoint(endpoint);
   }
 
   factory SeekingReaderProxy.connectToService(
@@ -483,30 +452,23 @@ class SeekingReaderProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static SeekingReaderProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SeekingReaderProxy"));
-    return new SeekingReaderProxy.fromEndpoint(endpoint);
+
+  dynamic describe([Function responseFactory = null]) {
+    var params = new _SeekingReaderDescribeParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _seekingReaderMethodDescribeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => SeekingReader.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "SeekingReaderProxy($impl)";
+  dynamic readAt(int position,[Function responseFactory = null]) {
+    var params = new _SeekingReaderReadAtParams();
+    params.position = position;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _seekingReaderMethodReadAtName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

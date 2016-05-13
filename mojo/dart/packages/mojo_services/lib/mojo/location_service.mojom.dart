@@ -244,24 +244,22 @@ abstract class LocationService {
 }
 
 
-class _LocationServiceProxyImpl extends bindings.Proxy {
-  _LocationServiceProxyImpl.fromEndpoint(
+class _LocationServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _LocationServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _LocationServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _LocationServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _LocationServiceProxyImpl.unbound() : super.unbound();
-
-  static _LocationServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _LocationServiceProxyImpl"));
-    return new _LocationServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _LocationServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _LocationServiceServiceDescription();
+      new _LocationServiceServiceDescription();
 
+  String get serviceName => LocationService.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _locationServiceMethodGetNextLocationName:
@@ -291,51 +289,30 @@ class _LocationServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_LocationServiceProxyImpl($superString)";
+    return "_LocationServiceProxyControl($superString)";
   }
 }
 
 
-class _LocationServiceProxyCalls implements LocationService {
-  _LocationServiceProxyImpl _proxyImpl;
-
-  _LocationServiceProxyCalls(this._proxyImpl);
-    dynamic getNextLocation(LocationServiceUpdatePriority priority,[Function responseFactory = null]) {
-      var params = new _LocationServiceGetNextLocationParams();
-      params.priority = priority;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _locationServiceMethodGetNextLocationName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class LocationServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  LocationService ptr;
-
-  LocationServiceProxy(_LocationServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _LocationServiceProxyCalls(proxyImpl);
-
+class LocationServiceProxy extends bindings.Proxy
+                              implements LocationService {
   LocationServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _LocationServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _LocationServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _LocationServiceProxyControl.fromEndpoint(endpoint));
 
-  LocationServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _LocationServiceProxyImpl.fromHandle(handle) {
-    ptr = new _LocationServiceProxyCalls(impl);
-  }
+  LocationServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _LocationServiceProxyControl.fromHandle(handle));
 
-  LocationServiceProxy.unbound() :
-      impl = new _LocationServiceProxyImpl.unbound() {
-    ptr = new _LocationServiceProxyCalls(impl);
+  LocationServiceProxy.unbound()
+      : super(new _LocationServiceProxyControl.unbound());
+
+  static LocationServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For LocationServiceProxy"));
+    return new LocationServiceProxy.fromEndpoint(endpoint);
   }
 
   factory LocationServiceProxy.connectToService(
@@ -345,30 +322,15 @@ class LocationServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static LocationServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For LocationServiceProxy"));
-    return new LocationServiceProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => LocationService.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "LocationServiceProxy($impl)";
+  dynamic getNextLocation(LocationServiceUpdatePriority priority,[Function responseFactory = null]) {
+    var params = new _LocationServiceGetNextLocationParams();
+    params.priority = priority;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _locationServiceMethodGetNextLocationName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

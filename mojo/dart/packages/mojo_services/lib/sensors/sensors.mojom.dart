@@ -534,24 +534,22 @@ abstract class SensorListener {
 }
 
 
-class _SensorListenerProxyImpl extends bindings.Proxy {
-  _SensorListenerProxyImpl.fromEndpoint(
+class _SensorListenerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _SensorListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _SensorListenerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _SensorListenerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _SensorListenerProxyImpl.unbound() : super.unbound();
-
-  static _SensorListenerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _SensorListenerProxyImpl"));
-    return new _SensorListenerProxyImpl.fromEndpoint(endpoint);
-  }
+  _SensorListenerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _SensorListenerServiceDescription();
+      new _SensorListenerServiceDescription();
 
+  String get serviceName => SensorListener.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -561,60 +559,30 @@ class _SensorListenerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_SensorListenerProxyImpl($superString)";
+    return "_SensorListenerProxyControl($superString)";
   }
 }
 
 
-class _SensorListenerProxyCalls implements SensorListener {
-  _SensorListenerProxyImpl _proxyImpl;
-
-  _SensorListenerProxyCalls(this._proxyImpl);
-    void onAccuracyChanged(int accuracy) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SensorListenerOnAccuracyChangedParams();
-      params.accuracy = accuracy;
-      _proxyImpl.sendMessage(params, _sensorListenerMethodOnAccuracyChangedName);
-    }
-    void onSensorChanged(SensorData data) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SensorListenerOnSensorChangedParams();
-      params.data = data;
-      _proxyImpl.sendMessage(params, _sensorListenerMethodOnSensorChangedName);
-    }
-}
-
-
-class SensorListenerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  SensorListener ptr;
-
-  SensorListenerProxy(_SensorListenerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _SensorListenerProxyCalls(proxyImpl);
-
+class SensorListenerProxy extends bindings.Proxy
+                              implements SensorListener {
   SensorListenerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _SensorListenerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _SensorListenerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _SensorListenerProxyControl.fromEndpoint(endpoint));
 
-  SensorListenerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _SensorListenerProxyImpl.fromHandle(handle) {
-    ptr = new _SensorListenerProxyCalls(impl);
-  }
+  SensorListenerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _SensorListenerProxyControl.fromHandle(handle));
 
-  SensorListenerProxy.unbound() :
-      impl = new _SensorListenerProxyImpl.unbound() {
-    ptr = new _SensorListenerProxyCalls(impl);
+  SensorListenerProxy.unbound()
+      : super(new _SensorListenerProxyControl.unbound());
+
+  static SensorListenerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SensorListenerProxy"));
+    return new SensorListenerProxy.fromEndpoint(endpoint);
   }
 
   factory SensorListenerProxy.connectToService(
@@ -624,30 +592,26 @@ class SensorListenerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static SensorListenerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SensorListenerProxy"));
-    return new SensorListenerProxy.fromEndpoint(endpoint);
+
+  void onAccuracyChanged(int accuracy) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SensorListenerOnAccuracyChangedParams();
+    params.accuracy = accuracy;
+    ctrl.sendMessage(params,
+        _sensorListenerMethodOnAccuracyChangedName);
   }
-
-  String get serviceName => SensorListener.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "SensorListenerProxy($impl)";
+  void onSensorChanged(SensorData data) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SensorListenerOnSensorChangedParams();
+    params.data = data;
+    ctrl.sendMessage(params,
+        _sensorListenerMethodOnSensorChangedName);
   }
 }
 
@@ -758,24 +722,22 @@ abstract class SensorService {
 }
 
 
-class _SensorServiceProxyImpl extends bindings.Proxy {
-  _SensorServiceProxyImpl.fromEndpoint(
+class _SensorServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _SensorServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _SensorServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _SensorServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _SensorServiceProxyImpl.unbound() : super.unbound();
-
-  static _SensorServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _SensorServiceProxyImpl"));
-    return new _SensorServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _SensorServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _SensorServiceServiceDescription();
+      new _SensorServiceServiceDescription();
 
+  String get serviceName => SensorService.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -785,52 +747,30 @@ class _SensorServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_SensorServiceProxyImpl($superString)";
+    return "_SensorServiceProxyControl($superString)";
   }
 }
 
 
-class _SensorServiceProxyCalls implements SensorService {
-  _SensorServiceProxyImpl _proxyImpl;
-
-  _SensorServiceProxyCalls(this._proxyImpl);
-    void addListener(SensorType type, Object listener) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SensorServiceAddListenerParams();
-      params.type = type;
-      params.listener = listener;
-      _proxyImpl.sendMessage(params, _sensorServiceMethodAddListenerName);
-    }
-}
-
-
-class SensorServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  SensorService ptr;
-
-  SensorServiceProxy(_SensorServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _SensorServiceProxyCalls(proxyImpl);
-
+class SensorServiceProxy extends bindings.Proxy
+                              implements SensorService {
   SensorServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _SensorServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _SensorServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _SensorServiceProxyControl.fromEndpoint(endpoint));
 
-  SensorServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _SensorServiceProxyImpl.fromHandle(handle) {
-    ptr = new _SensorServiceProxyCalls(impl);
-  }
+  SensorServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _SensorServiceProxyControl.fromHandle(handle));
 
-  SensorServiceProxy.unbound() :
-      impl = new _SensorServiceProxyImpl.unbound() {
-    ptr = new _SensorServiceProxyCalls(impl);
+  SensorServiceProxy.unbound()
+      : super(new _SensorServiceProxyControl.unbound());
+
+  static SensorServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SensorServiceProxy"));
+    return new SensorServiceProxy.fromEndpoint(endpoint);
   }
 
   factory SensorServiceProxy.connectToService(
@@ -840,30 +780,17 @@ class SensorServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static SensorServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SensorServiceProxy"));
-    return new SensorServiceProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => SensorService.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "SensorServiceProxy($impl)";
+  void addListener(SensorType type, Object listener) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SensorServiceAddListenerParams();
+    params.type = type;
+    params.listener = listener;
+    ctrl.sendMessage(params,
+        _sensorServiceMethodAddListenerName);
   }
 }
 

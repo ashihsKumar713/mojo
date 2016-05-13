@@ -577,24 +577,22 @@ abstract class CameraRollService {
 }
 
 
-class _CameraRollServiceProxyImpl extends bindings.Proxy {
-  _CameraRollServiceProxyImpl.fromEndpoint(
+class _CameraRollServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _CameraRollServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _CameraRollServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _CameraRollServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _CameraRollServiceProxyImpl.unbound() : super.unbound();
-
-  static _CameraRollServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _CameraRollServiceProxyImpl"));
-    return new _CameraRollServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _CameraRollServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _CameraRollServiceServiceDescription();
+      new _CameraRollServiceServiceDescription();
 
+  String get serviceName => CameraRollService.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _cameraRollServiceMethodGetCountName:
@@ -644,67 +642,30 @@ class _CameraRollServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_CameraRollServiceProxyImpl($superString)";
+    return "_CameraRollServiceProxyControl($superString)";
   }
 }
 
 
-class _CameraRollServiceProxyCalls implements CameraRollService {
-  _CameraRollServiceProxyImpl _proxyImpl;
-
-  _CameraRollServiceProxyCalls(this._proxyImpl);
-    void update() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _CameraRollServiceUpdateParams();
-      _proxyImpl.sendMessage(params, _cameraRollServiceMethodUpdateName);
-    }
-    dynamic getCount([Function responseFactory = null]) {
-      var params = new _CameraRollServiceGetCountParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _cameraRollServiceMethodGetCountName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic getPhoto(int index,[Function responseFactory = null]) {
-      var params = new _CameraRollServiceGetPhotoParams();
-      params.index = index;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _cameraRollServiceMethodGetPhotoName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class CameraRollServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  CameraRollService ptr;
-
-  CameraRollServiceProxy(_CameraRollServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _CameraRollServiceProxyCalls(proxyImpl);
-
+class CameraRollServiceProxy extends bindings.Proxy
+                              implements CameraRollService {
   CameraRollServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _CameraRollServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _CameraRollServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _CameraRollServiceProxyControl.fromEndpoint(endpoint));
 
-  CameraRollServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _CameraRollServiceProxyImpl.fromHandle(handle) {
-    ptr = new _CameraRollServiceProxyCalls(impl);
-  }
+  CameraRollServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _CameraRollServiceProxyControl.fromHandle(handle));
 
-  CameraRollServiceProxy.unbound() :
-      impl = new _CameraRollServiceProxyImpl.unbound() {
-    ptr = new _CameraRollServiceProxyCalls(impl);
+  CameraRollServiceProxy.unbound()
+      : super(new _CameraRollServiceProxyControl.unbound());
+
+  static CameraRollServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For CameraRollServiceProxy"));
+    return new CameraRollServiceProxy.fromEndpoint(endpoint);
   }
 
   factory CameraRollServiceProxy.connectToService(
@@ -714,30 +675,32 @@ class CameraRollServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static CameraRollServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For CameraRollServiceProxy"));
-    return new CameraRollServiceProxy.fromEndpoint(endpoint);
+
+  void update() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _CameraRollServiceUpdateParams();
+    ctrl.sendMessage(params,
+        _cameraRollServiceMethodUpdateName);
   }
-
-  String get serviceName => CameraRollService.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic getCount([Function responseFactory = null]) {
+    var params = new _CameraRollServiceGetCountParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _cameraRollServiceMethodGetCountName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "CameraRollServiceProxy($impl)";
+  dynamic getPhoto(int index,[Function responseFactory = null]) {
+    var params = new _CameraRollServiceGetPhotoParams();
+    params.index = index;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _cameraRollServiceMethodGetPhotoName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -893,24 +856,22 @@ abstract class CameraService {
 }
 
 
-class _CameraServiceProxyImpl extends bindings.Proxy {
-  _CameraServiceProxyImpl.fromEndpoint(
+class _CameraServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _CameraServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _CameraServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _CameraServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _CameraServiceProxyImpl.unbound() : super.unbound();
-
-  static _CameraServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _CameraServiceProxyImpl"));
-    return new _CameraServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _CameraServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _CameraServiceServiceDescription();
+      new _CameraServiceServiceDescription();
 
+  String get serviceName => CameraService.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _cameraServiceMethodGetLatestFrameName:
@@ -940,50 +901,30 @@ class _CameraServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_CameraServiceProxyImpl($superString)";
+    return "_CameraServiceProxyControl($superString)";
   }
 }
 
 
-class _CameraServiceProxyCalls implements CameraService {
-  _CameraServiceProxyImpl _proxyImpl;
-
-  _CameraServiceProxyCalls(this._proxyImpl);
-    dynamic getLatestFrame([Function responseFactory = null]) {
-      var params = new _CameraServiceGetLatestFrameParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _cameraServiceMethodGetLatestFrameName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class CameraServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  CameraService ptr;
-
-  CameraServiceProxy(_CameraServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _CameraServiceProxyCalls(proxyImpl);
-
+class CameraServiceProxy extends bindings.Proxy
+                              implements CameraService {
   CameraServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _CameraServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _CameraServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _CameraServiceProxyControl.fromEndpoint(endpoint));
 
-  CameraServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _CameraServiceProxyImpl.fromHandle(handle) {
-    ptr = new _CameraServiceProxyCalls(impl);
-  }
+  CameraServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _CameraServiceProxyControl.fromHandle(handle));
 
-  CameraServiceProxy.unbound() :
-      impl = new _CameraServiceProxyImpl.unbound() {
-    ptr = new _CameraServiceProxyCalls(impl);
+  CameraServiceProxy.unbound()
+      : super(new _CameraServiceProxyControl.unbound());
+
+  static CameraServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For CameraServiceProxy"));
+    return new CameraServiceProxy.fromEndpoint(endpoint);
   }
 
   factory CameraServiceProxy.connectToService(
@@ -993,30 +934,14 @@ class CameraServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static CameraServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For CameraServiceProxy"));
-    return new CameraServiceProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => CameraService.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "CameraServiceProxy($impl)";
+  dynamic getLatestFrame([Function responseFactory = null]) {
+    var params = new _CameraServiceGetLatestFrameParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _cameraServiceMethodGetLatestFrameName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

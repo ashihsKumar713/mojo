@@ -498,24 +498,22 @@ abstract class ViewTree {
 }
 
 
-class _ViewTreeProxyImpl extends bindings.Proxy {
-  _ViewTreeProxyImpl.fromEndpoint(
+class _ViewTreeProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ViewTreeProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ViewTreeProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ViewTreeProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ViewTreeProxyImpl.unbound() : super.unbound();
-
-  static _ViewTreeProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ViewTreeProxyImpl"));
-    return new _ViewTreeProxyImpl.fromEndpoint(endpoint);
-  }
+  _ViewTreeProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ViewTreeServiceDescription();
+      new _ViewTreeServiceDescription();
 
+  String get serviceName => ViewTree.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewTreeMethodGetTokenName:
@@ -545,77 +543,30 @@ class _ViewTreeProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ViewTreeProxyImpl($superString)";
+    return "_ViewTreeProxyControl($superString)";
   }
 }
 
 
-class _ViewTreeProxyCalls implements ViewTree {
-  _ViewTreeProxyImpl _proxyImpl;
-
-  _ViewTreeProxyCalls(this._proxyImpl);
-    dynamic getToken([Function responseFactory = null]) {
-      var params = new _ViewTreeGetTokenParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _viewTreeMethodGetTokenName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void getServiceProvider(Object serviceProvider) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ViewTreeGetServiceProviderParams();
-      params.serviceProvider = serviceProvider;
-      _proxyImpl.sendMessage(params, _viewTreeMethodGetServiceProviderName);
-    }
-    void setRenderer(Object renderer) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ViewTreeSetRendererParams();
-      params.renderer = renderer;
-      _proxyImpl.sendMessage(params, _viewTreeMethodSetRendererName);
-    }
-    void getContainer(Object container) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ViewTreeGetContainerParams();
-      params.container = container;
-      _proxyImpl.sendMessage(params, _viewTreeMethodGetContainerName);
-    }
-}
-
-
-class ViewTreeProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ViewTree ptr;
-
-  ViewTreeProxy(_ViewTreeProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ViewTreeProxyCalls(proxyImpl);
-
+class ViewTreeProxy extends bindings.Proxy
+                              implements ViewTree {
   ViewTreeProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ViewTreeProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ViewTreeProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ViewTreeProxyControl.fromEndpoint(endpoint));
 
-  ViewTreeProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ViewTreeProxyImpl.fromHandle(handle) {
-    ptr = new _ViewTreeProxyCalls(impl);
-  }
+  ViewTreeProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ViewTreeProxyControl.fromHandle(handle));
 
-  ViewTreeProxy.unbound() :
-      impl = new _ViewTreeProxyImpl.unbound() {
-    ptr = new _ViewTreeProxyCalls(impl);
+  ViewTreeProxy.unbound()
+      : super(new _ViewTreeProxyControl.unbound());
+
+  static ViewTreeProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewTreeProxy"));
+    return new ViewTreeProxy.fromEndpoint(endpoint);
   }
 
   factory ViewTreeProxy.connectToService(
@@ -625,30 +576,44 @@ class ViewTreeProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ViewTreeProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewTreeProxy"));
-    return new ViewTreeProxy.fromEndpoint(endpoint);
+
+  dynamic getToken([Function responseFactory = null]) {
+    var params = new _ViewTreeGetTokenParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _viewTreeMethodGetTokenName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => ViewTree.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void getServiceProvider(Object serviceProvider) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewTreeGetServiceProviderParams();
+    params.serviceProvider = serviceProvider;
+    ctrl.sendMessage(params,
+        _viewTreeMethodGetServiceProviderName);
   }
-
-  String toString() {
-    return "ViewTreeProxy($impl)";
+  void setRenderer(Object renderer) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewTreeSetRendererParams();
+    params.renderer = renderer;
+    ctrl.sendMessage(params,
+        _viewTreeMethodSetRendererName);
+  }
+  void getContainer(Object container) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewTreeGetContainerParams();
+    params.container = container;
+    ctrl.sendMessage(params,
+        _viewTreeMethodGetContainerName);
   }
 }
 
@@ -789,24 +754,22 @@ abstract class ViewTreeListener {
 }
 
 
-class _ViewTreeListenerProxyImpl extends bindings.Proxy {
-  _ViewTreeListenerProxyImpl.fromEndpoint(
+class _ViewTreeListenerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ViewTreeListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ViewTreeListenerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ViewTreeListenerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ViewTreeListenerProxyImpl.unbound() : super.unbound();
-
-  static _ViewTreeListenerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ViewTreeListenerProxyImpl"));
-    return new _ViewTreeListenerProxyImpl.fromEndpoint(endpoint);
-  }
+  _ViewTreeListenerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ViewTreeListenerServiceDescription();
+      new _ViewTreeListenerServiceDescription();
 
+  String get serviceName => ViewTreeListener.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewTreeListenerMethodOnRendererDiedName:
@@ -836,50 +799,30 @@ class _ViewTreeListenerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ViewTreeListenerProxyImpl($superString)";
+    return "_ViewTreeListenerProxyControl($superString)";
   }
 }
 
 
-class _ViewTreeListenerProxyCalls implements ViewTreeListener {
-  _ViewTreeListenerProxyImpl _proxyImpl;
-
-  _ViewTreeListenerProxyCalls(this._proxyImpl);
-    dynamic onRendererDied([Function responseFactory = null]) {
-      var params = new _ViewTreeListenerOnRendererDiedParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _viewTreeListenerMethodOnRendererDiedName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class ViewTreeListenerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ViewTreeListener ptr;
-
-  ViewTreeListenerProxy(_ViewTreeListenerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ViewTreeListenerProxyCalls(proxyImpl);
-
+class ViewTreeListenerProxy extends bindings.Proxy
+                              implements ViewTreeListener {
   ViewTreeListenerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ViewTreeListenerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ViewTreeListenerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ViewTreeListenerProxyControl.fromEndpoint(endpoint));
 
-  ViewTreeListenerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ViewTreeListenerProxyImpl.fromHandle(handle) {
-    ptr = new _ViewTreeListenerProxyCalls(impl);
-  }
+  ViewTreeListenerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ViewTreeListenerProxyControl.fromHandle(handle));
 
-  ViewTreeListenerProxy.unbound() :
-      impl = new _ViewTreeListenerProxyImpl.unbound() {
-    ptr = new _ViewTreeListenerProxyCalls(impl);
+  ViewTreeListenerProxy.unbound()
+      : super(new _ViewTreeListenerProxyControl.unbound());
+
+  static ViewTreeListenerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewTreeListenerProxy"));
+    return new ViewTreeListenerProxy.fromEndpoint(endpoint);
   }
 
   factory ViewTreeListenerProxy.connectToService(
@@ -889,30 +832,14 @@ class ViewTreeListenerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ViewTreeListenerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewTreeListenerProxy"));
-    return new ViewTreeListenerProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => ViewTreeListener.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ViewTreeListenerProxy($impl)";
+  dynamic onRendererDied([Function responseFactory = null]) {
+    var params = new _ViewTreeListenerOnRendererDiedParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _viewTreeListenerMethodOnRendererDiedName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

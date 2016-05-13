@@ -725,24 +725,22 @@ abstract class HitTester {
 }
 
 
-class _HitTesterProxyImpl extends bindings.Proxy {
-  _HitTesterProxyImpl.fromEndpoint(
+class _HitTesterProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _HitTesterProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _HitTesterProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _HitTesterProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _HitTesterProxyImpl.unbound() : super.unbound();
-
-  static _HitTesterProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _HitTesterProxyImpl"));
-    return new _HitTesterProxyImpl.fromEndpoint(endpoint);
-  }
+  _HitTesterProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _HitTesterServiceDescription();
+      new _HitTesterServiceDescription();
 
+  String get serviceName => HitTester.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _hitTesterMethodHitTestName:
@@ -772,51 +770,30 @@ class _HitTesterProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_HitTesterProxyImpl($superString)";
+    return "_HitTesterProxyControl($superString)";
   }
 }
 
 
-class _HitTesterProxyCalls implements HitTester {
-  _HitTesterProxyImpl _proxyImpl;
-
-  _HitTesterProxyCalls(this._proxyImpl);
-    dynamic hitTest(geometry_mojom.PointF point,[Function responseFactory = null]) {
-      var params = new _HitTesterHitTestParams();
-      params.point = point;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _hitTesterMethodHitTestName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class HitTesterProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  HitTester ptr;
-
-  HitTesterProxy(_HitTesterProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _HitTesterProxyCalls(proxyImpl);
-
+class HitTesterProxy extends bindings.Proxy
+                              implements HitTester {
   HitTesterProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _HitTesterProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _HitTesterProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _HitTesterProxyControl.fromEndpoint(endpoint));
 
-  HitTesterProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _HitTesterProxyImpl.fromHandle(handle) {
-    ptr = new _HitTesterProxyCalls(impl);
-  }
+  HitTesterProxy.fromHandle(core.MojoHandle handle)
+      : super(new _HitTesterProxyControl.fromHandle(handle));
 
-  HitTesterProxy.unbound() :
-      impl = new _HitTesterProxyImpl.unbound() {
-    ptr = new _HitTesterProxyCalls(impl);
+  HitTesterProxy.unbound()
+      : super(new _HitTesterProxyControl.unbound());
+
+  static HitTesterProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HitTesterProxy"));
+    return new HitTesterProxy.fromEndpoint(endpoint);
   }
 
   factory HitTesterProxy.connectToService(
@@ -826,30 +803,15 @@ class HitTesterProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static HitTesterProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HitTesterProxy"));
-    return new HitTesterProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => HitTester.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "HitTesterProxy($impl)";
+  dynamic hitTest(geometry_mojom.PointF point,[Function responseFactory = null]) {
+    var params = new _HitTesterHitTestParams();
+    params.point = point;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _hitTesterMethodHitTestName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

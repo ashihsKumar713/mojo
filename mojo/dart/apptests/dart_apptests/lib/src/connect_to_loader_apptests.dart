@@ -20,7 +20,7 @@ connectToLoaderApptests(Application application, String url) {
         "mojo:url_response_disk_cache", diskCacheProxy);
     var response = new UrlResponse();
     response.url = 'http://www.example.com';
-    await diskCacheProxy.ptr.updateAndGet(response);
+    await diskCacheProxy.updateAndGet(response);
     await diskCacheProxy.close();
   });
 }

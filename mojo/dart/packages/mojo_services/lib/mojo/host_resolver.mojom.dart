@@ -225,24 +225,22 @@ abstract class HostResolver {
 }
 
 
-class _HostResolverProxyImpl extends bindings.Proxy {
-  _HostResolverProxyImpl.fromEndpoint(
+class _HostResolverProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _HostResolverProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _HostResolverProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _HostResolverProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _HostResolverProxyImpl.unbound() : super.unbound();
-
-  static _HostResolverProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _HostResolverProxyImpl"));
-    return new _HostResolverProxyImpl.fromEndpoint(endpoint);
-  }
+  _HostResolverProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _HostResolverServiceDescription();
+      new _HostResolverServiceDescription();
 
+  String get serviceName => HostResolver.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _hostResolverMethodGetHostAddressesName:
@@ -272,52 +270,30 @@ class _HostResolverProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_HostResolverProxyImpl($superString)";
+    return "_HostResolverProxyControl($superString)";
   }
 }
 
 
-class _HostResolverProxyCalls implements HostResolver {
-  _HostResolverProxyImpl _proxyImpl;
-
-  _HostResolverProxyCalls(this._proxyImpl);
-    dynamic getHostAddresses(String host,net_address_mojom.NetAddressFamily family,[Function responseFactory = null]) {
-      var params = new _HostResolverGetHostAddressesParams();
-      params.host = host;
-      params.family = family;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _hostResolverMethodGetHostAddressesName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class HostResolverProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  HostResolver ptr;
-
-  HostResolverProxy(_HostResolverProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _HostResolverProxyCalls(proxyImpl);
-
+class HostResolverProxy extends bindings.Proxy
+                              implements HostResolver {
   HostResolverProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _HostResolverProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _HostResolverProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _HostResolverProxyControl.fromEndpoint(endpoint));
 
-  HostResolverProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _HostResolverProxyImpl.fromHandle(handle) {
-    ptr = new _HostResolverProxyCalls(impl);
-  }
+  HostResolverProxy.fromHandle(core.MojoHandle handle)
+      : super(new _HostResolverProxyControl.fromHandle(handle));
 
-  HostResolverProxy.unbound() :
-      impl = new _HostResolverProxyImpl.unbound() {
-    ptr = new _HostResolverProxyCalls(impl);
+  HostResolverProxy.unbound()
+      : super(new _HostResolverProxyControl.unbound());
+
+  static HostResolverProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HostResolverProxy"));
+    return new HostResolverProxy.fromEndpoint(endpoint);
   }
 
   factory HostResolverProxy.connectToService(
@@ -327,30 +303,16 @@ class HostResolverProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static HostResolverProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HostResolverProxy"));
-    return new HostResolverProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => HostResolver.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "HostResolverProxy($impl)";
+  dynamic getHostAddresses(String host,net_address_mojom.NetAddressFamily family,[Function responseFactory = null]) {
+    var params = new _HostResolverGetHostAddressesParams();
+    params.host = host;
+    params.family = family;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _hostResolverMethodGetHostAddressesName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

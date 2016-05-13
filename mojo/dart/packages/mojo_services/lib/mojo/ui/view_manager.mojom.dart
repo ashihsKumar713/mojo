@@ -241,24 +241,22 @@ abstract class ViewManager {
 }
 
 
-class _ViewManagerProxyImpl extends bindings.Proxy {
-  _ViewManagerProxyImpl.fromEndpoint(
+class _ViewManagerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ViewManagerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ViewManagerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ViewManagerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ViewManagerProxyImpl.unbound() : super.unbound();
-
-  static _ViewManagerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ViewManagerProxyImpl"));
-    return new _ViewManagerProxyImpl.fromEndpoint(endpoint);
-  }
+  _ViewManagerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ViewManagerServiceDescription();
+      new _ViewManagerServiceDescription();
 
+  String get serviceName => ViewManager.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -268,65 +266,30 @@ class _ViewManagerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ViewManagerProxyImpl($superString)";
+    return "_ViewManagerProxyControl($superString)";
   }
 }
 
 
-class _ViewManagerProxyCalls implements ViewManager {
-  _ViewManagerProxyImpl _proxyImpl;
-
-  _ViewManagerProxyCalls(this._proxyImpl);
-    void createView(Object view, Object viewOwner, Object viewListener, String label) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ViewManagerCreateViewParams();
-      params.view = view;
-      params.viewOwner = viewOwner;
-      params.viewListener = viewListener;
-      params.label = label;
-      _proxyImpl.sendMessage(params, _viewManagerMethodCreateViewName);
-    }
-    void createViewTree(Object viewTree, Object viewTreeListener, String label) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ViewManagerCreateViewTreeParams();
-      params.viewTree = viewTree;
-      params.viewTreeListener = viewTreeListener;
-      params.label = label;
-      _proxyImpl.sendMessage(params, _viewManagerMethodCreateViewTreeName);
-    }
-}
-
-
-class ViewManagerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ViewManager ptr;
-
-  ViewManagerProxy(_ViewManagerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ViewManagerProxyCalls(proxyImpl);
-
+class ViewManagerProxy extends bindings.Proxy
+                              implements ViewManager {
   ViewManagerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ViewManagerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ViewManagerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ViewManagerProxyControl.fromEndpoint(endpoint));
 
-  ViewManagerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ViewManagerProxyImpl.fromHandle(handle) {
-    ptr = new _ViewManagerProxyCalls(impl);
-  }
+  ViewManagerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ViewManagerProxyControl.fromHandle(handle));
 
-  ViewManagerProxy.unbound() :
-      impl = new _ViewManagerProxyImpl.unbound() {
-    ptr = new _ViewManagerProxyCalls(impl);
+  ViewManagerProxy.unbound()
+      : super(new _ViewManagerProxyControl.unbound());
+
+  static ViewManagerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewManagerProxy"));
+    return new ViewManagerProxy.fromEndpoint(endpoint);
   }
 
   factory ViewManagerProxy.connectToService(
@@ -336,30 +299,31 @@ class ViewManagerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ViewManagerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewManagerProxy"));
-    return new ViewManagerProxy.fromEndpoint(endpoint);
+
+  void createView(Object view, Object viewOwner, Object viewListener, String label) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewManagerCreateViewParams();
+    params.view = view;
+    params.viewOwner = viewOwner;
+    params.viewListener = viewListener;
+    params.label = label;
+    ctrl.sendMessage(params,
+        _viewManagerMethodCreateViewName);
   }
-
-  String get serviceName => ViewManager.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ViewManagerProxy($impl)";
+  void createViewTree(Object viewTree, Object viewTreeListener, String label) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewManagerCreateViewTreeParams();
+    params.viewTree = viewTree;
+    params.viewTreeListener = viewTreeListener;
+    params.label = label;
+    ctrl.sendMessage(params,
+        _viewManagerMethodCreateViewTreeName);
   }
 }
 

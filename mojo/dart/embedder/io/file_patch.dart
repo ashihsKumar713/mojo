@@ -112,9 +112,9 @@ patch class _Directory {
         types.kOpenFlagRead | types.kOpenFlagWrite | types.kOpenFlagCreate;
     var response =
         await rootDirectory.responseOrError(
-            rootDirectory.ptr.openDirectory(_ensurePathIsRelative(path),
-                                            null,
-                                            flags));
+            rootDirectory.openDirectory(_ensurePathIsRelative(path),
+                                        null,
+                                        flags));
     if (response.error != types.Error.ok) {
       throw _OSErrorFromError(response.error);
     }
@@ -132,7 +132,7 @@ patch class _Directory {
     while (true) {
       var response =
           await rootDirectory.responseOrError(
-              rootDirectory.ptr.openDirectory(tempPath, null, flags));
+              rootDirectory.openDirectory(tempPath, null, flags));
       if (response.error == types.Error.ok) {
         // Success.
         break;
@@ -151,9 +151,9 @@ patch class _Directory {
     int flags = types.kOpenFlagRead | types.kOpenFlagWrite;
     var response =
         await await rootDirectory.responseOrError(
-            rootDirectory.ptr.openDirectory(_ensurePathIsRelative(path),
-                                            null,
-                                            flags));
+            rootDirectory.openDirectory(_ensurePathIsRelative(path),
+                                        null,
+                                        flags));
     // If we can open it, it exists.
     return response.error == types.Error.ok;
   }
@@ -182,8 +182,8 @@ patch class _Directory {
   /* patch */ Future<Directory> rename(String newPath) async {
     DirectoryProxy rootDirectory = await _getRootDirectory();
     var response = await rootDirectory.responseOrError(
-        rootDirectory.ptr.rename(_ensurePathIsRelative(path),
-                                 _ensurePathIsRelative(newPath)));
+        rootDirectory.rename(_ensurePathIsRelative(path),
+                             _ensurePathIsRelative(newPath)));
     if (response.error != types.Error.ok) {
       throw _OSErrorFromError(response.error);
     }
@@ -250,15 +250,15 @@ class _DirectoryLister {
       DirectoryProxy directory = new DirectoryProxy.unbound();
       var response =
           await rootDirectory.responseOrError(
-              rootDirectory.ptr.openDirectory(_ensurePathIsRelative(path),
-                                              directory,
-                                              flags));
+              rootDirectory.openDirectory(_ensurePathIsRelative(path),
+                                          directory,
+                                          flags));
       if (response.error != types.Error.ok) {
         // Skip if we can't open it.
         continue;
       }
       // Read contents.
-      var readResponse = await directory.responseOrError(directory.ptr.read());
+      var readResponse = await directory.responseOrError(directory.read());
       // We are done with the directory now.
       directory.close(immediate: true);
       if (readResponse.error != types.Error.ok) {
@@ -291,9 +291,9 @@ patch class _File {
     int flags = types.kOpenFlagRead;
     var response =
         await rootDirectory.responseOrError(
-            rootDirectory.ptr.openFile(_ensurePathIsRelative(path),
-                                       null,
-                                       flags));
+            rootDirectory.openFile(_ensurePathIsRelative(path),
+                                   null,
+                                   flags));
     // If we can open it, it exists.
     return response.error == types.Error.ok;
   }
@@ -311,9 +311,9 @@ patch class _File {
     int flags = types.kOpenFlagWrite | types.kOpenFlagCreate;
     var response =
         await rootDirectory.responseOrError(
-            rootDirectory.ptr.openFile(_ensurePathIsRelative(path),
-                                       null,
-                                       flags));
+            rootDirectory.openFile(_ensurePathIsRelative(path),
+                                   null,
+                                   flags));
     if (response.error != types.Error.ok) {
       throw _OSErrorFromError(response.error);
     }
@@ -325,8 +325,8 @@ patch class _File {
   /* patch */ Future<File> rename(String newPath) async {
     DirectoryProxy rootDirectory = await _getRootDirectory();
     var response = await rootDirectory.responseOrError(
-        rootDirectory.ptr.rename(_ensurePathIsRelative(path),
-                                 _ensurePathIsRelative(newPath)));
+        rootDirectory.rename(_ensurePathIsRelative(path),
+                             _ensurePathIsRelative(newPath)));
     if (response.error != types.Error.ok) {
       throw _OSErrorFromError(response.error);
     }
@@ -353,14 +353,14 @@ patch class _File {
     DirectoryProxy rootDirectory = await _getRootDirectory();
     FileProxy file = new FileProxy.unbound();
     var response = await rootDirectory.responseOrError(
-        rootDirectory.ptr.openFile(_ensurePathIsRelative(path),
-                                   file,
-                                   _openFlagsFromFileMode(mode)));
+        rootDirectory.openFile(_ensurePathIsRelative(path),
+                               file,
+                               _openFlagsFromFileMode(mode)));
     if (response.error != types.Error.ok) {
       throw _OSErrorFromError(response.error);
     }
     // We use the raw mojo handle as our fd.
-    final int fd = file.impl.endpoint.handle.h;
+    final int fd = file.ctrl.endpoint.handle.h;
     // Construct the RandomAccessFile using the original constructor.
     _RandomAccessFile raf = new _RandomAccessFile(fd, path);
     // Hook up our proxy.
@@ -506,13 +506,13 @@ patch class FileStat {
     DirectoryProxy directory = new DirectoryProxy.unbound();
     var response =
         await await rootDirectory.responseOrError(
-            rootDirectory.ptr.openDirectory(_ensurePathIsRelative(path),
-                                            directory,
-                                            flags));
+            rootDirectory.openDirectory(_ensurePathIsRelative(path),
+                                        directory,
+                                        flags));
     if (response.error != types.Error.ok) {
       throw _OSErrorFromError(response.error);
     }
-    var statResponse = await directory.responseOrError(directory.ptr.stat());
+    var statResponse = await directory.responseOrError(directory.stat());
     // We are done with the directory now.
     directory.close(immediate: true);
     if (statResponse.error != types.Error.ok) {
@@ -553,7 +553,7 @@ patch class FileSystemEntity {
     DirectoryProxy rootDirectory = await _getRootDirectory();
     int flags = recursive ? types.kDeleteFlagRecursive : 0;
     var response = await rootDirectory.responseOrError(
-        rootDirectory.ptr.delete(_ensurePathIsRelative(path), flags));
+        rootDirectory.delete(_ensurePathIsRelative(path), flags));
     if (response.error != types.Error.ok) {
       throw _OSErrorFromError(response.error);
     }
@@ -648,7 +648,7 @@ patch class _RandomAccessFile {
 
   /* patch */ Future<RandomAccessFile> close() async {
     _ensureProxy();
-    await _proxy.responseOrError(_proxy.ptr.close());
+    await _proxy.responseOrError(_proxy.close());
     await _proxy.close(immediate: true);
     _proxy = null;
     closed = true;
@@ -663,7 +663,7 @@ patch class _RandomAccessFile {
   /* patch */ Future<int> readByte() async {
     _ensureProxy();
     var response = await _proxy.responseOrError(
-        _proxy.ptr.read(1, 0, types.Whence.fromCurrent));
+        _proxy.read(1, 0, types.Whence.fromCurrent));
     _handleError(response);
     _resourceInfo.addRead(response.bytesRead.length);
     if (response.bytesRead.length == 0) {
@@ -682,7 +682,7 @@ patch class _RandomAccessFile {
     }
     _ensureProxy();
     var response = await _proxy.responseOrError(
-        _proxy.ptr.read(bytes, 0, types.Whence.fromCurrent));
+        _proxy.read(bytes, 0, types.Whence.fromCurrent));
     _handleError(response);
     _resourceInfo.addRead(response.bytesRead.length);
     return response.bytesRead;
@@ -706,7 +706,7 @@ patch class _RandomAccessFile {
     }
     int length = end - start;
     var response = await _proxy.responseOrError(
-        _proxy.ptr.read(length, 0, types.Whence.fromCurrent));
+        _proxy.read(length, 0, types.Whence.fromCurrent));
     _handleError(response);
     int read = response.bytesRead.length;
     _resourceInfo.addRead(read);
@@ -724,7 +724,7 @@ patch class _RandomAccessFile {
     }
     _ensureProxy();
     var response = await _proxy.responseOrError(
-        _proxy.ptr.write([value], 0, types.Whence.fromCurrent));
+        _proxy.write([value], 0, types.Whence.fromCurrent));
     _handleError(response);
     assert(response.numBytesWritten == 1);
     _resourceInfo.addWrite(response.numBytesWritten);
@@ -762,7 +762,7 @@ patch class _RandomAccessFile {
     }
     assert(result.start == 0);
     var response = await _proxy.responseOrError(
-        _proxy.ptr.write(result.buffer, 0, types.Whence.fromCurrent));
+        _proxy.write(result.buffer, 0, types.Whence.fromCurrent));
     _handleError(response);
     _resourceInfo.addWrite(response.numBytesWritten);
     return this;
@@ -778,7 +778,7 @@ patch class _RandomAccessFile {
 
   /* patch */ Future<int> position() async {
     _ensureProxy();
-    var response = await _proxy.responseOrError(_proxy.ptr.tell());
+    var response = await _proxy.responseOrError(_proxy.tell());
     _handleError(response);
     return response.position;
   }
@@ -793,7 +793,7 @@ patch class _RandomAccessFile {
     }
     _ensureProxy();
     var response = await _proxy.responseOrError(
-        _proxy.ptr.seek(position, types.Whence.fromStart));
+        _proxy.seek(position, types.Whence.fromStart));
     _handleError(response);
     return this;
   }
@@ -807,7 +807,7 @@ patch class _RandomAccessFile {
       throw new ArgumentError(length);
     }
     _ensureProxy();
-    var response = await _proxy.responseOrError(_proxy.ptr.truncate(length));
+    var response = await _proxy.responseOrError(_proxy.truncate(length));
     _handleError(response);
   }
 
@@ -817,7 +817,7 @@ patch class _RandomAccessFile {
 
   /* patch */ Future<int> length() async {
     _ensureProxy();
-    var response = await _proxy.responseOrError(_proxy.ptr.stat());
+    var response = await _proxy.responseOrError(_proxy.stat());
     _handleError(response);
     return response.fileInformation.size;
   }

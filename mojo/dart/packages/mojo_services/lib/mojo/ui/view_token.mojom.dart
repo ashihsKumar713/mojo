@@ -231,24 +231,22 @@ abstract class ViewOwner {
 }
 
 
-class _ViewOwnerProxyImpl extends bindings.Proxy {
-  _ViewOwnerProxyImpl.fromEndpoint(
+class _ViewOwnerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ViewOwnerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ViewOwnerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ViewOwnerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ViewOwnerProxyImpl.unbound() : super.unbound();
-
-  static _ViewOwnerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ViewOwnerProxyImpl"));
-    return new _ViewOwnerProxyImpl.fromEndpoint(endpoint);
-  }
+  _ViewOwnerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ViewOwnerServiceDescription();
+      new _ViewOwnerServiceDescription();
 
+  String get serviceName => ViewOwner.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewOwnerMethodGetTokenName:
@@ -278,50 +276,30 @@ class _ViewOwnerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ViewOwnerProxyImpl($superString)";
+    return "_ViewOwnerProxyControl($superString)";
   }
 }
 
 
-class _ViewOwnerProxyCalls implements ViewOwner {
-  _ViewOwnerProxyImpl _proxyImpl;
-
-  _ViewOwnerProxyCalls(this._proxyImpl);
-    dynamic getToken([Function responseFactory = null]) {
-      var params = new _ViewOwnerGetTokenParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _viewOwnerMethodGetTokenName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class ViewOwnerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ViewOwner ptr;
-
-  ViewOwnerProxy(_ViewOwnerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ViewOwnerProxyCalls(proxyImpl);
-
+class ViewOwnerProxy extends bindings.Proxy
+                              implements ViewOwner {
   ViewOwnerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ViewOwnerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ViewOwnerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ViewOwnerProxyControl.fromEndpoint(endpoint));
 
-  ViewOwnerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ViewOwnerProxyImpl.fromHandle(handle) {
-    ptr = new _ViewOwnerProxyCalls(impl);
-  }
+  ViewOwnerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ViewOwnerProxyControl.fromHandle(handle));
 
-  ViewOwnerProxy.unbound() :
-      impl = new _ViewOwnerProxyImpl.unbound() {
-    ptr = new _ViewOwnerProxyCalls(impl);
+  ViewOwnerProxy.unbound()
+      : super(new _ViewOwnerProxyControl.unbound());
+
+  static ViewOwnerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewOwnerProxy"));
+    return new ViewOwnerProxy.fromEndpoint(endpoint);
   }
 
   factory ViewOwnerProxy.connectToService(
@@ -331,30 +309,14 @@ class ViewOwnerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ViewOwnerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewOwnerProxy"));
-    return new ViewOwnerProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => ViewOwner.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ViewOwnerProxy($impl)";
+  dynamic getToken([Function responseFactory = null]) {
+    var params = new _ViewOwnerGetTokenParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _viewOwnerMethodGetTokenName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

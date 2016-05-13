@@ -777,24 +777,22 @@ abstract class PingPongService {
 }
 
 
-class _PingPongServiceProxyImpl extends bindings.Proxy {
-  _PingPongServiceProxyImpl.fromEndpoint(
+class _PingPongServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _PingPongServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _PingPongServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _PingPongServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _PingPongServiceProxyImpl.unbound() : super.unbound();
-
-  static _PingPongServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _PingPongServiceProxyImpl"));
-    return new _PingPongServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _PingPongServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _PingPongServiceServiceDescription();
+      new _PingPongServiceServiceDescription();
 
+  String get serviceName => PingPongService.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _pingPongServiceMethodPingTargetUrlName:
@@ -844,106 +842,30 @@ class _PingPongServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_PingPongServiceProxyImpl($superString)";
+    return "_PingPongServiceProxyControl($superString)";
   }
 }
 
 
-class _PingPongServiceProxyCalls implements PingPongService {
-  _PingPongServiceProxyImpl _proxyImpl;
-
-  _PingPongServiceProxyCalls(this._proxyImpl);
-    void setClient(Object client) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _PingPongServiceSetClientParams();
-      params.client = client;
-      _proxyImpl.sendMessage(params, _pingPongServiceMethodSetClientName);
-    }
-    void ping(int pingValue) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _PingPongServicePingParams();
-      params.pingValue = pingValue;
-      _proxyImpl.sendMessage(params, _pingPongServiceMethodPingName);
-    }
-    dynamic pingTargetUrl(String url,int count,[Function responseFactory = null]) {
-      var params = new _PingPongServicePingTargetUrlParams();
-      params.url = url;
-      params.count = count;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _pingPongServiceMethodPingTargetUrlName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic pingTargetService(Object service,int count,[Function responseFactory = null]) {
-      var params = new _PingPongServicePingTargetServiceParams();
-      params.service = service;
-      params.count = count;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _pingPongServiceMethodPingTargetServiceName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void getPingPongService(Object service) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _PingPongServiceGetPingPongServiceParams();
-      params.service = service;
-      _proxyImpl.sendMessage(params, _pingPongServiceMethodGetPingPongServiceName);
-    }
-    void getPingPongServiceDelayed(Object service) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _PingPongServiceGetPingPongServiceDelayedParams();
-      params.service = service;
-      _proxyImpl.sendMessage(params, _pingPongServiceMethodGetPingPongServiceDelayedName);
-    }
-    void quit() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _PingPongServiceQuitParams();
-      _proxyImpl.sendMessage(params, _pingPongServiceMethodQuitName);
-    }
-}
-
-
-class PingPongServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  PingPongService ptr;
-
-  PingPongServiceProxy(_PingPongServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _PingPongServiceProxyCalls(proxyImpl);
-
+class PingPongServiceProxy extends bindings.Proxy
+                              implements PingPongService {
   PingPongServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _PingPongServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _PingPongServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _PingPongServiceProxyControl.fromEndpoint(endpoint));
 
-  PingPongServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _PingPongServiceProxyImpl.fromHandle(handle) {
-    ptr = new _PingPongServiceProxyCalls(impl);
-  }
+  PingPongServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _PingPongServiceProxyControl.fromHandle(handle));
 
-  PingPongServiceProxy.unbound() :
-      impl = new _PingPongServiceProxyImpl.unbound() {
-    ptr = new _PingPongServiceProxyCalls(impl);
+  PingPongServiceProxy.unbound()
+      : super(new _PingPongServiceProxyControl.unbound());
+
+  static PingPongServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For PingPongServiceProxy"));
+    return new PingPongServiceProxy.fromEndpoint(endpoint);
   }
 
   factory PingPongServiceProxy.connectToService(
@@ -953,30 +875,75 @@ class PingPongServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static PingPongServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For PingPongServiceProxy"));
-    return new PingPongServiceProxy.fromEndpoint(endpoint);
+
+  void setClient(Object client) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _PingPongServiceSetClientParams();
+    params.client = client;
+    ctrl.sendMessage(params,
+        _pingPongServiceMethodSetClientName);
   }
-
-  String get serviceName => PingPongService.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void ping(int pingValue) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _PingPongServicePingParams();
+    params.pingValue = pingValue;
+    ctrl.sendMessage(params,
+        _pingPongServiceMethodPingName);
   }
-
-  String toString() {
-    return "PingPongServiceProxy($impl)";
+  dynamic pingTargetUrl(String url,int count,[Function responseFactory = null]) {
+    var params = new _PingPongServicePingTargetUrlParams();
+    params.url = url;
+    params.count = count;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _pingPongServiceMethodPingTargetUrlName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic pingTargetService(Object service,int count,[Function responseFactory = null]) {
+    var params = new _PingPongServicePingTargetServiceParams();
+    params.service = service;
+    params.count = count;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _pingPongServiceMethodPingTargetServiceName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  void getPingPongService(Object service) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _PingPongServiceGetPingPongServiceParams();
+    params.service = service;
+    ctrl.sendMessage(params,
+        _pingPongServiceMethodGetPingPongServiceName);
+  }
+  void getPingPongServiceDelayed(Object service) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _PingPongServiceGetPingPongServiceDelayedParams();
+    params.service = service;
+    ctrl.sendMessage(params,
+        _pingPongServiceMethodGetPingPongServiceDelayedName);
+  }
+  void quit() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _PingPongServiceQuitParams();
+    ctrl.sendMessage(params,
+        _pingPongServiceMethodQuitName);
   }
 }
 
@@ -1154,24 +1121,22 @@ abstract class PingPongClient {
 }
 
 
-class _PingPongClientProxyImpl extends bindings.Proxy {
-  _PingPongClientProxyImpl.fromEndpoint(
+class _PingPongClientProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _PingPongClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _PingPongClientProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _PingPongClientProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _PingPongClientProxyImpl.unbound() : super.unbound();
-
-  static _PingPongClientProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _PingPongClientProxyImpl"));
-    return new _PingPongClientProxyImpl.fromEndpoint(endpoint);
-  }
+  _PingPongClientProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _PingPongClientServiceDescription();
+      new _PingPongClientServiceDescription();
 
+  String get serviceName => PingPongClient.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -1181,51 +1146,30 @@ class _PingPongClientProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_PingPongClientProxyImpl($superString)";
+    return "_PingPongClientProxyControl($superString)";
   }
 }
 
 
-class _PingPongClientProxyCalls implements PingPongClient {
-  _PingPongClientProxyImpl _proxyImpl;
-
-  _PingPongClientProxyCalls(this._proxyImpl);
-    void pong(int pongValue) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _PingPongClientPongParams();
-      params.pongValue = pongValue;
-      _proxyImpl.sendMessage(params, _pingPongClientMethodPongName);
-    }
-}
-
-
-class PingPongClientProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  PingPongClient ptr;
-
-  PingPongClientProxy(_PingPongClientProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _PingPongClientProxyCalls(proxyImpl);
-
+class PingPongClientProxy extends bindings.Proxy
+                              implements PingPongClient {
   PingPongClientProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _PingPongClientProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _PingPongClientProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _PingPongClientProxyControl.fromEndpoint(endpoint));
 
-  PingPongClientProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _PingPongClientProxyImpl.fromHandle(handle) {
-    ptr = new _PingPongClientProxyCalls(impl);
-  }
+  PingPongClientProxy.fromHandle(core.MojoHandle handle)
+      : super(new _PingPongClientProxyControl.fromHandle(handle));
 
-  PingPongClientProxy.unbound() :
-      impl = new _PingPongClientProxyImpl.unbound() {
-    ptr = new _PingPongClientProxyCalls(impl);
+  PingPongClientProxy.unbound()
+      : super(new _PingPongClientProxyControl.unbound());
+
+  static PingPongClientProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For PingPongClientProxy"));
+    return new PingPongClientProxy.fromEndpoint(endpoint);
   }
 
   factory PingPongClientProxy.connectToService(
@@ -1235,30 +1179,16 @@ class PingPongClientProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static PingPongClientProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For PingPongClientProxy"));
-    return new PingPongClientProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => PingPongClient.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "PingPongClientProxy($impl)";
+  void pong(int pongValue) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _PingPongClientPongParams();
+    params.pongValue = pongValue;
+    ctrl.sendMessage(params,
+        _pingPongClientMethodPongName);
   }
 }
 
@@ -1358,7 +1288,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xZTU/bTBB2HD7ywhs+3hdKSigKlFb0AEZqD4gTUkFFalWlLVXLKVhhC26T2LUdpN565CfwE/oTeuxP4dgjR27tLpltl/VOYkeJbVpWGsyuP3bn2Zl5ZicFrdUm4HoCV3l8XehnqOSgf4fKNBWfeP7GRtlqHJbtxuEr4h5bVaJ4/h68s7tX3q483d7bYC+uBt+T53eEdenC+Bpcl6jMod99XLNIw48y/7IwT1ZaD+t/Hmj1l2G8pEktc7W7Kd1ek8Z/QCtr6naLyhgVWaMiHfsf8FeoG8BxgcoIlQqVN1SMI7tODLd5YNetBnGNuv3eNjy32vrnwHR9w3Qc9nXPYH8rtOcZVsMn7juzSjzDoXM6dM6K18Julb1YD8zL+/9K0Mj2IeN5huCB4akJeIrfkxtbB9tCBpcKp0XY/37jVJLw4fpeZMLrydoaoucU6Mr0XHHJxyZdm0pf3vqtr7zfm4r4ogn3O7WwdoDh8x/4w+VSj81ak6jj3yL4X9z4FKSQMoH4iQP2coLEHY7vKVy/SPbzFcFHXk9JwQ/DwjiLRaNUIJI+N+skFE/MUBkX4hu/Mwc2jITpwD7lYopvnfSR1yXy1LCwnzrwCYtFg1SGhH0bFvbtWxbiAzywn29dd6ZgfAb2v6i2j+998p9JKv9c7rcvsE5Q/5GE4inX+60eLZ6uI/reBp1/6SsG1ZTHVWZf5z2Oqxi/joEtV8EoVPZQjNEeNGn+Uoe8Kmw+2W28PkPSxTC4Z8LkNZY6r8n/aXmNdZPXtM1rrPZ5TT7leQ2P3+tw3tIj4KO3wWcadGf2s2u6h8R//fKZAp/JhHmrkO0Nb/F85Yq+guMk5Tfyeb6Uwf0nEyN/jUJe1nRrSr+ZhJw1Dr9pl893iiu5LnBpxy95yCOqdrPhI7jcTTie6EIf86uoPIT51TzkELJfeXTNHkk/H2kx+RPP/+0PGupPD1PMQzzunAIPZSPgkhVwx84Tv+1HONwqcJpOiI+4/k5EPtpE9F4A3QN6p+Q8JfOSk0nHuWoc6gKwWqV9LKXgXIXVc8LW39POcwznRynmuXPxoR74K6t/ziL+yrnuOpy/0sJ3zH62rgHf8TYQAZeBNnw3C2fTJ8RXVHM15e9GSfLdfo/9J6j3VcK7qR+G4znWvx+jXeh94rlu/fNCwmswAu6DiufkvCxop1ukZn4iB0heVkzITzkORxH9dAfR/wFggOp/U+/vyl+Zfaz8xf4q1/uHIuA+FKLe/6JpKevf8wnX+8+03tb7mZ5pqPfnkN/HC8i55GcAAAD//zW0L99oJQAA";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xZz1PTThRPUgr9wpdfarX8nILo4AHCjB4YTswIIzM6TlU8cGJiWUswbWqSMuqJI38CR4/+CR79M/wzOHrTXfoWt5vdNumEduN0Zx5ht033vc++9z5vdwtas03B8xye/Pgm09ex5KC/gCWPJUB+sLVVsmuVklurvEHeqV1Ggu8/gHf2D0q7h893D7bIi+vh9/j564xeBjO+Ac8VLPPS333q2KgWxJl/lZknw+lD+j+Gmv1VGC9qrW1Kb+1vc59vcOO/oZU0cbuLZQILb9EcHrsN+AvMDeG4hGUUywmWd1jMhu+Zjlu2HLPiuhUHmcduFZlfPMusuieu6Xvl5j9HlheYVr1OJvJN8vcQ93zTrgXIe2+VkW/W8fR1PP2h34RxnbxYFfsT7f8P/qFJ/IvH91KCjwxfjcGX/T2+ET3IkhL4RPougz/0Grcihxe1v2BEt5u0DYndd8B2Yveahz42sIIi+2nrtf28P2wL8pHGfN6pRfUTGV63IH6u9D21nAYS+/cyxGu/8SowuuuMfnxcnUEQXkjyFsX7Ap7fOP/6LsGL16co4JcRZpzksjEskIlfWlUUiWfuYZlk8iP9ZB58XJLmQ+uW61N+7GQfryfLeyPM+hrATySXZbEMM+s4wqzjZQbG4eXiRPN5nIffnwE8FsT+8uuG4msay39X6x8wLBa2f1SRfExx+BQzH29K7J8BDK7tZ5NyyvJyVuPIPYG8LOPvCfD1MjiNyF/m+ugvGqdPsUNdF7We7Tbf83WUHmMd9Ch1lC2uo8b/9TrKHtRRseoou30dNZ6yOuqaD2B/aMTAy2iDVx6wIP61b3kVFLx9/UKA17RivLiXSYYXaX3UYj8TaKrEWeh8QpfHm95DfhyDurDhOcI4m4Yauh9x1m6/0Skv5brAqR1/jUPdUnYbtUCC033F8pHB9GVxWEioPl2EmoWPQx8r7qP08Z2m9Sb+6H7F/aBJ4+9xiniO5q2fwHOZGDhlmHWQ7X/++hezWRfglleE7ygeX2Py3bYEhyXAIoSDovtBnvfOdDX2hZNw7gEqC/1nRcF9oew8K+r9heo8SnB/kiIepf5aNJKJb3I+PCuJb8qladw/qsKnxL92UsintA3FwGmoDZ/Owl77GQoEp9/iezmV+PQs4XgL49BKqIPz1e54lPQf9tFvjBvi0W7jOcetSzbGOmQF3+PrwrAf7yDH+oyOJHXhnCJxTXE5jxnXexI8HgEmUjwG9yeJxDfxn7VBfEvvT4ZjrMNwhPuTVw1beH+wqNj9yaWW7P0JsVvF+5Oc1rm+Y7/3JwAA///Y0/jDWCcAAA==";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

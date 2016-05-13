@@ -23,12 +23,12 @@ class PingPongServiceImpl implements PingPongService {
     _stub.impl = this;
   }
 
-  void setClient(ProxyBase proxyBase) {
+  void setClient(Proxy proxy) {
     assert(_pingPongClient == null);
-    _pingPongClient = proxyBase;
+    _pingPongClient = proxy;
   }
 
-  void ping(int pingValue) => _pingPongClient.ptr.pong(pingValue + 1);
+  void ping(int pingValue) => _pingPongClient.pong(pingValue + 1);
 
   // These methods are unimplemented; they merely throw on invocation.
   dynamic pingTargetUrl(String url, int count, [Function responseFactory]) =>

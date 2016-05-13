@@ -25,7 +25,7 @@ class LocalServiceProvider implements ServiceProvider {
 
   Future close({bool immediate: false}) => _stub.close(immediate: immediate);
 
-  void connectToService(
+  void connectToService_(
       String interfaceName, core.MojoMessagePipeEndpoint pipe) {
     if (connection._nameToServiceFactory.containsKey(interfaceName)) {
       connection._nameToServiceFactory[interfaceName](pipe);
@@ -90,24 +90,24 @@ class ApplicationConnection {
     _fallbackServiceFactory = f;
   }
 
-  bindings.ProxyBase requestService(bindings.ProxyBase proxy,
+  bindings.Proxy requestService(bindings.Proxy proxy,
       [String serviceName]) {
-    if (proxy.impl.isBound ||
+    if (proxy.ctrl.isBound ||
         (remoteServiceProvider == null) ||
-        !remoteServiceProvider.impl.isBound) {
+        !remoteServiceProvider.ctrl.isBound) {
       throw new core.MojoApiError(
           "The proxy is bound, or there is no remove service provider proxy");
     }
 
-    var name = serviceName ?? proxy.serviceName;
+    var name = serviceName ?? proxy.ctrl.serviceName;
     if ((name == null) || name.isEmpty) {
       throw new core.MojoApiError(
           "If an interface has no ServiceName, then one must be provided.");
     }
 
     var pipe = new core.MojoMessagePipe();
-    proxy.impl.bind(pipe.endpoints[0]);
-    remoteServiceProvider.ptr.connectToService(name, pipe.endpoints[1]);
+    proxy.ctrl.bind(pipe.endpoints[0]);
+    remoteServiceProvider.connectToService_(name, pipe.endpoints[1]);
     return proxy;
   }
 

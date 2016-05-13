@@ -504,24 +504,22 @@ abstract class NfcTransmission {
 }
 
 
-class _NfcTransmissionProxyImpl extends bindings.Proxy {
-  _NfcTransmissionProxyImpl.fromEndpoint(
+class _NfcTransmissionProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _NfcTransmissionProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _NfcTransmissionProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _NfcTransmissionProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _NfcTransmissionProxyImpl.unbound() : super.unbound();
-
-  static _NfcTransmissionProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _NfcTransmissionProxyImpl"));
-    return new _NfcTransmissionProxyImpl.fromEndpoint(endpoint);
-  }
+  _NfcTransmissionProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _NfcTransmissionServiceDescription();
+      new _NfcTransmissionServiceDescription();
 
+  String get serviceName => NfcTransmission.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -531,50 +529,30 @@ class _NfcTransmissionProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_NfcTransmissionProxyImpl($superString)";
+    return "_NfcTransmissionProxyControl($superString)";
   }
 }
 
 
-class _NfcTransmissionProxyCalls implements NfcTransmission {
-  _NfcTransmissionProxyImpl _proxyImpl;
-
-  _NfcTransmissionProxyCalls(this._proxyImpl);
-    void cancel() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NfcTransmissionCancelParams();
-      _proxyImpl.sendMessage(params, _nfcTransmissionMethodCancelName);
-    }
-}
-
-
-class NfcTransmissionProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  NfcTransmission ptr;
-
-  NfcTransmissionProxy(_NfcTransmissionProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _NfcTransmissionProxyCalls(proxyImpl);
-
+class NfcTransmissionProxy extends bindings.Proxy
+                              implements NfcTransmission {
   NfcTransmissionProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _NfcTransmissionProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _NfcTransmissionProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _NfcTransmissionProxyControl.fromEndpoint(endpoint));
 
-  NfcTransmissionProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _NfcTransmissionProxyImpl.fromHandle(handle) {
-    ptr = new _NfcTransmissionProxyCalls(impl);
-  }
+  NfcTransmissionProxy.fromHandle(core.MojoHandle handle)
+      : super(new _NfcTransmissionProxyControl.fromHandle(handle));
 
-  NfcTransmissionProxy.unbound() :
-      impl = new _NfcTransmissionProxyImpl.unbound() {
-    ptr = new _NfcTransmissionProxyCalls(impl);
+  NfcTransmissionProxy.unbound()
+      : super(new _NfcTransmissionProxyControl.unbound());
+
+  static NfcTransmissionProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For NfcTransmissionProxy"));
+    return new NfcTransmissionProxy.fromEndpoint(endpoint);
   }
 
   factory NfcTransmissionProxy.connectToService(
@@ -584,30 +562,15 @@ class NfcTransmissionProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static NfcTransmissionProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For NfcTransmissionProxy"));
-    return new NfcTransmissionProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => NfcTransmission.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "NfcTransmissionProxy($impl)";
+  void cancel() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NfcTransmissionCancelParams();
+    ctrl.sendMessage(params,
+        _nfcTransmissionMethodCancelName);
   }
 }
 
@@ -711,24 +674,22 @@ abstract class NfcReceiver {
 }
 
 
-class _NfcReceiverProxyImpl extends bindings.Proxy {
-  _NfcReceiverProxyImpl.fromEndpoint(
+class _NfcReceiverProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _NfcReceiverProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _NfcReceiverProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _NfcReceiverProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _NfcReceiverProxyImpl.unbound() : super.unbound();
-
-  static _NfcReceiverProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _NfcReceiverProxyImpl"));
-    return new _NfcReceiverProxyImpl.fromEndpoint(endpoint);
-  }
+  _NfcReceiverProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _NfcReceiverServiceDescription();
+      new _NfcReceiverServiceDescription();
 
+  String get serviceName => NfcReceiver.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -738,51 +699,30 @@ class _NfcReceiverProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_NfcReceiverProxyImpl($superString)";
+    return "_NfcReceiverProxyControl($superString)";
   }
 }
 
 
-class _NfcReceiverProxyCalls implements NfcReceiver {
-  _NfcReceiverProxyImpl _proxyImpl;
-
-  _NfcReceiverProxyCalls(this._proxyImpl);
-    void onReceivedNfcData(NfcData nfcData) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NfcReceiverOnReceivedNfcDataParams();
-      params.nfcData = nfcData;
-      _proxyImpl.sendMessage(params, _nfcReceiverMethodOnReceivedNfcDataName);
-    }
-}
-
-
-class NfcReceiverProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  NfcReceiver ptr;
-
-  NfcReceiverProxy(_NfcReceiverProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _NfcReceiverProxyCalls(proxyImpl);
-
+class NfcReceiverProxy extends bindings.Proxy
+                              implements NfcReceiver {
   NfcReceiverProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _NfcReceiverProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _NfcReceiverProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _NfcReceiverProxyControl.fromEndpoint(endpoint));
 
-  NfcReceiverProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _NfcReceiverProxyImpl.fromHandle(handle) {
-    ptr = new _NfcReceiverProxyCalls(impl);
-  }
+  NfcReceiverProxy.fromHandle(core.MojoHandle handle)
+      : super(new _NfcReceiverProxyControl.fromHandle(handle));
 
-  NfcReceiverProxy.unbound() :
-      impl = new _NfcReceiverProxyImpl.unbound() {
-    ptr = new _NfcReceiverProxyCalls(impl);
+  NfcReceiverProxy.unbound()
+      : super(new _NfcReceiverProxyControl.unbound());
+
+  static NfcReceiverProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For NfcReceiverProxy"));
+    return new NfcReceiverProxy.fromEndpoint(endpoint);
   }
 
   factory NfcReceiverProxy.connectToService(
@@ -792,30 +732,16 @@ class NfcReceiverProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static NfcReceiverProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For NfcReceiverProxy"));
-    return new NfcReceiverProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => NfcReceiver.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "NfcReceiverProxy($impl)";
+  void onReceivedNfcData(NfcData nfcData) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NfcReceiverOnReceivedNfcDataParams();
+    params.nfcData = nfcData;
+    ctrl.sendMessage(params,
+        _nfcReceiverMethodOnReceivedNfcDataName);
   }
 }
 
@@ -925,24 +851,22 @@ abstract class Nfc {
 }
 
 
-class _NfcProxyImpl extends bindings.Proxy {
-  _NfcProxyImpl.fromEndpoint(
+class _NfcProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _NfcProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _NfcProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _NfcProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _NfcProxyImpl.unbound() : super.unbound();
-
-  static _NfcProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _NfcProxyImpl"));
-    return new _NfcProxyImpl.fromEndpoint(endpoint);
-  }
+  _NfcProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _NfcServiceDescription();
+      new _NfcServiceDescription();
 
+  String get serviceName => Nfc.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _nfcMethodTransmitOnNextConnectionName:
@@ -972,68 +896,30 @@ class _NfcProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_NfcProxyImpl($superString)";
+    return "_NfcProxyControl($superString)";
   }
 }
 
 
-class _NfcProxyCalls implements Nfc {
-  _NfcProxyImpl _proxyImpl;
-
-  _NfcProxyCalls(this._proxyImpl);
-    dynamic transmitOnNextConnection(NfcData nfcData,Object transmission,[Function responseFactory = null]) {
-      var params = new _NfcTransmitOnNextConnectionParams();
-      params.nfcData = nfcData;
-      params.transmission = transmission;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _nfcMethodTransmitOnNextConnectionName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void register() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NfcRegisterParams();
-      _proxyImpl.sendMessage(params, _nfcMethodRegisterName);
-    }
-    void unregister() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NfcUnregisterParams();
-      _proxyImpl.sendMessage(params, _nfcMethodUnregisterName);
-    }
-}
-
-
-class NfcProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Nfc ptr;
-
-  NfcProxy(_NfcProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _NfcProxyCalls(proxyImpl);
-
+class NfcProxy extends bindings.Proxy
+                              implements Nfc {
   NfcProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _NfcProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _NfcProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _NfcProxyControl.fromEndpoint(endpoint));
 
-  NfcProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _NfcProxyImpl.fromHandle(handle) {
-    ptr = new _NfcProxyCalls(impl);
-  }
+  NfcProxy.fromHandle(core.MojoHandle handle)
+      : super(new _NfcProxyControl.fromHandle(handle));
 
-  NfcProxy.unbound() :
-      impl = new _NfcProxyImpl.unbound() {
-    ptr = new _NfcProxyCalls(impl);
+  NfcProxy.unbound()
+      : super(new _NfcProxyControl.unbound());
+
+  static NfcProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For NfcProxy"));
+    return new NfcProxy.fromEndpoint(endpoint);
   }
 
   factory NfcProxy.connectToService(
@@ -1043,30 +929,34 @@ class NfcProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static NfcProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For NfcProxy"));
-    return new NfcProxy.fromEndpoint(endpoint);
+
+  dynamic transmitOnNextConnection(NfcData nfcData,Object transmission,[Function responseFactory = null]) {
+    var params = new _NfcTransmitOnNextConnectionParams();
+    params.nfcData = nfcData;
+    params.transmission = transmission;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _nfcMethodTransmitOnNextConnectionName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => Nfc.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void register() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NfcRegisterParams();
+    ctrl.sendMessage(params,
+        _nfcMethodRegisterName);
   }
-
-  String toString() {
-    return "NfcProxy($impl)";
+  void unregister() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NfcUnregisterParams();
+    ctrl.sendMessage(params,
+        _nfcMethodUnregisterName);
   }
 }
 

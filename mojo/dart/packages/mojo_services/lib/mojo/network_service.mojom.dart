@@ -1026,24 +1026,22 @@ abstract class NetworkService {
 }
 
 
-class _NetworkServiceProxyImpl extends bindings.Proxy {
-  _NetworkServiceProxyImpl.fromEndpoint(
+class _NetworkServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _NetworkServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _NetworkServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _NetworkServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _NetworkServiceProxyImpl.unbound() : super.unbound();
-
-  static _NetworkServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _NetworkServiceProxyImpl"));
-    return new _NetworkServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _NetworkServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _NetworkServiceServiceDescription();
+      new _NetworkServiceServiceDescription();
 
+  String get serviceName => NetworkService.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _networkServiceMethodCreateTcpBoundSocketName:
@@ -1113,128 +1111,30 @@ class _NetworkServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_NetworkServiceProxyImpl($superString)";
+    return "_NetworkServiceProxyControl($superString)";
   }
 }
 
 
-class _NetworkServiceProxyCalls implements NetworkService {
-  _NetworkServiceProxyImpl _proxyImpl;
-
-  _NetworkServiceProxyCalls(this._proxyImpl);
-    void createUrlLoader(Object loader) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NetworkServiceCreateUrlLoaderParams();
-      params.loader = loader;
-      _proxyImpl.sendMessage(params, _networkServiceMethodCreateUrlLoaderName);
-    }
-    void getCookieStore(Object cookieStore) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NetworkServiceGetCookieStoreParams();
-      params.cookieStore = cookieStore;
-      _proxyImpl.sendMessage(params, _networkServiceMethodGetCookieStoreName);
-    }
-    void createWebSocket(Object socket) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NetworkServiceCreateWebSocketParams();
-      params.socket = socket;
-      _proxyImpl.sendMessage(params, _networkServiceMethodCreateWebSocketName);
-    }
-    dynamic createTcpBoundSocket(net_address_mojom.NetAddress localAddress,Object boundSocket,[Function responseFactory = null]) {
-      var params = new _NetworkServiceCreateTcpBoundSocketParams();
-      params.localAddress = localAddress;
-      params.boundSocket = boundSocket;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _networkServiceMethodCreateTcpBoundSocketName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]) {
-      var params = new _NetworkServiceCreateTcpConnectedSocketParams();
-      params.remoteAddress = remoteAddress;
-      params.sendStream = sendStream;
-      params.receiveStream = receiveStream;
-      params.clientSocket = clientSocket;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _networkServiceMethodCreateTcpConnectedSocketName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void createUdpSocket(Object socket) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NetworkServiceCreateUdpSocketParams();
-      params.socket = socket;
-      _proxyImpl.sendMessage(params, _networkServiceMethodCreateUdpSocketName);
-    }
-    dynamic createHttpServer(net_address_mojom.NetAddress localAddress,Object delegate,[Function responseFactory = null]) {
-      var params = new _NetworkServiceCreateHttpServerParams();
-      params.localAddress = localAddress;
-      params.delegate = delegate;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _networkServiceMethodCreateHttpServerName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void registerUrlLoaderInterceptor(Object factory) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NetworkServiceRegisterUrlLoaderInterceptorParams();
-      params.factory = factory;
-      _proxyImpl.sendMessage(params, _networkServiceMethodRegisterUrlLoaderInterceptorName);
-    }
-    void createHostResolver(Object hostResolver) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _NetworkServiceCreateHostResolverParams();
-      params.hostResolver = hostResolver;
-      _proxyImpl.sendMessage(params, _networkServiceMethodCreateHostResolverName);
-    }
-}
-
-
-class NetworkServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  NetworkService ptr;
-
-  NetworkServiceProxy(_NetworkServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _NetworkServiceProxyCalls(proxyImpl);
-
+class NetworkServiceProxy extends bindings.Proxy
+                              implements NetworkService {
   NetworkServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _NetworkServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _NetworkServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _NetworkServiceProxyControl.fromEndpoint(endpoint));
 
-  NetworkServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _NetworkServiceProxyImpl.fromHandle(handle) {
-    ptr = new _NetworkServiceProxyCalls(impl);
-  }
+  NetworkServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _NetworkServiceProxyControl.fromHandle(handle));
 
-  NetworkServiceProxy.unbound() :
-      impl = new _NetworkServiceProxyImpl.unbound() {
-    ptr = new _NetworkServiceProxyCalls(impl);
+  NetworkServiceProxy.unbound()
+      : super(new _NetworkServiceProxyControl.unbound());
+
+  static NetworkServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For NetworkServiceProxy"));
+    return new NetworkServiceProxy.fromEndpoint(endpoint);
   }
 
   factory NetworkServiceProxy.connectToService(
@@ -1244,30 +1144,98 @@ class NetworkServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static NetworkServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For NetworkServiceProxy"));
-    return new NetworkServiceProxy.fromEndpoint(endpoint);
+
+  void createUrlLoader(Object loader) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NetworkServiceCreateUrlLoaderParams();
+    params.loader = loader;
+    ctrl.sendMessage(params,
+        _networkServiceMethodCreateUrlLoaderName);
   }
-
-  String get serviceName => NetworkService.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void getCookieStore(Object cookieStore) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NetworkServiceGetCookieStoreParams();
+    params.cookieStore = cookieStore;
+    ctrl.sendMessage(params,
+        _networkServiceMethodGetCookieStoreName);
   }
-
-  String toString() {
-    return "NetworkServiceProxy($impl)";
+  void createWebSocket(Object socket) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NetworkServiceCreateWebSocketParams();
+    params.socket = socket;
+    ctrl.sendMessage(params,
+        _networkServiceMethodCreateWebSocketName);
+  }
+  dynamic createTcpBoundSocket(net_address_mojom.NetAddress localAddress,Object boundSocket,[Function responseFactory = null]) {
+    var params = new _NetworkServiceCreateTcpBoundSocketParams();
+    params.localAddress = localAddress;
+    params.boundSocket = boundSocket;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _networkServiceMethodCreateTcpBoundSocketName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]) {
+    var params = new _NetworkServiceCreateTcpConnectedSocketParams();
+    params.remoteAddress = remoteAddress;
+    params.sendStream = sendStream;
+    params.receiveStream = receiveStream;
+    params.clientSocket = clientSocket;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _networkServiceMethodCreateTcpConnectedSocketName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  void createUdpSocket(Object socket) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NetworkServiceCreateUdpSocketParams();
+    params.socket = socket;
+    ctrl.sendMessage(params,
+        _networkServiceMethodCreateUdpSocketName);
+  }
+  dynamic createHttpServer(net_address_mojom.NetAddress localAddress,Object delegate,[Function responseFactory = null]) {
+    var params = new _NetworkServiceCreateHttpServerParams();
+    params.localAddress = localAddress;
+    params.delegate = delegate;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _networkServiceMethodCreateHttpServerName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  void registerUrlLoaderInterceptor(Object factory) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NetworkServiceRegisterUrlLoaderInterceptorParams();
+    params.factory = factory;
+    ctrl.sendMessage(params,
+        _networkServiceMethodRegisterUrlLoaderInterceptorName);
+  }
+  void createHostResolver(Object hostResolver) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _NetworkServiceCreateHostResolverParams();
+    params.hostResolver = hostResolver;
+    ctrl.sendMessage(params,
+        _networkServiceMethodCreateHostResolverName);
   }
 }
 

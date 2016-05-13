@@ -527,24 +527,22 @@ abstract class UrlLoader {
 }
 
 
-class _UrlLoaderProxyImpl extends bindings.Proxy {
-  _UrlLoaderProxyImpl.fromEndpoint(
+class _UrlLoaderProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _UrlLoaderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _UrlLoaderProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _UrlLoaderProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _UrlLoaderProxyImpl.unbound() : super.unbound();
-
-  static _UrlLoaderProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _UrlLoaderProxyImpl"));
-    return new _UrlLoaderProxyImpl.fromEndpoint(endpoint);
-  }
+  _UrlLoaderProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _UrlLoaderServiceDescription();
+      new _UrlLoaderServiceDescription();
 
+  String get serviceName => UrlLoader.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _urlLoaderMethodStartName:
@@ -614,67 +612,30 @@ class _UrlLoaderProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_UrlLoaderProxyImpl($superString)";
+    return "_UrlLoaderProxyControl($superString)";
   }
 }
 
 
-class _UrlLoaderProxyCalls implements UrlLoader {
-  _UrlLoaderProxyImpl _proxyImpl;
-
-  _UrlLoaderProxyCalls(this._proxyImpl);
-    dynamic start(url_request_mojom.UrlRequest request,[Function responseFactory = null]) {
-      var params = new _UrlLoaderStartParams();
-      params.request = request;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _urlLoaderMethodStartName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic followRedirect([Function responseFactory = null]) {
-      var params = new _UrlLoaderFollowRedirectParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _urlLoaderMethodFollowRedirectName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic queryStatus([Function responseFactory = null]) {
-      var params = new _UrlLoaderQueryStatusParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _urlLoaderMethodQueryStatusName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class UrlLoaderProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  UrlLoader ptr;
-
-  UrlLoaderProxy(_UrlLoaderProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _UrlLoaderProxyCalls(proxyImpl);
-
+class UrlLoaderProxy extends bindings.Proxy
+                              implements UrlLoader {
   UrlLoaderProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _UrlLoaderProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _UrlLoaderProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _UrlLoaderProxyControl.fromEndpoint(endpoint));
 
-  UrlLoaderProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _UrlLoaderProxyImpl.fromHandle(handle) {
-    ptr = new _UrlLoaderProxyCalls(impl);
-  }
+  UrlLoaderProxy.fromHandle(core.MojoHandle handle)
+      : super(new _UrlLoaderProxyControl.fromHandle(handle));
 
-  UrlLoaderProxy.unbound() :
-      impl = new _UrlLoaderProxyImpl.unbound() {
-    ptr = new _UrlLoaderProxyCalls(impl);
+  UrlLoaderProxy.unbound()
+      : super(new _UrlLoaderProxyControl.unbound());
+
+  static UrlLoaderProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For UrlLoaderProxy"));
+    return new UrlLoaderProxy.fromEndpoint(endpoint);
   }
 
   factory UrlLoaderProxy.connectToService(
@@ -684,30 +645,31 @@ class UrlLoaderProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static UrlLoaderProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For UrlLoaderProxy"));
-    return new UrlLoaderProxy.fromEndpoint(endpoint);
+
+  dynamic start(url_request_mojom.UrlRequest request,[Function responseFactory = null]) {
+    var params = new _UrlLoaderStartParams();
+    params.request = request;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _urlLoaderMethodStartName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => UrlLoader.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic followRedirect([Function responseFactory = null]) {
+    var params = new _UrlLoaderFollowRedirectParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _urlLoaderMethodFollowRedirectName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "UrlLoaderProxy($impl)";
+  dynamic queryStatus([Function responseFactory = null]) {
+    var params = new _UrlLoaderQueryStatusParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _urlLoaderMethodQueryStatusName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

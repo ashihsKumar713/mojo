@@ -54,11 +54,11 @@ void beginFrame(double timeStamp) {
 }
 
 void getPhoto() {
-  var future = cameraRoll.ptr.getPhoto(photoIndex);
+  var future = cameraRoll.getPhoto(photoIndex);
   future.then((response) {
     if (response.photo == null) {
       print("Photo $photoIndex not found, returning to the first photo.");
-      cameraRoll.ptr.update();
+      cameraRoll.update();
       photoIndex = 0;
       getPhoto();
       return;

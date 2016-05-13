@@ -595,24 +595,22 @@ abstract class MediaFactory {
 }
 
 
-class _MediaFactoryProxyImpl extends bindings.Proxy {
-  _MediaFactoryProxyImpl.fromEndpoint(
+class _MediaFactoryProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _MediaFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _MediaFactoryProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _MediaFactoryProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _MediaFactoryProxyImpl.unbound() : super.unbound();
-
-  static _MediaFactoryProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _MediaFactoryProxyImpl"));
-    return new _MediaFactoryProxyImpl.fromEndpoint(endpoint);
-  }
+  _MediaFactoryProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _MediaFactoryServiceDescription();
+      new _MediaFactoryServiceDescription();
 
+  String get serviceName => MediaFactory.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -622,104 +620,30 @@ class _MediaFactoryProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_MediaFactoryProxyImpl($superString)";
+    return "_MediaFactoryProxyControl($superString)";
   }
 }
 
 
-class _MediaFactoryProxyCalls implements MediaFactory {
-  _MediaFactoryProxyImpl _proxyImpl;
-
-  _MediaFactoryProxyCalls(this._proxyImpl);
-    void createPlayer(Object reader, Object player) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaFactoryCreatePlayerParams();
-      params.reader = reader;
-      params.player = player;
-      _proxyImpl.sendMessage(params, _mediaFactoryMethodCreatePlayerName);
-    }
-    void createSource(Object reader, List<media_types_mojom.MediaTypeSet> allowedMediaTypes, Object source) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaFactoryCreateSourceParams();
-      params.reader = reader;
-      params.allowedMediaTypes = allowedMediaTypes;
-      params.source = source;
-      _proxyImpl.sendMessage(params, _mediaFactoryMethodCreateSourceName);
-    }
-    void createSink(String destinationUrl, media_types_mojom.MediaType mediaType, Object sink) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaFactoryCreateSinkParams();
-      params.destinationUrl = destinationUrl;
-      params.mediaType = mediaType;
-      params.sink = sink;
-      _proxyImpl.sendMessage(params, _mediaFactoryMethodCreateSinkName);
-    }
-    void createDemux(Object reader, Object demux) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaFactoryCreateDemuxParams();
-      params.reader = reader;
-      params.demux = demux;
-      _proxyImpl.sendMessage(params, _mediaFactoryMethodCreateDemuxName);
-    }
-    void createDecoder(media_types_mojom.MediaType inputMediaType, Object decoder) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaFactoryCreateDecoderParams();
-      params.inputMediaType = inputMediaType;
-      params.decoder = decoder;
-      _proxyImpl.sendMessage(params, _mediaFactoryMethodCreateDecoderName);
-    }
-    void createNetworkReader(String url, Object reader) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaFactoryCreateNetworkReaderParams();
-      params.url = url;
-      params.reader = reader;
-      _proxyImpl.sendMessage(params, _mediaFactoryMethodCreateNetworkReaderName);
-    }
-}
-
-
-class MediaFactoryProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  MediaFactory ptr;
-
-  MediaFactoryProxy(_MediaFactoryProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _MediaFactoryProxyCalls(proxyImpl);
-
+class MediaFactoryProxy extends bindings.Proxy
+                              implements MediaFactory {
   MediaFactoryProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _MediaFactoryProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _MediaFactoryProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _MediaFactoryProxyControl.fromEndpoint(endpoint));
 
-  MediaFactoryProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _MediaFactoryProxyImpl.fromHandle(handle) {
-    ptr = new _MediaFactoryProxyCalls(impl);
-  }
+  MediaFactoryProxy.fromHandle(core.MojoHandle handle)
+      : super(new _MediaFactoryProxyControl.fromHandle(handle));
 
-  MediaFactoryProxy.unbound() :
-      impl = new _MediaFactoryProxyImpl.unbound() {
-    ptr = new _MediaFactoryProxyCalls(impl);
+  MediaFactoryProxy.unbound()
+      : super(new _MediaFactoryProxyControl.unbound());
+
+  static MediaFactoryProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaFactoryProxy"));
+    return new MediaFactoryProxy.fromEndpoint(endpoint);
   }
 
   factory MediaFactoryProxy.connectToService(
@@ -729,30 +653,74 @@ class MediaFactoryProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static MediaFactoryProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaFactoryProxy"));
-    return new MediaFactoryProxy.fromEndpoint(endpoint);
+
+  void createPlayer(Object reader, Object player) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaFactoryCreatePlayerParams();
+    params.reader = reader;
+    params.player = player;
+    ctrl.sendMessage(params,
+        _mediaFactoryMethodCreatePlayerName);
   }
-
-  String get serviceName => MediaFactory.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void createSource(Object reader, List<media_types_mojom.MediaTypeSet> allowedMediaTypes, Object source) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaFactoryCreateSourceParams();
+    params.reader = reader;
+    params.allowedMediaTypes = allowedMediaTypes;
+    params.source = source;
+    ctrl.sendMessage(params,
+        _mediaFactoryMethodCreateSourceName);
   }
-
-  String toString() {
-    return "MediaFactoryProxy($impl)";
+  void createSink(String destinationUrl, media_types_mojom.MediaType mediaType, Object sink) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaFactoryCreateSinkParams();
+    params.destinationUrl = destinationUrl;
+    params.mediaType = mediaType;
+    params.sink = sink;
+    ctrl.sendMessage(params,
+        _mediaFactoryMethodCreateSinkName);
+  }
+  void createDemux(Object reader, Object demux) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaFactoryCreateDemuxParams();
+    params.reader = reader;
+    params.demux = demux;
+    ctrl.sendMessage(params,
+        _mediaFactoryMethodCreateDemuxName);
+  }
+  void createDecoder(media_types_mojom.MediaType inputMediaType, Object decoder) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaFactoryCreateDecoderParams();
+    params.inputMediaType = inputMediaType;
+    params.decoder = decoder;
+    ctrl.sendMessage(params,
+        _mediaFactoryMethodCreateDecoderName);
+  }
+  void createNetworkReader(String url, Object reader) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaFactoryCreateNetworkReaderParams();
+    params.url = url;
+    params.reader = reader;
+    ctrl.sendMessage(params,
+        _mediaFactoryMethodCreateNetworkReaderName);
   }
 }
 

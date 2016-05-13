@@ -62,7 +62,7 @@ void beginFrame(double timeStamp) {
 }
 
 void drawNextPhoto() {
-  var future = camera.ptr.getLatestFrame();
+  var future = camera.getLatestFrame();
   future.then((response) {
     if (response.content == null) {
       drawNextPhoto();

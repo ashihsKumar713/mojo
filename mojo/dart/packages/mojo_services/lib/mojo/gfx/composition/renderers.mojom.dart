@@ -266,24 +266,22 @@ abstract class Renderer {
 }
 
 
-class _RendererProxyImpl extends bindings.Proxy {
-  _RendererProxyImpl.fromEndpoint(
+class _RendererProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _RendererProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _RendererProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _RendererProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _RendererProxyImpl.unbound() : super.unbound();
-
-  static _RendererProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _RendererProxyImpl"));
-    return new _RendererProxyImpl.fromEndpoint(endpoint);
-  }
+  _RendererProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _RendererServiceDescription();
+      new _RendererServiceDescription();
 
+  String get serviceName => Renderer.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -293,70 +291,30 @@ class _RendererProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_RendererProxyImpl($superString)";
+    return "_RendererProxyControl($superString)";
   }
 }
 
 
-class _RendererProxyCalls implements Renderer {
-  _RendererProxyImpl _proxyImpl;
-
-  _RendererProxyCalls(this._proxyImpl);
-    void setRootScene(scene_token_mojom.SceneToken sceneToken, int sceneVersion, geometry_mojom.Rect viewport) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _RendererSetRootSceneParams();
-      params.sceneToken = sceneToken;
-      params.sceneVersion = sceneVersion;
-      params.viewport = viewport;
-      _proxyImpl.sendMessage(params, _rendererMethodSetRootSceneName);
-    }
-    void clearRootScene() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _RendererClearRootSceneParams();
-      _proxyImpl.sendMessage(params, _rendererMethodClearRootSceneName);
-    }
-    void getHitTester(Object hitTester) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _RendererGetHitTesterParams();
-      params.hitTester = hitTester;
-      _proxyImpl.sendMessage(params, _rendererMethodGetHitTesterName);
-    }
-}
-
-
-class RendererProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Renderer ptr;
-
-  RendererProxy(_RendererProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _RendererProxyCalls(proxyImpl);
-
+class RendererProxy extends bindings.Proxy
+                              implements Renderer {
   RendererProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _RendererProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _RendererProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _RendererProxyControl.fromEndpoint(endpoint));
 
-  RendererProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _RendererProxyImpl.fromHandle(handle) {
-    ptr = new _RendererProxyCalls(impl);
-  }
+  RendererProxy.fromHandle(core.MojoHandle handle)
+      : super(new _RendererProxyControl.fromHandle(handle));
 
-  RendererProxy.unbound() :
-      impl = new _RendererProxyImpl.unbound() {
-    ptr = new _RendererProxyCalls(impl);
+  RendererProxy.unbound()
+      : super(new _RendererProxyControl.unbound());
+
+  static RendererProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For RendererProxy"));
+    return new RendererProxy.fromEndpoint(endpoint);
   }
 
   factory RendererProxy.connectToService(
@@ -366,30 +324,37 @@ class RendererProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static RendererProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For RendererProxy"));
-    return new RendererProxy.fromEndpoint(endpoint);
+
+  void setRootScene(scene_token_mojom.SceneToken sceneToken, int sceneVersion, geometry_mojom.Rect viewport) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _RendererSetRootSceneParams();
+    params.sceneToken = sceneToken;
+    params.sceneVersion = sceneVersion;
+    params.viewport = viewport;
+    ctrl.sendMessage(params,
+        _rendererMethodSetRootSceneName);
   }
-
-  String get serviceName => Renderer.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void clearRootScene() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _RendererClearRootSceneParams();
+    ctrl.sendMessage(params,
+        _rendererMethodClearRootSceneName);
   }
-
-  String toString() {
-    return "RendererProxy($impl)";
+  void getHitTester(Object hitTester) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _RendererGetHitTesterParams();
+    params.hitTester = hitTester;
+    ctrl.sendMessage(params,
+        _rendererMethodGetHitTesterName);
   }
 }
 

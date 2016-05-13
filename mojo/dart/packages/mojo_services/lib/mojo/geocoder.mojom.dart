@@ -1105,24 +1105,22 @@ abstract class Geocoder {
 }
 
 
-class _GeocoderProxyImpl extends bindings.Proxy {
-  _GeocoderProxyImpl.fromEndpoint(
+class _GeocoderProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _GeocoderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _GeocoderProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _GeocoderProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _GeocoderProxyImpl.unbound() : super.unbound();
-
-  static _GeocoderProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _GeocoderProxyImpl"));
-    return new _GeocoderProxyImpl.fromEndpoint(endpoint);
-  }
+  _GeocoderProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _GeocoderServiceDescription();
+      new _GeocoderServiceDescription();
 
+  String get serviceName => Geocoder.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _geocoderMethodAddressToLocationName:
@@ -1172,62 +1170,30 @@ class _GeocoderProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_GeocoderProxyImpl($superString)";
+    return "_GeocoderProxyControl($superString)";
   }
 }
 
 
-class _GeocoderProxyCalls implements Geocoder {
-  _GeocoderProxyImpl _proxyImpl;
-
-  _GeocoderProxyCalls(this._proxyImpl);
-    dynamic addressToLocation(String address,Options options,[Function responseFactory = null]) {
-      var params = new _GeocoderAddressToLocationParams();
-      params.address = address;
-      params.options = options;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _geocoderMethodAddressToLocationName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic locationToAddress(location_mojom.Location location,Options options,[Function responseFactory = null]) {
-      var params = new _GeocoderLocationToAddressParams();
-      params.location = location;
-      params.options = options;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _geocoderMethodLocationToAddressName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class GeocoderProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Geocoder ptr;
-
-  GeocoderProxy(_GeocoderProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _GeocoderProxyCalls(proxyImpl);
-
+class GeocoderProxy extends bindings.Proxy
+                              implements Geocoder {
   GeocoderProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _GeocoderProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _GeocoderProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _GeocoderProxyControl.fromEndpoint(endpoint));
 
-  GeocoderProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _GeocoderProxyImpl.fromHandle(handle) {
-    ptr = new _GeocoderProxyCalls(impl);
-  }
+  GeocoderProxy.fromHandle(core.MojoHandle handle)
+      : super(new _GeocoderProxyControl.fromHandle(handle));
 
-  GeocoderProxy.unbound() :
-      impl = new _GeocoderProxyImpl.unbound() {
-    ptr = new _GeocoderProxyCalls(impl);
+  GeocoderProxy.unbound()
+      : super(new _GeocoderProxyControl.unbound());
+
+  static GeocoderProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For GeocoderProxy"));
+    return new GeocoderProxy.fromEndpoint(endpoint);
   }
 
   factory GeocoderProxy.connectToService(
@@ -1237,30 +1203,26 @@ class GeocoderProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static GeocoderProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For GeocoderProxy"));
-    return new GeocoderProxy.fromEndpoint(endpoint);
+
+  dynamic addressToLocation(String address,Options options,[Function responseFactory = null]) {
+    var params = new _GeocoderAddressToLocationParams();
+    params.address = address;
+    params.options = options;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _geocoderMethodAddressToLocationName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => Geocoder.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "GeocoderProxy($impl)";
+  dynamic locationToAddress(location_mojom.Location location,Options options,[Function responseFactory = null]) {
+    var params = new _GeocoderLocationToAddressParams();
+    params.location = location;
+    params.options = options;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _geocoderMethodLocationToAddressName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

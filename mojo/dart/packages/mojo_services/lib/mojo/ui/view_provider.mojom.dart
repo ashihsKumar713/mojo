@@ -127,24 +127,22 @@ abstract class ViewProvider {
 }
 
 
-class _ViewProviderProxyImpl extends bindings.Proxy {
-  _ViewProviderProxyImpl.fromEndpoint(
+class _ViewProviderProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ViewProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ViewProviderProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ViewProviderProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ViewProviderProxyImpl.unbound() : super.unbound();
-
-  static _ViewProviderProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ViewProviderProxyImpl"));
-    return new _ViewProviderProxyImpl.fromEndpoint(endpoint);
-  }
+  _ViewProviderProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ViewProviderServiceDescription();
+      new _ViewProviderServiceDescription();
 
+  String get serviceName => ViewProvider.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -154,53 +152,30 @@ class _ViewProviderProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ViewProviderProxyImpl($superString)";
+    return "_ViewProviderProxyControl($superString)";
   }
 }
 
 
-class _ViewProviderProxyCalls implements ViewProvider {
-  _ViewProviderProxyImpl _proxyImpl;
-
-  _ViewProviderProxyCalls(this._proxyImpl);
-    void createView(Object viewOwner, Object services, Object exposedServices) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ViewProviderCreateViewParams();
-      params.viewOwner = viewOwner;
-      params.services = services;
-      params.exposedServices = exposedServices;
-      _proxyImpl.sendMessage(params, _viewProviderMethodCreateViewName);
-    }
-}
-
-
-class ViewProviderProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ViewProvider ptr;
-
-  ViewProviderProxy(_ViewProviderProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ViewProviderProxyCalls(proxyImpl);
-
+class ViewProviderProxy extends bindings.Proxy
+                              implements ViewProvider {
   ViewProviderProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ViewProviderProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ViewProviderProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ViewProviderProxyControl.fromEndpoint(endpoint));
 
-  ViewProviderProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ViewProviderProxyImpl.fromHandle(handle) {
-    ptr = new _ViewProviderProxyCalls(impl);
-  }
+  ViewProviderProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ViewProviderProxyControl.fromHandle(handle));
 
-  ViewProviderProxy.unbound() :
-      impl = new _ViewProviderProxyImpl.unbound() {
-    ptr = new _ViewProviderProxyCalls(impl);
+  ViewProviderProxy.unbound()
+      : super(new _ViewProviderProxyControl.unbound());
+
+  static ViewProviderProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewProviderProxy"));
+    return new ViewProviderProxy.fromEndpoint(endpoint);
   }
 
   factory ViewProviderProxy.connectToService(
@@ -210,30 +185,18 @@ class ViewProviderProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ViewProviderProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewProviderProxy"));
-    return new ViewProviderProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => ViewProvider.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ViewProviderProxy($impl)";
+  void createView(Object viewOwner, Object services, Object exposedServices) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewProviderCreateViewParams();
+    params.viewOwner = viewOwner;
+    params.services = services;
+    params.exposedServices = exposedServices;
+    ctrl.sendMessage(params,
+        _viewProviderMethodCreateViewName);
   }
 }
 

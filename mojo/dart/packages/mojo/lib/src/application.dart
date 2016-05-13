@@ -35,7 +35,7 @@ class _ApplicationImpl implements application_mojom.Application {
   }
 
   void initialize(
-      bindings.ProxyBase shellProxy, List<String> args, String url) {
+      bindings.Proxy shellProxy, List<String> args, String url) {
     assert(shell == null);
     shell = shellProxy;
     _application.initialize(args, url);
@@ -43,7 +43,7 @@ class _ApplicationImpl implements application_mojom.Application {
 
   @override
   void acceptConnection(String requestorUrl, ServiceProviderStub services,
-          bindings.ProxyBase exposedServices, String resolvedUrl) =>
+          bindings.Proxy exposedServices, String resolvedUrl) =>
       _application._acceptConnection(
           requestorUrl, services, exposedServices, resolvedUrl);
 
@@ -97,13 +97,13 @@ abstract class Application implements bindings.ServiceConnector {
   // Returns a connection to the app at |url|.
   ApplicationConnection connectToApplication(String url) {
     var proxy = new ServiceProviderProxy.unbound();
-    _applicationImpl.shell.ptr.connectToApplication(url, proxy, null);
+    _applicationImpl.shell.connectToApplication(url, proxy, null);
     var connection = new ApplicationConnection(null, proxy);
     _applicationConnections.add(connection);
     return connection;
   }
 
-  void connectToService(String url, bindings.ProxyBase proxy,
+  void connectToService(String url, bindings.Proxy proxy,
       [String serviceName]) {
     connectToApplication(url).requestService(proxy, serviceName);
   }

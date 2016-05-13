@@ -160,24 +160,22 @@ abstract class NativeViewportEventDispatcher {
 }
 
 
-class _NativeViewportEventDispatcherProxyImpl extends bindings.Proxy {
-  _NativeViewportEventDispatcherProxyImpl.fromEndpoint(
+class _NativeViewportEventDispatcherProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _NativeViewportEventDispatcherProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _NativeViewportEventDispatcherProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _NativeViewportEventDispatcherProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _NativeViewportEventDispatcherProxyImpl.unbound() : super.unbound();
-
-  static _NativeViewportEventDispatcherProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _NativeViewportEventDispatcherProxyImpl"));
-    return new _NativeViewportEventDispatcherProxyImpl.fromEndpoint(endpoint);
-  }
+  _NativeViewportEventDispatcherProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _NativeViewportEventDispatcherServiceDescription();
+      new _NativeViewportEventDispatcherServiceDescription();
 
+  String get serviceName => NativeViewportEventDispatcher.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _nativeViewportEventDispatcherMethodOnEventName:
@@ -207,51 +205,30 @@ class _NativeViewportEventDispatcherProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_NativeViewportEventDispatcherProxyImpl($superString)";
+    return "_NativeViewportEventDispatcherProxyControl($superString)";
   }
 }
 
 
-class _NativeViewportEventDispatcherProxyCalls implements NativeViewportEventDispatcher {
-  _NativeViewportEventDispatcherProxyImpl _proxyImpl;
-
-  _NativeViewportEventDispatcherProxyCalls(this._proxyImpl);
-    dynamic onEvent(input_events_mojom.Event event,[Function responseFactory = null]) {
-      var params = new _NativeViewportEventDispatcherOnEventParams();
-      params.event = event;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _nativeViewportEventDispatcherMethodOnEventName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class NativeViewportEventDispatcherProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  NativeViewportEventDispatcher ptr;
-
-  NativeViewportEventDispatcherProxy(_NativeViewportEventDispatcherProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _NativeViewportEventDispatcherProxyCalls(proxyImpl);
-
+class NativeViewportEventDispatcherProxy extends bindings.Proxy
+                              implements NativeViewportEventDispatcher {
   NativeViewportEventDispatcherProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _NativeViewportEventDispatcherProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _NativeViewportEventDispatcherProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _NativeViewportEventDispatcherProxyControl.fromEndpoint(endpoint));
 
-  NativeViewportEventDispatcherProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _NativeViewportEventDispatcherProxyImpl.fromHandle(handle) {
-    ptr = new _NativeViewportEventDispatcherProxyCalls(impl);
-  }
+  NativeViewportEventDispatcherProxy.fromHandle(core.MojoHandle handle)
+      : super(new _NativeViewportEventDispatcherProxyControl.fromHandle(handle));
 
-  NativeViewportEventDispatcherProxy.unbound() :
-      impl = new _NativeViewportEventDispatcherProxyImpl.unbound() {
-    ptr = new _NativeViewportEventDispatcherProxyCalls(impl);
+  NativeViewportEventDispatcherProxy.unbound()
+      : super(new _NativeViewportEventDispatcherProxyControl.unbound());
+
+  static NativeViewportEventDispatcherProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For NativeViewportEventDispatcherProxy"));
+    return new NativeViewportEventDispatcherProxy.fromEndpoint(endpoint);
   }
 
   factory NativeViewportEventDispatcherProxy.connectToService(
@@ -261,30 +238,15 @@ class NativeViewportEventDispatcherProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static NativeViewportEventDispatcherProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For NativeViewportEventDispatcherProxy"));
-    return new NativeViewportEventDispatcherProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => NativeViewportEventDispatcher.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "NativeViewportEventDispatcherProxy($impl)";
+  dynamic onEvent(input_events_mojom.Event event,[Function responseFactory = null]) {
+    var params = new _NativeViewportEventDispatcherOnEventParams();
+    params.event = event;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _nativeViewportEventDispatcherMethodOnEventName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

@@ -462,24 +462,22 @@ abstract class HttpServer {
 }
 
 
-class _HttpServerProxyImpl extends bindings.Proxy {
-  _HttpServerProxyImpl.fromEndpoint(
+class _HttpServerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _HttpServerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _HttpServerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _HttpServerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _HttpServerProxyImpl.unbound() : super.unbound();
-
-  static _HttpServerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _HttpServerProxyImpl"));
-    return new _HttpServerProxyImpl.fromEndpoint(endpoint);
-  }
+  _HttpServerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _HttpServerServiceDescription();
+      new _HttpServerServiceDescription();
 
+  String get serviceName => HttpServer.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _httpServerMethodSetHandlerName:
@@ -529,60 +527,30 @@ class _HttpServerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_HttpServerProxyImpl($superString)";
+    return "_HttpServerProxyControl($superString)";
   }
 }
 
 
-class _HttpServerProxyCalls implements HttpServer {
-  _HttpServerProxyImpl _proxyImpl;
-
-  _HttpServerProxyCalls(this._proxyImpl);
-    dynamic setHandler(String pattern,Object handler,[Function responseFactory = null]) {
-      var params = new _HttpServerSetHandlerParams();
-      params.pattern = pattern;
-      params.handler = handler;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _httpServerMethodSetHandlerName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic getPort([Function responseFactory = null]) {
-      var params = new _HttpServerGetPortParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _httpServerMethodGetPortName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class HttpServerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  HttpServer ptr;
-
-  HttpServerProxy(_HttpServerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _HttpServerProxyCalls(proxyImpl);
-
+class HttpServerProxy extends bindings.Proxy
+                              implements HttpServer {
   HttpServerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _HttpServerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _HttpServerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _HttpServerProxyControl.fromEndpoint(endpoint));
 
-  HttpServerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _HttpServerProxyImpl.fromHandle(handle) {
-    ptr = new _HttpServerProxyCalls(impl);
-  }
+  HttpServerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _HttpServerProxyControl.fromHandle(handle));
 
-  HttpServerProxy.unbound() :
-      impl = new _HttpServerProxyImpl.unbound() {
-    ptr = new _HttpServerProxyCalls(impl);
+  HttpServerProxy.unbound()
+      : super(new _HttpServerProxyControl.unbound());
+
+  static HttpServerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HttpServerProxy"));
+    return new HttpServerProxy.fromEndpoint(endpoint);
   }
 
   factory HttpServerProxy.connectToService(
@@ -592,30 +560,24 @@ class HttpServerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static HttpServerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HttpServerProxy"));
-    return new HttpServerProxy.fromEndpoint(endpoint);
+
+  dynamic setHandler(String pattern,Object handler,[Function responseFactory = null]) {
+    var params = new _HttpServerSetHandlerParams();
+    params.pattern = pattern;
+    params.handler = handler;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _httpServerMethodSetHandlerName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => HttpServer.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "HttpServerProxy($impl)";
+  dynamic getPort([Function responseFactory = null]) {
+    var params = new _HttpServerGetPortParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _httpServerMethodGetPortName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -768,24 +730,22 @@ abstract class HttpHandler {
 }
 
 
-class _HttpHandlerProxyImpl extends bindings.Proxy {
-  _HttpHandlerProxyImpl.fromEndpoint(
+class _HttpHandlerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _HttpHandlerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _HttpHandlerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _HttpHandlerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _HttpHandlerProxyImpl.unbound() : super.unbound();
-
-  static _HttpHandlerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _HttpHandlerProxyImpl"));
-    return new _HttpHandlerProxyImpl.fromEndpoint(endpoint);
-  }
+  _HttpHandlerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _HttpHandlerServiceDescription();
+      new _HttpHandlerServiceDescription();
 
+  String get serviceName => HttpHandler.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _httpHandlerMethodHandleRequestName:
@@ -815,51 +775,30 @@ class _HttpHandlerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_HttpHandlerProxyImpl($superString)";
+    return "_HttpHandlerProxyControl($superString)";
   }
 }
 
 
-class _HttpHandlerProxyCalls implements HttpHandler {
-  _HttpHandlerProxyImpl _proxyImpl;
-
-  _HttpHandlerProxyCalls(this._proxyImpl);
-    dynamic handleRequest(http_request_mojom.HttpRequest request,[Function responseFactory = null]) {
-      var params = new _HttpHandlerHandleRequestParams();
-      params.request = request;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _httpHandlerMethodHandleRequestName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class HttpHandlerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  HttpHandler ptr;
-
-  HttpHandlerProxy(_HttpHandlerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _HttpHandlerProxyCalls(proxyImpl);
-
+class HttpHandlerProxy extends bindings.Proxy
+                              implements HttpHandler {
   HttpHandlerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _HttpHandlerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _HttpHandlerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _HttpHandlerProxyControl.fromEndpoint(endpoint));
 
-  HttpHandlerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _HttpHandlerProxyImpl.fromHandle(handle) {
-    ptr = new _HttpHandlerProxyCalls(impl);
-  }
+  HttpHandlerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _HttpHandlerProxyControl.fromHandle(handle));
 
-  HttpHandlerProxy.unbound() :
-      impl = new _HttpHandlerProxyImpl.unbound() {
-    ptr = new _HttpHandlerProxyCalls(impl);
+  HttpHandlerProxy.unbound()
+      : super(new _HttpHandlerProxyControl.unbound());
+
+  static HttpHandlerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HttpHandlerProxy"));
+    return new HttpHandlerProxy.fromEndpoint(endpoint);
   }
 
   factory HttpHandlerProxy.connectToService(
@@ -869,30 +808,15 @@ class HttpHandlerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static HttpHandlerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HttpHandlerProxy"));
-    return new HttpHandlerProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => HttpHandler.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "HttpHandlerProxy($impl)";
+  dynamic handleRequest(http_request_mojom.HttpRequest request,[Function responseFactory = null]) {
+    var params = new _HttpHandlerHandleRequestParams();
+    params.request = request;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _httpHandlerMethodHandleRequestName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

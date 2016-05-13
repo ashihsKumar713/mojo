@@ -575,24 +575,22 @@ abstract class ServiceDescriber {
 }
 
 
-class _ServiceDescriberProxyImpl extends bindings.Proxy {
-  _ServiceDescriberProxyImpl.fromEndpoint(
+class _ServiceDescriberProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ServiceDescriberProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ServiceDescriberProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ServiceDescriberProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ServiceDescriberProxyImpl.unbound() : super.unbound();
-
-  static _ServiceDescriberProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ServiceDescriberProxyImpl"));
-    return new _ServiceDescriberProxyImpl.fromEndpoint(endpoint);
-  }
+  _ServiceDescriberProxyControl.unbound() : super.unbound();
 
   ServiceDescription get serviceDescription =>
-    new _ServiceDescriberServiceDescription();
+      new _ServiceDescriberServiceDescription();
 
+  String get serviceName => ServiceDescriber.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -602,52 +600,30 @@ class _ServiceDescriberProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ServiceDescriberProxyImpl($superString)";
+    return "_ServiceDescriberProxyControl($superString)";
   }
 }
 
 
-class _ServiceDescriberProxyCalls implements ServiceDescriber {
-  _ServiceDescriberProxyImpl _proxyImpl;
-
-  _ServiceDescriberProxyCalls(this._proxyImpl);
-    void describeService(String interfaceName, Object descriptionRequest) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ServiceDescriberDescribeServiceParams();
-      params.interfaceName = interfaceName;
-      params.descriptionRequest = descriptionRequest;
-      _proxyImpl.sendMessage(params, _serviceDescriberMethodDescribeServiceName);
-    }
-}
-
-
-class ServiceDescriberProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ServiceDescriber ptr;
-
-  ServiceDescriberProxy(_ServiceDescriberProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ServiceDescriberProxyCalls(proxyImpl);
-
+class ServiceDescriberProxy extends bindings.Proxy
+                              implements ServiceDescriber {
   ServiceDescriberProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ServiceDescriberProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ServiceDescriberProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ServiceDescriberProxyControl.fromEndpoint(endpoint));
 
-  ServiceDescriberProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ServiceDescriberProxyImpl.fromHandle(handle) {
-    ptr = new _ServiceDescriberProxyCalls(impl);
-  }
+  ServiceDescriberProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ServiceDescriberProxyControl.fromHandle(handle));
 
-  ServiceDescriberProxy.unbound() :
-      impl = new _ServiceDescriberProxyImpl.unbound() {
-    ptr = new _ServiceDescriberProxyCalls(impl);
+  ServiceDescriberProxy.unbound()
+      : super(new _ServiceDescriberProxyControl.unbound());
+
+  static ServiceDescriberProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ServiceDescriberProxy"));
+    return new ServiceDescriberProxy.fromEndpoint(endpoint);
   }
 
   factory ServiceDescriberProxy.connectToService(
@@ -657,30 +633,17 @@ class ServiceDescriberProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ServiceDescriberProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ServiceDescriberProxy"));
-    return new ServiceDescriberProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => ServiceDescriber.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ServiceDescriberProxy($impl)";
+  void describeService(String interfaceName, Object descriptionRequest) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ServiceDescriberDescribeServiceParams();
+    params.interfaceName = interfaceName;
+    params.descriptionRequest = descriptionRequest;
+    ctrl.sendMessage(params,
+        _serviceDescriberMethodDescribeServiceName);
   }
 }
 
@@ -790,24 +753,22 @@ abstract class ServiceDescription {
 }
 
 
-class _ServiceDescriptionProxyImpl extends bindings.Proxy {
-  _ServiceDescriptionProxyImpl.fromEndpoint(
+class _ServiceDescriptionProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ServiceDescriptionProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ServiceDescriptionProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ServiceDescriptionProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ServiceDescriptionProxyImpl.unbound() : super.unbound();
-
-  static _ServiceDescriptionProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ServiceDescriptionProxyImpl"));
-    return new _ServiceDescriptionProxyImpl.fromEndpoint(endpoint);
-  }
+  _ServiceDescriptionProxyControl.unbound() : super.unbound();
 
   ServiceDescription get serviceDescription =>
-    new _ServiceDescriptionServiceDescription();
+      new _ServiceDescriptionServiceDescription();
 
+  String get serviceName => ServiceDescription.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _serviceDescriptionMethodGetTopLevelInterfaceName:
@@ -877,67 +838,30 @@ class _ServiceDescriptionProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ServiceDescriptionProxyImpl($superString)";
+    return "_ServiceDescriptionProxyControl($superString)";
   }
 }
 
 
-class _ServiceDescriptionProxyCalls implements ServiceDescription {
-  _ServiceDescriptionProxyImpl _proxyImpl;
-
-  _ServiceDescriptionProxyCalls(this._proxyImpl);
-    dynamic getTopLevelInterface([Function responseFactory = null]) {
-      var params = new _ServiceDescriptionGetTopLevelInterfaceParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _serviceDescriptionMethodGetTopLevelInterfaceName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic getTypeDefinition(String typeKey,[Function responseFactory = null]) {
-      var params = new _ServiceDescriptionGetTypeDefinitionParams();
-      params.typeKey = typeKey;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _serviceDescriptionMethodGetTypeDefinitionName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic getAllTypeDefinitions([Function responseFactory = null]) {
-      var params = new _ServiceDescriptionGetAllTypeDefinitionsParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _serviceDescriptionMethodGetAllTypeDefinitionsName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class ServiceDescriptionProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ServiceDescription ptr;
-
-  ServiceDescriptionProxy(_ServiceDescriptionProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ServiceDescriptionProxyCalls(proxyImpl);
-
+class ServiceDescriptionProxy extends bindings.Proxy
+                              implements ServiceDescription {
   ServiceDescriptionProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ServiceDescriptionProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ServiceDescriptionProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ServiceDescriptionProxyControl.fromEndpoint(endpoint));
 
-  ServiceDescriptionProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ServiceDescriptionProxyImpl.fromHandle(handle) {
-    ptr = new _ServiceDescriptionProxyCalls(impl);
-  }
+  ServiceDescriptionProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ServiceDescriptionProxyControl.fromHandle(handle));
 
-  ServiceDescriptionProxy.unbound() :
-      impl = new _ServiceDescriptionProxyImpl.unbound() {
-    ptr = new _ServiceDescriptionProxyCalls(impl);
+  ServiceDescriptionProxy.unbound()
+      : super(new _ServiceDescriptionProxyControl.unbound());
+
+  static ServiceDescriptionProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ServiceDescriptionProxy"));
+    return new ServiceDescriptionProxy.fromEndpoint(endpoint);
   }
 
   factory ServiceDescriptionProxy.connectToService(
@@ -947,30 +871,31 @@ class ServiceDescriptionProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ServiceDescriptionProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ServiceDescriptionProxy"));
-    return new ServiceDescriptionProxy.fromEndpoint(endpoint);
+
+  dynamic getTopLevelInterface([Function responseFactory = null]) {
+    var params = new _ServiceDescriptionGetTopLevelInterfaceParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _serviceDescriptionMethodGetTopLevelInterfaceName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => ServiceDescription.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic getTypeDefinition(String typeKey,[Function responseFactory = null]) {
+    var params = new _ServiceDescriptionGetTypeDefinitionParams();
+    params.typeKey = typeKey;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _serviceDescriptionMethodGetTypeDefinitionName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "ServiceDescriptionProxy($impl)";
+  dynamic getAllTypeDefinitions([Function responseFactory = null]) {
+    var params = new _ServiceDescriptionGetAllTypeDefinitionsParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _serviceDescriptionMethodGetAllTypeDefinitionsName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

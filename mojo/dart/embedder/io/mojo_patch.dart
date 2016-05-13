@@ -114,10 +114,10 @@ HostResolverProxy _getHostResolver() {
     return null;
   }
   _hostResolver = new HostResolverProxy.unbound();
-  networkService.ptr.createHostResolver(_hostResolver);
+  networkService.createHostResolver(_hostResolver);
   // Remove the host resolver's handle from the open set because it is not
   // under application control and does not affect isolate shutdown.
-  _hostResolver.impl.endpoint.handle.pass();
+  _hostResolver.ctrl.endpoint.handle.pass();
   return _hostResolver;
 }
 
@@ -141,10 +141,10 @@ Future<DirectoryProxy> _getRootDirectory() async {
   assert(files != null);
   _rootDirectory = new DirectoryProxy.unbound();
   var response =
-      await files.ptr.openFileSystem(fileSystemName, _rootDirectory);
+      await files.openFileSystem(fileSystemName, _rootDirectory);
   // Remove the root directory's handle from the open set because it is not
   // under application control and does not affect isolate shutdown.
-  _rootDirectory.impl.endpoint.handle.pass();
+  _rootDirectory.ctrl.endpoint.handle.pass();
 
   // Ensure system temporary directory exists before returning the root
   // directory.
@@ -163,13 +163,13 @@ Future<DirectoryProxy> _getSystemTempDirectory() async {
               types.kOpenFlagCreate;
   _systemTempDirectory = new DirectoryProxy.unbound();
   var response =
-      await rootDirectory.ptr.openDirectory(systemTempPath,
-                                            _systemTempDirectory,
-                                            flags);
+      await rootDirectory.openDirectory(systemTempPath,
+                                        _systemTempDirectory,
+                                        flags);
   assert(response.error == types.Error.ok);
   // Remove the system temp directory's handle from the open set because it
   // is not under application control and does not affect isolate shutdown.
-  _systemTempDirectory.impl.endpoint.handle.pass();
+  _systemTempDirectory.ctrl.endpoint.handle.pass();
   return _systemTempDirectory;
 }
 

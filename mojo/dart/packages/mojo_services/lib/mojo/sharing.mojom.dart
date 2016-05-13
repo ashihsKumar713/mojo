@@ -100,24 +100,22 @@ abstract class SharingService {
 }
 
 
-class _SharingServiceProxyImpl extends bindings.Proxy {
-  _SharingServiceProxyImpl.fromEndpoint(
+class _SharingServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _SharingServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _SharingServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _SharingServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _SharingServiceProxyImpl.unbound() : super.unbound();
-
-  static _SharingServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _SharingServiceProxyImpl"));
-    return new _SharingServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _SharingServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _SharingServiceServiceDescription();
+      new _SharingServiceServiceDescription();
 
+  String get serviceName => SharingService.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -127,51 +125,30 @@ class _SharingServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_SharingServiceProxyImpl($superString)";
+    return "_SharingServiceProxyControl($superString)";
   }
 }
 
 
-class _SharingServiceProxyCalls implements SharingService {
-  _SharingServiceProxyImpl _proxyImpl;
-
-  _SharingServiceProxyCalls(this._proxyImpl);
-    void shareText(String text) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SharingServiceShareTextParams();
-      params.text = text;
-      _proxyImpl.sendMessage(params, _sharingServiceMethodShareTextName);
-    }
-}
-
-
-class SharingServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  SharingService ptr;
-
-  SharingServiceProxy(_SharingServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _SharingServiceProxyCalls(proxyImpl);
-
+class SharingServiceProxy extends bindings.Proxy
+                              implements SharingService {
   SharingServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _SharingServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _SharingServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _SharingServiceProxyControl.fromEndpoint(endpoint));
 
-  SharingServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _SharingServiceProxyImpl.fromHandle(handle) {
-    ptr = new _SharingServiceProxyCalls(impl);
-  }
+  SharingServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _SharingServiceProxyControl.fromHandle(handle));
 
-  SharingServiceProxy.unbound() :
-      impl = new _SharingServiceProxyImpl.unbound() {
-    ptr = new _SharingServiceProxyCalls(impl);
+  SharingServiceProxy.unbound()
+      : super(new _SharingServiceProxyControl.unbound());
+
+  static SharingServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SharingServiceProxy"));
+    return new SharingServiceProxy.fromEndpoint(endpoint);
   }
 
   factory SharingServiceProxy.connectToService(
@@ -181,30 +158,16 @@ class SharingServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static SharingServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SharingServiceProxy"));
-    return new SharingServiceProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => SharingService.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "SharingServiceProxy($impl)";
+  void shareText(String text) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SharingServiceShareTextParams();
+    params.text = text;
+    ctrl.sendMessage(params,
+        _sharingServiceMethodShareTextName);
   }
 }
 

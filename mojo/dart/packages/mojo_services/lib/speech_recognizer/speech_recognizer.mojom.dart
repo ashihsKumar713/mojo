@@ -598,24 +598,22 @@ abstract class SpeechRecognizerListener {
 }
 
 
-class _SpeechRecognizerListenerProxyImpl extends bindings.Proxy {
-  _SpeechRecognizerListenerProxyImpl.fromEndpoint(
+class _SpeechRecognizerListenerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _SpeechRecognizerListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _SpeechRecognizerListenerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _SpeechRecognizerListenerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _SpeechRecognizerListenerProxyImpl.unbound() : super.unbound();
-
-  static _SpeechRecognizerListenerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _SpeechRecognizerListenerProxyImpl"));
-    return new _SpeechRecognizerListenerProxyImpl.fromEndpoint(endpoint);
-  }
+  _SpeechRecognizerListenerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _SpeechRecognizerListenerServiceDescription();
+      new _SpeechRecognizerListenerServiceDescription();
 
+  String get serviceName => SpeechRecognizerListener.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -625,70 +623,30 @@ class _SpeechRecognizerListenerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_SpeechRecognizerListenerProxyImpl($superString)";
+    return "_SpeechRecognizerListenerProxyControl($superString)";
   }
 }
 
 
-class _SpeechRecognizerListenerProxyCalls implements SpeechRecognizerListener {
-  _SpeechRecognizerListenerProxyImpl _proxyImpl;
-
-  _SpeechRecognizerListenerProxyCalls(this._proxyImpl);
-    void onRecognizerError(Error errorCode) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SpeechRecognizerListenerOnRecognizerErrorParams();
-      params.errorCode = errorCode;
-      _proxyImpl.sendMessage(params, _speechRecognizerListenerMethodOnRecognizerErrorName);
-    }
-    void onResults(List<UtteranceCandidate> results, bool complete) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SpeechRecognizerListenerOnResultsParams();
-      params.results = results;
-      params.complete = complete;
-      _proxyImpl.sendMessage(params, _speechRecognizerListenerMethodOnResultsName);
-    }
-    void onSoundLevelChanged(double rmsDb) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SpeechRecognizerListenerOnSoundLevelChangedParams();
-      params.rmsDb = rmsDb;
-      _proxyImpl.sendMessage(params, _speechRecognizerListenerMethodOnSoundLevelChangedName);
-    }
-}
-
-
-class SpeechRecognizerListenerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  SpeechRecognizerListener ptr;
-
-  SpeechRecognizerListenerProxy(_SpeechRecognizerListenerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _SpeechRecognizerListenerProxyCalls(proxyImpl);
-
+class SpeechRecognizerListenerProxy extends bindings.Proxy
+                              implements SpeechRecognizerListener {
   SpeechRecognizerListenerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _SpeechRecognizerListenerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _SpeechRecognizerListenerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _SpeechRecognizerListenerProxyControl.fromEndpoint(endpoint));
 
-  SpeechRecognizerListenerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _SpeechRecognizerListenerProxyImpl.fromHandle(handle) {
-    ptr = new _SpeechRecognizerListenerProxyCalls(impl);
-  }
+  SpeechRecognizerListenerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _SpeechRecognizerListenerProxyControl.fromHandle(handle));
 
-  SpeechRecognizerListenerProxy.unbound() :
-      impl = new _SpeechRecognizerListenerProxyImpl.unbound() {
-    ptr = new _SpeechRecognizerListenerProxyCalls(impl);
+  SpeechRecognizerListenerProxy.unbound()
+      : super(new _SpeechRecognizerListenerProxyControl.unbound());
+
+  static SpeechRecognizerListenerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SpeechRecognizerListenerProxy"));
+    return new SpeechRecognizerListenerProxy.fromEndpoint(endpoint);
   }
 
   factory SpeechRecognizerListenerProxy.connectToService(
@@ -698,30 +656,37 @@ class SpeechRecognizerListenerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static SpeechRecognizerListenerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SpeechRecognizerListenerProxy"));
-    return new SpeechRecognizerListenerProxy.fromEndpoint(endpoint);
+
+  void onRecognizerError(Error errorCode) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SpeechRecognizerListenerOnRecognizerErrorParams();
+    params.errorCode = errorCode;
+    ctrl.sendMessage(params,
+        _speechRecognizerListenerMethodOnRecognizerErrorName);
   }
-
-  String get serviceName => SpeechRecognizerListener.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void onResults(List<UtteranceCandidate> results, bool complete) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SpeechRecognizerListenerOnResultsParams();
+    params.results = results;
+    params.complete = complete;
+    ctrl.sendMessage(params,
+        _speechRecognizerListenerMethodOnResultsName);
   }
-
-  String toString() {
-    return "SpeechRecognizerListenerProxy($impl)";
+  void onSoundLevelChanged(double rmsDb) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SpeechRecognizerListenerOnSoundLevelChangedParams();
+    params.rmsDb = rmsDb;
+    ctrl.sendMessage(params,
+        _speechRecognizerListenerMethodOnSoundLevelChangedName);
   }
 }
 
@@ -839,24 +804,22 @@ abstract class SpeechRecognizerService {
 }
 
 
-class _SpeechRecognizerServiceProxyImpl extends bindings.Proxy {
-  _SpeechRecognizerServiceProxyImpl.fromEndpoint(
+class _SpeechRecognizerServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _SpeechRecognizerServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _SpeechRecognizerServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _SpeechRecognizerServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _SpeechRecognizerServiceProxyImpl.unbound() : super.unbound();
-
-  static _SpeechRecognizerServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _SpeechRecognizerServiceProxyImpl"));
-    return new _SpeechRecognizerServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _SpeechRecognizerServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _SpeechRecognizerServiceServiceDescription();
+      new _SpeechRecognizerServiceServiceDescription();
 
+  String get serviceName => SpeechRecognizerService.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -866,59 +829,30 @@ class _SpeechRecognizerServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_SpeechRecognizerServiceProxyImpl($superString)";
+    return "_SpeechRecognizerServiceProxyControl($superString)";
   }
 }
 
 
-class _SpeechRecognizerServiceProxyCalls implements SpeechRecognizerService {
-  _SpeechRecognizerServiceProxyImpl _proxyImpl;
-
-  _SpeechRecognizerServiceProxyCalls(this._proxyImpl);
-    void listen(Object listener) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SpeechRecognizerServiceListenParams();
-      params.listener = listener;
-      _proxyImpl.sendMessage(params, _speechRecognizerServiceMethodListenName);
-    }
-    void stopListening() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SpeechRecognizerServiceStopListeningParams();
-      _proxyImpl.sendMessage(params, _speechRecognizerServiceMethodStopListeningName);
-    }
-}
-
-
-class SpeechRecognizerServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  SpeechRecognizerService ptr;
-
-  SpeechRecognizerServiceProxy(_SpeechRecognizerServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _SpeechRecognizerServiceProxyCalls(proxyImpl);
-
+class SpeechRecognizerServiceProxy extends bindings.Proxy
+                              implements SpeechRecognizerService {
   SpeechRecognizerServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _SpeechRecognizerServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _SpeechRecognizerServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _SpeechRecognizerServiceProxyControl.fromEndpoint(endpoint));
 
-  SpeechRecognizerServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _SpeechRecognizerServiceProxyImpl.fromHandle(handle) {
-    ptr = new _SpeechRecognizerServiceProxyCalls(impl);
-  }
+  SpeechRecognizerServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _SpeechRecognizerServiceProxyControl.fromHandle(handle));
 
-  SpeechRecognizerServiceProxy.unbound() :
-      impl = new _SpeechRecognizerServiceProxyImpl.unbound() {
-    ptr = new _SpeechRecognizerServiceProxyCalls(impl);
+  SpeechRecognizerServiceProxy.unbound()
+      : super(new _SpeechRecognizerServiceProxyControl.unbound());
+
+  static SpeechRecognizerServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SpeechRecognizerServiceProxy"));
+    return new SpeechRecognizerServiceProxy.fromEndpoint(endpoint);
   }
 
   factory SpeechRecognizerServiceProxy.connectToService(
@@ -928,30 +862,25 @@ class SpeechRecognizerServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static SpeechRecognizerServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SpeechRecognizerServiceProxy"));
-    return new SpeechRecognizerServiceProxy.fromEndpoint(endpoint);
+
+  void listen(Object listener) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SpeechRecognizerServiceListenParams();
+    params.listener = listener;
+    ctrl.sendMessage(params,
+        _speechRecognizerServiceMethodListenName);
   }
-
-  String get serviceName => SpeechRecognizerService.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "SpeechRecognizerServiceProxy($impl)";
+  void stopListening() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SpeechRecognizerServiceStopListeningParams();
+    ctrl.sendMessage(params,
+        _speechRecognizerServiceMethodStopListeningName);
   }
 }
 

@@ -605,24 +605,22 @@ abstract class UrlLoaderInterceptorFactory {
 }
 
 
-class _UrlLoaderInterceptorFactoryProxyImpl extends bindings.Proxy {
-  _UrlLoaderInterceptorFactoryProxyImpl.fromEndpoint(
+class _UrlLoaderInterceptorFactoryProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _UrlLoaderInterceptorFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _UrlLoaderInterceptorFactoryProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _UrlLoaderInterceptorFactoryProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _UrlLoaderInterceptorFactoryProxyImpl.unbound() : super.unbound();
-
-  static _UrlLoaderInterceptorFactoryProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _UrlLoaderInterceptorFactoryProxyImpl"));
-    return new _UrlLoaderInterceptorFactoryProxyImpl.fromEndpoint(endpoint);
-  }
+  _UrlLoaderInterceptorFactoryProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _UrlLoaderInterceptorFactoryServiceDescription();
+      new _UrlLoaderInterceptorFactoryServiceDescription();
 
+  String get serviceName => UrlLoaderInterceptorFactory.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -632,51 +630,30 @@ class _UrlLoaderInterceptorFactoryProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_UrlLoaderInterceptorFactoryProxyImpl($superString)";
+    return "_UrlLoaderInterceptorFactoryProxyControl($superString)";
   }
 }
 
 
-class _UrlLoaderInterceptorFactoryProxyCalls implements UrlLoaderInterceptorFactory {
-  _UrlLoaderInterceptorFactoryProxyImpl _proxyImpl;
-
-  _UrlLoaderInterceptorFactoryProxyCalls(this._proxyImpl);
-    void create(Object interceptor) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _UrlLoaderInterceptorFactoryCreateParams();
-      params.interceptor = interceptor;
-      _proxyImpl.sendMessage(params, _urlLoaderInterceptorFactoryMethodCreateName);
-    }
-}
-
-
-class UrlLoaderInterceptorFactoryProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  UrlLoaderInterceptorFactory ptr;
-
-  UrlLoaderInterceptorFactoryProxy(_UrlLoaderInterceptorFactoryProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _UrlLoaderInterceptorFactoryProxyCalls(proxyImpl);
-
+class UrlLoaderInterceptorFactoryProxy extends bindings.Proxy
+                              implements UrlLoaderInterceptorFactory {
   UrlLoaderInterceptorFactoryProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _UrlLoaderInterceptorFactoryProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _UrlLoaderInterceptorFactoryProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _UrlLoaderInterceptorFactoryProxyControl.fromEndpoint(endpoint));
 
-  UrlLoaderInterceptorFactoryProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _UrlLoaderInterceptorFactoryProxyImpl.fromHandle(handle) {
-    ptr = new _UrlLoaderInterceptorFactoryProxyCalls(impl);
-  }
+  UrlLoaderInterceptorFactoryProxy.fromHandle(core.MojoHandle handle)
+      : super(new _UrlLoaderInterceptorFactoryProxyControl.fromHandle(handle));
 
-  UrlLoaderInterceptorFactoryProxy.unbound() :
-      impl = new _UrlLoaderInterceptorFactoryProxyImpl.unbound() {
-    ptr = new _UrlLoaderInterceptorFactoryProxyCalls(impl);
+  UrlLoaderInterceptorFactoryProxy.unbound()
+      : super(new _UrlLoaderInterceptorFactoryProxyControl.unbound());
+
+  static UrlLoaderInterceptorFactoryProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For UrlLoaderInterceptorFactoryProxy"));
+    return new UrlLoaderInterceptorFactoryProxy.fromEndpoint(endpoint);
   }
 
   factory UrlLoaderInterceptorFactoryProxy.connectToService(
@@ -686,30 +663,16 @@ class UrlLoaderInterceptorFactoryProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static UrlLoaderInterceptorFactoryProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For UrlLoaderInterceptorFactoryProxy"));
-    return new UrlLoaderInterceptorFactoryProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => UrlLoaderInterceptorFactory.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "UrlLoaderInterceptorFactoryProxy($impl)";
+  void create(Object interceptor) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _UrlLoaderInterceptorFactoryCreateParams();
+    params.interceptor = interceptor;
+    ctrl.sendMessage(params,
+        _urlLoaderInterceptorFactoryMethodCreateName);
   }
 }
 
@@ -819,24 +782,22 @@ abstract class UrlLoaderInterceptor {
 }
 
 
-class _UrlLoaderInterceptorProxyImpl extends bindings.Proxy {
-  _UrlLoaderInterceptorProxyImpl.fromEndpoint(
+class _UrlLoaderInterceptorProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _UrlLoaderInterceptorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _UrlLoaderInterceptorProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _UrlLoaderInterceptorProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _UrlLoaderInterceptorProxyImpl.unbound() : super.unbound();
-
-  static _UrlLoaderInterceptorProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _UrlLoaderInterceptorProxyImpl"));
-    return new _UrlLoaderInterceptorProxyImpl.fromEndpoint(endpoint);
-  }
+  _UrlLoaderInterceptorProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _UrlLoaderInterceptorServiceDescription();
+      new _UrlLoaderInterceptorServiceDescription();
 
+  String get serviceName => UrlLoaderInterceptor.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _urlLoaderInterceptorMethodInterceptRequestName:
@@ -906,68 +867,30 @@ class _UrlLoaderInterceptorProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_UrlLoaderInterceptorProxyImpl($superString)";
+    return "_UrlLoaderInterceptorProxyControl($superString)";
   }
 }
 
 
-class _UrlLoaderInterceptorProxyCalls implements UrlLoaderInterceptor {
-  _UrlLoaderInterceptorProxyImpl _proxyImpl;
-
-  _UrlLoaderInterceptorProxyCalls(this._proxyImpl);
-    dynamic interceptRequest(url_request_mojom.UrlRequest request,[Function responseFactory = null]) {
-      var params = new _UrlLoaderInterceptorInterceptRequestParams();
-      params.request = request;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _urlLoaderInterceptorMethodInterceptRequestName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic interceptFollowRedirect([Function responseFactory = null]) {
-      var params = new _UrlLoaderInterceptorInterceptFollowRedirectParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _urlLoaderInterceptorMethodInterceptFollowRedirectName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic interceptResponse(url_response_mojom.UrlResponse response,[Function responseFactory = null]) {
-      var params = new _UrlLoaderInterceptorInterceptResponseParams();
-      params.response = response;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _urlLoaderInterceptorMethodInterceptResponseName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class UrlLoaderInterceptorProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  UrlLoaderInterceptor ptr;
-
-  UrlLoaderInterceptorProxy(_UrlLoaderInterceptorProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _UrlLoaderInterceptorProxyCalls(proxyImpl);
-
+class UrlLoaderInterceptorProxy extends bindings.Proxy
+                              implements UrlLoaderInterceptor {
   UrlLoaderInterceptorProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _UrlLoaderInterceptorProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _UrlLoaderInterceptorProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _UrlLoaderInterceptorProxyControl.fromEndpoint(endpoint));
 
-  UrlLoaderInterceptorProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _UrlLoaderInterceptorProxyImpl.fromHandle(handle) {
-    ptr = new _UrlLoaderInterceptorProxyCalls(impl);
-  }
+  UrlLoaderInterceptorProxy.fromHandle(core.MojoHandle handle)
+      : super(new _UrlLoaderInterceptorProxyControl.fromHandle(handle));
 
-  UrlLoaderInterceptorProxy.unbound() :
-      impl = new _UrlLoaderInterceptorProxyImpl.unbound() {
-    ptr = new _UrlLoaderInterceptorProxyCalls(impl);
+  UrlLoaderInterceptorProxy.unbound()
+      : super(new _UrlLoaderInterceptorProxyControl.unbound());
+
+  static UrlLoaderInterceptorProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For UrlLoaderInterceptorProxy"));
+    return new UrlLoaderInterceptorProxy.fromEndpoint(endpoint);
   }
 
   factory UrlLoaderInterceptorProxy.connectToService(
@@ -977,30 +900,32 @@ class UrlLoaderInterceptorProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static UrlLoaderInterceptorProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For UrlLoaderInterceptorProxy"));
-    return new UrlLoaderInterceptorProxy.fromEndpoint(endpoint);
+
+  dynamic interceptRequest(url_request_mojom.UrlRequest request,[Function responseFactory = null]) {
+    var params = new _UrlLoaderInterceptorInterceptRequestParams();
+    params.request = request;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _urlLoaderInterceptorMethodInterceptRequestName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => UrlLoaderInterceptor.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic interceptFollowRedirect([Function responseFactory = null]) {
+    var params = new _UrlLoaderInterceptorInterceptFollowRedirectParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _urlLoaderInterceptorMethodInterceptFollowRedirectName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "UrlLoaderInterceptorProxy($impl)";
+  dynamic interceptResponse(url_response_mojom.UrlResponse response,[Function responseFactory = null]) {
+    var params = new _UrlLoaderInterceptorInterceptResponseParams();
+    params.response = response;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _urlLoaderInterceptorMethodInterceptResponseName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

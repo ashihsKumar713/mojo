@@ -307,24 +307,22 @@ abstract class MediaTypeConverter {
 }
 
 
-class _MediaTypeConverterProxyImpl extends bindings.Proxy {
-  _MediaTypeConverterProxyImpl.fromEndpoint(
+class _MediaTypeConverterProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _MediaTypeConverterProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _MediaTypeConverterProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _MediaTypeConverterProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _MediaTypeConverterProxyImpl.unbound() : super.unbound();
-
-  static _MediaTypeConverterProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _MediaTypeConverterProxyImpl"));
-    return new _MediaTypeConverterProxyImpl.fromEndpoint(endpoint);
-  }
+  _MediaTypeConverterProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _MediaTypeConverterServiceDescription();
+      new _MediaTypeConverterServiceDescription();
 
+  String get serviceName => MediaTypeConverter.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaTypeConverterMethodGetOutputTypeName:
@@ -354,68 +352,30 @@ class _MediaTypeConverterProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_MediaTypeConverterProxyImpl($superString)";
+    return "_MediaTypeConverterProxyControl($superString)";
   }
 }
 
 
-class _MediaTypeConverterProxyCalls implements MediaTypeConverter {
-  _MediaTypeConverterProxyImpl _proxyImpl;
-
-  _MediaTypeConverterProxyCalls(this._proxyImpl);
-    dynamic getOutputType([Function responseFactory = null]) {
-      var params = new _MediaTypeConverterGetOutputTypeParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaTypeConverterMethodGetOutputTypeName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void getConsumer(Object consumer) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaTypeConverterGetConsumerParams();
-      params.consumer = consumer;
-      _proxyImpl.sendMessage(params, _mediaTypeConverterMethodGetConsumerName);
-    }
-    void getProducer(Object producer) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaTypeConverterGetProducerParams();
-      params.producer = producer;
-      _proxyImpl.sendMessage(params, _mediaTypeConverterMethodGetProducerName);
-    }
-}
-
-
-class MediaTypeConverterProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  MediaTypeConverter ptr;
-
-  MediaTypeConverterProxy(_MediaTypeConverterProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _MediaTypeConverterProxyCalls(proxyImpl);
-
+class MediaTypeConverterProxy extends bindings.Proxy
+                              implements MediaTypeConverter {
   MediaTypeConverterProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _MediaTypeConverterProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _MediaTypeConverterProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _MediaTypeConverterProxyControl.fromEndpoint(endpoint));
 
-  MediaTypeConverterProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _MediaTypeConverterProxyImpl.fromHandle(handle) {
-    ptr = new _MediaTypeConverterProxyCalls(impl);
-  }
+  MediaTypeConverterProxy.fromHandle(core.MojoHandle handle)
+      : super(new _MediaTypeConverterProxyControl.fromHandle(handle));
 
-  MediaTypeConverterProxy.unbound() :
-      impl = new _MediaTypeConverterProxyImpl.unbound() {
-    ptr = new _MediaTypeConverterProxyCalls(impl);
+  MediaTypeConverterProxy.unbound()
+      : super(new _MediaTypeConverterProxyControl.unbound());
+
+  static MediaTypeConverterProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaTypeConverterProxy"));
+    return new MediaTypeConverterProxy.fromEndpoint(endpoint);
   }
 
   factory MediaTypeConverterProxy.connectToService(
@@ -425,30 +385,34 @@ class MediaTypeConverterProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static MediaTypeConverterProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaTypeConverterProxy"));
-    return new MediaTypeConverterProxy.fromEndpoint(endpoint);
+
+  dynamic getOutputType([Function responseFactory = null]) {
+    var params = new _MediaTypeConverterGetOutputTypeParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaTypeConverterMethodGetOutputTypeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => MediaTypeConverter.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void getConsumer(Object consumer) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaTypeConverterGetConsumerParams();
+    params.consumer = consumer;
+    ctrl.sendMessage(params,
+        _mediaTypeConverterMethodGetConsumerName);
   }
-
-  String toString() {
-    return "MediaTypeConverterProxy($impl)";
+  void getProducer(Object producer) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaTypeConverterGetProducerParams();
+    params.producer = producer;
+    ctrl.sendMessage(params,
+        _mediaTypeConverterMethodGetProducerName);
   }
 }
 

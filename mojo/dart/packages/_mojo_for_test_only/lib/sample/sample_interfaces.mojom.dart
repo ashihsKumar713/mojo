@@ -1373,24 +1373,22 @@ abstract class Provider {
 }
 
 
-class _ProviderProxyImpl extends bindings.Proxy {
-  _ProviderProxyImpl.fromEndpoint(
+class _ProviderProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ProviderProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ProviderProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ProviderProxyImpl.unbound() : super.unbound();
-
-  static _ProviderProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ProviderProxyImpl"));
-    return new _ProviderProxyImpl.fromEndpoint(endpoint);
-  }
+  _ProviderProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ProviderServiceDescription();
+      new _ProviderServiceDescription();
 
+  String get serviceName => Provider.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _providerMethodEchoStringName:
@@ -1500,88 +1498,30 @@ class _ProviderProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ProviderProxyImpl($superString)";
+    return "_ProviderProxyControl($superString)";
   }
 }
 
 
-class _ProviderProxyCalls implements Provider {
-  _ProviderProxyImpl _proxyImpl;
-
-  _ProviderProxyCalls(this._proxyImpl);
-    dynamic echoString(String a,[Function responseFactory = null]) {
-      var params = new _ProviderEchoStringParams();
-      params.a = a;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _providerMethodEchoStringName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic echoStrings(String a,String b,[Function responseFactory = null]) {
-      var params = new _ProviderEchoStringsParams();
-      params.a = a;
-      params.b = b;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _providerMethodEchoStringsName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic echoMessagePipeHandle(core.MojoMessagePipeEndpoint a,[Function responseFactory = null]) {
-      var params = new _ProviderEchoMessagePipeHandleParams();
-      params.a = a;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _providerMethodEchoMessagePipeHandleName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic echoEnum(Enum a,[Function responseFactory = null]) {
-      var params = new _ProviderEchoEnumParams();
-      params.a = a;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _providerMethodEchoEnumName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic echoInt(int a,[Function responseFactory = null]) {
-      var params = new _ProviderEchoIntParams();
-      params.a = a;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _providerMethodEchoIntName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class ProviderProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Provider ptr;
-
-  ProviderProxy(_ProviderProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ProviderProxyCalls(proxyImpl);
-
+class ProviderProxy extends bindings.Proxy
+                              implements Provider {
   ProviderProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ProviderProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ProviderProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ProviderProxyControl.fromEndpoint(endpoint));
 
-  ProviderProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ProviderProxyImpl.fromHandle(handle) {
-    ptr = new _ProviderProxyCalls(impl);
-  }
+  ProviderProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ProviderProxyControl.fromHandle(handle));
 
-  ProviderProxy.unbound() :
-      impl = new _ProviderProxyImpl.unbound() {
-    ptr = new _ProviderProxyCalls(impl);
+  ProviderProxy.unbound()
+      : super(new _ProviderProxyControl.unbound());
+
+  static ProviderProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ProviderProxy"));
+    return new ProviderProxy.fromEndpoint(endpoint);
   }
 
   factory ProviderProxy.connectToService(
@@ -1591,30 +1531,52 @@ class ProviderProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ProviderProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ProviderProxy"));
-    return new ProviderProxy.fromEndpoint(endpoint);
+
+  dynamic echoString(String a,[Function responseFactory = null]) {
+    var params = new _ProviderEchoStringParams();
+    params.a = a;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _providerMethodEchoStringName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => Provider.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  dynamic echoStrings(String a,String b,[Function responseFactory = null]) {
+    var params = new _ProviderEchoStringsParams();
+    params.a = a;
+    params.b = b;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _providerMethodEchoStringsName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String toString() {
-    return "ProviderProxy($impl)";
+  dynamic echoMessagePipeHandle(core.MojoMessagePipeEndpoint a,[Function responseFactory = null]) {
+    var params = new _ProviderEchoMessagePipeHandleParams();
+    params.a = a;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _providerMethodEchoMessagePipeHandleName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic echoEnum(Enum a,[Function responseFactory = null]) {
+    var params = new _ProviderEchoEnumParams();
+    params.a = a;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _providerMethodEchoEnumName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic echoInt(int a,[Function responseFactory = null]) {
+    var params = new _ProviderEchoIntParams();
+    params.a = a;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _providerMethodEchoIntName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
@@ -1853,24 +1815,22 @@ abstract class IntegerAccessor {
 }
 
 
-class _IntegerAccessorProxyImpl extends bindings.Proxy {
-  _IntegerAccessorProxyImpl.fromEndpoint(
+class _IntegerAccessorProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _IntegerAccessorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _IntegerAccessorProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _IntegerAccessorProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _IntegerAccessorProxyImpl.unbound() : super.unbound();
-
-  static _IntegerAccessorProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _IntegerAccessorProxyImpl"));
-    return new _IntegerAccessorProxyImpl.fromEndpoint(endpoint);
-  }
+  _IntegerAccessorProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _IntegerAccessorServiceDescription();
+      new _IntegerAccessorServiceDescription();
 
+  String get serviceName => IntegerAccessor.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _integerAccessorMethodGetIntegerName:
@@ -1900,60 +1860,30 @@ class _IntegerAccessorProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_IntegerAccessorProxyImpl($superString)";
+    return "_IntegerAccessorProxyControl($superString)";
   }
 }
 
 
-class _IntegerAccessorProxyCalls implements IntegerAccessor {
-  _IntegerAccessorProxyImpl _proxyImpl;
-
-  _IntegerAccessorProxyCalls(this._proxyImpl);
-    dynamic getInteger([Function responseFactory = null]) {
-      var params = new _IntegerAccessorGetIntegerParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _integerAccessorMethodGetIntegerName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void setInteger(int data, Enum type) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _IntegerAccessorSetIntegerParams();
-      params.data = data;
-      params.type = type;
-      _proxyImpl.sendMessage(params, _integerAccessorMethodSetIntegerName);
-    }
-}
-
-
-class IntegerAccessorProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  IntegerAccessor ptr;
-
-  IntegerAccessorProxy(_IntegerAccessorProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _IntegerAccessorProxyCalls(proxyImpl);
-
+class IntegerAccessorProxy extends bindings.Proxy
+                              implements IntegerAccessor {
   IntegerAccessorProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _IntegerAccessorProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _IntegerAccessorProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _IntegerAccessorProxyControl.fromEndpoint(endpoint));
 
-  IntegerAccessorProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _IntegerAccessorProxyImpl.fromHandle(handle) {
-    ptr = new _IntegerAccessorProxyCalls(impl);
-  }
+  IntegerAccessorProxy.fromHandle(core.MojoHandle handle)
+      : super(new _IntegerAccessorProxyControl.fromHandle(handle));
 
-  IntegerAccessorProxy.unbound() :
-      impl = new _IntegerAccessorProxyImpl.unbound() {
-    ptr = new _IntegerAccessorProxyCalls(impl);
+  IntegerAccessorProxy.unbound()
+      : super(new _IntegerAccessorProxyControl.unbound());
+
+  static IntegerAccessorProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For IntegerAccessorProxy"));
+    return new IntegerAccessorProxy.fromEndpoint(endpoint);
   }
 
   factory IntegerAccessorProxy.connectToService(
@@ -1963,30 +1893,25 @@ class IntegerAccessorProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static IntegerAccessorProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For IntegerAccessorProxy"));
-    return new IntegerAccessorProxy.fromEndpoint(endpoint);
+
+  dynamic getInteger([Function responseFactory = null]) {
+    var params = new _IntegerAccessorGetIntegerParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _integerAccessorMethodGetIntegerName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => IntegerAccessor.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "IntegerAccessorProxy($impl)";
+  void setInteger(int data, Enum type) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _IntegerAccessorSetIntegerParams();
+    params.data = data;
+    params.type = type;
+    ctrl.sendMessage(params,
+        _integerAccessorMethodSetIntegerName);
   }
 }
 
@@ -2122,24 +2047,22 @@ abstract class SampleInterface {
 }
 
 
-class _SampleInterfaceProxyImpl extends bindings.Proxy {
-  _SampleInterfaceProxyImpl.fromEndpoint(
+class _SampleInterfaceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _SampleInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _SampleInterfaceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _SampleInterfaceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _SampleInterfaceProxyImpl.unbound() : super.unbound();
-
-  static _SampleInterfaceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _SampleInterfaceProxyImpl"));
-    return new _SampleInterfaceProxyImpl.fromEndpoint(endpoint);
-  }
+  _SampleInterfaceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _SampleInterfaceServiceDescription();
+      new _SampleInterfaceServiceDescription();
 
+  String get serviceName => SampleInterface.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _sampleInterfaceMethodSampleMethod1Name:
@@ -2169,68 +2092,30 @@ class _SampleInterfaceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_SampleInterfaceProxyImpl($superString)";
+    return "_SampleInterfaceProxyControl($superString)";
   }
 }
 
 
-class _SampleInterfaceProxyCalls implements SampleInterface {
-  _SampleInterfaceProxyImpl _proxyImpl;
-
-  _SampleInterfaceProxyCalls(this._proxyImpl);
-    dynamic sampleMethod1(int in1,String in2,[Function responseFactory = null]) {
-      var params = new _SampleInterfaceSampleMethod1Params();
-      params.in1 = in1;
-      params.in2 = in2;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _sampleInterfaceMethodSampleMethod1Name,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void sampleMethod0() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SampleInterfaceSampleMethod0Params();
-      _proxyImpl.sendMessage(params, _sampleInterfaceMethodSampleMethod0Name);
-    }
-    void sampleMethod2() {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SampleInterfaceSampleMethod2Params();
-      _proxyImpl.sendMessage(params, _sampleInterfaceMethodSampleMethod2Name);
-    }
-}
-
-
-class SampleInterfaceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  SampleInterface ptr;
-
-  SampleInterfaceProxy(_SampleInterfaceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _SampleInterfaceProxyCalls(proxyImpl);
-
+class SampleInterfaceProxy extends bindings.Proxy
+                              implements SampleInterface {
   SampleInterfaceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _SampleInterfaceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _SampleInterfaceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _SampleInterfaceProxyControl.fromEndpoint(endpoint));
 
-  SampleInterfaceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _SampleInterfaceProxyImpl.fromHandle(handle) {
-    ptr = new _SampleInterfaceProxyCalls(impl);
-  }
+  SampleInterfaceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _SampleInterfaceProxyControl.fromHandle(handle));
 
-  SampleInterfaceProxy.unbound() :
-      impl = new _SampleInterfaceProxyImpl.unbound() {
-    ptr = new _SampleInterfaceProxyCalls(impl);
+  SampleInterfaceProxy.unbound()
+      : super(new _SampleInterfaceProxyControl.unbound());
+
+  static SampleInterfaceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SampleInterfaceProxy"));
+    return new SampleInterfaceProxy.fromEndpoint(endpoint);
   }
 
   factory SampleInterfaceProxy.connectToService(
@@ -2240,30 +2125,34 @@ class SampleInterfaceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static SampleInterfaceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SampleInterfaceProxy"));
-    return new SampleInterfaceProxy.fromEndpoint(endpoint);
+
+  dynamic sampleMethod1(int in1,String in2,[Function responseFactory = null]) {
+    var params = new _SampleInterfaceSampleMethod1Params();
+    params.in1 = in1;
+    params.in2 = in2;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _sampleInterfaceMethodSampleMethod1Name,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => SampleInterface.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void sampleMethod0() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SampleInterfaceSampleMethod0Params();
+    ctrl.sendMessage(params,
+        _sampleInterfaceMethodSampleMethod0Name);
   }
-
-  String toString() {
-    return "SampleInterfaceProxy($impl)";
+  void sampleMethod2() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SampleInterfaceSampleMethod2Params();
+    ctrl.sendMessage(params,
+        _sampleInterfaceMethodSampleMethod2Name);
   }
 }
 
@@ -2392,7 +2281,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xb3W7jRBT2xOkSdil0ty2k7F920UJu2qRFgoir9CIiFVSqVKjYG1ZpMjRGjR1sBy13PAqXPAaPwmUv9w1gvDmnGU9m/NM69qTbkUZT/2V8Pn/nOzNnplVjWtagbUIrnse2IrTiff9AW2e1zGoNjlvQ/gTtGNpHrG6w+sPLo86r7zovv/F6o/E53enYk1Fw/QtWn0quH9g+PaPufr9PPc9x3/ZTldx35Dq/WwPqqn7n+G0T/Jr7S69PjS6895rw3sGxyWq7FD6++DB8/OeOHJcLaNtGuDSFfv6DIt6H5QN4P8RnndV7rAqwzfUfPLfC6s+snrDaGDoj2nAnA2dk2dRtjJxfnYbn9qd/jCen51a/YSEsXuPUsgeWfeY1fOr5XmPa3avZDTvBc6Npf4TjRx3amhFdkuLSVTy/Cvad7H//Y4e1W6zeD+Oyg9dk+ATPl3LAR4kHmTZmDB5tAY8jBR6fsPoRq6KfPGHnPp7hIl6ewyU4vpsDLrJ+8bjEQVSFY7yvfkfOM/S3SikZzwwOV9l5LA8Aj2+pD9jJ+bSVE59qAl4XCfXGEHjUUtj7Kdg8s3fbpb9N2EvJ7cayaLsrXL9EEo8MIU6pcPrLzAanh6DFIZy8sWN7tFCcRH9ZI2F7W8J73TGSlaR+VI+JY4Oe31P5z1YO+MhwCOJIi8jfG/lUMuQ4vpbgQLjxjlhE/tYk+mdy/aH+HFr2CXU9y7HDePp/jKkKzy9z1CNDoefi+CVu/CfytybxcyLppwS1qhiHNMl8+CUpvufra35PEvM98fxxTJx5WHCcyUo/Mc4caxZnllU/MR7pqp9mzvppXlM/Azy33yH9NGP0E8ubK87j2hHfM/iWOG/HeYwwnZfmJ4qYp9S5PMYKh2cJMCxzOKxw9/8NNw9X4cQ64FmNns/UzcXMZzr9oXPsuwwCud7eLzjO4Dwuqzgzs1ePOCPqmExXicTfFhVf3of+eoaaDxs54RKl9yodWzSPML6GeKTBfG8ZefRcYx6pdLhbDqXtEuFEInQY87gzPnlSvB4UrMN1c1H+44WEWJfxfo0shx8FvNgswI/S4lK5Ai4kAS6nEbg81Uxf+HH1ov0M5wdhP5sFqls/S+9n27d+JsXla439TIzjiFvLlOdzo3Aqcd9BLI9BhwN/O6Se1zujR9aYdnv24JxKcFsvKJ6j/Wspx8OqefsLsF1qNxfZdR4XlzXSmfUCdIZcY36VNZ8+Z/VJBJ8wgt3yKTmfDjTmk6jP/+J+ITPZvggeJzMCJ8wvBrwKcqQiThsF6THa207pP6r5ZBVsQjtRgnX2lxWN/GUD/l62fP9182PdjPJjuP+K4x+XHdNbt3Xj4aMbzEOV7ldA8MspcC5H4BysIb0HfDyw/TmcNwvW/TckG93H9TKw83LkrbO/GdzaWdH+tpmT7l9Vp7PmCz9OmPJlKtO3fEnOl8ca8SVuf3EcLm2BN3H7i8X988L+YvHyHH61gtbta1x8NYV1e7xucjg34ULtbvS6UFr+Yb8q/wz4tXqJ8yH1h86gKeHhc+Nm7DfG/FnIXg3yR2n3G6v40Uq5bkgieKPix64Ep2cF86NqLo4fuxrwI+0+wbzi1z3QMcvelcavZ3CuiH2Cea5fzHDYU+LwIsf8GMlonXCYkV9h3Bb9qug8q67rhDgfdib+ropPXxXAp7T5jKz9jMNlT4XL/g3LZ0StM4rjwqTrjPj/C2ni/p4E789u8LhwbwnHhf8HAAD//+5ePoRwPQAA";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xb3W7jRBS243Qpuyx0tymk+5tdtJCb1kmRoOIqvYhIBZUiFVbdq103GRKjxA62gwpPwCPwCFzyCDwCj8Jl78BuzmnGkxn/JE4zbjvS0dR/Gc/n73xn5sy0rEzKBtQ1qNnzWK8zNXvf31BXfSv6VoHjfahPoB5B/cS3km/fv2k3337bfPO1awxHA7LbtMbD4Prnvj3nXD+0PNIjzkGnQ1zXdi7aKXPuazv2L2aXOKLfOb6ogl9zfjQ6RGnBe28w7x0ca769K4SP//wofKzU+bicQ91QwqXGtPMfFPY+LB/A+yE+m77d842Bbab94Lk130zfDN/0sevoA7tjDPSebfcGRO/bQ6L/5hj60P7J1l2nM/ljND4dmB3dRIRc/dS0uqbVc3WPuJ6rT1p+O71hN3huSLWvUnypQl1RoktSnFqC5+9Df18ffPdD06+3fXsQxmkXr/HwCp4vrAAvET4b6qTWYvBpMPi0Bfh84ltAXdaPnvnnPp7ixF6ewSk4vrsCnHjvgcfgohe8K8Mx3nd2h48z+me1kIyHCoUz7zyWh4DPN8QDLPnvv70ivlUY/M4T6pXC8Gxf0P9HgMG0/zsO+XnsvxkfByxXjcO6QK/KzHutx+D2j5YNbo9B20O4uSPbcolUuLH+VVHD/d9n3vOOkqwk9btqTJzsGp4h8rftFeDFwyWIUy2V3w/kW0Hw/BkHF5UaX7GF5XeFo58a1R7q15FpvSaOa9pWGF/v1xER4fvFCvVMEcQHdvwUN/6c4TdHF1ROOwWwsiCuN5jvrYIl/b5nC35fNeb74vnjmLj1WLK4lZX+Ytw6ljxu5VV/Mb7lRX+1K9ZfbUH9DfDducH6q8Xob+jhOeadjYjvG3xbzDvgPItJR3DzKzLMo6pUXmaNgqgAmBYpXNao+8/h5uqH8HulSd1+FD3fOtGWM99qdvr2sef4OPD7+UCyuIXzzqzi1rT/csYtVgd5uqxy/HNZ8ep9aMpQxHwprQinqPgh0sFl8wzjd4hnEs5P88izlznimUjXfy+Gw2sS3NQIXcc895RvLhe/h5Lp+om2LH9zQ8Iu63ykpubD7wLebEngd2lxWp8DJzUBTqcROD2XXJ/ocf+y/RLnL2G/nAbCW79c3C93bv0ykV9+lSO/nJmPA459jZ/vjsKtQH0XtjwFXQ/884i4rtEjbXNEWobVHRAOjpuSjB8Qj1rK8booL/EKsODiQI0k8jRuL0qkU5sS6JS6wPwwa7595tuzCL5hhLzl2/x8O8wR31i9/xfniVqyfS00bloEbph/DXgX5JBZ3EqS6Dv2/11KfxPNj8vQR+w3Snqe/GtNIv8qwd95Xz9ZNF/YzyhfiPvvKH5S2cJ8xQHZePrkBvFUFEf2IYAUU+BejMA9WLN7D/h6aHkzuG9JFkc2MoojuF4J/b6cGeTJPxVq7XLV/rm1ojgyr+5nzSd6XDLh00T2b/k0P5+eSsynuP3rcTg1GF7F7V9n/3+D2b/OXp7BsyLJvosKFc81Zt8FXteo59pw4a+70etwafmJ7Yr8OeDf/Uvcj4jXt7s1Tn9eKtdzPzvmE0P9lzB/lnY/u4g/ZynXcdUIXon4U+fg9kIy/rS05fGnLiF/0u4rvar4eA900LTqXB19Aedk2Fd6letDU1z2hLi8WmG+UM1o3faPjPwQxwmsH8qWl5Z13Rbn9/bYq4v49qUEfEubv8naLymc9kQ4HVzz/E3Uui87Tk267ov/X5NmnLHHwf/TGzRO3bsG49T/AwAA//9GparmsEAAAA==";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

@@ -1262,24 +1262,22 @@ abstract class ResourceReturner {
 }
 
 
-class _ResourceReturnerProxyImpl extends bindings.Proxy {
-  _ResourceReturnerProxyImpl.fromEndpoint(
+class _ResourceReturnerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ResourceReturnerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ResourceReturnerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ResourceReturnerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ResourceReturnerProxyImpl.unbound() : super.unbound();
-
-  static _ResourceReturnerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ResourceReturnerProxyImpl"));
-    return new _ResourceReturnerProxyImpl.fromEndpoint(endpoint);
-  }
+  _ResourceReturnerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ResourceReturnerServiceDescription();
+      new _ResourceReturnerServiceDescription();
 
+  String get serviceName => ResourceReturner.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -1289,51 +1287,30 @@ class _ResourceReturnerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ResourceReturnerProxyImpl($superString)";
+    return "_ResourceReturnerProxyControl($superString)";
   }
 }
 
 
-class _ResourceReturnerProxyCalls implements ResourceReturner {
-  _ResourceReturnerProxyImpl _proxyImpl;
-
-  _ResourceReturnerProxyCalls(this._proxyImpl);
-    void returnResources(List<ReturnedResource> resources) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ResourceReturnerReturnResourcesParams();
-      params.resources = resources;
-      _proxyImpl.sendMessage(params, _resourceReturnerMethodReturnResourcesName);
-    }
-}
-
-
-class ResourceReturnerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ResourceReturner ptr;
-
-  ResourceReturnerProxy(_ResourceReturnerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ResourceReturnerProxyCalls(proxyImpl);
-
+class ResourceReturnerProxy extends bindings.Proxy
+                              implements ResourceReturner {
   ResourceReturnerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ResourceReturnerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ResourceReturnerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ResourceReturnerProxyControl.fromEndpoint(endpoint));
 
-  ResourceReturnerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ResourceReturnerProxyImpl.fromHandle(handle) {
-    ptr = new _ResourceReturnerProxyCalls(impl);
-  }
+  ResourceReturnerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ResourceReturnerProxyControl.fromHandle(handle));
 
-  ResourceReturnerProxy.unbound() :
-      impl = new _ResourceReturnerProxyImpl.unbound() {
-    ptr = new _ResourceReturnerProxyCalls(impl);
+  ResourceReturnerProxy.unbound()
+      : super(new _ResourceReturnerProxyControl.unbound());
+
+  static ResourceReturnerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ResourceReturnerProxy"));
+    return new ResourceReturnerProxy.fromEndpoint(endpoint);
   }
 
   factory ResourceReturnerProxy.connectToService(
@@ -1343,30 +1320,16 @@ class ResourceReturnerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ResourceReturnerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ResourceReturnerProxy"));
-    return new ResourceReturnerProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => ResourceReturner.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ResourceReturnerProxy($impl)";
+  void returnResources(List<ReturnedResource> resources) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ResourceReturnerReturnResourcesParams();
+    params.resources = resources;
+    ctrl.sendMessage(params,
+        _resourceReturnerMethodReturnResourcesName);
   }
 }
 
@@ -1480,24 +1443,22 @@ abstract class Surface {
 }
 
 
-class _SurfaceProxyImpl extends bindings.Proxy {
-  _SurfaceProxyImpl.fromEndpoint(
+class _SurfaceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _SurfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _SurfaceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _SurfaceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _SurfaceProxyImpl.unbound() : super.unbound();
-
-  static _SurfaceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _SurfaceProxyImpl"));
-    return new _SurfaceProxyImpl.fromEndpoint(endpoint);
-  }
+  _SurfaceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _SurfaceServiceDescription();
+      new _SurfaceServiceDescription();
 
+  String get serviceName => Surface.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _surfaceMethodGetIdNamespaceName:
@@ -1547,87 +1508,30 @@ class _SurfaceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_SurfaceProxyImpl($superString)";
+    return "_SurfaceProxyControl($superString)";
   }
 }
 
 
-class _SurfaceProxyCalls implements Surface {
-  _SurfaceProxyImpl _proxyImpl;
-
-  _SurfaceProxyCalls(this._proxyImpl);
-    dynamic getIdNamespace([Function responseFactory = null]) {
-      var params = new _SurfaceGetIdNamespaceParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _surfaceMethodGetIdNamespaceName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void setResourceReturner(Object returner) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SurfaceSetResourceReturnerParams();
-      params.returner = returner;
-      _proxyImpl.sendMessage(params, _surfaceMethodSetResourceReturnerName);
-    }
-    void createSurface(int idLocal) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SurfaceCreateSurfaceParams();
-      params.idLocal = idLocal;
-      _proxyImpl.sendMessage(params, _surfaceMethodCreateSurfaceName);
-    }
-    dynamic submitFrame(int idLocal,Frame frame,[Function responseFactory = null]) {
-      var params = new _SurfaceSubmitFrameParams();
-      params.idLocal = idLocal;
-      params.frame = frame;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _surfaceMethodSubmitFrameName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void destroySurface(int idLocal) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _SurfaceDestroySurfaceParams();
-      params.idLocal = idLocal;
-      _proxyImpl.sendMessage(params, _surfaceMethodDestroySurfaceName);
-    }
-}
-
-
-class SurfaceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Surface ptr;
-
-  SurfaceProxy(_SurfaceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _SurfaceProxyCalls(proxyImpl);
-
+class SurfaceProxy extends bindings.Proxy
+                              implements Surface {
   SurfaceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _SurfaceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _SurfaceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _SurfaceProxyControl.fromEndpoint(endpoint));
 
-  SurfaceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _SurfaceProxyImpl.fromHandle(handle) {
-    ptr = new _SurfaceProxyCalls(impl);
-  }
+  SurfaceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _SurfaceProxyControl.fromHandle(handle));
 
-  SurfaceProxy.unbound() :
-      impl = new _SurfaceProxyImpl.unbound() {
-    ptr = new _SurfaceProxyCalls(impl);
+  SurfaceProxy.unbound()
+      : super(new _SurfaceProxyControl.unbound());
+
+  static SurfaceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SurfaceProxy"));
+    return new SurfaceProxy.fromEndpoint(endpoint);
   }
 
   factory SurfaceProxy.connectToService(
@@ -1637,30 +1541,54 @@ class SurfaceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static SurfaceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SurfaceProxy"));
-    return new SurfaceProxy.fromEndpoint(endpoint);
+
+  dynamic getIdNamespace([Function responseFactory = null]) {
+    var params = new _SurfaceGetIdNamespaceParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _surfaceMethodGetIdNamespaceName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => Surface.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void setResourceReturner(Object returner) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SurfaceSetResourceReturnerParams();
+    params.returner = returner;
+    ctrl.sendMessage(params,
+        _surfaceMethodSetResourceReturnerName);
   }
-
-  String toString() {
-    return "SurfaceProxy($impl)";
+  void createSurface(int idLocal) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SurfaceCreateSurfaceParams();
+    params.idLocal = idLocal;
+    ctrl.sendMessage(params,
+        _surfaceMethodCreateSurfaceName);
+  }
+  dynamic submitFrame(int idLocal,Frame frame,[Function responseFactory = null]) {
+    var params = new _SurfaceSubmitFrameParams();
+    params.idLocal = idLocal;
+    params.frame = frame;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _surfaceMethodSubmitFrameName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  void destroySurface(int idLocal) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _SurfaceDestroySurfaceParams();
+    params.idLocal = idLocal;
+    ctrl.sendMessage(params,
+        _surfaceMethodDestroySurfaceName);
   }
 }
 

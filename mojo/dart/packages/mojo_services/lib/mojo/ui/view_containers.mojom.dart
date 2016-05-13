@@ -725,24 +725,22 @@ abstract class ViewContainer {
 }
 
 
-class _ViewContainerProxyImpl extends bindings.Proxy {
-  _ViewContainerProxyImpl.fromEndpoint(
+class _ViewContainerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ViewContainerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ViewContainerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ViewContainerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ViewContainerProxyImpl.unbound() : super.unbound();
-
-  static _ViewContainerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ViewContainerProxyImpl"));
-    return new _ViewContainerProxyImpl.fromEndpoint(endpoint);
-  }
+  _ViewContainerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ViewContainerServiceDescription();
+      new _ViewContainerServiceDescription();
 
+  String get serviceName => ViewContainer.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -752,82 +750,30 @@ class _ViewContainerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ViewContainerProxyImpl($superString)";
+    return "_ViewContainerProxyControl($superString)";
   }
 }
 
 
-class _ViewContainerProxyCalls implements ViewContainer {
-  _ViewContainerProxyImpl _proxyImpl;
-
-  _ViewContainerProxyCalls(this._proxyImpl);
-    void setListener(Object listener) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ViewContainerSetListenerParams();
-      params.listener = listener;
-      _proxyImpl.sendMessage(params, _viewContainerMethodSetListenerName);
-    }
-    void addChild(int childKey, Object childViewOwner) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ViewContainerAddChildParams();
-      params.childKey = childKey;
-      params.childViewOwner = childViewOwner;
-      _proxyImpl.sendMessage(params, _viewContainerMethodAddChildName);
-    }
-    void removeChild(int childKey, Object transferredViewOwner) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ViewContainerRemoveChildParams();
-      params.childKey = childKey;
-      params.transferredViewOwner = transferredViewOwner;
-      _proxyImpl.sendMessage(params, _viewContainerMethodRemoveChildName);
-    }
-    void setChildProperties(int childKey, int childSceneVersion, view_properties_mojom.ViewProperties childViewProperties) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ViewContainerSetChildPropertiesParams();
-      params.childKey = childKey;
-      params.childSceneVersion = childSceneVersion;
-      params.childViewProperties = childViewProperties;
-      _proxyImpl.sendMessage(params, _viewContainerMethodSetChildPropertiesName);
-    }
-}
-
-
-class ViewContainerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ViewContainer ptr;
-
-  ViewContainerProxy(_ViewContainerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ViewContainerProxyCalls(proxyImpl);
-
+class ViewContainerProxy extends bindings.Proxy
+                              implements ViewContainer {
   ViewContainerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ViewContainerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ViewContainerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ViewContainerProxyControl.fromEndpoint(endpoint));
 
-  ViewContainerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ViewContainerProxyImpl.fromHandle(handle) {
-    ptr = new _ViewContainerProxyCalls(impl);
-  }
+  ViewContainerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ViewContainerProxyControl.fromHandle(handle));
 
-  ViewContainerProxy.unbound() :
-      impl = new _ViewContainerProxyImpl.unbound() {
-    ptr = new _ViewContainerProxyCalls(impl);
+  ViewContainerProxy.unbound()
+      : super(new _ViewContainerProxyControl.unbound());
+
+  static ViewContainerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewContainerProxy"));
+    return new ViewContainerProxy.fromEndpoint(endpoint);
   }
 
   factory ViewContainerProxy.connectToService(
@@ -837,30 +783,50 @@ class ViewContainerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ViewContainerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewContainerProxy"));
-    return new ViewContainerProxy.fromEndpoint(endpoint);
+
+  void setListener(Object listener) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewContainerSetListenerParams();
+    params.listener = listener;
+    ctrl.sendMessage(params,
+        _viewContainerMethodSetListenerName);
   }
-
-  String get serviceName => ViewContainer.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void addChild(int childKey, Object childViewOwner) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewContainerAddChildParams();
+    params.childKey = childKey;
+    params.childViewOwner = childViewOwner;
+    ctrl.sendMessage(params,
+        _viewContainerMethodAddChildName);
   }
-
-  String toString() {
-    return "ViewContainerProxy($impl)";
+  void removeChild(int childKey, Object transferredViewOwner) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewContainerRemoveChildParams();
+    params.childKey = childKey;
+    params.transferredViewOwner = transferredViewOwner;
+    ctrl.sendMessage(params,
+        _viewContainerMethodRemoveChildName);
+  }
+  void setChildProperties(int childKey, int childSceneVersion, view_properties_mojom.ViewProperties childViewProperties) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewContainerSetChildPropertiesParams();
+    params.childKey = childKey;
+    params.childSceneVersion = childSceneVersion;
+    params.childViewProperties = childViewProperties;
+    ctrl.sendMessage(params,
+        _viewContainerMethodSetChildPropertiesName);
   }
 }
 
@@ -983,24 +949,22 @@ abstract class ViewContainerListener {
 }
 
 
-class _ViewContainerListenerProxyImpl extends bindings.Proxy {
-  _ViewContainerListenerProxyImpl.fromEndpoint(
+class _ViewContainerListenerProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ViewContainerListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ViewContainerListenerProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ViewContainerListenerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ViewContainerListenerProxyImpl.unbound() : super.unbound();
-
-  static _ViewContainerListenerProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ViewContainerListenerProxyImpl"));
-    return new _ViewContainerListenerProxyImpl.fromEndpoint(endpoint);
-  }
+  _ViewContainerListenerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ViewContainerListenerServiceDescription();
+      new _ViewContainerListenerServiceDescription();
 
+  String get serviceName => ViewContainerListener.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewContainerListenerMethodOnChildAttachedName:
@@ -1050,61 +1014,30 @@ class _ViewContainerListenerProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ViewContainerListenerProxyImpl($superString)";
+    return "_ViewContainerListenerProxyControl($superString)";
   }
 }
 
 
-class _ViewContainerListenerProxyCalls implements ViewContainerListener {
-  _ViewContainerListenerProxyImpl _proxyImpl;
-
-  _ViewContainerListenerProxyCalls(this._proxyImpl);
-    dynamic onChildAttached(int childKey,ViewInfo childViewInfo,[Function responseFactory = null]) {
-      var params = new _ViewContainerListenerOnChildAttachedParams();
-      params.childKey = childKey;
-      params.childViewInfo = childViewInfo;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _viewContainerListenerMethodOnChildAttachedName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic onChildUnavailable(int childKey,[Function responseFactory = null]) {
-      var params = new _ViewContainerListenerOnChildUnavailableParams();
-      params.childKey = childKey;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _viewContainerListenerMethodOnChildUnavailableName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class ViewContainerListenerProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ViewContainerListener ptr;
-
-  ViewContainerListenerProxy(_ViewContainerListenerProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ViewContainerListenerProxyCalls(proxyImpl);
-
+class ViewContainerListenerProxy extends bindings.Proxy
+                              implements ViewContainerListener {
   ViewContainerListenerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ViewContainerListenerProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ViewContainerListenerProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ViewContainerListenerProxyControl.fromEndpoint(endpoint));
 
-  ViewContainerListenerProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ViewContainerListenerProxyImpl.fromHandle(handle) {
-    ptr = new _ViewContainerListenerProxyCalls(impl);
-  }
+  ViewContainerListenerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ViewContainerListenerProxyControl.fromHandle(handle));
 
-  ViewContainerListenerProxy.unbound() :
-      impl = new _ViewContainerListenerProxyImpl.unbound() {
-    ptr = new _ViewContainerListenerProxyCalls(impl);
+  ViewContainerListenerProxy.unbound()
+      : super(new _ViewContainerListenerProxyControl.unbound());
+
+  static ViewContainerListenerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewContainerListenerProxy"));
+    return new ViewContainerListenerProxy.fromEndpoint(endpoint);
   }
 
   factory ViewContainerListenerProxy.connectToService(
@@ -1114,30 +1047,25 @@ class ViewContainerListenerProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ViewContainerListenerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewContainerListenerProxy"));
-    return new ViewContainerListenerProxy.fromEndpoint(endpoint);
+
+  dynamic onChildAttached(int childKey,ViewInfo childViewInfo,[Function responseFactory = null]) {
+    var params = new _ViewContainerListenerOnChildAttachedParams();
+    params.childKey = childKey;
+    params.childViewInfo = childViewInfo;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _viewContainerListenerMethodOnChildAttachedName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => ViewContainerListener.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ViewContainerListenerProxy($impl)";
+  dynamic onChildUnavailable(int childKey,[Function responseFactory = null]) {
+    var params = new _ViewContainerListenerOnChildUnavailableParams();
+    params.childKey = childKey;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _viewContainerListenerMethodOnChildUnavailableName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

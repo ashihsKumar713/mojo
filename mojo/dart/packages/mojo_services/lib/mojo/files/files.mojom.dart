@@ -190,24 +190,22 @@ abstract class Files {
 }
 
 
-class _FilesProxyImpl extends bindings.Proxy {
-  _FilesProxyImpl.fromEndpoint(
+class _FilesProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _FilesProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _FilesProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _FilesProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _FilesProxyImpl.unbound() : super.unbound();
-
-  static _FilesProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _FilesProxyImpl"));
-    return new _FilesProxyImpl.fromEndpoint(endpoint);
-  }
+  _FilesProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _FilesServiceDescription();
+      new _FilesServiceDescription();
 
+  String get serviceName => Files.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _filesMethodOpenFileSystemName:
@@ -237,52 +235,30 @@ class _FilesProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_FilesProxyImpl($superString)";
+    return "_FilesProxyControl($superString)";
   }
 }
 
 
-class _FilesProxyCalls implements Files {
-  _FilesProxyImpl _proxyImpl;
-
-  _FilesProxyCalls(this._proxyImpl);
-    dynamic openFileSystem(String fileSystem,Object directory,[Function responseFactory = null]) {
-      var params = new _FilesOpenFileSystemParams();
-      params.fileSystem = fileSystem;
-      params.directory = directory;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _filesMethodOpenFileSystemName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class FilesProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Files ptr;
-
-  FilesProxy(_FilesProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _FilesProxyCalls(proxyImpl);
-
+class FilesProxy extends bindings.Proxy
+                              implements Files {
   FilesProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _FilesProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _FilesProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _FilesProxyControl.fromEndpoint(endpoint));
 
-  FilesProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _FilesProxyImpl.fromHandle(handle) {
-    ptr = new _FilesProxyCalls(impl);
-  }
+  FilesProxy.fromHandle(core.MojoHandle handle)
+      : super(new _FilesProxyControl.fromHandle(handle));
 
-  FilesProxy.unbound() :
-      impl = new _FilesProxyImpl.unbound() {
-    ptr = new _FilesProxyCalls(impl);
+  FilesProxy.unbound()
+      : super(new _FilesProxyControl.unbound());
+
+  static FilesProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For FilesProxy"));
+    return new FilesProxy.fromEndpoint(endpoint);
   }
 
   factory FilesProxy.connectToService(
@@ -292,30 +268,16 @@ class FilesProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static FilesProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For FilesProxy"));
-    return new FilesProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => Files.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "FilesProxy($impl)";
+  dynamic openFileSystem(String fileSystem,Object directory,[Function responseFactory = null]) {
+    var params = new _FilesOpenFileSystemParams();
+    params.fileSystem = fileSystem;
+    params.directory = directory;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _filesMethodOpenFileSystemName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

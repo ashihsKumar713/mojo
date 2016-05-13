@@ -199,24 +199,22 @@ abstract class ApplicationConnector {
 }
 
 
-class _ApplicationConnectorProxyImpl extends bindings.Proxy {
-  _ApplicationConnectorProxyImpl.fromEndpoint(
+class _ApplicationConnectorProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ApplicationConnectorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ApplicationConnectorProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ApplicationConnectorProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ApplicationConnectorProxyImpl.unbound() : super.unbound();
-
-  static _ApplicationConnectorProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ApplicationConnectorProxyImpl"));
-    return new _ApplicationConnectorProxyImpl.fromEndpoint(endpoint);
-  }
+  _ApplicationConnectorProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ApplicationConnectorServiceDescription();
+      new _ApplicationConnectorServiceDescription();
 
+  String get serviceName => ApplicationConnector.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -226,62 +224,30 @@ class _ApplicationConnectorProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ApplicationConnectorProxyImpl($superString)";
+    return "_ApplicationConnectorProxyControl($superString)";
   }
 }
 
 
-class _ApplicationConnectorProxyCalls implements ApplicationConnector {
-  _ApplicationConnectorProxyImpl _proxyImpl;
-
-  _ApplicationConnectorProxyCalls(this._proxyImpl);
-    void connectToApplication(String applicationUrl, Object services, Object exposedServices) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ApplicationConnectorConnectToApplicationParams();
-      params.applicationUrl = applicationUrl;
-      params.services = services;
-      params.exposedServices = exposedServices;
-      _proxyImpl.sendMessage(params, _applicationConnectorMethodConnectToApplicationName);
-    }
-    void duplicate(Object applicationConnectorRequest) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ApplicationConnectorDuplicateParams();
-      params.applicationConnectorRequest = applicationConnectorRequest;
-      _proxyImpl.sendMessage(params, _applicationConnectorMethodDuplicateName);
-    }
-}
-
-
-class ApplicationConnectorProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  ApplicationConnector ptr;
-
-  ApplicationConnectorProxy(_ApplicationConnectorProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ApplicationConnectorProxyCalls(proxyImpl);
-
+class ApplicationConnectorProxy extends bindings.Proxy
+                              implements ApplicationConnector {
   ApplicationConnectorProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ApplicationConnectorProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ApplicationConnectorProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ApplicationConnectorProxyControl.fromEndpoint(endpoint));
 
-  ApplicationConnectorProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ApplicationConnectorProxyImpl.fromHandle(handle) {
-    ptr = new _ApplicationConnectorProxyCalls(impl);
-  }
+  ApplicationConnectorProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ApplicationConnectorProxyControl.fromHandle(handle));
 
-  ApplicationConnectorProxy.unbound() :
-      impl = new _ApplicationConnectorProxyImpl.unbound() {
-    ptr = new _ApplicationConnectorProxyCalls(impl);
+  ApplicationConnectorProxy.unbound()
+      : super(new _ApplicationConnectorProxyControl.unbound());
+
+  static ApplicationConnectorProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ApplicationConnectorProxy"));
+    return new ApplicationConnectorProxy.fromEndpoint(endpoint);
   }
 
   factory ApplicationConnectorProxy.connectToService(
@@ -291,30 +257,28 @@ class ApplicationConnectorProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ApplicationConnectorProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ApplicationConnectorProxy"));
-    return new ApplicationConnectorProxy.fromEndpoint(endpoint);
+
+  void connectToApplication(String applicationUrl, Object services, Object exposedServices) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ApplicationConnectorConnectToApplicationParams();
+    params.applicationUrl = applicationUrl;
+    params.services = services;
+    params.exposedServices = exposedServices;
+    ctrl.sendMessage(params,
+        _applicationConnectorMethodConnectToApplicationName);
   }
-
-  String get serviceName => ApplicationConnector.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ApplicationConnectorProxy($impl)";
+  void duplicate(Object applicationConnectorRequest) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ApplicationConnectorDuplicateParams();
+    params.applicationConnectorRequest = applicationConnectorRequest;
+    ctrl.sendMessage(params,
+        _applicationConnectorMethodDuplicateName);
   }
 }
 

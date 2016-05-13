@@ -793,24 +793,22 @@ abstract class MediaDemux {
 }
 
 
-class _MediaDemuxProxyImpl extends bindings.Proxy {
-  _MediaDemuxProxyImpl.fromEndpoint(
+class _MediaDemuxProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _MediaDemuxProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _MediaDemuxProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _MediaDemuxProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _MediaDemuxProxyImpl.unbound() : super.unbound();
-
-  static _MediaDemuxProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _MediaDemuxProxyImpl"));
-    return new _MediaDemuxProxyImpl.fromEndpoint(endpoint);
-  }
+  _MediaDemuxProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _MediaDemuxServiceDescription();
+      new _MediaDemuxServiceDescription();
 
+  String get serviceName => MediaDemux.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaDemuxMethodDescribeName:
@@ -920,94 +918,30 @@ class _MediaDemuxProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_MediaDemuxProxyImpl($superString)";
+    return "_MediaDemuxProxyControl($superString)";
   }
 }
 
 
-class _MediaDemuxProxyCalls implements MediaDemux {
-  _MediaDemuxProxyImpl _proxyImpl;
-
-  _MediaDemuxProxyCalls(this._proxyImpl);
-    dynamic describe([Function responseFactory = null]) {
-      var params = new _MediaDemuxDescribeParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaDemuxMethodDescribeName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void getProducer(int streamIndex, Object producer) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _MediaDemuxGetProducerParams();
-      params.streamIndex = streamIndex;
-      params.producer = producer;
-      _proxyImpl.sendMessage(params, _mediaDemuxMethodGetProducerName);
-    }
-    dynamic getMetadata(int versionLastSeen,[Function responseFactory = null]) {
-      var params = new _MediaDemuxGetMetadataParams();
-      params.versionLastSeen = versionLastSeen;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaDemuxMethodGetMetadataName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic prime([Function responseFactory = null]) {
-      var params = new _MediaDemuxPrimeParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaDemuxMethodPrimeName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic flush([Function responseFactory = null]) {
-      var params = new _MediaDemuxFlushParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaDemuxMethodFlushName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    dynamic seek(int position,[Function responseFactory = null]) {
-      var params = new _MediaDemuxSeekParams();
-      params.position = position;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _mediaDemuxMethodSeekName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class MediaDemuxProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  MediaDemux ptr;
-
-  MediaDemuxProxy(_MediaDemuxProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _MediaDemuxProxyCalls(proxyImpl);
-
+class MediaDemuxProxy extends bindings.Proxy
+                              implements MediaDemux {
   MediaDemuxProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _MediaDemuxProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _MediaDemuxProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _MediaDemuxProxyControl.fromEndpoint(endpoint));
 
-  MediaDemuxProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _MediaDemuxProxyImpl.fromHandle(handle) {
-    ptr = new _MediaDemuxProxyCalls(impl);
-  }
+  MediaDemuxProxy.fromHandle(core.MojoHandle handle)
+      : super(new _MediaDemuxProxyControl.fromHandle(handle));
 
-  MediaDemuxProxy.unbound() :
-      impl = new _MediaDemuxProxyImpl.unbound() {
-    ptr = new _MediaDemuxProxyCalls(impl);
+  MediaDemuxProxy.unbound()
+      : super(new _MediaDemuxProxyControl.unbound());
+
+  static MediaDemuxProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaDemuxProxy"));
+    return new MediaDemuxProxy.fromEndpoint(endpoint);
   }
 
   factory MediaDemuxProxy.connectToService(
@@ -1017,30 +951,59 @@ class MediaDemuxProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static MediaDemuxProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaDemuxProxy"));
-    return new MediaDemuxProxy.fromEndpoint(endpoint);
+
+  dynamic describe([Function responseFactory = null]) {
+    var params = new _MediaDemuxDescribeParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaDemuxMethodDescribeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => MediaDemux.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
+  void getProducer(int streamIndex, Object producer) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaDemuxGetProducerParams();
+    params.streamIndex = streamIndex;
+    params.producer = producer;
+    ctrl.sendMessage(params,
+        _mediaDemuxMethodGetProducerName);
   }
-
-  String toString() {
-    return "MediaDemuxProxy($impl)";
+  dynamic getMetadata(int versionLastSeen,[Function responseFactory = null]) {
+    var params = new _MediaDemuxGetMetadataParams();
+    params.versionLastSeen = versionLastSeen;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaDemuxMethodGetMetadataName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic prime([Function responseFactory = null]) {
+    var params = new _MediaDemuxPrimeParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaDemuxMethodPrimeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic flush([Function responseFactory = null]) {
+    var params = new _MediaDemuxFlushParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaDemuxMethodFlushName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
+  }
+  dynamic seek(int position,[Function responseFactory = null]) {
+    var params = new _MediaDemuxSeekParams();
+    params.position = position;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _mediaDemuxMethodSeekName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

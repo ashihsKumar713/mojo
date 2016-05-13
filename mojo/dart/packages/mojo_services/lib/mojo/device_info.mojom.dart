@@ -249,24 +249,22 @@ abstract class DeviceInfo {
 }
 
 
-class _DeviceInfoProxyImpl extends bindings.Proxy {
-  _DeviceInfoProxyImpl.fromEndpoint(
+class _DeviceInfoProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _DeviceInfoProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _DeviceInfoProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _DeviceInfoProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _DeviceInfoProxyImpl.unbound() : super.unbound();
-
-  static _DeviceInfoProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _DeviceInfoProxyImpl"));
-    return new _DeviceInfoProxyImpl.fromEndpoint(endpoint);
-  }
+  _DeviceInfoProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _DeviceInfoServiceDescription();
+      new _DeviceInfoServiceDescription();
 
+  String get serviceName => DeviceInfo.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _deviceInfoMethodGetDeviceTypeName:
@@ -296,50 +294,30 @@ class _DeviceInfoProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_DeviceInfoProxyImpl($superString)";
+    return "_DeviceInfoProxyControl($superString)";
   }
 }
 
 
-class _DeviceInfoProxyCalls implements DeviceInfo {
-  _DeviceInfoProxyImpl _proxyImpl;
-
-  _DeviceInfoProxyCalls(this._proxyImpl);
-    dynamic getDeviceType([Function responseFactory = null]) {
-      var params = new _DeviceInfoGetDeviceTypeParams();
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _deviceInfoMethodGetDeviceTypeName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class DeviceInfoProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  DeviceInfo ptr;
-
-  DeviceInfoProxy(_DeviceInfoProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _DeviceInfoProxyCalls(proxyImpl);
-
+class DeviceInfoProxy extends bindings.Proxy
+                              implements DeviceInfo {
   DeviceInfoProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _DeviceInfoProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _DeviceInfoProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _DeviceInfoProxyControl.fromEndpoint(endpoint));
 
-  DeviceInfoProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _DeviceInfoProxyImpl.fromHandle(handle) {
-    ptr = new _DeviceInfoProxyCalls(impl);
-  }
+  DeviceInfoProxy.fromHandle(core.MojoHandle handle)
+      : super(new _DeviceInfoProxyControl.fromHandle(handle));
 
-  DeviceInfoProxy.unbound() :
-      impl = new _DeviceInfoProxyImpl.unbound() {
-    ptr = new _DeviceInfoProxyCalls(impl);
+  DeviceInfoProxy.unbound()
+      : super(new _DeviceInfoProxyControl.unbound());
+
+  static DeviceInfoProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For DeviceInfoProxy"));
+    return new DeviceInfoProxy.fromEndpoint(endpoint);
   }
 
   factory DeviceInfoProxy.connectToService(
@@ -349,30 +327,14 @@ class DeviceInfoProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static DeviceInfoProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For DeviceInfoProxy"));
-    return new DeviceInfoProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => DeviceInfo.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "DeviceInfoProxy($impl)";
+  dynamic getDeviceType([Function responseFactory = null]) {
+    var params = new _DeviceInfoGetDeviceTypeParams();
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _deviceInfoMethodGetDeviceTypeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 

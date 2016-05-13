@@ -1762,24 +1762,22 @@ abstract class Service {
 }
 
 
-class _ServiceProxyImpl extends bindings.Proxy {
-  _ServiceProxyImpl.fromEndpoint(
+class _ServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _ServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _ServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _ServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _ServiceProxyImpl.unbound() : super.unbound();
-
-  static _ServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _ServiceProxyImpl"));
-    return new _ServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _ServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _ServiceServiceDescription();
+      new _ServiceServiceDescription();
 
+  String get serviceName => Service.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _serviceMethodFrobinateName:
@@ -1809,62 +1807,30 @@ class _ServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_ServiceProxyImpl($superString)";
+    return "_ServiceProxyControl($superString)";
   }
 }
 
 
-class _ServiceProxyCalls implements Service {
-  _ServiceProxyImpl _proxyImpl;
-
-  _ServiceProxyCalls(this._proxyImpl);
-    dynamic frobinate(Foo foo,ServiceBazOptions baz,Object port,[Function responseFactory = null]) {
-      var params = new _ServiceFrobinateParams();
-      params.foo = foo;
-      params.baz = baz;
-      params.port = port;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _serviceMethodFrobinateName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-    void getPort(Object port) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _ServiceGetPortParams();
-      params.port = port;
-      _proxyImpl.sendMessage(params, _serviceMethodGetPortName);
-    }
-}
-
-
-class ServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Service ptr;
-
-  ServiceProxy(_ServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _ServiceProxyCalls(proxyImpl);
-
+class ServiceProxy extends bindings.Proxy
+                              implements Service {
   ServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _ServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _ServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ServiceProxyControl.fromEndpoint(endpoint));
 
-  ServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _ServiceProxyImpl.fromHandle(handle) {
-    ptr = new _ServiceProxyCalls(impl);
-  }
+  ServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ServiceProxyControl.fromHandle(handle));
 
-  ServiceProxy.unbound() :
-      impl = new _ServiceProxyImpl.unbound() {
-    ptr = new _ServiceProxyCalls(impl);
+  ServiceProxy.unbound()
+      : super(new _ServiceProxyControl.unbound());
+
+  static ServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ServiceProxy"));
+    return new ServiceProxy.fromEndpoint(endpoint);
   }
 
   factory ServiceProxy.connectToService(
@@ -1874,30 +1840,27 @@ class ServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static ServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ServiceProxy"));
-    return new ServiceProxy.fromEndpoint(endpoint);
+
+  dynamic frobinate(Foo foo,ServiceBazOptions baz,Object port,[Function responseFactory = null]) {
+    var params = new _ServiceFrobinateParams();
+    params.foo = foo;
+    params.baz = baz;
+    params.port = port;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _serviceMethodFrobinateName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
-
-  String get serviceName => Service.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "ServiceProxy($impl)";
+  void getPort(Object port) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ServiceGetPortParams();
+    params.port = port;
+    ctrl.sendMessage(params,
+        _serviceMethodGetPortName);
   }
 }
 
@@ -2030,24 +1993,22 @@ abstract class Port {
 }
 
 
-class _PortProxyImpl extends bindings.Proxy {
-  _PortProxyImpl.fromEndpoint(
+class _PortProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _PortProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _PortProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _PortProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _PortProxyImpl.unbound() : super.unbound();
-
-  static _PortProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _PortProxyImpl"));
-    return new _PortProxyImpl.fromEndpoint(endpoint);
-  }
+  _PortProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _PortServiceDescription();
+      new _PortServiceDescription();
 
+  String get serviceName => Port.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -2057,52 +2018,30 @@ class _PortProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_PortProxyImpl($superString)";
+    return "_PortProxyControl($superString)";
   }
 }
 
 
-class _PortProxyCalls implements Port {
-  _PortProxyImpl _proxyImpl;
-
-  _PortProxyCalls(this._proxyImpl);
-    void postMessage(String messageText, Object port) {
-      if (!_proxyImpl.isBound) {
-        _proxyImpl.proxyError("The Proxy is closed.");
-        return;
-      }
-      var params = new _PortPostMessageParams();
-      params.messageText = messageText;
-      params.port = port;
-      _proxyImpl.sendMessage(params, _portMethodPostMessageName);
-    }
-}
-
-
-class PortProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  Port ptr;
-
-  PortProxy(_PortProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _PortProxyCalls(proxyImpl);
-
+class PortProxy extends bindings.Proxy
+                              implements Port {
   PortProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _PortProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _PortProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _PortProxyControl.fromEndpoint(endpoint));
 
-  PortProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _PortProxyImpl.fromHandle(handle) {
-    ptr = new _PortProxyCalls(impl);
-  }
+  PortProxy.fromHandle(core.MojoHandle handle)
+      : super(new _PortProxyControl.fromHandle(handle));
 
-  PortProxy.unbound() :
-      impl = new _PortProxyImpl.unbound() {
-    ptr = new _PortProxyCalls(impl);
+  PortProxy.unbound()
+      : super(new _PortProxyControl.unbound());
+
+  static PortProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For PortProxy"));
+    return new PortProxy.fromEndpoint(endpoint);
   }
 
   factory PortProxy.connectToService(
@@ -2112,30 +2051,17 @@ class PortProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static PortProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For PortProxy"));
-    return new PortProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => Port.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "PortProxy($impl)";
+  void postMessage(String messageText, Object port) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _PortPostMessageParams();
+    params.messageText = messageText;
+    params.port = port;
+    ctrl.sendMessage(params,
+        _portMethodPostMessageName);
   }
 }
 
@@ -2235,7 +2161,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "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";
+  var serializedRuntimeTypeInfo = "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";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

@@ -378,24 +378,22 @@ abstract class PredictionService {
 }
 
 
-class _PredictionServiceProxyImpl extends bindings.Proxy {
-  _PredictionServiceProxyImpl.fromEndpoint(
+class _PredictionServiceProxyControl extends bindings.ProxyMessageHandler
+                                      implements bindings.ProxyControl {
+  _PredictionServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _PredictionServiceProxyImpl.fromHandle(core.MojoHandle handle) :
-      super.fromHandle(handle);
+  _PredictionServiceProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
 
-  _PredictionServiceProxyImpl.unbound() : super.unbound();
-
-  static _PredictionServiceProxyImpl newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For _PredictionServiceProxyImpl"));
-    return new _PredictionServiceProxyImpl.fromEndpoint(endpoint);
-  }
+  _PredictionServiceProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-    new _PredictionServiceServiceDescription();
+      new _PredictionServiceServiceDescription();
 
+  String get serviceName => PredictionService.serviceName;
+
+  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _predictionServiceMethodGetPredictionListName:
@@ -425,51 +423,30 @@ class _PredictionServiceProxyImpl extends bindings.Proxy {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "_PredictionServiceProxyImpl($superString)";
+    return "_PredictionServiceProxyControl($superString)";
   }
 }
 
 
-class _PredictionServiceProxyCalls implements PredictionService {
-  _PredictionServiceProxyImpl _proxyImpl;
-
-  _PredictionServiceProxyCalls(this._proxyImpl);
-    dynamic getPredictionList(PredictionInfo predictionInfo,[Function responseFactory = null]) {
-      var params = new _PredictionServiceGetPredictionListParams();
-      params.predictionInfo = predictionInfo;
-      return _proxyImpl.sendMessageWithRequestId(
-          params,
-          _predictionServiceMethodGetPredictionListName,
-          -1,
-          bindings.MessageHeader.kMessageExpectsResponse);
-    }
-}
-
-
-class PredictionServiceProxy implements bindings.ProxyBase {
-  final bindings.Proxy impl;
-  PredictionService ptr;
-
-  PredictionServiceProxy(_PredictionServiceProxyImpl proxyImpl) :
-      impl = proxyImpl,
-      ptr = new _PredictionServiceProxyCalls(proxyImpl);
-
+class PredictionServiceProxy extends bindings.Proxy
+                              implements PredictionService {
   PredictionServiceProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) :
-      impl = new _PredictionServiceProxyImpl.fromEndpoint(endpoint) {
-    ptr = new _PredictionServiceProxyCalls(impl);
-  }
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _PredictionServiceProxyControl.fromEndpoint(endpoint));
 
-  PredictionServiceProxy.fromHandle(core.MojoHandle handle) :
-      impl = new _PredictionServiceProxyImpl.fromHandle(handle) {
-    ptr = new _PredictionServiceProxyCalls(impl);
-  }
+  PredictionServiceProxy.fromHandle(core.MojoHandle handle)
+      : super(new _PredictionServiceProxyControl.fromHandle(handle));
 
-  PredictionServiceProxy.unbound() :
-      impl = new _PredictionServiceProxyImpl.unbound() {
-    ptr = new _PredictionServiceProxyCalls(impl);
+  PredictionServiceProxy.unbound()
+      : super(new _PredictionServiceProxyControl.unbound());
+
+  static PredictionServiceProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For PredictionServiceProxy"));
+    return new PredictionServiceProxy.fromEndpoint(endpoint);
   }
 
   factory PredictionServiceProxy.connectToService(
@@ -479,30 +456,15 @@ class PredictionServiceProxy implements bindings.ProxyBase {
     return p;
   }
 
-  static PredictionServiceProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For PredictionServiceProxy"));
-    return new PredictionServiceProxy.fromEndpoint(endpoint);
-  }
 
-  String get serviceName => PredictionService.serviceName;
-
-  Future close({bool immediate: false}) => impl.close(immediate: immediate);
-
-  Future responseOrError(Future f) => impl.responseOrError(f);
-
-  Future get errorFuture => impl.errorFuture;
-
-  int get version => impl.version;
-
-  Future<int> queryVersion() => impl.queryVersion();
-
-  void requireVersion(int requiredVersion) {
-    impl.requireVersion(requiredVersion);
-  }
-
-  String toString() {
-    return "PredictionServiceProxy($impl)";
+  dynamic getPredictionList(PredictionInfo predictionInfo,[Function responseFactory = null]) {
+    var params = new _PredictionServiceGetPredictionListParams();
+    params.predictionInfo = predictionInfo;
+    return ctrl.sendMessageWithRequestId(
+        params,
+        _predictionServiceMethodGetPredictionListName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
