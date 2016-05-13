@@ -314,15 +314,16 @@ class Tester : public ApplicationDelegate,
   }
 
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    if (!requestor_url_.empty() &&
-        requestor_url_ != connection->GetRemoteApplicationURL()) {
+    const std::string& remote_url =
+        connection->GetServiceProviderImpl().connection_context().remote_url;
+    if (!requestor_url_.empty() && requestor_url_ != remote_url) {
       context_->set_tester_called_quit();
       context_->QuitSoon();
       base::MessageLoop::current()->Quit();
       return false;
     }
     // If we're coming from A, then add B, otherwise A.
-    if (connection->GetRemoteApplicationURL() == kTestAURLString)
+    if (remote_url == kTestAURLString)
       connection->AddService<TestB>(this);
     else
       connection->AddService<TestA>(this);

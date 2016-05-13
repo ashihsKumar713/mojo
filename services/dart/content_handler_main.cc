@@ -238,7 +238,9 @@ class DartContentHandlerApp : public mojo::ApplicationDelegate {
   // Overridden from ApplicationDelegate:
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    bool strict = HasStrictQueryParam(connection->GetConnectionURL());
+    bool strict = HasStrictQueryParam(connection->GetServiceProviderImpl()
+                                          .connection_context()
+                                          .connection_url);
     if (default_strict_ || strict) {
       connection->AddService(&strict_content_handler_factory_);
     } else {

@@ -39,7 +39,9 @@ void LauncherApp::Initialize(mojo::ApplicationImpl* app_impl) {
 bool LauncherApp::ConfigureIncomingConnection(
     mojo::ApplicationConnection* connection) {
   // Only present the launcher interface to the shell.
-  if (connection->GetRemoteApplicationURL().empty()) {
+  if (connection->GetServiceProviderImpl()
+          .connection_context()
+          .remote_url.empty()) {
     connection->AddService<Launcher>(this);
   }
   return true;

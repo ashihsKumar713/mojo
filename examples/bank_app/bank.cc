@@ -59,7 +59,8 @@ class BankApp : public mojo::ApplicationDelegate,
   // From ApplicationDelegate
   bool ConfigureIncomingConnection(
       mojo::ApplicationConnection* connection) override {
-    std::string url = connection->GetRemoteApplicationURL();
+    std::string url =
+        connection->GetServiceProviderImpl().connection_context().remote_url;
     if (url.length() > 0) {
       vanadium::AppInstanceNamePtr app(vanadium::AppInstanceName::New());
       app->url = url;

@@ -213,7 +213,9 @@ class PythonContentHandlerApp : public ApplicationDelegate {
  private:
   // Overridden from ApplicationDelegate:
   bool ConfigureIncomingConnection(ApplicationConnection* connection) override {
-    if (IsDebug(connection->GetConnectionURL()))
+    if (IsDebug(connection->GetServiceProviderImpl()
+                    .connection_context()
+                    .connection_url))
       connection->AddService(&debug_content_handler_factory_);
     else
       connection->AddService(&content_handler_factory_);
