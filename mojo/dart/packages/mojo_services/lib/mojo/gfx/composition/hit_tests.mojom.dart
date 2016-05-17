@@ -724,9 +724,9 @@ abstract class HitTester {
   dynamic hitTest(geometry_mojom.PointF point,[Function responseFactory = null]);
 }
 
-
-class _HitTesterProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _HitTesterProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _HitTesterProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -740,7 +740,6 @@ class _HitTesterProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => HitTester.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _hitTesterMethodHitTestName:
@@ -777,9 +776,9 @@ class _HitTesterProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class HitTesterProxy extends bindings.Proxy
-                              implements HitTester {
+class HitTesterProxy
+    extends bindings.Proxy
+    implements HitTester {
   HitTesterProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _HitTesterProxyControl.fromEndpoint(endpoint));
@@ -815,29 +814,24 @@ class HitTesterProxy extends bindings.Proxy
   }
 }
 
-
-class HitTesterStub extends bindings.Stub {
+class _HitTesterStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<HitTester> {
   HitTester _impl;
 
-  HitTesterStub.fromEndpoint(
+  _HitTesterStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [HitTester impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  HitTesterStub.fromHandle(
+  _HitTesterStubControl.fromHandle(
       core.MojoHandle handle, [HitTester impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  HitTesterStub.unbound([this._impl]) : super.unbound();
-
-  static HitTesterStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HitTesterStub"));
-    return new HitTesterStub.fromEndpoint(endpoint);
-  }
+  _HitTesterStubControl.unbound([this._impl]) : super.unbound();
 
 
   HitTesterHitTestResponseParams _hitTesterHitTestResponseParamsFactory(HitTestResult result) {
@@ -904,9 +898,10 @@ class HitTesterStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "HitTesterStub($superString)";
+    return "_HitTesterStubControl($superString)";
   }
 
   int get version => 0;
@@ -917,6 +912,35 @@ class HitTesterStub extends bindings.Stub {
       _cachedServiceDescription = new _HitTesterServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class HitTesterStub
+    extends bindings.Stub<HitTester>
+    implements HitTester {
+  HitTesterStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [HitTester impl])
+      : super(new _HitTesterStubControl.fromEndpoint(endpoint, impl));
+
+  HitTesterStub.fromHandle(
+      core.MojoHandle handle, [HitTester impl])
+      : super(new _HitTesterStubControl.fromHandle(handle, impl));
+
+  HitTesterStub.unbound([HitTester impl])
+      : super(new _HitTesterStubControl.unbound(impl));
+
+  static HitTesterStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HitTesterStub"));
+    return new HitTesterStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _HitTesterStubControl.serviceDescription;
+
+
+  dynamic hitTest(geometry_mojom.PointF point,[Function responseFactory = null]) {
+    return impl.hitTest(point,responseFactory);
   }
 }
 

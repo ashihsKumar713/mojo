@@ -805,9 +805,9 @@ abstract class HumanResourceDatabase {
   dynamic listEmployeeIds([Function responseFactory = null]);
 }
 
-
-class _HumanResourceDatabaseProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _HumanResourceDatabaseProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _HumanResourceDatabaseProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -821,7 +821,6 @@ class _HumanResourceDatabaseProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => HumanResourceDatabase.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _humanResourceDatabaseMethodAddEmployeeName:
@@ -918,9 +917,9 @@ class _HumanResourceDatabaseProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class HumanResourceDatabaseProxy extends bindings.Proxy
-                              implements HumanResourceDatabase {
+class HumanResourceDatabaseProxy
+    extends bindings.Proxy
+    implements HumanResourceDatabase {
   HumanResourceDatabaseProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _HumanResourceDatabaseProxyControl.fromEndpoint(endpoint));
@@ -984,29 +983,24 @@ class HumanResourceDatabaseProxy extends bindings.Proxy
   }
 }
 
-
-class HumanResourceDatabaseStub extends bindings.Stub {
+class _HumanResourceDatabaseStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<HumanResourceDatabase> {
   HumanResourceDatabase _impl;
 
-  HumanResourceDatabaseStub.fromEndpoint(
+  _HumanResourceDatabaseStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [HumanResourceDatabase impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  HumanResourceDatabaseStub.fromHandle(
+  _HumanResourceDatabaseStubControl.fromHandle(
       core.MojoHandle handle, [HumanResourceDatabase impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  HumanResourceDatabaseStub.unbound([this._impl]) : super.unbound();
-
-  static HumanResourceDatabaseStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HumanResourceDatabaseStub"));
-    return new HumanResourceDatabaseStub.fromEndpoint(endpoint);
-  }
+  _HumanResourceDatabaseStubControl.unbound([this._impl]) : super.unbound();
 
 
   HumanResourceDatabaseAddEmployeeResponseParams _humanResourceDatabaseAddEmployeeResponseParamsFactory(bool success) {
@@ -1153,9 +1147,10 @@ class HumanResourceDatabaseStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "HumanResourceDatabaseStub($superString)";
+    return "_HumanResourceDatabaseStubControl($superString)";
   }
 
   int get version => 2;
@@ -1166,6 +1161,44 @@ class HumanResourceDatabaseStub extends bindings.Stub {
       _cachedServiceDescription = new _HumanResourceDatabaseServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class HumanResourceDatabaseStub
+    extends bindings.Stub<HumanResourceDatabase>
+    implements HumanResourceDatabase {
+  HumanResourceDatabaseStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [HumanResourceDatabase impl])
+      : super(new _HumanResourceDatabaseStubControl.fromEndpoint(endpoint, impl));
+
+  HumanResourceDatabaseStub.fromHandle(
+      core.MojoHandle handle, [HumanResourceDatabase impl])
+      : super(new _HumanResourceDatabaseStubControl.fromHandle(handle, impl));
+
+  HumanResourceDatabaseStub.unbound([HumanResourceDatabase impl])
+      : super(new _HumanResourceDatabaseStubControl.unbound(impl));
+
+  static HumanResourceDatabaseStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HumanResourceDatabaseStub"));
+    return new HumanResourceDatabaseStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _HumanResourceDatabaseStubControl.serviceDescription;
+
+
+  dynamic addEmployee(Employee employee,[Function responseFactory = null]) {
+    return impl.addEmployee(employee,responseFactory);
+  }
+  dynamic queryEmployee(int id,bool retrieveFingerPrint,[Function responseFactory = null]) {
+    return impl.queryEmployee(id,retrieveFingerPrint,responseFactory);
+  }
+  dynamic attachFingerPrint(int id,List<int> fingerPrint,[Function responseFactory = null]) {
+    return impl.attachFingerPrint(id,fingerPrint,responseFactory);
+  }
+  dynamic listEmployeeIds([Function responseFactory = null]) {
+    return impl.listEmployeeIds(responseFactory);
   }
 }
 

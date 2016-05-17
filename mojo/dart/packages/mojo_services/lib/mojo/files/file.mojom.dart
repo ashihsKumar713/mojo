@@ -2361,9 +2361,9 @@ abstract class File {
   dynamic ioctl(int request,List<int> inValues,[Function responseFactory = null]);
 }
 
-
-class _FileProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _FileProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _FileProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -2377,7 +2377,6 @@ class _FileProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => File.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _fileMethodCloseName:
@@ -2674,9 +2673,9 @@ class _FileProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class FileProxy extends bindings.Proxy
-                              implements File {
+class FileProxy
+    extends bindings.Proxy
+    implements File {
   FileProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _FileProxyControl.fromEndpoint(endpoint));
@@ -2838,29 +2837,24 @@ class FileProxy extends bindings.Proxy
   }
 }
 
-
-class FileStub extends bindings.Stub {
+class _FileStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<File> {
   File _impl;
 
-  FileStub.fromEndpoint(
+  _FileStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [File impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  FileStub.fromHandle(
+  _FileStubControl.fromHandle(
       core.MojoHandle handle, [File impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  FileStub.unbound([this._impl]) : super.unbound();
-
-  static FileStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For FileStub"));
-    return new FileStub.fromEndpoint(endpoint);
-  }
+  _FileStubControl.unbound([this._impl]) : super.unbound();
 
 
   FileCloseResponseParams _fileCloseResponseParamsFactory(types_mojom.Error err) {
@@ -3277,9 +3271,10 @@ class FileStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "FileStub($superString)";
+    return "_FileStubControl($superString)";
   }
 
   int get version => 0;
@@ -3290,6 +3285,74 @@ class FileStub extends bindings.Stub {
       _cachedServiceDescription = new _FileServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class FileStub
+    extends bindings.Stub<File>
+    implements File {
+  FileStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [File impl])
+      : super(new _FileStubControl.fromEndpoint(endpoint, impl));
+
+  FileStub.fromHandle(
+      core.MojoHandle handle, [File impl])
+      : super(new _FileStubControl.fromHandle(handle, impl));
+
+  FileStub.unbound([File impl])
+      : super(new _FileStubControl.unbound(impl));
+
+  static FileStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For FileStub"));
+    return new FileStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _FileStubControl.serviceDescription;
+
+
+  dynamic close_([Function responseFactory = null]) {
+    return impl.close_(responseFactory);
+  }
+  dynamic read(int numBytesToRead,int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
+    return impl.read(numBytesToRead,offset,whence,responseFactory);
+  }
+  dynamic write(List<int> bytesToWrite,int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
+    return impl.write(bytesToWrite,offset,whence,responseFactory);
+  }
+  dynamic readToStream(core.MojoDataPipeProducer source,int offset,types_mojom.Whence whence,int numBytesToRead,[Function responseFactory = null]) {
+    return impl.readToStream(source,offset,whence,numBytesToRead,responseFactory);
+  }
+  dynamic writeFromStream(core.MojoDataPipeConsumer sink,int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
+    return impl.writeFromStream(sink,offset,whence,responseFactory);
+  }
+  dynamic tell([Function responseFactory = null]) {
+    return impl.tell(responseFactory);
+  }
+  dynamic seek(int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
+    return impl.seek(offset,whence,responseFactory);
+  }
+  dynamic stat([Function responseFactory = null]) {
+    return impl.stat(responseFactory);
+  }
+  dynamic truncate(int size,[Function responseFactory = null]) {
+    return impl.truncate(size,responseFactory);
+  }
+  dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]) {
+    return impl.touch(atime,mtime,responseFactory);
+  }
+  dynamic dup(Object file,[Function responseFactory = null]) {
+    return impl.dup(file,responseFactory);
+  }
+  dynamic reopen(Object file,int openFlags,[Function responseFactory = null]) {
+    return impl.reopen(file,openFlags,responseFactory);
+  }
+  dynamic asBuffer([Function responseFactory = null]) {
+    return impl.asBuffer(responseFactory);
+  }
+  dynamic ioctl(int request,List<int> inValues,[Function responseFactory = null]) {
+    return impl.ioctl(request,inValues,responseFactory);
   }
 }
 

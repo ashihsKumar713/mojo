@@ -243,9 +243,9 @@ abstract class LocationService {
   dynamic getNextLocation(LocationServiceUpdatePriority priority,[Function responseFactory = null]);
 }
 
-
-class _LocationServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _LocationServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _LocationServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -259,7 +259,6 @@ class _LocationServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => LocationService.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _locationServiceMethodGetNextLocationName:
@@ -296,9 +295,9 @@ class _LocationServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class LocationServiceProxy extends bindings.Proxy
-                              implements LocationService {
+class LocationServiceProxy
+    extends bindings.Proxy
+    implements LocationService {
   LocationServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _LocationServiceProxyControl.fromEndpoint(endpoint));
@@ -334,29 +333,24 @@ class LocationServiceProxy extends bindings.Proxy
   }
 }
 
-
-class LocationServiceStub extends bindings.Stub {
+class _LocationServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<LocationService> {
   LocationService _impl;
 
-  LocationServiceStub.fromEndpoint(
+  _LocationServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [LocationService impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  LocationServiceStub.fromHandle(
+  _LocationServiceStubControl.fromHandle(
       core.MojoHandle handle, [LocationService impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  LocationServiceStub.unbound([this._impl]) : super.unbound();
-
-  static LocationServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For LocationServiceStub"));
-    return new LocationServiceStub.fromEndpoint(endpoint);
-  }
+  _LocationServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
   LocationServiceGetNextLocationResponseParams _locationServiceGetNextLocationResponseParamsFactory(location_mojom.Location location) {
@@ -423,9 +417,10 @@ class LocationServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "LocationServiceStub($superString)";
+    return "_LocationServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -436,6 +431,35 @@ class LocationServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _LocationServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class LocationServiceStub
+    extends bindings.Stub<LocationService>
+    implements LocationService {
+  LocationServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [LocationService impl])
+      : super(new _LocationServiceStubControl.fromEndpoint(endpoint, impl));
+
+  LocationServiceStub.fromHandle(
+      core.MojoHandle handle, [LocationService impl])
+      : super(new _LocationServiceStubControl.fromHandle(handle, impl));
+
+  LocationServiceStub.unbound([LocationService impl])
+      : super(new _LocationServiceStubControl.unbound(impl));
+
+  static LocationServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For LocationServiceStub"));
+    return new LocationServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _LocationServiceStubControl.serviceDescription;
+
+
+  dynamic getNextLocation(LocationServiceUpdatePriority priority,[Function responseFactory = null]) {
+    return impl.getNextLocation(priority,responseFactory);
   }
 }
 

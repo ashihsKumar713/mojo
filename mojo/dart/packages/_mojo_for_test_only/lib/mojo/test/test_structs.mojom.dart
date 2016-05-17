@@ -6007,9 +6007,9 @@ abstract class SomeInterface {
   dynamic someMethod(RectPair pair,[Function responseFactory = null]);
 }
 
-
-class _SomeInterfaceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _SomeInterfaceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _SomeInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -6023,7 +6023,6 @@ class _SomeInterfaceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => SomeInterface.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _someInterfaceMethodSomeMethodName:
@@ -6060,9 +6059,9 @@ class _SomeInterfaceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class SomeInterfaceProxy extends bindings.Proxy
-                              implements SomeInterface {
+class SomeInterfaceProxy
+    extends bindings.Proxy
+    implements SomeInterface {
   SomeInterfaceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SomeInterfaceProxyControl.fromEndpoint(endpoint));
@@ -6098,29 +6097,24 @@ class SomeInterfaceProxy extends bindings.Proxy
   }
 }
 
-
-class SomeInterfaceStub extends bindings.Stub {
+class _SomeInterfaceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<SomeInterface> {
   SomeInterface _impl;
 
-  SomeInterfaceStub.fromEndpoint(
+  _SomeInterfaceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [SomeInterface impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SomeInterfaceStub.fromHandle(
+  _SomeInterfaceStubControl.fromHandle(
       core.MojoHandle handle, [SomeInterface impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SomeInterfaceStub.unbound([this._impl]) : super.unbound();
-
-  static SomeInterfaceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SomeInterfaceStub"));
-    return new SomeInterfaceStub.fromEndpoint(endpoint);
-  }
+  _SomeInterfaceStubControl.unbound([this._impl]) : super.unbound();
 
 
   SomeInterfaceSomeMethodResponseParams _someInterfaceSomeMethodResponseParamsFactory(RectPair otherPair) {
@@ -6187,9 +6181,10 @@ class SomeInterfaceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "SomeInterfaceStub($superString)";
+    return "_SomeInterfaceStubControl($superString)";
   }
 
   int get version => 0;
@@ -6200,6 +6195,35 @@ class SomeInterfaceStub extends bindings.Stub {
       _cachedServiceDescription = new _SomeInterfaceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class SomeInterfaceStub
+    extends bindings.Stub<SomeInterface>
+    implements SomeInterface {
+  SomeInterfaceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [SomeInterface impl])
+      : super(new _SomeInterfaceStubControl.fromEndpoint(endpoint, impl));
+
+  SomeInterfaceStub.fromHandle(
+      core.MojoHandle handle, [SomeInterface impl])
+      : super(new _SomeInterfaceStubControl.fromHandle(handle, impl));
+
+  SomeInterfaceStub.unbound([SomeInterface impl])
+      : super(new _SomeInterfaceStubControl.unbound(impl));
+
+  static SomeInterfaceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SomeInterfaceStub"));
+    return new SomeInterfaceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _SomeInterfaceStubControl.serviceDescription;
+
+
+  dynamic someMethod(RectPair pair,[Function responseFactory = null]) {
+    return impl.someMethod(pair,responseFactory);
   }
 }
 

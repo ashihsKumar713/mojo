@@ -254,9 +254,9 @@ abstract class AssetBundle {
   dynamic getAsStream(String assetName,[Function responseFactory = null]);
 }
 
-
-class _AssetBundleProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _AssetBundleProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _AssetBundleProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -270,7 +270,6 @@ class _AssetBundleProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => AssetBundle.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _assetBundleMethodGetAsStreamName:
@@ -307,9 +306,9 @@ class _AssetBundleProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class AssetBundleProxy extends bindings.Proxy
-                              implements AssetBundle {
+class AssetBundleProxy
+    extends bindings.Proxy
+    implements AssetBundle {
   AssetBundleProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _AssetBundleProxyControl.fromEndpoint(endpoint));
@@ -345,29 +344,24 @@ class AssetBundleProxy extends bindings.Proxy
   }
 }
 
-
-class AssetBundleStub extends bindings.Stub {
+class _AssetBundleStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<AssetBundle> {
   AssetBundle _impl;
 
-  AssetBundleStub.fromEndpoint(
+  _AssetBundleStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [AssetBundle impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  AssetBundleStub.fromHandle(
+  _AssetBundleStubControl.fromHandle(
       core.MojoHandle handle, [AssetBundle impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  AssetBundleStub.unbound([this._impl]) : super.unbound();
-
-  static AssetBundleStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For AssetBundleStub"));
-    return new AssetBundleStub.fromEndpoint(endpoint);
-  }
+  _AssetBundleStubControl.unbound([this._impl]) : super.unbound();
 
 
   AssetBundleGetAsStreamResponseParams _assetBundleGetAsStreamResponseParamsFactory(core.MojoDataPipeConsumer assetData) {
@@ -434,9 +428,10 @@ class AssetBundleStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "AssetBundleStub($superString)";
+    return "_AssetBundleStubControl($superString)";
   }
 
   int get version => 0;
@@ -447,6 +442,35 @@ class AssetBundleStub extends bindings.Stub {
       _cachedServiceDescription = new _AssetBundleServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class AssetBundleStub
+    extends bindings.Stub<AssetBundle>
+    implements AssetBundle {
+  AssetBundleStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [AssetBundle impl])
+      : super(new _AssetBundleStubControl.fromEndpoint(endpoint, impl));
+
+  AssetBundleStub.fromHandle(
+      core.MojoHandle handle, [AssetBundle impl])
+      : super(new _AssetBundleStubControl.fromHandle(handle, impl));
+
+  AssetBundleStub.unbound([AssetBundle impl])
+      : super(new _AssetBundleStubControl.unbound(impl));
+
+  static AssetBundleStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For AssetBundleStub"));
+    return new AssetBundleStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _AssetBundleStubControl.serviceDescription;
+
+
+  dynamic getAsStream(String assetName,[Function responseFactory = null]) {
+    return impl.getAsStream(assetName,responseFactory);
   }
 }
 
@@ -468,9 +492,9 @@ abstract class AssetUnpacker {
   void unpackZipStream(core.MojoDataPipeConsumer zippedAssets, Object assetBundle);
 }
 
-
-class _AssetUnpackerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _AssetUnpackerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _AssetUnpackerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -484,7 +508,6 @@ class _AssetUnpackerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => AssetUnpacker.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -501,9 +524,9 @@ class _AssetUnpackerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class AssetUnpackerProxy extends bindings.Proxy
-                              implements AssetUnpacker {
+class AssetUnpackerProxy
+    extends bindings.Proxy
+    implements AssetUnpacker {
   AssetUnpackerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _AssetUnpackerProxyControl.fromEndpoint(endpoint));
@@ -541,29 +564,24 @@ class AssetUnpackerProxy extends bindings.Proxy
   }
 }
 
-
-class AssetUnpackerStub extends bindings.Stub {
+class _AssetUnpackerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<AssetUnpacker> {
   AssetUnpacker _impl;
 
-  AssetUnpackerStub.fromEndpoint(
+  _AssetUnpackerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [AssetUnpacker impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  AssetUnpackerStub.fromHandle(
+  _AssetUnpackerStubControl.fromHandle(
       core.MojoHandle handle, [AssetUnpacker impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  AssetUnpackerStub.unbound([this._impl]) : super.unbound();
-
-  static AssetUnpackerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For AssetUnpackerStub"));
-    return new AssetUnpackerStub.fromEndpoint(endpoint);
-  }
+  _AssetUnpackerStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -608,9 +626,10 @@ class AssetUnpackerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "AssetUnpackerStub($superString)";
+    return "_AssetUnpackerStubControl($superString)";
   }
 
   int get version => 0;
@@ -621,6 +640,35 @@ class AssetUnpackerStub extends bindings.Stub {
       _cachedServiceDescription = new _AssetUnpackerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class AssetUnpackerStub
+    extends bindings.Stub<AssetUnpacker>
+    implements AssetUnpacker {
+  AssetUnpackerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [AssetUnpacker impl])
+      : super(new _AssetUnpackerStubControl.fromEndpoint(endpoint, impl));
+
+  AssetUnpackerStub.fromHandle(
+      core.MojoHandle handle, [AssetUnpacker impl])
+      : super(new _AssetUnpackerStubControl.fromHandle(handle, impl));
+
+  AssetUnpackerStub.unbound([AssetUnpacker impl])
+      : super(new _AssetUnpackerStubControl.unbound(impl));
+
+  static AssetUnpackerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For AssetUnpackerStub"));
+    return new AssetUnpackerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _AssetUnpackerStubControl.serviceDescription;
+
+
+  void unpackZipStream(core.MojoDataPipeConsumer zippedAssets, Object assetBundle) {
+    return impl.unpackZipStream(zippedAssets, assetBundle);
   }
 }
 

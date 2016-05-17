@@ -189,9 +189,9 @@ abstract class Files {
   dynamic openFileSystem(String fileSystem,Object directory,[Function responseFactory = null]);
 }
 
-
-class _FilesProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _FilesProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _FilesProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -205,7 +205,6 @@ class _FilesProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Files.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _filesMethodOpenFileSystemName:
@@ -242,9 +241,9 @@ class _FilesProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class FilesProxy extends bindings.Proxy
-                              implements Files {
+class FilesProxy
+    extends bindings.Proxy
+    implements Files {
   FilesProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _FilesProxyControl.fromEndpoint(endpoint));
@@ -281,29 +280,24 @@ class FilesProxy extends bindings.Proxy
   }
 }
 
-
-class FilesStub extends bindings.Stub {
+class _FilesStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Files> {
   Files _impl;
 
-  FilesStub.fromEndpoint(
+  _FilesStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Files impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  FilesStub.fromHandle(
+  _FilesStubControl.fromHandle(
       core.MojoHandle handle, [Files impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  FilesStub.unbound([this._impl]) : super.unbound();
-
-  static FilesStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For FilesStub"));
-    return new FilesStub.fromEndpoint(endpoint);
-  }
+  _FilesStubControl.unbound([this._impl]) : super.unbound();
 
 
   FilesOpenFileSystemResponseParams _filesOpenFileSystemResponseParamsFactory(types_mojom.Error error) {
@@ -370,9 +364,10 @@ class FilesStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "FilesStub($superString)";
+    return "_FilesStubControl($superString)";
   }
 
   int get version => 0;
@@ -383,6 +378,35 @@ class FilesStub extends bindings.Stub {
       _cachedServiceDescription = new _FilesServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class FilesStub
+    extends bindings.Stub<Files>
+    implements Files {
+  FilesStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Files impl])
+      : super(new _FilesStubControl.fromEndpoint(endpoint, impl));
+
+  FilesStub.fromHandle(
+      core.MojoHandle handle, [Files impl])
+      : super(new _FilesStubControl.fromHandle(handle, impl));
+
+  FilesStub.unbound([Files impl])
+      : super(new _FilesStubControl.unbound(impl));
+
+  static FilesStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For FilesStub"));
+    return new FilesStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _FilesStubControl.serviceDescription;
+
+
+  dynamic openFileSystem(String fileSystem,Object directory,[Function responseFactory = null]) {
+    return impl.openFileSystem(fileSystem,directory,responseFactory);
   }
 }
 

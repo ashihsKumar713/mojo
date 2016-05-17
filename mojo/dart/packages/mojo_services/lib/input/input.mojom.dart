@@ -214,9 +214,9 @@ abstract class InputClient {
   dynamic onBackButton([Function responseFactory = null]);
 }
 
-
-class _InputClientProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _InputClientProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _InputClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -230,7 +230,6 @@ class _InputClientProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => InputClient.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _inputClientMethodOnBackButtonName:
@@ -267,9 +266,9 @@ class _InputClientProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class InputClientProxy extends bindings.Proxy
-                              implements InputClient {
+class InputClientProxy
+    extends bindings.Proxy
+    implements InputClient {
   InputClientProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _InputClientProxyControl.fromEndpoint(endpoint));
@@ -304,29 +303,24 @@ class InputClientProxy extends bindings.Proxy
   }
 }
 
-
-class InputClientStub extends bindings.Stub {
+class _InputClientStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<InputClient> {
   InputClient _impl;
 
-  InputClientStub.fromEndpoint(
+  _InputClientStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [InputClient impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  InputClientStub.fromHandle(
+  _InputClientStubControl.fromHandle(
       core.MojoHandle handle, [InputClient impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  InputClientStub.unbound([this._impl]) : super.unbound();
-
-  static InputClientStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For InputClientStub"));
-    return new InputClientStub.fromEndpoint(endpoint);
-  }
+  _InputClientStubControl.unbound([this._impl]) : super.unbound();
 
 
   InputClientOnBackButtonResponseParams _inputClientOnBackButtonResponseParamsFactory() {
@@ -390,9 +384,10 @@ class InputClientStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "InputClientStub($superString)";
+    return "_InputClientStubControl($superString)";
   }
 
   int get version => 0;
@@ -403,6 +398,35 @@ class InputClientStub extends bindings.Stub {
       _cachedServiceDescription = new _InputClientServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class InputClientStub
+    extends bindings.Stub<InputClient>
+    implements InputClient {
+  InputClientStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [InputClient impl])
+      : super(new _InputClientStubControl.fromEndpoint(endpoint, impl));
+
+  InputClientStub.fromHandle(
+      core.MojoHandle handle, [InputClient impl])
+      : super(new _InputClientStubControl.fromHandle(handle, impl));
+
+  InputClientStub.unbound([InputClient impl])
+      : super(new _InputClientStubControl.unbound(impl));
+
+  static InputClientStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For InputClientStub"));
+    return new InputClientStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _InputClientStubControl.serviceDescription;
+
+
+  dynamic onBackButton([Function responseFactory = null]) {
+    return impl.onBackButton(responseFactory);
   }
 }
 
@@ -424,9 +448,9 @@ abstract class InputService {
   void setClient(Object client);
 }
 
-
-class _InputServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _InputServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _InputServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -440,7 +464,6 @@ class _InputServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => InputService.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -457,9 +480,9 @@ class _InputServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class InputServiceProxy extends bindings.Proxy
-                              implements InputService {
+class InputServiceProxy
+    extends bindings.Proxy
+    implements InputService {
   InputServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _InputServiceProxyControl.fromEndpoint(endpoint));
@@ -496,29 +519,24 @@ class InputServiceProxy extends bindings.Proxy
   }
 }
 
-
-class InputServiceStub extends bindings.Stub {
+class _InputServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<InputService> {
   InputService _impl;
 
-  InputServiceStub.fromEndpoint(
+  _InputServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [InputService impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  InputServiceStub.fromHandle(
+  _InputServiceStubControl.fromHandle(
       core.MojoHandle handle, [InputService impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  InputServiceStub.unbound([this._impl]) : super.unbound();
-
-  static InputServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For InputServiceStub"));
-    return new InputServiceStub.fromEndpoint(endpoint);
-  }
+  _InputServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -563,9 +581,10 @@ class InputServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "InputServiceStub($superString)";
+    return "_InputServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -576,6 +595,35 @@ class InputServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _InputServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class InputServiceStub
+    extends bindings.Stub<InputService>
+    implements InputService {
+  InputServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [InputService impl])
+      : super(new _InputServiceStubControl.fromEndpoint(endpoint, impl));
+
+  InputServiceStub.fromHandle(
+      core.MojoHandle handle, [InputService impl])
+      : super(new _InputServiceStubControl.fromHandle(handle, impl));
+
+  InputServiceStub.unbound([InputService impl])
+      : super(new _InputServiceStubControl.unbound(impl));
+
+  static InputServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For InputServiceStub"));
+    return new InputServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _InputServiceStubControl.serviceDescription;
+
+
+  void setClient(Object client) {
+    return impl.setClient(client);
   }
 }
 

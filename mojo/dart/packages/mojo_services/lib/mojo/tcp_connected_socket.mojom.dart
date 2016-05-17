@@ -25,9 +25,9 @@ abstract class TcpConnectedSocket {
   static const String serviceName = null;
 }
 
-
-class _TcpConnectedSocketProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _TcpConnectedSocketProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _TcpConnectedSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -41,7 +41,6 @@ class _TcpConnectedSocketProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => TcpConnectedSocket.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -58,9 +57,9 @@ class _TcpConnectedSocketProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class TcpConnectedSocketProxy extends bindings.Proxy
-                              implements TcpConnectedSocket {
+class TcpConnectedSocketProxy
+    extends bindings.Proxy
+    implements TcpConnectedSocket {
   TcpConnectedSocketProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TcpConnectedSocketProxyControl.fromEndpoint(endpoint));
@@ -87,29 +86,24 @@ class TcpConnectedSocketProxy extends bindings.Proxy
 
 }
 
-
-class TcpConnectedSocketStub extends bindings.Stub {
+class _TcpConnectedSocketStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<TcpConnectedSocket> {
   TcpConnectedSocket _impl;
 
-  TcpConnectedSocketStub.fromEndpoint(
+  _TcpConnectedSocketStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TcpConnectedSocket impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TcpConnectedSocketStub.fromHandle(
+  _TcpConnectedSocketStubControl.fromHandle(
       core.MojoHandle handle, [TcpConnectedSocket impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TcpConnectedSocketStub.unbound([this._impl]) : super.unbound();
-
-  static TcpConnectedSocketStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TcpConnectedSocketStub"));
-    return new TcpConnectedSocketStub.fromEndpoint(endpoint);
-  }
+  _TcpConnectedSocketStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -149,9 +143,10 @@ class TcpConnectedSocketStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "TcpConnectedSocketStub($superString)";
+    return "_TcpConnectedSocketStubControl($superString)";
   }
 
   int get version => 0;
@@ -163,6 +158,32 @@ class TcpConnectedSocketStub extends bindings.Stub {
     }
     return _cachedServiceDescription;
   }
+}
+
+class TcpConnectedSocketStub
+    extends bindings.Stub<TcpConnectedSocket>
+    implements TcpConnectedSocket {
+  TcpConnectedSocketStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [TcpConnectedSocket impl])
+      : super(new _TcpConnectedSocketStubControl.fromEndpoint(endpoint, impl));
+
+  TcpConnectedSocketStub.fromHandle(
+      core.MojoHandle handle, [TcpConnectedSocket impl])
+      : super(new _TcpConnectedSocketStubControl.fromHandle(handle, impl));
+
+  TcpConnectedSocketStub.unbound([TcpConnectedSocket impl])
+      : super(new _TcpConnectedSocketStubControl.unbound(impl));
+
+  static TcpConnectedSocketStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TcpConnectedSocketStub"));
+    return new TcpConnectedSocketStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _TcpConnectedSocketStubControl.serviceDescription;
+
+
 }
 
 

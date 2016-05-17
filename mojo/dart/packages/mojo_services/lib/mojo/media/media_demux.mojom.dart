@@ -792,9 +792,9 @@ abstract class MediaDemux {
   static const int kInitialMetadata = 0;
 }
 
-
-class _MediaDemuxProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _MediaDemuxProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _MediaDemuxProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -808,7 +808,6 @@ class _MediaDemuxProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => MediaDemux.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaDemuxMethodDescribeName:
@@ -925,9 +924,9 @@ class _MediaDemuxProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class MediaDemuxProxy extends bindings.Proxy
-                              implements MediaDemux {
+class MediaDemuxProxy
+    extends bindings.Proxy
+    implements MediaDemux {
   MediaDemuxProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaDemuxProxyControl.fromEndpoint(endpoint));
@@ -1007,29 +1006,24 @@ class MediaDemuxProxy extends bindings.Proxy
   }
 }
 
-
-class MediaDemuxStub extends bindings.Stub {
+class _MediaDemuxStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<MediaDemux> {
   MediaDemux _impl;
 
-  MediaDemuxStub.fromEndpoint(
+  _MediaDemuxStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaDemux impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaDemuxStub.fromHandle(
+  _MediaDemuxStubControl.fromHandle(
       core.MojoHandle handle, [MediaDemux impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaDemuxStub.unbound([this._impl]) : super.unbound();
-
-  static MediaDemuxStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaDemuxStub"));
-    return new MediaDemuxStub.fromEndpoint(endpoint);
-  }
+  _MediaDemuxStubControl.unbound([this._impl]) : super.unbound();
 
 
   MediaDemuxDescribeResponseParams _mediaDemuxDescribeResponseParamsFactory(List<media_types_mojom.MediaType> streamTypes) {
@@ -1201,9 +1195,10 @@ class MediaDemuxStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "MediaDemuxStub($superString)";
+    return "_MediaDemuxStubControl($superString)";
   }
 
   int get version => 0;
@@ -1214,6 +1209,50 @@ class MediaDemuxStub extends bindings.Stub {
       _cachedServiceDescription = new _MediaDemuxServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class MediaDemuxStub
+    extends bindings.Stub<MediaDemux>
+    implements MediaDemux {
+  MediaDemuxStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [MediaDemux impl])
+      : super(new _MediaDemuxStubControl.fromEndpoint(endpoint, impl));
+
+  MediaDemuxStub.fromHandle(
+      core.MojoHandle handle, [MediaDemux impl])
+      : super(new _MediaDemuxStubControl.fromHandle(handle, impl));
+
+  MediaDemuxStub.unbound([MediaDemux impl])
+      : super(new _MediaDemuxStubControl.unbound(impl));
+
+  static MediaDemuxStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaDemuxStub"));
+    return new MediaDemuxStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _MediaDemuxStubControl.serviceDescription;
+
+
+  dynamic describe([Function responseFactory = null]) {
+    return impl.describe(responseFactory);
+  }
+  void getProducer(int streamIndex, Object producer) {
+    return impl.getProducer(streamIndex, producer);
+  }
+  dynamic getMetadata(int versionLastSeen,[Function responseFactory = null]) {
+    return impl.getMetadata(versionLastSeen,responseFactory);
+  }
+  dynamic prime([Function responseFactory = null]) {
+    return impl.prime(responseFactory);
+  }
+  dynamic flush([Function responseFactory = null]) {
+    return impl.flush(responseFactory);
+  }
+  dynamic seek(int position,[Function responseFactory = null]) {
+    return impl.seek(position,responseFactory);
   }
 }
 

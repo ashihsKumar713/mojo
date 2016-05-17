@@ -248,9 +248,9 @@ abstract class DeviceInfo {
   dynamic getDeviceType([Function responseFactory = null]);
 }
 
-
-class _DeviceInfoProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _DeviceInfoProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _DeviceInfoProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -264,7 +264,6 @@ class _DeviceInfoProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => DeviceInfo.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _deviceInfoMethodGetDeviceTypeName:
@@ -301,9 +300,9 @@ class _DeviceInfoProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class DeviceInfoProxy extends bindings.Proxy
-                              implements DeviceInfo {
+class DeviceInfoProxy
+    extends bindings.Proxy
+    implements DeviceInfo {
   DeviceInfoProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _DeviceInfoProxyControl.fromEndpoint(endpoint));
@@ -338,29 +337,24 @@ class DeviceInfoProxy extends bindings.Proxy
   }
 }
 
-
-class DeviceInfoStub extends bindings.Stub {
+class _DeviceInfoStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<DeviceInfo> {
   DeviceInfo _impl;
 
-  DeviceInfoStub.fromEndpoint(
+  _DeviceInfoStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [DeviceInfo impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  DeviceInfoStub.fromHandle(
+  _DeviceInfoStubControl.fromHandle(
       core.MojoHandle handle, [DeviceInfo impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  DeviceInfoStub.unbound([this._impl]) : super.unbound();
-
-  static DeviceInfoStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For DeviceInfoStub"));
-    return new DeviceInfoStub.fromEndpoint(endpoint);
-  }
+  _DeviceInfoStubControl.unbound([this._impl]) : super.unbound();
 
 
   DeviceInfoGetDeviceTypeResponseParams _deviceInfoGetDeviceTypeResponseParamsFactory(DeviceInfoDeviceType deviceType) {
@@ -425,9 +419,10 @@ class DeviceInfoStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "DeviceInfoStub($superString)";
+    return "_DeviceInfoStubControl($superString)";
   }
 
   int get version => 0;
@@ -438,6 +433,35 @@ class DeviceInfoStub extends bindings.Stub {
       _cachedServiceDescription = new _DeviceInfoServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class DeviceInfoStub
+    extends bindings.Stub<DeviceInfo>
+    implements DeviceInfo {
+  DeviceInfoStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [DeviceInfo impl])
+      : super(new _DeviceInfoStubControl.fromEndpoint(endpoint, impl));
+
+  DeviceInfoStub.fromHandle(
+      core.MojoHandle handle, [DeviceInfo impl])
+      : super(new _DeviceInfoStubControl.fromHandle(handle, impl));
+
+  DeviceInfoStub.unbound([DeviceInfo impl])
+      : super(new _DeviceInfoStubControl.unbound(impl));
+
+  static DeviceInfoStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For DeviceInfoStub"));
+    return new DeviceInfoStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _DeviceInfoStubControl.serviceDescription;
+
+
+  dynamic getDeviceType([Function responseFactory = null]) {
+    return impl.getDeviceType(responseFactory);
   }
 }
 

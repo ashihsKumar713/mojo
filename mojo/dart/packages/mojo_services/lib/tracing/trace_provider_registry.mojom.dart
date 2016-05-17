@@ -99,9 +99,9 @@ abstract class TraceProviderRegistry {
   void registerTraceProvider(Object traceProvider);
 }
 
-
-class _TraceProviderRegistryProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _TraceProviderRegistryProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _TraceProviderRegistryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -115,7 +115,6 @@ class _TraceProviderRegistryProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => TraceProviderRegistry.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -132,9 +131,9 @@ class _TraceProviderRegistryProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class TraceProviderRegistryProxy extends bindings.Proxy
-                              implements TraceProviderRegistry {
+class TraceProviderRegistryProxy
+    extends bindings.Proxy
+    implements TraceProviderRegistry {
   TraceProviderRegistryProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TraceProviderRegistryProxyControl.fromEndpoint(endpoint));
@@ -171,29 +170,24 @@ class TraceProviderRegistryProxy extends bindings.Proxy
   }
 }
 
-
-class TraceProviderRegistryStub extends bindings.Stub {
+class _TraceProviderRegistryStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<TraceProviderRegistry> {
   TraceProviderRegistry _impl;
 
-  TraceProviderRegistryStub.fromEndpoint(
+  _TraceProviderRegistryStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TraceProviderRegistry impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TraceProviderRegistryStub.fromHandle(
+  _TraceProviderRegistryStubControl.fromHandle(
       core.MojoHandle handle, [TraceProviderRegistry impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TraceProviderRegistryStub.unbound([this._impl]) : super.unbound();
-
-  static TraceProviderRegistryStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TraceProviderRegistryStub"));
-    return new TraceProviderRegistryStub.fromEndpoint(endpoint);
-  }
+  _TraceProviderRegistryStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -238,9 +232,10 @@ class TraceProviderRegistryStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "TraceProviderRegistryStub($superString)";
+    return "_TraceProviderRegistryStubControl($superString)";
   }
 
   int get version => 0;
@@ -251,6 +246,35 @@ class TraceProviderRegistryStub extends bindings.Stub {
       _cachedServiceDescription = new _TraceProviderRegistryServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class TraceProviderRegistryStub
+    extends bindings.Stub<TraceProviderRegistry>
+    implements TraceProviderRegistry {
+  TraceProviderRegistryStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [TraceProviderRegistry impl])
+      : super(new _TraceProviderRegistryStubControl.fromEndpoint(endpoint, impl));
+
+  TraceProviderRegistryStub.fromHandle(
+      core.MojoHandle handle, [TraceProviderRegistry impl])
+      : super(new _TraceProviderRegistryStubControl.fromHandle(handle, impl));
+
+  TraceProviderRegistryStub.unbound([TraceProviderRegistry impl])
+      : super(new _TraceProviderRegistryStubControl.unbound(impl));
+
+  static TraceProviderRegistryStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TraceProviderRegistryStub"));
+    return new TraceProviderRegistryStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _TraceProviderRegistryStubControl.serviceDescription;
+
+
+  void registerTraceProvider(Object traceProvider) {
+    return impl.registerTraceProvider(traceProvider);
   }
 }
 

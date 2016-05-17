@@ -361,9 +361,9 @@ abstract class TcpBoundSocket {
   dynamic connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]);
 }
 
-
-class _TcpBoundSocketProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _TcpBoundSocketProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _TcpBoundSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -377,7 +377,6 @@ class _TcpBoundSocketProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => TcpBoundSocket.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _tcpBoundSocketMethodStartListeningName:
@@ -434,9 +433,9 @@ class _TcpBoundSocketProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class TcpBoundSocketProxy extends bindings.Proxy
-                              implements TcpBoundSocket {
+class TcpBoundSocketProxy
+    extends bindings.Proxy
+    implements TcpBoundSocket {
   TcpBoundSocketProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TcpBoundSocketProxyControl.fromEndpoint(endpoint));
@@ -484,29 +483,24 @@ class TcpBoundSocketProxy extends bindings.Proxy
   }
 }
 
-
-class TcpBoundSocketStub extends bindings.Stub {
+class _TcpBoundSocketStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<TcpBoundSocket> {
   TcpBoundSocket _impl;
 
-  TcpBoundSocketStub.fromEndpoint(
+  _TcpBoundSocketStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TcpBoundSocket impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TcpBoundSocketStub.fromHandle(
+  _TcpBoundSocketStubControl.fromHandle(
       core.MojoHandle handle, [TcpBoundSocket impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TcpBoundSocketStub.unbound([this._impl]) : super.unbound();
-
-  static TcpBoundSocketStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TcpBoundSocketStub"));
-    return new TcpBoundSocketStub.fromEndpoint(endpoint);
-  }
+  _TcpBoundSocketStubControl.unbound([this._impl]) : super.unbound();
 
 
   TcpBoundSocketStartListeningResponseParams _tcpBoundSocketStartListeningResponseParamsFactory(network_error_mojom.NetworkError result) {
@@ -600,9 +594,10 @@ class TcpBoundSocketStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "TcpBoundSocketStub($superString)";
+    return "_TcpBoundSocketStubControl($superString)";
   }
 
   int get version => 0;
@@ -613,6 +608,38 @@ class TcpBoundSocketStub extends bindings.Stub {
       _cachedServiceDescription = new _TcpBoundSocketServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class TcpBoundSocketStub
+    extends bindings.Stub<TcpBoundSocket>
+    implements TcpBoundSocket {
+  TcpBoundSocketStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [TcpBoundSocket impl])
+      : super(new _TcpBoundSocketStubControl.fromEndpoint(endpoint, impl));
+
+  TcpBoundSocketStub.fromHandle(
+      core.MojoHandle handle, [TcpBoundSocket impl])
+      : super(new _TcpBoundSocketStubControl.fromHandle(handle, impl));
+
+  TcpBoundSocketStub.unbound([TcpBoundSocket impl])
+      : super(new _TcpBoundSocketStubControl.unbound(impl));
+
+  static TcpBoundSocketStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TcpBoundSocketStub"));
+    return new TcpBoundSocketStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _TcpBoundSocketStubControl.serviceDescription;
+
+
+  dynamic startListening(Object server,[Function responseFactory = null]) {
+    return impl.startListening(server,responseFactory);
+  }
+  dynamic connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]) {
+    return impl.connect(remoteAddress,sendStream,receiveStream,clientSocket,responseFactory);
   }
 }
 

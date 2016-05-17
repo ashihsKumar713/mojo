@@ -127,9 +127,9 @@ abstract class ServiceRegistry {
   void addServices(List<String> interfaceNames, Object serviceProvider);
 }
 
-
-class _ServiceRegistryProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ServiceRegistryProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ServiceRegistryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -143,7 +143,6 @@ class _ServiceRegistryProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ServiceRegistry.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -160,9 +159,9 @@ class _ServiceRegistryProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ServiceRegistryProxy extends bindings.Proxy
-                              implements ServiceRegistry {
+class ServiceRegistryProxy
+    extends bindings.Proxy
+    implements ServiceRegistry {
   ServiceRegistryProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ServiceRegistryProxyControl.fromEndpoint(endpoint));
@@ -200,29 +199,24 @@ class ServiceRegistryProxy extends bindings.Proxy
   }
 }
 
-
-class ServiceRegistryStub extends bindings.Stub {
+class _ServiceRegistryStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ServiceRegistry> {
   ServiceRegistry _impl;
 
-  ServiceRegistryStub.fromEndpoint(
+  _ServiceRegistryStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ServiceRegistry impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ServiceRegistryStub.fromHandle(
+  _ServiceRegistryStubControl.fromHandle(
       core.MojoHandle handle, [ServiceRegistry impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ServiceRegistryStub.unbound([this._impl]) : super.unbound();
-
-  static ServiceRegistryStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ServiceRegistryStub"));
-    return new ServiceRegistryStub.fromEndpoint(endpoint);
-  }
+  _ServiceRegistryStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -267,9 +261,10 @@ class ServiceRegistryStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ServiceRegistryStub($superString)";
+    return "_ServiceRegistryStubControl($superString)";
   }
 
   int get version => 0;
@@ -280,6 +275,35 @@ class ServiceRegistryStub extends bindings.Stub {
       _cachedServiceDescription = new _ServiceRegistryServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ServiceRegistryStub
+    extends bindings.Stub<ServiceRegistry>
+    implements ServiceRegistry {
+  ServiceRegistryStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ServiceRegistry impl])
+      : super(new _ServiceRegistryStubControl.fromEndpoint(endpoint, impl));
+
+  ServiceRegistryStub.fromHandle(
+      core.MojoHandle handle, [ServiceRegistry impl])
+      : super(new _ServiceRegistryStubControl.fromHandle(handle, impl));
+
+  ServiceRegistryStub.unbound([ServiceRegistry impl])
+      : super(new _ServiceRegistryStubControl.unbound(impl));
+
+  static ServiceRegistryStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ServiceRegistryStub"));
+    return new ServiceRegistryStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ServiceRegistryStubControl.serviceDescription;
+
+
+  void addServices(List<String> interfaceNames, Object serviceProvider) {
+    return impl.addServices(interfaceNames, serviceProvider);
   }
 }
 

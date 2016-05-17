@@ -15,7 +15,7 @@ class EchoImpl implements Echo {
 
   EchoImpl(this._application, MojoMessagePipeEndpoint endpoint) {
     _stub = new EchoStub.fromEndpoint(endpoint, this);
-    _stub.onError = _errorHandler;
+    _stub.ctrl.onError = _errorHandler;
   }
 
   echoString(String value, [Function responseFactory]) =>

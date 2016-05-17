@@ -711,9 +711,9 @@ abstract class Clipboard {
   static const String mimeTypeUrl = "text/url";
 }
 
-
-class _ClipboardProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ClipboardProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ClipboardProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -727,7 +727,6 @@ class _ClipboardProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Clipboard.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _clipboardMethodGetSequenceNumberName:
@@ -804,9 +803,9 @@ class _ClipboardProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ClipboardProxy extends bindings.Proxy
-                              implements Clipboard {
+class ClipboardProxy
+    extends bindings.Proxy
+    implements Clipboard {
   ClipboardProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ClipboardProxyControl.fromEndpoint(endpoint));
@@ -872,29 +871,24 @@ class ClipboardProxy extends bindings.Proxy
   }
 }
 
-
-class ClipboardStub extends bindings.Stub {
+class _ClipboardStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Clipboard> {
   Clipboard _impl;
 
-  ClipboardStub.fromEndpoint(
+  _ClipboardStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Clipboard impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ClipboardStub.fromHandle(
+  _ClipboardStubControl.fromHandle(
       core.MojoHandle handle, [Clipboard impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ClipboardStub.unbound([this._impl]) : super.unbound();
-
-  static ClipboardStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ClipboardStub"));
-    return new ClipboardStub.fromEndpoint(endpoint);
-  }
+  _ClipboardStubControl.unbound([this._impl]) : super.unbound();
 
 
   ClipboardGetSequenceNumberResponseParams _clipboardGetSequenceNumberResponseParamsFactory(int sequence) {
@@ -1020,9 +1014,10 @@ class ClipboardStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ClipboardStub($superString)";
+    return "_ClipboardStubControl($superString)";
   }
 
   int get version => 0;
@@ -1033,6 +1028,44 @@ class ClipboardStub extends bindings.Stub {
       _cachedServiceDescription = new _ClipboardServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ClipboardStub
+    extends bindings.Stub<Clipboard>
+    implements Clipboard {
+  ClipboardStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Clipboard impl])
+      : super(new _ClipboardStubControl.fromEndpoint(endpoint, impl));
+
+  ClipboardStub.fromHandle(
+      core.MojoHandle handle, [Clipboard impl])
+      : super(new _ClipboardStubControl.fromHandle(handle, impl));
+
+  ClipboardStub.unbound([Clipboard impl])
+      : super(new _ClipboardStubControl.unbound(impl));
+
+  static ClipboardStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ClipboardStub"));
+    return new ClipboardStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ClipboardStubControl.serviceDescription;
+
+
+  dynamic getSequenceNumber(ClipboardType clipboardType,[Function responseFactory = null]) {
+    return impl.getSequenceNumber(clipboardType,responseFactory);
+  }
+  dynamic getAvailableMimeTypes(ClipboardType clipboardTypes,[Function responseFactory = null]) {
+    return impl.getAvailableMimeTypes(clipboardTypes,responseFactory);
+  }
+  dynamic readMimeType(ClipboardType clipboardType,String mimeType,[Function responseFactory = null]) {
+    return impl.readMimeType(clipboardType,mimeType,responseFactory);
+  }
+  void writeClipboardData(ClipboardType clipboardType, Map<String, List<int>> data) {
+    return impl.writeClipboardData(clipboardType, data);
   }
 }
 

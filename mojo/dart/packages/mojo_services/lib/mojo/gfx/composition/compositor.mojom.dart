@@ -288,9 +288,9 @@ abstract class Compositor {
   void createRenderer(Object contextProvider, Object renderer, String label);
 }
 
-
-class _CompositorProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _CompositorProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _CompositorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -304,7 +304,6 @@ class _CompositorProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Compositor.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _compositorMethodCreateSceneName:
@@ -341,9 +340,9 @@ class _CompositorProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class CompositorProxy extends bindings.Proxy
-                              implements Compositor {
+class CompositorProxy
+    extends bindings.Proxy
+    implements Compositor {
   CompositorProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _CompositorProxyControl.fromEndpoint(endpoint));
@@ -392,29 +391,24 @@ class CompositorProxy extends bindings.Proxy
   }
 }
 
-
-class CompositorStub extends bindings.Stub {
+class _CompositorStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Compositor> {
   Compositor _impl;
 
-  CompositorStub.fromEndpoint(
+  _CompositorStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Compositor impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  CompositorStub.fromHandle(
+  _CompositorStubControl.fromHandle(
       core.MojoHandle handle, [Compositor impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  CompositorStub.unbound([this._impl]) : super.unbound();
-
-  static CompositorStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For CompositorStub"));
-    return new CompositorStub.fromEndpoint(endpoint);
-  }
+  _CompositorStubControl.unbound([this._impl]) : super.unbound();
 
 
   CompositorCreateSceneResponseParams _compositorCreateSceneResponseParamsFactory(scene_token_mojom.SceneToken sceneToken) {
@@ -486,9 +480,10 @@ class CompositorStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "CompositorStub($superString)";
+    return "_CompositorStubControl($superString)";
   }
 
   int get version => 0;
@@ -499,6 +494,38 @@ class CompositorStub extends bindings.Stub {
       _cachedServiceDescription = new _CompositorServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class CompositorStub
+    extends bindings.Stub<Compositor>
+    implements Compositor {
+  CompositorStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Compositor impl])
+      : super(new _CompositorStubControl.fromEndpoint(endpoint, impl));
+
+  CompositorStub.fromHandle(
+      core.MojoHandle handle, [Compositor impl])
+      : super(new _CompositorStubControl.fromHandle(handle, impl));
+
+  CompositorStub.unbound([Compositor impl])
+      : super(new _CompositorStubControl.unbound(impl));
+
+  static CompositorStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For CompositorStub"));
+    return new CompositorStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _CompositorStubControl.serviceDescription;
+
+
+  dynamic createScene(Object scene,String label,[Function responseFactory = null]) {
+    return impl.createScene(scene,label,responseFactory);
+  }
+  void createRenderer(Object contextProvider, Object renderer, String label) {
+    return impl.createRenderer(contextProvider, renderer, label);
   }
 }
 

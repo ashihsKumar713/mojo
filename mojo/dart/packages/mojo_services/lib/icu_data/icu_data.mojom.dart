@@ -170,9 +170,9 @@ abstract class IcuData {
   dynamic map(String sha1hash,[Function responseFactory = null]);
 }
 
-
-class _IcuDataProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _IcuDataProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _IcuDataProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -186,7 +186,6 @@ class _IcuDataProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => IcuData.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _icuDataMethodMapName:
@@ -223,9 +222,9 @@ class _IcuDataProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class IcuDataProxy extends bindings.Proxy
-                              implements IcuData {
+class IcuDataProxy
+    extends bindings.Proxy
+    implements IcuData {
   IcuDataProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _IcuDataProxyControl.fromEndpoint(endpoint));
@@ -261,29 +260,24 @@ class IcuDataProxy extends bindings.Proxy
   }
 }
 
-
-class IcuDataStub extends bindings.Stub {
+class _IcuDataStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<IcuData> {
   IcuData _impl;
 
-  IcuDataStub.fromEndpoint(
+  _IcuDataStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [IcuData impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  IcuDataStub.fromHandle(
+  _IcuDataStubControl.fromHandle(
       core.MojoHandle handle, [IcuData impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  IcuDataStub.unbound([this._impl]) : super.unbound();
-
-  static IcuDataStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For IcuDataStub"));
-    return new IcuDataStub.fromEndpoint(endpoint);
-  }
+  _IcuDataStubControl.unbound([this._impl]) : super.unbound();
 
 
   IcuDataMapResponseParams _icuDataMapResponseParamsFactory(core.MojoSharedBuffer icuData) {
@@ -350,9 +344,10 @@ class IcuDataStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "IcuDataStub($superString)";
+    return "_IcuDataStubControl($superString)";
   }
 
   int get version => 0;
@@ -363,6 +358,35 @@ class IcuDataStub extends bindings.Stub {
       _cachedServiceDescription = new _IcuDataServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class IcuDataStub
+    extends bindings.Stub<IcuData>
+    implements IcuData {
+  IcuDataStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [IcuData impl])
+      : super(new _IcuDataStubControl.fromEndpoint(endpoint, impl));
+
+  IcuDataStub.fromHandle(
+      core.MojoHandle handle, [IcuData impl])
+      : super(new _IcuDataStubControl.fromHandle(handle, impl));
+
+  IcuDataStub.unbound([IcuData impl])
+      : super(new _IcuDataStubControl.unbound(impl));
+
+  static IcuDataStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For IcuDataStub"));
+    return new IcuDataStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _IcuDataStubControl.serviceDescription;
+
+
+  dynamic map(String sha1hash,[Function responseFactory = null]) {
+    return impl.map(sha1hash,responseFactory);
   }
 }
 

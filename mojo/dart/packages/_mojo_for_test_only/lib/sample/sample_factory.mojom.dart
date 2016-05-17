@@ -1102,9 +1102,9 @@ abstract class NamedObject {
   dynamic getName([Function responseFactory = null]);
 }
 
-
-class _NamedObjectProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _NamedObjectProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _NamedObjectProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1118,7 +1118,6 @@ class _NamedObjectProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => NamedObject.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _namedObjectMethodGetNameName:
@@ -1155,9 +1154,9 @@ class _NamedObjectProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class NamedObjectProxy extends bindings.Proxy
-                              implements NamedObject {
+class NamedObjectProxy
+    extends bindings.Proxy
+    implements NamedObject {
   NamedObjectProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _NamedObjectProxyControl.fromEndpoint(endpoint));
@@ -1202,29 +1201,24 @@ class NamedObjectProxy extends bindings.Proxy
   }
 }
 
-
-class NamedObjectStub extends bindings.Stub {
+class _NamedObjectStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<NamedObject> {
   NamedObject _impl;
 
-  NamedObjectStub.fromEndpoint(
+  _NamedObjectStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [NamedObject impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  NamedObjectStub.fromHandle(
+  _NamedObjectStubControl.fromHandle(
       core.MojoHandle handle, [NamedObject impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  NamedObjectStub.unbound([this._impl]) : super.unbound();
-
-  static NamedObjectStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For NamedObjectStub"));
-    return new NamedObjectStub.fromEndpoint(endpoint);
-  }
+  _NamedObjectStubControl.unbound([this._impl]) : super.unbound();
 
 
   NamedObjectGetNameResponseParams _namedObjectGetNameResponseParamsFactory(String name) {
@@ -1294,9 +1288,10 @@ class NamedObjectStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "NamedObjectStub($superString)";
+    return "_NamedObjectStubControl($superString)";
   }
 
   int get version => 0;
@@ -1307,6 +1302,38 @@ class NamedObjectStub extends bindings.Stub {
       _cachedServiceDescription = new _NamedObjectServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class NamedObjectStub
+    extends bindings.Stub<NamedObject>
+    implements NamedObject {
+  NamedObjectStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [NamedObject impl])
+      : super(new _NamedObjectStubControl.fromEndpoint(endpoint, impl));
+
+  NamedObjectStub.fromHandle(
+      core.MojoHandle handle, [NamedObject impl])
+      : super(new _NamedObjectStubControl.fromHandle(handle, impl));
+
+  NamedObjectStub.unbound([NamedObject impl])
+      : super(new _NamedObjectStubControl.unbound(impl));
+
+  static NamedObjectStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For NamedObjectStub"));
+    return new NamedObjectStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _NamedObjectStubControl.serviceDescription;
+
+
+  void setName(String name) {
+    return impl.setName(name);
+  }
+  dynamic getName([Function responseFactory = null]) {
+    return impl.getName(responseFactory);
   }
 }
 
@@ -1336,9 +1363,9 @@ abstract class Factory {
   dynamic takeImportedInterface(Object obj,[Function responseFactory = null]);
 }
 
-
-class _FactoryProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _FactoryProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _FactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1352,7 +1379,6 @@ class _FactoryProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Factory.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _factoryMethodDoStuffName:
@@ -1449,9 +1475,9 @@ class _FactoryProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class FactoryProxy extends bindings.Proxy
-                              implements Factory {
+class FactoryProxy
+    extends bindings.Proxy
+    implements Factory {
   FactoryProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _FactoryProxyControl.fromEndpoint(endpoint));
@@ -1525,29 +1551,24 @@ class FactoryProxy extends bindings.Proxy
   }
 }
 
-
-class FactoryStub extends bindings.Stub {
+class _FactoryStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Factory> {
   Factory _impl;
 
-  FactoryStub.fromEndpoint(
+  _FactoryStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Factory impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  FactoryStub.fromHandle(
+  _FactoryStubControl.fromHandle(
       core.MojoHandle handle, [Factory impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  FactoryStub.unbound([this._impl]) : super.unbound();
-
-  static FactoryStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For FactoryStub"));
-    return new FactoryStub.fromEndpoint(endpoint);
-  }
+  _FactoryStubControl.unbound([this._impl]) : super.unbound();
 
 
   FactoryDoStuffResponseParams _factoryDoStuffResponseParamsFactory(Response response, String text) {
@@ -1701,9 +1722,10 @@ class FactoryStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "FactoryStub($superString)";
+    return "_FactoryStubControl($superString)";
   }
 
   int get version => 0;
@@ -1714,6 +1736,47 @@ class FactoryStub extends bindings.Stub {
       _cachedServiceDescription = new _FactoryServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class FactoryStub
+    extends bindings.Stub<Factory>
+    implements Factory {
+  FactoryStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Factory impl])
+      : super(new _FactoryStubControl.fromEndpoint(endpoint, impl));
+
+  FactoryStub.fromHandle(
+      core.MojoHandle handle, [Factory impl])
+      : super(new _FactoryStubControl.fromHandle(handle, impl));
+
+  FactoryStub.unbound([Factory impl])
+      : super(new _FactoryStubControl.unbound(impl));
+
+  static FactoryStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For FactoryStub"));
+    return new FactoryStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _FactoryStubControl.serviceDescription;
+
+
+  dynamic doStuff(Request request,core.MojoMessagePipeEndpoint pipe,[Function responseFactory = null]) {
+    return impl.doStuff(request,pipe,responseFactory);
+  }
+  dynamic doStuff2(core.MojoDataPipeConsumer pipe,[Function responseFactory = null]) {
+    return impl.doStuff2(pipe,responseFactory);
+  }
+  void createNamedObject(Object obj) {
+    return impl.createNamedObject(obj);
+  }
+  dynamic requestImportedInterface(Object obj,[Function responseFactory = null]) {
+    return impl.requestImportedInterface(obj,responseFactory);
+  }
+  dynamic takeImportedInterface(Object obj,[Function responseFactory = null]) {
+    return impl.takeImportedInterface(obj,responseFactory);
   }
 }
 

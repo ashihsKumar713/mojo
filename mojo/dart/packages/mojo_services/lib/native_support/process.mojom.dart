@@ -819,9 +819,9 @@ abstract class Process {
   dynamic spawnWithTerminal(List<int> path,List<List<int>> argv,List<List<int>> envp,Object terminalFile,Object processController,[Function responseFactory = null]);
 }
 
-
-class _ProcessProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ProcessProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ProcessProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -835,7 +835,6 @@ class _ProcessProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Process.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _processMethodSpawnName:
@@ -892,9 +891,9 @@ class _ProcessProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ProcessProxy extends bindings.Proxy
-                              implements Process {
+class ProcessProxy
+    extends bindings.Proxy
+    implements Process {
   ProcessProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ProcessProxyControl.fromEndpoint(endpoint));
@@ -949,29 +948,24 @@ class ProcessProxy extends bindings.Proxy
   }
 }
 
-
-class ProcessStub extends bindings.Stub {
+class _ProcessStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Process> {
   Process _impl;
 
-  ProcessStub.fromEndpoint(
+  _ProcessStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Process impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ProcessStub.fromHandle(
+  _ProcessStubControl.fromHandle(
       core.MojoHandle handle, [Process impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ProcessStub.unbound([this._impl]) : super.unbound();
-
-  static ProcessStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ProcessStub"));
-    return new ProcessStub.fromEndpoint(endpoint);
-  }
+  _ProcessStubControl.unbound([this._impl]) : super.unbound();
 
 
   ProcessSpawnResponseParams _processSpawnResponseParamsFactory(types_mojom.Error error) {
@@ -1065,9 +1059,10 @@ class ProcessStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ProcessStub($superString)";
+    return "_ProcessStubControl($superString)";
   }
 
   int get version => 0;
@@ -1078,6 +1073,38 @@ class ProcessStub extends bindings.Stub {
       _cachedServiceDescription = new _ProcessServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ProcessStub
+    extends bindings.Stub<Process>
+    implements Process {
+  ProcessStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Process impl])
+      : super(new _ProcessStubControl.fromEndpoint(endpoint, impl));
+
+  ProcessStub.fromHandle(
+      core.MojoHandle handle, [Process impl])
+      : super(new _ProcessStubControl.fromHandle(handle, impl));
+
+  ProcessStub.unbound([Process impl])
+      : super(new _ProcessStubControl.unbound(impl));
+
+  static ProcessStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ProcessStub"));
+    return new ProcessStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ProcessStubControl.serviceDescription;
+
+
+  dynamic spawn(List<int> path,List<List<int>> argv,List<List<int>> envp,Object stdinFile,Object stdoutFile,Object stderrFile,Object processController,[Function responseFactory = null]) {
+    return impl.spawn(path,argv,envp,stdinFile,stdoutFile,stderrFile,processController,responseFactory);
+  }
+  dynamic spawnWithTerminal(List<int> path,List<List<int>> argv,List<List<int>> envp,Object terminalFile,Object processController,[Function responseFactory = null]) {
+    return impl.spawnWithTerminal(path,argv,envp,terminalFile,processController,responseFactory);
   }
 }
 
@@ -1101,9 +1128,9 @@ abstract class ProcessController {
   dynamic kill(int signal,[Function responseFactory = null]);
 }
 
-
-class _ProcessControllerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ProcessControllerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ProcessControllerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1117,7 +1144,6 @@ class _ProcessControllerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ProcessController.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _processControllerMethodWaitName:
@@ -1174,9 +1200,9 @@ class _ProcessControllerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ProcessControllerProxy extends bindings.Proxy
-                              implements ProcessController {
+class ProcessControllerProxy
+    extends bindings.Proxy
+    implements ProcessController {
   ProcessControllerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ProcessControllerProxyControl.fromEndpoint(endpoint));
@@ -1220,29 +1246,24 @@ class ProcessControllerProxy extends bindings.Proxy
   }
 }
 
-
-class ProcessControllerStub extends bindings.Stub {
+class _ProcessControllerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ProcessController> {
   ProcessController _impl;
 
-  ProcessControllerStub.fromEndpoint(
+  _ProcessControllerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ProcessController impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ProcessControllerStub.fromHandle(
+  _ProcessControllerStubControl.fromHandle(
       core.MojoHandle handle, [ProcessController impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ProcessControllerStub.unbound([this._impl]) : super.unbound();
-
-  static ProcessControllerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ProcessControllerStub"));
-    return new ProcessControllerStub.fromEndpoint(endpoint);
-  }
+  _ProcessControllerStubControl.unbound([this._impl]) : super.unbound();
 
 
   ProcessControllerWaitResponseParams _processControllerWaitResponseParamsFactory(types_mojom.Error error, int exitStatus) {
@@ -1335,9 +1356,10 @@ class ProcessControllerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ProcessControllerStub($superString)";
+    return "_ProcessControllerStubControl($superString)";
   }
 
   int get version => 0;
@@ -1348,6 +1370,38 @@ class ProcessControllerStub extends bindings.Stub {
       _cachedServiceDescription = new _ProcessControllerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ProcessControllerStub
+    extends bindings.Stub<ProcessController>
+    implements ProcessController {
+  ProcessControllerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ProcessController impl])
+      : super(new _ProcessControllerStubControl.fromEndpoint(endpoint, impl));
+
+  ProcessControllerStub.fromHandle(
+      core.MojoHandle handle, [ProcessController impl])
+      : super(new _ProcessControllerStubControl.fromHandle(handle, impl));
+
+  ProcessControllerStub.unbound([ProcessController impl])
+      : super(new _ProcessControllerStubControl.unbound(impl));
+
+  static ProcessControllerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ProcessControllerStub"));
+    return new ProcessControllerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ProcessControllerStubControl.serviceDescription;
+
+
+  dynamic wait([Function responseFactory = null]) {
+    return impl.wait(responseFactory);
+  }
+  dynamic kill(int signal,[Function responseFactory = null]) {
+    return impl.kill(signal,responseFactory);
   }
 }
 

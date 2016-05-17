@@ -315,9 +315,9 @@ abstract class Application {
   void requestQuit();
 }
 
-
-class _ApplicationProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ApplicationProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ApplicationProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -331,7 +331,6 @@ class _ApplicationProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Application.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -348,9 +347,9 @@ class _ApplicationProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ApplicationProxy extends bindings.Proxy
-                              implements Application {
+class ApplicationProxy
+    extends bindings.Proxy
+    implements Application {
   ApplicationProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ApplicationProxyControl.fromEndpoint(endpoint));
@@ -411,29 +410,24 @@ class ApplicationProxy extends bindings.Proxy
   }
 }
 
-
-class ApplicationStub extends bindings.Stub {
+class _ApplicationStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Application> {
   Application _impl;
 
-  ApplicationStub.fromEndpoint(
+  _ApplicationStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Application impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ApplicationStub.fromHandle(
+  _ApplicationStubControl.fromHandle(
       core.MojoHandle handle, [Application impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ApplicationStub.unbound([this._impl]) : super.unbound();
-
-  static ApplicationStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ApplicationStub"));
-    return new ApplicationStub.fromEndpoint(endpoint);
-  }
+  _ApplicationStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -486,9 +480,10 @@ class ApplicationStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ApplicationStub($superString)";
+    return "_ApplicationStubControl($superString)";
   }
 
   int get version => 0;
@@ -499,6 +494,41 @@ class ApplicationStub extends bindings.Stub {
       _cachedServiceDescription = new _ApplicationServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ApplicationStub
+    extends bindings.Stub<Application>
+    implements Application {
+  ApplicationStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Application impl])
+      : super(new _ApplicationStubControl.fromEndpoint(endpoint, impl));
+
+  ApplicationStub.fromHandle(
+      core.MojoHandle handle, [Application impl])
+      : super(new _ApplicationStubControl.fromHandle(handle, impl));
+
+  ApplicationStub.unbound([Application impl])
+      : super(new _ApplicationStubControl.unbound(impl));
+
+  static ApplicationStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ApplicationStub"));
+    return new ApplicationStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ApplicationStubControl.serviceDescription;
+
+
+  void initialize(Object shell, List<String> args, String url) {
+    return impl.initialize(shell, args, url);
+  }
+  void acceptConnection(String requestorUrl, Object services, Object exposedServices, String resolvedUrl) {
+    return impl.acceptConnection(requestorUrl, services, exposedServices, resolvedUrl);
+  }
+  void requestQuit() {
+    return impl.requestQuit();
   }
 }
 

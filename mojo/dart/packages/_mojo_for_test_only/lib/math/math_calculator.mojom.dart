@@ -454,9 +454,9 @@ abstract class Calculator {
   dynamic multiply(double value,[Function responseFactory = null]);
 }
 
-
-class _CalculatorProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _CalculatorProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _CalculatorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -470,7 +470,6 @@ class _CalculatorProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Calculator.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _calculatorMethodClearName:
@@ -547,9 +546,9 @@ class _CalculatorProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class CalculatorProxy extends bindings.Proxy
-                              implements Calculator {
+class CalculatorProxy
+    extends bindings.Proxy
+    implements Calculator {
   CalculatorProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _CalculatorProxyControl.fromEndpoint(endpoint));
@@ -602,29 +601,24 @@ class CalculatorProxy extends bindings.Proxy
   }
 }
 
-
-class CalculatorStub extends bindings.Stub {
+class _CalculatorStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Calculator> {
   Calculator _impl;
 
-  CalculatorStub.fromEndpoint(
+  _CalculatorStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Calculator impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  CalculatorStub.fromHandle(
+  _CalculatorStubControl.fromHandle(
       core.MojoHandle handle, [Calculator impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  CalculatorStub.unbound([this._impl]) : super.unbound();
-
-  static CalculatorStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For CalculatorStub"));
-    return new CalculatorStub.fromEndpoint(endpoint);
-  }
+  _CalculatorStubControl.unbound([this._impl]) : super.unbound();
 
 
   CalculatorClearResponseParams _calculatorClearResponseParamsFactory(double value) {
@@ -743,9 +737,10 @@ class CalculatorStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "CalculatorStub($superString)";
+    return "_CalculatorStubControl($superString)";
   }
 
   int get version => 0;
@@ -756,6 +751,41 @@ class CalculatorStub extends bindings.Stub {
       _cachedServiceDescription = new _CalculatorServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class CalculatorStub
+    extends bindings.Stub<Calculator>
+    implements Calculator {
+  CalculatorStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Calculator impl])
+      : super(new _CalculatorStubControl.fromEndpoint(endpoint, impl));
+
+  CalculatorStub.fromHandle(
+      core.MojoHandle handle, [Calculator impl])
+      : super(new _CalculatorStubControl.fromHandle(handle, impl));
+
+  CalculatorStub.unbound([Calculator impl])
+      : super(new _CalculatorStubControl.unbound(impl));
+
+  static CalculatorStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For CalculatorStub"));
+    return new CalculatorStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _CalculatorStubControl.serviceDescription;
+
+
+  dynamic clear([Function responseFactory = null]) {
+    return impl.clear(responseFactory);
+  }
+  dynamic add(double value,[Function responseFactory = null]) {
+    return impl.add(value,responseFactory);
+  }
+  dynamic multiply(double value,[Function responseFactory = null]) {
+    return impl.multiply(value,responseFactory);
   }
 }
 

@@ -893,9 +893,9 @@ abstract class CppSide {
   void echoResponse(EchoArgsList list);
 }
 
-
-class _CppSideProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _CppSideProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _CppSideProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -909,7 +909,6 @@ class _CppSideProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => CppSide.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -926,9 +925,9 @@ class _CppSideProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class CppSideProxy extends bindings.Proxy
-                              implements CppSide {
+class CppSideProxy
+    extends bindings.Proxy
+    implements CppSide {
   CppSideProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _CppSideProxyControl.fromEndpoint(endpoint));
@@ -992,29 +991,24 @@ class CppSideProxy extends bindings.Proxy
   }
 }
 
-
-class CppSideStub extends bindings.Stub {
+class _CppSideStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<CppSide> {
   CppSide _impl;
 
-  CppSideStub.fromEndpoint(
+  _CppSideStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [CppSide impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  CppSideStub.fromHandle(
+  _CppSideStubControl.fromHandle(
       core.MojoHandle handle, [CppSide impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  CppSideStub.unbound([this._impl]) : super.unbound();
-
-  static CppSideStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For CppSideStub"));
-    return new CppSideStub.fromEndpoint(endpoint);
-  }
+  _CppSideStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -1068,9 +1062,10 @@ class CppSideStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "CppSideStub($superString)";
+    return "_CppSideStubControl($superString)";
   }
 
   int get version => 0;
@@ -1081,6 +1076,44 @@ class CppSideStub extends bindings.Stub {
       _cachedServiceDescription = new _CppSideServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class CppSideStub
+    extends bindings.Stub<CppSide>
+    implements CppSide {
+  CppSideStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [CppSide impl])
+      : super(new _CppSideStubControl.fromEndpoint(endpoint, impl));
+
+  CppSideStub.fromHandle(
+      core.MojoHandle handle, [CppSide impl])
+      : super(new _CppSideStubControl.fromHandle(handle, impl));
+
+  CppSideStub.unbound([CppSide impl])
+      : super(new _CppSideStubControl.unbound(impl));
+
+  static CppSideStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For CppSideStub"));
+    return new CppSideStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _CppSideStubControl.serviceDescription;
+
+
+  void startTest() {
+    return impl.startTest();
+  }
+  void testFinished() {
+    return impl.testFinished();
+  }
+  void pingResponse() {
+    return impl.pingResponse();
+  }
+  void echoResponse(EchoArgsList list) {
+    return impl.echoResponse(list);
   }
 }
 
@@ -1106,9 +1139,9 @@ abstract class DartSide {
   void echo(int numIterations, EchoArgs arg);
 }
 
-
-class _DartSideProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _DartSideProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _DartSideProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1122,7 +1155,6 @@ class _DartSideProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => DartSide.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -1139,9 +1171,9 @@ class _DartSideProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class DartSideProxy extends bindings.Proxy
-                              implements DartSide {
+class DartSideProxy
+    extends bindings.Proxy
+    implements DartSide {
   DartSideProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _DartSideProxyControl.fromEndpoint(endpoint));
@@ -1198,29 +1230,24 @@ class DartSideProxy extends bindings.Proxy
   }
 }
 
-
-class DartSideStub extends bindings.Stub {
+class _DartSideStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<DartSide> {
   DartSide _impl;
 
-  DartSideStub.fromEndpoint(
+  _DartSideStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [DartSide impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  DartSideStub.fromHandle(
+  _DartSideStubControl.fromHandle(
       core.MojoHandle handle, [DartSide impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  DartSideStub.unbound([this._impl]) : super.unbound();
-
-  static DartSideStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For DartSideStub"));
-    return new DartSideStub.fromEndpoint(endpoint);
-  }
+  _DartSideStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -1273,9 +1300,10 @@ class DartSideStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "DartSideStub($superString)";
+    return "_DartSideStubControl($superString)";
   }
 
   int get version => 0;
@@ -1286,6 +1314,41 @@ class DartSideStub extends bindings.Stub {
       _cachedServiceDescription = new _DartSideServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class DartSideStub
+    extends bindings.Stub<DartSide>
+    implements DartSide {
+  DartSideStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [DartSide impl])
+      : super(new _DartSideStubControl.fromEndpoint(endpoint, impl));
+
+  DartSideStub.fromHandle(
+      core.MojoHandle handle, [DartSide impl])
+      : super(new _DartSideStubControl.fromHandle(handle, impl));
+
+  DartSideStub.unbound([DartSide impl])
+      : super(new _DartSideStubControl.unbound(impl));
+
+  static DartSideStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For DartSideStub"));
+    return new DartSideStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _DartSideStubControl.serviceDescription;
+
+
+  void setClient(Object cppSide) {
+    return impl.setClient(cppSide);
+  }
+  void ping() {
+    return impl.ping();
+  }
+  void echo(int numIterations, EchoArgs arg) {
+    return impl.echo(numIterations, arg);
   }
 }
 

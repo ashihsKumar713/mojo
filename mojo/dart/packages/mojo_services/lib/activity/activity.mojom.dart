@@ -1689,9 +1689,9 @@ abstract class Activity {
   void setRequestedOrientation(ScreenOrientation orientation);
 }
 
-
-class _ActivityProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ActivityProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ActivityProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1705,7 +1705,6 @@ class _ActivityProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Activity.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -1722,9 +1721,9 @@ class _ActivityProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ActivityProxy extends bindings.Proxy
-                              implements Activity {
+class ActivityProxy
+    extends bindings.Proxy
+    implements Activity {
   ActivityProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ActivityProxyControl.fromEndpoint(endpoint));
@@ -1810,29 +1809,24 @@ class ActivityProxy extends bindings.Proxy
   }
 }
 
-
-class ActivityStub extends bindings.Stub {
+class _ActivityStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Activity> {
   Activity _impl;
 
-  ActivityStub.fromEndpoint(
+  _ActivityStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Activity impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ActivityStub.fromHandle(
+  _ActivityStubControl.fromHandle(
       core.MojoHandle handle, [Activity impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ActivityStub.unbound([this._impl]) : super.unbound();
-
-  static ActivityStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ActivityStub"));
-    return new ActivityStub.fromEndpoint(endpoint);
-  }
+  _ActivityStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -1900,9 +1894,10 @@ class ActivityStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ActivityStub($superString)";
+    return "_ActivityStubControl($superString)";
   }
 
   int get version => 0;
@@ -1913,6 +1908,50 @@ class ActivityStub extends bindings.Stub {
       _cachedServiceDescription = new _ActivityServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ActivityStub
+    extends bindings.Stub<Activity>
+    implements Activity {
+  ActivityStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Activity impl])
+      : super(new _ActivityStubControl.fromEndpoint(endpoint, impl));
+
+  ActivityStub.fromHandle(
+      core.MojoHandle handle, [Activity impl])
+      : super(new _ActivityStubControl.fromHandle(handle, impl));
+
+  ActivityStub.unbound([Activity impl])
+      : super(new _ActivityStubControl.unbound(impl));
+
+  static ActivityStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ActivityStub"));
+    return new ActivityStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ActivityStubControl.serviceDescription;
+
+
+  void getUserFeedback(Object userFeedback) {
+    return impl.getUserFeedback(userFeedback);
+  }
+  void startActivity(Intent intent) {
+    return impl.startActivity(intent);
+  }
+  void finishCurrentActivity() {
+    return impl.finishCurrentActivity();
+  }
+  void setTaskDescription(TaskDescription description) {
+    return impl.setTaskDescription(description);
+  }
+  void setSystemUiVisibility(SystemUiVisibility visibility) {
+    return impl.setSystemUiVisibility(visibility);
+  }
+  void setRequestedOrientation(ScreenOrientation orientation) {
+    return impl.setRequestedOrientation(orientation);
   }
 }
 
@@ -1938,9 +1977,9 @@ abstract class PathService {
   dynamic getCacheDir([Function responseFactory = null]);
 }
 
-
-class _PathServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _PathServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _PathServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1954,7 +1993,6 @@ class _PathServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => PathService.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _pathServiceMethodGetAppDataDirName:
@@ -2031,9 +2069,9 @@ class _PathServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class PathServiceProxy extends bindings.Proxy
-                              implements PathService {
+class PathServiceProxy
+    extends bindings.Proxy
+    implements PathService {
   PathServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _PathServiceProxyControl.fromEndpoint(endpoint));
@@ -2084,29 +2122,24 @@ class PathServiceProxy extends bindings.Proxy
   }
 }
 
-
-class PathServiceStub extends bindings.Stub {
+class _PathServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<PathService> {
   PathService _impl;
 
-  PathServiceStub.fromEndpoint(
+  _PathServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [PathService impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  PathServiceStub.fromHandle(
+  _PathServiceStubControl.fromHandle(
       core.MojoHandle handle, [PathService impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  PathServiceStub.unbound([this._impl]) : super.unbound();
-
-  static PathServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For PathServiceStub"));
-    return new PathServiceStub.fromEndpoint(endpoint);
-  }
+  _PathServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
   PathServiceGetAppDataDirResponseParams _pathServiceGetAppDataDirResponseParamsFactory(String path) {
@@ -2221,9 +2254,10 @@ class PathServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "PathServiceStub($superString)";
+    return "_PathServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -2234,6 +2268,41 @@ class PathServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _PathServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class PathServiceStub
+    extends bindings.Stub<PathService>
+    implements PathService {
+  PathServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [PathService impl])
+      : super(new _PathServiceStubControl.fromEndpoint(endpoint, impl));
+
+  PathServiceStub.fromHandle(
+      core.MojoHandle handle, [PathService impl])
+      : super(new _PathServiceStubControl.fromHandle(handle, impl));
+
+  PathServiceStub.unbound([PathService impl])
+      : super(new _PathServiceStubControl.unbound(impl));
+
+  static PathServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For PathServiceStub"));
+    return new PathServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _PathServiceStubControl.serviceDescription;
+
+
+  dynamic getAppDataDir([Function responseFactory = null]) {
+    return impl.getAppDataDir(responseFactory);
+  }
+  dynamic getFilesDir([Function responseFactory = null]) {
+    return impl.getFilesDir(responseFactory);
+  }
+  dynamic getCacheDir([Function responseFactory = null]) {
+    return impl.getCacheDir(responseFactory);
   }
 }
 
@@ -2257,9 +2326,9 @@ abstract class UserFeedback {
   void performAuralFeedback(AuralFeedbackType type);
 }
 
-
-class _UserFeedbackProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _UserFeedbackProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _UserFeedbackProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -2273,7 +2342,6 @@ class _UserFeedbackProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => UserFeedback.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -2290,9 +2358,9 @@ class _UserFeedbackProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class UserFeedbackProxy extends bindings.Proxy
-                              implements UserFeedback {
+class UserFeedbackProxy
+    extends bindings.Proxy
+    implements UserFeedback {
   UserFeedbackProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _UserFeedbackProxyControl.fromEndpoint(endpoint));
@@ -2339,29 +2407,24 @@ class UserFeedbackProxy extends bindings.Proxy
   }
 }
 
-
-class UserFeedbackStub extends bindings.Stub {
+class _UserFeedbackStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<UserFeedback> {
   UserFeedback _impl;
 
-  UserFeedbackStub.fromEndpoint(
+  _UserFeedbackStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [UserFeedback impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  UserFeedbackStub.fromHandle(
+  _UserFeedbackStubControl.fromHandle(
       core.MojoHandle handle, [UserFeedback impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  UserFeedbackStub.unbound([this._impl]) : super.unbound();
-
-  static UserFeedbackStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For UserFeedbackStub"));
-    return new UserFeedbackStub.fromEndpoint(endpoint);
-  }
+  _UserFeedbackStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -2411,9 +2474,10 @@ class UserFeedbackStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "UserFeedbackStub($superString)";
+    return "_UserFeedbackStubControl($superString)";
   }
 
   int get version => 0;
@@ -2424,6 +2488,38 @@ class UserFeedbackStub extends bindings.Stub {
       _cachedServiceDescription = new _UserFeedbackServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class UserFeedbackStub
+    extends bindings.Stub<UserFeedback>
+    implements UserFeedback {
+  UserFeedbackStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [UserFeedback impl])
+      : super(new _UserFeedbackStubControl.fromEndpoint(endpoint, impl));
+
+  UserFeedbackStub.fromHandle(
+      core.MojoHandle handle, [UserFeedback impl])
+      : super(new _UserFeedbackStubControl.fromHandle(handle, impl));
+
+  UserFeedbackStub.unbound([UserFeedback impl])
+      : super(new _UserFeedbackStubControl.unbound(impl));
+
+  static UserFeedbackStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For UserFeedbackStub"));
+    return new UserFeedbackStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _UserFeedbackStubControl.serviceDescription;
+
+
+  void performHapticFeedback(HapticFeedbackType type) {
+    return impl.performHapticFeedback(type);
+  }
+  void performAuralFeedback(AuralFeedbackType type) {
+    return impl.performAuralFeedback(type);
   }
 }
 

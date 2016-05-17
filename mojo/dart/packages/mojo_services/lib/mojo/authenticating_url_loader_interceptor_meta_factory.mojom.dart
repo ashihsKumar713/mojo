@@ -113,9 +113,9 @@ abstract class AuthenticatingUrlLoaderInterceptorMetaFactory {
   void createUrlLoaderInterceptorFactory(Object factoryRequest, Object authenticationService);
 }
 
-
-class _AuthenticatingUrlLoaderInterceptorMetaFactoryProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _AuthenticatingUrlLoaderInterceptorMetaFactoryProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _AuthenticatingUrlLoaderInterceptorMetaFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -129,7 +129,6 @@ class _AuthenticatingUrlLoaderInterceptorMetaFactoryProxyControl extends binding
 
   String get serviceName => AuthenticatingUrlLoaderInterceptorMetaFactory.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -146,9 +145,9 @@ class _AuthenticatingUrlLoaderInterceptorMetaFactoryProxyControl extends binding
   }
 }
 
-
-class AuthenticatingUrlLoaderInterceptorMetaFactoryProxy extends bindings.Proxy
-                              implements AuthenticatingUrlLoaderInterceptorMetaFactory {
+class AuthenticatingUrlLoaderInterceptorMetaFactoryProxy
+    extends bindings.Proxy
+    implements AuthenticatingUrlLoaderInterceptorMetaFactory {
   AuthenticatingUrlLoaderInterceptorMetaFactoryProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _AuthenticatingUrlLoaderInterceptorMetaFactoryProxyControl.fromEndpoint(endpoint));
@@ -186,29 +185,24 @@ class AuthenticatingUrlLoaderInterceptorMetaFactoryProxy extends bindings.Proxy
   }
 }
 
-
-class AuthenticatingUrlLoaderInterceptorMetaFactoryStub extends bindings.Stub {
+class _AuthenticatingUrlLoaderInterceptorMetaFactoryStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<AuthenticatingUrlLoaderInterceptorMetaFactory> {
   AuthenticatingUrlLoaderInterceptorMetaFactory _impl;
 
-  AuthenticatingUrlLoaderInterceptorMetaFactoryStub.fromEndpoint(
+  _AuthenticatingUrlLoaderInterceptorMetaFactoryStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [AuthenticatingUrlLoaderInterceptorMetaFactory impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  AuthenticatingUrlLoaderInterceptorMetaFactoryStub.fromHandle(
+  _AuthenticatingUrlLoaderInterceptorMetaFactoryStubControl.fromHandle(
       core.MojoHandle handle, [AuthenticatingUrlLoaderInterceptorMetaFactory impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  AuthenticatingUrlLoaderInterceptorMetaFactoryStub.unbound([this._impl]) : super.unbound();
-
-  static AuthenticatingUrlLoaderInterceptorMetaFactoryStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For AuthenticatingUrlLoaderInterceptorMetaFactoryStub"));
-    return new AuthenticatingUrlLoaderInterceptorMetaFactoryStub.fromEndpoint(endpoint);
-  }
+  _AuthenticatingUrlLoaderInterceptorMetaFactoryStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -253,9 +247,10 @@ class AuthenticatingUrlLoaderInterceptorMetaFactoryStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "AuthenticatingUrlLoaderInterceptorMetaFactoryStub($superString)";
+    return "_AuthenticatingUrlLoaderInterceptorMetaFactoryStubControl($superString)";
   }
 
   int get version => 0;
@@ -266,6 +261,35 @@ class AuthenticatingUrlLoaderInterceptorMetaFactoryStub extends bindings.Stub {
       _cachedServiceDescription = new _AuthenticatingUrlLoaderInterceptorMetaFactoryServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class AuthenticatingUrlLoaderInterceptorMetaFactoryStub
+    extends bindings.Stub<AuthenticatingUrlLoaderInterceptorMetaFactory>
+    implements AuthenticatingUrlLoaderInterceptorMetaFactory {
+  AuthenticatingUrlLoaderInterceptorMetaFactoryStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [AuthenticatingUrlLoaderInterceptorMetaFactory impl])
+      : super(new _AuthenticatingUrlLoaderInterceptorMetaFactoryStubControl.fromEndpoint(endpoint, impl));
+
+  AuthenticatingUrlLoaderInterceptorMetaFactoryStub.fromHandle(
+      core.MojoHandle handle, [AuthenticatingUrlLoaderInterceptorMetaFactory impl])
+      : super(new _AuthenticatingUrlLoaderInterceptorMetaFactoryStubControl.fromHandle(handle, impl));
+
+  AuthenticatingUrlLoaderInterceptorMetaFactoryStub.unbound([AuthenticatingUrlLoaderInterceptorMetaFactory impl])
+      : super(new _AuthenticatingUrlLoaderInterceptorMetaFactoryStubControl.unbound(impl));
+
+  static AuthenticatingUrlLoaderInterceptorMetaFactoryStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For AuthenticatingUrlLoaderInterceptorMetaFactoryStub"));
+    return new AuthenticatingUrlLoaderInterceptorMetaFactoryStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _AuthenticatingUrlLoaderInterceptorMetaFactoryStubControl.serviceDescription;
+
+
+  void createUrlLoaderInterceptorFactory(Object factoryRequest, Object authenticationService) {
+    return impl.createUrlLoaderInterceptorFactory(factoryRequest, authenticationService);
   }
 }
 

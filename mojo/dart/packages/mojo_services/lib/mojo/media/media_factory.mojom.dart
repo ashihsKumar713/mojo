@@ -594,9 +594,9 @@ abstract class MediaFactory {
   void createNetworkReader(String url, Object reader);
 }
 
-
-class _MediaFactoryProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _MediaFactoryProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _MediaFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -610,7 +610,6 @@ class _MediaFactoryProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => MediaFactory.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -627,9 +626,9 @@ class _MediaFactoryProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class MediaFactoryProxy extends bindings.Proxy
-                              implements MediaFactory {
+class MediaFactoryProxy
+    extends bindings.Proxy
+    implements MediaFactory {
   MediaFactoryProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaFactoryProxyControl.fromEndpoint(endpoint));
@@ -724,29 +723,24 @@ class MediaFactoryProxy extends bindings.Proxy
   }
 }
 
-
-class MediaFactoryStub extends bindings.Stub {
+class _MediaFactoryStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<MediaFactory> {
   MediaFactory _impl;
 
-  MediaFactoryStub.fromEndpoint(
+  _MediaFactoryStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaFactory impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaFactoryStub.fromHandle(
+  _MediaFactoryStubControl.fromHandle(
       core.MojoHandle handle, [MediaFactory impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaFactoryStub.unbound([this._impl]) : super.unbound();
-
-  static MediaFactoryStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaFactoryStub"));
-    return new MediaFactoryStub.fromEndpoint(endpoint);
-  }
+  _MediaFactoryStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -816,9 +810,10 @@ class MediaFactoryStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "MediaFactoryStub($superString)";
+    return "_MediaFactoryStubControl($superString)";
   }
 
   int get version => 0;
@@ -829,6 +824,50 @@ class MediaFactoryStub extends bindings.Stub {
       _cachedServiceDescription = new _MediaFactoryServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class MediaFactoryStub
+    extends bindings.Stub<MediaFactory>
+    implements MediaFactory {
+  MediaFactoryStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [MediaFactory impl])
+      : super(new _MediaFactoryStubControl.fromEndpoint(endpoint, impl));
+
+  MediaFactoryStub.fromHandle(
+      core.MojoHandle handle, [MediaFactory impl])
+      : super(new _MediaFactoryStubControl.fromHandle(handle, impl));
+
+  MediaFactoryStub.unbound([MediaFactory impl])
+      : super(new _MediaFactoryStubControl.unbound(impl));
+
+  static MediaFactoryStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaFactoryStub"));
+    return new MediaFactoryStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _MediaFactoryStubControl.serviceDescription;
+
+
+  void createPlayer(Object reader, Object player) {
+    return impl.createPlayer(reader, player);
+  }
+  void createSource(Object reader, List<media_types_mojom.MediaTypeSet> allowedMediaTypes, Object source) {
+    return impl.createSource(reader, allowedMediaTypes, source);
+  }
+  void createSink(String destinationUrl, media_types_mojom.MediaType mediaType, Object sink) {
+    return impl.createSink(destinationUrl, mediaType, sink);
+  }
+  void createDemux(Object reader, Object demux) {
+    return impl.createDemux(reader, demux);
+  }
+  void createDecoder(media_types_mojom.MediaType inputMediaType, Object decoder) {
+    return impl.createDecoder(inputMediaType, decoder);
+  }
+  void createNetworkReader(String url, Object reader) {
+    return impl.createNetworkReader(url, reader);
   }
 }
 

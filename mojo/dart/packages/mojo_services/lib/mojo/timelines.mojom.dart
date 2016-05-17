@@ -342,9 +342,9 @@ abstract class TimelineConsumer {
   static const int kUnspecifiedTime = 9223372036854775807;
 }
 
-
-class _TimelineConsumerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _TimelineConsumerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _TimelineConsumerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -358,7 +358,6 @@ class _TimelineConsumerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => TimelineConsumer.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _timelineConsumerMethodSetTimelineTransformName:
@@ -395,9 +394,9 @@ class _TimelineConsumerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class TimelineConsumerProxy extends bindings.Proxy
-                              implements TimelineConsumer {
+class TimelineConsumerProxy
+    extends bindings.Proxy
+    implements TimelineConsumer {
   TimelineConsumerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TimelineConsumerProxyControl.fromEndpoint(endpoint));
@@ -437,29 +436,24 @@ class TimelineConsumerProxy extends bindings.Proxy
   }
 }
 
-
-class TimelineConsumerStub extends bindings.Stub {
+class _TimelineConsumerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<TimelineConsumer> {
   TimelineConsumer _impl;
 
-  TimelineConsumerStub.fromEndpoint(
+  _TimelineConsumerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TimelineConsumer impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TimelineConsumerStub.fromHandle(
+  _TimelineConsumerStubControl.fromHandle(
       core.MojoHandle handle, [TimelineConsumer impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TimelineConsumerStub.unbound([this._impl]) : super.unbound();
-
-  static TimelineConsumerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TimelineConsumerStub"));
-    return new TimelineConsumerStub.fromEndpoint(endpoint);
-  }
+  _TimelineConsumerStubControl.unbound([this._impl]) : super.unbound();
 
 
   TimelineConsumerSetTimelineTransformResponseParams _timelineConsumerSetTimelineTransformResponseParamsFactory(bool completed) {
@@ -526,9 +520,10 @@ class TimelineConsumerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "TimelineConsumerStub($superString)";
+    return "_TimelineConsumerStubControl($superString)";
   }
 
   int get version => 0;
@@ -539,6 +534,35 @@ class TimelineConsumerStub extends bindings.Stub {
       _cachedServiceDescription = new _TimelineConsumerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class TimelineConsumerStub
+    extends bindings.Stub<TimelineConsumer>
+    implements TimelineConsumer {
+  TimelineConsumerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [TimelineConsumer impl])
+      : super(new _TimelineConsumerStubControl.fromEndpoint(endpoint, impl));
+
+  TimelineConsumerStub.fromHandle(
+      core.MojoHandle handle, [TimelineConsumer impl])
+      : super(new _TimelineConsumerStubControl.fromHandle(handle, impl));
+
+  TimelineConsumerStub.unbound([TimelineConsumer impl])
+      : super(new _TimelineConsumerStubControl.unbound(impl));
+
+  static TimelineConsumerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TimelineConsumerStub"));
+    return new TimelineConsumerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _TimelineConsumerStubControl.serviceDescription;
+
+
+  dynamic setTimelineTransform(int subjectTime,int referenceDelta,int subjectDelta,int effectiveReferenceTime,int effectiveSubjectTime,[Function responseFactory = null]) {
+    return impl.setTimelineTransform(subjectTime,referenceDelta,subjectDelta,effectiveReferenceTime,effectiveSubjectTime,responseFactory);
   }
 }
 

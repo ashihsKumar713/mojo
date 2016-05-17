@@ -44,14 +44,14 @@ class Proxy {
 /// Generated Proxy classes have a factory Proxy.connectToService which takes
 /// a ServiceConnector, a url, and optionally a service name and returns a
 /// bound Proxy. For example, every class extending the Application base class
-/// in package:mojo/application.dart inherits and implementation of the
+/// in package:mojo/application.dart inherits an implementation of the
 /// ServiceConnector interface.
 abstract class ServiceConnector {
   /// Connects [proxy] to the service called [serviceName] that lives at [url].
   void connectToService(String url, Proxy proxy, [String serviceName]);
 }
 
-class ProxyMessageHandler extends core.MojoEventHandler {
+abstract class ProxyMessageHandler extends core.MojoEventHandler {
   HashMap<int, Completer> _completerMap = new HashMap<int, Completer>();
   Completer _errorCompleter = new Completer();
   Set<Completer> _errorCompleters;
@@ -70,7 +70,7 @@ class ProxyMessageHandler extends core.MojoEventHandler {
   /// The function that handles responses to sent proxy message. It should be
   /// implemented by the generated ProxyControl classes that extend
   /// [ProxyMessageHandler].
-  void handleResponse(ServiceMessage msg) {}
+  void handleResponse(ServiceMessage msg);
 
   /// If there is an error in using this proxy, this future completes with
   /// a ProxyError.
@@ -173,6 +173,7 @@ class ProxyMessageHandler extends core.MojoEventHandler {
   // Need a getter for this for access in subclasses.
   HashMap<int, Completer> get completerMap => _completerMap;
 
+  @override
   String toString() {
     var superString = super.toString();
     return "ProxyMessageHandler(${superString})";

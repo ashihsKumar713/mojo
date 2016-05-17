@@ -776,9 +776,9 @@ abstract class PingPongService {
   void quit();
 }
 
-
-class _PingPongServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _PingPongServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _PingPongServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -792,7 +792,6 @@ class _PingPongServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => PingPongService.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _pingPongServiceMethodPingTargetUrlName:
@@ -849,9 +848,9 @@ class _PingPongServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class PingPongServiceProxy extends bindings.Proxy
-                              implements PingPongService {
+class PingPongServiceProxy
+    extends bindings.Proxy
+    implements PingPongService {
   PingPongServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _PingPongServiceProxyControl.fromEndpoint(endpoint));
@@ -947,29 +946,24 @@ class PingPongServiceProxy extends bindings.Proxy
   }
 }
 
-
-class PingPongServiceStub extends bindings.Stub {
+class _PingPongServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<PingPongService> {
   PingPongService _impl;
 
-  PingPongServiceStub.fromEndpoint(
+  _PingPongServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [PingPongService impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  PingPongServiceStub.fromHandle(
+  _PingPongServiceStubControl.fromHandle(
       core.MojoHandle handle, [PingPongService impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  PingPongServiceStub.unbound([this._impl]) : super.unbound();
-
-  static PingPongServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For PingPongServiceStub"));
-    return new PingPongServiceStub.fromEndpoint(endpoint);
-  }
+  _PingPongServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
   PingPongServicePingTargetUrlResponseParams _pingPongServicePingTargetUrlResponseParamsFactory(bool ok) {
@@ -1086,9 +1080,10 @@ class PingPongServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "PingPongServiceStub($superString)";
+    return "_PingPongServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -1099,6 +1094,53 @@ class PingPongServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _PingPongServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class PingPongServiceStub
+    extends bindings.Stub<PingPongService>
+    implements PingPongService {
+  PingPongServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [PingPongService impl])
+      : super(new _PingPongServiceStubControl.fromEndpoint(endpoint, impl));
+
+  PingPongServiceStub.fromHandle(
+      core.MojoHandle handle, [PingPongService impl])
+      : super(new _PingPongServiceStubControl.fromHandle(handle, impl));
+
+  PingPongServiceStub.unbound([PingPongService impl])
+      : super(new _PingPongServiceStubControl.unbound(impl));
+
+  static PingPongServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For PingPongServiceStub"));
+    return new PingPongServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _PingPongServiceStubControl.serviceDescription;
+
+
+  void setClient(Object client) {
+    return impl.setClient(client);
+  }
+  void ping(int pingValue) {
+    return impl.ping(pingValue);
+  }
+  dynamic pingTargetUrl(String url,int count,[Function responseFactory = null]) {
+    return impl.pingTargetUrl(url,count,responseFactory);
+  }
+  dynamic pingTargetService(Object service,int count,[Function responseFactory = null]) {
+    return impl.pingTargetService(service,count,responseFactory);
+  }
+  void getPingPongService(Object service) {
+    return impl.getPingPongService(service);
+  }
+  void getPingPongServiceDelayed(Object service) {
+    return impl.getPingPongServiceDelayed(service);
+  }
+  void quit() {
+    return impl.quit();
   }
 }
 
@@ -1120,9 +1162,9 @@ abstract class PingPongClient {
   void pong(int pongValue);
 }
 
-
-class _PingPongClientProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _PingPongClientProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _PingPongClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1136,7 +1178,6 @@ class _PingPongClientProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => PingPongClient.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -1153,9 +1194,9 @@ class _PingPongClientProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class PingPongClientProxy extends bindings.Proxy
-                              implements PingPongClient {
+class PingPongClientProxy
+    extends bindings.Proxy
+    implements PingPongClient {
   PingPongClientProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _PingPongClientProxyControl.fromEndpoint(endpoint));
@@ -1192,29 +1233,24 @@ class PingPongClientProxy extends bindings.Proxy
   }
 }
 
-
-class PingPongClientStub extends bindings.Stub {
+class _PingPongClientStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<PingPongClient> {
   PingPongClient _impl;
 
-  PingPongClientStub.fromEndpoint(
+  _PingPongClientStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [PingPongClient impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  PingPongClientStub.fromHandle(
+  _PingPongClientStubControl.fromHandle(
       core.MojoHandle handle, [PingPongClient impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  PingPongClientStub.unbound([this._impl]) : super.unbound();
-
-  static PingPongClientStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For PingPongClientStub"));
-    return new PingPongClientStub.fromEndpoint(endpoint);
-  }
+  _PingPongClientStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -1259,9 +1295,10 @@ class PingPongClientStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "PingPongClientStub($superString)";
+    return "_PingPongClientStubControl($superString)";
   }
 
   int get version => 0;
@@ -1272,6 +1309,35 @@ class PingPongClientStub extends bindings.Stub {
       _cachedServiceDescription = new _PingPongClientServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class PingPongClientStub
+    extends bindings.Stub<PingPongClient>
+    implements PingPongClient {
+  PingPongClientStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [PingPongClient impl])
+      : super(new _PingPongClientStubControl.fromEndpoint(endpoint, impl));
+
+  PingPongClientStub.fromHandle(
+      core.MojoHandle handle, [PingPongClient impl])
+      : super(new _PingPongClientStubControl.fromHandle(handle, impl));
+
+  PingPongClientStub.unbound([PingPongClient impl])
+      : super(new _PingPongClientStubControl.unbound(impl));
+
+  static PingPongClientStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For PingPongClientStub"));
+    return new PingPongClientStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _PingPongClientStubControl.serviceDescription;
+
+
+  void pong(int pongValue) {
+    return impl.pong(pongValue);
   }
 }
 

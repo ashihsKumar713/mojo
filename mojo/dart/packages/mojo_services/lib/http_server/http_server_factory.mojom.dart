@@ -114,9 +114,9 @@ abstract class HttpServerFactory {
   void createHttpServer(Object serverRequest, net_address_mojom.NetAddress localAddress);
 }
 
-
-class _HttpServerFactoryProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _HttpServerFactoryProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _HttpServerFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -130,7 +130,6 @@ class _HttpServerFactoryProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => HttpServerFactory.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -147,9 +146,9 @@ class _HttpServerFactoryProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class HttpServerFactoryProxy extends bindings.Proxy
-                              implements HttpServerFactory {
+class HttpServerFactoryProxy
+    extends bindings.Proxy
+    implements HttpServerFactory {
   HttpServerFactoryProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _HttpServerFactoryProxyControl.fromEndpoint(endpoint));
@@ -187,29 +186,24 @@ class HttpServerFactoryProxy extends bindings.Proxy
   }
 }
 
-
-class HttpServerFactoryStub extends bindings.Stub {
+class _HttpServerFactoryStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<HttpServerFactory> {
   HttpServerFactory _impl;
 
-  HttpServerFactoryStub.fromEndpoint(
+  _HttpServerFactoryStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [HttpServerFactory impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  HttpServerFactoryStub.fromHandle(
+  _HttpServerFactoryStubControl.fromHandle(
       core.MojoHandle handle, [HttpServerFactory impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  HttpServerFactoryStub.unbound([this._impl]) : super.unbound();
-
-  static HttpServerFactoryStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HttpServerFactoryStub"));
-    return new HttpServerFactoryStub.fromEndpoint(endpoint);
-  }
+  _HttpServerFactoryStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -254,9 +248,10 @@ class HttpServerFactoryStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "HttpServerFactoryStub($superString)";
+    return "_HttpServerFactoryStubControl($superString)";
   }
 
   int get version => 0;
@@ -267,6 +262,35 @@ class HttpServerFactoryStub extends bindings.Stub {
       _cachedServiceDescription = new _HttpServerFactoryServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class HttpServerFactoryStub
+    extends bindings.Stub<HttpServerFactory>
+    implements HttpServerFactory {
+  HttpServerFactoryStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [HttpServerFactory impl])
+      : super(new _HttpServerFactoryStubControl.fromEndpoint(endpoint, impl));
+
+  HttpServerFactoryStub.fromHandle(
+      core.MojoHandle handle, [HttpServerFactory impl])
+      : super(new _HttpServerFactoryStubControl.fromHandle(handle, impl));
+
+  HttpServerFactoryStub.unbound([HttpServerFactory impl])
+      : super(new _HttpServerFactoryStubControl.unbound(impl));
+
+  static HttpServerFactoryStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HttpServerFactoryStub"));
+    return new HttpServerFactoryStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _HttpServerFactoryStubControl.serviceDescription;
+
+
+  void createHttpServer(Object serverRequest, net_address_mojom.NetAddress localAddress) {
+    return impl.createHttpServer(serverRequest, localAddress);
   }
 }
 

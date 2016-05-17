@@ -13,13 +13,13 @@ class _ApplicationImpl implements application_mojom.Application {
       Application application, core.MojoMessagePipeEndpoint endpoint) {
     _application = application;
     _stub = new application_mojom.ApplicationStub.fromEndpoint(endpoint, this);
-    _stub.onError = ((_) => close());
+    _stub.ctrl.onError = ((_) => close());
   }
 
   _ApplicationImpl.fromHandle(Application application, core.MojoHandle handle) {
     _application = application;
     _stub = new application_mojom.ApplicationStub.fromHandle(handle, this);
-    _stub.onError = ((_) => close());
+    _stub.ctrl.onError = ((_) => close());
   }
 
   _ApplicationImpl.fromStub(Application application,
@@ -27,11 +27,11 @@ class _ApplicationImpl implements application_mojom.Application {
     _application = application;
     _stub = applicationStub;
     _stub.impl = this;
-    _stub.onError = ((_) => close());
+    _stub.ctrl.onError = ((_) => close());
   }
 
   set onError(core.ErrorHandler f) {
-    _stub.onError = f;
+    _stub.ctrl.onError = f;
   }
 
   void initialize(

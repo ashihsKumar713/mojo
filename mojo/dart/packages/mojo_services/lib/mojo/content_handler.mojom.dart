@@ -114,9 +114,9 @@ abstract class ContentHandler {
   void startApplication(Object application, url_response_mojom.UrlResponse response);
 }
 
-
-class _ContentHandlerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ContentHandlerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ContentHandlerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -130,7 +130,6 @@ class _ContentHandlerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ContentHandler.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -147,9 +146,9 @@ class _ContentHandlerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ContentHandlerProxy extends bindings.Proxy
-                              implements ContentHandler {
+class ContentHandlerProxy
+    extends bindings.Proxy
+    implements ContentHandler {
   ContentHandlerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ContentHandlerProxyControl.fromEndpoint(endpoint));
@@ -187,29 +186,24 @@ class ContentHandlerProxy extends bindings.Proxy
   }
 }
 
-
-class ContentHandlerStub extends bindings.Stub {
+class _ContentHandlerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ContentHandler> {
   ContentHandler _impl;
 
-  ContentHandlerStub.fromEndpoint(
+  _ContentHandlerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ContentHandler impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ContentHandlerStub.fromHandle(
+  _ContentHandlerStubControl.fromHandle(
       core.MojoHandle handle, [ContentHandler impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ContentHandlerStub.unbound([this._impl]) : super.unbound();
-
-  static ContentHandlerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ContentHandlerStub"));
-    return new ContentHandlerStub.fromEndpoint(endpoint);
-  }
+  _ContentHandlerStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -254,9 +248,10 @@ class ContentHandlerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ContentHandlerStub($superString)";
+    return "_ContentHandlerStubControl($superString)";
   }
 
   int get version => 0;
@@ -267,6 +262,35 @@ class ContentHandlerStub extends bindings.Stub {
       _cachedServiceDescription = new _ContentHandlerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ContentHandlerStub
+    extends bindings.Stub<ContentHandler>
+    implements ContentHandler {
+  ContentHandlerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ContentHandler impl])
+      : super(new _ContentHandlerStubControl.fromEndpoint(endpoint, impl));
+
+  ContentHandlerStub.fromHandle(
+      core.MojoHandle handle, [ContentHandler impl])
+      : super(new _ContentHandlerStubControl.fromHandle(handle, impl));
+
+  ContentHandlerStub.unbound([ContentHandler impl])
+      : super(new _ContentHandlerStubControl.unbound(impl));
+
+  static ContentHandlerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ContentHandlerStub"));
+    return new ContentHandlerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ContentHandlerStubControl.serviceDescription;
+
+
+  void startApplication(Object application, url_response_mojom.UrlResponse response) {
+    return impl.startApplication(application, response);
   }
 }
 

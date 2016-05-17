@@ -218,15 +218,15 @@ class Encoder {
       return;
     }
     if (interface is Stub) {
-      if (interface.isBound) {
+      if (interface.ctrl.isBound) {
         throw new MojoCodecError(
             'Cannot encode a bound stub for an interface');
       }
       var pipe = new core.MojoMessagePipe();
-      interface.bind(pipe.endpoints[0]);
+      interface.ctrl.bind(pipe.endpoints[0]);
       encodeMessagePipeHandle(pipe.endpoints[1], offset, nullable);
       // Set the version to the version in the stub.
-      encodeUint32(interface.version, offset + kSerializedHandleSize);
+      encodeUint32(interface.ctrl.version, offset + kSerializedHandleSize);
     } else if (interface is Proxy) {
       if (!interface.ctrl.isBound) {
         throw new MojoCodecError(
@@ -260,18 +260,18 @@ class Encoder {
       request.ctrl.beginHandlingEvents();
       encodeMessagePipeHandle(pipe.endpoints[1], offset, nullable);
     } else if (request is Stub) {
-      if (!request.isBound) {
+      if (!request.ctrl.isBound) {
         throw new MojoCodecError(
             'Cannot encode an unbound stub for an interface request');
       }
-      if (!request.isOpen) {
+      if (!request.ctrl.isOpen) {
         // Make sure that we are listening so that state for the stub is
         // cleaned up when the message is sent and the handle is closed.
-        request.beginHandlingEvents();
+        request.ctrl.beginHandlingEvents();
       }
-      encodeMessagePipeHandle(request.endpoint, offset, nullable);
+      encodeMessagePipeHandle(request.ctrl.endpoint, offset, nullable);
       // Set the version to the current version of the stub.
-      encodeUint32(request.version, offset + kSerializedHandleSize);
+      encodeUint32(request.ctrl.version, offset + kSerializedHandleSize);
     }
   }
 

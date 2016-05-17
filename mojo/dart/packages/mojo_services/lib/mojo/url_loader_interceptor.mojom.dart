@@ -604,9 +604,9 @@ abstract class UrlLoaderInterceptorFactory {
   void create(Object interceptor);
 }
 
-
-class _UrlLoaderInterceptorFactoryProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _UrlLoaderInterceptorFactoryProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _UrlLoaderInterceptorFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -620,7 +620,6 @@ class _UrlLoaderInterceptorFactoryProxyControl extends bindings.ProxyMessageHand
 
   String get serviceName => UrlLoaderInterceptorFactory.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -637,9 +636,9 @@ class _UrlLoaderInterceptorFactoryProxyControl extends bindings.ProxyMessageHand
   }
 }
 
-
-class UrlLoaderInterceptorFactoryProxy extends bindings.Proxy
-                              implements UrlLoaderInterceptorFactory {
+class UrlLoaderInterceptorFactoryProxy
+    extends bindings.Proxy
+    implements UrlLoaderInterceptorFactory {
   UrlLoaderInterceptorFactoryProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _UrlLoaderInterceptorFactoryProxyControl.fromEndpoint(endpoint));
@@ -676,29 +675,24 @@ class UrlLoaderInterceptorFactoryProxy extends bindings.Proxy
   }
 }
 
-
-class UrlLoaderInterceptorFactoryStub extends bindings.Stub {
+class _UrlLoaderInterceptorFactoryStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<UrlLoaderInterceptorFactory> {
   UrlLoaderInterceptorFactory _impl;
 
-  UrlLoaderInterceptorFactoryStub.fromEndpoint(
+  _UrlLoaderInterceptorFactoryStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [UrlLoaderInterceptorFactory impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  UrlLoaderInterceptorFactoryStub.fromHandle(
+  _UrlLoaderInterceptorFactoryStubControl.fromHandle(
       core.MojoHandle handle, [UrlLoaderInterceptorFactory impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  UrlLoaderInterceptorFactoryStub.unbound([this._impl]) : super.unbound();
-
-  static UrlLoaderInterceptorFactoryStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For UrlLoaderInterceptorFactoryStub"));
-    return new UrlLoaderInterceptorFactoryStub.fromEndpoint(endpoint);
-  }
+  _UrlLoaderInterceptorFactoryStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -743,9 +737,10 @@ class UrlLoaderInterceptorFactoryStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "UrlLoaderInterceptorFactoryStub($superString)";
+    return "_UrlLoaderInterceptorFactoryStubControl($superString)";
   }
 
   int get version => 0;
@@ -756,6 +751,35 @@ class UrlLoaderInterceptorFactoryStub extends bindings.Stub {
       _cachedServiceDescription = new _UrlLoaderInterceptorFactoryServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class UrlLoaderInterceptorFactoryStub
+    extends bindings.Stub<UrlLoaderInterceptorFactory>
+    implements UrlLoaderInterceptorFactory {
+  UrlLoaderInterceptorFactoryStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [UrlLoaderInterceptorFactory impl])
+      : super(new _UrlLoaderInterceptorFactoryStubControl.fromEndpoint(endpoint, impl));
+
+  UrlLoaderInterceptorFactoryStub.fromHandle(
+      core.MojoHandle handle, [UrlLoaderInterceptorFactory impl])
+      : super(new _UrlLoaderInterceptorFactoryStubControl.fromHandle(handle, impl));
+
+  UrlLoaderInterceptorFactoryStub.unbound([UrlLoaderInterceptorFactory impl])
+      : super(new _UrlLoaderInterceptorFactoryStubControl.unbound(impl));
+
+  static UrlLoaderInterceptorFactoryStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For UrlLoaderInterceptorFactoryStub"));
+    return new UrlLoaderInterceptorFactoryStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _UrlLoaderInterceptorFactoryStubControl.serviceDescription;
+
+
+  void create(Object interceptor) {
+    return impl.create(interceptor);
   }
 }
 
@@ -781,9 +805,9 @@ abstract class UrlLoaderInterceptor {
   dynamic interceptResponse(url_response_mojom.UrlResponse response,[Function responseFactory = null]);
 }
 
-
-class _UrlLoaderInterceptorProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _UrlLoaderInterceptorProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _UrlLoaderInterceptorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -797,7 +821,6 @@ class _UrlLoaderInterceptorProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => UrlLoaderInterceptor.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _urlLoaderInterceptorMethodInterceptRequestName:
@@ -874,9 +897,9 @@ class _UrlLoaderInterceptorProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class UrlLoaderInterceptorProxy extends bindings.Proxy
-                              implements UrlLoaderInterceptor {
+class UrlLoaderInterceptorProxy
+    extends bindings.Proxy
+    implements UrlLoaderInterceptor {
   UrlLoaderInterceptorProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _UrlLoaderInterceptorProxyControl.fromEndpoint(endpoint));
@@ -929,29 +952,24 @@ class UrlLoaderInterceptorProxy extends bindings.Proxy
   }
 }
 
-
-class UrlLoaderInterceptorStub extends bindings.Stub {
+class _UrlLoaderInterceptorStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<UrlLoaderInterceptor> {
   UrlLoaderInterceptor _impl;
 
-  UrlLoaderInterceptorStub.fromEndpoint(
+  _UrlLoaderInterceptorStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [UrlLoaderInterceptor impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  UrlLoaderInterceptorStub.fromHandle(
+  _UrlLoaderInterceptorStubControl.fromHandle(
       core.MojoHandle handle, [UrlLoaderInterceptor impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  UrlLoaderInterceptorStub.unbound([this._impl]) : super.unbound();
-
-  static UrlLoaderInterceptorStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For UrlLoaderInterceptorStub"));
-    return new UrlLoaderInterceptorStub.fromEndpoint(endpoint);
-  }
+  _UrlLoaderInterceptorStubControl.unbound([this._impl]) : super.unbound();
 
 
   UrlLoaderInterceptorInterceptRequestResponseParams _urlLoaderInterceptorInterceptRequestResponseParamsFactory(UrlLoaderInterceptorResponse response) {
@@ -1070,9 +1088,10 @@ class UrlLoaderInterceptorStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "UrlLoaderInterceptorStub($superString)";
+    return "_UrlLoaderInterceptorStubControl($superString)";
   }
 
   int get version => 0;
@@ -1083,6 +1102,41 @@ class UrlLoaderInterceptorStub extends bindings.Stub {
       _cachedServiceDescription = new _UrlLoaderInterceptorServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class UrlLoaderInterceptorStub
+    extends bindings.Stub<UrlLoaderInterceptor>
+    implements UrlLoaderInterceptor {
+  UrlLoaderInterceptorStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [UrlLoaderInterceptor impl])
+      : super(new _UrlLoaderInterceptorStubControl.fromEndpoint(endpoint, impl));
+
+  UrlLoaderInterceptorStub.fromHandle(
+      core.MojoHandle handle, [UrlLoaderInterceptor impl])
+      : super(new _UrlLoaderInterceptorStubControl.fromHandle(handle, impl));
+
+  UrlLoaderInterceptorStub.unbound([UrlLoaderInterceptor impl])
+      : super(new _UrlLoaderInterceptorStubControl.unbound(impl));
+
+  static UrlLoaderInterceptorStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For UrlLoaderInterceptorStub"));
+    return new UrlLoaderInterceptorStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _UrlLoaderInterceptorStubControl.serviceDescription;
+
+
+  dynamic interceptRequest(url_request_mojom.UrlRequest request,[Function responseFactory = null]) {
+    return impl.interceptRequest(request,responseFactory);
+  }
+  dynamic interceptFollowRedirect([Function responseFactory = null]) {
+    return impl.interceptFollowRedirect(responseFactory);
+  }
+  dynamic interceptResponse(url_response_mojom.UrlResponse response,[Function responseFactory = null]) {
+    return impl.interceptResponse(response,responseFactory);
   }
 }
 

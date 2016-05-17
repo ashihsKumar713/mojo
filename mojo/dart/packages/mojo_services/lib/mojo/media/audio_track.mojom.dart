@@ -586,9 +586,9 @@ abstract class AudioTrack {
   static const double kMaxGain = 20.0;
 }
 
-
-class _AudioTrackProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _AudioTrackProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _AudioTrackProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -602,7 +602,6 @@ class _AudioTrackProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => AudioTrack.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _audioTrackMethodDescribeName:
@@ -639,9 +638,9 @@ class _AudioTrackProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class AudioTrackProxy extends bindings.Proxy
-                              implements AudioTrack {
+class AudioTrackProxy
+    extends bindings.Proxy
+    implements AudioTrack {
   AudioTrackProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _AudioTrackProxyControl.fromEndpoint(endpoint));
@@ -707,29 +706,24 @@ class AudioTrackProxy extends bindings.Proxy
   }
 }
 
-
-class AudioTrackStub extends bindings.Stub {
+class _AudioTrackStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<AudioTrack> {
   AudioTrack _impl;
 
-  AudioTrackStub.fromEndpoint(
+  _AudioTrackStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [AudioTrack impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  AudioTrackStub.fromHandle(
+  _AudioTrackStubControl.fromHandle(
       core.MojoHandle handle, [AudioTrack impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  AudioTrackStub.unbound([this._impl]) : super.unbound();
-
-  static AudioTrackStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For AudioTrackStub"));
-    return new AudioTrackStub.fromEndpoint(endpoint);
-  }
+  _AudioTrackStubControl.unbound([this._impl]) : super.unbound();
 
 
   AudioTrackDescribeResponseParams _audioTrackDescribeResponseParamsFactory(AudioTrackDescriptor descriptor) {
@@ -809,9 +803,10 @@ class AudioTrackStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "AudioTrackStub($superString)";
+    return "_AudioTrackStubControl($superString)";
   }
 
   int get version => 0;
@@ -822,6 +817,44 @@ class AudioTrackStub extends bindings.Stub {
       _cachedServiceDescription = new _AudioTrackServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class AudioTrackStub
+    extends bindings.Stub<AudioTrack>
+    implements AudioTrack {
+  AudioTrackStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [AudioTrack impl])
+      : super(new _AudioTrackStubControl.fromEndpoint(endpoint, impl));
+
+  AudioTrackStub.fromHandle(
+      core.MojoHandle handle, [AudioTrack impl])
+      : super(new _AudioTrackStubControl.fromHandle(handle, impl));
+
+  AudioTrackStub.unbound([AudioTrack impl])
+      : super(new _AudioTrackStubControl.unbound(impl));
+
+  static AudioTrackStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For AudioTrackStub"));
+    return new AudioTrackStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _AudioTrackStubControl.serviceDescription;
+
+
+  dynamic describe([Function responseFactory = null]) {
+    return impl.describe(responseFactory);
+  }
+  void configure(AudioTrackConfiguration configuration, Object pipe) {
+    return impl.configure(configuration, pipe);
+  }
+  void getRateControl(Object rateControl) {
+    return impl.getRateControl(rateControl);
+  }
+  void setGain(double dbGain) {
+    return impl.setGain(dbGain);
   }
 }
 

@@ -938,9 +938,9 @@ abstract class WebSocket {
   static const int kAbnormalCloseCode = 1006;
 }
 
-
-class _WebSocketProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _WebSocketProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _WebSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -954,7 +954,6 @@ class _WebSocketProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => WebSocket.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -971,9 +970,9 @@ class _WebSocketProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class WebSocketProxy extends bindings.Proxy
-                              implements WebSocket {
+class WebSocketProxy
+    extends bindings.Proxy
+    implements WebSocket {
   WebSocketProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _WebSocketProxyControl.fromEndpoint(endpoint));
@@ -1047,29 +1046,24 @@ class WebSocketProxy extends bindings.Proxy
   }
 }
 
-
-class WebSocketStub extends bindings.Stub {
+class _WebSocketStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<WebSocket> {
   WebSocket _impl;
 
-  WebSocketStub.fromEndpoint(
+  _WebSocketStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [WebSocket impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  WebSocketStub.fromHandle(
+  _WebSocketStubControl.fromHandle(
       core.MojoHandle handle, [WebSocket impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  WebSocketStub.unbound([this._impl]) : super.unbound();
-
-  static WebSocketStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For WebSocketStub"));
-    return new WebSocketStub.fromEndpoint(endpoint);
-  }
+  _WebSocketStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -1129,9 +1123,10 @@ class WebSocketStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "WebSocketStub($superString)";
+    return "_WebSocketStubControl($superString)";
   }
 
   int get version => 0;
@@ -1142,6 +1137,44 @@ class WebSocketStub extends bindings.Stub {
       _cachedServiceDescription = new _WebSocketServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class WebSocketStub
+    extends bindings.Stub<WebSocket>
+    implements WebSocket {
+  WebSocketStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [WebSocket impl])
+      : super(new _WebSocketStubControl.fromEndpoint(endpoint, impl));
+
+  WebSocketStub.fromHandle(
+      core.MojoHandle handle, [WebSocket impl])
+      : super(new _WebSocketStubControl.fromHandle(handle, impl));
+
+  WebSocketStub.unbound([WebSocket impl])
+      : super(new _WebSocketStubControl.unbound(impl));
+
+  static WebSocketStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For WebSocketStub"));
+    return new WebSocketStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _WebSocketStubControl.serviceDescription;
+
+
+  void connect(String url, List<String> protocols, String origin, core.MojoDataPipeConsumer sendStream, Object client) {
+    return impl.connect(url, protocols, origin, sendStream, client);
+  }
+  void send(bool fin, WebSocketMessageType type, int numBytes) {
+    return impl.send(fin, type, numBytes);
+  }
+  void flowControl(int quota) {
+    return impl.flowControl(quota);
+  }
+  void close_(int code, String reason) {
+    return impl.close_(code, reason);
   }
 }
 
@@ -1171,9 +1204,9 @@ abstract class WebSocketClient {
   void didClose(bool wasClean, int code, String reason);
 }
 
-
-class _WebSocketClientProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _WebSocketClientProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _WebSocketClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1187,7 +1220,6 @@ class _WebSocketClientProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => WebSocketClient.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -1204,9 +1236,9 @@ class _WebSocketClientProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class WebSocketClientProxy extends bindings.Proxy
-                              implements WebSocketClient {
+class WebSocketClientProxy
+    extends bindings.Proxy
+    implements WebSocketClient {
   WebSocketClientProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _WebSocketClientProxyControl.fromEndpoint(endpoint));
@@ -1289,29 +1321,24 @@ class WebSocketClientProxy extends bindings.Proxy
   }
 }
 
-
-class WebSocketClientStub extends bindings.Stub {
+class _WebSocketClientStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<WebSocketClient> {
   WebSocketClient _impl;
 
-  WebSocketClientStub.fromEndpoint(
+  _WebSocketClientStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [WebSocketClient impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  WebSocketClientStub.fromHandle(
+  _WebSocketClientStubControl.fromHandle(
       core.MojoHandle handle, [WebSocketClient impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  WebSocketClientStub.unbound([this._impl]) : super.unbound();
-
-  static WebSocketClientStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For WebSocketClientStub"));
-    return new WebSocketClientStub.fromEndpoint(endpoint);
-  }
+  _WebSocketClientStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -1376,9 +1403,10 @@ class WebSocketClientStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "WebSocketClientStub($superString)";
+    return "_WebSocketClientStubControl($superString)";
   }
 
   int get version => 0;
@@ -1389,6 +1417,47 @@ class WebSocketClientStub extends bindings.Stub {
       _cachedServiceDescription = new _WebSocketClientServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class WebSocketClientStub
+    extends bindings.Stub<WebSocketClient>
+    implements WebSocketClient {
+  WebSocketClientStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [WebSocketClient impl])
+      : super(new _WebSocketClientStubControl.fromEndpoint(endpoint, impl));
+
+  WebSocketClientStub.fromHandle(
+      core.MojoHandle handle, [WebSocketClient impl])
+      : super(new _WebSocketClientStubControl.fromHandle(handle, impl));
+
+  WebSocketClientStub.unbound([WebSocketClient impl])
+      : super(new _WebSocketClientStubControl.unbound(impl));
+
+  static WebSocketClientStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For WebSocketClientStub"));
+    return new WebSocketClientStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _WebSocketClientStubControl.serviceDescription;
+
+
+  void didConnect(String selectedSubprotocol, String extensions, core.MojoDataPipeConsumer receiveStream) {
+    return impl.didConnect(selectedSubprotocol, extensions, receiveStream);
+  }
+  void didReceiveData(bool fin, WebSocketMessageType type, int numBytes) {
+    return impl.didReceiveData(fin, type, numBytes);
+  }
+  void didReceiveFlowControl(int quota) {
+    return impl.didReceiveFlowControl(quota);
+  }
+  void didFail(String message) {
+    return impl.didFail(message);
+  }
+  void didClose(bool wasClean, int code, String reason) {
+    return impl.didClose(wasClean, code, reason);
   }
 }
 

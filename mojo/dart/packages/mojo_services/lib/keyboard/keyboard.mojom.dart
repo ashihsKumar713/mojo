@@ -1465,9 +1465,9 @@ abstract class KeyboardClient {
   void submit(SubmitAction action);
 }
 
-
-class _KeyboardClientProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _KeyboardClientProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _KeyboardClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1481,7 +1481,6 @@ class _KeyboardClientProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => KeyboardClient.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -1498,9 +1497,9 @@ class _KeyboardClientProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class KeyboardClientProxy extends bindings.Proxy
-                              implements KeyboardClient {
+class KeyboardClientProxy
+    extends bindings.Proxy
+    implements KeyboardClient {
   KeyboardClientProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _KeyboardClientProxyControl.fromEndpoint(endpoint));
@@ -1612,29 +1611,24 @@ class KeyboardClientProxy extends bindings.Proxy
   }
 }
 
-
-class KeyboardClientStub extends bindings.Stub {
+class _KeyboardClientStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<KeyboardClient> {
   KeyboardClient _impl;
 
-  KeyboardClientStub.fromEndpoint(
+  _KeyboardClientStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [KeyboardClient impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  KeyboardClientStub.fromHandle(
+  _KeyboardClientStubControl.fromHandle(
       core.MojoHandle handle, [KeyboardClient impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  KeyboardClientStub.unbound([this._impl]) : super.unbound();
-
-  static KeyboardClientStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For KeyboardClientStub"));
-    return new KeyboardClientStub.fromEndpoint(endpoint);
-  }
+  _KeyboardClientStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -1714,9 +1708,10 @@ class KeyboardClientStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "KeyboardClientStub($superString)";
+    return "_KeyboardClientStubControl($superString)";
   }
 
   int get version => 0;
@@ -1727,6 +1722,56 @@ class KeyboardClientStub extends bindings.Stub {
       _cachedServiceDescription = new _KeyboardClientServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class KeyboardClientStub
+    extends bindings.Stub<KeyboardClient>
+    implements KeyboardClient {
+  KeyboardClientStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [KeyboardClient impl])
+      : super(new _KeyboardClientStubControl.fromEndpoint(endpoint, impl));
+
+  KeyboardClientStub.fromHandle(
+      core.MojoHandle handle, [KeyboardClient impl])
+      : super(new _KeyboardClientStubControl.fromHandle(handle, impl));
+
+  KeyboardClientStub.unbound([KeyboardClient impl])
+      : super(new _KeyboardClientStubControl.unbound(impl));
+
+  static KeyboardClientStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For KeyboardClientStub"));
+    return new KeyboardClientStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _KeyboardClientStubControl.serviceDescription;
+
+
+  void commitCompletion(CompletionData completion) {
+    return impl.commitCompletion(completion);
+  }
+  void commitCorrection(CorrectionData correction) {
+    return impl.commitCorrection(correction);
+  }
+  void commitText(String text, int newCursorPosition) {
+    return impl.commitText(text, newCursorPosition);
+  }
+  void deleteSurroundingText(int beforeLength, int afterLength) {
+    return impl.deleteSurroundingText(beforeLength, afterLength);
+  }
+  void setComposingRegion(int start, int end) {
+    return impl.setComposingRegion(start, end);
+  }
+  void setComposingText(String text, int newCursorPosition) {
+    return impl.setComposingText(text, newCursorPosition);
+  }
+  void setSelection(int start, int end) {
+    return impl.setSelection(start, end);
+  }
+  void submit(SubmitAction action) {
+    return impl.submit(action);
   }
 }
 
@@ -1756,9 +1801,9 @@ abstract class KeyboardService {
   void setSelection(int start, int end);
 }
 
-
-class _KeyboardServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _KeyboardServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _KeyboardServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1772,7 +1817,6 @@ class _KeyboardServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => KeyboardService.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -1789,9 +1833,9 @@ class _KeyboardServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class KeyboardServiceProxy extends bindings.Proxy
-                              implements KeyboardService {
+class KeyboardServiceProxy
+    extends bindings.Proxy
+    implements KeyboardService {
   KeyboardServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _KeyboardServiceProxyControl.fromEndpoint(endpoint));
@@ -1868,29 +1912,24 @@ class KeyboardServiceProxy extends bindings.Proxy
   }
 }
 
-
-class KeyboardServiceStub extends bindings.Stub {
+class _KeyboardServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<KeyboardService> {
   KeyboardService _impl;
 
-  KeyboardServiceStub.fromEndpoint(
+  _KeyboardServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [KeyboardService impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  KeyboardServiceStub.fromHandle(
+  _KeyboardServiceStubControl.fromHandle(
       core.MojoHandle handle, [KeyboardService impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  KeyboardServiceStub.unbound([this._impl]) : super.unbound();
-
-  static KeyboardServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For KeyboardServiceStub"));
-    return new KeyboardServiceStub.fromEndpoint(endpoint);
-  }
+  _KeyboardServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -1951,9 +1990,10 @@ class KeyboardServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "KeyboardServiceStub($superString)";
+    return "_KeyboardServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -1964,6 +2004,47 @@ class KeyboardServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _KeyboardServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class KeyboardServiceStub
+    extends bindings.Stub<KeyboardService>
+    implements KeyboardService {
+  KeyboardServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [KeyboardService impl])
+      : super(new _KeyboardServiceStubControl.fromEndpoint(endpoint, impl));
+
+  KeyboardServiceStub.fromHandle(
+      core.MojoHandle handle, [KeyboardService impl])
+      : super(new _KeyboardServiceStubControl.fromHandle(handle, impl));
+
+  KeyboardServiceStub.unbound([KeyboardService impl])
+      : super(new _KeyboardServiceStubControl.unbound(impl));
+
+  static KeyboardServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For KeyboardServiceStub"));
+    return new KeyboardServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _KeyboardServiceStubControl.serviceDescription;
+
+
+  void show(Object client, KeyboardType type) {
+    return impl.show(client, type);
+  }
+  void showByRequest() {
+    return impl.showByRequest();
+  }
+  void hide() {
+    return impl.hide();
+  }
+  void setText(String text) {
+    return impl.setText(text);
+  }
+  void setSelection(int start, int end) {
+    return impl.setSelection(start, end);
   }
 }
 
@@ -1985,9 +2066,9 @@ abstract class KeyboardServiceFactory {
   void createKeyboardService(Object keyEventDispatcher, Object serviceRequest);
 }
 
-
-class _KeyboardServiceFactoryProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _KeyboardServiceFactoryProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _KeyboardServiceFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -2001,7 +2082,6 @@ class _KeyboardServiceFactoryProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => KeyboardServiceFactory.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -2018,9 +2098,9 @@ class _KeyboardServiceFactoryProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class KeyboardServiceFactoryProxy extends bindings.Proxy
-                              implements KeyboardServiceFactory {
+class KeyboardServiceFactoryProxy
+    extends bindings.Proxy
+    implements KeyboardServiceFactory {
   KeyboardServiceFactoryProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _KeyboardServiceFactoryProxyControl.fromEndpoint(endpoint));
@@ -2058,29 +2138,24 @@ class KeyboardServiceFactoryProxy extends bindings.Proxy
   }
 }
 
-
-class KeyboardServiceFactoryStub extends bindings.Stub {
+class _KeyboardServiceFactoryStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<KeyboardServiceFactory> {
   KeyboardServiceFactory _impl;
 
-  KeyboardServiceFactoryStub.fromEndpoint(
+  _KeyboardServiceFactoryStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [KeyboardServiceFactory impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  KeyboardServiceFactoryStub.fromHandle(
+  _KeyboardServiceFactoryStubControl.fromHandle(
       core.MojoHandle handle, [KeyboardServiceFactory impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  KeyboardServiceFactoryStub.unbound([this._impl]) : super.unbound();
-
-  static KeyboardServiceFactoryStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For KeyboardServiceFactoryStub"));
-    return new KeyboardServiceFactoryStub.fromEndpoint(endpoint);
-  }
+  _KeyboardServiceFactoryStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -2125,9 +2200,10 @@ class KeyboardServiceFactoryStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "KeyboardServiceFactoryStub($superString)";
+    return "_KeyboardServiceFactoryStubControl($superString)";
   }
 
   int get version => 0;
@@ -2138,6 +2214,35 @@ class KeyboardServiceFactoryStub extends bindings.Stub {
       _cachedServiceDescription = new _KeyboardServiceFactoryServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class KeyboardServiceFactoryStub
+    extends bindings.Stub<KeyboardServiceFactory>
+    implements KeyboardServiceFactory {
+  KeyboardServiceFactoryStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [KeyboardServiceFactory impl])
+      : super(new _KeyboardServiceFactoryStubControl.fromEndpoint(endpoint, impl));
+
+  KeyboardServiceFactoryStub.fromHandle(
+      core.MojoHandle handle, [KeyboardServiceFactory impl])
+      : super(new _KeyboardServiceFactoryStubControl.fromHandle(handle, impl));
+
+  KeyboardServiceFactoryStub.unbound([KeyboardServiceFactory impl])
+      : super(new _KeyboardServiceFactoryStubControl.unbound(impl));
+
+  static KeyboardServiceFactoryStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For KeyboardServiceFactoryStub"));
+    return new KeyboardServiceFactoryStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _KeyboardServiceFactoryStubControl.serviceDescription;
+
+
+  void createKeyboardService(Object keyEventDispatcher, Object serviceRequest) {
+    return impl.createKeyboardService(keyEventDispatcher, serviceRequest);
   }
 }
 

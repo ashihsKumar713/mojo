@@ -324,9 +324,9 @@ abstract class NavigatorHost {
   void didNavigateLocally(String url);
 }
 
-
-class _NavigatorHostProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _NavigatorHostProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _NavigatorHostProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -340,7 +340,6 @@ class _NavigatorHostProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => NavigatorHost.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -357,9 +356,9 @@ class _NavigatorHostProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class NavigatorHostProxy extends bindings.Proxy
-                              implements NavigatorHost {
+class NavigatorHostProxy
+    extends bindings.Proxy
+    implements NavigatorHost {
   NavigatorHostProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _NavigatorHostProxyControl.fromEndpoint(endpoint));
@@ -417,29 +416,24 @@ class NavigatorHostProxy extends bindings.Proxy
   }
 }
 
-
-class NavigatorHostStub extends bindings.Stub {
+class _NavigatorHostStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<NavigatorHost> {
   NavigatorHost _impl;
 
-  NavigatorHostStub.fromEndpoint(
+  _NavigatorHostStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [NavigatorHost impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  NavigatorHostStub.fromHandle(
+  _NavigatorHostStubControl.fromHandle(
       core.MojoHandle handle, [NavigatorHost impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  NavigatorHostStub.unbound([this._impl]) : super.unbound();
-
-  static NavigatorHostStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For NavigatorHostStub"));
-    return new NavigatorHostStub.fromEndpoint(endpoint);
-  }
+  _NavigatorHostStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -494,9 +488,10 @@ class NavigatorHostStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "NavigatorHostStub($superString)";
+    return "_NavigatorHostStubControl($superString)";
   }
 
   int get version => 0;
@@ -507,6 +502,41 @@ class NavigatorHostStub extends bindings.Stub {
       _cachedServiceDescription = new _NavigatorHostServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class NavigatorHostStub
+    extends bindings.Stub<NavigatorHost>
+    implements NavigatorHost {
+  NavigatorHostStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [NavigatorHost impl])
+      : super(new _NavigatorHostStubControl.fromEndpoint(endpoint, impl));
+
+  NavigatorHostStub.fromHandle(
+      core.MojoHandle handle, [NavigatorHost impl])
+      : super(new _NavigatorHostStubControl.fromHandle(handle, impl));
+
+  NavigatorHostStub.unbound([NavigatorHost impl])
+      : super(new _NavigatorHostStubControl.unbound(impl));
+
+  static NavigatorHostStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For NavigatorHostStub"));
+    return new NavigatorHostStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _NavigatorHostStubControl.serviceDescription;
+
+
+  void requestNavigate(Target target, url_request_mojom.UrlRequest request) {
+    return impl.requestNavigate(target, request);
+  }
+  void requestNavigateHistory(int delta) {
+    return impl.requestNavigateHistory(delta);
+  }
+  void didNavigateLocally(String url) {
+    return impl.didNavigateLocally(url);
   }
 }
 

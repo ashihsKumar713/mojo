@@ -730,9 +730,9 @@ abstract class Scene {
   void getScheduler(Object scheduler);
 }
 
-
-class _SceneProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _SceneProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _SceneProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -746,7 +746,6 @@ class _SceneProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Scene.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -763,9 +762,9 @@ class _SceneProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class SceneProxy extends bindings.Proxy
-                              implements Scene {
+class SceneProxy
+    extends bindings.Proxy
+    implements Scene {
   SceneProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SceneProxyControl.fromEndpoint(endpoint));
@@ -832,29 +831,24 @@ class SceneProxy extends bindings.Proxy
   }
 }
 
-
-class SceneStub extends bindings.Stub {
+class _SceneStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Scene> {
   Scene _impl;
 
-  SceneStub.fromEndpoint(
+  _SceneStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Scene impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SceneStub.fromHandle(
+  _SceneStubControl.fromHandle(
       core.MojoHandle handle, [Scene impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SceneStub.unbound([this._impl]) : super.unbound();
-
-  static SceneStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SceneStub"));
-    return new SceneStub.fromEndpoint(endpoint);
-  }
+  _SceneStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -914,9 +908,10 @@ class SceneStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "SceneStub($superString)";
+    return "_SceneStubControl($superString)";
   }
 
   int get version => 0;
@@ -927,6 +922,44 @@ class SceneStub extends bindings.Stub {
       _cachedServiceDescription = new _SceneServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class SceneStub
+    extends bindings.Stub<Scene>
+    implements Scene {
+  SceneStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Scene impl])
+      : super(new _SceneStubControl.fromEndpoint(endpoint, impl));
+
+  SceneStub.fromHandle(
+      core.MojoHandle handle, [Scene impl])
+      : super(new _SceneStubControl.fromHandle(handle, impl));
+
+  SceneStub.unbound([Scene impl])
+      : super(new _SceneStubControl.unbound(impl));
+
+  static SceneStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SceneStub"));
+    return new SceneStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _SceneStubControl.serviceDescription;
+
+
+  void setListener(Object listener) {
+    return impl.setListener(listener);
+  }
+  void update(SceneUpdate update) {
+    return impl.update(update);
+  }
+  void publish(SceneMetadata metadata) {
+    return impl.publish(metadata);
+  }
+  void getScheduler(Object scheduler) {
+    return impl.getScheduler(scheduler);
   }
 }
 
@@ -948,9 +981,9 @@ abstract class SceneListener {
   dynamic onResourceUnavailable(int resourceId,[Function responseFactory = null]);
 }
 
-
-class _SceneListenerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _SceneListenerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _SceneListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -964,7 +997,6 @@ class _SceneListenerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => SceneListener.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _sceneListenerMethodOnResourceUnavailableName:
@@ -1001,9 +1033,9 @@ class _SceneListenerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class SceneListenerProxy extends bindings.Proxy
-                              implements SceneListener {
+class SceneListenerProxy
+    extends bindings.Proxy
+    implements SceneListener {
   SceneListenerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SceneListenerProxyControl.fromEndpoint(endpoint));
@@ -1039,29 +1071,24 @@ class SceneListenerProxy extends bindings.Proxy
   }
 }
 
-
-class SceneListenerStub extends bindings.Stub {
+class _SceneListenerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<SceneListener> {
   SceneListener _impl;
 
-  SceneListenerStub.fromEndpoint(
+  _SceneListenerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [SceneListener impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SceneListenerStub.fromHandle(
+  _SceneListenerStubControl.fromHandle(
       core.MojoHandle handle, [SceneListener impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SceneListenerStub.unbound([this._impl]) : super.unbound();
-
-  static SceneListenerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SceneListenerStub"));
-    return new SceneListenerStub.fromEndpoint(endpoint);
-  }
+  _SceneListenerStubControl.unbound([this._impl]) : super.unbound();
 
 
   SceneListenerOnResourceUnavailableResponseParams _sceneListenerOnResourceUnavailableResponseParamsFactory() {
@@ -1127,9 +1154,10 @@ class SceneListenerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "SceneListenerStub($superString)";
+    return "_SceneListenerStubControl($superString)";
   }
 
   int get version => 0;
@@ -1140,6 +1168,35 @@ class SceneListenerStub extends bindings.Stub {
       _cachedServiceDescription = new _SceneListenerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class SceneListenerStub
+    extends bindings.Stub<SceneListener>
+    implements SceneListener {
+  SceneListenerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [SceneListener impl])
+      : super(new _SceneListenerStubControl.fromEndpoint(endpoint, impl));
+
+  SceneListenerStub.fromHandle(
+      core.MojoHandle handle, [SceneListener impl])
+      : super(new _SceneListenerStubControl.fromHandle(handle, impl));
+
+  SceneListenerStub.unbound([SceneListener impl])
+      : super(new _SceneListenerStubControl.unbound(impl));
+
+  static SceneListenerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SceneListenerStub"));
+    return new SceneListenerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _SceneListenerStubControl.serviceDescription;
+
+
+  dynamic onResourceUnavailable(int resourceId,[Function responseFactory = null]) {
+    return impl.onResourceUnavailable(resourceId,responseFactory);
   }
 }
 

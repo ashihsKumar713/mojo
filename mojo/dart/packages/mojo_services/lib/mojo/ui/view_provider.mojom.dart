@@ -126,9 +126,9 @@ abstract class ViewProvider {
   void createView(Object viewOwner, Object services, Object exposedServices);
 }
 
-
-class _ViewProviderProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ViewProviderProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ViewProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -142,7 +142,6 @@ class _ViewProviderProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ViewProvider.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -159,9 +158,9 @@ class _ViewProviderProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ViewProviderProxy extends bindings.Proxy
-                              implements ViewProvider {
+class ViewProviderProxy
+    extends bindings.Proxy
+    implements ViewProvider {
   ViewProviderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewProviderProxyControl.fromEndpoint(endpoint));
@@ -200,29 +199,24 @@ class ViewProviderProxy extends bindings.Proxy
   }
 }
 
-
-class ViewProviderStub extends bindings.Stub {
+class _ViewProviderStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ViewProvider> {
   ViewProvider _impl;
 
-  ViewProviderStub.fromEndpoint(
+  _ViewProviderStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewProvider impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewProviderStub.fromHandle(
+  _ViewProviderStubControl.fromHandle(
       core.MojoHandle handle, [ViewProvider impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewProviderStub.unbound([this._impl]) : super.unbound();
-
-  static ViewProviderStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewProviderStub"));
-    return new ViewProviderStub.fromEndpoint(endpoint);
-  }
+  _ViewProviderStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -267,9 +261,10 @@ class ViewProviderStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ViewProviderStub($superString)";
+    return "_ViewProviderStubControl($superString)";
   }
 
   int get version => 0;
@@ -280,6 +275,35 @@ class ViewProviderStub extends bindings.Stub {
       _cachedServiceDescription = new _ViewProviderServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ViewProviderStub
+    extends bindings.Stub<ViewProvider>
+    implements ViewProvider {
+  ViewProviderStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ViewProvider impl])
+      : super(new _ViewProviderStubControl.fromEndpoint(endpoint, impl));
+
+  ViewProviderStub.fromHandle(
+      core.MojoHandle handle, [ViewProvider impl])
+      : super(new _ViewProviderStubControl.fromHandle(handle, impl));
+
+  ViewProviderStub.unbound([ViewProvider impl])
+      : super(new _ViewProviderStubControl.unbound(impl));
+
+  static ViewProviderStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewProviderStub"));
+    return new ViewProviderStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ViewProviderStubControl.serviceDescription;
+
+
+  void createView(Object viewOwner, Object services, Object exposedServices) {
+    return impl.createView(viewOwner, services, exposedServices);
   }
 }
 

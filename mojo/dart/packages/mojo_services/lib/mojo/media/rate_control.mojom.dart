@@ -876,9 +876,9 @@ abstract class RateControl {
   void cancelPendingChanges();
 }
 
-
-class _RateControlProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _RateControlProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _RateControlProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -892,7 +892,6 @@ class _RateControlProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => RateControl.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _rateControlMethodGetCurrentTransformName:
@@ -929,9 +928,9 @@ class _RateControlProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class RateControlProxy extends bindings.Proxy
-                              implements RateControl {
+class RateControlProxy
+    extends bindings.Proxy
+    implements RateControl {
   RateControlProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _RateControlProxyControl.fromEndpoint(endpoint));
@@ -1030,29 +1029,24 @@ class RateControlProxy extends bindings.Proxy
   }
 }
 
-
-class RateControlStub extends bindings.Stub {
+class _RateControlStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<RateControl> {
   RateControl _impl;
 
-  RateControlStub.fromEndpoint(
+  _RateControlStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [RateControl impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  RateControlStub.fromHandle(
+  _RateControlStubControl.fromHandle(
       core.MojoHandle handle, [RateControl impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  RateControlStub.unbound([this._impl]) : super.unbound();
-
-  static RateControlStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For RateControlStub"));
-    return new RateControlStub.fromEndpoint(endpoint);
-  }
+  _RateControlStubControl.unbound([this._impl]) : super.unbound();
 
 
   RateControlGetCurrentTransformResponseParams _rateControlGetCurrentTransformResponseParamsFactory(TimelineTransform trans) {
@@ -1145,9 +1139,10 @@ class RateControlStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "RateControlStub($superString)";
+    return "_RateControlStubControl($superString)";
   }
 
   int get version => 0;
@@ -1158,6 +1153,53 @@ class RateControlStub extends bindings.Stub {
       _cachedServiceDescription = new _RateControlServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class RateControlStub
+    extends bindings.Stub<RateControl>
+    implements RateControl {
+  RateControlStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [RateControl impl])
+      : super(new _RateControlStubControl.fromEndpoint(endpoint, impl));
+
+  RateControlStub.fromHandle(
+      core.MojoHandle handle, [RateControl impl])
+      : super(new _RateControlStubControl.fromHandle(handle, impl));
+
+  RateControlStub.unbound([RateControl impl])
+      : super(new _RateControlStubControl.unbound(impl));
+
+  static RateControlStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For RateControlStub"));
+    return new RateControlStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _RateControlStubControl.serviceDescription;
+
+
+  dynamic getCurrentTransform([Function responseFactory = null]) {
+    return impl.getCurrentTransform(responseFactory);
+  }
+  void setCurrentQuad(TimelineQuad quad) {
+    return impl.setCurrentQuad(quad);
+  }
+  void setTargetTimelineId(int id) {
+    return impl.setTargetTimelineId(id);
+  }
+  void setRate(int referenceDelta, int targetDelta) {
+    return impl.setRate(referenceDelta, targetDelta);
+  }
+  void setRateAtReferenceTime(int referenceDelta, int targetDelta, int referenceTime) {
+    return impl.setRateAtReferenceTime(referenceDelta, targetDelta, referenceTime);
+  }
+  void setRateAtTargetTime(int referenceDelta, int targetDelta, int targetTime) {
+    return impl.setRateAtTargetTime(referenceDelta, targetDelta, targetTime);
+  }
+  void cancelPendingChanges() {
+    return impl.cancelPendingChanges();
   }
 }
 

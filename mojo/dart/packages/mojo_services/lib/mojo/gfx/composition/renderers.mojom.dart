@@ -265,9 +265,9 @@ abstract class Renderer {
   void getHitTester(Object hitTester);
 }
 
-
-class _RendererProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _RendererProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _RendererProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -281,7 +281,6 @@ class _RendererProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Renderer.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -298,9 +297,9 @@ class _RendererProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class RendererProxy extends bindings.Proxy
-                              implements Renderer {
+class RendererProxy
+    extends bindings.Proxy
+    implements Renderer {
   RendererProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _RendererProxyControl.fromEndpoint(endpoint));
@@ -358,29 +357,24 @@ class RendererProxy extends bindings.Proxy
   }
 }
 
-
-class RendererStub extends bindings.Stub {
+class _RendererStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Renderer> {
   Renderer _impl;
 
-  RendererStub.fromEndpoint(
+  _RendererStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Renderer impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  RendererStub.fromHandle(
+  _RendererStubControl.fromHandle(
       core.MojoHandle handle, [Renderer impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  RendererStub.unbound([this._impl]) : super.unbound();
-
-  static RendererStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For RendererStub"));
-    return new RendererStub.fromEndpoint(endpoint);
-  }
+  _RendererStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -433,9 +427,10 @@ class RendererStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "RendererStub($superString)";
+    return "_RendererStubControl($superString)";
   }
 
   int get version => 0;
@@ -446,6 +441,41 @@ class RendererStub extends bindings.Stub {
       _cachedServiceDescription = new _RendererServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class RendererStub
+    extends bindings.Stub<Renderer>
+    implements Renderer {
+  RendererStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Renderer impl])
+      : super(new _RendererStubControl.fromEndpoint(endpoint, impl));
+
+  RendererStub.fromHandle(
+      core.MojoHandle handle, [Renderer impl])
+      : super(new _RendererStubControl.fromHandle(handle, impl));
+
+  RendererStub.unbound([Renderer impl])
+      : super(new _RendererStubControl.unbound(impl));
+
+  static RendererStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For RendererStub"));
+    return new RendererStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _RendererStubControl.serviceDescription;
+
+
+  void setRootScene(scene_token_mojom.SceneToken sceneToken, int sceneVersion, geometry_mojom.Rect viewport) {
+    return impl.setRootScene(sceneToken, sceneVersion, viewport);
+  }
+  void clearRootScene() {
+    return impl.clearRootScene();
+  }
+  void getHitTester(Object hitTester) {
+    return impl.getHitTester(hitTester);
   }
 }
 

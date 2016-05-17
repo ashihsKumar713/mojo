@@ -23,7 +23,7 @@ class ConformanceTestInterfaceImpl implements ConformanceTestInterface {
   }
 
   set onError(Function f) {
-    _stub.onError = f;
+    _stub.ctrl.onError = f;
   }
 
   void _complete() => _completer.complete(null);

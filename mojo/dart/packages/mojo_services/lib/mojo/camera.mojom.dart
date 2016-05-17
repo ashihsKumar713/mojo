@@ -576,9 +576,9 @@ abstract class CameraRollService {
   dynamic getPhoto(int index,[Function responseFactory = null]);
 }
 
-
-class _CameraRollServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _CameraRollServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _CameraRollServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -592,7 +592,6 @@ class _CameraRollServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => CameraRollService.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _cameraRollServiceMethodGetCountName:
@@ -649,9 +648,9 @@ class _CameraRollServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class CameraRollServiceProxy extends bindings.Proxy
-                              implements CameraRollService {
+class CameraRollServiceProxy
+    extends bindings.Proxy
+    implements CameraRollService {
   CameraRollServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _CameraRollServiceProxyControl.fromEndpoint(endpoint));
@@ -704,29 +703,24 @@ class CameraRollServiceProxy extends bindings.Proxy
   }
 }
 
-
-class CameraRollServiceStub extends bindings.Stub {
+class _CameraRollServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<CameraRollService> {
   CameraRollService _impl;
 
-  CameraRollServiceStub.fromEndpoint(
+  _CameraRollServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [CameraRollService impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  CameraRollServiceStub.fromHandle(
+  _CameraRollServiceStubControl.fromHandle(
       core.MojoHandle handle, [CameraRollService impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  CameraRollServiceStub.unbound([this._impl]) : super.unbound();
-
-  static CameraRollServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For CameraRollServiceStub"));
-    return new CameraRollServiceStub.fromEndpoint(endpoint);
-  }
+  _CameraRollServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
   CameraRollServiceGetCountResponseParams _cameraRollServiceGetCountResponseParamsFactory(int numPhotos) {
@@ -821,9 +815,10 @@ class CameraRollServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "CameraRollServiceStub($superString)";
+    return "_CameraRollServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -834,6 +829,41 @@ class CameraRollServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _CameraRollServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class CameraRollServiceStub
+    extends bindings.Stub<CameraRollService>
+    implements CameraRollService {
+  CameraRollServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [CameraRollService impl])
+      : super(new _CameraRollServiceStubControl.fromEndpoint(endpoint, impl));
+
+  CameraRollServiceStub.fromHandle(
+      core.MojoHandle handle, [CameraRollService impl])
+      : super(new _CameraRollServiceStubControl.fromHandle(handle, impl));
+
+  CameraRollServiceStub.unbound([CameraRollService impl])
+      : super(new _CameraRollServiceStubControl.unbound(impl));
+
+  static CameraRollServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For CameraRollServiceStub"));
+    return new CameraRollServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _CameraRollServiceStubControl.serviceDescription;
+
+
+  void update() {
+    return impl.update();
+  }
+  dynamic getCount([Function responseFactory = null]) {
+    return impl.getCount(responseFactory);
+  }
+  dynamic getPhoto(int index,[Function responseFactory = null]) {
+    return impl.getPhoto(index,responseFactory);
   }
 }
 
@@ -855,9 +885,9 @@ abstract class CameraService {
   dynamic getLatestFrame([Function responseFactory = null]);
 }
 
-
-class _CameraServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _CameraServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _CameraServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -871,7 +901,6 @@ class _CameraServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => CameraService.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _cameraServiceMethodGetLatestFrameName:
@@ -908,9 +937,9 @@ class _CameraServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class CameraServiceProxy extends bindings.Proxy
-                              implements CameraService {
+class CameraServiceProxy
+    extends bindings.Proxy
+    implements CameraService {
   CameraServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _CameraServiceProxyControl.fromEndpoint(endpoint));
@@ -945,29 +974,24 @@ class CameraServiceProxy extends bindings.Proxy
   }
 }
 
-
-class CameraServiceStub extends bindings.Stub {
+class _CameraServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<CameraService> {
   CameraService _impl;
 
-  CameraServiceStub.fromEndpoint(
+  _CameraServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [CameraService impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  CameraServiceStub.fromHandle(
+  _CameraServiceStubControl.fromHandle(
       core.MojoHandle handle, [CameraService impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  CameraServiceStub.unbound([this._impl]) : super.unbound();
-
-  static CameraServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For CameraServiceStub"));
-    return new CameraServiceStub.fromEndpoint(endpoint);
-  }
+  _CameraServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
   CameraServiceGetLatestFrameResponseParams _cameraServiceGetLatestFrameResponseParamsFactory(core.MojoDataPipeConsumer content) {
@@ -1032,9 +1056,10 @@ class CameraServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "CameraServiceStub($superString)";
+    return "_CameraServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -1045,6 +1070,35 @@ class CameraServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _CameraServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class CameraServiceStub
+    extends bindings.Stub<CameraService>
+    implements CameraService {
+  CameraServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [CameraService impl])
+      : super(new _CameraServiceStubControl.fromEndpoint(endpoint, impl));
+
+  CameraServiceStub.fromHandle(
+      core.MojoHandle handle, [CameraService impl])
+      : super(new _CameraServiceStubControl.fromHandle(handle, impl));
+
+  CameraServiceStub.unbound([CameraService impl])
+      : super(new _CameraServiceStubControl.unbound(impl));
+
+  static CameraServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For CameraServiceStub"));
+    return new CameraServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _CameraServiceStubControl.serviceDescription;
+
+
+  dynamic getLatestFrame([Function responseFactory = null]) {
+    return impl.getLatestFrame(responseFactory);
   }
 }
 

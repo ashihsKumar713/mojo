@@ -474,9 +474,9 @@ abstract class MediaSink {
   static const int kInitialStatus = 0;
 }
 
-
-class _MediaSinkProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _MediaSinkProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _MediaSinkProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -490,7 +490,6 @@ class _MediaSinkProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => MediaSink.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaSinkMethodGetStatusName:
@@ -527,9 +526,9 @@ class _MediaSinkProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class MediaSinkProxy extends bindings.Proxy
-                              implements MediaSink {
+class MediaSinkProxy
+    extends bindings.Proxy
+    implements MediaSink {
   MediaSinkProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaSinkProxyControl.fromEndpoint(endpoint));
@@ -593,29 +592,24 @@ class MediaSinkProxy extends bindings.Proxy
   }
 }
 
-
-class MediaSinkStub extends bindings.Stub {
+class _MediaSinkStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<MediaSink> {
   MediaSink _impl;
 
-  MediaSinkStub.fromEndpoint(
+  _MediaSinkStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaSink impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaSinkStub.fromHandle(
+  _MediaSinkStubControl.fromHandle(
       core.MojoHandle handle, [MediaSink impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaSinkStub.unbound([this._impl]) : super.unbound();
-
-  static MediaSinkStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaSinkStub"));
-    return new MediaSinkStub.fromEndpoint(endpoint);
-  }
+  _MediaSinkStubControl.unbound([this._impl]) : super.unbound();
 
 
   MediaSinkGetStatusResponseParams _mediaSinkGetStatusResponseParamsFactory(int version, MediaSinkStatus status) {
@@ -694,9 +688,10 @@ class MediaSinkStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "MediaSinkStub($superString)";
+    return "_MediaSinkStubControl($superString)";
   }
 
   int get version => 0;
@@ -707,6 +702,44 @@ class MediaSinkStub extends bindings.Stub {
       _cachedServiceDescription = new _MediaSinkServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class MediaSinkStub
+    extends bindings.Stub<MediaSink>
+    implements MediaSink {
+  MediaSinkStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [MediaSink impl])
+      : super(new _MediaSinkStubControl.fromEndpoint(endpoint, impl));
+
+  MediaSinkStub.fromHandle(
+      core.MojoHandle handle, [MediaSink impl])
+      : super(new _MediaSinkStubControl.fromHandle(handle, impl));
+
+  MediaSinkStub.unbound([MediaSink impl])
+      : super(new _MediaSinkStubControl.unbound(impl));
+
+  static MediaSinkStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaSinkStub"));
+    return new MediaSinkStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _MediaSinkStubControl.serviceDescription;
+
+
+  void getConsumer(Object consumer) {
+    return impl.getConsumer(consumer);
+  }
+  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
+    return impl.getStatus(versionLastSeen,responseFactory);
+  }
+  void play() {
+    return impl.play();
+  }
+  void pause() {
+    return impl.pause();
   }
 }
 

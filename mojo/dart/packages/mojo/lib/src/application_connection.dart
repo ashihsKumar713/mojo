@@ -14,13 +14,13 @@ class LocalServiceProvider implements ServiceProvider {
 
   LocalServiceProvider(this.connection, this._stub) {
     _stub.impl = this;
-    if (!_stub.isOpen) {
+    if (!_stub.ctrl.isOpen) {
       throw new core.MojoApiError("The service provider stub must be open");
     }
   }
 
   set onError(Function f) {
-    _stub.onError = f;
+    _stub.ctrl.onError = f;
   }
 
   Future close({bool immediate: false}) => _stub.close(immediate: immediate);

@@ -157,9 +157,9 @@ abstract class VSyncProvider {
   dynamic awaitVSync([Function responseFactory = null]);
 }
 
-
-class _VSyncProviderProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _VSyncProviderProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _VSyncProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -173,7 +173,6 @@ class _VSyncProviderProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => VSyncProvider.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _vSyncProviderMethodAwaitVSyncName:
@@ -210,9 +209,9 @@ class _VSyncProviderProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class VSyncProviderProxy extends bindings.Proxy
-                              implements VSyncProvider {
+class VSyncProviderProxy
+    extends bindings.Proxy
+    implements VSyncProvider {
   VSyncProviderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _VSyncProviderProxyControl.fromEndpoint(endpoint));
@@ -247,29 +246,24 @@ class VSyncProviderProxy extends bindings.Proxy
   }
 }
 
-
-class VSyncProviderStub extends bindings.Stub {
+class _VSyncProviderStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<VSyncProvider> {
   VSyncProvider _impl;
 
-  VSyncProviderStub.fromEndpoint(
+  _VSyncProviderStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [VSyncProvider impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  VSyncProviderStub.fromHandle(
+  _VSyncProviderStubControl.fromHandle(
       core.MojoHandle handle, [VSyncProvider impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  VSyncProviderStub.unbound([this._impl]) : super.unbound();
-
-  static VSyncProviderStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For VSyncProviderStub"));
-    return new VSyncProviderStub.fromEndpoint(endpoint);
-  }
+  _VSyncProviderStubControl.unbound([this._impl]) : super.unbound();
 
 
   VSyncProviderAwaitVSyncResponseParams _vSyncProviderAwaitVSyncResponseParamsFactory(int timeStamp) {
@@ -334,9 +328,10 @@ class VSyncProviderStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "VSyncProviderStub($superString)";
+    return "_VSyncProviderStubControl($superString)";
   }
 
   int get version => 0;
@@ -347,6 +342,35 @@ class VSyncProviderStub extends bindings.Stub {
       _cachedServiceDescription = new _VSyncProviderServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class VSyncProviderStub
+    extends bindings.Stub<VSyncProvider>
+    implements VSyncProvider {
+  VSyncProviderStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [VSyncProvider impl])
+      : super(new _VSyncProviderStubControl.fromEndpoint(endpoint, impl));
+
+  VSyncProviderStub.fromHandle(
+      core.MojoHandle handle, [VSyncProvider impl])
+      : super(new _VSyncProviderStubControl.fromHandle(handle, impl));
+
+  VSyncProviderStub.unbound([VSyncProvider impl])
+      : super(new _VSyncProviderStubControl.unbound(impl));
+
+  static VSyncProviderStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For VSyncProviderStub"));
+    return new VSyncProviderStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _VSyncProviderStubControl.serviceDescription;
+
+
+  dynamic awaitVSync([Function responseFactory = null]) {
+    return impl.awaitVSync(responseFactory);
   }
 }
 

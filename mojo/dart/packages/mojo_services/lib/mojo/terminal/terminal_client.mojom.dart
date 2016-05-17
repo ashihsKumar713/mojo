@@ -99,9 +99,9 @@ abstract class TerminalClient {
   void connectToTerminal(Object terminal);
 }
 
-
-class _TerminalClientProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _TerminalClientProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _TerminalClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -115,7 +115,6 @@ class _TerminalClientProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => TerminalClient.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -132,9 +131,9 @@ class _TerminalClientProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class TerminalClientProxy extends bindings.Proxy
-                              implements TerminalClient {
+class TerminalClientProxy
+    extends bindings.Proxy
+    implements TerminalClient {
   TerminalClientProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TerminalClientProxyControl.fromEndpoint(endpoint));
@@ -171,29 +170,24 @@ class TerminalClientProxy extends bindings.Proxy
   }
 }
 
-
-class TerminalClientStub extends bindings.Stub {
+class _TerminalClientStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<TerminalClient> {
   TerminalClient _impl;
 
-  TerminalClientStub.fromEndpoint(
+  _TerminalClientStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TerminalClient impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TerminalClientStub.fromHandle(
+  _TerminalClientStubControl.fromHandle(
       core.MojoHandle handle, [TerminalClient impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TerminalClientStub.unbound([this._impl]) : super.unbound();
-
-  static TerminalClientStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TerminalClientStub"));
-    return new TerminalClientStub.fromEndpoint(endpoint);
-  }
+  _TerminalClientStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -238,9 +232,10 @@ class TerminalClientStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "TerminalClientStub($superString)";
+    return "_TerminalClientStubControl($superString)";
   }
 
   int get version => 0;
@@ -251,6 +246,35 @@ class TerminalClientStub extends bindings.Stub {
       _cachedServiceDescription = new _TerminalClientServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class TerminalClientStub
+    extends bindings.Stub<TerminalClient>
+    implements TerminalClient {
+  TerminalClientStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [TerminalClient impl])
+      : super(new _TerminalClientStubControl.fromEndpoint(endpoint, impl));
+
+  TerminalClientStub.fromHandle(
+      core.MojoHandle handle, [TerminalClient impl])
+      : super(new _TerminalClientStubControl.fromHandle(handle, impl));
+
+  TerminalClientStub.unbound([TerminalClient impl])
+      : super(new _TerminalClientStubControl.unbound(impl));
+
+  static TerminalClientStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TerminalClientStub"));
+    return new TerminalClientStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _TerminalClientStubControl.serviceDescription;
+
+
+  void connectToTerminal(Object terminal) {
+    return impl.connectToTerminal(terminal);
   }
 }
 

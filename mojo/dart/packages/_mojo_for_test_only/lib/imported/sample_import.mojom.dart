@@ -360,9 +360,9 @@ abstract class ImportedInterface {
   void doSomething();
 }
 
-
-class _ImportedInterfaceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ImportedInterfaceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ImportedInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -376,7 +376,6 @@ class _ImportedInterfaceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ImportedInterface.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -393,9 +392,9 @@ class _ImportedInterfaceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ImportedInterfaceProxy extends bindings.Proxy
-                              implements ImportedInterface {
+class ImportedInterfaceProxy
+    extends bindings.Proxy
+    implements ImportedInterface {
   ImportedInterfaceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ImportedInterfaceProxyControl.fromEndpoint(endpoint));
@@ -431,29 +430,24 @@ class ImportedInterfaceProxy extends bindings.Proxy
   }
 }
 
-
-class ImportedInterfaceStub extends bindings.Stub {
+class _ImportedInterfaceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ImportedInterface> {
   ImportedInterface _impl;
 
-  ImportedInterfaceStub.fromEndpoint(
+  _ImportedInterfaceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ImportedInterface impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ImportedInterfaceStub.fromHandle(
+  _ImportedInterfaceStubControl.fromHandle(
       core.MojoHandle handle, [ImportedInterface impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ImportedInterfaceStub.unbound([this._impl]) : super.unbound();
-
-  static ImportedInterfaceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ImportedInterfaceStub"));
-    return new ImportedInterfaceStub.fromEndpoint(endpoint);
-  }
+  _ImportedInterfaceStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -496,9 +490,10 @@ class ImportedInterfaceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ImportedInterfaceStub($superString)";
+    return "_ImportedInterfaceStubControl($superString)";
   }
 
   int get version => 0;
@@ -509,6 +504,35 @@ class ImportedInterfaceStub extends bindings.Stub {
       _cachedServiceDescription = new _ImportedInterfaceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ImportedInterfaceStub
+    extends bindings.Stub<ImportedInterface>
+    implements ImportedInterface {
+  ImportedInterfaceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ImportedInterface impl])
+      : super(new _ImportedInterfaceStubControl.fromEndpoint(endpoint, impl));
+
+  ImportedInterfaceStub.fromHandle(
+      core.MojoHandle handle, [ImportedInterface impl])
+      : super(new _ImportedInterfaceStubControl.fromHandle(handle, impl));
+
+  ImportedInterfaceStub.unbound([ImportedInterface impl])
+      : super(new _ImportedInterfaceStubControl.unbound(impl));
+
+  static ImportedInterfaceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ImportedInterfaceStub"));
+    return new ImportedInterfaceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ImportedInterfaceStubControl.serviceDescription;
+
+
+  void doSomething() {
+    return impl.doSomething();
   }
 }
 

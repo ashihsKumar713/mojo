@@ -1104,9 +1104,9 @@ abstract class Geocoder {
   dynamic locationToAddress(location_mojom.Location location,Options options,[Function responseFactory = null]);
 }
 
-
-class _GeocoderProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _GeocoderProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _GeocoderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1120,7 +1120,6 @@ class _GeocoderProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Geocoder.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _geocoderMethodAddressToLocationName:
@@ -1177,9 +1176,9 @@ class _GeocoderProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class GeocoderProxy extends bindings.Proxy
-                              implements Geocoder {
+class GeocoderProxy
+    extends bindings.Proxy
+    implements Geocoder {
   GeocoderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _GeocoderProxyControl.fromEndpoint(endpoint));
@@ -1226,29 +1225,24 @@ class GeocoderProxy extends bindings.Proxy
   }
 }
 
-
-class GeocoderStub extends bindings.Stub {
+class _GeocoderStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Geocoder> {
   Geocoder _impl;
 
-  GeocoderStub.fromEndpoint(
+  _GeocoderStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Geocoder impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  GeocoderStub.fromHandle(
+  _GeocoderStubControl.fromHandle(
       core.MojoHandle handle, [Geocoder impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  GeocoderStub.unbound([this._impl]) : super.unbound();
-
-  static GeocoderStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For GeocoderStub"));
-    return new GeocoderStub.fromEndpoint(endpoint);
-  }
+  _GeocoderStubControl.unbound([this._impl]) : super.unbound();
 
 
   GeocoderAddressToLocationResponseParams _geocoderAddressToLocationResponseParamsFactory(String status, List<Result> results) {
@@ -1344,9 +1338,10 @@ class GeocoderStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "GeocoderStub($superString)";
+    return "_GeocoderStubControl($superString)";
   }
 
   int get version => 0;
@@ -1357,6 +1352,38 @@ class GeocoderStub extends bindings.Stub {
       _cachedServiceDescription = new _GeocoderServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class GeocoderStub
+    extends bindings.Stub<Geocoder>
+    implements Geocoder {
+  GeocoderStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Geocoder impl])
+      : super(new _GeocoderStubControl.fromEndpoint(endpoint, impl));
+
+  GeocoderStub.fromHandle(
+      core.MojoHandle handle, [Geocoder impl])
+      : super(new _GeocoderStubControl.fromHandle(handle, impl));
+
+  GeocoderStub.unbound([Geocoder impl])
+      : super(new _GeocoderStubControl.unbound(impl));
+
+  static GeocoderStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For GeocoderStub"));
+    return new GeocoderStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _GeocoderStubControl.serviceDescription;
+
+
+  dynamic addressToLocation(String address,Options options,[Function responseFactory = null]) {
+    return impl.addressToLocation(address,options,responseFactory);
+  }
+  dynamic locationToAddress(location_mojom.Location location,Options options,[Function responseFactory = null]) {
+    return impl.locationToAddress(location,options,responseFactory);
   }
 }
 

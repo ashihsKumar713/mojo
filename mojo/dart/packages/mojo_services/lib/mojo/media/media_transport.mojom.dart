@@ -1294,9 +1294,9 @@ abstract class MediaProducer {
   void disconnect();
 }
 
-
-class _MediaProducerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _MediaProducerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _MediaProducerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1310,7 +1310,6 @@ class _MediaProducerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => MediaProducer.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaProducerMethodConnectName:
@@ -1347,9 +1346,9 @@ class _MediaProducerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class MediaProducerProxy extends bindings.Proxy
-                              implements MediaProducer {
+class MediaProducerProxy
+    extends bindings.Proxy
+    implements MediaProducer {
   MediaProducerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaProducerProxyControl.fromEndpoint(endpoint));
@@ -1394,29 +1393,24 @@ class MediaProducerProxy extends bindings.Proxy
   }
 }
 
-
-class MediaProducerStub extends bindings.Stub {
+class _MediaProducerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<MediaProducer> {
   MediaProducer _impl;
 
-  MediaProducerStub.fromEndpoint(
+  _MediaProducerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaProducer impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaProducerStub.fromHandle(
+  _MediaProducerStubControl.fromHandle(
       core.MojoHandle handle, [MediaProducer impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaProducerStub.unbound([this._impl]) : super.unbound();
-
-  static MediaProducerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaProducerStub"));
-    return new MediaProducerStub.fromEndpoint(endpoint);
-  }
+  _MediaProducerStubControl.unbound([this._impl]) : super.unbound();
 
 
   MediaProducerConnectResponseParams _mediaProducerConnectResponseParamsFactory() {
@@ -1485,9 +1479,10 @@ class MediaProducerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "MediaProducerStub($superString)";
+    return "_MediaProducerStubControl($superString)";
   }
 
   int get version => 0;
@@ -1498,6 +1493,38 @@ class MediaProducerStub extends bindings.Stub {
       _cachedServiceDescription = new _MediaProducerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class MediaProducerStub
+    extends bindings.Stub<MediaProducer>
+    implements MediaProducer {
+  MediaProducerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [MediaProducer impl])
+      : super(new _MediaProducerStubControl.fromEndpoint(endpoint, impl));
+
+  MediaProducerStub.fromHandle(
+      core.MojoHandle handle, [MediaProducer impl])
+      : super(new _MediaProducerStubControl.fromHandle(handle, impl));
+
+  MediaProducerStub.unbound([MediaProducer impl])
+      : super(new _MediaProducerStubControl.unbound(impl));
+
+  static MediaProducerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaProducerStub"));
+    return new MediaProducerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _MediaProducerStubControl.serviceDescription;
+
+
+  dynamic connect(Object consumer,[Function responseFactory = null]) {
+    return impl.connect(consumer,responseFactory);
+  }
+  void disconnect() {
+    return impl.disconnect();
   }
 }
 
@@ -1523,9 +1550,9 @@ abstract class MediaPullModeProducer {
   void releasePacket(MediaPacket toRelease);
 }
 
-
-class _MediaPullModeProducerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _MediaPullModeProducerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _MediaPullModeProducerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1539,7 +1566,6 @@ class _MediaPullModeProducerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => MediaPullModeProducer.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaPullModeProducerMethodGetBufferName:
@@ -1596,9 +1622,9 @@ class _MediaPullModeProducerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class MediaPullModeProducerProxy extends bindings.Proxy
-                              implements MediaPullModeProducer {
+class MediaPullModeProducerProxy
+    extends bindings.Proxy
+    implements MediaPullModeProducer {
   MediaPullModeProducerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaPullModeProducerProxyControl.fromEndpoint(endpoint));
@@ -1652,29 +1678,24 @@ class MediaPullModeProducerProxy extends bindings.Proxy
   }
 }
 
-
-class MediaPullModeProducerStub extends bindings.Stub {
+class _MediaPullModeProducerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<MediaPullModeProducer> {
   MediaPullModeProducer _impl;
 
-  MediaPullModeProducerStub.fromEndpoint(
+  _MediaPullModeProducerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaPullModeProducer impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaPullModeProducerStub.fromHandle(
+  _MediaPullModeProducerStubControl.fromHandle(
       core.MojoHandle handle, [MediaPullModeProducer impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaPullModeProducerStub.unbound([this._impl]) : super.unbound();
-
-  static MediaPullModeProducerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaPullModeProducerStub"));
-    return new MediaPullModeProducerStub.fromEndpoint(endpoint);
-  }
+  _MediaPullModeProducerStubControl.unbound([this._impl]) : super.unbound();
 
 
   MediaPullModeProducerGetBufferResponseParams _mediaPullModeProducerGetBufferResponseParamsFactory(core.MojoSharedBuffer buffer) {
@@ -1771,9 +1792,10 @@ class MediaPullModeProducerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "MediaPullModeProducerStub($superString)";
+    return "_MediaPullModeProducerStubControl($superString)";
   }
 
   int get version => 0;
@@ -1784,6 +1806,41 @@ class MediaPullModeProducerStub extends bindings.Stub {
       _cachedServiceDescription = new _MediaPullModeProducerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class MediaPullModeProducerStub
+    extends bindings.Stub<MediaPullModeProducer>
+    implements MediaPullModeProducer {
+  MediaPullModeProducerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [MediaPullModeProducer impl])
+      : super(new _MediaPullModeProducerStubControl.fromEndpoint(endpoint, impl));
+
+  MediaPullModeProducerStub.fromHandle(
+      core.MojoHandle handle, [MediaPullModeProducer impl])
+      : super(new _MediaPullModeProducerStubControl.fromHandle(handle, impl));
+
+  MediaPullModeProducerStub.unbound([MediaPullModeProducer impl])
+      : super(new _MediaPullModeProducerStubControl.unbound(impl));
+
+  static MediaPullModeProducerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaPullModeProducerStub"));
+    return new MediaPullModeProducerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _MediaPullModeProducerStubControl.serviceDescription;
+
+
+  dynamic getBuffer([Function responseFactory = null]) {
+    return impl.getBuffer(responseFactory);
+  }
+  dynamic pullPacket(MediaPacket toRelease,[Function responseFactory = null]) {
+    return impl.pullPacket(toRelease,responseFactory);
+  }
+  void releasePacket(MediaPacket toRelease) {
+    return impl.releasePacket(toRelease);
   }
 }
 
@@ -1864,9 +1921,9 @@ abstract class MediaConsumer {
   static const int kMaxBufferLen = 4611686018427387903;
 }
 
-
-class _MediaConsumerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _MediaConsumerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _MediaConsumerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1880,7 +1937,6 @@ class _MediaConsumerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => MediaConsumer.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaConsumerMethodSetBufferName:
@@ -1977,9 +2033,9 @@ class _MediaConsumerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class MediaConsumerProxy extends bindings.Proxy
-                              implements MediaConsumer {
+class MediaConsumerProxy
+    extends bindings.Proxy
+    implements MediaConsumer {
   MediaConsumerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaConsumerProxyControl.fromEndpoint(endpoint));
@@ -2040,29 +2096,24 @@ class MediaConsumerProxy extends bindings.Proxy
   }
 }
 
-
-class MediaConsumerStub extends bindings.Stub {
+class _MediaConsumerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<MediaConsumer> {
   MediaConsumer _impl;
 
-  MediaConsumerStub.fromEndpoint(
+  _MediaConsumerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaConsumer impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaConsumerStub.fromHandle(
+  _MediaConsumerStubControl.fromHandle(
       core.MojoHandle handle, [MediaConsumer impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaConsumerStub.unbound([this._impl]) : super.unbound();
-
-  static MediaConsumerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaConsumerStub"));
-    return new MediaConsumerStub.fromEndpoint(endpoint);
-  }
+  _MediaConsumerStubControl.unbound([this._impl]) : super.unbound();
 
 
   MediaConsumerSetBufferResponseParams _mediaConsumerSetBufferResponseParamsFactory() {
@@ -2203,9 +2254,10 @@ class MediaConsumerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "MediaConsumerStub($superString)";
+    return "_MediaConsumerStubControl($superString)";
   }
 
   int get version => 0;
@@ -2216,6 +2268,44 @@ class MediaConsumerStub extends bindings.Stub {
       _cachedServiceDescription = new _MediaConsumerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class MediaConsumerStub
+    extends bindings.Stub<MediaConsumer>
+    implements MediaConsumer {
+  MediaConsumerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [MediaConsumer impl])
+      : super(new _MediaConsumerStubControl.fromEndpoint(endpoint, impl));
+
+  MediaConsumerStub.fromHandle(
+      core.MojoHandle handle, [MediaConsumer impl])
+      : super(new _MediaConsumerStubControl.fromHandle(handle, impl));
+
+  MediaConsumerStub.unbound([MediaConsumer impl])
+      : super(new _MediaConsumerStubControl.unbound(impl));
+
+  static MediaConsumerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaConsumerStub"));
+    return new MediaConsumerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _MediaConsumerStubControl.serviceDescription;
+
+
+  dynamic setBuffer(core.MojoSharedBuffer buffer,[Function responseFactory = null]) {
+    return impl.setBuffer(buffer,responseFactory);
+  }
+  dynamic sendPacket(MediaPacket packet,[Function responseFactory = null]) {
+    return impl.sendPacket(packet,responseFactory);
+  }
+  dynamic prime([Function responseFactory = null]) {
+    return impl.prime(responseFactory);
+  }
+  dynamic flush([Function responseFactory = null]) {
+    return impl.flush(responseFactory);
   }
 }
 

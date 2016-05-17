@@ -45,7 +45,7 @@ class EchoServiceImpl implements EchoService {
     // It is not allowed to do an unbind in the midst of handling an event, so
     // it is delayed until popping back out to the event loop.
     Timer.run(() {
-      final endpoint = stub.unbind();
+      final endpoint = stub.ctrl.unbind();
       new EchoServiceImpl(app, endpoint);
     });
   }

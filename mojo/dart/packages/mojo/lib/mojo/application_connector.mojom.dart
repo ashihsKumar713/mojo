@@ -198,9 +198,9 @@ abstract class ApplicationConnector {
   void duplicate(Object applicationConnectorRequest);
 }
 
-
-class _ApplicationConnectorProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ApplicationConnectorProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ApplicationConnectorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -214,7 +214,6 @@ class _ApplicationConnectorProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ApplicationConnector.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -231,9 +230,9 @@ class _ApplicationConnectorProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ApplicationConnectorProxy extends bindings.Proxy
-                              implements ApplicationConnector {
+class ApplicationConnectorProxy
+    extends bindings.Proxy
+    implements ApplicationConnector {
   ApplicationConnectorProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ApplicationConnectorProxyControl.fromEndpoint(endpoint));
@@ -282,29 +281,24 @@ class ApplicationConnectorProxy extends bindings.Proxy
   }
 }
 
-
-class ApplicationConnectorStub extends bindings.Stub {
+class _ApplicationConnectorStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ApplicationConnector> {
   ApplicationConnector _impl;
 
-  ApplicationConnectorStub.fromEndpoint(
+  _ApplicationConnectorStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ApplicationConnector impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ApplicationConnectorStub.fromHandle(
+  _ApplicationConnectorStubControl.fromHandle(
       core.MojoHandle handle, [ApplicationConnector impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ApplicationConnectorStub.unbound([this._impl]) : super.unbound();
-
-  static ApplicationConnectorStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ApplicationConnectorStub"));
-    return new ApplicationConnectorStub.fromEndpoint(endpoint);
-  }
+  _ApplicationConnectorStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -354,9 +348,10 @@ class ApplicationConnectorStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ApplicationConnectorStub($superString)";
+    return "_ApplicationConnectorStubControl($superString)";
   }
 
   int get version => 0;
@@ -367,6 +362,38 @@ class ApplicationConnectorStub extends bindings.Stub {
       _cachedServiceDescription = new _ApplicationConnectorServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ApplicationConnectorStub
+    extends bindings.Stub<ApplicationConnector>
+    implements ApplicationConnector {
+  ApplicationConnectorStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ApplicationConnector impl])
+      : super(new _ApplicationConnectorStubControl.fromEndpoint(endpoint, impl));
+
+  ApplicationConnectorStub.fromHandle(
+      core.MojoHandle handle, [ApplicationConnector impl])
+      : super(new _ApplicationConnectorStubControl.fromHandle(handle, impl));
+
+  ApplicationConnectorStub.unbound([ApplicationConnector impl])
+      : super(new _ApplicationConnectorStubControl.unbound(impl));
+
+  static ApplicationConnectorStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ApplicationConnectorStub"));
+    return new ApplicationConnectorStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ApplicationConnectorStubControl.serviceDescription;
+
+
+  void connectToApplication(String applicationUrl, Object services, Object exposedServices) {
+    return impl.connectToApplication(applicationUrl, services, exposedServices);
+  }
+  void duplicate(Object applicationConnectorRequest) {
+    return impl.duplicate(applicationConnectorRequest);
   }
 }
 

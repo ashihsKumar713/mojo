@@ -159,9 +159,9 @@ abstract class NativeViewportEventDispatcher {
   dynamic onEvent(input_events_mojom.Event event,[Function responseFactory = null]);
 }
 
-
-class _NativeViewportEventDispatcherProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _NativeViewportEventDispatcherProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _NativeViewportEventDispatcherProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -175,7 +175,6 @@ class _NativeViewportEventDispatcherProxyControl extends bindings.ProxyMessageHa
 
   String get serviceName => NativeViewportEventDispatcher.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _nativeViewportEventDispatcherMethodOnEventName:
@@ -212,9 +211,9 @@ class _NativeViewportEventDispatcherProxyControl extends bindings.ProxyMessageHa
   }
 }
 
-
-class NativeViewportEventDispatcherProxy extends bindings.Proxy
-                              implements NativeViewportEventDispatcher {
+class NativeViewportEventDispatcherProxy
+    extends bindings.Proxy
+    implements NativeViewportEventDispatcher {
   NativeViewportEventDispatcherProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _NativeViewportEventDispatcherProxyControl.fromEndpoint(endpoint));
@@ -250,29 +249,24 @@ class NativeViewportEventDispatcherProxy extends bindings.Proxy
   }
 }
 
-
-class NativeViewportEventDispatcherStub extends bindings.Stub {
+class _NativeViewportEventDispatcherStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<NativeViewportEventDispatcher> {
   NativeViewportEventDispatcher _impl;
 
-  NativeViewportEventDispatcherStub.fromEndpoint(
+  _NativeViewportEventDispatcherStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [NativeViewportEventDispatcher impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  NativeViewportEventDispatcherStub.fromHandle(
+  _NativeViewportEventDispatcherStubControl.fromHandle(
       core.MojoHandle handle, [NativeViewportEventDispatcher impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  NativeViewportEventDispatcherStub.unbound([this._impl]) : super.unbound();
-
-  static NativeViewportEventDispatcherStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For NativeViewportEventDispatcherStub"));
-    return new NativeViewportEventDispatcherStub.fromEndpoint(endpoint);
-  }
+  _NativeViewportEventDispatcherStubControl.unbound([this._impl]) : super.unbound();
 
 
   NativeViewportEventDispatcherOnEventResponseParams _nativeViewportEventDispatcherOnEventResponseParamsFactory() {
@@ -338,9 +332,10 @@ class NativeViewportEventDispatcherStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "NativeViewportEventDispatcherStub($superString)";
+    return "_NativeViewportEventDispatcherStubControl($superString)";
   }
 
   int get version => 0;
@@ -351,6 +346,35 @@ class NativeViewportEventDispatcherStub extends bindings.Stub {
       _cachedServiceDescription = new _NativeViewportEventDispatcherServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class NativeViewportEventDispatcherStub
+    extends bindings.Stub<NativeViewportEventDispatcher>
+    implements NativeViewportEventDispatcher {
+  NativeViewportEventDispatcherStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [NativeViewportEventDispatcher impl])
+      : super(new _NativeViewportEventDispatcherStubControl.fromEndpoint(endpoint, impl));
+
+  NativeViewportEventDispatcherStub.fromHandle(
+      core.MojoHandle handle, [NativeViewportEventDispatcher impl])
+      : super(new _NativeViewportEventDispatcherStubControl.fromHandle(handle, impl));
+
+  NativeViewportEventDispatcherStub.unbound([NativeViewportEventDispatcher impl])
+      : super(new _NativeViewportEventDispatcherStubControl.unbound(impl));
+
+  static NativeViewportEventDispatcherStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For NativeViewportEventDispatcherStub"));
+    return new NativeViewportEventDispatcherStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _NativeViewportEventDispatcherStubControl.serviceDescription;
+
+
+  dynamic onEvent(input_events_mojom.Event event,[Function responseFactory = null]) {
+    return impl.onEvent(event,responseFactory);
   }
 }
 

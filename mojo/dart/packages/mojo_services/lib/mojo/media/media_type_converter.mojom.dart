@@ -306,9 +306,9 @@ abstract class MediaTypeConverter {
   void getProducer(Object producer);
 }
 
-
-class _MediaTypeConverterProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _MediaTypeConverterProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _MediaTypeConverterProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -322,7 +322,6 @@ class _MediaTypeConverterProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => MediaTypeConverter.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaTypeConverterMethodGetOutputTypeName:
@@ -359,9 +358,9 @@ class _MediaTypeConverterProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class MediaTypeConverterProxy extends bindings.Proxy
-                              implements MediaTypeConverter {
+class MediaTypeConverterProxy
+    extends bindings.Proxy
+    implements MediaTypeConverter {
   MediaTypeConverterProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaTypeConverterProxyControl.fromEndpoint(endpoint));
@@ -416,29 +415,24 @@ class MediaTypeConverterProxy extends bindings.Proxy
   }
 }
 
-
-class MediaTypeConverterStub extends bindings.Stub {
+class _MediaTypeConverterStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<MediaTypeConverter> {
   MediaTypeConverter _impl;
 
-  MediaTypeConverterStub.fromEndpoint(
+  _MediaTypeConverterStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaTypeConverter impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaTypeConverterStub.fromHandle(
+  _MediaTypeConverterStubControl.fromHandle(
       core.MojoHandle handle, [MediaTypeConverter impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaTypeConverterStub.unbound([this._impl]) : super.unbound();
-
-  static MediaTypeConverterStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaTypeConverterStub"));
-    return new MediaTypeConverterStub.fromEndpoint(endpoint);
-  }
+  _MediaTypeConverterStubControl.unbound([this._impl]) : super.unbound();
 
 
   MediaTypeConverterGetOutputTypeResponseParams _mediaTypeConverterGetOutputTypeResponseParamsFactory(media_types_mojom.MediaType outputType) {
@@ -513,9 +507,10 @@ class MediaTypeConverterStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "MediaTypeConverterStub($superString)";
+    return "_MediaTypeConverterStubControl($superString)";
   }
 
   int get version => 0;
@@ -526,6 +521,41 @@ class MediaTypeConverterStub extends bindings.Stub {
       _cachedServiceDescription = new _MediaTypeConverterServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class MediaTypeConverterStub
+    extends bindings.Stub<MediaTypeConverter>
+    implements MediaTypeConverter {
+  MediaTypeConverterStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [MediaTypeConverter impl])
+      : super(new _MediaTypeConverterStubControl.fromEndpoint(endpoint, impl));
+
+  MediaTypeConverterStub.fromHandle(
+      core.MojoHandle handle, [MediaTypeConverter impl])
+      : super(new _MediaTypeConverterStubControl.fromHandle(handle, impl));
+
+  MediaTypeConverterStub.unbound([MediaTypeConverter impl])
+      : super(new _MediaTypeConverterStubControl.unbound(impl));
+
+  static MediaTypeConverterStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaTypeConverterStub"));
+    return new MediaTypeConverterStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _MediaTypeConverterStubControl.serviceDescription;
+
+
+  dynamic getOutputType([Function responseFactory = null]) {
+    return impl.getOutputType(responseFactory);
+  }
+  void getConsumer(Object consumer) {
+    return impl.getConsumer(consumer);
+  }
+  void getProducer(Object producer) {
+    return impl.getProducer(producer);
   }
 }
 

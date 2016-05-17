@@ -768,9 +768,9 @@ abstract class ContactsService {
   dynamic getPhoto(int id,bool highResolution,[Function responseFactory = null]);
 }
 
-
-class _ContactsServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ContactsServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ContactsServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -784,7 +784,6 @@ class _ContactsServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ContactsService.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _contactsServiceMethodGetCountName:
@@ -881,9 +880,9 @@ class _ContactsServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ContactsServiceProxy extends bindings.Proxy
-                              implements ContactsService {
+class ContactsServiceProxy
+    extends bindings.Proxy
+    implements ContactsService {
   ContactsServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ContactsServiceProxyControl.fromEndpoint(endpoint));
@@ -949,29 +948,24 @@ class ContactsServiceProxy extends bindings.Proxy
   }
 }
 
-
-class ContactsServiceStub extends bindings.Stub {
+class _ContactsServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ContactsService> {
   ContactsService _impl;
 
-  ContactsServiceStub.fromEndpoint(
+  _ContactsServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ContactsService impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ContactsServiceStub.fromHandle(
+  _ContactsServiceStubControl.fromHandle(
       core.MojoHandle handle, [ContactsService impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ContactsServiceStub.unbound([this._impl]) : super.unbound();
-
-  static ContactsServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ContactsServiceStub"));
-    return new ContactsServiceStub.fromEndpoint(endpoint);
-  }
+  _ContactsServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
   ContactsServiceGetCountResponseParams _contactsServiceGetCountResponseParamsFactory(int count) {
@@ -1119,9 +1113,10 @@ class ContactsServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ContactsServiceStub($superString)";
+    return "_ContactsServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -1132,6 +1127,44 @@ class ContactsServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _ContactsServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ContactsServiceStub
+    extends bindings.Stub<ContactsService>
+    implements ContactsService {
+  ContactsServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ContactsService impl])
+      : super(new _ContactsServiceStubControl.fromEndpoint(endpoint, impl));
+
+  ContactsServiceStub.fromHandle(
+      core.MojoHandle handle, [ContactsService impl])
+      : super(new _ContactsServiceStubControl.fromHandle(handle, impl));
+
+  ContactsServiceStub.unbound([ContactsService impl])
+      : super(new _ContactsServiceStubControl.unbound(impl));
+
+  static ContactsServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ContactsServiceStub"));
+    return new ContactsServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ContactsServiceStubControl.serviceDescription;
+
+
+  dynamic getCount(String filter,[Function responseFactory = null]) {
+    return impl.getCount(filter,responseFactory);
+  }
+  dynamic get(String filter,int offset,int limit,[Function responseFactory = null]) {
+    return impl.get(filter,offset,limit,responseFactory);
+  }
+  dynamic getEmails(int id,[Function responseFactory = null]) {
+    return impl.getEmails(id,responseFactory);
+  }
+  dynamic getPhoto(int id,bool highResolution,[Function responseFactory = null]) {
+    return impl.getPhoto(id,highResolution,responseFactory);
   }
 }
 

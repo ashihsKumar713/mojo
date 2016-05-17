@@ -385,9 +385,9 @@ abstract class TraceProvider {
   void stopTracing();
 }
 
-
-class _TraceProviderProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _TraceProviderProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _TraceProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -401,7 +401,6 @@ class _TraceProviderProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => TraceProvider.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -418,9 +417,9 @@ class _TraceProviderProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class TraceProviderProxy extends bindings.Proxy
-                              implements TraceProvider {
+class TraceProviderProxy
+    extends bindings.Proxy
+    implements TraceProvider {
   TraceProviderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TraceProviderProxyControl.fromEndpoint(endpoint));
@@ -467,29 +466,24 @@ class TraceProviderProxy extends bindings.Proxy
   }
 }
 
-
-class TraceProviderStub extends bindings.Stub {
+class _TraceProviderStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<TraceProvider> {
   TraceProvider _impl;
 
-  TraceProviderStub.fromEndpoint(
+  _TraceProviderStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TraceProvider impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TraceProviderStub.fromHandle(
+  _TraceProviderStubControl.fromHandle(
       core.MojoHandle handle, [TraceProvider impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TraceProviderStub.unbound([this._impl]) : super.unbound();
-
-  static TraceProviderStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TraceProviderStub"));
-    return new TraceProviderStub.fromEndpoint(endpoint);
-  }
+  _TraceProviderStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -537,9 +531,10 @@ class TraceProviderStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "TraceProviderStub($superString)";
+    return "_TraceProviderStubControl($superString)";
   }
 
   int get version => 0;
@@ -550,6 +545,38 @@ class TraceProviderStub extends bindings.Stub {
       _cachedServiceDescription = new _TraceProviderServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class TraceProviderStub
+    extends bindings.Stub<TraceProvider>
+    implements TraceProvider {
+  TraceProviderStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [TraceProvider impl])
+      : super(new _TraceProviderStubControl.fromEndpoint(endpoint, impl));
+
+  TraceProviderStub.fromHandle(
+      core.MojoHandle handle, [TraceProvider impl])
+      : super(new _TraceProviderStubControl.fromHandle(handle, impl));
+
+  TraceProviderStub.unbound([TraceProvider impl])
+      : super(new _TraceProviderStubControl.unbound(impl));
+
+  static TraceProviderStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TraceProviderStub"));
+    return new TraceProviderStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _TraceProviderStubControl.serviceDescription;
+
+
+  void startTracing(String categories, Object recorder) {
+    return impl.startTracing(categories, recorder);
+  }
+  void stopTracing() {
+    return impl.stopTracing();
   }
 }
 
@@ -571,9 +598,9 @@ abstract class TraceRecorder {
   void record(String json);
 }
 
-
-class _TraceRecorderProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _TraceRecorderProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _TraceRecorderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -587,7 +614,6 @@ class _TraceRecorderProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => TraceRecorder.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -604,9 +630,9 @@ class _TraceRecorderProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class TraceRecorderProxy extends bindings.Proxy
-                              implements TraceRecorder {
+class TraceRecorderProxy
+    extends bindings.Proxy
+    implements TraceRecorder {
   TraceRecorderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TraceRecorderProxyControl.fromEndpoint(endpoint));
@@ -643,29 +669,24 @@ class TraceRecorderProxy extends bindings.Proxy
   }
 }
 
-
-class TraceRecorderStub extends bindings.Stub {
+class _TraceRecorderStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<TraceRecorder> {
   TraceRecorder _impl;
 
-  TraceRecorderStub.fromEndpoint(
+  _TraceRecorderStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TraceRecorder impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TraceRecorderStub.fromHandle(
+  _TraceRecorderStubControl.fromHandle(
       core.MojoHandle handle, [TraceRecorder impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TraceRecorderStub.unbound([this._impl]) : super.unbound();
-
-  static TraceRecorderStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TraceRecorderStub"));
-    return new TraceRecorderStub.fromEndpoint(endpoint);
-  }
+  _TraceRecorderStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -710,9 +731,10 @@ class TraceRecorderStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "TraceRecorderStub($superString)";
+    return "_TraceRecorderStubControl($superString)";
   }
 
   int get version => 0;
@@ -723,6 +745,35 @@ class TraceRecorderStub extends bindings.Stub {
       _cachedServiceDescription = new _TraceRecorderServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class TraceRecorderStub
+    extends bindings.Stub<TraceRecorder>
+    implements TraceRecorder {
+  TraceRecorderStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [TraceRecorder impl])
+      : super(new _TraceRecorderStubControl.fromEndpoint(endpoint, impl));
+
+  TraceRecorderStub.fromHandle(
+      core.MojoHandle handle, [TraceRecorder impl])
+      : super(new _TraceRecorderStubControl.fromHandle(handle, impl));
+
+  TraceRecorderStub.unbound([TraceRecorder impl])
+      : super(new _TraceRecorderStubControl.unbound(impl));
+
+  static TraceRecorderStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TraceRecorderStub"));
+    return new TraceRecorderStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _TraceRecorderStubControl.serviceDescription;
+
+
+  void record(String json) {
+    return impl.record(json);
   }
 }
 
@@ -746,9 +797,9 @@ abstract class TraceCollector {
   void stopAndFlush();
 }
 
-
-class _TraceCollectorProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _TraceCollectorProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _TraceCollectorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -762,7 +813,6 @@ class _TraceCollectorProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => TraceCollector.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -779,9 +829,9 @@ class _TraceCollectorProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class TraceCollectorProxy extends bindings.Proxy
-                              implements TraceCollector {
+class TraceCollectorProxy
+    extends bindings.Proxy
+    implements TraceCollector {
   TraceCollectorProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TraceCollectorProxyControl.fromEndpoint(endpoint));
@@ -828,29 +878,24 @@ class TraceCollectorProxy extends bindings.Proxy
   }
 }
 
-
-class TraceCollectorStub extends bindings.Stub {
+class _TraceCollectorStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<TraceCollector> {
   TraceCollector _impl;
 
-  TraceCollectorStub.fromEndpoint(
+  _TraceCollectorStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TraceCollector impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TraceCollectorStub.fromHandle(
+  _TraceCollectorStubControl.fromHandle(
       core.MojoHandle handle, [TraceCollector impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TraceCollectorStub.unbound([this._impl]) : super.unbound();
-
-  static TraceCollectorStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TraceCollectorStub"));
-    return new TraceCollectorStub.fromEndpoint(endpoint);
-  }
+  _TraceCollectorStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -898,9 +943,10 @@ class TraceCollectorStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "TraceCollectorStub($superString)";
+    return "_TraceCollectorStubControl($superString)";
   }
 
   int get version => 0;
@@ -911,6 +957,38 @@ class TraceCollectorStub extends bindings.Stub {
       _cachedServiceDescription = new _TraceCollectorServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class TraceCollectorStub
+    extends bindings.Stub<TraceCollector>
+    implements TraceCollector {
+  TraceCollectorStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [TraceCollector impl])
+      : super(new _TraceCollectorStubControl.fromEndpoint(endpoint, impl));
+
+  TraceCollectorStub.fromHandle(
+      core.MojoHandle handle, [TraceCollector impl])
+      : super(new _TraceCollectorStubControl.fromHandle(handle, impl));
+
+  TraceCollectorStub.unbound([TraceCollector impl])
+      : super(new _TraceCollectorStubControl.unbound(impl));
+
+  static TraceCollectorStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TraceCollectorStub"));
+    return new TraceCollectorStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _TraceCollectorStubControl.serviceDescription;
+
+
+  void start(core.MojoDataPipeProducer stream, String categories) {
+    return impl.start(stream, categories);
+  }
+  void stopAndFlush() {
+    return impl.stopAndFlush();
   }
 }
 

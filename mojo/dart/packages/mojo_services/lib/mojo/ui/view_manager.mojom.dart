@@ -240,9 +240,9 @@ abstract class ViewManager {
   void createViewTree(Object viewTree, Object viewTreeListener, String label);
 }
 
-
-class _ViewManagerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ViewManagerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ViewManagerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -256,7 +256,6 @@ class _ViewManagerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ViewManager.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -273,9 +272,9 @@ class _ViewManagerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ViewManagerProxy extends bindings.Proxy
-                              implements ViewManager {
+class ViewManagerProxy
+    extends bindings.Proxy
+    implements ViewManager {
   ViewManagerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewManagerProxyControl.fromEndpoint(endpoint));
@@ -327,29 +326,24 @@ class ViewManagerProxy extends bindings.Proxy
   }
 }
 
-
-class ViewManagerStub extends bindings.Stub {
+class _ViewManagerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ViewManager> {
   ViewManager _impl;
 
-  ViewManagerStub.fromEndpoint(
+  _ViewManagerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewManager impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewManagerStub.fromHandle(
+  _ViewManagerStubControl.fromHandle(
       core.MojoHandle handle, [ViewManager impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewManagerStub.unbound([this._impl]) : super.unbound();
-
-  static ViewManagerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewManagerStub"));
-    return new ViewManagerStub.fromEndpoint(endpoint);
-  }
+  _ViewManagerStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -399,9 +393,10 @@ class ViewManagerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ViewManagerStub($superString)";
+    return "_ViewManagerStubControl($superString)";
   }
 
   int get version => 0;
@@ -412,6 +407,38 @@ class ViewManagerStub extends bindings.Stub {
       _cachedServiceDescription = new _ViewManagerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ViewManagerStub
+    extends bindings.Stub<ViewManager>
+    implements ViewManager {
+  ViewManagerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ViewManager impl])
+      : super(new _ViewManagerStubControl.fromEndpoint(endpoint, impl));
+
+  ViewManagerStub.fromHandle(
+      core.MojoHandle handle, [ViewManager impl])
+      : super(new _ViewManagerStubControl.fromHandle(handle, impl));
+
+  ViewManagerStub.unbound([ViewManager impl])
+      : super(new _ViewManagerStubControl.unbound(impl));
+
+  static ViewManagerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewManagerStub"));
+    return new ViewManagerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ViewManagerStubControl.serviceDescription;
+
+
+  void createView(Object view, Object viewOwner, Object viewListener, String label) {
+    return impl.createView(view, viewOwner, viewListener, label);
+  }
+  void createViewTree(Object viewTree, Object viewTreeListener, String label) {
+    return impl.createViewTree(viewTree, viewTreeListener, label);
   }
 }
 

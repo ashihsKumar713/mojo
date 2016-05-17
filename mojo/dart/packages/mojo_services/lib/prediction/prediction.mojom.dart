@@ -377,9 +377,9 @@ abstract class PredictionService {
   dynamic getPredictionList(PredictionInfo predictionInfo,[Function responseFactory = null]);
 }
 
-
-class _PredictionServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _PredictionServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _PredictionServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -393,7 +393,6 @@ class _PredictionServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => PredictionService.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _predictionServiceMethodGetPredictionListName:
@@ -430,9 +429,9 @@ class _PredictionServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class PredictionServiceProxy extends bindings.Proxy
-                              implements PredictionService {
+class PredictionServiceProxy
+    extends bindings.Proxy
+    implements PredictionService {
   PredictionServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _PredictionServiceProxyControl.fromEndpoint(endpoint));
@@ -468,29 +467,24 @@ class PredictionServiceProxy extends bindings.Proxy
   }
 }
 
-
-class PredictionServiceStub extends bindings.Stub {
+class _PredictionServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<PredictionService> {
   PredictionService _impl;
 
-  PredictionServiceStub.fromEndpoint(
+  _PredictionServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [PredictionService impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  PredictionServiceStub.fromHandle(
+  _PredictionServiceStubControl.fromHandle(
       core.MojoHandle handle, [PredictionService impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  PredictionServiceStub.unbound([this._impl]) : super.unbound();
-
-  static PredictionServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For PredictionServiceStub"));
-    return new PredictionServiceStub.fromEndpoint(endpoint);
-  }
+  _PredictionServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
   PredictionServiceGetPredictionListResponseParams _predictionServiceGetPredictionListResponseParamsFactory(List<String> predictionList) {
@@ -557,9 +551,10 @@ class PredictionServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "PredictionServiceStub($superString)";
+    return "_PredictionServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -570,6 +565,35 @@ class PredictionServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _PredictionServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class PredictionServiceStub
+    extends bindings.Stub<PredictionService>
+    implements PredictionService {
+  PredictionServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [PredictionService impl])
+      : super(new _PredictionServiceStubControl.fromEndpoint(endpoint, impl));
+
+  PredictionServiceStub.fromHandle(
+      core.MojoHandle handle, [PredictionService impl])
+      : super(new _PredictionServiceStubControl.fromHandle(handle, impl));
+
+  PredictionServiceStub.unbound([PredictionService impl])
+      : super(new _PredictionServiceStubControl.unbound(impl));
+
+  static PredictionServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For PredictionServiceStub"));
+    return new PredictionServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _PredictionServiceStubControl.serviceDescription;
+
+
+  dynamic getPredictionList(PredictionInfo predictionInfo,[Function responseFactory = null]) {
+    return impl.getPredictionList(predictionInfo,responseFactory);
   }
 }
 

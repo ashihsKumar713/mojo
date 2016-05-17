@@ -331,9 +331,9 @@ abstract class CookieStore {
   dynamic set(String url,String cookie,[Function responseFactory = null]);
 }
 
-
-class _CookieStoreProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _CookieStoreProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _CookieStoreProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -347,7 +347,6 @@ class _CookieStoreProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => CookieStore.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _cookieStoreMethodGetName:
@@ -404,9 +403,9 @@ class _CookieStoreProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class CookieStoreProxy extends bindings.Proxy
-                              implements CookieStore {
+class CookieStoreProxy
+    extends bindings.Proxy
+    implements CookieStore {
   CookieStoreProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _CookieStoreProxyControl.fromEndpoint(endpoint));
@@ -452,29 +451,24 @@ class CookieStoreProxy extends bindings.Proxy
   }
 }
 
-
-class CookieStoreStub extends bindings.Stub {
+class _CookieStoreStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<CookieStore> {
   CookieStore _impl;
 
-  CookieStoreStub.fromEndpoint(
+  _CookieStoreStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [CookieStore impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  CookieStoreStub.fromHandle(
+  _CookieStoreStubControl.fromHandle(
       core.MojoHandle handle, [CookieStore impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  CookieStoreStub.unbound([this._impl]) : super.unbound();
-
-  static CookieStoreStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For CookieStoreStub"));
-    return new CookieStoreStub.fromEndpoint(endpoint);
-  }
+  _CookieStoreStubControl.unbound([this._impl]) : super.unbound();
 
 
   CookieStoreGetResponseParams _cookieStoreGetResponseParamsFactory(String cookies) {
@@ -568,9 +562,10 @@ class CookieStoreStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "CookieStoreStub($superString)";
+    return "_CookieStoreStubControl($superString)";
   }
 
   int get version => 0;
@@ -581,6 +576,38 @@ class CookieStoreStub extends bindings.Stub {
       _cachedServiceDescription = new _CookieStoreServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class CookieStoreStub
+    extends bindings.Stub<CookieStore>
+    implements CookieStore {
+  CookieStoreStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [CookieStore impl])
+      : super(new _CookieStoreStubControl.fromEndpoint(endpoint, impl));
+
+  CookieStoreStub.fromHandle(
+      core.MojoHandle handle, [CookieStore impl])
+      : super(new _CookieStoreStubControl.fromHandle(handle, impl));
+
+  CookieStoreStub.unbound([CookieStore impl])
+      : super(new _CookieStoreStubControl.unbound(impl));
+
+  static CookieStoreStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For CookieStoreStub"));
+    return new CookieStoreStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _CookieStoreStubControl.serviceDescription;
+
+
+  dynamic get(String url,[Function responseFactory = null]) {
+    return impl.get(url,responseFactory);
+  }
+  dynamic set(String url,String cookie,[Function responseFactory = null]) {
+    return impl.set(url,cookie,responseFactory);
   }
 }
 

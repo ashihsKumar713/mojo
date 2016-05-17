@@ -111,9 +111,9 @@ abstract class ServiceProvider {
   void connectToService_(String interfaceName, core.MojoMessagePipeEndpoint pipe);
 }
 
-
-class _ServiceProviderProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ServiceProviderProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ServiceProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -127,7 +127,6 @@ class _ServiceProviderProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ServiceProvider.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -144,9 +143,9 @@ class _ServiceProviderProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ServiceProviderProxy extends bindings.Proxy
-                              implements ServiceProvider {
+class ServiceProviderProxy
+    extends bindings.Proxy
+    implements ServiceProvider {
   ServiceProviderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ServiceProviderProxyControl.fromEndpoint(endpoint));
@@ -184,29 +183,24 @@ class ServiceProviderProxy extends bindings.Proxy
   }
 }
 
-
-class ServiceProviderStub extends bindings.Stub {
+class _ServiceProviderStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ServiceProvider> {
   ServiceProvider _impl;
 
-  ServiceProviderStub.fromEndpoint(
+  _ServiceProviderStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ServiceProvider impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ServiceProviderStub.fromHandle(
+  _ServiceProviderStubControl.fromHandle(
       core.MojoHandle handle, [ServiceProvider impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ServiceProviderStub.unbound([this._impl]) : super.unbound();
-
-  static ServiceProviderStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ServiceProviderStub"));
-    return new ServiceProviderStub.fromEndpoint(endpoint);
-  }
+  _ServiceProviderStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -251,9 +245,10 @@ class ServiceProviderStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ServiceProviderStub($superString)";
+    return "_ServiceProviderStubControl($superString)";
   }
 
   int get version => 0;
@@ -264,6 +259,35 @@ class ServiceProviderStub extends bindings.Stub {
       _cachedServiceDescription = new _ServiceProviderServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ServiceProviderStub
+    extends bindings.Stub<ServiceProvider>
+    implements ServiceProvider {
+  ServiceProviderStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ServiceProvider impl])
+      : super(new _ServiceProviderStubControl.fromEndpoint(endpoint, impl));
+
+  ServiceProviderStub.fromHandle(
+      core.MojoHandle handle, [ServiceProvider impl])
+      : super(new _ServiceProviderStubControl.fromHandle(handle, impl));
+
+  ServiceProviderStub.unbound([ServiceProvider impl])
+      : super(new _ServiceProviderStubControl.unbound(impl));
+
+  static ServiceProviderStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ServiceProviderStub"));
+    return new ServiceProviderStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ServiceProviderStubControl.serviceDescription;
+
+
+  void connectToService_(String interfaceName, core.MojoMessagePipeEndpoint pipe) {
+    return impl.connectToService_(interfaceName, pipe);
   }
 }
 

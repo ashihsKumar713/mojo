@@ -497,9 +497,9 @@ abstract class ViewTree {
   void getContainer(Object container);
 }
 
-
-class _ViewTreeProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ViewTreeProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ViewTreeProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -513,7 +513,6 @@ class _ViewTreeProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ViewTree.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewTreeMethodGetTokenName:
@@ -550,9 +549,9 @@ class _ViewTreeProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ViewTreeProxy extends bindings.Proxy
-                              implements ViewTree {
+class ViewTreeProxy
+    extends bindings.Proxy
+    implements ViewTree {
   ViewTreeProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewTreeProxyControl.fromEndpoint(endpoint));
@@ -617,29 +616,24 @@ class ViewTreeProxy extends bindings.Proxy
   }
 }
 
-
-class ViewTreeStub extends bindings.Stub {
+class _ViewTreeStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ViewTree> {
   ViewTree _impl;
 
-  ViewTreeStub.fromEndpoint(
+  _ViewTreeStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewTree impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewTreeStub.fromHandle(
+  _ViewTreeStubControl.fromHandle(
       core.MojoHandle handle, [ViewTree impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewTreeStub.unbound([this._impl]) : super.unbound();
-
-  static ViewTreeStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewTreeStub"));
-    return new ViewTreeStub.fromEndpoint(endpoint);
-  }
+  _ViewTreeStubControl.unbound([this._impl]) : super.unbound();
 
 
   ViewTreeGetTokenResponseParams _viewTreeGetTokenResponseParamsFactory(view_tree_token_mojom.ViewTreeToken token) {
@@ -719,9 +713,10 @@ class ViewTreeStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ViewTreeStub($superString)";
+    return "_ViewTreeStubControl($superString)";
   }
 
   int get version => 0;
@@ -732,6 +727,44 @@ class ViewTreeStub extends bindings.Stub {
       _cachedServiceDescription = new _ViewTreeServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ViewTreeStub
+    extends bindings.Stub<ViewTree>
+    implements ViewTree {
+  ViewTreeStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ViewTree impl])
+      : super(new _ViewTreeStubControl.fromEndpoint(endpoint, impl));
+
+  ViewTreeStub.fromHandle(
+      core.MojoHandle handle, [ViewTree impl])
+      : super(new _ViewTreeStubControl.fromHandle(handle, impl));
+
+  ViewTreeStub.unbound([ViewTree impl])
+      : super(new _ViewTreeStubControl.unbound(impl));
+
+  static ViewTreeStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewTreeStub"));
+    return new ViewTreeStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ViewTreeStubControl.serviceDescription;
+
+
+  dynamic getToken([Function responseFactory = null]) {
+    return impl.getToken(responseFactory);
+  }
+  void getServiceProvider(Object serviceProvider) {
+    return impl.getServiceProvider(serviceProvider);
+  }
+  void setRenderer(Object renderer) {
+    return impl.setRenderer(renderer);
+  }
+  void getContainer(Object container) {
+    return impl.getContainer(container);
   }
 }
 
@@ -753,9 +786,9 @@ abstract class ViewTreeListener {
   dynamic onRendererDied([Function responseFactory = null]);
 }
 
-
-class _ViewTreeListenerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ViewTreeListenerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ViewTreeListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -769,7 +802,6 @@ class _ViewTreeListenerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ViewTreeListener.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewTreeListenerMethodOnRendererDiedName:
@@ -806,9 +838,9 @@ class _ViewTreeListenerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ViewTreeListenerProxy extends bindings.Proxy
-                              implements ViewTreeListener {
+class ViewTreeListenerProxy
+    extends bindings.Proxy
+    implements ViewTreeListener {
   ViewTreeListenerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewTreeListenerProxyControl.fromEndpoint(endpoint));
@@ -843,29 +875,24 @@ class ViewTreeListenerProxy extends bindings.Proxy
   }
 }
 
-
-class ViewTreeListenerStub extends bindings.Stub {
+class _ViewTreeListenerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ViewTreeListener> {
   ViewTreeListener _impl;
 
-  ViewTreeListenerStub.fromEndpoint(
+  _ViewTreeListenerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewTreeListener impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewTreeListenerStub.fromHandle(
+  _ViewTreeListenerStubControl.fromHandle(
       core.MojoHandle handle, [ViewTreeListener impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewTreeListenerStub.unbound([this._impl]) : super.unbound();
-
-  static ViewTreeListenerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewTreeListenerStub"));
-    return new ViewTreeListenerStub.fromEndpoint(endpoint);
-  }
+  _ViewTreeListenerStubControl.unbound([this._impl]) : super.unbound();
 
 
   ViewTreeListenerOnRendererDiedResponseParams _viewTreeListenerOnRendererDiedResponseParamsFactory() {
@@ -929,9 +956,10 @@ class ViewTreeListenerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ViewTreeListenerStub($superString)";
+    return "_ViewTreeListenerStubControl($superString)";
   }
 
   int get version => 0;
@@ -942,6 +970,35 @@ class ViewTreeListenerStub extends bindings.Stub {
       _cachedServiceDescription = new _ViewTreeListenerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ViewTreeListenerStub
+    extends bindings.Stub<ViewTreeListener>
+    implements ViewTreeListener {
+  ViewTreeListenerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ViewTreeListener impl])
+      : super(new _ViewTreeListenerStubControl.fromEndpoint(endpoint, impl));
+
+  ViewTreeListenerStub.fromHandle(
+      core.MojoHandle handle, [ViewTreeListener impl])
+      : super(new _ViewTreeListenerStubControl.fromHandle(handle, impl));
+
+  ViewTreeListenerStub.unbound([ViewTreeListener impl])
+      : super(new _ViewTreeListenerStubControl.unbound(impl));
+
+  static ViewTreeListenerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewTreeListenerStub"));
+    return new ViewTreeListenerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ViewTreeListenerStubControl.serviceDescription;
+
+
+  dynamic onRendererDied([Function responseFactory = null]) {
+    return impl.onRendererDied(responseFactory);
   }
 }
 

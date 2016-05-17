@@ -1190,9 +1190,9 @@ abstract class MediaSource {
   static const int kInitialStatus = 0;
 }
 
-
-class _MediaSourceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _MediaSourceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _MediaSourceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1206,7 +1206,6 @@ class _MediaSourceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => MediaSource.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaSourceMethodGetStreamsName:
@@ -1343,9 +1342,9 @@ class _MediaSourceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class MediaSourceProxy extends bindings.Proxy
-                              implements MediaSource {
+class MediaSourceProxy
+    extends bindings.Proxy
+    implements MediaSource {
   MediaSourceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaSourceProxyControl.fromEndpoint(endpoint));
@@ -1444,29 +1443,24 @@ class MediaSourceProxy extends bindings.Proxy
   }
 }
 
-
-class MediaSourceStub extends bindings.Stub {
+class _MediaSourceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<MediaSource> {
   MediaSource _impl;
 
-  MediaSourceStub.fromEndpoint(
+  _MediaSourceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaSource impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaSourceStub.fromHandle(
+  _MediaSourceStubControl.fromHandle(
       core.MojoHandle handle, [MediaSource impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaSourceStub.unbound([this._impl]) : super.unbound();
-
-  static MediaSourceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaSourceStub"));
-    return new MediaSourceStub.fromEndpoint(endpoint);
-  }
+  _MediaSourceStubControl.unbound([this._impl]) : super.unbound();
 
 
   MediaSourceGetStreamsResponseParams _mediaSourceGetStreamsResponseParamsFactory(List<MediaSourceStreamDescriptor> streams) {
@@ -1667,9 +1661,10 @@ class MediaSourceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "MediaSourceStub($superString)";
+    return "_MediaSourceStubControl($superString)";
   }
 
   int get version => 0;
@@ -1680,6 +1675,56 @@ class MediaSourceStub extends bindings.Stub {
       _cachedServiceDescription = new _MediaSourceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class MediaSourceStub
+    extends bindings.Stub<MediaSource>
+    implements MediaSource {
+  MediaSourceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [MediaSource impl])
+      : super(new _MediaSourceStubControl.fromEndpoint(endpoint, impl));
+
+  MediaSourceStub.fromHandle(
+      core.MojoHandle handle, [MediaSource impl])
+      : super(new _MediaSourceStubControl.fromHandle(handle, impl));
+
+  MediaSourceStub.unbound([MediaSource impl])
+      : super(new _MediaSourceStubControl.unbound(impl));
+
+  static MediaSourceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaSourceStub"));
+    return new MediaSourceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _MediaSourceStubControl.serviceDescription;
+
+
+  dynamic getStreams([Function responseFactory = null]) {
+    return impl.getStreams(responseFactory);
+  }
+  void getProducer(int streamIndex, Object producer) {
+    return impl.getProducer(streamIndex, producer);
+  }
+  void getPullModeProducer(int streamIndex, Object producer) {
+    return impl.getPullModeProducer(streamIndex, producer);
+  }
+  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
+    return impl.getStatus(versionLastSeen,responseFactory);
+  }
+  dynamic prepare([Function responseFactory = null]) {
+    return impl.prepare(responseFactory);
+  }
+  dynamic prime([Function responseFactory = null]) {
+    return impl.prime(responseFactory);
+  }
+  dynamic flush([Function responseFactory = null]) {
+    return impl.flush(responseFactory);
+  }
+  dynamic seek(int position,[Function responseFactory = null]) {
+    return impl.seek(position,responseFactory);
   }
 }
 

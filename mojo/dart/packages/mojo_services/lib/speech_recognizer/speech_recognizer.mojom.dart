@@ -597,9 +597,9 @@ abstract class SpeechRecognizerListener {
   void onSoundLevelChanged(double rmsDb);
 }
 
-
-class _SpeechRecognizerListenerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _SpeechRecognizerListenerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _SpeechRecognizerListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -613,7 +613,6 @@ class _SpeechRecognizerListenerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => SpeechRecognizerListener.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -630,9 +629,9 @@ class _SpeechRecognizerListenerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class SpeechRecognizerListenerProxy extends bindings.Proxy
-                              implements SpeechRecognizerListener {
+class SpeechRecognizerListenerProxy
+    extends bindings.Proxy
+    implements SpeechRecognizerListener {
   SpeechRecognizerListenerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SpeechRecognizerListenerProxyControl.fromEndpoint(endpoint));
@@ -690,29 +689,24 @@ class SpeechRecognizerListenerProxy extends bindings.Proxy
   }
 }
 
-
-class SpeechRecognizerListenerStub extends bindings.Stub {
+class _SpeechRecognizerListenerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<SpeechRecognizerListener> {
   SpeechRecognizerListener _impl;
 
-  SpeechRecognizerListenerStub.fromEndpoint(
+  _SpeechRecognizerListenerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [SpeechRecognizerListener impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SpeechRecognizerListenerStub.fromHandle(
+  _SpeechRecognizerListenerStubControl.fromHandle(
       core.MojoHandle handle, [SpeechRecognizerListener impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SpeechRecognizerListenerStub.unbound([this._impl]) : super.unbound();
-
-  static SpeechRecognizerListenerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SpeechRecognizerListenerStub"));
-    return new SpeechRecognizerListenerStub.fromEndpoint(endpoint);
-  }
+  _SpeechRecognizerListenerStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -767,9 +761,10 @@ class SpeechRecognizerListenerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "SpeechRecognizerListenerStub($superString)";
+    return "_SpeechRecognizerListenerStubControl($superString)";
   }
 
   int get version => 0;
@@ -780,6 +775,41 @@ class SpeechRecognizerListenerStub extends bindings.Stub {
       _cachedServiceDescription = new _SpeechRecognizerListenerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class SpeechRecognizerListenerStub
+    extends bindings.Stub<SpeechRecognizerListener>
+    implements SpeechRecognizerListener {
+  SpeechRecognizerListenerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [SpeechRecognizerListener impl])
+      : super(new _SpeechRecognizerListenerStubControl.fromEndpoint(endpoint, impl));
+
+  SpeechRecognizerListenerStub.fromHandle(
+      core.MojoHandle handle, [SpeechRecognizerListener impl])
+      : super(new _SpeechRecognizerListenerStubControl.fromHandle(handle, impl));
+
+  SpeechRecognizerListenerStub.unbound([SpeechRecognizerListener impl])
+      : super(new _SpeechRecognizerListenerStubControl.unbound(impl));
+
+  static SpeechRecognizerListenerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SpeechRecognizerListenerStub"));
+    return new SpeechRecognizerListenerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _SpeechRecognizerListenerStubControl.serviceDescription;
+
+
+  void onRecognizerError(Error errorCode) {
+    return impl.onRecognizerError(errorCode);
+  }
+  void onResults(List<UtteranceCandidate> results, bool complete) {
+    return impl.onResults(results, complete);
+  }
+  void onSoundLevelChanged(double rmsDb) {
+    return impl.onSoundLevelChanged(rmsDb);
   }
 }
 
@@ -803,9 +833,9 @@ abstract class SpeechRecognizerService {
   void stopListening();
 }
 
-
-class _SpeechRecognizerServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _SpeechRecognizerServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _SpeechRecognizerServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -819,7 +849,6 @@ class _SpeechRecognizerServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => SpeechRecognizerService.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -836,9 +865,9 @@ class _SpeechRecognizerServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class SpeechRecognizerServiceProxy extends bindings.Proxy
-                              implements SpeechRecognizerService {
+class SpeechRecognizerServiceProxy
+    extends bindings.Proxy
+    implements SpeechRecognizerService {
   SpeechRecognizerServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SpeechRecognizerServiceProxyControl.fromEndpoint(endpoint));
@@ -884,29 +913,24 @@ class SpeechRecognizerServiceProxy extends bindings.Proxy
   }
 }
 
-
-class SpeechRecognizerServiceStub extends bindings.Stub {
+class _SpeechRecognizerServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<SpeechRecognizerService> {
   SpeechRecognizerService _impl;
 
-  SpeechRecognizerServiceStub.fromEndpoint(
+  _SpeechRecognizerServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [SpeechRecognizerService impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SpeechRecognizerServiceStub.fromHandle(
+  _SpeechRecognizerServiceStubControl.fromHandle(
       core.MojoHandle handle, [SpeechRecognizerService impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SpeechRecognizerServiceStub.unbound([this._impl]) : super.unbound();
-
-  static SpeechRecognizerServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SpeechRecognizerServiceStub"));
-    return new SpeechRecognizerServiceStub.fromEndpoint(endpoint);
-  }
+  _SpeechRecognizerServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -954,9 +978,10 @@ class SpeechRecognizerServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "SpeechRecognizerServiceStub($superString)";
+    return "_SpeechRecognizerServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -967,6 +992,38 @@ class SpeechRecognizerServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _SpeechRecognizerServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class SpeechRecognizerServiceStub
+    extends bindings.Stub<SpeechRecognizerService>
+    implements SpeechRecognizerService {
+  SpeechRecognizerServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [SpeechRecognizerService impl])
+      : super(new _SpeechRecognizerServiceStubControl.fromEndpoint(endpoint, impl));
+
+  SpeechRecognizerServiceStub.fromHandle(
+      core.MojoHandle handle, [SpeechRecognizerService impl])
+      : super(new _SpeechRecognizerServiceStubControl.fromHandle(handle, impl));
+
+  SpeechRecognizerServiceStub.unbound([SpeechRecognizerService impl])
+      : super(new _SpeechRecognizerServiceStubControl.unbound(impl));
+
+  static SpeechRecognizerServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SpeechRecognizerServiceStub"));
+    return new SpeechRecognizerServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _SpeechRecognizerServiceStubControl.serviceDescription;
+
+
+  void listen(Object listener) {
+    return impl.listen(listener);
+  }
+  void stopListening() {
+    return impl.stopListening();
   }
 }
 

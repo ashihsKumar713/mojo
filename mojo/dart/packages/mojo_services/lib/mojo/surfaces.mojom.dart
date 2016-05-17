@@ -1261,9 +1261,9 @@ abstract class ResourceReturner {
   void returnResources(List<ReturnedResource> resources);
 }
 
-
-class _ResourceReturnerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ResourceReturnerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ResourceReturnerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1277,7 +1277,6 @@ class _ResourceReturnerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ResourceReturner.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -1294,9 +1293,9 @@ class _ResourceReturnerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ResourceReturnerProxy extends bindings.Proxy
-                              implements ResourceReturner {
+class ResourceReturnerProxy
+    extends bindings.Proxy
+    implements ResourceReturner {
   ResourceReturnerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ResourceReturnerProxyControl.fromEndpoint(endpoint));
@@ -1333,29 +1332,24 @@ class ResourceReturnerProxy extends bindings.Proxy
   }
 }
 
-
-class ResourceReturnerStub extends bindings.Stub {
+class _ResourceReturnerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ResourceReturner> {
   ResourceReturner _impl;
 
-  ResourceReturnerStub.fromEndpoint(
+  _ResourceReturnerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ResourceReturner impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ResourceReturnerStub.fromHandle(
+  _ResourceReturnerStubControl.fromHandle(
       core.MojoHandle handle, [ResourceReturner impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ResourceReturnerStub.unbound([this._impl]) : super.unbound();
-
-  static ResourceReturnerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ResourceReturnerStub"));
-    return new ResourceReturnerStub.fromEndpoint(endpoint);
-  }
+  _ResourceReturnerStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -1400,9 +1394,10 @@ class ResourceReturnerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ResourceReturnerStub($superString)";
+    return "_ResourceReturnerStubControl($superString)";
   }
 
   int get version => 0;
@@ -1413,6 +1408,35 @@ class ResourceReturnerStub extends bindings.Stub {
       _cachedServiceDescription = new _ResourceReturnerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ResourceReturnerStub
+    extends bindings.Stub<ResourceReturner>
+    implements ResourceReturner {
+  ResourceReturnerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ResourceReturner impl])
+      : super(new _ResourceReturnerStubControl.fromEndpoint(endpoint, impl));
+
+  ResourceReturnerStub.fromHandle(
+      core.MojoHandle handle, [ResourceReturner impl])
+      : super(new _ResourceReturnerStubControl.fromHandle(handle, impl));
+
+  ResourceReturnerStub.unbound([ResourceReturner impl])
+      : super(new _ResourceReturnerStubControl.unbound(impl));
+
+  static ResourceReturnerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ResourceReturnerStub"));
+    return new ResourceReturnerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ResourceReturnerStubControl.serviceDescription;
+
+
+  void returnResources(List<ReturnedResource> resources) {
+    return impl.returnResources(resources);
   }
 }
 
@@ -1442,9 +1466,9 @@ abstract class Surface {
   void destroySurface(int idLocal);
 }
 
-
-class _SurfaceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _SurfaceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _SurfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1458,7 +1482,6 @@ class _SurfaceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Surface.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _surfaceMethodGetIdNamespaceName:
@@ -1515,9 +1538,9 @@ class _SurfaceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class SurfaceProxy extends bindings.Proxy
-                              implements Surface {
+class SurfaceProxy
+    extends bindings.Proxy
+    implements Surface {
   SurfaceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SurfaceProxyControl.fromEndpoint(endpoint));
@@ -1592,29 +1615,24 @@ class SurfaceProxy extends bindings.Proxy
   }
 }
 
-
-class SurfaceStub extends bindings.Stub {
+class _SurfaceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Surface> {
   Surface _impl;
 
-  SurfaceStub.fromEndpoint(
+  _SurfaceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Surface impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SurfaceStub.fromHandle(
+  _SurfaceStubControl.fromHandle(
       core.MojoHandle handle, [Surface impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SurfaceStub.unbound([this._impl]) : super.unbound();
-
-  static SurfaceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SurfaceStub"));
-    return new SurfaceStub.fromEndpoint(endpoint);
-  }
+  _SurfaceStubControl.unbound([this._impl]) : super.unbound();
 
 
   SurfaceGetIdNamespaceResponseParams _surfaceGetIdNamespaceResponseParamsFactory(int idNamespace) {
@@ -1720,9 +1738,10 @@ class SurfaceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "SurfaceStub($superString)";
+    return "_SurfaceStubControl($superString)";
   }
 
   int get version => 0;
@@ -1733,6 +1752,47 @@ class SurfaceStub extends bindings.Stub {
       _cachedServiceDescription = new _SurfaceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class SurfaceStub
+    extends bindings.Stub<Surface>
+    implements Surface {
+  SurfaceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Surface impl])
+      : super(new _SurfaceStubControl.fromEndpoint(endpoint, impl));
+
+  SurfaceStub.fromHandle(
+      core.MojoHandle handle, [Surface impl])
+      : super(new _SurfaceStubControl.fromHandle(handle, impl));
+
+  SurfaceStub.unbound([Surface impl])
+      : super(new _SurfaceStubControl.unbound(impl));
+
+  static SurfaceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SurfaceStub"));
+    return new SurfaceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _SurfaceStubControl.serviceDescription;
+
+
+  dynamic getIdNamespace([Function responseFactory = null]) {
+    return impl.getIdNamespace(responseFactory);
+  }
+  void setResourceReturner(Object returner) {
+    return impl.setResourceReturner(returner);
+  }
+  void createSurface(int idLocal) {
+    return impl.createSurface(idLocal);
+  }
+  dynamic submitFrame(int idLocal,Frame frame,[Function responseFactory = null]) {
+    return impl.submitFrame(idLocal,frame,responseFactory);
+  }
+  void destroySurface(int idLocal) {
+    return impl.destroySurface(idLocal);
   }
 }
 

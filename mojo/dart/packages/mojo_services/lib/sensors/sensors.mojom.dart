@@ -533,9 +533,9 @@ abstract class SensorListener {
   void onSensorChanged(SensorData data);
 }
 
-
-class _SensorListenerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _SensorListenerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _SensorListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -549,7 +549,6 @@ class _SensorListenerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => SensorListener.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -566,9 +565,9 @@ class _SensorListenerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class SensorListenerProxy extends bindings.Proxy
-                              implements SensorListener {
+class SensorListenerProxy
+    extends bindings.Proxy
+    implements SensorListener {
   SensorListenerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SensorListenerProxyControl.fromEndpoint(endpoint));
@@ -615,29 +614,24 @@ class SensorListenerProxy extends bindings.Proxy
   }
 }
 
-
-class SensorListenerStub extends bindings.Stub {
+class _SensorListenerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<SensorListener> {
   SensorListener _impl;
 
-  SensorListenerStub.fromEndpoint(
+  _SensorListenerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [SensorListener impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SensorListenerStub.fromHandle(
+  _SensorListenerStubControl.fromHandle(
       core.MojoHandle handle, [SensorListener impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SensorListenerStub.unbound([this._impl]) : super.unbound();
-
-  static SensorListenerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SensorListenerStub"));
-    return new SensorListenerStub.fromEndpoint(endpoint);
-  }
+  _SensorListenerStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -687,9 +681,10 @@ class SensorListenerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "SensorListenerStub($superString)";
+    return "_SensorListenerStubControl($superString)";
   }
 
   int get version => 0;
@@ -700,6 +695,38 @@ class SensorListenerStub extends bindings.Stub {
       _cachedServiceDescription = new _SensorListenerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class SensorListenerStub
+    extends bindings.Stub<SensorListener>
+    implements SensorListener {
+  SensorListenerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [SensorListener impl])
+      : super(new _SensorListenerStubControl.fromEndpoint(endpoint, impl));
+
+  SensorListenerStub.fromHandle(
+      core.MojoHandle handle, [SensorListener impl])
+      : super(new _SensorListenerStubControl.fromHandle(handle, impl));
+
+  SensorListenerStub.unbound([SensorListener impl])
+      : super(new _SensorListenerStubControl.unbound(impl));
+
+  static SensorListenerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SensorListenerStub"));
+    return new SensorListenerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _SensorListenerStubControl.serviceDescription;
+
+
+  void onAccuracyChanged(int accuracy) {
+    return impl.onAccuracyChanged(accuracy);
+  }
+  void onSensorChanged(SensorData data) {
+    return impl.onSensorChanged(data);
   }
 }
 
@@ -721,9 +748,9 @@ abstract class SensorService {
   void addListener(SensorType type, Object listener);
 }
 
-
-class _SensorServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _SensorServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _SensorServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -737,7 +764,6 @@ class _SensorServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => SensorService.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -754,9 +780,9 @@ class _SensorServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class SensorServiceProxy extends bindings.Proxy
-                              implements SensorService {
+class SensorServiceProxy
+    extends bindings.Proxy
+    implements SensorService {
   SensorServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SensorServiceProxyControl.fromEndpoint(endpoint));
@@ -794,29 +820,24 @@ class SensorServiceProxy extends bindings.Proxy
   }
 }
 
-
-class SensorServiceStub extends bindings.Stub {
+class _SensorServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<SensorService> {
   SensorService _impl;
 
-  SensorServiceStub.fromEndpoint(
+  _SensorServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [SensorService impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SensorServiceStub.fromHandle(
+  _SensorServiceStubControl.fromHandle(
       core.MojoHandle handle, [SensorService impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SensorServiceStub.unbound([this._impl]) : super.unbound();
-
-  static SensorServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SensorServiceStub"));
-    return new SensorServiceStub.fromEndpoint(endpoint);
-  }
+  _SensorServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -861,9 +882,10 @@ class SensorServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "SensorServiceStub($superString)";
+    return "_SensorServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -874,6 +896,35 @@ class SensorServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _SensorServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class SensorServiceStub
+    extends bindings.Stub<SensorService>
+    implements SensorService {
+  SensorServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [SensorService impl])
+      : super(new _SensorServiceStubControl.fromEndpoint(endpoint, impl));
+
+  SensorServiceStub.fromHandle(
+      core.MojoHandle handle, [SensorService impl])
+      : super(new _SensorServiceStubControl.fromHandle(handle, impl));
+
+  SensorServiceStub.unbound([SensorService impl])
+      : super(new _SensorServiceStubControl.unbound(impl));
+
+  static SensorServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SensorServiceStub"));
+    return new SensorServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _SensorServiceStubControl.serviceDescription;
+
+
+  void addListener(SensorType type, Object listener) {
+    return impl.addListener(type, listener);
   }
 }
 

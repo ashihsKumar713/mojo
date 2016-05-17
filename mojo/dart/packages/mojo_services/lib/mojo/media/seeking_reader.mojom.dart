@@ -353,9 +353,9 @@ abstract class SeekingReader {
   static const int kUnknownSize = 18446744073709551615;
 }
 
-
-class _SeekingReaderProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _SeekingReaderProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _SeekingReaderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -369,7 +369,6 @@ class _SeekingReaderProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => SeekingReader.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _seekingReaderMethodDescribeName:
@@ -426,9 +425,9 @@ class _SeekingReaderProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class SeekingReaderProxy extends bindings.Proxy
-                              implements SeekingReader {
+class SeekingReaderProxy
+    extends bindings.Proxy
+    implements SeekingReader {
   SeekingReaderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SeekingReaderProxyControl.fromEndpoint(endpoint));
@@ -472,29 +471,24 @@ class SeekingReaderProxy extends bindings.Proxy
   }
 }
 
-
-class SeekingReaderStub extends bindings.Stub {
+class _SeekingReaderStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<SeekingReader> {
   SeekingReader _impl;
 
-  SeekingReaderStub.fromEndpoint(
+  _SeekingReaderStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [SeekingReader impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SeekingReaderStub.fromHandle(
+  _SeekingReaderStubControl.fromHandle(
       core.MojoHandle handle, [SeekingReader impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SeekingReaderStub.unbound([this._impl]) : super.unbound();
-
-  static SeekingReaderStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SeekingReaderStub"));
-    return new SeekingReaderStub.fromEndpoint(endpoint);
-  }
+  _SeekingReaderStubControl.unbound([this._impl]) : super.unbound();
 
 
   SeekingReaderDescribeResponseParams _seekingReaderDescribeResponseParamsFactory(media_common_mojom.MediaResult result, int size, bool canSeek) {
@@ -589,9 +583,10 @@ class SeekingReaderStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "SeekingReaderStub($superString)";
+    return "_SeekingReaderStubControl($superString)";
   }
 
   int get version => 0;
@@ -602,6 +597,38 @@ class SeekingReaderStub extends bindings.Stub {
       _cachedServiceDescription = new _SeekingReaderServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class SeekingReaderStub
+    extends bindings.Stub<SeekingReader>
+    implements SeekingReader {
+  SeekingReaderStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [SeekingReader impl])
+      : super(new _SeekingReaderStubControl.fromEndpoint(endpoint, impl));
+
+  SeekingReaderStub.fromHandle(
+      core.MojoHandle handle, [SeekingReader impl])
+      : super(new _SeekingReaderStubControl.fromHandle(handle, impl));
+
+  SeekingReaderStub.unbound([SeekingReader impl])
+      : super(new _SeekingReaderStubControl.unbound(impl));
+
+  static SeekingReaderStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SeekingReaderStub"));
+    return new SeekingReaderStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _SeekingReaderStubControl.serviceDescription;
+
+
+  dynamic describe([Function responseFactory = null]) {
+    return impl.describe(responseFactory);
+  }
+  dynamic readAt(int position,[Function responseFactory = null]) {
+    return impl.readAt(position,responseFactory);
   }
 }
 

@@ -526,9 +526,9 @@ abstract class UrlLoader {
   dynamic queryStatus([Function responseFactory = null]);
 }
 
-
-class _UrlLoaderProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _UrlLoaderProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _UrlLoaderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -542,7 +542,6 @@ class _UrlLoaderProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => UrlLoader.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _urlLoaderMethodStartName:
@@ -619,9 +618,9 @@ class _UrlLoaderProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class UrlLoaderProxy extends bindings.Proxy
-                              implements UrlLoader {
+class UrlLoaderProxy
+    extends bindings.Proxy
+    implements UrlLoader {
   UrlLoaderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _UrlLoaderProxyControl.fromEndpoint(endpoint));
@@ -673,29 +672,24 @@ class UrlLoaderProxy extends bindings.Proxy
   }
 }
 
-
-class UrlLoaderStub extends bindings.Stub {
+class _UrlLoaderStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<UrlLoader> {
   UrlLoader _impl;
 
-  UrlLoaderStub.fromEndpoint(
+  _UrlLoaderStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [UrlLoader impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  UrlLoaderStub.fromHandle(
+  _UrlLoaderStubControl.fromHandle(
       core.MojoHandle handle, [UrlLoader impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  UrlLoaderStub.unbound([this._impl]) : super.unbound();
-
-  static UrlLoaderStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For UrlLoaderStub"));
-    return new UrlLoaderStub.fromEndpoint(endpoint);
-  }
+  _UrlLoaderStubControl.unbound([this._impl]) : super.unbound();
 
 
   UrlLoaderStartResponseParams _urlLoaderStartResponseParamsFactory(url_response_mojom.UrlResponse response) {
@@ -812,9 +806,10 @@ class UrlLoaderStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "UrlLoaderStub($superString)";
+    return "_UrlLoaderStubControl($superString)";
   }
 
   int get version => 0;
@@ -825,6 +820,41 @@ class UrlLoaderStub extends bindings.Stub {
       _cachedServiceDescription = new _UrlLoaderServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class UrlLoaderStub
+    extends bindings.Stub<UrlLoader>
+    implements UrlLoader {
+  UrlLoaderStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [UrlLoader impl])
+      : super(new _UrlLoaderStubControl.fromEndpoint(endpoint, impl));
+
+  UrlLoaderStub.fromHandle(
+      core.MojoHandle handle, [UrlLoader impl])
+      : super(new _UrlLoaderStubControl.fromHandle(handle, impl));
+
+  UrlLoaderStub.unbound([UrlLoader impl])
+      : super(new _UrlLoaderStubControl.unbound(impl));
+
+  static UrlLoaderStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For UrlLoaderStub"));
+    return new UrlLoaderStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _UrlLoaderStubControl.serviceDescription;
+
+
+  dynamic start(url_request_mojom.UrlRequest request,[Function responseFactory = null]) {
+    return impl.start(request,responseFactory);
+  }
+  dynamic followRedirect([Function responseFactory = null]) {
+    return impl.followRedirect(responseFactory);
+  }
+  dynamic queryStatus([Function responseFactory = null]) {
+    return impl.queryStatus(responseFactory);
   }
 }
 

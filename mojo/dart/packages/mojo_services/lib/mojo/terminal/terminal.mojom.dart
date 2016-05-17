@@ -722,9 +722,9 @@ abstract class Terminal {
   dynamic setSize(int rows,int columns,bool reset,[Function responseFactory = null]);
 }
 
-
-class _TerminalProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _TerminalProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _TerminalProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -738,7 +738,6 @@ class _TerminalProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Terminal.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _terminalMethodConnectName:
@@ -835,9 +834,9 @@ class _TerminalProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class TerminalProxy extends bindings.Proxy
-                              implements Terminal {
+class TerminalProxy
+    extends bindings.Proxy
+    implements Terminal {
   TerminalProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TerminalProxyControl.fromEndpoint(endpoint));
@@ -903,29 +902,24 @@ class TerminalProxy extends bindings.Proxy
   }
 }
 
-
-class TerminalStub extends bindings.Stub {
+class _TerminalStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Terminal> {
   Terminal _impl;
 
-  TerminalStub.fromEndpoint(
+  _TerminalStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Terminal impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TerminalStub.fromHandle(
+  _TerminalStubControl.fromHandle(
       core.MojoHandle handle, [Terminal impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TerminalStub.unbound([this._impl]) : super.unbound();
-
-  static TerminalStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TerminalStub"));
-    return new TerminalStub.fromEndpoint(endpoint);
-  }
+  _TerminalStubControl.unbound([this._impl]) : super.unbound();
 
 
   TerminalConnectResponseParams _terminalConnectResponseParamsFactory(types_mojom.Error error) {
@@ -1075,9 +1069,10 @@ class TerminalStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "TerminalStub($superString)";
+    return "_TerminalStubControl($superString)";
   }
 
   int get version => 0;
@@ -1088,6 +1083,44 @@ class TerminalStub extends bindings.Stub {
       _cachedServiceDescription = new _TerminalServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class TerminalStub
+    extends bindings.Stub<Terminal>
+    implements Terminal {
+  TerminalStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Terminal impl])
+      : super(new _TerminalStubControl.fromEndpoint(endpoint, impl));
+
+  TerminalStub.fromHandle(
+      core.MojoHandle handle, [Terminal impl])
+      : super(new _TerminalStubControl.fromHandle(handle, impl));
+
+  TerminalStub.unbound([Terminal impl])
+      : super(new _TerminalStubControl.unbound(impl));
+
+  static TerminalStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TerminalStub"));
+    return new TerminalStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _TerminalStubControl.serviceDescription;
+
+
+  dynamic connect(Object terminalFile,bool force,[Function responseFactory = null]) {
+    return impl.connect(terminalFile,force,responseFactory);
+  }
+  dynamic connectToClient(Object terminalClient,bool force,[Function responseFactory = null]) {
+    return impl.connectToClient(terminalClient,force,responseFactory);
+  }
+  dynamic getSize([Function responseFactory = null]) {
+    return impl.getSize(responseFactory);
+  }
+  dynamic setSize(int rows,int columns,bool reset,[Function responseFactory = null]) {
+    return impl.setSize(rows,columns,reset,responseFactory);
   }
 }
 

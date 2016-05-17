@@ -1190,9 +1190,9 @@ abstract class Directory {
   dynamic delete(String path,int deleteFlags,[Function responseFactory = null]);
 }
 
-
-class _DirectoryProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _DirectoryProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _DirectoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1206,7 +1206,6 @@ class _DirectoryProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Directory.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _directoryMethodReadName:
@@ -1363,9 +1362,9 @@ class _DirectoryProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class DirectoryProxy extends bindings.Proxy
-                              implements Directory {
+class DirectoryProxy
+    extends bindings.Proxy
+    implements Directory {
   DirectoryProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _DirectoryProxyControl.fromEndpoint(endpoint));
@@ -1460,29 +1459,24 @@ class DirectoryProxy extends bindings.Proxy
   }
 }
 
-
-class DirectoryStub extends bindings.Stub {
+class _DirectoryStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Directory> {
   Directory _impl;
 
-  DirectoryStub.fromEndpoint(
+  _DirectoryStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Directory impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  DirectoryStub.fromHandle(
+  _DirectoryStubControl.fromHandle(
       core.MojoHandle handle, [Directory impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  DirectoryStub.unbound([this._impl]) : super.unbound();
-
-  static DirectoryStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For DirectoryStub"));
-    return new DirectoryStub.fromEndpoint(endpoint);
-  }
+  _DirectoryStubControl.unbound([this._impl]) : super.unbound();
 
 
   DirectoryReadResponseParams _directoryReadResponseParamsFactory(types_mojom.Error error, List<types_mojom.DirectoryEntry> directoryContents) {
@@ -1709,9 +1703,10 @@ class DirectoryStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "DirectoryStub($superString)";
+    return "_DirectoryStubControl($superString)";
   }
 
   int get version => 0;
@@ -1722,6 +1717,53 @@ class DirectoryStub extends bindings.Stub {
       _cachedServiceDescription = new _DirectoryServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class DirectoryStub
+    extends bindings.Stub<Directory>
+    implements Directory {
+  DirectoryStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Directory impl])
+      : super(new _DirectoryStubControl.fromEndpoint(endpoint, impl));
+
+  DirectoryStub.fromHandle(
+      core.MojoHandle handle, [Directory impl])
+      : super(new _DirectoryStubControl.fromHandle(handle, impl));
+
+  DirectoryStub.unbound([Directory impl])
+      : super(new _DirectoryStubControl.unbound(impl));
+
+  static DirectoryStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For DirectoryStub"));
+    return new DirectoryStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _DirectoryStubControl.serviceDescription;
+
+
+  dynamic read([Function responseFactory = null]) {
+    return impl.read(responseFactory);
+  }
+  dynamic stat([Function responseFactory = null]) {
+    return impl.stat(responseFactory);
+  }
+  dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]) {
+    return impl.touch(atime,mtime,responseFactory);
+  }
+  dynamic openFile(String path,Object file,int openFlags,[Function responseFactory = null]) {
+    return impl.openFile(path,file,openFlags,responseFactory);
+  }
+  dynamic openDirectory(String path,Object directory,int openFlags,[Function responseFactory = null]) {
+    return impl.openDirectory(path,directory,openFlags,responseFactory);
+  }
+  dynamic rename(String path,String newPath,[Function responseFactory = null]) {
+    return impl.rename(path,newPath,responseFactory);
+  }
+  dynamic delete(String path,int deleteFlags,[Function responseFactory = null]) {
+    return impl.delete(path,deleteFlags,responseFactory);
   }
 }
 

@@ -215,9 +215,9 @@ abstract class TcpServerSocket {
   dynamic accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]);
 }
 
-
-class _TcpServerSocketProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _TcpServerSocketProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _TcpServerSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -231,7 +231,6 @@ class _TcpServerSocketProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => TcpServerSocket.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _tcpServerSocketMethodAcceptName:
@@ -268,9 +267,9 @@ class _TcpServerSocketProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class TcpServerSocketProxy extends bindings.Proxy
-                              implements TcpServerSocket {
+class TcpServerSocketProxy
+    extends bindings.Proxy
+    implements TcpServerSocket {
   TcpServerSocketProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TcpServerSocketProxyControl.fromEndpoint(endpoint));
@@ -308,29 +307,24 @@ class TcpServerSocketProxy extends bindings.Proxy
   }
 }
 
-
-class TcpServerSocketStub extends bindings.Stub {
+class _TcpServerSocketStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<TcpServerSocket> {
   TcpServerSocket _impl;
 
-  TcpServerSocketStub.fromEndpoint(
+  _TcpServerSocketStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TcpServerSocket impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TcpServerSocketStub.fromHandle(
+  _TcpServerSocketStubControl.fromHandle(
       core.MojoHandle handle, [TcpServerSocket impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  TcpServerSocketStub.unbound([this._impl]) : super.unbound();
-
-  static TcpServerSocketStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For TcpServerSocketStub"));
-    return new TcpServerSocketStub.fromEndpoint(endpoint);
-  }
+  _TcpServerSocketStubControl.unbound([this._impl]) : super.unbound();
 
 
   TcpServerSocketAcceptResponseParams _tcpServerSocketAcceptResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress remoteAddress) {
@@ -398,9 +392,10 @@ class TcpServerSocketStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "TcpServerSocketStub($superString)";
+    return "_TcpServerSocketStubControl($superString)";
   }
 
   int get version => 0;
@@ -411,6 +406,35 @@ class TcpServerSocketStub extends bindings.Stub {
       _cachedServiceDescription = new _TcpServerSocketServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class TcpServerSocketStub
+    extends bindings.Stub<TcpServerSocket>
+    implements TcpServerSocket {
+  TcpServerSocketStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [TcpServerSocket impl])
+      : super(new _TcpServerSocketStubControl.fromEndpoint(endpoint, impl));
+
+  TcpServerSocketStub.fromHandle(
+      core.MojoHandle handle, [TcpServerSocket impl])
+      : super(new _TcpServerSocketStubControl.fromHandle(handle, impl));
+
+  TcpServerSocketStub.unbound([TcpServerSocket impl])
+      : super(new _TcpServerSocketStubControl.unbound(impl));
+
+  static TcpServerSocketStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For TcpServerSocketStub"));
+    return new TcpServerSocketStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _TcpServerSocketStubControl.serviceDescription;
+
+
+  dynamic accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]) {
+    return impl.accept(sendStream,receiveStream,clientSocket,responseFactory);
   }
 }
 

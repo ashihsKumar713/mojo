@@ -811,9 +811,9 @@ abstract class AuthenticationService {
   dynamic addAccount(String deviceCode,[Function responseFactory = null]);
 }
 
-
-class _AuthenticationServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _AuthenticationServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _AuthenticationServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -827,7 +827,6 @@ class _AuthenticationServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => AuthenticationService.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _authenticationServiceMethodSelectAccountName:
@@ -924,9 +923,9 @@ class _AuthenticationServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class AuthenticationServiceProxy extends bindings.Proxy
-                              implements AuthenticationService {
+class AuthenticationServiceProxy
+    extends bindings.Proxy
+    implements AuthenticationService {
   AuthenticationServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _AuthenticationServiceProxyControl.fromEndpoint(endpoint));
@@ -1000,29 +999,24 @@ class AuthenticationServiceProxy extends bindings.Proxy
   }
 }
 
-
-class AuthenticationServiceStub extends bindings.Stub {
+class _AuthenticationServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<AuthenticationService> {
   AuthenticationService _impl;
 
-  AuthenticationServiceStub.fromEndpoint(
+  _AuthenticationServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [AuthenticationService impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  AuthenticationServiceStub.fromHandle(
+  _AuthenticationServiceStubControl.fromHandle(
       core.MojoHandle handle, [AuthenticationService impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  AuthenticationServiceStub.unbound([this._impl]) : super.unbound();
-
-  static AuthenticationServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For AuthenticationServiceStub"));
-    return new AuthenticationServiceStub.fromEndpoint(endpoint);
-  }
+  _AuthenticationServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
   AuthenticationServiceSelectAccountResponseParams _authenticationServiceSelectAccountResponseParamsFactory(String username, String error) {
@@ -1181,9 +1175,10 @@ class AuthenticationServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "AuthenticationServiceStub($superString)";
+    return "_AuthenticationServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -1194,6 +1189,47 @@ class AuthenticationServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _AuthenticationServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class AuthenticationServiceStub
+    extends bindings.Stub<AuthenticationService>
+    implements AuthenticationService {
+  AuthenticationServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [AuthenticationService impl])
+      : super(new _AuthenticationServiceStubControl.fromEndpoint(endpoint, impl));
+
+  AuthenticationServiceStub.fromHandle(
+      core.MojoHandle handle, [AuthenticationService impl])
+      : super(new _AuthenticationServiceStubControl.fromHandle(handle, impl));
+
+  AuthenticationServiceStub.unbound([AuthenticationService impl])
+      : super(new _AuthenticationServiceStubControl.unbound(impl));
+
+  static AuthenticationServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For AuthenticationServiceStub"));
+    return new AuthenticationServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _AuthenticationServiceStubControl.serviceDescription;
+
+
+  dynamic selectAccount(bool returnLastSelected,[Function responseFactory = null]) {
+    return impl.selectAccount(returnLastSelected,responseFactory);
+  }
+  dynamic getOAuth2Token(String username,List<String> scopes,[Function responseFactory = null]) {
+    return impl.getOAuth2Token(username,scopes,responseFactory);
+  }
+  void clearOAuth2Token(String token) {
+    return impl.clearOAuth2Token(token);
+  }
+  dynamic getOAuth2DeviceCode(List<String> scopes,[Function responseFactory = null]) {
+    return impl.getOAuth2DeviceCode(scopes,responseFactory);
+  }
+  dynamic addAccount(String deviceCode,[Function responseFactory = null]) {
+    return impl.addAccount(deviceCode,responseFactory);
   }
 }
 

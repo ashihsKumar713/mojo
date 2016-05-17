@@ -101,9 +101,9 @@ abstract class InputDispatcher {
   void dispatchEvent(input_events_mojom.Event event);
 }
 
-
-class _InputDispatcherProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _InputDispatcherProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _InputDispatcherProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -117,7 +117,6 @@ class _InputDispatcherProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => InputDispatcher.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -134,9 +133,9 @@ class _InputDispatcherProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class InputDispatcherProxy extends bindings.Proxy
-                              implements InputDispatcher {
+class InputDispatcherProxy
+    extends bindings.Proxy
+    implements InputDispatcher {
   InputDispatcherProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _InputDispatcherProxyControl.fromEndpoint(endpoint));
@@ -173,29 +172,24 @@ class InputDispatcherProxy extends bindings.Proxy
   }
 }
 
-
-class InputDispatcherStub extends bindings.Stub {
+class _InputDispatcherStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<InputDispatcher> {
   InputDispatcher _impl;
 
-  InputDispatcherStub.fromEndpoint(
+  _InputDispatcherStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [InputDispatcher impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  InputDispatcherStub.fromHandle(
+  _InputDispatcherStubControl.fromHandle(
       core.MojoHandle handle, [InputDispatcher impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  InputDispatcherStub.unbound([this._impl]) : super.unbound();
-
-  static InputDispatcherStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For InputDispatcherStub"));
-    return new InputDispatcherStub.fromEndpoint(endpoint);
-  }
+  _InputDispatcherStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -240,9 +234,10 @@ class InputDispatcherStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "InputDispatcherStub($superString)";
+    return "_InputDispatcherStubControl($superString)";
   }
 
   int get version => 0;
@@ -253,6 +248,35 @@ class InputDispatcherStub extends bindings.Stub {
       _cachedServiceDescription = new _InputDispatcherServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class InputDispatcherStub
+    extends bindings.Stub<InputDispatcher>
+    implements InputDispatcher {
+  InputDispatcherStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [InputDispatcher impl])
+      : super(new _InputDispatcherStubControl.fromEndpoint(endpoint, impl));
+
+  InputDispatcherStub.fromHandle(
+      core.MojoHandle handle, [InputDispatcher impl])
+      : super(new _InputDispatcherStubControl.fromHandle(handle, impl));
+
+  InputDispatcherStub.unbound([InputDispatcher impl])
+      : super(new _InputDispatcherStubControl.unbound(impl));
+
+  static InputDispatcherStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For InputDispatcherStub"));
+    return new InputDispatcherStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _InputDispatcherStubControl.serviceDescription;
+
+
+  void dispatchEvent(input_events_mojom.Event event) {
+    return impl.dispatchEvent(event);
   }
 }
 

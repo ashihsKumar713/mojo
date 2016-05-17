@@ -527,9 +527,9 @@ abstract class View {
   void getContainer(Object container);
 }
 
-
-class _ViewProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ViewProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ViewProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -543,7 +543,6 @@ class _ViewProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => View.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewMethodGetTokenName:
@@ -580,9 +579,9 @@ class _ViewProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ViewProxy extends bindings.Proxy
-                              implements View {
+class ViewProxy
+    extends bindings.Proxy
+    implements View {
   ViewProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewProxyControl.fromEndpoint(endpoint));
@@ -647,29 +646,24 @@ class ViewProxy extends bindings.Proxy
   }
 }
 
-
-class ViewStub extends bindings.Stub {
+class _ViewStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<View> {
   View _impl;
 
-  ViewStub.fromEndpoint(
+  _ViewStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [View impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewStub.fromHandle(
+  _ViewStubControl.fromHandle(
       core.MojoHandle handle, [View impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewStub.unbound([this._impl]) : super.unbound();
-
-  static ViewStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewStub"));
-    return new ViewStub.fromEndpoint(endpoint);
-  }
+  _ViewStubControl.unbound([this._impl]) : super.unbound();
 
 
   ViewGetTokenResponseParams _viewGetTokenResponseParamsFactory(view_token_mojom.ViewToken token) {
@@ -749,9 +743,10 @@ class ViewStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ViewStub($superString)";
+    return "_ViewStubControl($superString)";
   }
 
   int get version => 0;
@@ -762,6 +757,44 @@ class ViewStub extends bindings.Stub {
       _cachedServiceDescription = new _ViewServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ViewStub
+    extends bindings.Stub<View>
+    implements View {
+  ViewStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [View impl])
+      : super(new _ViewStubControl.fromEndpoint(endpoint, impl));
+
+  ViewStub.fromHandle(
+      core.MojoHandle handle, [View impl])
+      : super(new _ViewStubControl.fromHandle(handle, impl));
+
+  ViewStub.unbound([View impl])
+      : super(new _ViewStubControl.unbound(impl));
+
+  static ViewStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewStub"));
+    return new ViewStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ViewStubControl.serviceDescription;
+
+
+  dynamic getToken([Function responseFactory = null]) {
+    return impl.getToken(responseFactory);
+  }
+  void getServiceProvider(Object serviceProvider) {
+    return impl.getServiceProvider(serviceProvider);
+  }
+  void createScene(Object scene) {
+    return impl.createScene(scene);
+  }
+  void getContainer(Object container) {
+    return impl.getContainer(container);
   }
 }
 
@@ -783,9 +816,9 @@ abstract class ViewListener {
   dynamic onPropertiesChanged(int sceneVersion,view_properties_mojom.ViewProperties properties,[Function responseFactory = null]);
 }
 
-
-class _ViewListenerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ViewListenerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ViewListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -799,7 +832,6 @@ class _ViewListenerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ViewListener.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewListenerMethodOnPropertiesChangedName:
@@ -836,9 +868,9 @@ class _ViewListenerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ViewListenerProxy extends bindings.Proxy
-                              implements ViewListener {
+class ViewListenerProxy
+    extends bindings.Proxy
+    implements ViewListener {
   ViewListenerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewListenerProxyControl.fromEndpoint(endpoint));
@@ -875,29 +907,24 @@ class ViewListenerProxy extends bindings.Proxy
   }
 }
 
-
-class ViewListenerStub extends bindings.Stub {
+class _ViewListenerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ViewListener> {
   ViewListener _impl;
 
-  ViewListenerStub.fromEndpoint(
+  _ViewListenerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewListener impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewListenerStub.fromHandle(
+  _ViewListenerStubControl.fromHandle(
       core.MojoHandle handle, [ViewListener impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewListenerStub.unbound([this._impl]) : super.unbound();
-
-  static ViewListenerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewListenerStub"));
-    return new ViewListenerStub.fromEndpoint(endpoint);
-  }
+  _ViewListenerStubControl.unbound([this._impl]) : super.unbound();
 
 
   ViewListenerOnPropertiesChangedResponseParams _viewListenerOnPropertiesChangedResponseParamsFactory() {
@@ -963,9 +990,10 @@ class ViewListenerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ViewListenerStub($superString)";
+    return "_ViewListenerStubControl($superString)";
   }
 
   int get version => 0;
@@ -976,6 +1004,35 @@ class ViewListenerStub extends bindings.Stub {
       _cachedServiceDescription = new _ViewListenerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ViewListenerStub
+    extends bindings.Stub<ViewListener>
+    implements ViewListener {
+  ViewListenerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ViewListener impl])
+      : super(new _ViewListenerStubControl.fromEndpoint(endpoint, impl));
+
+  ViewListenerStub.fromHandle(
+      core.MojoHandle handle, [ViewListener impl])
+      : super(new _ViewListenerStubControl.fromHandle(handle, impl));
+
+  ViewListenerStub.unbound([ViewListener impl])
+      : super(new _ViewListenerStubControl.unbound(impl));
+
+  static ViewListenerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewListenerStub"));
+    return new ViewListenerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ViewListenerStubControl.serviceDescription;
+
+
+  dynamic onPropertiesChanged(int sceneVersion,view_properties_mojom.ViewProperties properties,[Function responseFactory = null]) {
+    return impl.onPropertiesChanged(sceneVersion,properties,responseFactory);
   }
 }
 

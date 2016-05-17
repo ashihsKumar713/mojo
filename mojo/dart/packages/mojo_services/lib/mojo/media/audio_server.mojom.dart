@@ -99,9 +99,9 @@ abstract class AudioServer {
   void createTrack(Object track);
 }
 
-
-class _AudioServerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _AudioServerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _AudioServerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -115,7 +115,6 @@ class _AudioServerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => AudioServer.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -132,9 +131,9 @@ class _AudioServerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class AudioServerProxy extends bindings.Proxy
-                              implements AudioServer {
+class AudioServerProxy
+    extends bindings.Proxy
+    implements AudioServer {
   AudioServerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _AudioServerProxyControl.fromEndpoint(endpoint));
@@ -171,29 +170,24 @@ class AudioServerProxy extends bindings.Proxy
   }
 }
 
-
-class AudioServerStub extends bindings.Stub {
+class _AudioServerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<AudioServer> {
   AudioServer _impl;
 
-  AudioServerStub.fromEndpoint(
+  _AudioServerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [AudioServer impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  AudioServerStub.fromHandle(
+  _AudioServerStubControl.fromHandle(
       core.MojoHandle handle, [AudioServer impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  AudioServerStub.unbound([this._impl]) : super.unbound();
-
-  static AudioServerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For AudioServerStub"));
-    return new AudioServerStub.fromEndpoint(endpoint);
-  }
+  _AudioServerStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -238,9 +232,10 @@ class AudioServerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "AudioServerStub($superString)";
+    return "_AudioServerStubControl($superString)";
   }
 
   int get version => 0;
@@ -251,6 +246,35 @@ class AudioServerStub extends bindings.Stub {
       _cachedServiceDescription = new _AudioServerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class AudioServerStub
+    extends bindings.Stub<AudioServer>
+    implements AudioServer {
+  AudioServerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [AudioServer impl])
+      : super(new _AudioServerStubControl.fromEndpoint(endpoint, impl));
+
+  AudioServerStub.fromHandle(
+      core.MojoHandle handle, [AudioServer impl])
+      : super(new _AudioServerStubControl.fromHandle(handle, impl));
+
+  AudioServerStub.unbound([AudioServer impl])
+      : super(new _AudioServerStubControl.unbound(impl));
+
+  static AudioServerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For AudioServerStub"));
+    return new AudioServerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _AudioServerStubControl.serviceDescription;
+
+
+  void createTrack(Object track) {
+    return impl.createTrack(track);
   }
 }
 

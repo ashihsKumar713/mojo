@@ -461,9 +461,9 @@ abstract class HttpServer {
   dynamic getPort([Function responseFactory = null]);
 }
 
-
-class _HttpServerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _HttpServerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _HttpServerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -477,7 +477,6 @@ class _HttpServerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => HttpServer.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _httpServerMethodSetHandlerName:
@@ -534,9 +533,9 @@ class _HttpServerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class HttpServerProxy extends bindings.Proxy
-                              implements HttpServer {
+class HttpServerProxy
+    extends bindings.Proxy
+    implements HttpServer {
   HttpServerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _HttpServerProxyControl.fromEndpoint(endpoint));
@@ -581,29 +580,24 @@ class HttpServerProxy extends bindings.Proxy
   }
 }
 
-
-class HttpServerStub extends bindings.Stub {
+class _HttpServerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<HttpServer> {
   HttpServer _impl;
 
-  HttpServerStub.fromEndpoint(
+  _HttpServerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [HttpServer impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  HttpServerStub.fromHandle(
+  _HttpServerStubControl.fromHandle(
       core.MojoHandle handle, [HttpServer impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  HttpServerStub.unbound([this._impl]) : super.unbound();
-
-  static HttpServerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HttpServerStub"));
-    return new HttpServerStub.fromEndpoint(endpoint);
-  }
+  _HttpServerStubControl.unbound([this._impl]) : super.unbound();
 
 
   HttpServerSetHandlerResponseParams _httpServerSetHandlerResponseParamsFactory(bool success) {
@@ -695,9 +689,10 @@ class HttpServerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "HttpServerStub($superString)";
+    return "_HttpServerStubControl($superString)";
   }
 
   int get version => 0;
@@ -708,6 +703,38 @@ class HttpServerStub extends bindings.Stub {
       _cachedServiceDescription = new _HttpServerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class HttpServerStub
+    extends bindings.Stub<HttpServer>
+    implements HttpServer {
+  HttpServerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [HttpServer impl])
+      : super(new _HttpServerStubControl.fromEndpoint(endpoint, impl));
+
+  HttpServerStub.fromHandle(
+      core.MojoHandle handle, [HttpServer impl])
+      : super(new _HttpServerStubControl.fromHandle(handle, impl));
+
+  HttpServerStub.unbound([HttpServer impl])
+      : super(new _HttpServerStubControl.unbound(impl));
+
+  static HttpServerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HttpServerStub"));
+    return new HttpServerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _HttpServerStubControl.serviceDescription;
+
+
+  dynamic setHandler(String pattern,Object handler,[Function responseFactory = null]) {
+    return impl.setHandler(pattern,handler,responseFactory);
+  }
+  dynamic getPort([Function responseFactory = null]) {
+    return impl.getPort(responseFactory);
   }
 }
 
@@ -729,9 +756,9 @@ abstract class HttpHandler {
   dynamic handleRequest(http_request_mojom.HttpRequest request,[Function responseFactory = null]);
 }
 
-
-class _HttpHandlerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _HttpHandlerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _HttpHandlerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -745,7 +772,6 @@ class _HttpHandlerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => HttpHandler.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _httpHandlerMethodHandleRequestName:
@@ -782,9 +808,9 @@ class _HttpHandlerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class HttpHandlerProxy extends bindings.Proxy
-                              implements HttpHandler {
+class HttpHandlerProxy
+    extends bindings.Proxy
+    implements HttpHandler {
   HttpHandlerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _HttpHandlerProxyControl.fromEndpoint(endpoint));
@@ -820,29 +846,24 @@ class HttpHandlerProxy extends bindings.Proxy
   }
 }
 
-
-class HttpHandlerStub extends bindings.Stub {
+class _HttpHandlerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<HttpHandler> {
   HttpHandler _impl;
 
-  HttpHandlerStub.fromEndpoint(
+  _HttpHandlerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [HttpHandler impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  HttpHandlerStub.fromHandle(
+  _HttpHandlerStubControl.fromHandle(
       core.MojoHandle handle, [HttpHandler impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  HttpHandlerStub.unbound([this._impl]) : super.unbound();
-
-  static HttpHandlerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HttpHandlerStub"));
-    return new HttpHandlerStub.fromEndpoint(endpoint);
-  }
+  _HttpHandlerStubControl.unbound([this._impl]) : super.unbound();
 
 
   HttpHandlerHandleRequestResponseParams _httpHandlerHandleRequestResponseParamsFactory(http_response_mojom.HttpResponse response) {
@@ -909,9 +930,10 @@ class HttpHandlerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "HttpHandlerStub($superString)";
+    return "_HttpHandlerStubControl($superString)";
   }
 
   int get version => 0;
@@ -922,6 +944,35 @@ class HttpHandlerStub extends bindings.Stub {
       _cachedServiceDescription = new _HttpHandlerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class HttpHandlerStub
+    extends bindings.Stub<HttpHandler>
+    implements HttpHandler {
+  HttpHandlerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [HttpHandler impl])
+      : super(new _HttpHandlerStubControl.fromEndpoint(endpoint, impl));
+
+  HttpHandlerStub.fromHandle(
+      core.MojoHandle handle, [HttpHandler impl])
+      : super(new _HttpHandlerStubControl.fromHandle(handle, impl));
+
+  HttpHandlerStub.unbound([HttpHandler impl])
+      : super(new _HttpHandlerStubControl.unbound(impl));
+
+  static HttpHandlerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HttpHandlerStub"));
+    return new HttpHandlerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _HttpHandlerStubControl.serviceDescription;
+
+
+  dynamic handleRequest(http_request_mojom.HttpRequest request,[Function responseFactory = null]) {
+    return impl.handleRequest(request,responseFactory);
   }
 }
 

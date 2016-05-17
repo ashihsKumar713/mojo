@@ -3368,9 +3368,9 @@ abstract class InterfaceA {
   static const String serviceName = null;
 }
 
-
-class _InterfaceAProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _InterfaceAProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _InterfaceAProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -3384,7 +3384,6 @@ class _InterfaceAProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => InterfaceA.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -3401,9 +3400,9 @@ class _InterfaceAProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class InterfaceAProxy extends bindings.Proxy
-                              implements InterfaceA {
+class InterfaceAProxy
+    extends bindings.Proxy
+    implements InterfaceA {
   InterfaceAProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _InterfaceAProxyControl.fromEndpoint(endpoint));
@@ -3430,29 +3429,24 @@ class InterfaceAProxy extends bindings.Proxy
 
 }
 
-
-class InterfaceAStub extends bindings.Stub {
+class _InterfaceAStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<InterfaceA> {
   InterfaceA _impl;
 
-  InterfaceAStub.fromEndpoint(
+  _InterfaceAStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [InterfaceA impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  InterfaceAStub.fromHandle(
+  _InterfaceAStubControl.fromHandle(
       core.MojoHandle handle, [InterfaceA impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  InterfaceAStub.unbound([this._impl]) : super.unbound();
-
-  static InterfaceAStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For InterfaceAStub"));
-    return new InterfaceAStub.fromEndpoint(endpoint);
-  }
+  _InterfaceAStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -3492,9 +3486,10 @@ class InterfaceAStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "InterfaceAStub($superString)";
+    return "_InterfaceAStubControl($superString)";
   }
 
   int get version => 0;
@@ -3506,6 +3501,32 @@ class InterfaceAStub extends bindings.Stub {
     }
     return _cachedServiceDescription;
   }
+}
+
+class InterfaceAStub
+    extends bindings.Stub<InterfaceA>
+    implements InterfaceA {
+  InterfaceAStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [InterfaceA impl])
+      : super(new _InterfaceAStubControl.fromEndpoint(endpoint, impl));
+
+  InterfaceAStub.fromHandle(
+      core.MojoHandle handle, [InterfaceA impl])
+      : super(new _InterfaceAStubControl.fromHandle(handle, impl));
+
+  InterfaceAStub.unbound([InterfaceA impl])
+      : super(new _InterfaceAStubControl.unbound(impl));
+
+  static InterfaceAStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For InterfaceAStub"));
+    return new InterfaceAStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _InterfaceAStubControl.serviceDescription;
+
+
 }
 
 const int _boundsCheckTestInterfaceMethodMethod0Name = 0;
@@ -3531,9 +3552,9 @@ abstract class BoundsCheckTestInterface {
   void method1(int param0);
 }
 
-
-class _BoundsCheckTestInterfaceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _BoundsCheckTestInterfaceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _BoundsCheckTestInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -3547,7 +3568,6 @@ class _BoundsCheckTestInterfaceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => BoundsCheckTestInterface.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _boundsCheckTestInterfaceMethodMethod0Name:
@@ -3584,9 +3604,9 @@ class _BoundsCheckTestInterfaceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class BoundsCheckTestInterfaceProxy extends bindings.Proxy
-                              implements BoundsCheckTestInterface {
+class BoundsCheckTestInterfaceProxy
+    extends bindings.Proxy
+    implements BoundsCheckTestInterface {
   BoundsCheckTestInterfaceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _BoundsCheckTestInterfaceProxyControl.fromEndpoint(endpoint));
@@ -3632,29 +3652,24 @@ class BoundsCheckTestInterfaceProxy extends bindings.Proxy
   }
 }
 
-
-class BoundsCheckTestInterfaceStub extends bindings.Stub {
+class _BoundsCheckTestInterfaceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<BoundsCheckTestInterface> {
   BoundsCheckTestInterface _impl;
 
-  BoundsCheckTestInterfaceStub.fromEndpoint(
+  _BoundsCheckTestInterfaceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [BoundsCheckTestInterface impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  BoundsCheckTestInterfaceStub.fromHandle(
+  _BoundsCheckTestInterfaceStubControl.fromHandle(
       core.MojoHandle handle, [BoundsCheckTestInterface impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  BoundsCheckTestInterfaceStub.unbound([this._impl]) : super.unbound();
-
-  static BoundsCheckTestInterfaceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For BoundsCheckTestInterfaceStub"));
-    return new BoundsCheckTestInterfaceStub.fromEndpoint(endpoint);
-  }
+  _BoundsCheckTestInterfaceStubControl.unbound([this._impl]) : super.unbound();
 
 
   BoundsCheckTestInterfaceMethod0ResponseParams _boundsCheckTestInterfaceMethod0ResponseParamsFactory(int param0) {
@@ -3726,9 +3741,10 @@ class BoundsCheckTestInterfaceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "BoundsCheckTestInterfaceStub($superString)";
+    return "_BoundsCheckTestInterfaceStubControl($superString)";
   }
 
   int get version => 0;
@@ -3739,6 +3755,38 @@ class BoundsCheckTestInterfaceStub extends bindings.Stub {
       _cachedServiceDescription = new _BoundsCheckTestInterfaceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class BoundsCheckTestInterfaceStub
+    extends bindings.Stub<BoundsCheckTestInterface>
+    implements BoundsCheckTestInterface {
+  BoundsCheckTestInterfaceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [BoundsCheckTestInterface impl])
+      : super(new _BoundsCheckTestInterfaceStubControl.fromEndpoint(endpoint, impl));
+
+  BoundsCheckTestInterfaceStub.fromHandle(
+      core.MojoHandle handle, [BoundsCheckTestInterface impl])
+      : super(new _BoundsCheckTestInterfaceStubControl.fromHandle(handle, impl));
+
+  BoundsCheckTestInterfaceStub.unbound([BoundsCheckTestInterface impl])
+      : super(new _BoundsCheckTestInterfaceStubControl.unbound(impl));
+
+  static BoundsCheckTestInterfaceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For BoundsCheckTestInterfaceStub"));
+    return new BoundsCheckTestInterfaceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _BoundsCheckTestInterfaceStubControl.serviceDescription;
+
+
+  dynamic method0(int param0,[Function responseFactory = null]) {
+    return impl.method0(param0,responseFactory);
+  }
+  void method1(int param0) {
+    return impl.method1(param0);
   }
 }
 
@@ -3790,9 +3838,9 @@ abstract class ConformanceTestInterface {
   void method15(StructH param0);
 }
 
-
-class _ConformanceTestInterfaceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ConformanceTestInterfaceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ConformanceTestInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -3806,7 +3854,6 @@ class _ConformanceTestInterfaceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ConformanceTestInterface.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _conformanceTestInterfaceMethodMethod12Name:
@@ -3843,9 +3890,9 @@ class _ConformanceTestInterfaceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ConformanceTestInterfaceProxy extends bindings.Proxy
-                              implements ConformanceTestInterface {
+class ConformanceTestInterfaceProxy
+    extends bindings.Proxy
+    implements ConformanceTestInterface {
   ConformanceTestInterfaceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ConformanceTestInterfaceProxyControl.fromEndpoint(endpoint));
@@ -4037,29 +4084,24 @@ class ConformanceTestInterfaceProxy extends bindings.Proxy
   }
 }
 
-
-class ConformanceTestInterfaceStub extends bindings.Stub {
+class _ConformanceTestInterfaceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ConformanceTestInterface> {
   ConformanceTestInterface _impl;
 
-  ConformanceTestInterfaceStub.fromEndpoint(
+  _ConformanceTestInterfaceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ConformanceTestInterface impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ConformanceTestInterfaceStub.fromHandle(
+  _ConformanceTestInterfaceStubControl.fromHandle(
       core.MojoHandle handle, [ConformanceTestInterface impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ConformanceTestInterfaceStub.unbound([this._impl]) : super.unbound();
-
-  static ConformanceTestInterfaceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ConformanceTestInterfaceStub"));
-    return new ConformanceTestInterfaceStub.fromEndpoint(endpoint);
-  }
+  _ConformanceTestInterfaceStubControl.unbound([this._impl]) : super.unbound();
 
 
   ConformanceTestInterfaceMethod12ResponseParams _conformanceTestInterfaceMethod12ResponseParamsFactory(double param0) {
@@ -4201,9 +4243,10 @@ class ConformanceTestInterfaceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ConformanceTestInterfaceStub($superString)";
+    return "_ConformanceTestInterfaceStubControl($superString)";
   }
 
   int get version => 0;
@@ -4214,6 +4257,80 @@ class ConformanceTestInterfaceStub extends bindings.Stub {
       _cachedServiceDescription = new _ConformanceTestInterfaceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ConformanceTestInterfaceStub
+    extends bindings.Stub<ConformanceTestInterface>
+    implements ConformanceTestInterface {
+  ConformanceTestInterfaceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ConformanceTestInterface impl])
+      : super(new _ConformanceTestInterfaceStubControl.fromEndpoint(endpoint, impl));
+
+  ConformanceTestInterfaceStub.fromHandle(
+      core.MojoHandle handle, [ConformanceTestInterface impl])
+      : super(new _ConformanceTestInterfaceStubControl.fromHandle(handle, impl));
+
+  ConformanceTestInterfaceStub.unbound([ConformanceTestInterface impl])
+      : super(new _ConformanceTestInterfaceStubControl.unbound(impl));
+
+  static ConformanceTestInterfaceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ConformanceTestInterfaceStub"));
+    return new ConformanceTestInterfaceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ConformanceTestInterfaceStubControl.serviceDescription;
+
+
+  void method0(double param0) {
+    return impl.method0(param0);
+  }
+  void method1(StructA param0) {
+    return impl.method1(param0);
+  }
+  void method2(StructB param0, StructA param1) {
+    return impl.method2(param0, param1);
+  }
+  void method3(List<bool> param0) {
+    return impl.method3(param0);
+  }
+  void method4(StructC param0, List<int> param1) {
+    return impl.method4(param0, param1);
+  }
+  void method5(StructE param0, core.MojoDataPipeProducer param1) {
+    return impl.method5(param0, param1);
+  }
+  void method6(List<List<int>> param0) {
+    return impl.method6(param0);
+  }
+  void method7(StructF param0, List<List<int>> param1) {
+    return impl.method7(param0, param1);
+  }
+  void method8(List<List<String>> param0) {
+    return impl.method8(param0);
+  }
+  void method9(List<List<core.MojoHandle>> param0) {
+    return impl.method9(param0);
+  }
+  void method10(Map<String, int> param0) {
+    return impl.method10(param0);
+  }
+  void method11(StructG param0) {
+    return impl.method11(param0);
+  }
+  dynamic method12(double param0,[Function responseFactory = null]) {
+    return impl.method12(param0,responseFactory);
+  }
+  void method13(Object param0, int param1, Object param2) {
+    return impl.method13(param0, param1, param2);
+  }
+  void method14(UnionA param0) {
+    return impl.method14(param0);
+  }
+  void method15(StructH param0) {
+    return impl.method15(param0);
   }
 }
 
@@ -4235,9 +4352,9 @@ abstract class IntegrationTestInterface {
   dynamic method0(BasicStruct param0,[Function responseFactory = null]);
 }
 
-
-class _IntegrationTestInterfaceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _IntegrationTestInterfaceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _IntegrationTestInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -4251,7 +4368,6 @@ class _IntegrationTestInterfaceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => IntegrationTestInterface.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _integrationTestInterfaceMethodMethod0Name:
@@ -4288,9 +4404,9 @@ class _IntegrationTestInterfaceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class IntegrationTestInterfaceProxy extends bindings.Proxy
-                              implements IntegrationTestInterface {
+class IntegrationTestInterfaceProxy
+    extends bindings.Proxy
+    implements IntegrationTestInterface {
   IntegrationTestInterfaceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _IntegrationTestInterfaceProxyControl.fromEndpoint(endpoint));
@@ -4326,29 +4442,24 @@ class IntegrationTestInterfaceProxy extends bindings.Proxy
   }
 }
 
-
-class IntegrationTestInterfaceStub extends bindings.Stub {
+class _IntegrationTestInterfaceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<IntegrationTestInterface> {
   IntegrationTestInterface _impl;
 
-  IntegrationTestInterfaceStub.fromEndpoint(
+  _IntegrationTestInterfaceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [IntegrationTestInterface impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  IntegrationTestInterfaceStub.fromHandle(
+  _IntegrationTestInterfaceStubControl.fromHandle(
       core.MojoHandle handle, [IntegrationTestInterface impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  IntegrationTestInterfaceStub.unbound([this._impl]) : super.unbound();
-
-  static IntegrationTestInterfaceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For IntegrationTestInterfaceStub"));
-    return new IntegrationTestInterfaceStub.fromEndpoint(endpoint);
-  }
+  _IntegrationTestInterfaceStubControl.unbound([this._impl]) : super.unbound();
 
 
   IntegrationTestInterfaceMethod0ResponseParams _integrationTestInterfaceMethod0ResponseParamsFactory(List<int> param0) {
@@ -4415,9 +4526,10 @@ class IntegrationTestInterfaceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "IntegrationTestInterfaceStub($superString)";
+    return "_IntegrationTestInterfaceStubControl($superString)";
   }
 
   int get version => 0;
@@ -4428,6 +4540,35 @@ class IntegrationTestInterfaceStub extends bindings.Stub {
       _cachedServiceDescription = new _IntegrationTestInterfaceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class IntegrationTestInterfaceStub
+    extends bindings.Stub<IntegrationTestInterface>
+    implements IntegrationTestInterface {
+  IntegrationTestInterfaceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [IntegrationTestInterface impl])
+      : super(new _IntegrationTestInterfaceStubControl.fromEndpoint(endpoint, impl));
+
+  IntegrationTestInterfaceStub.fromHandle(
+      core.MojoHandle handle, [IntegrationTestInterface impl])
+      : super(new _IntegrationTestInterfaceStubControl.fromHandle(handle, impl));
+
+  IntegrationTestInterfaceStub.unbound([IntegrationTestInterface impl])
+      : super(new _IntegrationTestInterfaceStubControl.unbound(impl));
+
+  static IntegrationTestInterfaceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For IntegrationTestInterfaceStub"));
+    return new IntegrationTestInterfaceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _IntegrationTestInterfaceStubControl.serviceDescription;
+
+
+  dynamic method0(BasicStruct param0,[Function responseFactory = null]) {
+    return impl.method0(param0,responseFactory);
   }
 }
 

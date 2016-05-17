@@ -99,9 +99,9 @@ abstract class SharingService {
   void shareText(String text);
 }
 
-
-class _SharingServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _SharingServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _SharingServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -115,7 +115,6 @@ class _SharingServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => SharingService.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -132,9 +131,9 @@ class _SharingServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class SharingServiceProxy extends bindings.Proxy
-                              implements SharingService {
+class SharingServiceProxy
+    extends bindings.Proxy
+    implements SharingService {
   SharingServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SharingServiceProxyControl.fromEndpoint(endpoint));
@@ -171,29 +170,24 @@ class SharingServiceProxy extends bindings.Proxy
   }
 }
 
-
-class SharingServiceStub extends bindings.Stub {
+class _SharingServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<SharingService> {
   SharingService _impl;
 
-  SharingServiceStub.fromEndpoint(
+  _SharingServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [SharingService impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SharingServiceStub.fromHandle(
+  _SharingServiceStubControl.fromHandle(
       core.MojoHandle handle, [SharingService impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SharingServiceStub.unbound([this._impl]) : super.unbound();
-
-  static SharingServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SharingServiceStub"));
-    return new SharingServiceStub.fromEndpoint(endpoint);
-  }
+  _SharingServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -238,9 +232,10 @@ class SharingServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "SharingServiceStub($superString)";
+    return "_SharingServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -251,6 +246,35 @@ class SharingServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _SharingServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class SharingServiceStub
+    extends bindings.Stub<SharingService>
+    implements SharingService {
+  SharingServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [SharingService impl])
+      : super(new _SharingServiceStubControl.fromEndpoint(endpoint, impl));
+
+  SharingServiceStub.fromHandle(
+      core.MojoHandle handle, [SharingService impl])
+      : super(new _SharingServiceStubControl.fromHandle(handle, impl));
+
+  SharingServiceStub.unbound([SharingService impl])
+      : super(new _SharingServiceStubControl.unbound(impl));
+
+  static SharingServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SharingServiceStub"));
+    return new SharingServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _SharingServiceStubControl.serviceDescription;
+
+
+  void shareText(String text) {
+    return impl.shareText(text);
   }
 }
 

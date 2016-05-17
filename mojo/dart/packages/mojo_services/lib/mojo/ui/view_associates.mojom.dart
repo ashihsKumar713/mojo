@@ -828,9 +828,9 @@ abstract class ViewAssociate {
   void connectToViewTreeService(view_tree_token_mojom.ViewTreeToken viewTreeToken, String serviceName_, core.MojoMessagePipeEndpoint pipe);
 }
 
-
-class _ViewAssociateProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ViewAssociateProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ViewAssociateProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -844,7 +844,6 @@ class _ViewAssociateProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ViewAssociate.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewAssociateMethodConnectName:
@@ -881,9 +880,9 @@ class _ViewAssociateProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ViewAssociateProxy extends bindings.Proxy
-                              implements ViewAssociate {
+class ViewAssociateProxy
+    extends bindings.Proxy
+    implements ViewAssociate {
   ViewAssociateProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewAssociateProxyControl.fromEndpoint(endpoint));
@@ -943,29 +942,24 @@ class ViewAssociateProxy extends bindings.Proxy
   }
 }
 
-
-class ViewAssociateStub extends bindings.Stub {
+class _ViewAssociateStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ViewAssociate> {
   ViewAssociate _impl;
 
-  ViewAssociateStub.fromEndpoint(
+  _ViewAssociateStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewAssociate impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewAssociateStub.fromHandle(
+  _ViewAssociateStubControl.fromHandle(
       core.MojoHandle handle, [ViewAssociate impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewAssociateStub.unbound([this._impl]) : super.unbound();
-
-  static ViewAssociateStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewAssociateStub"));
-    return new ViewAssociateStub.fromEndpoint(endpoint);
-  }
+  _ViewAssociateStubControl.unbound([this._impl]) : super.unbound();
 
 
   ViewAssociateConnectResponseParams _viewAssociateConnectResponseParamsFactory(ViewAssociateInfo info) {
@@ -1042,9 +1036,10 @@ class ViewAssociateStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ViewAssociateStub($superString)";
+    return "_ViewAssociateStubControl($superString)";
   }
 
   int get version => 0;
@@ -1055,6 +1050,41 @@ class ViewAssociateStub extends bindings.Stub {
       _cachedServiceDescription = new _ViewAssociateServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ViewAssociateStub
+    extends bindings.Stub<ViewAssociate>
+    implements ViewAssociate {
+  ViewAssociateStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ViewAssociate impl])
+      : super(new _ViewAssociateStubControl.fromEndpoint(endpoint, impl));
+
+  ViewAssociateStub.fromHandle(
+      core.MojoHandle handle, [ViewAssociate impl])
+      : super(new _ViewAssociateStubControl.fromHandle(handle, impl));
+
+  ViewAssociateStub.unbound([ViewAssociate impl])
+      : super(new _ViewAssociateStubControl.unbound(impl));
+
+  static ViewAssociateStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewAssociateStub"));
+    return new ViewAssociateStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ViewAssociateStubControl.serviceDescription;
+
+
+  dynamic connect(Object inspector,[Function responseFactory = null]) {
+    return impl.connect(inspector,responseFactory);
+  }
+  void connectToViewService(view_token_mojom.ViewToken viewToken, String serviceName_, core.MojoMessagePipeEndpoint pipe) {
+    return impl.connectToViewService(viewToken, serviceName_, pipe);
+  }
+  void connectToViewTreeService(view_tree_token_mojom.ViewTreeToken viewTreeToken, String serviceName_, core.MojoMessagePipeEndpoint pipe) {
+    return impl.connectToViewTreeService(viewTreeToken, serviceName_, pipe);
   }
 }
 
@@ -1078,9 +1108,9 @@ abstract class ViewInspector {
   dynamic resolveScenes(List<scene_token_mojom.SceneToken> sceneTokens,[Function responseFactory = null]);
 }
 
-
-class _ViewInspectorProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ViewInspectorProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ViewInspectorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1094,7 +1124,6 @@ class _ViewInspectorProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ViewInspector.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewInspectorMethodGetHitTesterName:
@@ -1151,9 +1180,9 @@ class _ViewInspectorProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ViewInspectorProxy extends bindings.Proxy
-                              implements ViewInspector {
+class ViewInspectorProxy
+    extends bindings.Proxy
+    implements ViewInspector {
   ViewInspectorProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewInspectorProxyControl.fromEndpoint(endpoint));
@@ -1199,29 +1228,24 @@ class ViewInspectorProxy extends bindings.Proxy
   }
 }
 
-
-class ViewInspectorStub extends bindings.Stub {
+class _ViewInspectorStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ViewInspector> {
   ViewInspector _impl;
 
-  ViewInspectorStub.fromEndpoint(
+  _ViewInspectorStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewInspector impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewInspectorStub.fromHandle(
+  _ViewInspectorStubControl.fromHandle(
       core.MojoHandle handle, [ViewInspector impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewInspectorStub.unbound([this._impl]) : super.unbound();
-
-  static ViewInspectorStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewInspectorStub"));
-    return new ViewInspectorStub.fromEndpoint(endpoint);
-  }
+  _ViewInspectorStubControl.unbound([this._impl]) : super.unbound();
 
 
   ViewInspectorGetHitTesterResponseParams _viewInspectorGetHitTesterResponseParamsFactory(bool rendererChanged) {
@@ -1315,9 +1339,10 @@ class ViewInspectorStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ViewInspectorStub($superString)";
+    return "_ViewInspectorStubControl($superString)";
   }
 
   int get version => 0;
@@ -1328,6 +1353,38 @@ class ViewInspectorStub extends bindings.Stub {
       _cachedServiceDescription = new _ViewInspectorServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ViewInspectorStub
+    extends bindings.Stub<ViewInspector>
+    implements ViewInspector {
+  ViewInspectorStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ViewInspector impl])
+      : super(new _ViewInspectorStubControl.fromEndpoint(endpoint, impl));
+
+  ViewInspectorStub.fromHandle(
+      core.MojoHandle handle, [ViewInspector impl])
+      : super(new _ViewInspectorStubControl.fromHandle(handle, impl));
+
+  ViewInspectorStub.unbound([ViewInspector impl])
+      : super(new _ViewInspectorStubControl.unbound(impl));
+
+  static ViewInspectorStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewInspectorStub"));
+    return new ViewInspectorStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ViewInspectorStubControl.serviceDescription;
+
+
+  dynamic getHitTester(view_tree_token_mojom.ViewTreeToken viewTreeToken,Object hitTester,[Function responseFactory = null]) {
+    return impl.getHitTester(viewTreeToken,hitTester,responseFactory);
+  }
+  dynamic resolveScenes(List<scene_token_mojom.SceneToken> sceneTokens,[Function responseFactory = null]) {
+    return impl.resolveScenes(sceneTokens,responseFactory);
   }
 }
 

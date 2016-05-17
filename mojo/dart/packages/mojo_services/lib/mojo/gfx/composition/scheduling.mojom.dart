@@ -272,9 +272,9 @@ abstract class SceneScheduler {
   dynamic scheduleFrame([Function responseFactory = null]);
 }
 
-
-class _SceneSchedulerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _SceneSchedulerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _SceneSchedulerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -288,7 +288,6 @@ class _SceneSchedulerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => SceneScheduler.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _sceneSchedulerMethodScheduleFrameName:
@@ -325,9 +324,9 @@ class _SceneSchedulerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class SceneSchedulerProxy extends bindings.Proxy
-                              implements SceneScheduler {
+class SceneSchedulerProxy
+    extends bindings.Proxy
+    implements SceneScheduler {
   SceneSchedulerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SceneSchedulerProxyControl.fromEndpoint(endpoint));
@@ -362,29 +361,24 @@ class SceneSchedulerProxy extends bindings.Proxy
   }
 }
 
-
-class SceneSchedulerStub extends bindings.Stub {
+class _SceneSchedulerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<SceneScheduler> {
   SceneScheduler _impl;
 
-  SceneSchedulerStub.fromEndpoint(
+  _SceneSchedulerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [SceneScheduler impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SceneSchedulerStub.fromHandle(
+  _SceneSchedulerStubControl.fromHandle(
       core.MojoHandle handle, [SceneScheduler impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  SceneSchedulerStub.unbound([this._impl]) : super.unbound();
-
-  static SceneSchedulerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SceneSchedulerStub"));
-    return new SceneSchedulerStub.fromEndpoint(endpoint);
-  }
+  _SceneSchedulerStubControl.unbound([this._impl]) : super.unbound();
 
 
   SceneSchedulerScheduleFrameResponseParams _sceneSchedulerScheduleFrameResponseParamsFactory(FrameInfo frameInfo) {
@@ -449,9 +443,10 @@ class SceneSchedulerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "SceneSchedulerStub($superString)";
+    return "_SceneSchedulerStubControl($superString)";
   }
 
   int get version => 0;
@@ -462,6 +457,35 @@ class SceneSchedulerStub extends bindings.Stub {
       _cachedServiceDescription = new _SceneSchedulerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class SceneSchedulerStub
+    extends bindings.Stub<SceneScheduler>
+    implements SceneScheduler {
+  SceneSchedulerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [SceneScheduler impl])
+      : super(new _SceneSchedulerStubControl.fromEndpoint(endpoint, impl));
+
+  SceneSchedulerStub.fromHandle(
+      core.MojoHandle handle, [SceneScheduler impl])
+      : super(new _SceneSchedulerStubControl.fromHandle(handle, impl));
+
+  SceneSchedulerStub.unbound([SceneScheduler impl])
+      : super(new _SceneSchedulerStubControl.unbound(impl));
+
+  static SceneSchedulerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For SceneSchedulerStub"));
+    return new SceneSchedulerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _SceneSchedulerStubControl.serviceDescription;
+
+
+  dynamic scheduleFrame([Function responseFactory = null]) {
+    return impl.scheduleFrame(responseFactory);
   }
 }
 

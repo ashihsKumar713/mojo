@@ -490,9 +490,9 @@ abstract class MediaPlayer {
   static const int kInitialStatus = 0;
 }
 
-
-class _MediaPlayerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _MediaPlayerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _MediaPlayerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -506,7 +506,6 @@ class _MediaPlayerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => MediaPlayer.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaPlayerMethodGetStatusName:
@@ -543,9 +542,9 @@ class _MediaPlayerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class MediaPlayerProxy extends bindings.Proxy
-                              implements MediaPlayer {
+class MediaPlayerProxy
+    extends bindings.Proxy
+    implements MediaPlayer {
   MediaPlayerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaPlayerProxyControl.fromEndpoint(endpoint));
@@ -609,29 +608,24 @@ class MediaPlayerProxy extends bindings.Proxy
   }
 }
 
-
-class MediaPlayerStub extends bindings.Stub {
+class _MediaPlayerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<MediaPlayer> {
   MediaPlayer _impl;
 
-  MediaPlayerStub.fromEndpoint(
+  _MediaPlayerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaPlayer impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaPlayerStub.fromHandle(
+  _MediaPlayerStubControl.fromHandle(
       core.MojoHandle handle, [MediaPlayer impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  MediaPlayerStub.unbound([this._impl]) : super.unbound();
-
-  static MediaPlayerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaPlayerStub"));
-    return new MediaPlayerStub.fromEndpoint(endpoint);
-  }
+  _MediaPlayerStubControl.unbound([this._impl]) : super.unbound();
 
 
   MediaPlayerGetStatusResponseParams _mediaPlayerGetStatusResponseParamsFactory(int version, MediaPlayerStatus status) {
@@ -710,9 +704,10 @@ class MediaPlayerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "MediaPlayerStub($superString)";
+    return "_MediaPlayerStubControl($superString)";
   }
 
   int get version => 0;
@@ -723,6 +718,44 @@ class MediaPlayerStub extends bindings.Stub {
       _cachedServiceDescription = new _MediaPlayerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class MediaPlayerStub
+    extends bindings.Stub<MediaPlayer>
+    implements MediaPlayer {
+  MediaPlayerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [MediaPlayer impl])
+      : super(new _MediaPlayerStubControl.fromEndpoint(endpoint, impl));
+
+  MediaPlayerStub.fromHandle(
+      core.MojoHandle handle, [MediaPlayer impl])
+      : super(new _MediaPlayerStubControl.fromHandle(handle, impl));
+
+  MediaPlayerStub.unbound([MediaPlayer impl])
+      : super(new _MediaPlayerStubControl.unbound(impl));
+
+  static MediaPlayerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For MediaPlayerStub"));
+    return new MediaPlayerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _MediaPlayerStubControl.serviceDescription;
+
+
+  void play() {
+    return impl.play();
+  }
+  void pause() {
+    return impl.pause();
+  }
+  void seek(int position) {
+    return impl.seek(position);
+  }
+  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
+    return impl.getStatus(versionLastSeen,responseFactory);
   }
 }
 

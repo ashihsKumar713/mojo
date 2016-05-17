@@ -199,9 +199,9 @@ abstract class Shell {
   void createApplicationConnector(Object applicationConnectorRequest);
 }
 
-
-class _ShellProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ShellProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ShellProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -215,7 +215,6 @@ class _ShellProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Shell.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -232,9 +231,9 @@ class _ShellProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ShellProxy extends bindings.Proxy
-                              implements Shell {
+class ShellProxy
+    extends bindings.Proxy
+    implements Shell {
   ShellProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ShellProxyControl.fromEndpoint(endpoint));
@@ -283,29 +282,24 @@ class ShellProxy extends bindings.Proxy
   }
 }
 
-
-class ShellStub extends bindings.Stub {
+class _ShellStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Shell> {
   Shell _impl;
 
-  ShellStub.fromEndpoint(
+  _ShellStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Shell impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ShellStub.fromHandle(
+  _ShellStubControl.fromHandle(
       core.MojoHandle handle, [Shell impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ShellStub.unbound([this._impl]) : super.unbound();
-
-  static ShellStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ShellStub"));
-    return new ShellStub.fromEndpoint(endpoint);
-  }
+  _ShellStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -355,9 +349,10 @@ class ShellStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ShellStub($superString)";
+    return "_ShellStubControl($superString)";
   }
 
   int get version => 0;
@@ -368,6 +363,38 @@ class ShellStub extends bindings.Stub {
       _cachedServiceDescription = new _ShellServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ShellStub
+    extends bindings.Stub<Shell>
+    implements Shell {
+  ShellStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Shell impl])
+      : super(new _ShellStubControl.fromEndpoint(endpoint, impl));
+
+  ShellStub.fromHandle(
+      core.MojoHandle handle, [Shell impl])
+      : super(new _ShellStubControl.fromHandle(handle, impl));
+
+  ShellStub.unbound([Shell impl])
+      : super(new _ShellStubControl.unbound(impl));
+
+  static ShellStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ShellStub"));
+    return new ShellStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ShellStubControl.serviceDescription;
+
+
+  void connectToApplication(String applicationUrl, Object services, Object exposedServices) {
+    return impl.connectToApplication(applicationUrl, services, exposedServices);
+  }
+  void createApplicationConnector(Object applicationConnectorRequest) {
+    return impl.createApplicationConnector(applicationConnectorRequest);
   }
 }
 

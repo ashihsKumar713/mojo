@@ -459,9 +459,9 @@ abstract class EchoService {
   void quit();
 }
 
-
-class _EchoServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _EchoServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _EchoServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -475,7 +475,6 @@ class _EchoServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => EchoService.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _echoServiceMethodEchoStringName:
@@ -532,9 +531,9 @@ class _EchoServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class EchoServiceProxy extends bindings.Proxy
-                              implements EchoService {
+class EchoServiceProxy
+    extends bindings.Proxy
+    implements EchoService {
   EchoServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _EchoServiceProxyControl.fromEndpoint(endpoint));
@@ -598,29 +597,24 @@ class EchoServiceProxy extends bindings.Proxy
   }
 }
 
-
-class EchoServiceStub extends bindings.Stub {
+class _EchoServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<EchoService> {
   EchoService _impl;
 
-  EchoServiceStub.fromEndpoint(
+  _EchoServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [EchoService impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  EchoServiceStub.fromHandle(
+  _EchoServiceStubControl.fromHandle(
       core.MojoHandle handle, [EchoService impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  EchoServiceStub.unbound([this._impl]) : super.unbound();
-
-  static EchoServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For EchoServiceStub"));
-    return new EchoServiceStub.fromEndpoint(endpoint);
-  }
+  _EchoServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
   EchoServiceEchoStringResponseParams _echoServiceEchoStringResponseParamsFactory(String value) {
@@ -720,9 +714,10 @@ class EchoServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "EchoServiceStub($superString)";
+    return "_EchoServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -733,6 +728,44 @@ class EchoServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _EchoServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class EchoServiceStub
+    extends bindings.Stub<EchoService>
+    implements EchoService {
+  EchoServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [EchoService impl])
+      : super(new _EchoServiceStubControl.fromEndpoint(endpoint, impl));
+
+  EchoServiceStub.fromHandle(
+      core.MojoHandle handle, [EchoService impl])
+      : super(new _EchoServiceStubControl.fromHandle(handle, impl));
+
+  EchoServiceStub.unbound([EchoService impl])
+      : super(new _EchoServiceStubControl.unbound(impl));
+
+  static EchoServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For EchoServiceStub"));
+    return new EchoServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _EchoServiceStubControl.serviceDescription;
+
+
+  dynamic echoString(String value,[Function responseFactory = null]) {
+    return impl.echoString(value,responseFactory);
+  }
+  dynamic delayedEchoString(String value,int millis,[Function responseFactory = null]) {
+    return impl.delayedEchoString(value,millis,responseFactory);
+  }
+  void swap() {
+    return impl.swap();
+  }
+  void quit() {
+    return impl.quit();
   }
 }
 

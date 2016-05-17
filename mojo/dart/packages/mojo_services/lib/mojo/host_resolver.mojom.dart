@@ -224,9 +224,9 @@ abstract class HostResolver {
   dynamic getHostAddresses(String host,net_address_mojom.NetAddressFamily family,[Function responseFactory = null]);
 }
 
-
-class _HostResolverProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _HostResolverProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _HostResolverProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -240,7 +240,6 @@ class _HostResolverProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => HostResolver.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _hostResolverMethodGetHostAddressesName:
@@ -277,9 +276,9 @@ class _HostResolverProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class HostResolverProxy extends bindings.Proxy
-                              implements HostResolver {
+class HostResolverProxy
+    extends bindings.Proxy
+    implements HostResolver {
   HostResolverProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _HostResolverProxyControl.fromEndpoint(endpoint));
@@ -316,29 +315,24 @@ class HostResolverProxy extends bindings.Proxy
   }
 }
 
-
-class HostResolverStub extends bindings.Stub {
+class _HostResolverStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<HostResolver> {
   HostResolver _impl;
 
-  HostResolverStub.fromEndpoint(
+  _HostResolverStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [HostResolver impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  HostResolverStub.fromHandle(
+  _HostResolverStubControl.fromHandle(
       core.MojoHandle handle, [HostResolver impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  HostResolverStub.unbound([this._impl]) : super.unbound();
-
-  static HostResolverStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HostResolverStub"));
-    return new HostResolverStub.fromEndpoint(endpoint);
-  }
+  _HostResolverStubControl.unbound([this._impl]) : super.unbound();
 
 
   HostResolverGetHostAddressesResponseParams _hostResolverGetHostAddressesResponseParamsFactory(network_error_mojom.NetworkError result, List<net_address_mojom.NetAddress> addresses) {
@@ -406,9 +400,10 @@ class HostResolverStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "HostResolverStub($superString)";
+    return "_HostResolverStubControl($superString)";
   }
 
   int get version => 0;
@@ -419,6 +414,35 @@ class HostResolverStub extends bindings.Stub {
       _cachedServiceDescription = new _HostResolverServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class HostResolverStub
+    extends bindings.Stub<HostResolver>
+    implements HostResolver {
+  HostResolverStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [HostResolver impl])
+      : super(new _HostResolverStubControl.fromEndpoint(endpoint, impl));
+
+  HostResolverStub.fromHandle(
+      core.MojoHandle handle, [HostResolver impl])
+      : super(new _HostResolverStubControl.fromHandle(handle, impl));
+
+  HostResolverStub.unbound([HostResolver impl])
+      : super(new _HostResolverStubControl.unbound(impl));
+
+  static HostResolverStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HostResolverStub"));
+    return new HostResolverStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _HostResolverStubControl.serviceDescription;
+
+
+  dynamic getHostAddresses(String host,net_address_mojom.NetAddressFamily family,[Function responseFactory = null]) {
+    return impl.getHostAddresses(host,family,responseFactory);
   }
 }
 

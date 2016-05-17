@@ -112,9 +112,9 @@ abstract class HttpServerDelegate {
   void onConnected(Object connection, Object delegate);
 }
 
-
-class _HttpServerDelegateProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _HttpServerDelegateProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _HttpServerDelegateProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -128,7 +128,6 @@ class _HttpServerDelegateProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => HttpServerDelegate.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -145,9 +144,9 @@ class _HttpServerDelegateProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class HttpServerDelegateProxy extends bindings.Proxy
-                              implements HttpServerDelegate {
+class HttpServerDelegateProxy
+    extends bindings.Proxy
+    implements HttpServerDelegate {
   HttpServerDelegateProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _HttpServerDelegateProxyControl.fromEndpoint(endpoint));
@@ -185,29 +184,24 @@ class HttpServerDelegateProxy extends bindings.Proxy
   }
 }
 
-
-class HttpServerDelegateStub extends bindings.Stub {
+class _HttpServerDelegateStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<HttpServerDelegate> {
   HttpServerDelegate _impl;
 
-  HttpServerDelegateStub.fromEndpoint(
+  _HttpServerDelegateStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [HttpServerDelegate impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  HttpServerDelegateStub.fromHandle(
+  _HttpServerDelegateStubControl.fromHandle(
       core.MojoHandle handle, [HttpServerDelegate impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  HttpServerDelegateStub.unbound([this._impl]) : super.unbound();
-
-  static HttpServerDelegateStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For HttpServerDelegateStub"));
-    return new HttpServerDelegateStub.fromEndpoint(endpoint);
-  }
+  _HttpServerDelegateStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -252,9 +246,10 @@ class HttpServerDelegateStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "HttpServerDelegateStub($superString)";
+    return "_HttpServerDelegateStubControl($superString)";
   }
 
   int get version => 0;
@@ -265,6 +260,35 @@ class HttpServerDelegateStub extends bindings.Stub {
       _cachedServiceDescription = new _HttpServerDelegateServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class HttpServerDelegateStub
+    extends bindings.Stub<HttpServerDelegate>
+    implements HttpServerDelegate {
+  HttpServerDelegateStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [HttpServerDelegate impl])
+      : super(new _HttpServerDelegateStubControl.fromEndpoint(endpoint, impl));
+
+  HttpServerDelegateStub.fromHandle(
+      core.MojoHandle handle, [HttpServerDelegate impl])
+      : super(new _HttpServerDelegateStubControl.fromHandle(handle, impl));
+
+  HttpServerDelegateStub.unbound([HttpServerDelegate impl])
+      : super(new _HttpServerDelegateStubControl.unbound(impl));
+
+  static HttpServerDelegateStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For HttpServerDelegateStub"));
+    return new HttpServerDelegateStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _HttpServerDelegateStubControl.serviceDescription;
+
+
+  void onConnected(Object connection, Object delegate) {
+    return impl.onConnected(connection, delegate);
   }
 }
 

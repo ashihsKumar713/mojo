@@ -230,9 +230,9 @@ abstract class ViewOwner {
   dynamic getToken([Function responseFactory = null]);
 }
 
-
-class _ViewOwnerProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ViewOwnerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ViewOwnerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -246,7 +246,6 @@ class _ViewOwnerProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => ViewOwner.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewOwnerMethodGetTokenName:
@@ -283,9 +282,9 @@ class _ViewOwnerProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ViewOwnerProxy extends bindings.Proxy
-                              implements ViewOwner {
+class ViewOwnerProxy
+    extends bindings.Proxy
+    implements ViewOwner {
   ViewOwnerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewOwnerProxyControl.fromEndpoint(endpoint));
@@ -320,29 +319,24 @@ class ViewOwnerProxy extends bindings.Proxy
   }
 }
 
-
-class ViewOwnerStub extends bindings.Stub {
+class _ViewOwnerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ViewOwner> {
   ViewOwner _impl;
 
-  ViewOwnerStub.fromEndpoint(
+  _ViewOwnerStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewOwner impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewOwnerStub.fromHandle(
+  _ViewOwnerStubControl.fromHandle(
       core.MojoHandle handle, [ViewOwner impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ViewOwnerStub.unbound([this._impl]) : super.unbound();
-
-  static ViewOwnerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ViewOwnerStub"));
-    return new ViewOwnerStub.fromEndpoint(endpoint);
-  }
+  _ViewOwnerStubControl.unbound([this._impl]) : super.unbound();
 
 
   ViewOwnerGetTokenResponseParams _viewOwnerGetTokenResponseParamsFactory(ViewToken token) {
@@ -407,9 +401,10 @@ class ViewOwnerStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ViewOwnerStub($superString)";
+    return "_ViewOwnerStubControl($superString)";
   }
 
   int get version => 0;
@@ -420,6 +415,35 @@ class ViewOwnerStub extends bindings.Stub {
       _cachedServiceDescription = new _ViewOwnerServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ViewOwnerStub
+    extends bindings.Stub<ViewOwner>
+    implements ViewOwner {
+  ViewOwnerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ViewOwner impl])
+      : super(new _ViewOwnerStubControl.fromEndpoint(endpoint, impl));
+
+  ViewOwnerStub.fromHandle(
+      core.MojoHandle handle, [ViewOwner impl])
+      : super(new _ViewOwnerStubControl.fromHandle(handle, impl));
+
+  ViewOwnerStub.unbound([ViewOwner impl])
+      : super(new _ViewOwnerStubControl.unbound(impl));
+
+  static ViewOwnerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewOwnerStub"));
+    return new ViewOwnerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ViewOwnerStubControl.serviceDescription;
+
+
+  dynamic getToken([Function responseFactory = null]) {
+    return impl.getToken(responseFactory);
   }
 }
 

@@ -1761,9 +1761,9 @@ abstract class Service {
   static const int kFavoriteBaz = 1;
 }
 
-
-class _ServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _ServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _ServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1777,7 +1777,6 @@ class _ServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Service.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _serviceMethodFrobinateName:
@@ -1814,9 +1813,9 @@ class _ServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class ServiceProxy extends bindings.Proxy
-                              implements Service {
+class ServiceProxy
+    extends bindings.Proxy
+    implements Service {
   ServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ServiceProxyControl.fromEndpoint(endpoint));
@@ -1864,29 +1863,24 @@ class ServiceProxy extends bindings.Proxy
   }
 }
 
-
-class ServiceStub extends bindings.Stub {
+class _ServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Service> {
   Service _impl;
 
-  ServiceStub.fromEndpoint(
+  _ServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Service impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ServiceStub.fromHandle(
+  _ServiceStubControl.fromHandle(
       core.MojoHandle handle, [Service impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  ServiceStub.unbound([this._impl]) : super.unbound();
-
-  static ServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For ServiceStub"));
-    return new ServiceStub.fromEndpoint(endpoint);
-  }
+  _ServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
   ServiceFrobinateResponseParams _serviceFrobinateResponseParamsFactory(int result) {
@@ -1958,9 +1952,10 @@ class ServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "ServiceStub($superString)";
+    return "_ServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -1971,6 +1966,38 @@ class ServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _ServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class ServiceStub
+    extends bindings.Stub<Service>
+    implements Service {
+  ServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Service impl])
+      : super(new _ServiceStubControl.fromEndpoint(endpoint, impl));
+
+  ServiceStub.fromHandle(
+      core.MojoHandle handle, [Service impl])
+      : super(new _ServiceStubControl.fromHandle(handle, impl));
+
+  ServiceStub.unbound([Service impl])
+      : super(new _ServiceStubControl.unbound(impl));
+
+  static ServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ServiceStub"));
+    return new ServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ServiceStubControl.serviceDescription;
+
+
+  dynamic frobinate(Foo foo,ServiceBazOptions baz,Object port,[Function responseFactory = null]) {
+    return impl.frobinate(foo,baz,port,responseFactory);
+  }
+  void getPort(Object port) {
+    return impl.getPort(port);
   }
 }
 
@@ -1992,9 +2019,9 @@ abstract class Port {
   void postMessage(String messageText, Object port);
 }
 
-
-class _PortProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _PortProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _PortProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -2008,7 +2035,6 @@ class _PortProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => Port.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       default:
@@ -2025,9 +2051,9 @@ class _PortProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class PortProxy extends bindings.Proxy
-                              implements Port {
+class PortProxy
+    extends bindings.Proxy
+    implements Port {
   PortProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _PortProxyControl.fromEndpoint(endpoint));
@@ -2065,29 +2091,24 @@ class PortProxy extends bindings.Proxy
   }
 }
 
-
-class PortStub extends bindings.Stub {
+class _PortStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<Port> {
   Port _impl;
 
-  PortStub.fromEndpoint(
+  _PortStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Port impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  PortStub.fromHandle(
+  _PortStubControl.fromHandle(
       core.MojoHandle handle, [Port impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  PortStub.unbound([this._impl]) : super.unbound();
-
-  static PortStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For PortStub"));
-    return new PortStub.fromEndpoint(endpoint);
-  }
+  _PortStubControl.unbound([this._impl]) : super.unbound();
 
 
 
@@ -2132,9 +2153,10 @@ class PortStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "PortStub($superString)";
+    return "_PortStubControl($superString)";
   }
 
   int get version => 0;
@@ -2145,6 +2167,35 @@ class PortStub extends bindings.Stub {
       _cachedServiceDescription = new _PortServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class PortStub
+    extends bindings.Stub<Port>
+    implements Port {
+  PortStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [Port impl])
+      : super(new _PortStubControl.fromEndpoint(endpoint, impl));
+
+  PortStub.fromHandle(
+      core.MojoHandle handle, [Port impl])
+      : super(new _PortStubControl.fromHandle(handle, impl));
+
+  PortStub.unbound([Port impl])
+      : super(new _PortStubControl.unbound(impl));
+
+  static PortStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For PortStub"));
+    return new PortStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _PortStubControl.serviceDescription;
+
+
+  void postMessage(String messageText, Object port) {
+    return impl.postMessage(messageText, port);
   }
 }
 

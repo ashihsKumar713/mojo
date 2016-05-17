@@ -1025,9 +1025,9 @@ abstract class NetworkService {
   void createHostResolver(Object hostResolver);
 }
 
-
-class _NetworkServiceProxyControl extends bindings.ProxyMessageHandler
-                                      implements bindings.ProxyControl {
+class _NetworkServiceProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
   _NetworkServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1041,7 +1041,6 @@ class _NetworkServiceProxyControl extends bindings.ProxyMessageHandler
 
   String get serviceName => NetworkService.serviceName;
 
-  @override
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _networkServiceMethodCreateTcpBoundSocketName:
@@ -1118,9 +1117,9 @@ class _NetworkServiceProxyControl extends bindings.ProxyMessageHandler
   }
 }
 
-
-class NetworkServiceProxy extends bindings.Proxy
-                              implements NetworkService {
+class NetworkServiceProxy
+    extends bindings.Proxy
+    implements NetworkService {
   NetworkServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _NetworkServiceProxyControl.fromEndpoint(endpoint));
@@ -1239,29 +1238,24 @@ class NetworkServiceProxy extends bindings.Proxy
   }
 }
 
-
-class NetworkServiceStub extends bindings.Stub {
+class _NetworkServiceStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<NetworkService> {
   NetworkService _impl;
 
-  NetworkServiceStub.fromEndpoint(
+  _NetworkServiceStubControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [NetworkService impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  NetworkServiceStub.fromHandle(
+  _NetworkServiceStubControl.fromHandle(
       core.MojoHandle handle, [NetworkService impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  NetworkServiceStub.unbound([this._impl]) : super.unbound();
-
-  static NetworkServiceStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For NetworkServiceStub"));
-    return new NetworkServiceStub.fromEndpoint(endpoint);
-  }
+  _NetworkServiceStubControl.unbound([this._impl]) : super.unbound();
 
 
   NetworkServiceCreateTcpBoundSocketResponseParams _networkServiceCreateTcpBoundSocketResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo) {
@@ -1415,9 +1409,10 @@ class NetworkServiceStub extends bindings.Stub {
     }
   }
 
+  @override
   String toString() {
     var superString = super.toString();
-    return "NetworkServiceStub($superString)";
+    return "_NetworkServiceStubControl($superString)";
   }
 
   int get version => 0;
@@ -1428,6 +1423,59 @@ class NetworkServiceStub extends bindings.Stub {
       _cachedServiceDescription = new _NetworkServiceServiceDescription();
     }
     return _cachedServiceDescription;
+  }
+}
+
+class NetworkServiceStub
+    extends bindings.Stub<NetworkService>
+    implements NetworkService {
+  NetworkServiceStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [NetworkService impl])
+      : super(new _NetworkServiceStubControl.fromEndpoint(endpoint, impl));
+
+  NetworkServiceStub.fromHandle(
+      core.MojoHandle handle, [NetworkService impl])
+      : super(new _NetworkServiceStubControl.fromHandle(handle, impl));
+
+  NetworkServiceStub.unbound([NetworkService impl])
+      : super(new _NetworkServiceStubControl.unbound(impl));
+
+  static NetworkServiceStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For NetworkServiceStub"));
+    return new NetworkServiceStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _NetworkServiceStubControl.serviceDescription;
+
+
+  void createUrlLoader(Object loader) {
+    return impl.createUrlLoader(loader);
+  }
+  void getCookieStore(Object cookieStore) {
+    return impl.getCookieStore(cookieStore);
+  }
+  void createWebSocket(Object socket) {
+    return impl.createWebSocket(socket);
+  }
+  dynamic createTcpBoundSocket(net_address_mojom.NetAddress localAddress,Object boundSocket,[Function responseFactory = null]) {
+    return impl.createTcpBoundSocket(localAddress,boundSocket,responseFactory);
+  }
+  dynamic createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]) {
+    return impl.createTcpConnectedSocket(remoteAddress,sendStream,receiveStream,clientSocket,responseFactory);
+  }
+  void createUdpSocket(Object socket) {
+    return impl.createUdpSocket(socket);
+  }
+  dynamic createHttpServer(net_address_mojom.NetAddress localAddress,Object delegate,[Function responseFactory = null]) {
+    return impl.createHttpServer(localAddress,delegate,responseFactory);
+  }
+  void registerUrlLoaderInterceptor(Object factory) {
+    return impl.registerUrlLoaderInterceptor(factory);
+  }
+  void createHostResolver(Object hostResolver) {
+    return impl.createHostResolver(hostResolver);
   }
 }
 
