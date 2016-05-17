@@ -5,6 +5,7 @@
 #include "mojo/ui/gl_view.h"
 
 #include "base/logging.h"
+#include "mojo/public/cpp/application/connect.h"
 
 namespace mojo {
 namespace ui {
@@ -15,7 +16,7 @@ GLView::GLView(mojo::ApplicationImpl* app_impl,
     : BaseView(app_impl, view_owner_request.Pass(), label),
       gl_renderer_(mojo::GLContext::CreateOffscreen(
           ApplicationConnectorPtr::Create(
-              app_impl->CreateApplicationConnector())
+              mojo::CreateApplicationConnector(app_impl->shell()))
               .get())) {}
 
 GLView::~GLView() {}

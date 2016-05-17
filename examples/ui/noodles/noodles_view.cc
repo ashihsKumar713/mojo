@@ -14,6 +14,7 @@
 #include "base/message_loop/message_loop.h"
 #include "examples/ui/noodles/frame.h"
 #include "examples/ui/noodles/rasterizer.h"
+#include "mojo/public/cpp/application/connect.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -65,10 +66,11 @@ NoodlesView::NoodlesView(
 
   rasterizer_task_runner_->PostTask(
       FROM_HERE,
-      base::Bind(&RasterizerDelegate::CreateRasterizer,
-                 base::Unretained(rasterizer_delegate_.get()),
-                 base::Passed(app_impl->CreateApplicationConnector()),
-                 base::Passed(TakeScene().PassInterfaceHandle())));
+      base::Bind(
+          &RasterizerDelegate::CreateRasterizer,
+          base::Unretained(rasterizer_delegate_.get()),
+          base::Passed(mojo::CreateApplicationConnector(app_impl->shell())),
+          base::Passed(TakeScene().PassInterfaceHandle())));
 }
 
 NoodlesView::~NoodlesView() {

@@ -5,6 +5,7 @@
 #include "mojo/ui/ganesh_view.h"
 
 #include "base/logging.h"
+#include "mojo/public/cpp/application/connect.h"
 #include "mojo/skia/ganesh_texture_surface.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 
@@ -19,7 +20,7 @@ GaneshView::GaneshView(
       ganesh_renderer_(
           new mojo::skia::GaneshContext(mojo::GLContext::CreateOffscreen(
               mojo::ApplicationConnectorPtr::Create(
-                  app_impl->CreateApplicationConnector())
+                  mojo::CreateApplicationConnector(app_impl->shell()))
                   .get()))) {}
 
 GaneshView::~GaneshView() {}

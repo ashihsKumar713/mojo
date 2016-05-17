@@ -224,13 +224,15 @@ void TestApplicationConnector(mojo::ApplicationConnector* app_connector) {
 
 TEST_F(ShellAppTest, ApplicationConnector) {
   mojo::ApplicationConnectorPtr app_connector;
-  app_connector.Bind(application_impl()->CreateApplicationConnector());
+  app_connector.Bind(
+      mojo::CreateApplicationConnector(application_impl()->shell()));
   TestApplicationConnector(app_connector.get());
 }
 
 TEST_F(ShellAppTest, ApplicationConnectorDuplicate) {
   mojo::ApplicationConnectorPtr app_connector1;
-  app_connector1.Bind(application_impl()->CreateApplicationConnector());
+  app_connector1.Bind(
+      mojo::CreateApplicationConnector(application_impl()->shell()));
   {
     SCOPED_TRACE("app_connector1");
     TestApplicationConnector(app_connector1.get());
