@@ -4,7 +4,6 @@
 
 #include "services/native_support/process_test_base.h"
 
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/services/native_support/interfaces/process.mojom.h"
 
@@ -18,7 +17,7 @@ ProcessTestBase::~ProcessTestBase() {}
 
 void ProcessTestBase::SetUp() {
   mojo::test::ApplicationTestBase::SetUp();
-  mojo::ConnectToService(application_impl()->shell(), "mojo:native_support",
+  mojo::ConnectToService(shell(), "mojo:native_support",
                          GetSynchronousProxy(&process_));
 }
 

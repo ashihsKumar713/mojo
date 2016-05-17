@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
@@ -290,8 +289,7 @@ class AuthenticatingURLLoaderInterceptorAppTest
     ApplicationTestBase::SetUp();
 
     InitializeNetworkService();
-    ConnectToService(application_impl()->shell(),
-                     "mojo:authenticating_url_loader_interceptor",
+    ConnectToService(shell(), "mojo:authenticating_url_loader_interceptor",
                      GetProxy(&interceptor_meta_factory_));
   }
 
@@ -341,7 +339,7 @@ class AuthenticatingURLLoaderInterceptorAppTest
 
   void InitializeNetworkService() {
     network_service_.reset();
-    mojo::ConnectToService(application_impl()->shell(), "mojo:network_service",
+    mojo::ConnectToService(shell(), "mojo:network_service",
                            GetProxy(&network_service_));
   }
 

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/message_loop/message_loop.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/services/prediction/interfaces/prediction.mojom.h"
@@ -27,8 +26,8 @@ class PredictionApptest : public mojo::test::ApplicationTestBase {
 
   void SetUp() override {
     mojo::test::ApplicationTestBase::SetUp();
-    mojo::ConnectToService(application_impl()->shell(),
-                           "mojo:prediction_service", GetProxy(&prediction_));
+    mojo::ConnectToService(shell(), "mojo:prediction_service",
+                           GetProxy(&prediction_));
   }
 
   std::vector<std::string> GetPredictionListClient(

@@ -12,9 +12,9 @@
 #include "base/strings/stringprintf.h"
 #include "mojo/converters/base/base_type_converters.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/synchronous_interface_ptr.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "mojo/public/interfaces/application/application_connector.mojom.h"
@@ -81,7 +81,7 @@ class ShellHTTPAppTest : public ShellAppTest {
   void SetUp() override {
     ShellAppTest::SetUp();
 
-    mojo::ConnectToService(application_impl()->shell(), "mojo:http_server",
+    mojo::ConnectToService(shell(), "mojo:http_server",
                            GetProxy(&http_server_factory_));
 
     mojo::NetAddressPtr local_address(mojo::NetAddress::New());
@@ -119,8 +119,7 @@ class ShellHTTPAppTest : public ShellAppTest {
 // Test that we can load apps over http.
 TEST_F(ShellHTTPAppTest, Http) {
   PingablePtr pingable;
-  mojo::ConnectToService(application_impl()->shell(), GetURL("app"),
-                         GetProxy(&pingable));
+  mojo::ConnectToService(shell(), GetURL("app"), GetProxy(&pingable));
   pingable->Ping("hello",
                  [this](const String& app_url, const String& connection_url,
                         const String& message) {
@@ -136,8 +135,7 @@ TEST_F(ShellHTTPAppTest, Http) {
 // TODO(aa): Test that apps receive the correct URL parameters.
 TEST_F(ShellHTTPAppTest, Redirect) {
   PingablePtr pingable;
-  mojo::ConnectToService(application_impl()->shell(), GetURL("redirect"),
-                         GetProxy(&pingable));
+  mojo::ConnectToService(shell(), GetURL("redirect"), GetProxy(&pingable));
   pingable->Ping("hello",
                  [this](const String& app_url, const String& connection_url,
                         const String& message) {
@@ -159,10 +157,8 @@ TEST_F(ShellHTTPAppTest, Redirect) {
 TEST_F(ShellHTTPAppTest, MAYBE_QueryHandling) {
   PingablePtr pingable1;
   PingablePtr pingable2;
-  mojo::ConnectToService(application_impl()->shell(), GetURL("app?foo"),
-                         GetProxy(&pingable1));
-  mojo::ConnectToService(application_impl()->shell(), GetURL("app?bar"),
-                         GetProxy(&pingable2));
+  mojo::ConnectToService(shell(), GetURL("app?foo"), GetProxy(&pingable1));
+  mojo::ConnectToService(shell(), GetURL("app?bar"), GetProxy(&pingable2));
 
   int num_responses = 0;
   auto callbacks_builder = [this, &num_responses](int query_index) {
@@ -191,8 +187,7 @@ TEST_F(ShellHTTPAppTest, MAYBE_QueryHandling) {
 // mojo: URLs can have querystrings too
 TEST_F(ShellAppTest, MojoURLQueryHandling) {
   PingablePtr pingable;
-  mojo::ConnectToService(application_impl()->shell(), "mojo:pingable_app?foo",
-                         GetProxy(&pingable));
+  mojo::ConnectToService(shell(), "mojo:pingable_app?foo", GetProxy(&pingable));
   auto callback = [](const String& app_url, const String& connection_url,
                      const String& message) {
     EXPECT_TRUE(base::EndsWith(app_url.To<base::StringPiece>(),
@@ -224,15 +219,13 @@ void TestApplicationConnector(mojo::ApplicationConnector* app_connector) {
 
 TEST_F(ShellAppTest, ApplicationConnector) {
   mojo::ApplicationConnectorPtr app_connector;
-  app_connector.Bind(
-      mojo::CreateApplicationConnector(application_impl()->shell()));
+  app_connector.Bind(mojo::CreateApplicationConnector(shell()));
   TestApplicationConnector(app_connector.get());
 }
 
 TEST_F(ShellAppTest, ApplicationConnectorDuplicate) {
   mojo::ApplicationConnectorPtr app_connector1;
-  app_connector1.Bind(
-      mojo::CreateApplicationConnector(application_impl()->shell()));
+  app_connector1.Bind(mojo::CreateApplicationConnector(shell()));
   {
     SCOPED_TRACE("app_connector1");
     TestApplicationConnector(app_connector1.get());

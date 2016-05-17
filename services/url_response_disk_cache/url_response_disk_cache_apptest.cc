@@ -6,7 +6,6 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -25,8 +24,7 @@ class URLResponseDiskCacheAppTest : public mojo::test::ApplicationTestBase {
 
   void SetUp() override {
     test::ApplicationTestBase::SetUp();
-    ConnectToService(application_impl()->shell(),
-                     "mojo:url_response_disk_cache",
+    ConnectToService(shell(), "mojo:url_response_disk_cache",
                      GetProxy(&url_response_disk_cache_));
   }
 

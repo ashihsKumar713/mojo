@@ -8,7 +8,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/services/asset_bundle/interfaces/asset_bundle.mojom.h"
@@ -23,7 +22,7 @@ class AssetBundleAppTest : public mojo::test::ApplicationTestBase {
 
   void SetUp() override {
     mojo::test::ApplicationTestBase::SetUp();
-    mojo::ConnectToService(application_impl()->shell(), "mojo:asset_bundle",
+    mojo::ConnectToService(shell(), "mojo:asset_bundle",
                            GetProxy(&asset_unpacker_));
   }
 

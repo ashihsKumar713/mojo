@@ -4,7 +4,6 @@
 
 #include "services/files/files_test_base.h"
 
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/services/files/interfaces/files.mojom.h"
 #include "mojo/services/files/interfaces/types.mojom.h"
@@ -18,8 +17,7 @@ FilesTestBase::~FilesTestBase() {}
 
 void FilesTestBase::SetUp() {
   test::ApplicationTestBase::SetUp();
-  ConnectToService(application_impl()->shell(), "mojo:files",
-                   GetSynchronousProxy(&files_));
+  ConnectToService(shell(), "mojo:files", GetSynchronousProxy(&files_));
 }
 
 void FilesTestBase::GetTemporaryRoot(

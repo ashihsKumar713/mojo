@@ -20,8 +20,7 @@ class JSNetworkTest : public test::JSApplicationTestBase {
   void SetUp() override {
     ApplicationTestBase::SetUp();
     const std::string& url = JSAppURL("network_test.js");
-    mojo::ConnectToService(application_impl()->shell(), url,
-                           GetProxy(&network_test_service_));
+    mojo::ConnectToService(shell(), url, GetProxy(&network_test_service_));
   }
 
   NetworkTestServicePtr network_test_service_;

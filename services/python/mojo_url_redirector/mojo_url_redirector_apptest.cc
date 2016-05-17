@@ -8,9 +8,9 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/interface_handle.h"
 #include "mojo/public/interfaces/application/service_provider.mojom.h"
 #include "mojo/services/http_server/cpp/http_server_util.h"
@@ -84,7 +84,7 @@ class MojoUrlRedirectorApplicationTest :
     // Obtain the port that the redirector is at and the port that we should
     // spin up the app location files server at.
     uint16_t app_location_files_port = 0;
-    for (const std::string& arg : application_impl()->args()) {
+    for (const std::string& arg : args()) {
       if (arg.find("--redirector_port") != std::string::npos) {
         sscanf(arg.c_str(), "--redirector_port=%hu", &redirector_port_);
       } else if (arg.find("--app_location_files_port") != std::string::npos) {
@@ -100,7 +100,7 @@ class MojoUrlRedirectorApplicationTest :
     binding_.Bind(GetProxy(&location_files_handler));
 
     http_server::HttpServerFactoryPtr http_server_factory;
-    mojo::ConnectToService(application_impl()->shell(), "mojo:http_server",
+    mojo::ConnectToService(shell(), "mojo:http_server",
                            GetProxy(&http_server_factory));
 
     mojo::NetAddressPtr location_files_server_addr(mojo::NetAddress::New());
@@ -125,9 +125,9 @@ class MojoUrlRedirectorApplicationTest :
 
     // Connect to the redirector and wait until it registers itself as a
     // handler with the server on |redirector_port_|.
-    application_impl()->shell()->ConnectToApplication(
-        "mojo:mojo_url_redirector", GetProxy(&url_redirector_sp_), nullptr);
-    mojo::ConnectToService(application_impl()->shell(), "mojo:network_service",
+    shell()->ConnectToApplication("mojo:mojo_url_redirector",
+                                  GetProxy(&url_redirector_sp_), nullptr);
+    mojo::ConnectToService(shell(), "mojo:network_service",
                            GetProxy(&network_service_));
     WaitForRedirectorRegistration();
   }

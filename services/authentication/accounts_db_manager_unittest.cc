@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/strings/string_tokenizer.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/services/files/interfaces/types.mojom.h"
@@ -25,8 +24,7 @@ class AccountsDBTest : public mojo::test::ApplicationTestBase {
   void SetUp() override {
     mojo::test::ApplicationTestBase::SetUp();
     mojo::files::FilesPtr files;
-    mojo::ConnectToService(application_impl()->shell(), "mojo:files",
-                           GetProxy(&files));
+    mojo::ConnectToService(shell(), "mojo:files", GetProxy(&files));
 
     mojo::files::Error error = mojo::files::Error::INTERNAL;
     mojo::files::DirectoryPtr directory;

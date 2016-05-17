@@ -22,8 +22,7 @@ class JSEchoTest : public test::JSApplicationTestBase {
   void SetUp() override {
     ApplicationTestBase::SetUp();
     const std::string& url = JSAppURL("echo.js");
-    mojo::ConnectToService(application_impl()->shell(), url,
-                           GetSynchronousProxy(&echo_service_));
+    mojo::ConnectToService(shell(), url, GetSynchronousProxy(&echo_service_));
   }
 
   mojo::SynchronousInterfacePtr<mojo::EchoService> echo_service_;
@@ -42,8 +41,8 @@ class JSServiceProviderEchoTest : public test::JSApplicationTestBase {
   void SetUp() override {
     ApplicationTestBase::SetUp();
     const std::string& url = JSAppURL("echo.js");
-    application_impl()->shell()->ConnectToApplication(
-        url, GetProxy(&echo_service_provider_), nullptr);
+    shell()->ConnectToApplication(url, GetProxy(&echo_service_provider_),
+                                  nullptr);
   }
 
   mojo::ServiceProviderPtr echo_service_provider_;

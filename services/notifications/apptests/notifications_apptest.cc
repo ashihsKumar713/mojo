@@ -4,7 +4,6 @@
 
 #include "base/bind.h"
 #include "base/message_loop/message_loop.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/bindings/callback.h"
@@ -31,7 +30,7 @@ class NotificationsApplicationTest : public test::ApplicationTestBase,
   // ApplicationTestBase:
   void SetUp() override {
     ApplicationTestBase::SetUp();
-    ConnectToService(application_impl()->shell(), "mojo:notifications",
+    ConnectToService(shell(), "mojo:notifications",
                      GetProxy(&notification_service_));
   }
 

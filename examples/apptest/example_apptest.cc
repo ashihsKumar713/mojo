@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "examples/apptest/example_service.mojom.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/bindings/callback.h"
@@ -24,7 +25,7 @@ class ExampleApplicationTest : public test::ApplicationTestBase {
   void SetUp() override {
     ApplicationTestBase::SetUp();
 
-    ConnectToService(application_impl()->shell(), "mojo:example_service",
+    ConnectToService(shell(), "mojo:example_service",
                      GetProxy(&example_service_));
   }
 
@@ -45,7 +46,8 @@ TEST_F(ExampleApplicationTest, PingServiceToPong) {
 
 TEST_F(ExampleApplicationTest, CheckCommandLineArg) {
   // Ensure the test runner passes along this example command line argument.
-  ASSERT_TRUE(application_impl()->HasArg("--example_apptest_arg"));
+  ASSERT_TRUE(std::find(args().begin(), args().end(),
+                        "--example_apptest_arg") != args().end());
 }
 
 }  // namespace

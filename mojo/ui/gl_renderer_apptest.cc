@@ -6,7 +6,6 @@
 #include "base/message_loop/message_loop.h"
 #include "mojo/gpu/gl_context.h"
 #include "mojo/gpu/gl_texture.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/services/geometry/interfaces/geometry.mojom.h"
@@ -30,7 +29,7 @@ class GLRendererTest : public mojo::test::ApplicationTestBase {
     mojo::test::ApplicationTestBase::SetUp();
     gl_context_ = mojo::GLContext::CreateOffscreen(
         mojo::ApplicationConnectorPtr::Create(
-            mojo::CreateApplicationConnector(application_impl()->shell()))
+            mojo::CreateApplicationConnector(shell()))
             .get());
     quit_message_loop_callback_ = base::Bind(
         &GLRendererTest::QuitMessageLoopCallback, weak_factory_.GetWeakPtr());

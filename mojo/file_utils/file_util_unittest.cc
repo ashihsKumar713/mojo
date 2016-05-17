@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "mojo/file_utils/file_util.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/bindings/synchronous_interface_ptr.h"
@@ -93,8 +92,7 @@ mojo::SynchronousInterfacePtr<mojo::files::File> OpenFileHelper(
 
 TEST_F(FileUtilTest, BasicCreateTemporaryFile) {
   mojo::SynchronousInterfacePtr<mojo::files::Files> files;
-  mojo::ConnectToService(application_impl()->shell(), "mojo:files",
-                         GetSynchronousProxy(&files));
+  mojo::ConnectToService(shell(), "mojo:files", GetSynchronousProxy(&files));
 
   mojo::files::Error error = mojo::files::Error::INTERNAL;
   mojo::SynchronousInterfacePtr<mojo::files::Directory> directory;

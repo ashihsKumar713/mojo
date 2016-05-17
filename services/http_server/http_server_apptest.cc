@@ -6,9 +6,9 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/synchronous_interface_ptr.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "mojo/services/http_server/cpp/http_server_util.h"
@@ -101,9 +101,9 @@ class HttpServerApplicationTest : public mojo::test::ApplicationTestBase {
   void SetUp() override {
     ApplicationTestBase::SetUp();
 
-    mojo::ConnectToService(application_impl()->shell(), "mojo:http_server",
+    mojo::ConnectToService(shell(), "mojo:http_server",
                            GetProxy(&http_server_factory_));
-    mojo::ConnectToService(application_impl()->shell(), "mojo:network_service",
+    mojo::ConnectToService(shell(), "mojo:network_service",
                            GetProxy(&network_service_));
   }
 
