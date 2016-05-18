@@ -6,17 +6,28 @@ import("//mojo/android/rules.gni")
 
 mojo_android_java_application("speech_recognizer") {
   sources = [
+    "src/org/chromium/mojo/speech_recognizer/SpeechRecognizer.java",
+  ]
+
+  mojo_main = "org.chromium.mojo.speech_recognizer.SpeechRecognizer"
+
+  deps = [
+    ":speech_recognizer_lib",
+    "//mojo/public/java:application",
+  ]
+}
+
+android_library("speech_recognizer_lib") {
+  java_files = [
     "src/org/chromium/mojo/speech_recognizer/SpeechRecognizerApplicationDelegate.java",
     "src/org/chromium/mojo/speech_recognizer/SpeechRecognizerServiceImpl.java",
   ]
 
-  mojo_main =
-      "org.chromium.mojo.speech_recognizer.SpeechRecognizerApplicationDelegate"
-
   deps = [
-    "//base:base_java",
     "//mojo/public/interfaces/application:application_java",
     "//mojo/public/java:application",
+    "//mojo/public/java:bindings",
+    "//mojo/public/java:system",
     "//mojo/services/speech_recognizer/interfaces:interfaces_java",
   ]
 }

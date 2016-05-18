@@ -8,11 +8,8 @@ import android.content.Context;
 
 import org.chromium.mojo.application.ApplicationConnection;
 import org.chromium.mojo.application.ApplicationDelegate;
-import org.chromium.mojo.application.ApplicationRunner;
 import org.chromium.mojo.application.ServiceFactoryBinder;
 import org.chromium.mojo.bindings.InterfaceRequest;
-import org.chromium.mojo.system.Core;
-import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojom.mojo.Shell;
 
 /**
@@ -56,10 +53,4 @@ final class SpeechRecognizerApplicationDelegate implements ApplicationDelegate {
      */
     @Override
     public void quit() {}
-
-    public static void mojoMain(
-            Context context, Core core, MessagePipeHandle applicationRequestHandle) {
-        ApplicationRunner.run(
-                new SpeechRecognizerApplicationDelegate(context), core, applicationRequestHandle);
-    }
 }
