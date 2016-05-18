@@ -16,7 +16,7 @@ namespace examples {
 class ShadowsView : public mojo::ui::GLView,
                     public mojo::ui::ChoreographerDelegate {
  public:
-  ShadowsView(mojo::ApplicationImpl* app_impl,
+  ShadowsView(mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
               mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request);
 
   ~ShadowsView() override;

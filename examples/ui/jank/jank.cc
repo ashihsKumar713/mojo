@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "mojo/application/application_runner_chromium.h"
 #include "mojo/public/c/system/main.h"
+#include "mojo/public/cpp/application/connect.h"
 #include "mojo/ui/choreographer.h"
 #include "mojo/ui/ganesh_view.h"
 #include "mojo/ui/input_handler.h"
@@ -53,9 +54,9 @@ class JankView : public mojo::ui::GaneshView,
                  public mojo::ui::ChoreographerDelegate,
                  public mojo::ui::InputListener {
  public:
-  JankView(mojo::ApplicationImpl* app_impl,
+  JankView(mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
            mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request)
-      : GaneshView(app_impl, view_owner_request.Pass(), "Jank"),
+      : GaneshView(app_connector.Pass(), view_owner_request.Pass(), "Jank"),
         choreographer_(scene(), this),
         input_handler_(GetViewServiceProvider(), this),
         typeface_(skia::AdoptRef(SkTypeface::CreateFromStream(
@@ -210,7 +211,8 @@ class JankApp : public mojo::ui::ViewProviderApp {
       mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
       mojo::InterfaceRequest<mojo::ServiceProvider> services,
       mojo::InterfaceHandle<mojo::ServiceProvider> exposed_services) override {
-    new JankView(app_impl(), view_owner_request.Pass());
+    new JankView(mojo::CreateApplicationConnector(app_impl()->shell()),
+                 view_owner_request.Pass());
   }
 
  private:

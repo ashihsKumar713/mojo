@@ -19,9 +19,9 @@ constexpr uint32_t kRootNodeId = mojo::gfx::composition::kSceneRootNodeId;
 }  // namespace
 
 ShadowsView::ShadowsView(
-    mojo::ApplicationImpl* app_impl,
+    mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
     mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request)
-    : GLView(app_impl, view_owner_request.Pass(), "Shadows"),
+    : GLView(app_connector.Pass(), view_owner_request.Pass(), "Shadows"),
       choreographer_(scene(), this) {
   mojo::GLContext::Scope gl_scope(gl_context());
   renderer_.reset(new ShadowsRenderer());

@@ -5,6 +5,7 @@
 #include "base/strings/string_split.h"
 #include "examples/ui/tile/tile_app.h"
 #include "examples/ui/tile/tile_view.h"
+#include "mojo/public/cpp/application/connect.h"
 #include "url/url_parse.h"
 
 namespace examples {
@@ -24,7 +25,8 @@ void TileApp::CreateView(
     return;
   }
 
-  new TileView(app_impl(), view_owner_request.Pass(), params);
+  new TileView(mojo::CreateApplicationConnector(app_impl()->shell()),
+               view_owner_request.Pass(), params);
 }
 
 bool TileApp::ParseParams(const std::string& connection_url,

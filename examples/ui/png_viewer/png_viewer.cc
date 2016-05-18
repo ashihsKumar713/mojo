@@ -10,6 +10,7 @@
 #include "mojo/application/application_runner_chromium.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
 #include "mojo/public/c/system/main.h"
+#include "mojo/public/cpp/application/connect.h"
 #include "mojo/ui/content_viewer_app.h"
 #include "mojo/ui/ganesh_view.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -27,10 +28,12 @@ constexpr uint32_t kRootNodeId = mojo::gfx::composition::kSceneRootNodeId;
 
 class PNGView : public mojo::ui::GaneshView {
  public:
-  PNGView(mojo::ApplicationImpl* app_impl,
+  PNGView(mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
           mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
           const skia::RefPtr<SkImage>& image)
-      : GaneshView(app_impl, view_owner_request.Pass(), "PNGViewer"),
+      : GaneshView(app_connector.Pass(),
+                   view_owner_request.Pass(),
+                   "PNGViewer"),
         image_(image) {
     DCHECK(image_);
   }
@@ -119,7 +122,8 @@ class PNGContentViewProviderApp : public mojo::ui::ViewProviderApp {
       mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
       mojo::InterfaceRequest<mojo::ServiceProvider> services,
       mojo::InterfaceHandle<mojo::ServiceProvider> exposed_services) override {
-    new PNGView(app_impl(), view_owner_request.Pass(), image_);
+    new PNGView(mojo::CreateApplicationConnector(app_impl()->shell()),
+                view_owner_request.Pass(), image_);
   }
 
  private:

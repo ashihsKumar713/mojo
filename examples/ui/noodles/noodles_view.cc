@@ -50,9 +50,9 @@ void Lissajous(SkPath* path, double ax, double ay, int wx, int wy, double p) {
 }  // namespace
 
 NoodlesView::NoodlesView(
-    mojo::ApplicationImpl* app_impl,
+    mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
     mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request)
-    : BaseView(app_impl, view_owner_request.Pass(), "Noodles"),
+    : BaseView(app_connector.Pass(), view_owner_request.Pass(), "Noodles"),
       choreographer_(scene(), this),
       frame_queue_(std::make_shared<FrameQueue>()),
       rasterizer_delegate_(
@@ -65,12 +65,11 @@ NoodlesView::NoodlesView(
   rasterizer_task_runner_ = rasterizer_thread_->message_loop()->task_runner();
 
   rasterizer_task_runner_->PostTask(
-      FROM_HERE,
-      base::Bind(
-          &RasterizerDelegate::CreateRasterizer,
-          base::Unretained(rasterizer_delegate_.get()),
-          base::Passed(mojo::CreateApplicationConnector(app_impl->shell())),
-          base::Passed(TakeScene().PassInterfaceHandle())));
+      FROM_HERE, base::Bind(&RasterizerDelegate::CreateRasterizer,
+                            base::Unretained(rasterizer_delegate_.get()),
+                            base::Passed(mojo::DuplicateApplicationConnector(
+                                BaseView::app_connector())),
+                            base::Passed(TakeScene().PassInterfaceHandle())));
 }
 
 NoodlesView::~NoodlesView() {

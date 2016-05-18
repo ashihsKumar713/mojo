@@ -5,6 +5,7 @@
 #include "examples/ui/shapes/shapes_app.h"
 
 #include "examples/ui/shapes/shapes_view.h"
+#include "mojo/public/cpp/application/connect.h"
 
 namespace examples {
 
@@ -17,7 +18,8 @@ void ShapesApp::CreateView(
     mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
     mojo::InterfaceRequest<mojo::ServiceProvider> services,
     mojo::InterfaceHandle<mojo::ServiceProvider> exposed_services) {
-  new ShapesView(app_impl(), view_owner_request.Pass());
+  new ShapesView(mojo::CreateApplicationConnector(app_impl()->shell()),
+                 view_owner_request.Pass());
 }
 
 }  // namespace examples

@@ -42,7 +42,7 @@ struct TileParams {
 
 class TileView : public mojo::ui::BaseView {
  public:
-  TileView(mojo::ApplicationImpl* app_impl_,
+  TileView(mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
            mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
            const TileParams& tile_params);
 

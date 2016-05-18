@@ -17,22 +17,22 @@ namespace ui {
 // content for the scene.
 class GLView : public BaseView {
  public:
-  GLView(mojo::ApplicationImpl* app_impl,
-         mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
+  GLView(InterfaceHandle<ApplicationConnector> app_connector,
+         InterfaceRequest<ViewOwner> view_owner_request,
          const std::string& label);
 
   ~GLView() override;
 
   // Gets the GL context, never null.
-  const scoped_refptr<mojo::GLContext>& gl_context() const {
+  const scoped_refptr<GLContext>& gl_context() const {
     return gl_renderer_.gl_context();
   }
 
   // Gets the GL renderer, never null.
-  mojo::ui::GLRenderer* gl_renderer() { return &gl_renderer_; }
+  GLRenderer* gl_renderer() { return &gl_renderer_; }
 
  private:
-  mojo::ui::GLRenderer gl_renderer_;
+  GLRenderer gl_renderer_;
 
   MOJO_DISALLOW_COPY_AND_ASSIGN(GLView);
 };

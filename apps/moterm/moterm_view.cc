@@ -38,10 +38,10 @@ constexpr uint32_t kMotermImageResourceId = 1;
 constexpr uint32_t kRootNodeId = mojo::gfx::composition::kSceneRootNodeId;
 
 MotermView::MotermView(
-    mojo::ApplicationImpl* app_impl,
+    mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
     mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
     mojo::InterfaceRequest<mojo::ServiceProvider> service_provider_request)
-    : GaneshView(app_impl, view_owner_request.Pass(), "Moterm"),
+    : GaneshView(app_connector.Pass(), view_owner_request.Pass(), "Moterm"),
       choreographer_(scene(), this),
       input_handler_(GetViewServiceProvider(), this),
       model_(MotermModel::Size(240, 160), MotermModel::Size(24, 80), this),

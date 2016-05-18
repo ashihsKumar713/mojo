@@ -11,6 +11,7 @@
 #include "mojo/application/application_runner_chromium.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
 #include "mojo/public/c/system/main.h"
+#include "mojo/public/cpp/application/connect.h"
 #include "mojo/ui/choreographer.h"
 #include "mojo/ui/content_viewer_app.h"
 #include "mojo/ui/ganesh_view.h"
@@ -116,10 +117,12 @@ class PDFDocumentView : public mojo::ui::GaneshView,
                         public mojo::ui::InputListener {
  public:
   PDFDocumentView(
-      mojo::ApplicationImpl* app_impl,
+      mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
       mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
       const std::shared_ptr<PDFDocument>& pdf_document)
-      : GaneshView(app_impl, view_owner_request.Pass(), "PDFDocumentViewer"),
+      : GaneshView(app_connector.Pass(),
+                   view_owner_request.Pass(),
+                   "PDFDocumentViewer"),
         pdf_document_(pdf_document),
         choreographer_(scene(), this),
         input_handler_(GetViewServiceProvider(), this) {
@@ -271,7 +274,8 @@ class PDFContentViewProviderApp : public mojo::ui::ViewProviderApp {
       mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
       mojo::InterfaceRequest<mojo::ServiceProvider> services,
       mojo::InterfaceHandle<mojo::ServiceProvider> exposed_services) override {
-    new PDFDocumentView(app_impl(), view_owner_request.Pass(), pdf_document_);
+    new PDFDocumentView(mojo::CreateApplicationConnector(app_impl()->shell()),
+                        view_owner_request.Pass(), pdf_document_);
   }
 
  private:

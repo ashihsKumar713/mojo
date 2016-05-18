@@ -32,7 +32,7 @@ class MotermView : public mojo::ui::GaneshView,
                    public mojo::terminal::Terminal {
  public:
   MotermView(
-      mojo::ApplicationImpl* app_impl,
+      mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
       mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
       mojo::InterfaceRequest<mojo::ServiceProvider> service_provider_request);
   ~MotermView() override;

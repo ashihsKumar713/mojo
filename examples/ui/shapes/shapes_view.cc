@@ -18,9 +18,9 @@ constexpr uint32_t kRootNodeId = mojo::gfx::composition::kSceneRootNodeId;
 }  // namespace
 
 ShapesView::ShapesView(
-    mojo::ApplicationImpl* app_impl,
+    mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
     mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request)
-    : GaneshView(app_impl, view_owner_request.Pass(), "Shapes") {}
+    : GaneshView(app_connector.Pass(), view_owner_request.Pass(), "Shapes") {}
 
 ShapesView::~ShapesView() {}
 

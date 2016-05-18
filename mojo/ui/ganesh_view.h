@@ -6,6 +6,7 @@
 #define MOJO_UI_GANESH_VIEW_H_
 
 #include "mojo/gpu/gl_context.h"
+#include "mojo/public/cpp/bindings/interface_handle.h"
 #include "mojo/skia/ganesh_context.h"
 #include "mojo/ui/base_view.h"
 #include "mojo/ui/ganesh_renderer.h"
@@ -20,27 +21,27 @@ namespace ui {
 // content for the scene.
 class GaneshView : public BaseView {
  public:
-  GaneshView(mojo::ApplicationImpl* app_impl,
-             mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
+  GaneshView(InterfaceHandle<ApplicationConnector> app_connector,
+             InterfaceRequest<ViewOwner> view_owner_request,
              const std::string& label);
 
   ~GaneshView() override;
 
   // Gets the GL context, never null.
-  const scoped_refptr<mojo::GLContext>& gl_context() const {
+  const scoped_refptr<GLContext>& gl_context() const {
     return ganesh_renderer_.gl_context();
   }
 
   // Gets the Ganesh context, never null.
-  const scoped_refptr<mojo::skia::GaneshContext>& ganesh_context() const {
+  const scoped_refptr<skia::GaneshContext>& ganesh_context() const {
     return ganesh_renderer_.ganesh_context();
   }
 
   // Gets the Ganesh renderer, never null.
-  mojo::ui::GaneshRenderer* ganesh_renderer() { return &ganesh_renderer_; }
+  GaneshRenderer* ganesh_renderer() { return &ganesh_renderer_; }
 
  private:
-  mojo::ui::GaneshRenderer ganesh_renderer_;
+  GaneshRenderer ganesh_renderer_;
 
   DISALLOW_COPY_AND_ASSIGN(GaneshView);
 };

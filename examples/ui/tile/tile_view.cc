@@ -27,10 +27,11 @@ TileParams::TileParams() {}
 TileParams::~TileParams() {}
 
 TileView::TileView(
-    mojo::ApplicationImpl* app_impl,
+    mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
     mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
     const TileParams& params)
-    : BaseView(app_impl, view_owner_request.Pass(), "Tile"), params_(params) {
+    : BaseView(app_connector.Pass(), view_owner_request.Pass(), "Tile"),
+      params_(params) {
   ConnectViews();
 }
 
@@ -41,7 +42,7 @@ void TileView::ConnectViews() {
   for (const auto& url : params_.view_urls) {
     // Start connecting to the view provider.
     mojo::ui::ViewProviderPtr provider;
-    mojo::ConnectToService(app_impl()->shell(), url, mojo::GetProxy(&provider));
+    mojo::ConnectToService(app_connector(), url, mojo::GetProxy(&provider));
 
     LOG(INFO) << "Connecting to view: child_key=" << child_key
               << ", url=" << url;

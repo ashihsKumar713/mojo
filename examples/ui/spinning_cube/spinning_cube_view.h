@@ -19,7 +19,7 @@ class SpinningCubeView : public mojo::ui::GLView,
                          public mojo::ui::InputListener {
  public:
   SpinningCubeView(
-      mojo::ApplicationImpl* app_impl,
+      mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
       mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request);
 
   ~SpinningCubeView() override;
