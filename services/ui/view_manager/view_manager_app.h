@@ -30,7 +30,6 @@ class ViewManagerApp : public mojo::ApplicationDelegate {
       mojo::ServiceProviderImpl* service_provider_impl) override;
 
   void OnCompositorConnectionError();
-  void OnAssociateConnectionError(const std::string& url);
 
   void Shutdown();
 

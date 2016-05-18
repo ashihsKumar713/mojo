@@ -4,6 +4,7 @@
 
 #include "services/ui/launcher/launch_instance.h"
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
@@ -18,9 +19,13 @@ namespace launcher {
 
 LaunchInstance::LaunchInstance(mojo::ApplicationImpl* app_impl,
                                const std::string& app_url,
+                               mojo::gfx::composition::Compositor* compositor,
+                               mojo::ui::ViewManager* view_manager,
                                const base::Closure& shutdown_callback)
     : app_impl_(app_impl),
       app_url_(app_url),
+      compositor_(compositor),
+      view_manager_(view_manager),
       shutdown_callback_(shutdown_callback),
       viewport_event_dispatcher_binding_(this) {}
 
@@ -30,16 +35,6 @@ void LaunchInstance::Launch() {
   DVLOG(1) << "Launching " << app_url_;
   TRACE_EVENT0("launcher", __func__);
 
-  mojo::ConnectToService(app_impl_->shell(), "mojo:compositor_service",
-                         GetProxy(&compositor_));
-  compositor_.set_connection_error_handler(base::Bind(
-      &LaunchInstance::OnCompositorConnectionError, base::Unretained(this)));
-
-  mojo::ConnectToService(app_impl_->shell(), "mojo:view_manager_service",
-                         GetProxy(&view_manager_));
-  view_manager_.set_connection_error_handler(base::Bind(
-      &LaunchInstance::OnViewManagerConnectionError, base::Unretained(this)));
-
   InitViewport();
 
   mojo::ui::ViewProviderPtr client_view_provider;
@@ -48,16 +43,6 @@ void LaunchInstance::Launch() {
 
   client_view_provider->CreateView(GetProxy(&client_view_owner_), nullptr,
                                    nullptr);
-}
-
-void LaunchInstance::OnCompositorConnectionError() {
-  LOG(ERROR) << "Exiting due to compositor connection error.";
-  shutdown_callback_.Run();
-}
-
-void LaunchInstance::OnViewManagerConnectionError() {
-  LOG(ERROR) << "Exiting due to view manager connection error.";
-  shutdown_callback_.Run();
 }
 
 void LaunchInstance::InitViewport() {
@@ -92,7 +77,7 @@ void LaunchInstance::OnViewportCreated(mojo::ViewportMetricsPtr metrics) {
   mojo::ContextProviderPtr context_provider;
   viewport_->GetContextProvider(GetProxy(&context_provider));
 
-  view_tree_.reset(new LauncherViewTree(compositor_.get(), view_manager_.get(),
+  view_tree_.reset(new LauncherViewTree(compositor_, view_manager_,
                                         context_provider.Pass(), metrics.Pass(),
                                         shutdown_callback_));
   view_tree_->SetRoot(client_view_owner_.Pass());

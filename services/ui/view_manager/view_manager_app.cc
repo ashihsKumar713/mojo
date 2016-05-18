@@ -44,19 +44,6 @@ void ViewManagerApp::Initialize(mojo::ApplicationImpl* app_impl) {
 
   // Create the registry.
   registry_.reset(new ViewRegistry(compositor.Pass()));
-
-  // Connect to associates.
-  // TODO(jeffbrown): Consider making the launcher register associates
-  // with the view manager or perhaps per view tree.
-  std::vector<std::string> associate_urls = command_line->GetArgs();
-  if (associate_urls.empty()) {
-    // TODO(jeffbrown): Replace this hardcoded list.
-    associate_urls.push_back("mojo:input_manager_service");
-  }
-  registry_->ConnectAssociates(
-      app_impl_, associate_urls,
-      base::Bind(&ViewManagerApp::OnAssociateConnectionError,
-                 base::Unretained(this)));
 }
 
 bool ViewManagerApp::ConfigureIncomingConnection(
@@ -73,11 +60,6 @@ bool ViewManagerApp::ConfigureIncomingConnection(
 
 void ViewManagerApp::OnCompositorConnectionError() {
   LOG(ERROR) << "Exiting due to compositor connection error.";
-  Shutdown();
-}
-
-void ViewManagerApp::OnAssociateConnectionError(const std::string& url) {
-  LOG(ERROR) << "Exiting due to view associate connection error: url=" << url;
   Shutdown();
 }
 

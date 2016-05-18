@@ -1088,6 +1088,183 @@ class ViewAssociateStub
   }
 }
 
+
+class _ViewAssociateOwnerServiceDescription implements service_describer.ServiceDescription {
+  dynamic getTopLevelInterface([Function responseFactory]) =>
+      responseFactory(null);
+
+  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
+      responseFactory(null);
+
+  dynamic getAllTypeDefinitions([Function responseFactory]) =>
+      responseFactory(null);
+}
+
+abstract class ViewAssociateOwner {
+  static const String serviceName = "mojo::ui::ViewAssociateOwner";
+}
+
+class _ViewAssociateOwnerProxyControl
+    extends bindings.ProxyMessageHandler
+    implements bindings.ProxyControl {
+  _ViewAssociateOwnerProxyControl.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
+
+  _ViewAssociateOwnerProxyControl.fromHandle(
+      core.MojoHandle handle) : super.fromHandle(handle);
+
+  _ViewAssociateOwnerProxyControl.unbound() : super.unbound();
+
+  service_describer.ServiceDescription get serviceDescription =>
+      new _ViewAssociateOwnerServiceDescription();
+
+  String get serviceName => ViewAssociateOwner.serviceName;
+
+  void handleResponse(bindings.ServiceMessage message) {
+    switch (message.header.type) {
+      default:
+        proxyError("Unexpected message type: ${message.header.type}");
+        close(immediate: true);
+        break;
+    }
+  }
+
+  @override
+  String toString() {
+    var superString = super.toString();
+    return "_ViewAssociateOwnerProxyControl($superString)";
+  }
+}
+
+class ViewAssociateOwnerProxy
+    extends bindings.Proxy
+    implements ViewAssociateOwner {
+  ViewAssociateOwnerProxy.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint)
+      : super(new _ViewAssociateOwnerProxyControl.fromEndpoint(endpoint));
+
+  ViewAssociateOwnerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _ViewAssociateOwnerProxyControl.fromHandle(handle));
+
+  ViewAssociateOwnerProxy.unbound()
+      : super(new _ViewAssociateOwnerProxyControl.unbound());
+
+  static ViewAssociateOwnerProxy newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewAssociateOwnerProxy"));
+    return new ViewAssociateOwnerProxy.fromEndpoint(endpoint);
+  }
+
+  factory ViewAssociateOwnerProxy.connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ViewAssociateOwnerProxy p = new ViewAssociateOwnerProxy.unbound();
+    s.connectToService(url, p, serviceName);
+    return p;
+  }
+
+
+}
+
+class _ViewAssociateOwnerStubControl
+    extends bindings.StubMessageHandler
+    implements bindings.StubControl<ViewAssociateOwner> {
+  ViewAssociateOwner _impl;
+
+  _ViewAssociateOwnerStubControl.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ViewAssociateOwner impl])
+      : super.fromEndpoint(endpoint, autoBegin: impl != null) {
+    _impl = impl;
+  }
+
+  _ViewAssociateOwnerStubControl.fromHandle(
+      core.MojoHandle handle, [ViewAssociateOwner impl])
+      : super.fromHandle(handle, autoBegin: impl != null) {
+    _impl = impl;
+  }
+
+  _ViewAssociateOwnerStubControl.unbound([this._impl]) : super.unbound();
+
+
+
+  dynamic handleMessage(bindings.ServiceMessage message) {
+    if (bindings.ControlMessageHandler.isControlMessage(message)) {
+      return bindings.ControlMessageHandler.handleMessage(this,
+                                                          0,
+                                                          message);
+    }
+    if (_impl == null) {
+      throw new core.MojoApiError("$this has no implementation set");
+    }
+    switch (message.header.type) {
+      default:
+        throw new bindings.MojoCodecError("Unexpected message name");
+        break;
+    }
+    return null;
+  }
+
+  ViewAssociateOwner get impl => _impl;
+  set impl(ViewAssociateOwner d) {
+    if (d == null) {
+      throw new core.MojoApiError("$this: Cannot set a null implementation");
+    }
+    if (isBound && (_impl == null)) {
+      beginHandlingEvents();
+    }
+    _impl = d;
+  }
+
+  @override
+  void bind(core.MojoMessagePipeEndpoint endpoint) {
+    super.bind(endpoint);
+    if (!isOpen && (_impl != null)) {
+      beginHandlingEvents();
+    }
+  }
+
+  @override
+  String toString() {
+    var superString = super.toString();
+    return "_ViewAssociateOwnerStubControl($superString)";
+  }
+
+  int get version => 0;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ViewAssociateOwnerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+}
+
+class ViewAssociateOwnerStub
+    extends bindings.Stub<ViewAssociateOwner>
+    implements ViewAssociateOwner {
+  ViewAssociateOwnerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [ViewAssociateOwner impl])
+      : super(new _ViewAssociateOwnerStubControl.fromEndpoint(endpoint, impl));
+
+  ViewAssociateOwnerStub.fromHandle(
+      core.MojoHandle handle, [ViewAssociateOwner impl])
+      : super(new _ViewAssociateOwnerStubControl.fromHandle(handle, impl));
+
+  ViewAssociateOwnerStub.unbound([ViewAssociateOwner impl])
+      : super(new _ViewAssociateOwnerStubControl.unbound(impl));
+
+  static ViewAssociateOwnerStub newFromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint) {
+    assert(endpoint.setDescription("For ViewAssociateOwnerStub"));
+    return new ViewAssociateOwnerStub.fromEndpoint(endpoint);
+  }
+
+  static service_describer.ServiceDescription get serviceDescription =>
+      _ViewAssociateOwnerStubControl.serviceDescription;
+
+
+}
+
 const int _viewInspectorMethodGetHitTesterName = 0;
 const int _viewInspectorMethodResolveScenesName = 1;
 

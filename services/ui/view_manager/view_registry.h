@@ -31,14 +31,6 @@ class ViewRegistry : public mojo::ui::ViewInspector {
   explicit ViewRegistry(mojo::gfx::composition::CompositorPtr compositor);
   ~ViewRegistry() override;
 
-  // Begins connecting to the view associates.
-  // Invokes |connection_error_callback| if an associate connection fails
-  // and provides the associate's url.
-  void ConnectAssociates(
-      mojo::ApplicationImpl* app_impl,
-      const std::vector<std::string>& urls,
-      const AssociateConnectionErrorCallback& connection_error_callback);
-
   // VIEW MANAGER REQUESTS
 
   // Creates a view and returns its ViewToken.
@@ -53,6 +45,14 @@ class ViewRegistry : public mojo::ui::ViewInspector {
       mojo::InterfaceRequest<mojo::ui::ViewTree> view_tree_request,
       mojo::ui::ViewTreeListenerPtr view_tree_listener,
       const mojo::String& label);
+
+  void RegisterViewAssociate(
+      mojo::ui::ViewInspector* view_inspector,
+      mojo::ui::ViewAssociatePtr view_associate,
+      mojo::InterfaceRequest<mojo::ui::ViewAssociateOwner> view_associate_owner,
+      const mojo::String& label);
+
+  void FinishedRegisteringViewAssociates();
 
   // VIEW STUB REQUESTS
 

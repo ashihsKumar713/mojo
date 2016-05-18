@@ -24,6 +24,8 @@ class LaunchInstance : public mojo::NativeViewportEventDispatcher {
  public:
   LaunchInstance(mojo::ApplicationImpl* app_impl,
                  const std::string& app_url,
+                 mojo::gfx::composition::Compositor* compositor,
+                 mojo::ui::ViewManager* view_manager,
                  const base::Closure& shutdown_callback);
   ~LaunchInstance() override;
 
@@ -34,9 +36,6 @@ class LaunchInstance : public mojo::NativeViewportEventDispatcher {
   void OnEvent(mojo::EventPtr event,
                const mojo::Callback<void()>& callback) override;
 
-  void OnCompositorConnectionError();
-  void OnViewManagerConnectionError();
-
   void InitViewport();
   void OnViewportConnectionError();
   void OnViewportCreated(mojo::ViewportMetricsPtr metrics);
@@ -45,10 +44,10 @@ class LaunchInstance : public mojo::NativeViewportEventDispatcher {
 
   mojo::ApplicationImpl* app_impl_;
   std::string app_url_;
-  base::Closure shutdown_callback_;
 
-  mojo::gfx::composition::CompositorPtr compositor_;
-  mojo::ui::ViewManagerPtr view_manager_;
+  mojo::gfx::composition::Compositor* compositor_;
+  mojo::ui::ViewManager* view_manager_;
+  base::Closure shutdown_callback_;
 
   mojo::NativeViewportPtr viewport_;
   mojo::Binding<NativeViewportEventDispatcher>

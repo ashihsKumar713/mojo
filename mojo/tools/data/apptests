@@ -64,6 +64,9 @@ tests = [
     "test": "mojo:ui_associates_apptests",
   },
   {
+    "test": "mojo:view_manager_apptests",
+  },
+  {
     "test": "mojo:url_response_disk_cache_apptests",
   },
   {

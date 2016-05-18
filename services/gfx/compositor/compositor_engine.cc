@@ -83,13 +83,17 @@ void CompositorEngine::DestroyScene(SceneState* scene_state) {
   }
 
   // Destroy any renderers using this scene.
+  std::vector<RendererState*> renderers_to_destroy;
   for (auto& renderer : renderers_) {
     if (renderer->root_scene() == scene_state) {
-      LOG(ERROR) << "Destroying renderer whose root scene has become "
-                    "unavailable: renderer="
-                 << renderer;
-      DestroyRenderer(renderer);
+      renderers_to_destroy.emplace_back(renderer);
     }
+  }
+  for (auto& renderer : renderers_to_destroy) {
+    LOG(ERROR) << "Destroying renderer whose root scene has become "
+                  "unavailable: renderer="
+               << renderer;
+    DestroyRenderer(renderer);
   }
 
   // Consider all dependent rendering to be invalidated.

@@ -28,6 +28,11 @@ class ViewManagerImpl : public mojo::ui::ViewManager {
       mojo::InterfaceRequest<mojo::ui::ViewTree> view_tree_request,
       mojo::InterfaceHandle<mojo::ui::ViewTreeListener> view_tree_listener,
       const mojo::String& label) override;
+  void RegisterViewAssociate(
+      mojo::InterfaceHandle<mojo::ui::ViewAssociate> view_associate,
+      mojo::InterfaceRequest<mojo::ui::ViewAssociateOwner> view_associate_owner,
+      const mojo::String& label) override;
+  void FinishedRegisteringViewAssociates() override;
 
   ViewRegistry* registry_;
 

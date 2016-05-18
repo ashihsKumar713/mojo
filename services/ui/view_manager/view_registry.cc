@@ -59,13 +59,20 @@ ViewRegistry::ViewRegistry(mojo::gfx::composition::CompositorPtr compositor)
 
 ViewRegistry::~ViewRegistry() {}
 
-void ViewRegistry::ConnectAssociates(
-    mojo::ApplicationImpl* app_impl,
-    const std::vector<std::string>& urls,
-    const AssociateConnectionErrorCallback& connection_error_callback) {
-  associate_table_.ConnectAssociates(app_impl, this, urls,
-                                     connection_error_callback);
+// REGISTERING ASSOCIATES
+
+void ViewRegistry::RegisterViewAssociate(
+    mojo::ui::ViewInspector* view_inspector,
+    mojo::ui::ViewAssociatePtr view_associate,
+    mojo::InterfaceRequest<mojo::ui::ViewAssociateOwner> view_associate_owner,
+    const mojo::String& label) {
+  associate_table_.RegisterViewAssociate(view_inspector, view_associate.Pass(),
+                                         view_associate_owner.Pass(), label);
 }
+
+void ViewRegistry::FinishedRegisteringViewAssociates() {
+  associate_table_.FinishedRegisteringViewAssociates();
+};
 
 // CREATE / DESTROY VIEWS
 

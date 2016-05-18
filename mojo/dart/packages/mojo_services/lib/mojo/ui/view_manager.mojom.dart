@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
+import 'package:mojo_services/mojo/ui/view_associates.mojom.dart' as view_associates_mojom;
 import 'package:mojo_services/mojo/ui/view_token.mojom.dart' as view_token_mojom;
 import 'package:mojo_services/mojo/ui/view_trees.mojom.dart' as view_trees_mojom;
 import 'package:mojo_services/mojo/ui/views.mojom.dart' as views_mojom;
@@ -220,8 +221,165 @@ class _ViewManagerCreateViewTreeParams extends bindings.Struct {
   }
 }
 
+
+class _ViewManagerRegisterViewAssociateParams extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(32, 0)
+  ];
+  Object viewAssociate = null;
+  Object viewAssociateOwner = null;
+  String label = null;
+
+  _ViewManagerRegisterViewAssociateParams() : super(kVersions.last.size);
+
+  static _ViewManagerRegisterViewAssociateParams deserialize(bindings.Message message) {
+    var decoder = new bindings.Decoder(message);
+    var result = decode(decoder);
+    if (decoder.excessHandles != null) {
+      decoder.excessHandles.forEach((h) => h.close());
+    }
+    return result;
+  }
+
+  static _ViewManagerRegisterViewAssociateParams decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    _ViewManagerRegisterViewAssociateParams result = new _ViewManagerRegisterViewAssociateParams();
+
+    var mainDataHeader = decoder0.decodeStructDataHeader();
+    if (mainDataHeader.version <= kVersions.last.version) {
+      // Scan in reverse order to optimize for more recent versions.
+      for (int i = kVersions.length - 1; i >= 0; --i) {
+        if (mainDataHeader.version >= kVersions[i].version) {
+          if (mainDataHeader.size == kVersions[i].size) {
+            // Found a match.
+            break;
+          }
+          throw new bindings.MojoCodecError(
+              'Header size doesn\'t correspond to known version size.');
+        }
+      }
+    } else if (mainDataHeader.size < kVersions.last.size) {
+      throw new bindings.MojoCodecError(
+        'Message newer than the last known version cannot be shorter than '
+        'required by the last known version.');
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.viewAssociate = decoder0.decodeServiceInterface(8, false, view_associates_mojom.ViewAssociateProxy.newFromEndpoint);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.viewAssociateOwner = decoder0.decodeInterfaceRequest(16, false, view_associates_mojom.ViewAssociateOwnerStub.newFromEndpoint);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.label = decoder0.decodeString(24, true);
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    try {
+      encoder0.encodeInterface(viewAssociate, 8, false);
+    } on bindings.MojoCodecError catch(e) {
+      e.message = "Error encountered while encoding field "
+          "viewAssociate of struct _ViewManagerRegisterViewAssociateParams: $e";
+      rethrow;
+    }
+    try {
+      encoder0.encodeInterfaceRequest(viewAssociateOwner, 16, false);
+    } on bindings.MojoCodecError catch(e) {
+      e.message = "Error encountered while encoding field "
+          "viewAssociateOwner of struct _ViewManagerRegisterViewAssociateParams: $e";
+      rethrow;
+    }
+    try {
+      encoder0.encodeString(label, 24, true);
+    } on bindings.MojoCodecError catch(e) {
+      e.message = "Error encountered while encoding field "
+          "label of struct _ViewManagerRegisterViewAssociateParams: $e";
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "_ViewManagerRegisterViewAssociateParams("
+           "viewAssociate: $viewAssociate" ", "
+           "viewAssociateOwner: $viewAssociateOwner" ", "
+           "label: $label" ")";
+  }
+
+  Map toJson() {
+    throw new bindings.MojoCodecError(
+        'Object containing handles cannot be encoded to JSON.');
+  }
+}
+
+
+class _ViewManagerFinishedRegisteringViewAssociatesParams extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(8, 0)
+  ];
+
+  _ViewManagerFinishedRegisteringViewAssociatesParams() : super(kVersions.last.size);
+
+  static _ViewManagerFinishedRegisteringViewAssociatesParams deserialize(bindings.Message message) {
+    var decoder = new bindings.Decoder(message);
+    var result = decode(decoder);
+    if (decoder.excessHandles != null) {
+      decoder.excessHandles.forEach((h) => h.close());
+    }
+    return result;
+  }
+
+  static _ViewManagerFinishedRegisteringViewAssociatesParams decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    _ViewManagerFinishedRegisteringViewAssociatesParams result = new _ViewManagerFinishedRegisteringViewAssociatesParams();
+
+    var mainDataHeader = decoder0.decodeStructDataHeader();
+    if (mainDataHeader.version <= kVersions.last.version) {
+      // Scan in reverse order to optimize for more recent versions.
+      for (int i = kVersions.length - 1; i >= 0; --i) {
+        if (mainDataHeader.version >= kVersions[i].version) {
+          if (mainDataHeader.size == kVersions[i].size) {
+            // Found a match.
+            break;
+          }
+          throw new bindings.MojoCodecError(
+              'Header size doesn\'t correspond to known version size.');
+        }
+      }
+    } else if (mainDataHeader.size < kVersions.last.size) {
+      throw new bindings.MojoCodecError(
+        'Message newer than the last known version cannot be shorter than '
+        'required by the last known version.');
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    encoder.getStructEncoderAtOffset(kVersions.last);
+  }
+
+  String toString() {
+    return "_ViewManagerFinishedRegisteringViewAssociatesParams("")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    return map;
+  }
+}
+
 const int _viewManagerMethodCreateViewName = 0;
 const int _viewManagerMethodCreateViewTreeName = 1;
+const int _viewManagerMethodRegisterViewAssociateName = 2;
+const int _viewManagerMethodFinishedRegisteringViewAssociatesName = 3;
 
 class _ViewManagerServiceDescription implements service_describer.ServiceDescription {
   dynamic getTopLevelInterface([Function responseFactory]) =>
@@ -238,6 +396,8 @@ abstract class ViewManager {
   static const String serviceName = "mojo::ui::ViewManager";
   void createView(Object view, Object viewOwner, Object viewListener, String label);
   void createViewTree(Object viewTree, Object viewTreeListener, String label);
+  void registerViewAssociate(Object viewAssociate, Object viewAssociateOwner, String label);
+  void finishedRegisteringViewAssociates();
 }
 
 class _ViewManagerProxyControl
@@ -324,6 +484,27 @@ class ViewManagerProxy
     ctrl.sendMessage(params,
         _viewManagerMethodCreateViewTreeName);
   }
+  void registerViewAssociate(Object viewAssociate, Object viewAssociateOwner, String label) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewManagerRegisterViewAssociateParams();
+    params.viewAssociate = viewAssociate;
+    params.viewAssociateOwner = viewAssociateOwner;
+    params.label = label;
+    ctrl.sendMessage(params,
+        _viewManagerMethodRegisterViewAssociateName);
+  }
+  void finishedRegisteringViewAssociates() {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewManagerFinishedRegisteringViewAssociatesParams();
+    ctrl.sendMessage(params,
+        _viewManagerMethodFinishedRegisteringViewAssociatesName);
+  }
 }
 
 class _ViewManagerStubControl
@@ -366,6 +547,14 @@ class _ViewManagerStubControl
         var params = _ViewManagerCreateViewTreeParams.deserialize(
             message.payload);
         _impl.createViewTree(params.viewTree, params.viewTreeListener, params.label);
+        break;
+      case _viewManagerMethodRegisterViewAssociateName:
+        var params = _ViewManagerRegisterViewAssociateParams.deserialize(
+            message.payload);
+        _impl.registerViewAssociate(params.viewAssociate, params.viewAssociateOwner, params.label);
+        break;
+      case _viewManagerMethodFinishedRegisteringViewAssociatesName:
+        _impl.finishedRegisteringViewAssociates();
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
@@ -439,6 +628,12 @@ class ViewManagerStub
   }
   void createViewTree(Object viewTree, Object viewTreeListener, String label) {
     return impl.createViewTree(viewTree, viewTreeListener, label);
+  }
+  void registerViewAssociate(Object viewAssociate, Object viewAssociateOwner, String label) {
+    return impl.registerViewAssociate(viewAssociate, viewAssociateOwner, label);
+  }
+  void finishedRegisteringViewAssociates() {
+    return impl.finishedRegisteringViewAssociates();
   }
 }
 

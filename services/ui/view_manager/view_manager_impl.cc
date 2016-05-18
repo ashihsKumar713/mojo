@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "services/ui/view_manager/view_impl.h"
 #include "services/ui/view_manager/view_tree_impl.h"
 
@@ -34,6 +35,21 @@ void ViewManagerImpl::CreateViewTree(
       view_tree_request.Pass(),
       mojo::ui::ViewTreeListenerPtr::Create(std::move(view_tree_listener)),
       label);
+}
+
+// TODO(mikejurka): This should only be called by trusted code (ie launcher),
+// once we have a security story.
+void ViewManagerImpl::RegisterViewAssociate(
+    mojo::InterfaceHandle<mojo::ui::ViewAssociate> view_associate,
+    mojo::InterfaceRequest<mojo::ui::ViewAssociateOwner> view_associate_owner,
+    const mojo::String& label) {
+  registry_->RegisterViewAssociate(
+      registry_, mojo::ui::ViewAssociatePtr::Create(std::move(view_associate)),
+      view_associate_owner.Pass(), label);
+}
+
+void ViewManagerImpl::FinishedRegisteringViewAssociates() {
+  registry_->FinishedRegisteringViewAssociates();
 }
 
 }  // namespace view_manager

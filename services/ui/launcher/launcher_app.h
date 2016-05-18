@@ -24,6 +24,9 @@ class LauncherApp : public mojo::ApplicationDelegate, public Launcher {
  private:
   // |ApplicationDelegate|:
   void Initialize(mojo::ApplicationImpl* app_impl) override;
+  void InitCompositor();
+  void InitViewManager();
+  void InitViewAssociates(const std::string& associate_urls_command_line_param);
   bool ConfigureIncomingConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override;
 
@@ -32,13 +35,22 @@ class LauncherApp : public mojo::ApplicationDelegate, public Launcher {
 
   void OnLaunchTermination(uint32_t id);
 
+  void OnCompositorConnectionError();
+  void OnViewManagerConnectionError();
+  void OnViewAssociateConnectionError();
+
   mojo::ApplicationImpl* app_impl_;
   mojo::TracingImpl tracing_;
 
   mojo::BindingSet<Launcher> bindings_;
   std::unordered_map<uint32_t, std::unique_ptr<LaunchInstance>>
       launch_instances_;
+
   uint32_t next_id_;
+
+  mojo::gfx::composition::CompositorPtr compositor_;
+  mojo::ui::ViewManagerPtr view_manager_;
+  std::vector<mojo::ui::ViewAssociateOwnerPtr> view_associate_owners_;
 
   DISALLOW_COPY_AND_ASSIGN(LauncherApp);
 };

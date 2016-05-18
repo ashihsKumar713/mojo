@@ -14,26 +14,26 @@
 #include "mojo/common/binding_set.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/services/ui/views/interfaces/view_associates.mojom.h"
+#include "mojo/services/ui/views/interfaces/view_manager.mojom.h"
 
 namespace view_manager {
 
 // Maintains a table of all connected view associates.
-class ViewAssociateTable {
+class ViewAssociateTable : public mojo::ui::ViewAssociateOwner {
  public:
   using AssociateConnectionErrorCallback =
       base::Callback<void(const std::string&)>;
 
   ViewAssociateTable();
-  ~ViewAssociateTable();
+  ~ViewAssociateTable() override;
 
-  // Begins connecting to the view associates.
-  // Invokes |connection_error_callback| if an associate connection fails
-  // and provides the associate's url.
-  void ConnectAssociates(
-      mojo::ApplicationImpl* app_impl,
+  void RegisterViewAssociate(
       mojo::ui::ViewInspector* inspector,
-      const std::vector<std::string>& urls,
-      const AssociateConnectionErrorCallback& connection_error_callback);
+      mojo::ui::ViewAssociatePtr associate,
+      mojo::InterfaceRequest<mojo::ui::ViewAssociateOwner> view_associate_owner,
+      const mojo::String& label);
+
+  void FinishedRegisteringViewAssociates();
 
   // Connects to services offered by the view associates.
   void ConnectToViewService(mojo::ui::ViewTokenPtr view_token,
@@ -45,22 +45,35 @@ class ViewAssociateTable {
 
   void OnConnected(uint32_t index, mojo::ui::ViewAssociateInfoPtr info);
 
-  void CompleteDeferredWork();
+  size_t associate_count();
 
  private:
   struct AssociateData {
-    AssociateData(const std::string& url, mojo::ui::ViewInspector* inspector);
+    AssociateData(const std::string& label,
+                  mojo::ui::ViewAssociatePtr associate,
+                  mojo::ui::ViewAssociateOwner* associate_owner_impl,
+                  mojo::ui::ViewInspector* inspector);
     ~AssociateData();
 
-    const std::string url;
+    void BindOwner(mojo::InterfaceRequest<mojo::ui::ViewAssociateOwner>
+                       view_associate_owner_request);
+
+    const std::string label;
     mojo::ui::ViewAssociatePtr associate;
+    mojo::Binding<mojo::ui::ViewAssociateOwner> associate_owner;
     mojo::ui::ViewAssociateInfoPtr info;
     mojo::Binding<mojo::ui::ViewInspector> inspector_binding;
   };
 
+  bool RemoveAssociateData(AssociateData* associate_data, std::string& label);
+  void CompleteDeferredWorkIfReady();
+  void OnAssociateOwnerConnectionError(AssociateData* associate_data);
+  void OnAssociateConnectionError(AssociateData* associate_data);
+
   std::vector<std::unique_ptr<AssociateData>> associates_;
 
   uint32_t pending_connection_count_ = 0u;
+  bool waiting_to_register_associates_ = true;
   std::vector<base::Closure> deferred_work_;
 
   DISALLOW_COPY_AND_ASSIGN(ViewAssociateTable);
