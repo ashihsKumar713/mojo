@@ -4,8 +4,6 @@
 
 #include "services/authenticating_url_loader_interceptor/authenticating_url_loader_interceptor_app.h"
 
-#include "mojo/application/application_runner_chromium.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "services/authenticating_url_loader_interceptor/authenticating_url_loader_interceptor_meta_factory_impl.h"
 
@@ -40,9 +38,3 @@ bool AuthenticatingURLLoaderInterceptorApp::ConfigureIncomingConnection(
 }
 
 }  // namespace mojo
-
-MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(
-      new mojo::AuthenticatingURLLoaderInterceptorApp);
-  return runner.Run(application_request);
-}
