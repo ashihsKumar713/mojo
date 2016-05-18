@@ -14,6 +14,7 @@ namespace ui {
 namespace {
 
 class X11EventSourceLibevent : public X11EventSource,
+                               public base::MessagePumpLibevent::EventSource,
                                public base::MessagePumpLibevent::Watcher {
  public:
   explicit X11EventSourceLibevent(XDisplay* display)
@@ -23,6 +24,8 @@ class X11EventSourceLibevent : public X11EventSource,
   }
 
   ~X11EventSourceLibevent() override {
+    if (initialized_)
+      base::MessageLoopForUI::current()->ClearEventSource();
   }
 
  private:
@@ -33,15 +36,18 @@ class X11EventSourceLibevent : public X11EventSource,
       return;
 
     int fd = ConnectionNumber(display());
-    base::MessageLoopForUI::current()->WatchFileDescriptor(fd, true,
-        base::MessagePumpLibevent::WATCH_READ, &watcher_controller_, this);
+    base::MessageLoopForUI::current()->WatchFileDescriptor(
+        fd, true, base::MessagePumpLibevent::WATCH_READ, &watcher_controller_,
+        this);
+    base::MessageLoopForUI::current()->SetEventSource(this);
     initialized_ = true;
   }
 
   // PlatformEventSource:
-  void OnDispatcherListChanged() override {
-    AddEventWatcher();
-  }
+  void OnDispatcherListChanged() override { AddEventWatcher(); }
+
+  // base::MessagePumpLibEvent::EventSource:
+  bool Poll() override { return DispatchXEvents(); }
 
   // base::MessagePumpLibevent::Watcher:
   void OnFileCanReadWithoutBlocking(int fd) override {

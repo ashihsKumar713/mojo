@@ -9,8 +9,10 @@
 #include <X11/Xlib.h>
 #include <X11/XKBlib.h>
 
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "ui/events/devices/x11/device_data_manager_x11.h"
+#include "ui/events/event_switches.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/events/platform/x11/x11_hotplug_event_handler.h"
@@ -81,6 +83,10 @@ X11EventSource::X11EventSource(XDisplay* display)
   DeviceDataManagerX11::CreateInstance();
   InitializeXInput2(display_);
   InitializeXkb(display_);
+
+  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  dispatch_one_event_per_loop_ =
+      cmdline->HasSwitch(switches::kDispatchOneEventPerLoop);
 }
 
 X11EventSource::~X11EventSource() {
@@ -94,17 +100,19 @@ X11EventSource* X11EventSource::GetInstance() {
 ////////////////////////////////////////////////////////////////////////////////
 // X11EventSource, public
 
-void X11EventSource::DispatchXEvents() {
+bool X11EventSource::DispatchXEvents() {
   DCHECK(display_);
-  // Handle all pending events.
-  // It may be useful to eventually align this event dispatch with vsync, but
-  // not yet.
-  continue_stream_ = true;
-  while (XPending(display_) && continue_stream_) {
+
+  int pending_events = XPending(display_);
+  if (!pending_events)
+    return false;
+  do {
     XEvent xevent;
     XNextEvent(display_, &xevent);
     DispatchEvent(&xevent);
-  }
+  } while (--pending_events && continue_stream_ &&
+           !dispatch_one_event_per_loop_);
+  return true;
 }
 
 void X11EventSource::BlockUntilWindowMapped(XID window) {

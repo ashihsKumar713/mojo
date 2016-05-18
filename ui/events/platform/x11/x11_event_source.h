@@ -28,9 +28,10 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource {
 
   static X11EventSource* GetInstance();
 
-  // Called by the glib source dispatch function. Processes all (if any)
-  // available X events.
-  void DispatchXEvents();
+  // Processes pending X events.  Returns true if any events were dispatched.
+  // This function should be called repeatedly until it returns false to
+  // ensure all events are processed.
+  bool DispatchXEvents();
 
   // Blocks on the X11 event queue until we receive notification from the
   // xserver that |w| has been mapped; StructureNotifyMask events on |w| are
@@ -58,6 +59,9 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource {
   // Keeps track of whether this source should continue to dispatch all the
   // available events.
   bool continue_stream_;
+
+  // Dispatch one event at a time.
+  bool dispatch_one_event_per_loop_;
 
   scoped_ptr<X11HotplugEventHandler> hotplug_event_handler_;
 

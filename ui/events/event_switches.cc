@@ -43,4 +43,9 @@ const char kExtraTouchNoiseFiltering[] = "touch-noise-filtering";
 const char kTouchCalibration[] = "touch-calibration";
 #endif
 
+#if defined(USE_X11)
+// Dispatch one event per iteration of the message loop.
+const char kDispatchOneEventPerLoop[] = "dispatch-one-event-per-loop";
+#endif
+
 }  // namespace switches

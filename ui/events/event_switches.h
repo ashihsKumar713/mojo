@@ -26,6 +26,10 @@ EVENTS_BASE_EXPORT extern const char kExtraTouchNoiseFiltering[];
 EVENTS_BASE_EXPORT extern const char kTouchCalibration[];
 #endif
 
+#if defined(USE_X11)
+EVENTS_BASE_EXPORT extern const char kDispatchOneEventPerLoop[];
+#endif
+
 }  // namespace switches
 
 #endif  // UI_EVENTS_EVENTS_SWITCHES_H_
