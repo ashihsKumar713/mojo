@@ -47,7 +47,7 @@ class EchoTracingApp extends Application {
     // Setup the connection to the echo app.
     for (int i = 0; i < _numClients; i++) {
       var newProxy = new EchoProxy.unbound();
-      newProxy.errorFuture.then((e) {
+      newProxy.ctrl.errorFuture.then((e) {
         _errorHandler(e);
       });
       connectToService(echoUrl, newProxy);
