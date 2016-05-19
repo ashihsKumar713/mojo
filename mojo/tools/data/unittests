@@ -57,9 +57,6 @@ tests = [
     "test": "mojo_application_manager_unittests",
   },
   {
-    "test": "mojo_common_unittests",
-  },
-  {
     "test": "mojo_converters_unittests",
   },
   {

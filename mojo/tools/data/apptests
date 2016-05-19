@@ -48,6 +48,15 @@ tests = [
     "test": "mojo:mojio_apptests",
   },
   {
+    "test": "mojo:mojo_common_apptests",
+  },
+  {
+    "test": "mojo:mojo_data_pipe_utils_apptests",
+  },
+  {
+    "test": "mojo:mojo_message_pump_apptests",
+  },
+  {
     "test": "mojo:moterm_apptests",
   },
   {
