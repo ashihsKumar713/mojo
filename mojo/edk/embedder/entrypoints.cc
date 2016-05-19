@@ -27,6 +27,10 @@ MojoResult MojoClose(MojoHandle handle) {
   return g_core->Close(handle);
 }
 
+MojoResult MojoGetRights(MojoHandle handle, MojoHandleRights* rights) {
+  return g_core->GetRights(handle, MakeUserPointer(rights));
+}
+
 MojoResult MojoWait(MojoHandle handle,
                     MojoHandleSignals signals,
                     MojoDeadline deadline,

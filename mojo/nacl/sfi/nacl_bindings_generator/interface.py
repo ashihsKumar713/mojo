@@ -20,6 +20,10 @@ def MakeInterface():
   f = mojo.Func('MojoClose', 'MojoResult')
   f.Param('handle').In('MojoHandle')
 
+  f = mojo.Func('MojoGetRights', 'MojoResult')
+  f.Param('handle').In('MojoHandle')
+  f.Param('rights').Out('MojoHandleRights')
+
   f = mojo.Func('MojoWait', 'MojoResult')
   f.Param('handle').In('MojoHandle')
   f.Param('signals').In('MojoHandleSignals')

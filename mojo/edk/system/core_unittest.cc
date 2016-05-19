@@ -20,6 +20,17 @@ namespace mojo {
 namespace system {
 namespace {
 
+const MojoHandleRights kDefaultMessagePipeHandleRights =
+    MOJO_HANDLE_RIGHT_TRANSFER | MOJO_HANDLE_RIGHT_READ |
+    MOJO_HANDLE_RIGHT_WRITE | MOJO_HANDLE_RIGHT_GET_OPTIONS |
+    MOJO_HANDLE_RIGHT_SET_OPTIONS;
+const MojoHandleRights kDefaultDataPipeProducerHandleRights =
+    MOJO_HANDLE_RIGHT_TRANSFER | MOJO_HANDLE_RIGHT_WRITE |
+    MOJO_HANDLE_RIGHT_GET_OPTIONS | MOJO_HANDLE_RIGHT_SET_OPTIONS;
+const MojoHandleRights kDefaultDataPipeConsumerHandleRights =
+    MOJO_HANDLE_RIGHT_TRANSFER | MOJO_HANDLE_RIGHT_READ |
+    MOJO_HANDLE_RIGHT_GET_OPTIONS | MOJO_HANDLE_RIGHT_SET_OPTIONS;
+
 const MojoHandleSignalsState kEmptyMojoHandleSignalsState = {0u, 0u};
 const MojoHandleSignalsState kFullMojoHandleSignalsState = {~0u, ~0u};
 
@@ -44,7 +55,7 @@ TEST_F(CoreTest, Basic) {
   EXPECT_EQ(1u, info.GetCtorCallCount());
   EXPECT_NE(h, MOJO_HANDLE_INVALID);
 
-  MojoHandleRights rights = 0;
+  MojoHandleRights rights = MOJO_HANDLE_RIGHT_NONE;
   EXPECT_EQ(MOJO_RESULT_OK, core()->GetRights(h, MakeUserPointer(&rights)));
   EXPECT_EQ(kDefaultMockHandleRights, rights);
 
@@ -210,7 +221,7 @@ TEST_F(CoreTest, InvalidArguments) {
 
   // |GetRights()|:
   {
-    MojoHandleRights rights = 0;
+    MojoHandleRights rights = MOJO_HANDLE_RIGHT_NONE;
     EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
               core()->GetRights(MOJO_HANDLE_INVALID, MakeUserPointer(&rights)));
     EXPECT_EQ(0u, rights);
@@ -670,16 +681,12 @@ TEST_F(CoreTest, MessagePipe) {
   EXPECT_NE(h[0], h[1]);
 
   // Both should have the correct rights.
-  static const MojoHandleRights kMessagePipeHandleRights =
-      MOJO_HANDLE_RIGHT_TRANSFER | MOJO_HANDLE_RIGHT_READ |
-      MOJO_HANDLE_RIGHT_WRITE | MOJO_HANDLE_RIGHT_GET_OPTIONS |
-      MOJO_HANDLE_RIGHT_SET_OPTIONS;
   MojoHandleRights rights = MOJO_HANDLE_RIGHT_NONE;
   EXPECT_EQ(MOJO_RESULT_OK, core()->GetRights(h[0], MakeUserPointer(&rights)));
-  EXPECT_EQ(kMessagePipeHandleRights, rights);
+  EXPECT_EQ(kDefaultMessagePipeHandleRights, rights);
   rights = MOJO_HANDLE_RIGHT_NONE;
   EXPECT_EQ(MOJO_RESULT_OK, core()->GetRights(h[1], MakeUserPointer(&rights)));
-  EXPECT_EQ(kMessagePipeHandleRights, rights);
+  EXPECT_EQ(kDefaultMessagePipeHandleRights, rights);
 
   // Neither should be readable.
   MojoHandleSignals signals[2] = {MOJO_HANDLE_SIGNAL_READABLE,
@@ -981,6 +988,12 @@ TEST_F(CoreTest, MessagePipeBasicLocalHandlePassing1) {
   // fails. See above note.
   EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, core()->Close(h_passed[1]));
 
+  // Check that |h_received| still has the expected rights.
+  MojoHandleRights rights = MOJO_HANDLE_RIGHT_NONE;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            core()->GetRights(h_received, MakeUserPointer(&rights)));
+  EXPECT_EQ(kDefaultMessagePipeHandleRights, rights);
+
   // Write to |h_passed[0]|. Should receive on |h_received|.
   EXPECT_EQ(MOJO_RESULT_OK,
             core()->WriteMessage(h_passed[0], UserPointer<const void>(kHello),
@@ -1027,18 +1040,12 @@ TEST_F(CoreTest, DataPipe) {
   EXPECT_NE(ph, ch);
 
   // Both should have the correct rights.
-  static const MojoHandleRights kDataPipeProducerHandleRights =
-      MOJO_HANDLE_RIGHT_TRANSFER | MOJO_HANDLE_RIGHT_WRITE |
-      MOJO_HANDLE_RIGHT_GET_OPTIONS | MOJO_HANDLE_RIGHT_SET_OPTIONS;
-  static const MojoHandleRights kDataPipeConsumerHandleRights =
-      MOJO_HANDLE_RIGHT_TRANSFER | MOJO_HANDLE_RIGHT_READ |
-      MOJO_HANDLE_RIGHT_GET_OPTIONS | MOJO_HANDLE_RIGHT_SET_OPTIONS;
   MojoHandleRights rights = MOJO_HANDLE_RIGHT_NONE;
   EXPECT_EQ(MOJO_RESULT_OK, core()->GetRights(ph, MakeUserPointer(&rights)));
-  EXPECT_EQ(kDataPipeProducerHandleRights, rights);
+  EXPECT_EQ(kDefaultDataPipeProducerHandleRights, rights);
   rights = MOJO_HANDLE_RIGHT_NONE;
   EXPECT_EQ(MOJO_RESULT_OK, core()->GetRights(ch, MakeUserPointer(&rights)));
-  EXPECT_EQ(kDataPipeConsumerHandleRights, rights);
+  EXPECT_EQ(kDefaultDataPipeConsumerHandleRights, rights);
 
   // Producer should be never-readable, but already writable.
   hss = kEmptyMojoHandleSignalsState;
@@ -1464,6 +1471,12 @@ TEST_F(CoreTest, MessagePipeBasicLocalHandlePassing2) {
   // above note.
   EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, core()->Close(ch));
 
+  // Check that |ch_received| still has the expected rights.
+  MojoHandleRights rights = MOJO_HANDLE_RIGHT_NONE;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            core()->GetRights(ch_received, MakeUserPointer(&rights)));
+  EXPECT_EQ(kDefaultDataPipeConsumerHandleRights, rights);
+
   // Write to |ph|. Should receive on |ch_received|.
   num_bytes = kWorldSize;
   EXPECT_EQ(MOJO_RESULT_OK,
@@ -1523,6 +1536,12 @@ TEST_F(CoreTest, MessagePipeBasicLocalHandlePassing2) {
   // |ph| should no longer be valid; check that trying to close it fails. See
   // above note.
   EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, core()->Close(ph));
+
+  // Check that |ph_received| still has the expected rights.
+  rights = MOJO_HANDLE_RIGHT_NONE;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            core()->GetRights(ph_received, MakeUserPointer(&rights)));
+  EXPECT_EQ(kDefaultDataPipeProducerHandleRights, rights);
 
   // Write to |ph_received|. Should receive on |ch_received|.
   num_bytes = kHelloSize;

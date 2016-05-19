@@ -92,6 +92,14 @@ MojoResult MojoSystemImplClose(MojoSystemImpl system, MojoHandle handle) {
   return core->Close(handle);
 }
 
+MojoResult MojoSystemImplGetRights(MojoSystemImpl system,
+                                   MojoHandle handle,
+                                   MojoHandleRights* rights) {
+  mojo::system::Core* core = static_cast<mojo::system::Core*>(system);
+  DCHECK(core);
+  return core->GetRights(handle, MakeUserPointer(rights));
+}
+
 MojoResult MojoSystemImplWait(MojoSystemImpl system,
                               MojoHandle handle,
                               MojoHandleSignals signals,
