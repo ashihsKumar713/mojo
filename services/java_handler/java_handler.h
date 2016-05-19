@@ -41,7 +41,6 @@ class JavaHandler : public mojo::ApplicationDelegate,
                       const base::Closure& callback);
 
   mojo::TracingImpl tracing_;
-  mojo::ContentHandlerFactory content_handler_factory_;
   mojo::URLResponseDiskCachePtr url_response_disk_cache_;
   scoped_refptr<base::SingleThreadTaskRunner> handler_task_runner_;
   MOJO_DISALLOW_COPY_AND_ASSIGN(JavaHandler);

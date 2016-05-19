@@ -53,7 +53,7 @@ bool RegisterJNI(JNIEnv* env) {
 namespace services {
 namespace android {
 
-JavaHandler::JavaHandler() : content_handler_factory_(this) {}
+JavaHandler::JavaHandler() {}
 
 JavaHandler::~JavaHandler() {}
 
@@ -121,7 +121,7 @@ void JavaHandler::GetApplication(base::FilePath* archive_path,
 bool JavaHandler::ConfigureIncomingConnection(
     mojo::ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<mojo::ContentHandler>(
-      content_handler_factory_.GetInterfaceRequestHandler());
+      mojo::ContentHandlerFactory::GetInterfaceRequestHandler(this));
   return true;
 }
 

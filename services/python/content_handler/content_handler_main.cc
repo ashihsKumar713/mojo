@@ -204,10 +204,7 @@ class PythonContentHandler : public ContentHandlerFactory::Delegate {
 class PythonContentHandlerApp : public ApplicationDelegate {
  public:
   PythonContentHandlerApp()
-      : content_handler_(false),
-        debug_content_handler_(true),
-        content_handler_factory_(&content_handler_),
-        debug_content_handler_factory_(&debug_content_handler_) {}
+      : content_handler_(false), debug_content_handler_(true) {}
 
  private:
   // Overridden from ApplicationDelegate:
@@ -215,10 +212,11 @@ class PythonContentHandlerApp : public ApplicationDelegate {
       mojo::ServiceProviderImpl* service_provider_impl) override {
     if (IsDebug(service_provider_impl->connection_context().connection_url)) {
       service_provider_impl->AddService<mojo::ContentHandler>(
-          debug_content_handler_factory_.GetInterfaceRequestHandler());
+          ContentHandlerFactory::GetInterfaceRequestHandler(
+              &debug_content_handler_));
     } else {
       service_provider_impl->AddService<mojo::ContentHandler>(
-          content_handler_factory_.GetInterfaceRequestHandler());
+          ContentHandlerFactory::GetInterfaceRequestHandler(&content_handler_));
     }
     return true;
   }
@@ -236,8 +234,6 @@ class PythonContentHandlerApp : public ApplicationDelegate {
 
   PythonContentHandler content_handler_;
   PythonContentHandler debug_content_handler_;
-  ContentHandlerFactory content_handler_factory_;
-  ContentHandlerFactory debug_content_handler_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(PythonContentHandlerApp);
 };

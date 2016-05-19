@@ -41,7 +41,6 @@ class AndroidHandler : public mojo::ApplicationDelegate,
                           mojo::URLResponsePtr response,
                           const base::Closure& callback);
 
-  mojo::ContentHandlerFactory content_handler_factory_;
   mojo::URLResponseDiskCachePtr url_response_disk_cache_;
   scoped_refptr<base::SingleThreadTaskRunner> handler_task_runner_;
 

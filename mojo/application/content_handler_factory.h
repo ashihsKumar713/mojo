@@ -15,7 +15,8 @@ namespace mojo {
 
 struct ConnectionContext;
 
-// TODO(vtl): Should this even be a class, now that InterfaceFactory is no more?
+// TODO(vtl): Nuke this class. Now it's only a "namespace" for stuff, most of
+// which is overcomplicated.
 class ContentHandlerFactory {
  public:
   class HandledApplicationHolder {
@@ -49,21 +50,9 @@ class ContentHandlerFactory {
                         URLResponsePtr response) override;
   };
 
-  explicit ContentHandlerFactory(Delegate* delegate);
-  ~ContentHandlerFactory();
-
-  // Creates a content handler for the given connection (context and request).
-  void Create(const ConnectionContext& connection_context,
-              InterfaceRequest<ContentHandler> content_handler_request);
-
   // For use with |ServiceProviderImpl::AddService<ContentHandler>()|.
-  ServiceProviderImpl::InterfaceRequestHandler<ContentHandler>
-  GetInterfaceRequestHandler();
-
- private:
-  Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentHandlerFactory);
+  static ServiceProviderImpl::InterfaceRequestHandler<ContentHandler>
+  GetInterfaceRequestHandler(Delegate* delegate);
 };
 
 template <class A>

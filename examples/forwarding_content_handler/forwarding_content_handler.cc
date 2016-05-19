@@ -54,14 +54,14 @@ class ForwardingApplicationImpl : public Application {
 class ForwardingContentHandler : public ApplicationDelegate,
                                  public ContentHandlerFactory::ManagedDelegate {
  public:
-  ForwardingContentHandler() : content_handler_factory_(this) {}
+  ForwardingContentHandler() {}
 
  private:
   // Overridden from ApplicationDelegate:
   bool ConfigureIncomingConnection(
       ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<ContentHandler>(
-        content_handler_factory_.GetInterfaceRequestHandler());
+        ContentHandlerFactory::GetInterfaceRequestHandler(this));
     return true;
   }
 
@@ -79,8 +79,6 @@ class ForwardingContentHandler : public ApplicationDelegate,
     return make_handled_factory_holder(
         new ForwardingApplicationImpl(application_request.Pass(), target_url));
   }
-
-  ContentHandlerFactory content_handler_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(ForwardingContentHandler);
 };

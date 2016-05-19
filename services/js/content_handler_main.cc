@@ -17,7 +17,7 @@ namespace js {
 class JsContentHandler : public mojo::ApplicationDelegate,
                          public mojo::ContentHandlerFactory::ManagedDelegate {
  public:
-  JsContentHandler() : content_handler_factory_(this) {}
+  JsContentHandler() {}
 
  private:
   // Overridden from mojo::ApplicationDelegate:
@@ -33,7 +33,7 @@ class JsContentHandler : public mojo::ApplicationDelegate,
   bool ConfigureIncomingConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<mojo::ContentHandler>(
-        content_handler_factory_.GetInterfaceRequestHandler());
+        mojo::ContentHandlerFactory::GetInterfaceRequestHandler(this));
     return true;
   }
 
@@ -45,8 +45,6 @@ class JsContentHandler : public mojo::ApplicationDelegate,
     return make_scoped_ptr(
         new JSApp(application_request.Pass(), response.Pass()));
   }
-
-  mojo::ContentHandlerFactory content_handler_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(JsContentHandler);
 };

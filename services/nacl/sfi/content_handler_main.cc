@@ -74,7 +74,7 @@ NaClDesc* FileStreamToNaClDesc(FILE* file_stream) {
 class NaClContentHandler : public mojo::ApplicationDelegate,
                            public mojo::ContentHandlerFactory::Delegate {
  public:
-  NaClContentHandler() : content_handler_factory_(this) {}
+  NaClContentHandler() {}
 
  private:
   // Overridden from ApplicationDelegate:
@@ -106,7 +106,7 @@ class NaClContentHandler : public mojo::ApplicationDelegate,
   bool ConfigureIncomingConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<mojo::ContentHandler>(
-        content_handler_factory_.GetInterfaceRequestHandler());
+        mojo::ContentHandlerFactory::GetInterfaceRequestHandler(this));
     return true;
   }
 
@@ -139,7 +139,6 @@ class NaClContentHandler : public mojo::ApplicationDelegate,
     NOTREACHED();
   }
 
-  mojo::ContentHandlerFactory content_handler_factory_;
   GURL url_;
   base::ScopedFILE irt_fp_;
 

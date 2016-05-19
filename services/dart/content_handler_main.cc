@@ -135,8 +135,6 @@ class DartContentHandlerApp : public mojo::ApplicationDelegate {
   DartContentHandlerApp()
       : content_handler_(this, false),
         strict_content_handler_(this, true),
-        content_handler_factory_(&content_handler_),
-        strict_content_handler_factory_(&strict_content_handler_),
         service_connector_(nullptr),
         default_strict_(false),
         run_on_message_loop_(false) {}
@@ -242,10 +240,12 @@ class DartContentHandlerApp : public mojo::ApplicationDelegate {
         service_provider_impl->connection_context().connection_url);
     if (default_strict_ || strict) {
       service_provider_impl->AddService<mojo::ContentHandler>(
-          strict_content_handler_factory_.GetInterfaceRequestHandler());
+          mojo::ContentHandlerFactory::GetInterfaceRequestHandler(
+              &strict_content_handler_));
     } else {
       service_provider_impl->AddService<mojo::ContentHandler>(
-          content_handler_factory_.GetInterfaceRequestHandler());
+          mojo::ContentHandlerFactory::GetInterfaceRequestHandler(
+              &content_handler_));
     }
     return true;
   }
@@ -253,8 +253,6 @@ class DartContentHandlerApp : public mojo::ApplicationDelegate {
   mojo::TracingImpl tracing_;
   DartContentHandler content_handler_;
   DartContentHandler strict_content_handler_;
-  mojo::ContentHandlerFactory content_handler_factory_;
-  mojo::ContentHandlerFactory strict_content_handler_factory_;
   mojo::URLResponseDiskCachePtr url_response_disk_cache_;
   ContentHandlerAppServiceConnector* service_connector_;
   DartTracingImpl dart_tracing_;

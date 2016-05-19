@@ -83,11 +83,9 @@ void RunAndroidApplication(JNIEnv* env,
 
 }  // namespace
 
-AndroidHandler::AndroidHandler() : content_handler_factory_(this) {
-}
+AndroidHandler::AndroidHandler() {}
 
-AndroidHandler::~AndroidHandler() {
-}
+AndroidHandler::~AndroidHandler() {}
 
 void AndroidHandler::RunApplication(
     mojo::InterfaceRequest<mojo::Application> application_request,
@@ -133,7 +131,7 @@ void AndroidHandler::Initialize(mojo::ApplicationImpl* app) {
 bool AndroidHandler::ConfigureIncomingConnection(
     mojo::ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<mojo::ContentHandler>(
-      content_handler_factory_.GetInterfaceRequestHandler());
+      mojo::ContentHandlerFactory::GetInterfaceRequestHandler(this));
   return true;
 }
 

@@ -31,7 +31,7 @@ namespace content_handler {
 class PexeContentHandler : public mojo::ApplicationDelegate,
                            public mojo::ContentHandlerFactory::Delegate {
  public:
-  PexeContentHandler() : content_handler_factory_(this) {}
+  PexeContentHandler() {}
 
  private:
   // Overridden from ApplicationDelegate:
@@ -53,7 +53,7 @@ class PexeContentHandler : public mojo::ApplicationDelegate,
   bool ConfigureIncomingConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<mojo::ContentHandler>(
-        content_handler_factory_.GetInterfaceRequestHandler());
+        mojo::ContentHandlerFactory::GetInterfaceRequestHandler(this));
     return true;
   }
 
@@ -152,7 +152,6 @@ class PexeContentHandler : public mojo::ApplicationDelegate,
  private:
   mojo::SynchronousInterfacePtr<mojo::files::Directory> nexe_cache_directory_;
   mojo::files::FilesPtr files_;
-  mojo::ContentHandlerFactory content_handler_factory_;
   mojo::SynchronousInterfacePtr<mojo::nacl::PexeCompilerInit> compiler_init_;
   mojo::SynchronousInterfacePtr<mojo::nacl::PexeLinkerInit> linker_init_;
 

@@ -18,14 +18,14 @@ namespace examples {
 class RecursiveContentHandler : public ApplicationDelegate,
                                 public ContentHandlerFactory::ManagedDelegate {
  public:
-  RecursiveContentHandler() : content_handler_factory_(this) {}
+  RecursiveContentHandler() {}
 
  private:
   // Overridden from ApplicationDelegate:
   bool ConfigureIncomingConnection(
       ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<ContentHandler>(
-        content_handler_factory_.GetInterfaceRequestHandler());
+        ContentHandlerFactory::GetInterfaceRequestHandler(this));
     return true;
   }
 
@@ -37,8 +37,6 @@ class RecursiveContentHandler : public ApplicationDelegate,
     return make_handled_factory_holder(new mojo::ApplicationImpl(
         new RecursiveContentHandler(), application_request.Pass()));
   }
-
-  ContentHandlerFactory content_handler_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(RecursiveContentHandler);
 };

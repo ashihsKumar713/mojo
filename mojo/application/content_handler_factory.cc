@@ -4,7 +4,7 @@
 
 #include "mojo/application/content_handler_factory.h"
 
-#include <set>
+#include <map>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -111,22 +111,12 @@ class ContentHandlerImpl : public ContentHandler {
 
 }  // namespace
 
-ContentHandlerFactory::ContentHandlerFactory(Delegate* delegate)
-    : delegate_(delegate) {}
-
-ContentHandlerFactory::~ContentHandlerFactory() {}
-
-void ContentHandlerFactory::Create(
-    const ConnectionContext& connection_context,
-    InterfaceRequest<ContentHandler> content_handler_request) {
-  new ContentHandlerImpl(delegate_, content_handler_request.Pass());
-}
-
+// static
 ServiceProviderImpl::InterfaceRequestHandler<ContentHandler>
-ContentHandlerFactory::GetInterfaceRequestHandler() {
-  return [this](const ConnectionContext& connection_context,
-                InterfaceRequest<ContentHandler> content_handler_request) {
-    Create(connection_context, content_handler_request.Pass());
+ContentHandlerFactory::GetInterfaceRequestHandler(Delegate* delegate) {
+  return [delegate](const ConnectionContext& connection_context,
+                    InterfaceRequest<ContentHandler> content_handler_request) {
+    new ContentHandlerImpl(delegate, content_handler_request.Pass());
   };
 }
 
