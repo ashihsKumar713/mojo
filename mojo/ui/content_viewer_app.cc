@@ -64,8 +64,11 @@ void ContentViewerApp::StartViewer(
     mojo::InterfaceRequest<mojo::Application> application_request,
     mojo::URLResponsePtr response) {
   ViewProviderApp* app = LoadContent(content_handler_url, response.Pass());
-  if (app)
+  if (app) {
+    // TODO(vtl): This is leaky, since |ApplicationImpl| doesn't own itself.
+    // (Also, who owns |*app|?)
     new mojo::ApplicationImpl(app, application_request.Pass());
+  }
 }
 
 }  // namespace ui
