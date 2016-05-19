@@ -6,15 +6,27 @@ import("//mojo/public/mojo_application.gni")
 
 mojo_native_application("files") {
   sources = [
+    "main.cc",
+  ]
+
+  deps = [
+    ":lib",
+    "//mojo/application",
+  ]
+}
+
+source_set("lib") {
+  sources = [
     "directory_impl.cc",
     "directory_impl.h",
     "file_impl.cc",
     "file_impl.h",
+    "files_app.cc",
+    "files_app.h",
     "files_impl.cc",
     "files_impl.h",
     "futimens.h",
     "futimens_android.cc",
-    "main.cc",
     "shared_impl.cc",
     "shared_impl.h",
     "util.cc",

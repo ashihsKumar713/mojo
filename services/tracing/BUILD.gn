@@ -8,6 +8,16 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojo_native_application("tracing") {
   sources = [
     "main.cc",
+  ]
+
+  deps = [
+    ":lib",
+    "//mojo/application",
+  ]
+}
+
+source_set("lib") {
+  sources = [
     "trace_data_sink.cc",
     "trace_data_sink.h",
     "trace_recorder_impl.cc",

@@ -18,6 +18,17 @@ embed_file("embed_icu_data") {
 
 mojo_native_application("icu_data") {
   sources = [
+    "main.cc",
+  ]
+
+  deps = [
+    ":lib",
+    "//mojo/application",
+  ]
+}
+
+source_set("lib") {
+  sources = [
     "icu_data_impl.cc",
   ]
 

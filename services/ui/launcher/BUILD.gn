@@ -8,13 +8,23 @@ import("//testing/test.gni")
 
 mojo_native_application("launcher") {
   sources = [
+    "main.cc",
+  ]
+
+  deps = [
+    ":lib",
+    "//mojo/application",
+  ]
+}
+
+source_set("lib") {
+  sources = [
     "launch_instance.cc",
     "launch_instance.h",
     "launcher_app.cc",
     "launcher_app.h",
     "launcher_view_tree.cc",
     "launcher_view_tree.h",
-    "main.cc",
   ]
 
   deps = [

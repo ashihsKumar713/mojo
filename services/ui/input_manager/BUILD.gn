@@ -9,6 +9,17 @@ mojo_native_application("input_manager") {
   output_name = "input_manager_service"
 
   sources = [
+    "main.cc",
+  ]
+
+  deps = [
+    ":lib",
+    "//mojo/application",
+  ]
+}
+
+source_set("lib") {
+  sources = [
     "input_associate.cc",
     "input_associate.h",
     "input_connection_impl.cc",
@@ -17,7 +28,6 @@ mojo_native_application("input_manager") {
     "input_dispatcher_impl.h",
     "input_manager_app.cc",
     "input_manager_app.h",
-    "main.cc",
   ]
 
   deps = [
