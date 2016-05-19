@@ -14,8 +14,8 @@
 //      LogPtr log;
 //      app->ConnectToService("mojo:log", &log);
 //      mojo::log::InitializeLogger(std::move(log),
-//                                  ApplicationRunner::GetDefaultLogger());
-//      mojo::ApplicationRunner::SetDefaultLogger(mojo::log::GetLogger());
+//                                  mojo::Environment::GetDefaultLogger());
+//      mojo::Environment::SetDefaultLogger(mojo::log::GetLogger());
 //    }
 //
 //    void Quit() {
