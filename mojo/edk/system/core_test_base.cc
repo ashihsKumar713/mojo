@@ -208,6 +208,9 @@ class MockDispatcher : public Dispatcher {
 
 // CoreTestBase ----------------------------------------------------------------
 
+// static
+constexpr MojoHandleRights CoreTestBase::kDefaultMockHandleRights;
+
 CoreTestBase::CoreTestBase()
     : platform_support_(embedder::CreateSimplePlatformSupport()) {}
 

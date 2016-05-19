@@ -44,6 +44,10 @@ TEST_F(CoreTest, Basic) {
   EXPECT_EQ(1u, info.GetCtorCallCount());
   EXPECT_NE(h, MOJO_HANDLE_INVALID);
 
+  MojoHandleRights rights = 0;
+  EXPECT_EQ(MOJO_RESULT_OK, core()->GetRights(h, MakeUserPointer(&rights)));
+  EXPECT_EQ(kDefaultMockHandleRights, rights);
+
   EXPECT_EQ(0u, info.GetWriteMessageCallCount());
   EXPECT_EQ(MOJO_RESULT_OK,
             core()->WriteMessage(h, NullUserPointer(), 0, NullUserPointer(), 0,
@@ -202,6 +206,17 @@ TEST_F(CoreTest, InvalidArguments) {
     EXPECT_EQ(1u, info.GetCloseCallCount());
     EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, core()->Close(h));
     EXPECT_EQ(1u, info.GetCloseCallCount());
+  }
+
+  // |GetRights()|:
+  {
+    MojoHandleRights rights = 0;
+    EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
+              core()->GetRights(MOJO_HANDLE_INVALID, MakeUserPointer(&rights)));
+    EXPECT_EQ(0u, rights);
+    EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
+              core()->GetRights(10, MakeUserPointer(&rights)));
+    EXPECT_EQ(0u, rights);
   }
 
   // |Wait()|:
@@ -556,6 +571,16 @@ TEST_F(CoreTest, InvalidArguments) {
 TEST_F(CoreTest, InvalidArgumentsDeath) {
   const char kMemoryCheckFailedRegex[] = "Check failed";
 
+  // |GetRights()|:
+  {
+    MockHandleInfo info;
+    MojoHandle h = CreateMockHandle(&info);
+    EXPECT_DEATH_IF_SUPPORTED(core()->GetRights(h, NullUserPointer()),
+                              kMemoryCheckFailedRegex);
+
+    EXPECT_EQ(MOJO_RESULT_OK, core()->Close(h));
+  }
+
   // |WaitMany()|:
   {
     MojoHandle handle = MOJO_HANDLE_INVALID;
@@ -632,7 +657,7 @@ TEST_F(CoreTest, InvalidArgumentsDeath) {
 //    same/different signals)
 
 TEST_F(CoreTest, MessagePipe) {
-  MojoHandle h[2];
+  MojoHandle h[2] = {MOJO_HANDLE_INVALID, MOJO_HANDLE_INVALID};
   MojoHandleSignalsState hss[2];
   uint32_t result_index;
 
@@ -643,6 +668,18 @@ TEST_F(CoreTest, MessagePipe) {
   EXPECT_NE(h[0], MOJO_HANDLE_INVALID);
   EXPECT_NE(h[1], MOJO_HANDLE_INVALID);
   EXPECT_NE(h[0], h[1]);
+
+  // Both should have the correct rights.
+  static const MojoHandleRights kMessagePipeHandleRights =
+      MOJO_HANDLE_RIGHT_TRANSFER | MOJO_HANDLE_RIGHT_READ |
+      MOJO_HANDLE_RIGHT_WRITE | MOJO_HANDLE_RIGHT_GET_OPTIONS |
+      MOJO_HANDLE_RIGHT_SET_OPTIONS;
+  MojoHandleRights rights = MOJO_HANDLE_RIGHT_NONE;
+  EXPECT_EQ(MOJO_RESULT_OK, core()->GetRights(h[0], MakeUserPointer(&rights)));
+  EXPECT_EQ(kMessagePipeHandleRights, rights);
+  rights = MOJO_HANDLE_RIGHT_NONE;
+  EXPECT_EQ(MOJO_RESULT_OK, core()->GetRights(h[1], MakeUserPointer(&rights)));
+  EXPECT_EQ(kMessagePipeHandleRights, rights);
 
   // Neither should be readable.
   MojoHandleSignals signals[2] = {MOJO_HANDLE_SIGNAL_READABLE,
@@ -976,7 +1013,9 @@ TEST_F(CoreTest, MessagePipeBasicLocalHandlePassing1) {
 }
 
 TEST_F(CoreTest, DataPipe) {
-  MojoHandle ph, ch;  // p is for producer and c is for consumer.
+  // p is for producer and c is for consumer.
+  MojoHandle ph = MOJO_HANDLE_INVALID;
+  MojoHandle ch = MOJO_HANDLE_INVALID;
   MojoHandleSignalsState hss;
 
   EXPECT_EQ(MOJO_RESULT_OK,
@@ -986,6 +1025,20 @@ TEST_F(CoreTest, DataPipe) {
   EXPECT_NE(ph, MOJO_HANDLE_INVALID);
   EXPECT_NE(ch, MOJO_HANDLE_INVALID);
   EXPECT_NE(ph, ch);
+
+  // Both should have the correct rights.
+  static const MojoHandleRights kDataPipeProducerHandleRights =
+      MOJO_HANDLE_RIGHT_TRANSFER | MOJO_HANDLE_RIGHT_WRITE |
+      MOJO_HANDLE_RIGHT_GET_OPTIONS | MOJO_HANDLE_RIGHT_SET_OPTIONS;
+  static const MojoHandleRights kDataPipeConsumerHandleRights =
+      MOJO_HANDLE_RIGHT_TRANSFER | MOJO_HANDLE_RIGHT_READ |
+      MOJO_HANDLE_RIGHT_GET_OPTIONS | MOJO_HANDLE_RIGHT_SET_OPTIONS;
+  MojoHandleRights rights = MOJO_HANDLE_RIGHT_NONE;
+  EXPECT_EQ(MOJO_RESULT_OK, core()->GetRights(ph, MakeUserPointer(&rights)));
+  EXPECT_EQ(kDataPipeProducerHandleRights, rights);
+  rights = MOJO_HANDLE_RIGHT_NONE;
+  EXPECT_EQ(MOJO_RESULT_OK, core()->GetRights(ch, MakeUserPointer(&rights)));
+  EXPECT_EQ(kDataPipeConsumerHandleRights, rights);
 
   // Producer should be never-readable, but already writable.
   hss = kEmptyMojoHandleSignalsState;
@@ -1681,7 +1734,8 @@ TEST_F(CoreTest, AsyncWait) {
   EXPECT_EQ(MOJO_RESULT_OK, core()->Close(h));
 }
 
-// TODO(vtl): Test |DuplicateBufferHandle()| and |MapBuffer()|.
+// TODO(vtl): Test |CreateSharedBuffer()|, |DuplicateBufferHandle()|, and
+// |MapBuffer()|.
 
 }  // namespace
 }  // namespace system

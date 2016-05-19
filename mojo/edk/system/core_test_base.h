@@ -32,6 +32,13 @@ class CoreTestBase : public testing::Test {
  public:
   using MockHandleInfo = CoreTestBase_MockHandleInfo;
 
+  static constexpr MojoHandleRights kDefaultMockHandleRights =
+      MOJO_HANDLE_RIGHT_DUPLICATE | MOJO_HANDLE_RIGHT_TRANSFER |
+      MOJO_HANDLE_RIGHT_READ | MOJO_HANDLE_RIGHT_WRITE |
+      MOJO_HANDLE_RIGHT_GET_OPTIONS | MOJO_HANDLE_RIGHT_SET_OPTIONS |
+      MOJO_HANDLE_RIGHT_MAP_READABLE | MOJO_HANDLE_RIGHT_MAP_WRITABLE |
+      MOJO_HANDLE_RIGHT_MAP_EXECUTABLE;
+
   CoreTestBase();
   ~CoreTestBase() override;
 

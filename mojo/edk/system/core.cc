@@ -175,6 +175,17 @@ MojoResult Core::Close(MojoHandle handle) {
   return h.dispatcher->Close();
 }
 
+MojoResult Core::GetRights(MojoHandle handle,
+                           UserPointer<MojoHandleRights> rights) {
+  Handle h;
+  MojoResult result = GetHandle(handle, &h);
+  if (result != MOJO_RESULT_OK)
+    return result;
+
+  rights.Put(h.rights);
+  return MOJO_RESULT_OK;
+}
+
 MojoResult Core::Wait(MojoHandle handle,
                       MojoHandleSignals signals,
                       MojoDeadline deadline,

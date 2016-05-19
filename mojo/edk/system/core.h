@@ -116,6 +116,7 @@ class Core {
   // This method corresponds to the API function defined in
   // "mojo/public/c/system/handle.h":
   MojoResult Close(MojoHandle handle);
+  MojoResult GetRights(MojoHandle handle, UserPointer<MojoHandleRights> rights);
 
   // These methods correspond to the API functions defined in
   // "mojo/public/c/system/wait.h":
