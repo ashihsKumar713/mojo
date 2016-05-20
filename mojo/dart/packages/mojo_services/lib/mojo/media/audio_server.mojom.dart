@@ -15,7 +15,7 @@ class _AudioServerCreateTrackParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object track = null;
+  audio_track_mojom.AudioTrackInterfaceRequest track = null;
 
   _AudioServerCreateTrackParams() : super(kVersions.last.size);
 
@@ -96,12 +96,50 @@ class _AudioServerServiceDescription implements service_describer.ServiceDescrip
 
 abstract class AudioServer {
   static const String serviceName = "mojo::media::AudioServer";
-  void createTrack(Object track);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _AudioServerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static AudioServerProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    AudioServerProxy p = new AudioServerProxy.unbound();
+    String name = serviceName ?? AudioServer.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void createTrack(audio_track_mojom.AudioTrackInterfaceRequest track);
+}
+
+abstract class AudioServerInterface
+    implements bindings.MojoInterface<AudioServer>,
+               AudioServer {
+  factory AudioServerInterface([AudioServer impl]) =>
+      new AudioServerStub.unbound(impl);
+  factory AudioServerInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [AudioServer impl]) =>
+      new AudioServerStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class AudioServerInterfaceRequest
+    implements bindings.MojoInterface<AudioServer>,
+               AudioServer {
+  factory AudioServerInterfaceRequest() =>
+      new AudioServerProxy.unbound();
 }
 
 class _AudioServerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<AudioServer> {
   _AudioServerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -109,9 +147,6 @@ class _AudioServerProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _AudioServerProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _AudioServerServiceDescription();
 
   String get serviceName => AudioServer.serviceName;
 
@@ -124,6 +159,11 @@ class _AudioServerProxyControl
     }
   }
 
+  AudioServer get impl => null;
+  set impl(AudioServer _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -132,8 +172,10 @@ class _AudioServerProxyControl
 }
 
 class AudioServerProxy
-    extends bindings.Proxy
-    implements AudioServer {
+    extends bindings.Proxy<AudioServer>
+    implements AudioServer,
+               AudioServerInterface,
+               AudioServerInterfaceRequest {
   AudioServerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _AudioServerProxyControl.fromEndpoint(endpoint));
@@ -150,15 +192,8 @@ class AudioServerProxy
     return new AudioServerProxy.fromEndpoint(endpoint);
   }
 
-  factory AudioServerProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    AudioServerProxy p = new AudioServerProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void createTrack(Object track) {
+  void createTrack(audio_track_mojom.AudioTrackInterfaceRequest track) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -188,6 +223,8 @@ class _AudioServerStubControl
   }
 
   _AudioServerStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => AudioServer.serviceName;
 
 
 
@@ -239,19 +276,16 @@ class _AudioServerStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _AudioServerServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class AudioServerStub
     extends bindings.Stub<AudioServer>
-    implements AudioServer {
+    implements AudioServer,
+               AudioServerInterface,
+               AudioServerInterfaceRequest {
+  AudioServerStub.unbound([AudioServer impl])
+      : super(new _AudioServerStubControl.unbound(impl));
+
   AudioServerStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [AudioServer impl])
       : super(new _AudioServerStubControl.fromEndpoint(endpoint, impl));
@@ -260,20 +294,14 @@ class AudioServerStub
       core.MojoHandle handle, [AudioServer impl])
       : super(new _AudioServerStubControl.fromHandle(handle, impl));
 
-  AudioServerStub.unbound([AudioServer impl])
-      : super(new _AudioServerStubControl.unbound(impl));
-
   static AudioServerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For AudioServerStub"));
     return new AudioServerStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _AudioServerStubControl.serviceDescription;
 
-
-  void createTrack(Object track) {
+  void createTrack(audio_track_mojom.AudioTrackInterfaceRequest track) {
     return impl.createTrack(track);
   }
 }

@@ -130,7 +130,7 @@ class _InputServiceSetClientParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object client = null;
+  InputClientInterface client = null;
 
   _InputServiceSetClientParams() : super(kVersions.last.size);
 
@@ -211,12 +211,50 @@ class _InputClientServiceDescription implements service_describer.ServiceDescrip
 
 abstract class InputClient {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _InputClientServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static InputClientProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    InputClientProxy p = new InputClientProxy.unbound();
+    String name = serviceName ?? InputClient.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic onBackButton([Function responseFactory = null]);
+}
+
+abstract class InputClientInterface
+    implements bindings.MojoInterface<InputClient>,
+               InputClient {
+  factory InputClientInterface([InputClient impl]) =>
+      new InputClientStub.unbound(impl);
+  factory InputClientInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [InputClient impl]) =>
+      new InputClientStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class InputClientInterfaceRequest
+    implements bindings.MojoInterface<InputClient>,
+               InputClient {
+  factory InputClientInterfaceRequest() =>
+      new InputClientProxy.unbound();
 }
 
 class _InputClientProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<InputClient> {
   _InputClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -224,9 +262,6 @@ class _InputClientProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _InputClientProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _InputClientServiceDescription();
 
   String get serviceName => InputClient.serviceName;
 
@@ -259,6 +294,11 @@ class _InputClientProxyControl
     }
   }
 
+  InputClient get impl => null;
+  set impl(InputClient _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -267,8 +307,10 @@ class _InputClientProxyControl
 }
 
 class InputClientProxy
-    extends bindings.Proxy
-    implements InputClient {
+    extends bindings.Proxy<InputClient>
+    implements InputClient,
+               InputClientInterface,
+               InputClientInterfaceRequest {
   InputClientProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _InputClientProxyControl.fromEndpoint(endpoint));
@@ -283,13 +325,6 @@ class InputClientProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For InputClientProxy"));
     return new InputClientProxy.fromEndpoint(endpoint);
-  }
-
-  factory InputClientProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    InputClientProxy p = new InputClientProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -321,6 +356,8 @@ class _InputClientStubControl
   }
 
   _InputClientStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => InputClient.serviceName;
 
 
   InputClientOnBackButtonResponseParams _inputClientOnBackButtonResponseParamsFactory() {
@@ -391,19 +428,16 @@ class _InputClientStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _InputClientServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class InputClientStub
     extends bindings.Stub<InputClient>
-    implements InputClient {
+    implements InputClient,
+               InputClientInterface,
+               InputClientInterfaceRequest {
+  InputClientStub.unbound([InputClient impl])
+      : super(new _InputClientStubControl.unbound(impl));
+
   InputClientStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [InputClient impl])
       : super(new _InputClientStubControl.fromEndpoint(endpoint, impl));
@@ -412,17 +446,11 @@ class InputClientStub
       core.MojoHandle handle, [InputClient impl])
       : super(new _InputClientStubControl.fromHandle(handle, impl));
 
-  InputClientStub.unbound([InputClient impl])
-      : super(new _InputClientStubControl.unbound(impl));
-
   static InputClientStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For InputClientStub"));
     return new InputClientStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _InputClientStubControl.serviceDescription;
 
 
   dynamic onBackButton([Function responseFactory = null]) {
@@ -445,12 +473,50 @@ class _InputServiceServiceDescription implements service_describer.ServiceDescri
 
 abstract class InputService {
   static const String serviceName = "input::InputService";
-  void setClient(Object client);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _InputServiceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static InputServiceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    InputServiceProxy p = new InputServiceProxy.unbound();
+    String name = serviceName ?? InputService.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void setClient(InputClientInterface client);
+}
+
+abstract class InputServiceInterface
+    implements bindings.MojoInterface<InputService>,
+               InputService {
+  factory InputServiceInterface([InputService impl]) =>
+      new InputServiceStub.unbound(impl);
+  factory InputServiceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [InputService impl]) =>
+      new InputServiceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class InputServiceInterfaceRequest
+    implements bindings.MojoInterface<InputService>,
+               InputService {
+  factory InputServiceInterfaceRequest() =>
+      new InputServiceProxy.unbound();
 }
 
 class _InputServiceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<InputService> {
   _InputServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -458,9 +524,6 @@ class _InputServiceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _InputServiceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _InputServiceServiceDescription();
 
   String get serviceName => InputService.serviceName;
 
@@ -473,6 +536,11 @@ class _InputServiceProxyControl
     }
   }
 
+  InputService get impl => null;
+  set impl(InputService _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -481,8 +549,10 @@ class _InputServiceProxyControl
 }
 
 class InputServiceProxy
-    extends bindings.Proxy
-    implements InputService {
+    extends bindings.Proxy<InputService>
+    implements InputService,
+               InputServiceInterface,
+               InputServiceInterfaceRequest {
   InputServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _InputServiceProxyControl.fromEndpoint(endpoint));
@@ -499,15 +569,8 @@ class InputServiceProxy
     return new InputServiceProxy.fromEndpoint(endpoint);
   }
 
-  factory InputServiceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    InputServiceProxy p = new InputServiceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void setClient(Object client) {
+  void setClient(InputClientInterface client) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -537,6 +600,8 @@ class _InputServiceStubControl
   }
 
   _InputServiceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => InputService.serviceName;
 
 
 
@@ -588,19 +653,16 @@ class _InputServiceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _InputServiceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class InputServiceStub
     extends bindings.Stub<InputService>
-    implements InputService {
+    implements InputService,
+               InputServiceInterface,
+               InputServiceInterfaceRequest {
+  InputServiceStub.unbound([InputService impl])
+      : super(new _InputServiceStubControl.unbound(impl));
+
   InputServiceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [InputService impl])
       : super(new _InputServiceStubControl.fromEndpoint(endpoint, impl));
@@ -609,20 +671,14 @@ class InputServiceStub
       core.MojoHandle handle, [InputService impl])
       : super(new _InputServiceStubControl.fromHandle(handle, impl));
 
-  InputServiceStub.unbound([InputService impl])
-      : super(new _InputServiceStubControl.unbound(impl));
-
   static InputServiceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For InputServiceStub"));
     return new InputServiceStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _InputServiceStubControl.serviceDescription;
 
-
-  void setClient(Object client) {
+  void setClient(InputClientInterface client) {
     return impl.setClient(client);
   }
 }

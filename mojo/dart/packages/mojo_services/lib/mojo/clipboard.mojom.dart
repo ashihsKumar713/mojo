@@ -702,6 +702,26 @@ class _ClipboardServiceDescription implements service_describer.ServiceDescripti
 
 abstract class Clipboard {
   static const String serviceName = "mojo::Clipboard";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ClipboardServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ClipboardProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ClipboardProxy p = new ClipboardProxy.unbound();
+    String name = serviceName ?? Clipboard.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic getSequenceNumber(ClipboardType clipboardType,[Function responseFactory = null]);
   dynamic getAvailableMimeTypes(ClipboardType clipboardTypes,[Function responseFactory = null]);
   dynamic readMimeType(ClipboardType clipboardType,String mimeType,[Function responseFactory = null]);
@@ -711,9 +731,27 @@ abstract class Clipboard {
   static const String mimeTypeUrl = "text/url";
 }
 
+abstract class ClipboardInterface
+    implements bindings.MojoInterface<Clipboard>,
+               Clipboard {
+  factory ClipboardInterface([Clipboard impl]) =>
+      new ClipboardStub.unbound(impl);
+  factory ClipboardInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Clipboard impl]) =>
+      new ClipboardStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ClipboardInterfaceRequest
+    implements bindings.MojoInterface<Clipboard>,
+               Clipboard {
+  factory ClipboardInterfaceRequest() =>
+      new ClipboardProxy.unbound();
+}
+
 class _ClipboardProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Clipboard> {
   _ClipboardProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -721,9 +759,6 @@ class _ClipboardProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ClipboardProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ClipboardServiceDescription();
 
   String get serviceName => Clipboard.serviceName;
 
@@ -796,6 +831,11 @@ class _ClipboardProxyControl
     }
   }
 
+  Clipboard get impl => null;
+  set impl(Clipboard _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -804,8 +844,10 @@ class _ClipboardProxyControl
 }
 
 class ClipboardProxy
-    extends bindings.Proxy
-    implements Clipboard {
+    extends bindings.Proxy<Clipboard>
+    implements Clipboard,
+               ClipboardInterface,
+               ClipboardInterfaceRequest {
   ClipboardProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ClipboardProxyControl.fromEndpoint(endpoint));
@@ -820,13 +862,6 @@ class ClipboardProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ClipboardProxy"));
     return new ClipboardProxy.fromEndpoint(endpoint);
-  }
-
-  factory ClipboardProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ClipboardProxy p = new ClipboardProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -889,6 +924,8 @@ class _ClipboardStubControl
   }
 
   _ClipboardStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Clipboard.serviceName;
 
 
   ClipboardGetSequenceNumberResponseParams _clipboardGetSequenceNumberResponseParamsFactory(int sequence) {
@@ -1021,19 +1058,16 @@ class _ClipboardStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ClipboardServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ClipboardStub
     extends bindings.Stub<Clipboard>
-    implements Clipboard {
+    implements Clipboard,
+               ClipboardInterface,
+               ClipboardInterfaceRequest {
+  ClipboardStub.unbound([Clipboard impl])
+      : super(new _ClipboardStubControl.unbound(impl));
+
   ClipboardStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Clipboard impl])
       : super(new _ClipboardStubControl.fromEndpoint(endpoint, impl));
@@ -1042,17 +1076,11 @@ class ClipboardStub
       core.MojoHandle handle, [Clipboard impl])
       : super(new _ClipboardStubControl.fromHandle(handle, impl));
 
-  ClipboardStub.unbound([Clipboard impl])
-      : super(new _ClipboardStubControl.unbound(impl));
-
   static ClipboardStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ClipboardStub"));
     return new ClipboardStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ClipboardStubControl.serviceDescription;
 
 
   dynamic getSequenceNumber(ClipboardType clipboardType,[Function responseFactory = null]) {

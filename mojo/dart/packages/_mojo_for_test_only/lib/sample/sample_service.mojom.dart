@@ -1366,7 +1366,7 @@ class _ServiceFrobinateParams extends bindings.Struct {
   ];
   Foo foo = null;
   ServiceBazOptions baz = null;
-  Object port = null;
+  PortInterface port = null;
 
   _ServiceFrobinateParams() : super(kVersions.last.size);
 
@@ -1538,7 +1538,7 @@ class _ServiceGetPortParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object port = null;
+  PortInterfaceRequest port = null;
 
   _ServiceGetPortParams() : super(kVersions.last.size);
 
@@ -1610,7 +1610,7 @@ class _PortPostMessageParams extends bindings.Struct {
     const bindings.StructDataHeader(24, 0)
   ];
   String messageText = null;
-  Object port = null;
+  PortInterface port = null;
 
   _PortPostMessageParams() : super(kVersions.last.size);
 
@@ -1756,14 +1756,52 @@ class _ServiceServiceDescription implements service_describer.ServiceDescription
 
 abstract class Service {
   static const String serviceName = null;
-  dynamic frobinate(Foo foo,ServiceBazOptions baz,Object port,[Function responseFactory = null]);
-  void getPort(Object port);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ServiceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ServiceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ServiceProxy p = new ServiceProxy.unbound();
+    String name = serviceName ?? Service.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  dynamic frobinate(Foo foo,ServiceBazOptions baz,PortInterface port,[Function responseFactory = null]);
+  void getPort(PortInterfaceRequest port);
   static const int kFavoriteBaz = 1;
+}
+
+abstract class ServiceInterface
+    implements bindings.MojoInterface<Service>,
+               Service {
+  factory ServiceInterface([Service impl]) =>
+      new ServiceStub.unbound(impl);
+  factory ServiceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Service impl]) =>
+      new ServiceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ServiceInterfaceRequest
+    implements bindings.MojoInterface<Service>,
+               Service {
+  factory ServiceInterfaceRequest() =>
+      new ServiceProxy.unbound();
 }
 
 class _ServiceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Service> {
   _ServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1771,9 +1809,6 @@ class _ServiceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ServiceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ServiceServiceDescription();
 
   String get serviceName => Service.serviceName;
 
@@ -1806,6 +1841,11 @@ class _ServiceProxyControl
     }
   }
 
+  Service get impl => null;
+  set impl(Service _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1814,8 +1854,10 @@ class _ServiceProxyControl
 }
 
 class ServiceProxy
-    extends bindings.Proxy
-    implements Service {
+    extends bindings.Proxy<Service>
+    implements Service,
+               ServiceInterface,
+               ServiceInterfaceRequest {
   ServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ServiceProxyControl.fromEndpoint(endpoint));
@@ -1832,15 +1874,8 @@ class ServiceProxy
     return new ServiceProxy.fromEndpoint(endpoint);
   }
 
-  factory ServiceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ServiceProxy p = new ServiceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  dynamic frobinate(Foo foo,ServiceBazOptions baz,Object port,[Function responseFactory = null]) {
+  dynamic frobinate(Foo foo,ServiceBazOptions baz,PortInterface port,[Function responseFactory = null]) {
     var params = new _ServiceFrobinateParams();
     params.foo = foo;
     params.baz = baz;
@@ -1851,7 +1886,7 @@ class ServiceProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  void getPort(Object port) {
+  void getPort(PortInterfaceRequest port) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1881,6 +1916,8 @@ class _ServiceStubControl
   }
 
   _ServiceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Service.serviceName;
 
 
   ServiceFrobinateResponseParams _serviceFrobinateResponseParamsFactory(int result) {
@@ -1959,19 +1996,16 @@ class _ServiceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ServiceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ServiceStub
     extends bindings.Stub<Service>
-    implements Service {
+    implements Service,
+               ServiceInterface,
+               ServiceInterfaceRequest {
+  ServiceStub.unbound([Service impl])
+      : super(new _ServiceStubControl.unbound(impl));
+
   ServiceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Service impl])
       : super(new _ServiceStubControl.fromEndpoint(endpoint, impl));
@@ -1980,23 +2014,17 @@ class ServiceStub
       core.MojoHandle handle, [Service impl])
       : super(new _ServiceStubControl.fromHandle(handle, impl));
 
-  ServiceStub.unbound([Service impl])
-      : super(new _ServiceStubControl.unbound(impl));
-
   static ServiceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ServiceStub"));
     return new ServiceStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ServiceStubControl.serviceDescription;
 
-
-  dynamic frobinate(Foo foo,ServiceBazOptions baz,Object port,[Function responseFactory = null]) {
+  dynamic frobinate(Foo foo,ServiceBazOptions baz,PortInterface port,[Function responseFactory = null]) {
     return impl.frobinate(foo,baz,port,responseFactory);
   }
-  void getPort(Object port) {
+  void getPort(PortInterfaceRequest port) {
     return impl.getPort(port);
   }
 }
@@ -2016,12 +2044,50 @@ class _PortServiceDescription implements service_describer.ServiceDescription {
 
 abstract class Port {
   static const String serviceName = null;
-  void postMessage(String messageText, Object port);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _PortServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static PortProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    PortProxy p = new PortProxy.unbound();
+    String name = serviceName ?? Port.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void postMessage(String messageText, PortInterface port);
+}
+
+abstract class PortInterface
+    implements bindings.MojoInterface<Port>,
+               Port {
+  factory PortInterface([Port impl]) =>
+      new PortStub.unbound(impl);
+  factory PortInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Port impl]) =>
+      new PortStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class PortInterfaceRequest
+    implements bindings.MojoInterface<Port>,
+               Port {
+  factory PortInterfaceRequest() =>
+      new PortProxy.unbound();
 }
 
 class _PortProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Port> {
   _PortProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -2029,9 +2095,6 @@ class _PortProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _PortProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _PortServiceDescription();
 
   String get serviceName => Port.serviceName;
 
@@ -2044,6 +2107,11 @@ class _PortProxyControl
     }
   }
 
+  Port get impl => null;
+  set impl(Port _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -2052,8 +2120,10 @@ class _PortProxyControl
 }
 
 class PortProxy
-    extends bindings.Proxy
-    implements Port {
+    extends bindings.Proxy<Port>
+    implements Port,
+               PortInterface,
+               PortInterfaceRequest {
   PortProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _PortProxyControl.fromEndpoint(endpoint));
@@ -2070,15 +2140,8 @@ class PortProxy
     return new PortProxy.fromEndpoint(endpoint);
   }
 
-  factory PortProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    PortProxy p = new PortProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void postMessage(String messageText, Object port) {
+  void postMessage(String messageText, PortInterface port) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -2109,6 +2172,8 @@ class _PortStubControl
   }
 
   _PortStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Port.serviceName;
 
 
 
@@ -2160,19 +2225,16 @@ class _PortStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _PortServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class PortStub
     extends bindings.Stub<Port>
-    implements Port {
+    implements Port,
+               PortInterface,
+               PortInterfaceRequest {
+  PortStub.unbound([Port impl])
+      : super(new _PortStubControl.unbound(impl));
+
   PortStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Port impl])
       : super(new _PortStubControl.fromEndpoint(endpoint, impl));
@@ -2181,20 +2243,14 @@ class PortStub
       core.MojoHandle handle, [Port impl])
       : super(new _PortStubControl.fromHandle(handle, impl));
 
-  PortStub.unbound([Port impl])
-      : super(new _PortStubControl.unbound(impl));
-
   static PortStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For PortStub"));
     return new PortStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _PortStubControl.serviceDescription;
 
-
-  void postMessage(String messageText, Object port) {
+  void postMessage(String messageText, PortInterface port) {
     return impl.postMessage(messageText, port);
   }
 }

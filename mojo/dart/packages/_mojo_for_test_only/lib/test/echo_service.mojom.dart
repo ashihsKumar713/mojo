@@ -453,15 +453,53 @@ class _EchoServiceServiceDescription implements service_describer.ServiceDescrip
 
 abstract class EchoService {
   static const String serviceName = "test::EchoService";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _EchoServiceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static EchoServiceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    EchoServiceProxy p = new EchoServiceProxy.unbound();
+    String name = serviceName ?? EchoService.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic echoString(String value,[Function responseFactory = null]);
   dynamic delayedEchoString(String value,int millis,[Function responseFactory = null]);
   void swap();
   void quit();
 }
 
+abstract class EchoServiceInterface
+    implements bindings.MojoInterface<EchoService>,
+               EchoService {
+  factory EchoServiceInterface([EchoService impl]) =>
+      new EchoServiceStub.unbound(impl);
+  factory EchoServiceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [EchoService impl]) =>
+      new EchoServiceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class EchoServiceInterfaceRequest
+    implements bindings.MojoInterface<EchoService>,
+               EchoService {
+  factory EchoServiceInterfaceRequest() =>
+      new EchoServiceProxy.unbound();
+}
+
 class _EchoServiceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<EchoService> {
   _EchoServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -469,9 +507,6 @@ class _EchoServiceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _EchoServiceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _EchoServiceServiceDescription();
 
   String get serviceName => EchoService.serviceName;
 
@@ -524,6 +559,11 @@ class _EchoServiceProxyControl
     }
   }
 
+  EchoService get impl => null;
+  set impl(EchoService _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -532,8 +572,10 @@ class _EchoServiceProxyControl
 }
 
 class EchoServiceProxy
-    extends bindings.Proxy
-    implements EchoService {
+    extends bindings.Proxy<EchoService>
+    implements EchoService,
+               EchoServiceInterface,
+               EchoServiceInterfaceRequest {
   EchoServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _EchoServiceProxyControl.fromEndpoint(endpoint));
@@ -548,13 +590,6 @@ class EchoServiceProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For EchoServiceProxy"));
     return new EchoServiceProxy.fromEndpoint(endpoint);
-  }
-
-  factory EchoServiceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    EchoServiceProxy p = new EchoServiceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -615,6 +650,8 @@ class _EchoServiceStubControl
   }
 
   _EchoServiceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => EchoService.serviceName;
 
 
   EchoServiceEchoStringResponseParams _echoServiceEchoStringResponseParamsFactory(String value) {
@@ -721,19 +758,16 @@ class _EchoServiceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _EchoServiceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class EchoServiceStub
     extends bindings.Stub<EchoService>
-    implements EchoService {
+    implements EchoService,
+               EchoServiceInterface,
+               EchoServiceInterfaceRequest {
+  EchoServiceStub.unbound([EchoService impl])
+      : super(new _EchoServiceStubControl.unbound(impl));
+
   EchoServiceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [EchoService impl])
       : super(new _EchoServiceStubControl.fromEndpoint(endpoint, impl));
@@ -742,17 +776,11 @@ class EchoServiceStub
       core.MojoHandle handle, [EchoService impl])
       : super(new _EchoServiceStubControl.fromHandle(handle, impl));
 
-  EchoServiceStub.unbound([EchoService impl])
-      : super(new _EchoServiceStubControl.unbound(impl));
-
   static EchoServiceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For EchoServiceStub"));
     return new EchoServiceStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _EchoServiceStubControl.serviceDescription;
 
 
   dynamic echoString(String value,[Function responseFactory = null]) {

@@ -523,9 +523,9 @@ class HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams extends bin
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(24, 0)
   ];
-  Object webSocket = null;
+  web_socket_mojom.WebSocketInterfaceRequest webSocket = null;
   core.MojoDataPipeConsumer sendStream = null;
-  Object client = null;
+  web_socket_mojom.WebSocketClientInterface client = null;
 
   HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams() : super(kVersions.last.size);
 
@@ -631,13 +631,51 @@ class _HttpConnectionServiceDescription implements service_describer.ServiceDesc
 
 abstract class HttpConnection {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _HttpConnectionServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static HttpConnectionProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    HttpConnectionProxy p = new HttpConnectionProxy.unbound();
+    String name = serviceName ?? HttpConnection.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic setSendBufferSize(int size,[Function responseFactory = null]);
   dynamic setReceiveBufferSize(int size,[Function responseFactory = null]);
 }
 
+abstract class HttpConnectionInterface
+    implements bindings.MojoInterface<HttpConnection>,
+               HttpConnection {
+  factory HttpConnectionInterface([HttpConnection impl]) =>
+      new HttpConnectionStub.unbound(impl);
+  factory HttpConnectionInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [HttpConnection impl]) =>
+      new HttpConnectionStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class HttpConnectionInterfaceRequest
+    implements bindings.MojoInterface<HttpConnection>,
+               HttpConnection {
+  factory HttpConnectionInterfaceRequest() =>
+      new HttpConnectionProxy.unbound();
+}
+
 class _HttpConnectionProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<HttpConnection> {
   _HttpConnectionProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -645,9 +683,6 @@ class _HttpConnectionProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _HttpConnectionProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _HttpConnectionServiceDescription();
 
   String get serviceName => HttpConnection.serviceName;
 
@@ -700,6 +735,11 @@ class _HttpConnectionProxyControl
     }
   }
 
+  HttpConnection get impl => null;
+  set impl(HttpConnection _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -708,8 +748,10 @@ class _HttpConnectionProxyControl
 }
 
 class HttpConnectionProxy
-    extends bindings.Proxy
-    implements HttpConnection {
+    extends bindings.Proxy<HttpConnection>
+    implements HttpConnection,
+               HttpConnectionInterface,
+               HttpConnectionInterfaceRequest {
   HttpConnectionProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _HttpConnectionProxyControl.fromEndpoint(endpoint));
@@ -724,13 +766,6 @@ class HttpConnectionProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HttpConnectionProxy"));
     return new HttpConnectionProxy.fromEndpoint(endpoint);
-  }
-
-  factory HttpConnectionProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    HttpConnectionProxy p = new HttpConnectionProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -772,6 +807,8 @@ class _HttpConnectionStubControl
   }
 
   _HttpConnectionStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => HttpConnection.serviceName;
 
 
   HttpConnectionSetSendBufferSizeResponseParams _httpConnectionSetSendBufferSizeResponseParamsFactory(network_error_mojom.NetworkError result) {
@@ -872,19 +909,16 @@ class _HttpConnectionStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _HttpConnectionServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class HttpConnectionStub
     extends bindings.Stub<HttpConnection>
-    implements HttpConnection {
+    implements HttpConnection,
+               HttpConnectionInterface,
+               HttpConnectionInterfaceRequest {
+  HttpConnectionStub.unbound([HttpConnection impl])
+      : super(new _HttpConnectionStubControl.unbound(impl));
+
   HttpConnectionStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [HttpConnection impl])
       : super(new _HttpConnectionStubControl.fromEndpoint(endpoint, impl));
@@ -893,17 +927,11 @@ class HttpConnectionStub
       core.MojoHandle handle, [HttpConnection impl])
       : super(new _HttpConnectionStubControl.fromHandle(handle, impl));
 
-  HttpConnectionStub.unbound([HttpConnection impl])
-      : super(new _HttpConnectionStubControl.unbound(impl));
-
   static HttpConnectionStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HttpConnectionStub"));
     return new HttpConnectionStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _HttpConnectionStubControl.serviceDescription;
 
 
   dynamic setSendBufferSize(int size,[Function responseFactory = null]) {
@@ -930,13 +958,51 @@ class _HttpConnectionDelegateServiceDescription implements service_describer.Ser
 
 abstract class HttpConnectionDelegate {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _HttpConnectionDelegateServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static HttpConnectionDelegateProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    HttpConnectionDelegateProxy p = new HttpConnectionDelegateProxy.unbound();
+    String name = serviceName ?? HttpConnectionDelegate.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic onReceivedRequest(http_message_mojom.HttpRequest request,[Function responseFactory = null]);
   dynamic onReceivedWebSocketRequest(http_message_mojom.HttpRequest request,[Function responseFactory = null]);
 }
 
+abstract class HttpConnectionDelegateInterface
+    implements bindings.MojoInterface<HttpConnectionDelegate>,
+               HttpConnectionDelegate {
+  factory HttpConnectionDelegateInterface([HttpConnectionDelegate impl]) =>
+      new HttpConnectionDelegateStub.unbound(impl);
+  factory HttpConnectionDelegateInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [HttpConnectionDelegate impl]) =>
+      new HttpConnectionDelegateStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class HttpConnectionDelegateInterfaceRequest
+    implements bindings.MojoInterface<HttpConnectionDelegate>,
+               HttpConnectionDelegate {
+  factory HttpConnectionDelegateInterfaceRequest() =>
+      new HttpConnectionDelegateProxy.unbound();
+}
+
 class _HttpConnectionDelegateProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<HttpConnectionDelegate> {
   _HttpConnectionDelegateProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -944,9 +1010,6 @@ class _HttpConnectionDelegateProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _HttpConnectionDelegateProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _HttpConnectionDelegateServiceDescription();
 
   String get serviceName => HttpConnectionDelegate.serviceName;
 
@@ -999,6 +1062,11 @@ class _HttpConnectionDelegateProxyControl
     }
   }
 
+  HttpConnectionDelegate get impl => null;
+  set impl(HttpConnectionDelegate _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1007,8 +1075,10 @@ class _HttpConnectionDelegateProxyControl
 }
 
 class HttpConnectionDelegateProxy
-    extends bindings.Proxy
-    implements HttpConnectionDelegate {
+    extends bindings.Proxy<HttpConnectionDelegate>
+    implements HttpConnectionDelegate,
+               HttpConnectionDelegateInterface,
+               HttpConnectionDelegateInterfaceRequest {
   HttpConnectionDelegateProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _HttpConnectionDelegateProxyControl.fromEndpoint(endpoint));
@@ -1023,13 +1093,6 @@ class HttpConnectionDelegateProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HttpConnectionDelegateProxy"));
     return new HttpConnectionDelegateProxy.fromEndpoint(endpoint);
-  }
-
-  factory HttpConnectionDelegateProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    HttpConnectionDelegateProxy p = new HttpConnectionDelegateProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1072,13 +1135,15 @@ class _HttpConnectionDelegateStubControl
 
   _HttpConnectionDelegateStubControl.unbound([this._impl]) : super.unbound();
 
+  String get serviceName => HttpConnectionDelegate.serviceName;
+
 
   HttpConnectionDelegateOnReceivedRequestResponseParams _httpConnectionDelegateOnReceivedRequestResponseParamsFactory(http_message_mojom.HttpResponse response) {
     var result = new HttpConnectionDelegateOnReceivedRequestResponseParams();
     result.response = response;
     return result;
   }
-  HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams _httpConnectionDelegateOnReceivedWebSocketRequestResponseParamsFactory(Object webSocket, core.MojoDataPipeConsumer sendStream, Object client) {
+  HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams _httpConnectionDelegateOnReceivedWebSocketRequestResponseParamsFactory(web_socket_mojom.WebSocketInterfaceRequest webSocket, core.MojoDataPipeConsumer sendStream, web_socket_mojom.WebSocketClientInterface client) {
     var result = new HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams();
     result.webSocket = webSocket;
     result.sendStream = sendStream;
@@ -1173,19 +1238,16 @@ class _HttpConnectionDelegateStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _HttpConnectionDelegateServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class HttpConnectionDelegateStub
     extends bindings.Stub<HttpConnectionDelegate>
-    implements HttpConnectionDelegate {
+    implements HttpConnectionDelegate,
+               HttpConnectionDelegateInterface,
+               HttpConnectionDelegateInterfaceRequest {
+  HttpConnectionDelegateStub.unbound([HttpConnectionDelegate impl])
+      : super(new _HttpConnectionDelegateStubControl.unbound(impl));
+
   HttpConnectionDelegateStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [HttpConnectionDelegate impl])
       : super(new _HttpConnectionDelegateStubControl.fromEndpoint(endpoint, impl));
@@ -1194,17 +1256,11 @@ class HttpConnectionDelegateStub
       core.MojoHandle handle, [HttpConnectionDelegate impl])
       : super(new _HttpConnectionDelegateStubControl.fromHandle(handle, impl));
 
-  HttpConnectionDelegateStub.unbound([HttpConnectionDelegate impl])
-      : super(new _HttpConnectionDelegateStubControl.unbound(impl));
-
   static HttpConnectionDelegateStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HttpConnectionDelegateStub"));
     return new HttpConnectionDelegateStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _HttpConnectionDelegateStubControl.serviceDescription;
 
 
   dynamic onReceivedRequest(http_message_mojom.HttpRequest request,[Function responseFactory = null]) {

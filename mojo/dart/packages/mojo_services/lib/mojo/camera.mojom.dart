@@ -571,14 +571,52 @@ class _CameraRollServiceServiceDescription implements service_describer.ServiceD
 
 abstract class CameraRollService {
   static const String serviceName = "mojo::CameraRollService";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _CameraRollServiceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static CameraRollServiceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    CameraRollServiceProxy p = new CameraRollServiceProxy.unbound();
+    String name = serviceName ?? CameraRollService.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void update();
   dynamic getCount([Function responseFactory = null]);
   dynamic getPhoto(int index,[Function responseFactory = null]);
 }
 
+abstract class CameraRollServiceInterface
+    implements bindings.MojoInterface<CameraRollService>,
+               CameraRollService {
+  factory CameraRollServiceInterface([CameraRollService impl]) =>
+      new CameraRollServiceStub.unbound(impl);
+  factory CameraRollServiceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [CameraRollService impl]) =>
+      new CameraRollServiceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class CameraRollServiceInterfaceRequest
+    implements bindings.MojoInterface<CameraRollService>,
+               CameraRollService {
+  factory CameraRollServiceInterfaceRequest() =>
+      new CameraRollServiceProxy.unbound();
+}
+
 class _CameraRollServiceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<CameraRollService> {
   _CameraRollServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -586,9 +624,6 @@ class _CameraRollServiceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _CameraRollServiceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _CameraRollServiceServiceDescription();
 
   String get serviceName => CameraRollService.serviceName;
 
@@ -641,6 +676,11 @@ class _CameraRollServiceProxyControl
     }
   }
 
+  CameraRollService get impl => null;
+  set impl(CameraRollService _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -649,8 +689,10 @@ class _CameraRollServiceProxyControl
 }
 
 class CameraRollServiceProxy
-    extends bindings.Proxy
-    implements CameraRollService {
+    extends bindings.Proxy<CameraRollService>
+    implements CameraRollService,
+               CameraRollServiceInterface,
+               CameraRollServiceInterfaceRequest {
   CameraRollServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _CameraRollServiceProxyControl.fromEndpoint(endpoint));
@@ -665,13 +707,6 @@ class CameraRollServiceProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For CameraRollServiceProxy"));
     return new CameraRollServiceProxy.fromEndpoint(endpoint);
-  }
-
-  factory CameraRollServiceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    CameraRollServiceProxy p = new CameraRollServiceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -721,6 +756,8 @@ class _CameraRollServiceStubControl
   }
 
   _CameraRollServiceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => CameraRollService.serviceName;
 
 
   CameraRollServiceGetCountResponseParams _cameraRollServiceGetCountResponseParamsFactory(int numPhotos) {
@@ -822,19 +859,16 @@ class _CameraRollServiceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _CameraRollServiceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class CameraRollServiceStub
     extends bindings.Stub<CameraRollService>
-    implements CameraRollService {
+    implements CameraRollService,
+               CameraRollServiceInterface,
+               CameraRollServiceInterfaceRequest {
+  CameraRollServiceStub.unbound([CameraRollService impl])
+      : super(new _CameraRollServiceStubControl.unbound(impl));
+
   CameraRollServiceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [CameraRollService impl])
       : super(new _CameraRollServiceStubControl.fromEndpoint(endpoint, impl));
@@ -843,17 +877,11 @@ class CameraRollServiceStub
       core.MojoHandle handle, [CameraRollService impl])
       : super(new _CameraRollServiceStubControl.fromHandle(handle, impl));
 
-  CameraRollServiceStub.unbound([CameraRollService impl])
-      : super(new _CameraRollServiceStubControl.unbound(impl));
-
   static CameraRollServiceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For CameraRollServiceStub"));
     return new CameraRollServiceStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _CameraRollServiceStubControl.serviceDescription;
 
 
   void update() {
@@ -882,12 +910,50 @@ class _CameraServiceServiceDescription implements service_describer.ServiceDescr
 
 abstract class CameraService {
   static const String serviceName = "mojo::CameraService";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _CameraServiceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static CameraServiceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    CameraServiceProxy p = new CameraServiceProxy.unbound();
+    String name = serviceName ?? CameraService.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic getLatestFrame([Function responseFactory = null]);
+}
+
+abstract class CameraServiceInterface
+    implements bindings.MojoInterface<CameraService>,
+               CameraService {
+  factory CameraServiceInterface([CameraService impl]) =>
+      new CameraServiceStub.unbound(impl);
+  factory CameraServiceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [CameraService impl]) =>
+      new CameraServiceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class CameraServiceInterfaceRequest
+    implements bindings.MojoInterface<CameraService>,
+               CameraService {
+  factory CameraServiceInterfaceRequest() =>
+      new CameraServiceProxy.unbound();
 }
 
 class _CameraServiceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<CameraService> {
   _CameraServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -895,9 +961,6 @@ class _CameraServiceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _CameraServiceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _CameraServiceServiceDescription();
 
   String get serviceName => CameraService.serviceName;
 
@@ -930,6 +993,11 @@ class _CameraServiceProxyControl
     }
   }
 
+  CameraService get impl => null;
+  set impl(CameraService _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -938,8 +1006,10 @@ class _CameraServiceProxyControl
 }
 
 class CameraServiceProxy
-    extends bindings.Proxy
-    implements CameraService {
+    extends bindings.Proxy<CameraService>
+    implements CameraService,
+               CameraServiceInterface,
+               CameraServiceInterfaceRequest {
   CameraServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _CameraServiceProxyControl.fromEndpoint(endpoint));
@@ -954,13 +1024,6 @@ class CameraServiceProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For CameraServiceProxy"));
     return new CameraServiceProxy.fromEndpoint(endpoint);
-  }
-
-  factory CameraServiceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    CameraServiceProxy p = new CameraServiceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -992,6 +1055,8 @@ class _CameraServiceStubControl
   }
 
   _CameraServiceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => CameraService.serviceName;
 
 
   CameraServiceGetLatestFrameResponseParams _cameraServiceGetLatestFrameResponseParamsFactory(core.MojoDataPipeConsumer content) {
@@ -1063,19 +1128,16 @@ class _CameraServiceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _CameraServiceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class CameraServiceStub
     extends bindings.Stub<CameraService>
-    implements CameraService {
+    implements CameraService,
+               CameraServiceInterface,
+               CameraServiceInterfaceRequest {
+  CameraServiceStub.unbound([CameraService impl])
+      : super(new _CameraServiceStubControl.unbound(impl));
+
   CameraServiceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [CameraService impl])
       : super(new _CameraServiceStubControl.fromEndpoint(endpoint, impl));
@@ -1084,17 +1146,11 @@ class CameraServiceStub
       core.MojoHandle handle, [CameraService impl])
       : super(new _CameraServiceStubControl.fromHandle(handle, impl));
 
-  CameraServiceStub.unbound([CameraService impl])
-      : super(new _CameraServiceStubControl.unbound(impl));
-
   static CameraServiceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For CameraServiceStub"));
     return new CameraServiceStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _CameraServiceStubControl.serviceDescription;
 
 
   dynamic getLatestFrame([Function responseFactory = null]) {

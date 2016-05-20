@@ -16,7 +16,7 @@ class _HttpServerFactoryCreateHttpServerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(24, 0)
   ];
-  Object serverRequest = null;
+  http_server_mojom.HttpServerInterfaceRequest serverRequest = null;
   net_address_mojom.NetAddress localAddress = null;
 
   _HttpServerFactoryCreateHttpServerParams() : super(kVersions.last.size);
@@ -111,12 +111,50 @@ class _HttpServerFactoryServiceDescription implements service_describer.ServiceD
 
 abstract class HttpServerFactory {
   static const String serviceName = "http_server::HttpServerFactory";
-  void createHttpServer(Object serverRequest, net_address_mojom.NetAddress localAddress);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _HttpServerFactoryServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static HttpServerFactoryProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    HttpServerFactoryProxy p = new HttpServerFactoryProxy.unbound();
+    String name = serviceName ?? HttpServerFactory.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void createHttpServer(http_server_mojom.HttpServerInterfaceRequest serverRequest, net_address_mojom.NetAddress localAddress);
+}
+
+abstract class HttpServerFactoryInterface
+    implements bindings.MojoInterface<HttpServerFactory>,
+               HttpServerFactory {
+  factory HttpServerFactoryInterface([HttpServerFactory impl]) =>
+      new HttpServerFactoryStub.unbound(impl);
+  factory HttpServerFactoryInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [HttpServerFactory impl]) =>
+      new HttpServerFactoryStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class HttpServerFactoryInterfaceRequest
+    implements bindings.MojoInterface<HttpServerFactory>,
+               HttpServerFactory {
+  factory HttpServerFactoryInterfaceRequest() =>
+      new HttpServerFactoryProxy.unbound();
 }
 
 class _HttpServerFactoryProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<HttpServerFactory> {
   _HttpServerFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -124,9 +162,6 @@ class _HttpServerFactoryProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _HttpServerFactoryProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _HttpServerFactoryServiceDescription();
 
   String get serviceName => HttpServerFactory.serviceName;
 
@@ -139,6 +174,11 @@ class _HttpServerFactoryProxyControl
     }
   }
 
+  HttpServerFactory get impl => null;
+  set impl(HttpServerFactory _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -147,8 +187,10 @@ class _HttpServerFactoryProxyControl
 }
 
 class HttpServerFactoryProxy
-    extends bindings.Proxy
-    implements HttpServerFactory {
+    extends bindings.Proxy<HttpServerFactory>
+    implements HttpServerFactory,
+               HttpServerFactoryInterface,
+               HttpServerFactoryInterfaceRequest {
   HttpServerFactoryProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _HttpServerFactoryProxyControl.fromEndpoint(endpoint));
@@ -165,15 +207,8 @@ class HttpServerFactoryProxy
     return new HttpServerFactoryProxy.fromEndpoint(endpoint);
   }
 
-  factory HttpServerFactoryProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    HttpServerFactoryProxy p = new HttpServerFactoryProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void createHttpServer(Object serverRequest, net_address_mojom.NetAddress localAddress) {
+  void createHttpServer(http_server_mojom.HttpServerInterfaceRequest serverRequest, net_address_mojom.NetAddress localAddress) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -204,6 +239,8 @@ class _HttpServerFactoryStubControl
   }
 
   _HttpServerFactoryStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => HttpServerFactory.serviceName;
 
 
 
@@ -255,19 +292,16 @@ class _HttpServerFactoryStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _HttpServerFactoryServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class HttpServerFactoryStub
     extends bindings.Stub<HttpServerFactory>
-    implements HttpServerFactory {
+    implements HttpServerFactory,
+               HttpServerFactoryInterface,
+               HttpServerFactoryInterfaceRequest {
+  HttpServerFactoryStub.unbound([HttpServerFactory impl])
+      : super(new _HttpServerFactoryStubControl.unbound(impl));
+
   HttpServerFactoryStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [HttpServerFactory impl])
       : super(new _HttpServerFactoryStubControl.fromEndpoint(endpoint, impl));
@@ -276,20 +310,14 @@ class HttpServerFactoryStub
       core.MojoHandle handle, [HttpServerFactory impl])
       : super(new _HttpServerFactoryStubControl.fromHandle(handle, impl));
 
-  HttpServerFactoryStub.unbound([HttpServerFactory impl])
-      : super(new _HttpServerFactoryStubControl.unbound(impl));
-
   static HttpServerFactoryStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HttpServerFactoryStub"));
     return new HttpServerFactoryStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _HttpServerFactoryStubControl.serviceDescription;
 
-
-  void createHttpServer(Object serverRequest, net_address_mojom.NetAddress localAddress) {
+  void createHttpServer(http_server_mojom.HttpServerInterfaceRequest serverRequest, net_address_mojom.NetAddress localAddress) {
     return impl.createHttpServer(serverRequest, localAddress);
   }
 }

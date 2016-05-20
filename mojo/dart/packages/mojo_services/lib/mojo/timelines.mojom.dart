@@ -338,13 +338,51 @@ class _TimelineConsumerServiceDescription implements service_describer.ServiceDe
 
 abstract class TimelineConsumer {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _TimelineConsumerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static TimelineConsumerProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    TimelineConsumerProxy p = new TimelineConsumerProxy.unbound();
+    String name = serviceName ?? TimelineConsumer.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic setTimelineTransform(int subjectTime,int referenceDelta,int subjectDelta,int effectiveReferenceTime,int effectiveSubjectTime,[Function responseFactory = null]);
   static const int kUnspecifiedTime = 9223372036854775807;
 }
 
+abstract class TimelineConsumerInterface
+    implements bindings.MojoInterface<TimelineConsumer>,
+               TimelineConsumer {
+  factory TimelineConsumerInterface([TimelineConsumer impl]) =>
+      new TimelineConsumerStub.unbound(impl);
+  factory TimelineConsumerInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [TimelineConsumer impl]) =>
+      new TimelineConsumerStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class TimelineConsumerInterfaceRequest
+    implements bindings.MojoInterface<TimelineConsumer>,
+               TimelineConsumer {
+  factory TimelineConsumerInterfaceRequest() =>
+      new TimelineConsumerProxy.unbound();
+}
+
 class _TimelineConsumerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<TimelineConsumer> {
   _TimelineConsumerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -352,9 +390,6 @@ class _TimelineConsumerProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _TimelineConsumerProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _TimelineConsumerServiceDescription();
 
   String get serviceName => TimelineConsumer.serviceName;
 
@@ -387,6 +422,11 @@ class _TimelineConsumerProxyControl
     }
   }
 
+  TimelineConsumer get impl => null;
+  set impl(TimelineConsumer _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -395,8 +435,10 @@ class _TimelineConsumerProxyControl
 }
 
 class TimelineConsumerProxy
-    extends bindings.Proxy
-    implements TimelineConsumer {
+    extends bindings.Proxy<TimelineConsumer>
+    implements TimelineConsumer,
+               TimelineConsumerInterface,
+               TimelineConsumerInterfaceRequest {
   TimelineConsumerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TimelineConsumerProxyControl.fromEndpoint(endpoint));
@@ -411,13 +453,6 @@ class TimelineConsumerProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TimelineConsumerProxy"));
     return new TimelineConsumerProxy.fromEndpoint(endpoint);
-  }
-
-  factory TimelineConsumerProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    TimelineConsumerProxy p = new TimelineConsumerProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -454,6 +489,8 @@ class _TimelineConsumerStubControl
   }
 
   _TimelineConsumerStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => TimelineConsumer.serviceName;
 
 
   TimelineConsumerSetTimelineTransformResponseParams _timelineConsumerSetTimelineTransformResponseParamsFactory(bool completed) {
@@ -527,19 +564,16 @@ class _TimelineConsumerStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _TimelineConsumerServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class TimelineConsumerStub
     extends bindings.Stub<TimelineConsumer>
-    implements TimelineConsumer {
+    implements TimelineConsumer,
+               TimelineConsumerInterface,
+               TimelineConsumerInterfaceRequest {
+  TimelineConsumerStub.unbound([TimelineConsumer impl])
+      : super(new _TimelineConsumerStubControl.unbound(impl));
+
   TimelineConsumerStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TimelineConsumer impl])
       : super(new _TimelineConsumerStubControl.fromEndpoint(endpoint, impl));
@@ -548,17 +582,11 @@ class TimelineConsumerStub
       core.MojoHandle handle, [TimelineConsumer impl])
       : super(new _TimelineConsumerStubControl.fromHandle(handle, impl));
 
-  TimelineConsumerStub.unbound([TimelineConsumer impl])
-      : super(new _TimelineConsumerStubControl.unbound(impl));
-
   static TimelineConsumerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TimelineConsumerStub"));
     return new TimelineConsumerStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _TimelineConsumerStubControl.serviceDescription;
 
 
   dynamic setTimelineTransform(int subjectTime,int referenceDelta,int subjectDelta,int effectiveReferenceTime,int effectiveSubjectTime,[Function responseFactory = null]) {

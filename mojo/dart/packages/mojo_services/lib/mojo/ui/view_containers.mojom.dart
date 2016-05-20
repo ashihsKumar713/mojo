@@ -90,7 +90,7 @@ class _ViewContainerSetListenerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object listener = null;
+  ViewContainerListenerInterface listener = null;
 
   _ViewContainerSetListenerParams() : super(kVersions.last.size);
 
@@ -162,7 +162,7 @@ class _ViewContainerAddChildParams extends bindings.Struct {
     const bindings.StructDataHeader(24, 0)
   ];
   int childKey = 0;
-  Object childViewOwner = null;
+  view_token_mojom.ViewOwnerInterface childViewOwner = null;
 
   _ViewContainerAddChildParams() : super(kVersions.last.size);
 
@@ -246,7 +246,7 @@ class _ViewContainerRemoveChildParams extends bindings.Struct {
     const bindings.StructDataHeader(16, 0)
   ];
   int childKey = 0;
-  Object transferredViewOwner = null;
+  view_token_mojom.ViewOwnerInterfaceRequest transferredViewOwner = null;
 
   _ViewContainerRemoveChildParams() : super(kVersions.last.size);
 
@@ -718,15 +718,53 @@ class _ViewContainerServiceDescription implements service_describer.ServiceDescr
 
 abstract class ViewContainer {
   static const String serviceName = null;
-  void setListener(Object listener);
-  void addChild(int childKey, Object childViewOwner);
-  void removeChild(int childKey, Object transferredViewOwner);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ViewContainerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ViewContainerProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ViewContainerProxy p = new ViewContainerProxy.unbound();
+    String name = serviceName ?? ViewContainer.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void setListener(ViewContainerListenerInterface listener);
+  void addChild(int childKey, view_token_mojom.ViewOwnerInterface childViewOwner);
+  void removeChild(int childKey, view_token_mojom.ViewOwnerInterfaceRequest transferredViewOwner);
   void setChildProperties(int childKey, int childSceneVersion, view_properties_mojom.ViewProperties childViewProperties);
+}
+
+abstract class ViewContainerInterface
+    implements bindings.MojoInterface<ViewContainer>,
+               ViewContainer {
+  factory ViewContainerInterface([ViewContainer impl]) =>
+      new ViewContainerStub.unbound(impl);
+  factory ViewContainerInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [ViewContainer impl]) =>
+      new ViewContainerStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ViewContainerInterfaceRequest
+    implements bindings.MojoInterface<ViewContainer>,
+               ViewContainer {
+  factory ViewContainerInterfaceRequest() =>
+      new ViewContainerProxy.unbound();
 }
 
 class _ViewContainerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<ViewContainer> {
   _ViewContainerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -734,9 +772,6 @@ class _ViewContainerProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ViewContainerProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ViewContainerServiceDescription();
 
   String get serviceName => ViewContainer.serviceName;
 
@@ -749,6 +784,11 @@ class _ViewContainerProxyControl
     }
   }
 
+  ViewContainer get impl => null;
+  set impl(ViewContainer _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -757,8 +797,10 @@ class _ViewContainerProxyControl
 }
 
 class ViewContainerProxy
-    extends bindings.Proxy
-    implements ViewContainer {
+    extends bindings.Proxy<ViewContainer>
+    implements ViewContainer,
+               ViewContainerInterface,
+               ViewContainerInterfaceRequest {
   ViewContainerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewContainerProxyControl.fromEndpoint(endpoint));
@@ -775,15 +817,8 @@ class ViewContainerProxy
     return new ViewContainerProxy.fromEndpoint(endpoint);
   }
 
-  factory ViewContainerProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ViewContainerProxy p = new ViewContainerProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void setListener(Object listener) {
+  void setListener(ViewContainerListenerInterface listener) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -793,7 +828,7 @@ class ViewContainerProxy
     ctrl.sendMessage(params,
         _viewContainerMethodSetListenerName);
   }
-  void addChild(int childKey, Object childViewOwner) {
+  void addChild(int childKey, view_token_mojom.ViewOwnerInterface childViewOwner) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -804,7 +839,7 @@ class ViewContainerProxy
     ctrl.sendMessage(params,
         _viewContainerMethodAddChildName);
   }
-  void removeChild(int childKey, Object transferredViewOwner) {
+  void removeChild(int childKey, view_token_mojom.ViewOwnerInterfaceRequest transferredViewOwner) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -847,6 +882,8 @@ class _ViewContainerStubControl
   }
 
   _ViewContainerStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => ViewContainer.serviceName;
 
 
 
@@ -913,19 +950,16 @@ class _ViewContainerStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ViewContainerServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ViewContainerStub
     extends bindings.Stub<ViewContainer>
-    implements ViewContainer {
+    implements ViewContainer,
+               ViewContainerInterface,
+               ViewContainerInterfaceRequest {
+  ViewContainerStub.unbound([ViewContainer impl])
+      : super(new _ViewContainerStubControl.unbound(impl));
+
   ViewContainerStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewContainer impl])
       : super(new _ViewContainerStubControl.fromEndpoint(endpoint, impl));
@@ -934,26 +968,20 @@ class ViewContainerStub
       core.MojoHandle handle, [ViewContainer impl])
       : super(new _ViewContainerStubControl.fromHandle(handle, impl));
 
-  ViewContainerStub.unbound([ViewContainer impl])
-      : super(new _ViewContainerStubControl.unbound(impl));
-
   static ViewContainerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewContainerStub"));
     return new ViewContainerStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ViewContainerStubControl.serviceDescription;
 
-
-  void setListener(Object listener) {
+  void setListener(ViewContainerListenerInterface listener) {
     return impl.setListener(listener);
   }
-  void addChild(int childKey, Object childViewOwner) {
+  void addChild(int childKey, view_token_mojom.ViewOwnerInterface childViewOwner) {
     return impl.addChild(childKey, childViewOwner);
   }
-  void removeChild(int childKey, Object transferredViewOwner) {
+  void removeChild(int childKey, view_token_mojom.ViewOwnerInterfaceRequest transferredViewOwner) {
     return impl.removeChild(childKey, transferredViewOwner);
   }
   void setChildProperties(int childKey, int childSceneVersion, view_properties_mojom.ViewProperties childViewProperties) {
@@ -977,13 +1005,51 @@ class _ViewContainerListenerServiceDescription implements service_describer.Serv
 
 abstract class ViewContainerListener {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ViewContainerListenerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ViewContainerListenerProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ViewContainerListenerProxy p = new ViewContainerListenerProxy.unbound();
+    String name = serviceName ?? ViewContainerListener.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic onChildAttached(int childKey,ViewInfo childViewInfo,[Function responseFactory = null]);
   dynamic onChildUnavailable(int childKey,[Function responseFactory = null]);
 }
 
+abstract class ViewContainerListenerInterface
+    implements bindings.MojoInterface<ViewContainerListener>,
+               ViewContainerListener {
+  factory ViewContainerListenerInterface([ViewContainerListener impl]) =>
+      new ViewContainerListenerStub.unbound(impl);
+  factory ViewContainerListenerInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [ViewContainerListener impl]) =>
+      new ViewContainerListenerStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ViewContainerListenerInterfaceRequest
+    implements bindings.MojoInterface<ViewContainerListener>,
+               ViewContainerListener {
+  factory ViewContainerListenerInterfaceRequest() =>
+      new ViewContainerListenerProxy.unbound();
+}
+
 class _ViewContainerListenerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<ViewContainerListener> {
   _ViewContainerListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -991,9 +1057,6 @@ class _ViewContainerListenerProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ViewContainerListenerProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ViewContainerListenerServiceDescription();
 
   String get serviceName => ViewContainerListener.serviceName;
 
@@ -1046,6 +1109,11 @@ class _ViewContainerListenerProxyControl
     }
   }
 
+  ViewContainerListener get impl => null;
+  set impl(ViewContainerListener _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1054,8 +1122,10 @@ class _ViewContainerListenerProxyControl
 }
 
 class ViewContainerListenerProxy
-    extends bindings.Proxy
-    implements ViewContainerListener {
+    extends bindings.Proxy<ViewContainerListener>
+    implements ViewContainerListener,
+               ViewContainerListenerInterface,
+               ViewContainerListenerInterfaceRequest {
   ViewContainerListenerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewContainerListenerProxyControl.fromEndpoint(endpoint));
@@ -1070,13 +1140,6 @@ class ViewContainerListenerProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewContainerListenerProxy"));
     return new ViewContainerListenerProxy.fromEndpoint(endpoint);
-  }
-
-  factory ViewContainerListenerProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ViewContainerListenerProxy p = new ViewContainerListenerProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1119,6 +1182,8 @@ class _ViewContainerListenerStubControl
   }
 
   _ViewContainerListenerStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => ViewContainerListener.serviceName;
 
 
   ViewContainerListenerOnChildAttachedResponseParams _viewContainerListenerOnChildAttachedResponseParamsFactory() {
@@ -1217,19 +1282,16 @@ class _ViewContainerListenerStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ViewContainerListenerServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ViewContainerListenerStub
     extends bindings.Stub<ViewContainerListener>
-    implements ViewContainerListener {
+    implements ViewContainerListener,
+               ViewContainerListenerInterface,
+               ViewContainerListenerInterfaceRequest {
+  ViewContainerListenerStub.unbound([ViewContainerListener impl])
+      : super(new _ViewContainerListenerStubControl.unbound(impl));
+
   ViewContainerListenerStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewContainerListener impl])
       : super(new _ViewContainerListenerStubControl.fromEndpoint(endpoint, impl));
@@ -1238,17 +1300,11 @@ class ViewContainerListenerStub
       core.MojoHandle handle, [ViewContainerListener impl])
       : super(new _ViewContainerListenerStubControl.fromHandle(handle, impl));
 
-  ViewContainerListenerStub.unbound([ViewContainerListener impl])
-      : super(new _ViewContainerListenerStubControl.unbound(impl));
-
   static ViewContainerListenerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewContainerListenerStub"));
     return new ViewContainerListenerStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ViewContainerListenerStubControl.serviceDescription;
 
 
   dynamic onChildAttached(int childKey,ViewInfo childViewInfo,[Function responseFactory = null]) {

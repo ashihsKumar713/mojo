@@ -19,7 +19,7 @@ class _TcpServerSocketAcceptParams extends bindings.Struct {
   ];
   core.MojoDataPipeConsumer sendStream = null;
   core.MojoDataPipeProducer receiveStream = null;
-  Object clientSocket = null;
+  tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket = null;
 
   _TcpServerSocketAcceptParams() : super(kVersions.last.size);
 
@@ -212,12 +212,50 @@ class _TcpServerSocketServiceDescription implements service_describer.ServiceDes
 
 abstract class TcpServerSocket {
   static const String serviceName = null;
-  dynamic accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _TcpServerSocketServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static TcpServerSocketProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    TcpServerSocketProxy p = new TcpServerSocketProxy.unbound();
+    String name = serviceName ?? TcpServerSocket.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  dynamic accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]);
+}
+
+abstract class TcpServerSocketInterface
+    implements bindings.MojoInterface<TcpServerSocket>,
+               TcpServerSocket {
+  factory TcpServerSocketInterface([TcpServerSocket impl]) =>
+      new TcpServerSocketStub.unbound(impl);
+  factory TcpServerSocketInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [TcpServerSocket impl]) =>
+      new TcpServerSocketStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class TcpServerSocketInterfaceRequest
+    implements bindings.MojoInterface<TcpServerSocket>,
+               TcpServerSocket {
+  factory TcpServerSocketInterfaceRequest() =>
+      new TcpServerSocketProxy.unbound();
 }
 
 class _TcpServerSocketProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<TcpServerSocket> {
   _TcpServerSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -225,9 +263,6 @@ class _TcpServerSocketProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _TcpServerSocketProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _TcpServerSocketServiceDescription();
 
   String get serviceName => TcpServerSocket.serviceName;
 
@@ -260,6 +295,11 @@ class _TcpServerSocketProxyControl
     }
   }
 
+  TcpServerSocket get impl => null;
+  set impl(TcpServerSocket _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -268,8 +308,10 @@ class _TcpServerSocketProxyControl
 }
 
 class TcpServerSocketProxy
-    extends bindings.Proxy
-    implements TcpServerSocket {
+    extends bindings.Proxy<TcpServerSocket>
+    implements TcpServerSocket,
+               TcpServerSocketInterface,
+               TcpServerSocketInterfaceRequest {
   TcpServerSocketProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TcpServerSocketProxyControl.fromEndpoint(endpoint));
@@ -286,15 +328,8 @@ class TcpServerSocketProxy
     return new TcpServerSocketProxy.fromEndpoint(endpoint);
   }
 
-  factory TcpServerSocketProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    TcpServerSocketProxy p = new TcpServerSocketProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  dynamic accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]) {
+  dynamic accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]) {
     var params = new _TcpServerSocketAcceptParams();
     params.sendStream = sendStream;
     params.receiveStream = receiveStream;
@@ -325,6 +360,8 @@ class _TcpServerSocketStubControl
   }
 
   _TcpServerSocketStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => TcpServerSocket.serviceName;
 
 
   TcpServerSocketAcceptResponseParams _tcpServerSocketAcceptResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress remoteAddress) {
@@ -399,19 +436,16 @@ class _TcpServerSocketStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _TcpServerSocketServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class TcpServerSocketStub
     extends bindings.Stub<TcpServerSocket>
-    implements TcpServerSocket {
+    implements TcpServerSocket,
+               TcpServerSocketInterface,
+               TcpServerSocketInterfaceRequest {
+  TcpServerSocketStub.unbound([TcpServerSocket impl])
+      : super(new _TcpServerSocketStubControl.unbound(impl));
+
   TcpServerSocketStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TcpServerSocket impl])
       : super(new _TcpServerSocketStubControl.fromEndpoint(endpoint, impl));
@@ -420,20 +454,14 @@ class TcpServerSocketStub
       core.MojoHandle handle, [TcpServerSocket impl])
       : super(new _TcpServerSocketStubControl.fromHandle(handle, impl));
 
-  TcpServerSocketStub.unbound([TcpServerSocket impl])
-      : super(new _TcpServerSocketStubControl.unbound(impl));
-
   static TcpServerSocketStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TcpServerSocketStub"));
     return new TcpServerSocketStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _TcpServerSocketStubControl.serviceDescription;
 
-
-  dynamic accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]) {
+  dynamic accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]) {
     return impl.accept(sendStream,receiveStream,clientSocket,responseFactory);
   }
 }

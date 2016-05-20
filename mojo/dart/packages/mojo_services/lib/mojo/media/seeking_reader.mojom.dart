@@ -348,14 +348,52 @@ class _SeekingReaderServiceDescription implements service_describer.ServiceDescr
 
 abstract class SeekingReader {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _SeekingReaderServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static SeekingReaderProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    SeekingReaderProxy p = new SeekingReaderProxy.unbound();
+    String name = serviceName ?? SeekingReader.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic describe([Function responseFactory = null]);
   dynamic readAt(int position,[Function responseFactory = null]);
   static const int kUnknownSize = 18446744073709551615;
 }
 
+abstract class SeekingReaderInterface
+    implements bindings.MojoInterface<SeekingReader>,
+               SeekingReader {
+  factory SeekingReaderInterface([SeekingReader impl]) =>
+      new SeekingReaderStub.unbound(impl);
+  factory SeekingReaderInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [SeekingReader impl]) =>
+      new SeekingReaderStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class SeekingReaderInterfaceRequest
+    implements bindings.MojoInterface<SeekingReader>,
+               SeekingReader {
+  factory SeekingReaderInterfaceRequest() =>
+      new SeekingReaderProxy.unbound();
+}
+
 class _SeekingReaderProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<SeekingReader> {
   _SeekingReaderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -363,9 +401,6 @@ class _SeekingReaderProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _SeekingReaderProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _SeekingReaderServiceDescription();
 
   String get serviceName => SeekingReader.serviceName;
 
@@ -418,6 +453,11 @@ class _SeekingReaderProxyControl
     }
   }
 
+  SeekingReader get impl => null;
+  set impl(SeekingReader _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -426,8 +466,10 @@ class _SeekingReaderProxyControl
 }
 
 class SeekingReaderProxy
-    extends bindings.Proxy
-    implements SeekingReader {
+    extends bindings.Proxy<SeekingReader>
+    implements SeekingReader,
+               SeekingReaderInterface,
+               SeekingReaderInterfaceRequest {
   SeekingReaderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SeekingReaderProxyControl.fromEndpoint(endpoint));
@@ -442,13 +484,6 @@ class SeekingReaderProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SeekingReaderProxy"));
     return new SeekingReaderProxy.fromEndpoint(endpoint);
-  }
-
-  factory SeekingReaderProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    SeekingReaderProxy p = new SeekingReaderProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -489,6 +524,8 @@ class _SeekingReaderStubControl
   }
 
   _SeekingReaderStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => SeekingReader.serviceName;
 
 
   SeekingReaderDescribeResponseParams _seekingReaderDescribeResponseParamsFactory(media_common_mojom.MediaResult result, int size, bool canSeek) {
@@ -590,19 +627,16 @@ class _SeekingReaderStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _SeekingReaderServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class SeekingReaderStub
     extends bindings.Stub<SeekingReader>
-    implements SeekingReader {
+    implements SeekingReader,
+               SeekingReaderInterface,
+               SeekingReaderInterfaceRequest {
+  SeekingReaderStub.unbound([SeekingReader impl])
+      : super(new _SeekingReaderStubControl.unbound(impl));
+
   SeekingReaderStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [SeekingReader impl])
       : super(new _SeekingReaderStubControl.fromEndpoint(endpoint, impl));
@@ -611,17 +645,11 @@ class SeekingReaderStub
       core.MojoHandle handle, [SeekingReader impl])
       : super(new _SeekingReaderStubControl.fromHandle(handle, impl));
 
-  SeekingReaderStub.unbound([SeekingReader impl])
-      : super(new _SeekingReaderStubControl.unbound(impl));
-
   static SeekingReaderStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SeekingReaderStub"));
     return new SeekingReaderStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _SeekingReaderStubControl.serviceDescription;
 
 
   dynamic describe([Function responseFactory = null]) {

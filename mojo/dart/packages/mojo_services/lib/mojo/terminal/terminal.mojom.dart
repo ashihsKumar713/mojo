@@ -17,7 +17,7 @@ class _TerminalConnectParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object terminalFile = null;
+  file_mojom.FileInterfaceRequest terminalFile = null;
   bool force = false;
 
   _TerminalConnectParams() : super(kVersions.last.size);
@@ -177,7 +177,7 @@ class _TerminalConnectToClientParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(24, 0)
   ];
-  Object terminalClient = null;
+  terminal_client_mojom.TerminalClientInterface terminalClient = null;
   bool force = false;
 
   _TerminalConnectToClientParams() : super(kVersions.last.size);
@@ -716,15 +716,53 @@ class _TerminalServiceDescription implements service_describer.ServiceDescriptio
 
 abstract class Terminal {
   static const String serviceName = "mojo::terminal::Terminal";
-  dynamic connect(Object terminalFile,bool force,[Function responseFactory = null]);
-  dynamic connectToClient(Object terminalClient,bool force,[Function responseFactory = null]);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _TerminalServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static TerminalProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    TerminalProxy p = new TerminalProxy.unbound();
+    String name = serviceName ?? Terminal.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  dynamic connect(file_mojom.FileInterfaceRequest terminalFile,bool force,[Function responseFactory = null]);
+  dynamic connectToClient(terminal_client_mojom.TerminalClientInterface terminalClient,bool force,[Function responseFactory = null]);
   dynamic getSize([Function responseFactory = null]);
   dynamic setSize(int rows,int columns,bool reset,[Function responseFactory = null]);
 }
 
+abstract class TerminalInterface
+    implements bindings.MojoInterface<Terminal>,
+               Terminal {
+  factory TerminalInterface([Terminal impl]) =>
+      new TerminalStub.unbound(impl);
+  factory TerminalInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Terminal impl]) =>
+      new TerminalStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class TerminalInterfaceRequest
+    implements bindings.MojoInterface<Terminal>,
+               Terminal {
+  factory TerminalInterfaceRequest() =>
+      new TerminalProxy.unbound();
+}
+
 class _TerminalProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Terminal> {
   _TerminalProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -732,9 +770,6 @@ class _TerminalProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _TerminalProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _TerminalServiceDescription();
 
   String get serviceName => Terminal.serviceName;
 
@@ -827,6 +862,11 @@ class _TerminalProxyControl
     }
   }
 
+  Terminal get impl => null;
+  set impl(Terminal _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -835,8 +875,10 @@ class _TerminalProxyControl
 }
 
 class TerminalProxy
-    extends bindings.Proxy
-    implements Terminal {
+    extends bindings.Proxy<Terminal>
+    implements Terminal,
+               TerminalInterface,
+               TerminalInterfaceRequest {
   TerminalProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TerminalProxyControl.fromEndpoint(endpoint));
@@ -853,15 +895,8 @@ class TerminalProxy
     return new TerminalProxy.fromEndpoint(endpoint);
   }
 
-  factory TerminalProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    TerminalProxy p = new TerminalProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  dynamic connect(Object terminalFile,bool force,[Function responseFactory = null]) {
+  dynamic connect(file_mojom.FileInterfaceRequest terminalFile,bool force,[Function responseFactory = null]) {
     var params = new _TerminalConnectParams();
     params.terminalFile = terminalFile;
     params.force = force;
@@ -871,7 +906,7 @@ class TerminalProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  dynamic connectToClient(Object terminalClient,bool force,[Function responseFactory = null]) {
+  dynamic connectToClient(terminal_client_mojom.TerminalClientInterface terminalClient,bool force,[Function responseFactory = null]) {
     var params = new _TerminalConnectToClientParams();
     params.terminalClient = terminalClient;
     params.force = force;
@@ -920,6 +955,8 @@ class _TerminalStubControl
   }
 
   _TerminalStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Terminal.serviceName;
 
 
   TerminalConnectResponseParams _terminalConnectResponseParamsFactory(types_mojom.Error error) {
@@ -1076,19 +1113,16 @@ class _TerminalStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _TerminalServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class TerminalStub
     extends bindings.Stub<Terminal>
-    implements Terminal {
+    implements Terminal,
+               TerminalInterface,
+               TerminalInterfaceRequest {
+  TerminalStub.unbound([Terminal impl])
+      : super(new _TerminalStubControl.unbound(impl));
+
   TerminalStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Terminal impl])
       : super(new _TerminalStubControl.fromEndpoint(endpoint, impl));
@@ -1097,23 +1131,17 @@ class TerminalStub
       core.MojoHandle handle, [Terminal impl])
       : super(new _TerminalStubControl.fromHandle(handle, impl));
 
-  TerminalStub.unbound([Terminal impl])
-      : super(new _TerminalStubControl.unbound(impl));
-
   static TerminalStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TerminalStub"));
     return new TerminalStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _TerminalStubControl.serviceDescription;
 
-
-  dynamic connect(Object terminalFile,bool force,[Function responseFactory = null]) {
+  dynamic connect(file_mojom.FileInterfaceRequest terminalFile,bool force,[Function responseFactory = null]) {
     return impl.connect(terminalFile,force,responseFactory);
   }
-  dynamic connectToClient(Object terminalClient,bool force,[Function responseFactory = null]) {
+  dynamic connectToClient(terminal_client_mojom.TerminalClientInterface terminalClient,bool force,[Function responseFactory = null]) {
     return impl.connectToClient(terminalClient,force,responseFactory);
   }
   dynamic getSize([Function responseFactory = null]) {

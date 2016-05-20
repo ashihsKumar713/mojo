@@ -17,8 +17,8 @@ class _ShellConnectToApplicationParams extends bindings.Struct {
     const bindings.StructDataHeader(32, 0)
   ];
   String applicationUrl = null;
-  Object services = null;
-  Object exposedServices = null;
+  service_provider_mojom.ServiceProviderInterfaceRequest services = null;
+  service_provider_mojom.ServiceProviderInterface exposedServices = null;
 
   _ShellConnectToApplicationParams() : super(kVersions.last.size);
 
@@ -113,7 +113,7 @@ class _ShellCreateApplicationConnectorParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object applicationConnectorRequest = null;
+  application_connector_mojom.ApplicationConnectorInterfaceRequest applicationConnectorRequest = null;
 
   _ShellCreateApplicationConnectorParams() : super(kVersions.last.size);
 
@@ -195,13 +195,51 @@ class _ShellServiceDescription implements service_describer.ServiceDescription {
 
 abstract class Shell {
   static const String serviceName = null;
-  void connectToApplication(String applicationUrl, Object services, Object exposedServices);
-  void createApplicationConnector(Object applicationConnectorRequest);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ShellServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ShellProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ShellProxy p = new ShellProxy.unbound();
+    String name = serviceName ?? Shell.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices);
+  void createApplicationConnector(application_connector_mojom.ApplicationConnectorInterfaceRequest applicationConnectorRequest);
+}
+
+abstract class ShellInterface
+    implements bindings.MojoInterface<Shell>,
+               Shell {
+  factory ShellInterface([Shell impl]) =>
+      new ShellStub.unbound(impl);
+  factory ShellInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Shell impl]) =>
+      new ShellStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ShellInterfaceRequest
+    implements bindings.MojoInterface<Shell>,
+               Shell {
+  factory ShellInterfaceRequest() =>
+      new ShellProxy.unbound();
 }
 
 class _ShellProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Shell> {
   _ShellProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -209,9 +247,6 @@ class _ShellProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ShellProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ShellServiceDescription();
 
   String get serviceName => Shell.serviceName;
 
@@ -224,6 +259,11 @@ class _ShellProxyControl
     }
   }
 
+  Shell get impl => null;
+  set impl(Shell _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -232,8 +272,10 @@ class _ShellProxyControl
 }
 
 class ShellProxy
-    extends bindings.Proxy
-    implements Shell {
+    extends bindings.Proxy<Shell>
+    implements Shell,
+               ShellInterface,
+               ShellInterfaceRequest {
   ShellProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ShellProxyControl.fromEndpoint(endpoint));
@@ -250,15 +292,8 @@ class ShellProxy
     return new ShellProxy.fromEndpoint(endpoint);
   }
 
-  factory ShellProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ShellProxy p = new ShellProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void connectToApplication(String applicationUrl, Object services, Object exposedServices) {
+  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -270,7 +305,7 @@ class ShellProxy
     ctrl.sendMessage(params,
         _shellMethodConnectToApplicationName);
   }
-  void createApplicationConnector(Object applicationConnectorRequest) {
+  void createApplicationConnector(application_connector_mojom.ApplicationConnectorInterfaceRequest applicationConnectorRequest) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -300,6 +335,8 @@ class _ShellStubControl
   }
 
   _ShellStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Shell.serviceName;
 
 
 
@@ -356,19 +393,16 @@ class _ShellStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ShellServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ShellStub
     extends bindings.Stub<Shell>
-    implements Shell {
+    implements Shell,
+               ShellInterface,
+               ShellInterfaceRequest {
+  ShellStub.unbound([Shell impl])
+      : super(new _ShellStubControl.unbound(impl));
+
   ShellStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Shell impl])
       : super(new _ShellStubControl.fromEndpoint(endpoint, impl));
@@ -377,23 +411,17 @@ class ShellStub
       core.MojoHandle handle, [Shell impl])
       : super(new _ShellStubControl.fromHandle(handle, impl));
 
-  ShellStub.unbound([Shell impl])
-      : super(new _ShellStubControl.unbound(impl));
-
   static ShellStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ShellStub"));
     return new ShellStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ShellStubControl.serviceDescription;
 
-
-  void connectToApplication(String applicationUrl, Object services, Object exposedServices) {
+  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices) {
     return impl.connectToApplication(applicationUrl, services, exposedServices);
   }
-  void createApplicationConnector(Object applicationConnectorRequest) {
+  void createApplicationConnector(application_connector_mojom.ApplicationConnectorInterfaceRequest applicationConnectorRequest) {
     return impl.createApplicationConnector(applicationConnectorRequest);
   }
 }

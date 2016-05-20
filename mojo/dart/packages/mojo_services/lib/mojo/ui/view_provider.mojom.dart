@@ -16,9 +16,9 @@ class _ViewProviderCreateViewParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(24, 0)
   ];
-  Object viewOwner = null;
-  Object services = null;
-  Object exposedServices = null;
+  view_token_mojom.ViewOwnerInterfaceRequest viewOwner = null;
+  service_provider_mojom.ServiceProviderInterfaceRequest services = null;
+  service_provider_mojom.ServiceProviderInterface exposedServices = null;
 
   _ViewProviderCreateViewParams() : super(kVersions.last.size);
 
@@ -123,12 +123,50 @@ class _ViewProviderServiceDescription implements service_describer.ServiceDescri
 
 abstract class ViewProvider {
   static const String serviceName = "mojo::ui::ViewProvider";
-  void createView(Object viewOwner, Object services, Object exposedServices);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ViewProviderServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ViewProviderProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ViewProviderProxy p = new ViewProviderProxy.unbound();
+    String name = serviceName ?? ViewProvider.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void createView(view_token_mojom.ViewOwnerInterfaceRequest viewOwner, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices);
+}
+
+abstract class ViewProviderInterface
+    implements bindings.MojoInterface<ViewProvider>,
+               ViewProvider {
+  factory ViewProviderInterface([ViewProvider impl]) =>
+      new ViewProviderStub.unbound(impl);
+  factory ViewProviderInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [ViewProvider impl]) =>
+      new ViewProviderStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ViewProviderInterfaceRequest
+    implements bindings.MojoInterface<ViewProvider>,
+               ViewProvider {
+  factory ViewProviderInterfaceRequest() =>
+      new ViewProviderProxy.unbound();
 }
 
 class _ViewProviderProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<ViewProvider> {
   _ViewProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -136,9 +174,6 @@ class _ViewProviderProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ViewProviderProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ViewProviderServiceDescription();
 
   String get serviceName => ViewProvider.serviceName;
 
@@ -151,6 +186,11 @@ class _ViewProviderProxyControl
     }
   }
 
+  ViewProvider get impl => null;
+  set impl(ViewProvider _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -159,8 +199,10 @@ class _ViewProviderProxyControl
 }
 
 class ViewProviderProxy
-    extends bindings.Proxy
-    implements ViewProvider {
+    extends bindings.Proxy<ViewProvider>
+    implements ViewProvider,
+               ViewProviderInterface,
+               ViewProviderInterfaceRequest {
   ViewProviderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewProviderProxyControl.fromEndpoint(endpoint));
@@ -177,15 +219,8 @@ class ViewProviderProxy
     return new ViewProviderProxy.fromEndpoint(endpoint);
   }
 
-  factory ViewProviderProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ViewProviderProxy p = new ViewProviderProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void createView(Object viewOwner, Object services, Object exposedServices) {
+  void createView(view_token_mojom.ViewOwnerInterfaceRequest viewOwner, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -217,6 +252,8 @@ class _ViewProviderStubControl
   }
 
   _ViewProviderStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => ViewProvider.serviceName;
 
 
 
@@ -268,19 +305,16 @@ class _ViewProviderStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ViewProviderServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ViewProviderStub
     extends bindings.Stub<ViewProvider>
-    implements ViewProvider {
+    implements ViewProvider,
+               ViewProviderInterface,
+               ViewProviderInterfaceRequest {
+  ViewProviderStub.unbound([ViewProvider impl])
+      : super(new _ViewProviderStubControl.unbound(impl));
+
   ViewProviderStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewProvider impl])
       : super(new _ViewProviderStubControl.fromEndpoint(endpoint, impl));
@@ -289,20 +323,14 @@ class ViewProviderStub
       core.MojoHandle handle, [ViewProvider impl])
       : super(new _ViewProviderStubControl.fromHandle(handle, impl));
 
-  ViewProviderStub.unbound([ViewProvider impl])
-      : super(new _ViewProviderStubControl.unbound(impl));
-
   static ViewProviderStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewProviderStub"));
     return new ViewProviderStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ViewProviderStubControl.serviceDescription;
 
-
-  void createView(Object viewOwner, Object services, Object exposedServices) {
+  void createView(view_token_mojom.ViewOwnerInterfaceRequest viewOwner, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices) {
     return impl.createView(viewOwner, services, exposedServices);
   }
 }

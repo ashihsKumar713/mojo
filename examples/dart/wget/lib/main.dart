@@ -16,7 +16,7 @@ import 'package:mojo_services/mojo/network_service.mojom.dart';
 import 'package:mojo_services/mojo/url_loader.mojom.dart';
 
 class WGet extends Application {
-  NetworkServiceProxy _networkService;
+  NetworkServiceInterfaceRequest _networkService;
   UrlLoaderProxy _urlLoader;
 
   WGet.fromHandle(MojoHandle handle) : super.fromHandle(handle);
@@ -35,13 +35,13 @@ class WGet extends Application {
     print(new String.fromCharCodes(bodyData.buffer.asUint8List()));
     print(">>> EOF <<<");
 
-    _closeProxies();
+    _closeInterfaces();
     await close();
     MojoHandle.reportLeakedHandles();
   }
 
   Future<ByteData> _getUrl(String url) async {
-    _initProxiesIfNeeded();
+    _initInterfacesIfNeeded();
 
     var urlRequest = new UrlRequest()
       ..url = url
@@ -54,18 +54,18 @@ class WGet extends Application {
     return DataPipeDrainer.drainHandle(urlResponse.response.body);
   }
 
-  void _initProxiesIfNeeded() {
+  void _initInterfacesIfNeeded() {
     if (_networkService == null) {
-      _networkService = new NetworkServiceProxy.unbound();
+      _networkService = new NetworkServiceInterfaceRequest();
       connectToService("mojo:network_service", _networkService);
     }
     if (_urlLoader == null) {
-      _urlLoader = new UrlLoaderProxy.unbound();
+      _urlLoader = new UrlLoaderInterfaceRequest();
       _networkService.createUrlLoader(_urlLoader);
     }
   }
 
-  void _closeProxies() {
+  void _closeInterfaces() {
     _urlLoader.close();
     _urlLoader = null;
     _networkService.close();

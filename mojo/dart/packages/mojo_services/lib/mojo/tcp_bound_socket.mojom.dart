@@ -18,7 +18,7 @@ class _TcpBoundSocketStartListeningParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object server = null;
+  tcp_server_socket_mojom.TcpServerSocketInterfaceRequest server = null;
 
   _TcpBoundSocketStartListeningParams() : super(kVersions.last.size);
 
@@ -165,7 +165,7 @@ class _TcpBoundSocketConnectParams extends bindings.Struct {
   net_address_mojom.NetAddress remoteAddress = null;
   core.MojoDataPipeConsumer sendStream = null;
   core.MojoDataPipeProducer receiveStream = null;
-  Object clientSocket = null;
+  tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket = null;
 
   _TcpBoundSocketConnectParams() : super(kVersions.last.size);
 
@@ -357,13 +357,51 @@ class _TcpBoundSocketServiceDescription implements service_describer.ServiceDesc
 
 abstract class TcpBoundSocket {
   static const String serviceName = null;
-  dynamic startListening(Object server,[Function responseFactory = null]);
-  dynamic connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _TcpBoundSocketServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static TcpBoundSocketProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    TcpBoundSocketProxy p = new TcpBoundSocketProxy.unbound();
+    String name = serviceName ?? TcpBoundSocket.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  dynamic startListening(tcp_server_socket_mojom.TcpServerSocketInterfaceRequest server,[Function responseFactory = null]);
+  dynamic connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]);
+}
+
+abstract class TcpBoundSocketInterface
+    implements bindings.MojoInterface<TcpBoundSocket>,
+               TcpBoundSocket {
+  factory TcpBoundSocketInterface([TcpBoundSocket impl]) =>
+      new TcpBoundSocketStub.unbound(impl);
+  factory TcpBoundSocketInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [TcpBoundSocket impl]) =>
+      new TcpBoundSocketStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class TcpBoundSocketInterfaceRequest
+    implements bindings.MojoInterface<TcpBoundSocket>,
+               TcpBoundSocket {
+  factory TcpBoundSocketInterfaceRequest() =>
+      new TcpBoundSocketProxy.unbound();
 }
 
 class _TcpBoundSocketProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<TcpBoundSocket> {
   _TcpBoundSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -371,9 +409,6 @@ class _TcpBoundSocketProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _TcpBoundSocketProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _TcpBoundSocketServiceDescription();
 
   String get serviceName => TcpBoundSocket.serviceName;
 
@@ -426,6 +461,11 @@ class _TcpBoundSocketProxyControl
     }
   }
 
+  TcpBoundSocket get impl => null;
+  set impl(TcpBoundSocket _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -434,8 +474,10 @@ class _TcpBoundSocketProxyControl
 }
 
 class TcpBoundSocketProxy
-    extends bindings.Proxy
-    implements TcpBoundSocket {
+    extends bindings.Proxy<TcpBoundSocket>
+    implements TcpBoundSocket,
+               TcpBoundSocketInterface,
+               TcpBoundSocketInterfaceRequest {
   TcpBoundSocketProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TcpBoundSocketProxyControl.fromEndpoint(endpoint));
@@ -452,15 +494,8 @@ class TcpBoundSocketProxy
     return new TcpBoundSocketProxy.fromEndpoint(endpoint);
   }
 
-  factory TcpBoundSocketProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    TcpBoundSocketProxy p = new TcpBoundSocketProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  dynamic startListening(Object server,[Function responseFactory = null]) {
+  dynamic startListening(tcp_server_socket_mojom.TcpServerSocketInterfaceRequest server,[Function responseFactory = null]) {
     var params = new _TcpBoundSocketStartListeningParams();
     params.server = server;
     return ctrl.sendMessageWithRequestId(
@@ -469,7 +504,7 @@ class TcpBoundSocketProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  dynamic connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]) {
+  dynamic connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]) {
     var params = new _TcpBoundSocketConnectParams();
     params.remoteAddress = remoteAddress;
     params.sendStream = sendStream;
@@ -501,6 +536,8 @@ class _TcpBoundSocketStubControl
   }
 
   _TcpBoundSocketStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => TcpBoundSocket.serviceName;
 
 
   TcpBoundSocketStartListeningResponseParams _tcpBoundSocketStartListeningResponseParamsFactory(network_error_mojom.NetworkError result) {
@@ -601,19 +638,16 @@ class _TcpBoundSocketStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _TcpBoundSocketServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class TcpBoundSocketStub
     extends bindings.Stub<TcpBoundSocket>
-    implements TcpBoundSocket {
+    implements TcpBoundSocket,
+               TcpBoundSocketInterface,
+               TcpBoundSocketInterfaceRequest {
+  TcpBoundSocketStub.unbound([TcpBoundSocket impl])
+      : super(new _TcpBoundSocketStubControl.unbound(impl));
+
   TcpBoundSocketStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TcpBoundSocket impl])
       : super(new _TcpBoundSocketStubControl.fromEndpoint(endpoint, impl));
@@ -622,23 +656,17 @@ class TcpBoundSocketStub
       core.MojoHandle handle, [TcpBoundSocket impl])
       : super(new _TcpBoundSocketStubControl.fromHandle(handle, impl));
 
-  TcpBoundSocketStub.unbound([TcpBoundSocket impl])
-      : super(new _TcpBoundSocketStubControl.unbound(impl));
-
   static TcpBoundSocketStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TcpBoundSocketStub"));
     return new TcpBoundSocketStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _TcpBoundSocketStubControl.serviceDescription;
 
-
-  dynamic startListening(Object server,[Function responseFactory = null]) {
+  dynamic startListening(tcp_server_socket_mojom.TcpServerSocketInterfaceRequest server,[Function responseFactory = null]) {
     return impl.startListening(server,responseFactory);
   }
-  dynamic connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]) {
+  dynamic connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]) {
     return impl.connect(remoteAddress,sendStream,receiveStream,clientSocket,responseFactory);
   }
 }

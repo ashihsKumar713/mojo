@@ -653,15 +653,9 @@ testValidateInterfaceType() {
 
   _checkMojomInterface(mi, shortName, fullIdentifier, methodMap);
 
-  // The proxy and stub need to have a valid serviceDescription.
-  var boundsCheckProxyController =
-      new validation.BoundsCheckTestInterfaceProxy.unbound().ctrl;
   var boundsCheckStubDescription =
-      validation.BoundsCheckTestInterfaceStub.serviceDescription;
+      validation.BoundsCheckTestInterface.serviceDescription;
 
-  _checkServiceDescription(
-      boundsCheckProxyController.serviceDescription, interfaceID, shortName,
-      fullIdentifier, methodMap);
   _checkServiceDescription(
       boundsCheckStubDescription, interfaceID, shortName, fullIdentifier,
       methodMap);

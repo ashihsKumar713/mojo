@@ -5166,7 +5166,7 @@ class ContainsInterface extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object someInterface = null;
+  SomeInterfaceInterface someInterface = null;
 
   ContainsInterface() : super(kVersions.last.size);
 
@@ -5309,8 +5309,8 @@ class ContainsInterfaceRequest extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object req = null;
-  Object nullableReq = null;
+  SomeInterfaceInterfaceRequest req = null;
+  SomeInterfaceInterfaceRequest nullableReq = null;
 
   ContainsInterfaceRequest() : super(kVersions.last.size);
 
@@ -6004,12 +6004,50 @@ class _SomeInterfaceServiceDescription implements service_describer.ServiceDescr
 
 abstract class SomeInterface {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _SomeInterfaceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static SomeInterfaceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    SomeInterfaceProxy p = new SomeInterfaceProxy.unbound();
+    String name = serviceName ?? SomeInterface.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic someMethod(RectPair pair,[Function responseFactory = null]);
+}
+
+abstract class SomeInterfaceInterface
+    implements bindings.MojoInterface<SomeInterface>,
+               SomeInterface {
+  factory SomeInterfaceInterface([SomeInterface impl]) =>
+      new SomeInterfaceStub.unbound(impl);
+  factory SomeInterfaceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [SomeInterface impl]) =>
+      new SomeInterfaceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class SomeInterfaceInterfaceRequest
+    implements bindings.MojoInterface<SomeInterface>,
+               SomeInterface {
+  factory SomeInterfaceInterfaceRequest() =>
+      new SomeInterfaceProxy.unbound();
 }
 
 class _SomeInterfaceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<SomeInterface> {
   _SomeInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -6017,9 +6055,6 @@ class _SomeInterfaceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _SomeInterfaceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _SomeInterfaceServiceDescription();
 
   String get serviceName => SomeInterface.serviceName;
 
@@ -6052,6 +6087,11 @@ class _SomeInterfaceProxyControl
     }
   }
 
+  SomeInterface get impl => null;
+  set impl(SomeInterface _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -6060,8 +6100,10 @@ class _SomeInterfaceProxyControl
 }
 
 class SomeInterfaceProxy
-    extends bindings.Proxy
-    implements SomeInterface {
+    extends bindings.Proxy<SomeInterface>
+    implements SomeInterface,
+               SomeInterfaceInterface,
+               SomeInterfaceInterfaceRequest {
   SomeInterfaceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SomeInterfaceProxyControl.fromEndpoint(endpoint));
@@ -6076,13 +6118,6 @@ class SomeInterfaceProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SomeInterfaceProxy"));
     return new SomeInterfaceProxy.fromEndpoint(endpoint);
-  }
-
-  factory SomeInterfaceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    SomeInterfaceProxy p = new SomeInterfaceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -6115,6 +6150,8 @@ class _SomeInterfaceStubControl
   }
 
   _SomeInterfaceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => SomeInterface.serviceName;
 
 
   SomeInterfaceSomeMethodResponseParams _someInterfaceSomeMethodResponseParamsFactory(RectPair otherPair) {
@@ -6188,19 +6225,16 @@ class _SomeInterfaceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _SomeInterfaceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class SomeInterfaceStub
     extends bindings.Stub<SomeInterface>
-    implements SomeInterface {
+    implements SomeInterface,
+               SomeInterfaceInterface,
+               SomeInterfaceInterfaceRequest {
+  SomeInterfaceStub.unbound([SomeInterface impl])
+      : super(new _SomeInterfaceStubControl.unbound(impl));
+
   SomeInterfaceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [SomeInterface impl])
       : super(new _SomeInterfaceStubControl.fromEndpoint(endpoint, impl));
@@ -6209,17 +6243,11 @@ class SomeInterfaceStub
       core.MojoHandle handle, [SomeInterface impl])
       : super(new _SomeInterfaceStubControl.fromHandle(handle, impl));
 
-  SomeInterfaceStub.unbound([SomeInterface impl])
-      : super(new _SomeInterfaceStubControl.unbound(impl));
-
   static SomeInterfaceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SomeInterfaceStub"));
     return new SomeInterfaceStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _SomeInterfaceStubControl.serviceDescription;
 
 
   dynamic someMethod(RectPair pair,[Function responseFactory = null]) {

@@ -449,14 +449,52 @@ class _CalculatorServiceDescription implements service_describer.ServiceDescript
 
 abstract class Calculator {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _CalculatorServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static CalculatorProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    CalculatorProxy p = new CalculatorProxy.unbound();
+    String name = serviceName ?? Calculator.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic clear([Function responseFactory = null]);
   dynamic add(double value,[Function responseFactory = null]);
   dynamic multiply(double value,[Function responseFactory = null]);
 }
 
+abstract class CalculatorInterface
+    implements bindings.MojoInterface<Calculator>,
+               Calculator {
+  factory CalculatorInterface([Calculator impl]) =>
+      new CalculatorStub.unbound(impl);
+  factory CalculatorInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Calculator impl]) =>
+      new CalculatorStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class CalculatorInterfaceRequest
+    implements bindings.MojoInterface<Calculator>,
+               Calculator {
+  factory CalculatorInterfaceRequest() =>
+      new CalculatorProxy.unbound();
+}
+
 class _CalculatorProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Calculator> {
   _CalculatorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -464,9 +502,6 @@ class _CalculatorProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _CalculatorProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _CalculatorServiceDescription();
 
   String get serviceName => Calculator.serviceName;
 
@@ -539,6 +574,11 @@ class _CalculatorProxyControl
     }
   }
 
+  Calculator get impl => null;
+  set impl(Calculator _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -547,8 +587,10 @@ class _CalculatorProxyControl
 }
 
 class CalculatorProxy
-    extends bindings.Proxy
-    implements Calculator {
+    extends bindings.Proxy<Calculator>
+    implements Calculator,
+               CalculatorInterface,
+               CalculatorInterfaceRequest {
   CalculatorProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _CalculatorProxyControl.fromEndpoint(endpoint));
@@ -563,13 +605,6 @@ class CalculatorProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For CalculatorProxy"));
     return new CalculatorProxy.fromEndpoint(endpoint);
-  }
-
-  factory CalculatorProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    CalculatorProxy p = new CalculatorProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -619,6 +654,8 @@ class _CalculatorStubControl
   }
 
   _CalculatorStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Calculator.serviceName;
 
 
   CalculatorClearResponseParams _calculatorClearResponseParamsFactory(double value) {
@@ -744,19 +781,16 @@ class _CalculatorStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _CalculatorServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class CalculatorStub
     extends bindings.Stub<Calculator>
-    implements Calculator {
+    implements Calculator,
+               CalculatorInterface,
+               CalculatorInterfaceRequest {
+  CalculatorStub.unbound([Calculator impl])
+      : super(new _CalculatorStubControl.unbound(impl));
+
   CalculatorStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Calculator impl])
       : super(new _CalculatorStubControl.fromEndpoint(endpoint, impl));
@@ -765,17 +799,11 @@ class CalculatorStub
       core.MojoHandle handle, [Calculator impl])
       : super(new _CalculatorStubControl.fromHandle(handle, impl));
 
-  CalculatorStub.unbound([Calculator impl])
-      : super(new _CalculatorStubControl.unbound(impl));
-
   static CalculatorStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For CalculatorStub"));
     return new CalculatorStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _CalculatorStubControl.serviceDescription;
 
 
   dynamic clear([Function responseFactory = null]) {

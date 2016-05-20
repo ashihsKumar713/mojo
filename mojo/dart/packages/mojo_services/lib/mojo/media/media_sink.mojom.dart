@@ -108,7 +108,7 @@ class _MediaSinkGetConsumerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object consumer = null;
+  media_transport_mojom.MediaConsumerInterfaceRequest consumer = null;
 
   _MediaSinkGetConsumerParams() : super(kVersions.last.size);
 
@@ -467,16 +467,54 @@ class _MediaSinkServiceDescription implements service_describer.ServiceDescripti
 
 abstract class MediaSink {
   static const String serviceName = null;
-  void getConsumer(Object consumer);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _MediaSinkServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static MediaSinkProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    MediaSinkProxy p = new MediaSinkProxy.unbound();
+    String name = serviceName ?? MediaSink.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer);
   dynamic getStatus(int versionLastSeen,[Function responseFactory = null]);
   void play();
   void pause();
   static const int kInitialStatus = 0;
 }
 
+abstract class MediaSinkInterface
+    implements bindings.MojoInterface<MediaSink>,
+               MediaSink {
+  factory MediaSinkInterface([MediaSink impl]) =>
+      new MediaSinkStub.unbound(impl);
+  factory MediaSinkInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [MediaSink impl]) =>
+      new MediaSinkStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class MediaSinkInterfaceRequest
+    implements bindings.MojoInterface<MediaSink>,
+               MediaSink {
+  factory MediaSinkInterfaceRequest() =>
+      new MediaSinkProxy.unbound();
+}
+
 class _MediaSinkProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<MediaSink> {
   _MediaSinkProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -484,9 +522,6 @@ class _MediaSinkProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _MediaSinkProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _MediaSinkServiceDescription();
 
   String get serviceName => MediaSink.serviceName;
 
@@ -519,6 +554,11 @@ class _MediaSinkProxyControl
     }
   }
 
+  MediaSink get impl => null;
+  set impl(MediaSink _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -527,8 +567,10 @@ class _MediaSinkProxyControl
 }
 
 class MediaSinkProxy
-    extends bindings.Proxy
-    implements MediaSink {
+    extends bindings.Proxy<MediaSink>
+    implements MediaSink,
+               MediaSinkInterface,
+               MediaSinkInterfaceRequest {
   MediaSinkProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaSinkProxyControl.fromEndpoint(endpoint));
@@ -545,15 +587,8 @@ class MediaSinkProxy
     return new MediaSinkProxy.fromEndpoint(endpoint);
   }
 
-  factory MediaSinkProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    MediaSinkProxy p = new MediaSinkProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void getConsumer(Object consumer) {
+  void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -610,6 +645,8 @@ class _MediaSinkStubControl
   }
 
   _MediaSinkStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => MediaSink.serviceName;
 
 
   MediaSinkGetStatusResponseParams _mediaSinkGetStatusResponseParamsFactory(int version, MediaSinkStatus status) {
@@ -695,19 +732,16 @@ class _MediaSinkStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _MediaSinkServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class MediaSinkStub
     extends bindings.Stub<MediaSink>
-    implements MediaSink {
+    implements MediaSink,
+               MediaSinkInterface,
+               MediaSinkInterfaceRequest {
+  MediaSinkStub.unbound([MediaSink impl])
+      : super(new _MediaSinkStubControl.unbound(impl));
+
   MediaSinkStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaSink impl])
       : super(new _MediaSinkStubControl.fromEndpoint(endpoint, impl));
@@ -716,20 +750,14 @@ class MediaSinkStub
       core.MojoHandle handle, [MediaSink impl])
       : super(new _MediaSinkStubControl.fromHandle(handle, impl));
 
-  MediaSinkStub.unbound([MediaSink impl])
-      : super(new _MediaSinkStubControl.unbound(impl));
-
   static MediaSinkStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaSinkStub"));
     return new MediaSinkStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _MediaSinkStubControl.serviceDescription;
 
-
-  void getConsumer(Object consumer) {
+  void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
     return impl.getConsumer(consumer);
   }
   dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {

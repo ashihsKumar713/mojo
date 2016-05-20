@@ -164,7 +164,7 @@ class _MediaDemuxGetProducerParams extends bindings.Struct {
     const bindings.StructDataHeader(16, 0)
   ];
   int streamIndex = 0;
-  Object producer = null;
+  media_transport_mojom.MediaProducerInterfaceRequest producer = null;
 
   _MediaDemuxGetProducerParams() : super(kVersions.last.size);
 
@@ -783,8 +783,28 @@ class _MediaDemuxServiceDescription implements service_describer.ServiceDescript
 
 abstract class MediaDemux {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _MediaDemuxServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static MediaDemuxProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    MediaDemuxProxy p = new MediaDemuxProxy.unbound();
+    String name = serviceName ?? MediaDemux.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic describe([Function responseFactory = null]);
-  void getProducer(int streamIndex, Object producer);
+  void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer);
   dynamic getMetadata(int versionLastSeen,[Function responseFactory = null]);
   dynamic prime([Function responseFactory = null]);
   dynamic flush([Function responseFactory = null]);
@@ -792,9 +812,27 @@ abstract class MediaDemux {
   static const int kInitialMetadata = 0;
 }
 
+abstract class MediaDemuxInterface
+    implements bindings.MojoInterface<MediaDemux>,
+               MediaDemux {
+  factory MediaDemuxInterface([MediaDemux impl]) =>
+      new MediaDemuxStub.unbound(impl);
+  factory MediaDemuxInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [MediaDemux impl]) =>
+      new MediaDemuxStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class MediaDemuxInterfaceRequest
+    implements bindings.MojoInterface<MediaDemux>,
+               MediaDemux {
+  factory MediaDemuxInterfaceRequest() =>
+      new MediaDemuxProxy.unbound();
+}
+
 class _MediaDemuxProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<MediaDemux> {
   _MediaDemuxProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -802,9 +840,6 @@ class _MediaDemuxProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _MediaDemuxProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _MediaDemuxServiceDescription();
 
   String get serviceName => MediaDemux.serviceName;
 
@@ -917,6 +952,11 @@ class _MediaDemuxProxyControl
     }
   }
 
+  MediaDemux get impl => null;
+  set impl(MediaDemux _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -925,8 +965,10 @@ class _MediaDemuxProxyControl
 }
 
 class MediaDemuxProxy
-    extends bindings.Proxy
-    implements MediaDemux {
+    extends bindings.Proxy<MediaDemux>
+    implements MediaDemux,
+               MediaDemuxInterface,
+               MediaDemuxInterfaceRequest {
   MediaDemuxProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaDemuxProxyControl.fromEndpoint(endpoint));
@@ -943,13 +985,6 @@ class MediaDemuxProxy
     return new MediaDemuxProxy.fromEndpoint(endpoint);
   }
 
-  factory MediaDemuxProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    MediaDemuxProxy p = new MediaDemuxProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
-
 
   dynamic describe([Function responseFactory = null]) {
     var params = new _MediaDemuxDescribeParams();
@@ -959,7 +994,7 @@ class MediaDemuxProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  void getProducer(int streamIndex, Object producer) {
+  void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1024,6 +1059,8 @@ class _MediaDemuxStubControl
   }
 
   _MediaDemuxStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => MediaDemux.serviceName;
 
 
   MediaDemuxDescribeResponseParams _mediaDemuxDescribeResponseParamsFactory(List<media_types_mojom.MediaType> streamTypes) {
@@ -1202,19 +1239,16 @@ class _MediaDemuxStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _MediaDemuxServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class MediaDemuxStub
     extends bindings.Stub<MediaDemux>
-    implements MediaDemux {
+    implements MediaDemux,
+               MediaDemuxInterface,
+               MediaDemuxInterfaceRequest {
+  MediaDemuxStub.unbound([MediaDemux impl])
+      : super(new _MediaDemuxStubControl.unbound(impl));
+
   MediaDemuxStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaDemux impl])
       : super(new _MediaDemuxStubControl.fromEndpoint(endpoint, impl));
@@ -1223,23 +1257,17 @@ class MediaDemuxStub
       core.MojoHandle handle, [MediaDemux impl])
       : super(new _MediaDemuxStubControl.fromHandle(handle, impl));
 
-  MediaDemuxStub.unbound([MediaDemux impl])
-      : super(new _MediaDemuxStubControl.unbound(impl));
-
   static MediaDemuxStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaDemuxStub"));
     return new MediaDemuxStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _MediaDemuxStubControl.serviceDescription;
-
 
   dynamic describe([Function responseFactory = null]) {
     return impl.describe(responseFactory);
   }
-  void getProducer(int streamIndex, Object producer) {
+  void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer) {
     return impl.getProducer(streamIndex, producer);
   }
   dynamic getMetadata(int versionLastSeen,[Function responseFactory = null]) {

@@ -762,15 +762,53 @@ class _ContactsServiceServiceDescription implements service_describer.ServiceDes
 
 abstract class ContactsService {
   static const String serviceName = "contacts::ContactsService";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ContactsServiceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ContactsServiceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ContactsServiceProxy p = new ContactsServiceProxy.unbound();
+    String name = serviceName ?? ContactsService.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic getCount(String filter,[Function responseFactory = null]);
   dynamic get(String filter,int offset,int limit,[Function responseFactory = null]);
   dynamic getEmails(int id,[Function responseFactory = null]);
   dynamic getPhoto(int id,bool highResolution,[Function responseFactory = null]);
 }
 
+abstract class ContactsServiceInterface
+    implements bindings.MojoInterface<ContactsService>,
+               ContactsService {
+  factory ContactsServiceInterface([ContactsService impl]) =>
+      new ContactsServiceStub.unbound(impl);
+  factory ContactsServiceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [ContactsService impl]) =>
+      new ContactsServiceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ContactsServiceInterfaceRequest
+    implements bindings.MojoInterface<ContactsService>,
+               ContactsService {
+  factory ContactsServiceInterfaceRequest() =>
+      new ContactsServiceProxy.unbound();
+}
+
 class _ContactsServiceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<ContactsService> {
   _ContactsServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -778,9 +816,6 @@ class _ContactsServiceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ContactsServiceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ContactsServiceServiceDescription();
 
   String get serviceName => ContactsService.serviceName;
 
@@ -873,6 +908,11 @@ class _ContactsServiceProxyControl
     }
   }
 
+  ContactsService get impl => null;
+  set impl(ContactsService _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -881,8 +921,10 @@ class _ContactsServiceProxyControl
 }
 
 class ContactsServiceProxy
-    extends bindings.Proxy
-    implements ContactsService {
+    extends bindings.Proxy<ContactsService>
+    implements ContactsService,
+               ContactsServiceInterface,
+               ContactsServiceInterfaceRequest {
   ContactsServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ContactsServiceProxyControl.fromEndpoint(endpoint));
@@ -897,13 +939,6 @@ class ContactsServiceProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ContactsServiceProxy"));
     return new ContactsServiceProxy.fromEndpoint(endpoint);
-  }
-
-  factory ContactsServiceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ContactsServiceProxy p = new ContactsServiceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -966,6 +1001,8 @@ class _ContactsServiceStubControl
   }
 
   _ContactsServiceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => ContactsService.serviceName;
 
 
   ContactsServiceGetCountResponseParams _contactsServiceGetCountResponseParamsFactory(int count) {
@@ -1120,19 +1157,16 @@ class _ContactsServiceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ContactsServiceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ContactsServiceStub
     extends bindings.Stub<ContactsService>
-    implements ContactsService {
+    implements ContactsService,
+               ContactsServiceInterface,
+               ContactsServiceInterfaceRequest {
+  ContactsServiceStub.unbound([ContactsService impl])
+      : super(new _ContactsServiceStubControl.unbound(impl));
+
   ContactsServiceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ContactsService impl])
       : super(new _ContactsServiceStubControl.fromEndpoint(endpoint, impl));
@@ -1141,17 +1175,11 @@ class ContactsServiceStub
       core.MojoHandle handle, [ContactsService impl])
       : super(new _ContactsServiceStubControl.fromHandle(handle, impl));
 
-  ContactsServiceStub.unbound([ContactsService impl])
-      : super(new _ContactsServiceStubControl.unbound(impl));
-
   static ContactsServiceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ContactsServiceStub"));
     return new ContactsServiceStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ContactsServiceStubControl.serviceDescription;
 
 
   dynamic getCount(String filter,[Function responseFactory = null]) {

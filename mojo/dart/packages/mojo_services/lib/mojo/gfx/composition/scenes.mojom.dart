@@ -294,7 +294,7 @@ class _SceneSetListenerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object listener = null;
+  SceneListenerInterface listener = null;
 
   _SceneSetListenerParams() : super(kVersions.last.size);
 
@@ -510,7 +510,7 @@ class _SceneGetSchedulerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object scheduler = null;
+  scheduling_mojom.FrameSchedulerInterfaceRequest scheduler = null;
 
   _SceneGetSchedulerParams() : super(kVersions.last.size);
 
@@ -724,15 +724,53 @@ class _SceneServiceDescription implements service_describer.ServiceDescription {
 
 abstract class Scene {
   static const String serviceName = null;
-  void setListener(Object listener);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _SceneServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static SceneProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    SceneProxy p = new SceneProxy.unbound();
+    String name = serviceName ?? Scene.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void setListener(SceneListenerInterface listener);
   void update(SceneUpdate update);
   void publish(SceneMetadata metadata);
-  void getScheduler(Object scheduler);
+  void getScheduler(scheduling_mojom.FrameSchedulerInterfaceRequest scheduler);
+}
+
+abstract class SceneInterface
+    implements bindings.MojoInterface<Scene>,
+               Scene {
+  factory SceneInterface([Scene impl]) =>
+      new SceneStub.unbound(impl);
+  factory SceneInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Scene impl]) =>
+      new SceneStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class SceneInterfaceRequest
+    implements bindings.MojoInterface<Scene>,
+               Scene {
+  factory SceneInterfaceRequest() =>
+      new SceneProxy.unbound();
 }
 
 class _SceneProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Scene> {
   _SceneProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -740,9 +778,6 @@ class _SceneProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _SceneProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _SceneServiceDescription();
 
   String get serviceName => Scene.serviceName;
 
@@ -755,6 +790,11 @@ class _SceneProxyControl
     }
   }
 
+  Scene get impl => null;
+  set impl(Scene _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -763,8 +803,10 @@ class _SceneProxyControl
 }
 
 class SceneProxy
-    extends bindings.Proxy
-    implements Scene {
+    extends bindings.Proxy<Scene>
+    implements Scene,
+               SceneInterface,
+               SceneInterfaceRequest {
   SceneProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SceneProxyControl.fromEndpoint(endpoint));
@@ -781,15 +823,8 @@ class SceneProxy
     return new SceneProxy.fromEndpoint(endpoint);
   }
 
-  factory SceneProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    SceneProxy p = new SceneProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void setListener(Object listener) {
+  void setListener(SceneListenerInterface listener) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -819,7 +854,7 @@ class SceneProxy
     ctrl.sendMessage(params,
         _sceneMethodPublishName);
   }
-  void getScheduler(Object scheduler) {
+  void getScheduler(scheduling_mojom.FrameSchedulerInterfaceRequest scheduler) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -849,6 +884,8 @@ class _SceneStubControl
   }
 
   _SceneStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Scene.serviceName;
 
 
 
@@ -915,19 +952,16 @@ class _SceneStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _SceneServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class SceneStub
     extends bindings.Stub<Scene>
-    implements Scene {
+    implements Scene,
+               SceneInterface,
+               SceneInterfaceRequest {
+  SceneStub.unbound([Scene impl])
+      : super(new _SceneStubControl.unbound(impl));
+
   SceneStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Scene impl])
       : super(new _SceneStubControl.fromEndpoint(endpoint, impl));
@@ -936,20 +970,14 @@ class SceneStub
       core.MojoHandle handle, [Scene impl])
       : super(new _SceneStubControl.fromHandle(handle, impl));
 
-  SceneStub.unbound([Scene impl])
-      : super(new _SceneStubControl.unbound(impl));
-
   static SceneStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SceneStub"));
     return new SceneStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _SceneStubControl.serviceDescription;
 
-
-  void setListener(Object listener) {
+  void setListener(SceneListenerInterface listener) {
     return impl.setListener(listener);
   }
   void update(SceneUpdate update) {
@@ -958,7 +986,7 @@ class SceneStub
   void publish(SceneMetadata metadata) {
     return impl.publish(metadata);
   }
-  void getScheduler(Object scheduler) {
+  void getScheduler(scheduling_mojom.FrameSchedulerInterfaceRequest scheduler) {
     return impl.getScheduler(scheduler);
   }
 }
@@ -978,12 +1006,50 @@ class _SceneListenerServiceDescription implements service_describer.ServiceDescr
 
 abstract class SceneListener {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _SceneListenerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static SceneListenerProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    SceneListenerProxy p = new SceneListenerProxy.unbound();
+    String name = serviceName ?? SceneListener.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic onResourceUnavailable(int resourceId,[Function responseFactory = null]);
+}
+
+abstract class SceneListenerInterface
+    implements bindings.MojoInterface<SceneListener>,
+               SceneListener {
+  factory SceneListenerInterface([SceneListener impl]) =>
+      new SceneListenerStub.unbound(impl);
+  factory SceneListenerInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [SceneListener impl]) =>
+      new SceneListenerStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class SceneListenerInterfaceRequest
+    implements bindings.MojoInterface<SceneListener>,
+               SceneListener {
+  factory SceneListenerInterfaceRequest() =>
+      new SceneListenerProxy.unbound();
 }
 
 class _SceneListenerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<SceneListener> {
   _SceneListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -991,9 +1057,6 @@ class _SceneListenerProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _SceneListenerProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _SceneListenerServiceDescription();
 
   String get serviceName => SceneListener.serviceName;
 
@@ -1026,6 +1089,11 @@ class _SceneListenerProxyControl
     }
   }
 
+  SceneListener get impl => null;
+  set impl(SceneListener _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1034,8 +1102,10 @@ class _SceneListenerProxyControl
 }
 
 class SceneListenerProxy
-    extends bindings.Proxy
-    implements SceneListener {
+    extends bindings.Proxy<SceneListener>
+    implements SceneListener,
+               SceneListenerInterface,
+               SceneListenerInterfaceRequest {
   SceneListenerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SceneListenerProxyControl.fromEndpoint(endpoint));
@@ -1050,13 +1120,6 @@ class SceneListenerProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SceneListenerProxy"));
     return new SceneListenerProxy.fromEndpoint(endpoint);
-  }
-
-  factory SceneListenerProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    SceneListenerProxy p = new SceneListenerProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1089,6 +1152,8 @@ class _SceneListenerStubControl
   }
 
   _SceneListenerStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => SceneListener.serviceName;
 
 
   SceneListenerOnResourceUnavailableResponseParams _sceneListenerOnResourceUnavailableResponseParamsFactory() {
@@ -1161,19 +1226,16 @@ class _SceneListenerStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _SceneListenerServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class SceneListenerStub
     extends bindings.Stub<SceneListener>
-    implements SceneListener {
+    implements SceneListener,
+               SceneListenerInterface,
+               SceneListenerInterfaceRequest {
+  SceneListenerStub.unbound([SceneListener impl])
+      : super(new _SceneListenerStubControl.unbound(impl));
+
   SceneListenerStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [SceneListener impl])
       : super(new _SceneListenerStubControl.fromEndpoint(endpoint, impl));
@@ -1182,17 +1244,11 @@ class SceneListenerStub
       core.MojoHandle handle, [SceneListener impl])
       : super(new _SceneListenerStubControl.fromHandle(handle, impl));
 
-  SceneListenerStub.unbound([SceneListener impl])
-      : super(new _SceneListenerStubControl.unbound(impl));
-
   static SceneListenerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SceneListenerStub"));
     return new SceneListenerStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _SceneListenerStubControl.serviceDescription;
 
 
   dynamic onResourceUnavailable(int resourceId,[Function responseFactory = null]) {

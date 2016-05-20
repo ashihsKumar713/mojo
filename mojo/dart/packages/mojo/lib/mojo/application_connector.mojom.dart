@@ -16,8 +16,8 @@ class _ApplicationConnectorConnectToApplicationParams extends bindings.Struct {
     const bindings.StructDataHeader(32, 0)
   ];
   String applicationUrl = null;
-  Object services = null;
-  Object exposedServices = null;
+  service_provider_mojom.ServiceProviderInterfaceRequest services = null;
+  service_provider_mojom.ServiceProviderInterface exposedServices = null;
 
   _ApplicationConnectorConnectToApplicationParams() : super(kVersions.last.size);
 
@@ -112,7 +112,7 @@ class _ApplicationConnectorDuplicateParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object applicationConnectorRequest = null;
+  ApplicationConnectorInterfaceRequest applicationConnectorRequest = null;
 
   _ApplicationConnectorDuplicateParams() : super(kVersions.last.size);
 
@@ -194,13 +194,51 @@ class _ApplicationConnectorServiceDescription implements service_describer.Servi
 
 abstract class ApplicationConnector {
   static const String serviceName = null;
-  void connectToApplication(String applicationUrl, Object services, Object exposedServices);
-  void duplicate(Object applicationConnectorRequest);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ApplicationConnectorServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ApplicationConnectorProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ApplicationConnectorProxy p = new ApplicationConnectorProxy.unbound();
+    String name = serviceName ?? ApplicationConnector.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices);
+  void duplicate(ApplicationConnectorInterfaceRequest applicationConnectorRequest);
+}
+
+abstract class ApplicationConnectorInterface
+    implements bindings.MojoInterface<ApplicationConnector>,
+               ApplicationConnector {
+  factory ApplicationConnectorInterface([ApplicationConnector impl]) =>
+      new ApplicationConnectorStub.unbound(impl);
+  factory ApplicationConnectorInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [ApplicationConnector impl]) =>
+      new ApplicationConnectorStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ApplicationConnectorInterfaceRequest
+    implements bindings.MojoInterface<ApplicationConnector>,
+               ApplicationConnector {
+  factory ApplicationConnectorInterfaceRequest() =>
+      new ApplicationConnectorProxy.unbound();
 }
 
 class _ApplicationConnectorProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<ApplicationConnector> {
   _ApplicationConnectorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -208,9 +246,6 @@ class _ApplicationConnectorProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ApplicationConnectorProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ApplicationConnectorServiceDescription();
 
   String get serviceName => ApplicationConnector.serviceName;
 
@@ -223,6 +258,11 @@ class _ApplicationConnectorProxyControl
     }
   }
 
+  ApplicationConnector get impl => null;
+  set impl(ApplicationConnector _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -231,8 +271,10 @@ class _ApplicationConnectorProxyControl
 }
 
 class ApplicationConnectorProxy
-    extends bindings.Proxy
-    implements ApplicationConnector {
+    extends bindings.Proxy<ApplicationConnector>
+    implements ApplicationConnector,
+               ApplicationConnectorInterface,
+               ApplicationConnectorInterfaceRequest {
   ApplicationConnectorProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ApplicationConnectorProxyControl.fromEndpoint(endpoint));
@@ -249,15 +291,8 @@ class ApplicationConnectorProxy
     return new ApplicationConnectorProxy.fromEndpoint(endpoint);
   }
 
-  factory ApplicationConnectorProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ApplicationConnectorProxy p = new ApplicationConnectorProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void connectToApplication(String applicationUrl, Object services, Object exposedServices) {
+  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -269,7 +304,7 @@ class ApplicationConnectorProxy
     ctrl.sendMessage(params,
         _applicationConnectorMethodConnectToApplicationName);
   }
-  void duplicate(Object applicationConnectorRequest) {
+  void duplicate(ApplicationConnectorInterfaceRequest applicationConnectorRequest) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -299,6 +334,8 @@ class _ApplicationConnectorStubControl
   }
 
   _ApplicationConnectorStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => ApplicationConnector.serviceName;
 
 
 
@@ -355,19 +392,16 @@ class _ApplicationConnectorStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ApplicationConnectorServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ApplicationConnectorStub
     extends bindings.Stub<ApplicationConnector>
-    implements ApplicationConnector {
+    implements ApplicationConnector,
+               ApplicationConnectorInterface,
+               ApplicationConnectorInterfaceRequest {
+  ApplicationConnectorStub.unbound([ApplicationConnector impl])
+      : super(new _ApplicationConnectorStubControl.unbound(impl));
+
   ApplicationConnectorStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ApplicationConnector impl])
       : super(new _ApplicationConnectorStubControl.fromEndpoint(endpoint, impl));
@@ -376,23 +410,17 @@ class ApplicationConnectorStub
       core.MojoHandle handle, [ApplicationConnector impl])
       : super(new _ApplicationConnectorStubControl.fromHandle(handle, impl));
 
-  ApplicationConnectorStub.unbound([ApplicationConnector impl])
-      : super(new _ApplicationConnectorStubControl.unbound(impl));
-
   static ApplicationConnectorStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ApplicationConnectorStub"));
     return new ApplicationConnectorStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ApplicationConnectorStubControl.serviceDescription;
 
-
-  void connectToApplication(String applicationUrl, Object services, Object exposedServices) {
+  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices) {
     return impl.connectToApplication(applicationUrl, services, exposedServices);
   }
-  void duplicate(Object applicationConnectorRequest) {
+  void duplicate(ApplicationConnectorInterfaceRequest applicationConnectorRequest) {
     return impl.duplicate(applicationConnectorRequest);
   }
 }

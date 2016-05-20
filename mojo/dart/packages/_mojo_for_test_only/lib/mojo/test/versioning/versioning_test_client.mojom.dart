@@ -799,15 +799,53 @@ class _HumanResourceDatabaseServiceDescription implements service_describer.Serv
 
 abstract class HumanResourceDatabase {
   static const String serviceName = "mojo::test::versioning::HumanResourceDatabase";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _HumanResourceDatabaseServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static HumanResourceDatabaseProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    HumanResourceDatabaseProxy p = new HumanResourceDatabaseProxy.unbound();
+    String name = serviceName ?? HumanResourceDatabase.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic addEmployee(Employee employee,[Function responseFactory = null]);
   dynamic queryEmployee(int id,bool retrieveFingerPrint,[Function responseFactory = null]);
   dynamic attachFingerPrint(int id,List<int> fingerPrint,[Function responseFactory = null]);
   dynamic listEmployeeIds([Function responseFactory = null]);
 }
 
+abstract class HumanResourceDatabaseInterface
+    implements bindings.MojoInterface<HumanResourceDatabase>,
+               HumanResourceDatabase {
+  factory HumanResourceDatabaseInterface([HumanResourceDatabase impl]) =>
+      new HumanResourceDatabaseStub.unbound(impl);
+  factory HumanResourceDatabaseInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [HumanResourceDatabase impl]) =>
+      new HumanResourceDatabaseStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class HumanResourceDatabaseInterfaceRequest
+    implements bindings.MojoInterface<HumanResourceDatabase>,
+               HumanResourceDatabase {
+  factory HumanResourceDatabaseInterfaceRequest() =>
+      new HumanResourceDatabaseProxy.unbound();
+}
+
 class _HumanResourceDatabaseProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<HumanResourceDatabase> {
   _HumanResourceDatabaseProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -815,9 +853,6 @@ class _HumanResourceDatabaseProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _HumanResourceDatabaseProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _HumanResourceDatabaseServiceDescription();
 
   String get serviceName => HumanResourceDatabase.serviceName;
 
@@ -910,6 +945,11 @@ class _HumanResourceDatabaseProxyControl
     }
   }
 
+  HumanResourceDatabase get impl => null;
+  set impl(HumanResourceDatabase _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -918,8 +958,10 @@ class _HumanResourceDatabaseProxyControl
 }
 
 class HumanResourceDatabaseProxy
-    extends bindings.Proxy
-    implements HumanResourceDatabase {
+    extends bindings.Proxy<HumanResourceDatabase>
+    implements HumanResourceDatabase,
+               HumanResourceDatabaseInterface,
+               HumanResourceDatabaseInterfaceRequest {
   HumanResourceDatabaseProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _HumanResourceDatabaseProxyControl.fromEndpoint(endpoint));
@@ -934,13 +976,6 @@ class HumanResourceDatabaseProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HumanResourceDatabaseProxy"));
     return new HumanResourceDatabaseProxy.fromEndpoint(endpoint);
-  }
-
-  factory HumanResourceDatabaseProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    HumanResourceDatabaseProxy p = new HumanResourceDatabaseProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1001,6 +1036,8 @@ class _HumanResourceDatabaseStubControl
   }
 
   _HumanResourceDatabaseStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => HumanResourceDatabase.serviceName;
 
 
   HumanResourceDatabaseAddEmployeeResponseParams _humanResourceDatabaseAddEmployeeResponseParamsFactory(bool success) {
@@ -1154,19 +1191,16 @@ class _HumanResourceDatabaseStubControl
   }
 
   int get version => 2;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _HumanResourceDatabaseServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class HumanResourceDatabaseStub
     extends bindings.Stub<HumanResourceDatabase>
-    implements HumanResourceDatabase {
+    implements HumanResourceDatabase,
+               HumanResourceDatabaseInterface,
+               HumanResourceDatabaseInterfaceRequest {
+  HumanResourceDatabaseStub.unbound([HumanResourceDatabase impl])
+      : super(new _HumanResourceDatabaseStubControl.unbound(impl));
+
   HumanResourceDatabaseStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [HumanResourceDatabase impl])
       : super(new _HumanResourceDatabaseStubControl.fromEndpoint(endpoint, impl));
@@ -1175,17 +1209,11 @@ class HumanResourceDatabaseStub
       core.MojoHandle handle, [HumanResourceDatabase impl])
       : super(new _HumanResourceDatabaseStubControl.fromHandle(handle, impl));
 
-  HumanResourceDatabaseStub.unbound([HumanResourceDatabase impl])
-      : super(new _HumanResourceDatabaseStubControl.unbound(impl));
-
   static HumanResourceDatabaseStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HumanResourceDatabaseStub"));
     return new HumanResourceDatabaseStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _HumanResourceDatabaseStubControl.serviceDescription;
 
 
   dynamic addEmployee(Employee employee,[Function responseFactory = null]) {

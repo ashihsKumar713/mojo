@@ -145,7 +145,7 @@ class MailboxTextureResource extends bindings.Struct {
   int syncPoint = 0;
   MailboxTextureResourceOrigin origin = new MailboxTextureResourceOrigin(0);
   geometry_mojom.Size size = null;
-  Object callback = null;
+  MailboxTextureCallbackInterface callback = null;
 
   MailboxTextureResource() : super(kVersions.last.size);
 
@@ -442,12 +442,50 @@ class _MailboxTextureCallbackServiceDescription implements service_describer.Ser
 
 abstract class MailboxTextureCallback {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _MailboxTextureCallbackServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static MailboxTextureCallbackProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    MailboxTextureCallbackProxy p = new MailboxTextureCallbackProxy.unbound();
+    String name = serviceName ?? MailboxTextureCallback.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void onMailboxTextureReleased();
+}
+
+abstract class MailboxTextureCallbackInterface
+    implements bindings.MojoInterface<MailboxTextureCallback>,
+               MailboxTextureCallback {
+  factory MailboxTextureCallbackInterface([MailboxTextureCallback impl]) =>
+      new MailboxTextureCallbackStub.unbound(impl);
+  factory MailboxTextureCallbackInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [MailboxTextureCallback impl]) =>
+      new MailboxTextureCallbackStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class MailboxTextureCallbackInterfaceRequest
+    implements bindings.MojoInterface<MailboxTextureCallback>,
+               MailboxTextureCallback {
+  factory MailboxTextureCallbackInterfaceRequest() =>
+      new MailboxTextureCallbackProxy.unbound();
 }
 
 class _MailboxTextureCallbackProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<MailboxTextureCallback> {
   _MailboxTextureCallbackProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -455,9 +493,6 @@ class _MailboxTextureCallbackProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _MailboxTextureCallbackProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _MailboxTextureCallbackServiceDescription();
 
   String get serviceName => MailboxTextureCallback.serviceName;
 
@@ -470,6 +505,11 @@ class _MailboxTextureCallbackProxyControl
     }
   }
 
+  MailboxTextureCallback get impl => null;
+  set impl(MailboxTextureCallback _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -478,8 +518,10 @@ class _MailboxTextureCallbackProxyControl
 }
 
 class MailboxTextureCallbackProxy
-    extends bindings.Proxy
-    implements MailboxTextureCallback {
+    extends bindings.Proxy<MailboxTextureCallback>
+    implements MailboxTextureCallback,
+               MailboxTextureCallbackInterface,
+               MailboxTextureCallbackInterfaceRequest {
   MailboxTextureCallbackProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MailboxTextureCallbackProxyControl.fromEndpoint(endpoint));
@@ -494,13 +536,6 @@ class MailboxTextureCallbackProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MailboxTextureCallbackProxy"));
     return new MailboxTextureCallbackProxy.fromEndpoint(endpoint);
-  }
-
-  factory MailboxTextureCallbackProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    MailboxTextureCallbackProxy p = new MailboxTextureCallbackProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -533,6 +568,8 @@ class _MailboxTextureCallbackStubControl
   }
 
   _MailboxTextureCallbackStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => MailboxTextureCallback.serviceName;
 
 
 
@@ -582,19 +619,16 @@ class _MailboxTextureCallbackStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _MailboxTextureCallbackServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class MailboxTextureCallbackStub
     extends bindings.Stub<MailboxTextureCallback>
-    implements MailboxTextureCallback {
+    implements MailboxTextureCallback,
+               MailboxTextureCallbackInterface,
+               MailboxTextureCallbackInterfaceRequest {
+  MailboxTextureCallbackStub.unbound([MailboxTextureCallback impl])
+      : super(new _MailboxTextureCallbackStubControl.unbound(impl));
+
   MailboxTextureCallbackStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MailboxTextureCallback impl])
       : super(new _MailboxTextureCallbackStubControl.fromEndpoint(endpoint, impl));
@@ -603,17 +637,11 @@ class MailboxTextureCallbackStub
       core.MojoHandle handle, [MailboxTextureCallback impl])
       : super(new _MailboxTextureCallbackStubControl.fromHandle(handle, impl));
 
-  MailboxTextureCallbackStub.unbound([MailboxTextureCallback impl])
-      : super(new _MailboxTextureCallbackStubControl.unbound(impl));
-
   static MailboxTextureCallbackStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MailboxTextureCallbackStub"));
     return new MailboxTextureCallbackStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _MailboxTextureCallbackStubControl.serviceDescription;
 
 
   void onMailboxTextureReleased() {

@@ -390,8 +390,8 @@ class _NotificationServicePostParams extends bindings.Struct {
     const bindings.StructDataHeader(32, 0)
   ];
   NotificationData notificationData = null;
-  Object client = null;
-  Object notification = null;
+  NotificationClientInterface client = null;
+  NotificationInterfaceRequest notification = null;
 
   _NotificationServicePostParams() : super(kVersions.last.size);
 
@@ -498,13 +498,51 @@ class _NotificationClientServiceDescription implements service_describer.Service
 
 abstract class NotificationClient {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _NotificationClientServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static NotificationClientProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    NotificationClientProxy p = new NotificationClientProxy.unbound();
+    String name = serviceName ?? NotificationClient.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void onSelected();
   void onDismissed();
 }
 
+abstract class NotificationClientInterface
+    implements bindings.MojoInterface<NotificationClient>,
+               NotificationClient {
+  factory NotificationClientInterface([NotificationClient impl]) =>
+      new NotificationClientStub.unbound(impl);
+  factory NotificationClientInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [NotificationClient impl]) =>
+      new NotificationClientStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class NotificationClientInterfaceRequest
+    implements bindings.MojoInterface<NotificationClient>,
+               NotificationClient {
+  factory NotificationClientInterfaceRequest() =>
+      new NotificationClientProxy.unbound();
+}
+
 class _NotificationClientProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<NotificationClient> {
   _NotificationClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -512,9 +550,6 @@ class _NotificationClientProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _NotificationClientProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _NotificationClientServiceDescription();
 
   String get serviceName => NotificationClient.serviceName;
 
@@ -527,6 +562,11 @@ class _NotificationClientProxyControl
     }
   }
 
+  NotificationClient get impl => null;
+  set impl(NotificationClient _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -535,8 +575,10 @@ class _NotificationClientProxyControl
 }
 
 class NotificationClientProxy
-    extends bindings.Proxy
-    implements NotificationClient {
+    extends bindings.Proxy<NotificationClient>
+    implements NotificationClient,
+               NotificationClientInterface,
+               NotificationClientInterfaceRequest {
   NotificationClientProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _NotificationClientProxyControl.fromEndpoint(endpoint));
@@ -551,13 +593,6 @@ class NotificationClientProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NotificationClientProxy"));
     return new NotificationClientProxy.fromEndpoint(endpoint);
-  }
-
-  factory NotificationClientProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    NotificationClientProxy p = new NotificationClientProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -599,6 +634,8 @@ class _NotificationClientStubControl
   }
 
   _NotificationClientStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => NotificationClient.serviceName;
 
 
 
@@ -651,19 +688,16 @@ class _NotificationClientStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _NotificationClientServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class NotificationClientStub
     extends bindings.Stub<NotificationClient>
-    implements NotificationClient {
+    implements NotificationClient,
+               NotificationClientInterface,
+               NotificationClientInterfaceRequest {
+  NotificationClientStub.unbound([NotificationClient impl])
+      : super(new _NotificationClientStubControl.unbound(impl));
+
   NotificationClientStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [NotificationClient impl])
       : super(new _NotificationClientStubControl.fromEndpoint(endpoint, impl));
@@ -672,17 +706,11 @@ class NotificationClientStub
       core.MojoHandle handle, [NotificationClient impl])
       : super(new _NotificationClientStubControl.fromHandle(handle, impl));
 
-  NotificationClientStub.unbound([NotificationClient impl])
-      : super(new _NotificationClientStubControl.unbound(impl));
-
   static NotificationClientStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NotificationClientStub"));
     return new NotificationClientStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _NotificationClientStubControl.serviceDescription;
 
 
   void onSelected() {
@@ -709,13 +737,51 @@ class _NotificationServiceDescription implements service_describer.ServiceDescri
 
 abstract class Notification {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _NotificationServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static NotificationProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    NotificationProxy p = new NotificationProxy.unbound();
+    String name = serviceName ?? Notification.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void update(NotificationData notificationData);
   void cancel();
 }
 
+abstract class NotificationInterface
+    implements bindings.MojoInterface<Notification>,
+               Notification {
+  factory NotificationInterface([Notification impl]) =>
+      new NotificationStub.unbound(impl);
+  factory NotificationInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Notification impl]) =>
+      new NotificationStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class NotificationInterfaceRequest
+    implements bindings.MojoInterface<Notification>,
+               Notification {
+  factory NotificationInterfaceRequest() =>
+      new NotificationProxy.unbound();
+}
+
 class _NotificationProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Notification> {
   _NotificationProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -723,9 +789,6 @@ class _NotificationProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _NotificationProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _NotificationServiceDescription();
 
   String get serviceName => Notification.serviceName;
 
@@ -738,6 +801,11 @@ class _NotificationProxyControl
     }
   }
 
+  Notification get impl => null;
+  set impl(Notification _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -746,8 +814,10 @@ class _NotificationProxyControl
 }
 
 class NotificationProxy
-    extends bindings.Proxy
-    implements Notification {
+    extends bindings.Proxy<Notification>
+    implements Notification,
+               NotificationInterface,
+               NotificationInterfaceRequest {
   NotificationProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _NotificationProxyControl.fromEndpoint(endpoint));
@@ -762,13 +832,6 @@ class NotificationProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NotificationProxy"));
     return new NotificationProxy.fromEndpoint(endpoint);
-  }
-
-  factory NotificationProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    NotificationProxy p = new NotificationProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -811,6 +874,8 @@ class _NotificationStubControl
   }
 
   _NotificationStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Notification.serviceName;
 
 
 
@@ -865,19 +930,16 @@ class _NotificationStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _NotificationServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class NotificationStub
     extends bindings.Stub<Notification>
-    implements Notification {
+    implements Notification,
+               NotificationInterface,
+               NotificationInterfaceRequest {
+  NotificationStub.unbound([Notification impl])
+      : super(new _NotificationStubControl.unbound(impl));
+
   NotificationStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Notification impl])
       : super(new _NotificationStubControl.fromEndpoint(endpoint, impl));
@@ -886,17 +948,11 @@ class NotificationStub
       core.MojoHandle handle, [Notification impl])
       : super(new _NotificationStubControl.fromHandle(handle, impl));
 
-  NotificationStub.unbound([Notification impl])
-      : super(new _NotificationStubControl.unbound(impl));
-
   static NotificationStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NotificationStub"));
     return new NotificationStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _NotificationStubControl.serviceDescription;
 
 
   void update(NotificationData notificationData) {
@@ -922,12 +978,50 @@ class _NotificationServiceServiceDescription implements service_describer.Servic
 
 abstract class NotificationService {
   static const String serviceName = "notifications::NotificationService";
-  void post(NotificationData notificationData, Object client, Object notification);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _NotificationServiceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static NotificationServiceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    NotificationServiceProxy p = new NotificationServiceProxy.unbound();
+    String name = serviceName ?? NotificationService.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void post(NotificationData notificationData, NotificationClientInterface client, NotificationInterfaceRequest notification);
+}
+
+abstract class NotificationServiceInterface
+    implements bindings.MojoInterface<NotificationService>,
+               NotificationService {
+  factory NotificationServiceInterface([NotificationService impl]) =>
+      new NotificationServiceStub.unbound(impl);
+  factory NotificationServiceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [NotificationService impl]) =>
+      new NotificationServiceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class NotificationServiceInterfaceRequest
+    implements bindings.MojoInterface<NotificationService>,
+               NotificationService {
+  factory NotificationServiceInterfaceRequest() =>
+      new NotificationServiceProxy.unbound();
 }
 
 class _NotificationServiceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<NotificationService> {
   _NotificationServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -935,9 +1029,6 @@ class _NotificationServiceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _NotificationServiceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _NotificationServiceServiceDescription();
 
   String get serviceName => NotificationService.serviceName;
 
@@ -950,6 +1041,11 @@ class _NotificationServiceProxyControl
     }
   }
 
+  NotificationService get impl => null;
+  set impl(NotificationService _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -958,8 +1054,10 @@ class _NotificationServiceProxyControl
 }
 
 class NotificationServiceProxy
-    extends bindings.Proxy
-    implements NotificationService {
+    extends bindings.Proxy<NotificationService>
+    implements NotificationService,
+               NotificationServiceInterface,
+               NotificationServiceInterfaceRequest {
   NotificationServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _NotificationServiceProxyControl.fromEndpoint(endpoint));
@@ -976,15 +1074,8 @@ class NotificationServiceProxy
     return new NotificationServiceProxy.fromEndpoint(endpoint);
   }
 
-  factory NotificationServiceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    NotificationServiceProxy p = new NotificationServiceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void post(NotificationData notificationData, Object client, Object notification) {
+  void post(NotificationData notificationData, NotificationClientInterface client, NotificationInterfaceRequest notification) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1016,6 +1107,8 @@ class _NotificationServiceStubControl
   }
 
   _NotificationServiceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => NotificationService.serviceName;
 
 
 
@@ -1067,19 +1160,16 @@ class _NotificationServiceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _NotificationServiceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class NotificationServiceStub
     extends bindings.Stub<NotificationService>
-    implements NotificationService {
+    implements NotificationService,
+               NotificationServiceInterface,
+               NotificationServiceInterfaceRequest {
+  NotificationServiceStub.unbound([NotificationService impl])
+      : super(new _NotificationServiceStubControl.unbound(impl));
+
   NotificationServiceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [NotificationService impl])
       : super(new _NotificationServiceStubControl.fromEndpoint(endpoint, impl));
@@ -1088,20 +1178,14 @@ class NotificationServiceStub
       core.MojoHandle handle, [NotificationService impl])
       : super(new _NotificationServiceStubControl.fromHandle(handle, impl));
 
-  NotificationServiceStub.unbound([NotificationService impl])
-      : super(new _NotificationServiceStubControl.unbound(impl));
-
   static NotificationServiceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NotificationServiceStub"));
     return new NotificationServiceStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _NotificationServiceStubControl.serviceDescription;
 
-
-  void post(NotificationData notificationData, Object client, Object notification) {
+  void post(NotificationData notificationData, NotificationClientInterface client, NotificationInterfaceRequest notification) {
     return impl.post(notificationData, client, notification);
   }
 }

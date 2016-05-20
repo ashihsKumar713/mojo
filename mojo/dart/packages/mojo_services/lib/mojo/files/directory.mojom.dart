@@ -496,7 +496,7 @@ class _DirectoryOpenFileParams extends bindings.Struct {
     const bindings.StructDataHeader(24, 0)
   ];
   String path = null;
-  Object file = null;
+  file_mojom.FileInterfaceRequest file = null;
   int openFlags = 0;
 
   _DirectoryOpenFileParams() : super(kVersions.last.size);
@@ -669,7 +669,7 @@ class _DirectoryOpenDirectoryParams extends bindings.Struct {
     const bindings.StructDataHeader(24, 0)
   ];
   String path = null;
-  Object directory = null;
+  DirectoryInterfaceRequest directory = null;
   int openFlags = 0;
 
   _DirectoryOpenDirectoryParams() : super(kVersions.last.size);
@@ -1181,18 +1181,56 @@ class _DirectoryServiceDescription implements service_describer.ServiceDescripti
 
 abstract class Directory {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _DirectoryServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static DirectoryProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    DirectoryProxy p = new DirectoryProxy.unbound();
+    String name = serviceName ?? Directory.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic read([Function responseFactory = null]);
   dynamic stat([Function responseFactory = null]);
   dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]);
-  dynamic openFile(String path,Object file,int openFlags,[Function responseFactory = null]);
-  dynamic openDirectory(String path,Object directory,int openFlags,[Function responseFactory = null]);
+  dynamic openFile(String path,file_mojom.FileInterfaceRequest file,int openFlags,[Function responseFactory = null]);
+  dynamic openDirectory(String path,DirectoryInterfaceRequest directory,int openFlags,[Function responseFactory = null]);
   dynamic rename(String path,String newPath,[Function responseFactory = null]);
   dynamic delete(String path,int deleteFlags,[Function responseFactory = null]);
 }
 
+abstract class DirectoryInterface
+    implements bindings.MojoInterface<Directory>,
+               Directory {
+  factory DirectoryInterface([Directory impl]) =>
+      new DirectoryStub.unbound(impl);
+  factory DirectoryInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Directory impl]) =>
+      new DirectoryStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class DirectoryInterfaceRequest
+    implements bindings.MojoInterface<Directory>,
+               Directory {
+  factory DirectoryInterfaceRequest() =>
+      new DirectoryProxy.unbound();
+}
+
 class _DirectoryProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Directory> {
   _DirectoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1200,9 +1238,6 @@ class _DirectoryProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _DirectoryProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _DirectoryServiceDescription();
 
   String get serviceName => Directory.serviceName;
 
@@ -1355,6 +1390,11 @@ class _DirectoryProxyControl
     }
   }
 
+  Directory get impl => null;
+  set impl(Directory _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1363,8 +1403,10 @@ class _DirectoryProxyControl
 }
 
 class DirectoryProxy
-    extends bindings.Proxy
-    implements Directory {
+    extends bindings.Proxy<Directory>
+    implements Directory,
+               DirectoryInterface,
+               DirectoryInterfaceRequest {
   DirectoryProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _DirectoryProxyControl.fromEndpoint(endpoint));
@@ -1379,13 +1421,6 @@ class DirectoryProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For DirectoryProxy"));
     return new DirectoryProxy.fromEndpoint(endpoint);
-  }
-
-  factory DirectoryProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    DirectoryProxy p = new DirectoryProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1415,7 +1450,7 @@ class DirectoryProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  dynamic openFile(String path,Object file,int openFlags,[Function responseFactory = null]) {
+  dynamic openFile(String path,file_mojom.FileInterfaceRequest file,int openFlags,[Function responseFactory = null]) {
     var params = new _DirectoryOpenFileParams();
     params.path = path;
     params.file = file;
@@ -1426,7 +1461,7 @@ class DirectoryProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  dynamic openDirectory(String path,Object directory,int openFlags,[Function responseFactory = null]) {
+  dynamic openDirectory(String path,DirectoryInterfaceRequest directory,int openFlags,[Function responseFactory = null]) {
     var params = new _DirectoryOpenDirectoryParams();
     params.path = path;
     params.directory = directory;
@@ -1477,6 +1512,8 @@ class _DirectoryStubControl
   }
 
   _DirectoryStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Directory.serviceName;
 
 
   DirectoryReadResponseParams _directoryReadResponseParamsFactory(types_mojom.Error error, List<types_mojom.DirectoryEntry> directoryContents) {
@@ -1710,19 +1747,16 @@ class _DirectoryStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _DirectoryServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class DirectoryStub
     extends bindings.Stub<Directory>
-    implements Directory {
+    implements Directory,
+               DirectoryInterface,
+               DirectoryInterfaceRequest {
+  DirectoryStub.unbound([Directory impl])
+      : super(new _DirectoryStubControl.unbound(impl));
+
   DirectoryStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Directory impl])
       : super(new _DirectoryStubControl.fromEndpoint(endpoint, impl));
@@ -1731,17 +1765,11 @@ class DirectoryStub
       core.MojoHandle handle, [Directory impl])
       : super(new _DirectoryStubControl.fromHandle(handle, impl));
 
-  DirectoryStub.unbound([Directory impl])
-      : super(new _DirectoryStubControl.unbound(impl));
-
   static DirectoryStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For DirectoryStub"));
     return new DirectoryStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _DirectoryStubControl.serviceDescription;
 
 
   dynamic read([Function responseFactory = null]) {
@@ -1753,10 +1781,10 @@ class DirectoryStub
   dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]) {
     return impl.touch(atime,mtime,responseFactory);
   }
-  dynamic openFile(String path,Object file,int openFlags,[Function responseFactory = null]) {
+  dynamic openFile(String path,file_mojom.FileInterfaceRequest file,int openFlags,[Function responseFactory = null]) {
     return impl.openFile(path,file,openFlags,responseFactory);
   }
-  dynamic openDirectory(String path,Object directory,int openFlags,[Function responseFactory = null]) {
+  dynamic openDirectory(String path,DirectoryInterfaceRequest directory,int openFlags,[Function responseFactory = null]) {
     return impl.openDirectory(path,directory,openFlags,responseFactory);
   }
   dynamic rename(String path,String newPath,[Function responseFactory = null]) {

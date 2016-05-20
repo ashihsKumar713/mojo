@@ -17,7 +17,7 @@ class _FilesOpenFileSystemParams extends bindings.Struct {
     const bindings.StructDataHeader(24, 0)
   ];
   String fileSystem = null;
-  Object directory = null;
+  directory_mojom.DirectoryInterfaceRequest directory = null;
 
   _FilesOpenFileSystemParams() : super(kVersions.last.size);
 
@@ -186,12 +186,50 @@ class _FilesServiceDescription implements service_describer.ServiceDescription {
 
 abstract class Files {
   static const String serviceName = "mojo::files::Files";
-  dynamic openFileSystem(String fileSystem,Object directory,[Function responseFactory = null]);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _FilesServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static FilesProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    FilesProxy p = new FilesProxy.unbound();
+    String name = serviceName ?? Files.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  dynamic openFileSystem(String fileSystem,directory_mojom.DirectoryInterfaceRequest directory,[Function responseFactory = null]);
+}
+
+abstract class FilesInterface
+    implements bindings.MojoInterface<Files>,
+               Files {
+  factory FilesInterface([Files impl]) =>
+      new FilesStub.unbound(impl);
+  factory FilesInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Files impl]) =>
+      new FilesStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class FilesInterfaceRequest
+    implements bindings.MojoInterface<Files>,
+               Files {
+  factory FilesInterfaceRequest() =>
+      new FilesProxy.unbound();
 }
 
 class _FilesProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Files> {
   _FilesProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -199,9 +237,6 @@ class _FilesProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _FilesProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _FilesServiceDescription();
 
   String get serviceName => Files.serviceName;
 
@@ -234,6 +269,11 @@ class _FilesProxyControl
     }
   }
 
+  Files get impl => null;
+  set impl(Files _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -242,8 +282,10 @@ class _FilesProxyControl
 }
 
 class FilesProxy
-    extends bindings.Proxy
-    implements Files {
+    extends bindings.Proxy<Files>
+    implements Files,
+               FilesInterface,
+               FilesInterfaceRequest {
   FilesProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _FilesProxyControl.fromEndpoint(endpoint));
@@ -260,15 +302,8 @@ class FilesProxy
     return new FilesProxy.fromEndpoint(endpoint);
   }
 
-  factory FilesProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    FilesProxy p = new FilesProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  dynamic openFileSystem(String fileSystem,Object directory,[Function responseFactory = null]) {
+  dynamic openFileSystem(String fileSystem,directory_mojom.DirectoryInterfaceRequest directory,[Function responseFactory = null]) {
     var params = new _FilesOpenFileSystemParams();
     params.fileSystem = fileSystem;
     params.directory = directory;
@@ -298,6 +333,8 @@ class _FilesStubControl
   }
 
   _FilesStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Files.serviceName;
 
 
   FilesOpenFileSystemResponseParams _filesOpenFileSystemResponseParamsFactory(types_mojom.Error error) {
@@ -371,19 +408,16 @@ class _FilesStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _FilesServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class FilesStub
     extends bindings.Stub<Files>
-    implements Files {
+    implements Files,
+               FilesInterface,
+               FilesInterfaceRequest {
+  FilesStub.unbound([Files impl])
+      : super(new _FilesStubControl.unbound(impl));
+
   FilesStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Files impl])
       : super(new _FilesStubControl.fromEndpoint(endpoint, impl));
@@ -392,20 +426,14 @@ class FilesStub
       core.MojoHandle handle, [Files impl])
       : super(new _FilesStubControl.fromHandle(handle, impl));
 
-  FilesStub.unbound([Files impl])
-      : super(new _FilesStubControl.unbound(impl));
-
   static FilesStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For FilesStub"));
     return new FilesStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _FilesStubControl.serviceDescription;
 
-
-  dynamic openFileSystem(String fileSystem,Object directory,[Function responseFactory = null]) {
+  dynamic openFileSystem(String fileSystem,directory_mojom.DirectoryInterfaceRequest directory,[Function responseFactory = null]) {
     return impl.openFileSystem(fileSystem,directory,responseFactory);
   }
 }

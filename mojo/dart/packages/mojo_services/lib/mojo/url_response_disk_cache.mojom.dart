@@ -659,6 +659,26 @@ class _UrlResponseDiskCacheServiceDescription implements service_describer.Servi
 
 abstract class UrlResponseDiskCache {
   static const String serviceName = "mojo::URLResponseDiskCache";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _UrlResponseDiskCacheServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static UrlResponseDiskCacheProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    UrlResponseDiskCacheProxy p = new UrlResponseDiskCacheProxy.unbound();
+    String name = serviceName ?? UrlResponseDiskCache.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic get(String url,[Function responseFactory = null]);
   void validate(String url);
   void update(url_response_mojom.UrlResponse response);
@@ -666,9 +686,27 @@ abstract class UrlResponseDiskCache {
   dynamic updateAndGetExtracted(url_response_mojom.UrlResponse response,[Function responseFactory = null]);
 }
 
+abstract class UrlResponseDiskCacheInterface
+    implements bindings.MojoInterface<UrlResponseDiskCache>,
+               UrlResponseDiskCache {
+  factory UrlResponseDiskCacheInterface([UrlResponseDiskCache impl]) =>
+      new UrlResponseDiskCacheStub.unbound(impl);
+  factory UrlResponseDiskCacheInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [UrlResponseDiskCache impl]) =>
+      new UrlResponseDiskCacheStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class UrlResponseDiskCacheInterfaceRequest
+    implements bindings.MojoInterface<UrlResponseDiskCache>,
+               UrlResponseDiskCache {
+  factory UrlResponseDiskCacheInterfaceRequest() =>
+      new UrlResponseDiskCacheProxy.unbound();
+}
+
 class _UrlResponseDiskCacheProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<UrlResponseDiskCache> {
   _UrlResponseDiskCacheProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -676,9 +714,6 @@ class _UrlResponseDiskCacheProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _UrlResponseDiskCacheProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _UrlResponseDiskCacheServiceDescription();
 
   String get serviceName => UrlResponseDiskCache.serviceName;
 
@@ -751,6 +786,11 @@ class _UrlResponseDiskCacheProxyControl
     }
   }
 
+  UrlResponseDiskCache get impl => null;
+  set impl(UrlResponseDiskCache _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -759,8 +799,10 @@ class _UrlResponseDiskCacheProxyControl
 }
 
 class UrlResponseDiskCacheProxy
-    extends bindings.Proxy
-    implements UrlResponseDiskCache {
+    extends bindings.Proxy<UrlResponseDiskCache>
+    implements UrlResponseDiskCache,
+               UrlResponseDiskCacheInterface,
+               UrlResponseDiskCacheInterfaceRequest {
   UrlResponseDiskCacheProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _UrlResponseDiskCacheProxyControl.fromEndpoint(endpoint));
@@ -775,13 +817,6 @@ class UrlResponseDiskCacheProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UrlResponseDiskCacheProxy"));
     return new UrlResponseDiskCacheProxy.fromEndpoint(endpoint);
-  }
-
-  factory UrlResponseDiskCacheProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    UrlResponseDiskCacheProxy p = new UrlResponseDiskCacheProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -852,6 +887,8 @@ class _UrlResponseDiskCacheStubControl
   }
 
   _UrlResponseDiskCacheStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => UrlResponseDiskCache.serviceName;
 
 
   UrlResponseDiskCacheGetResponseParams _urlResponseDiskCacheGetResponseParamsFactory(url_response_mojom.UrlResponse response, List<int> filePath, List<int> cacheDirPath) {
@@ -993,19 +1030,16 @@ class _UrlResponseDiskCacheStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _UrlResponseDiskCacheServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class UrlResponseDiskCacheStub
     extends bindings.Stub<UrlResponseDiskCache>
-    implements UrlResponseDiskCache {
+    implements UrlResponseDiskCache,
+               UrlResponseDiskCacheInterface,
+               UrlResponseDiskCacheInterfaceRequest {
+  UrlResponseDiskCacheStub.unbound([UrlResponseDiskCache impl])
+      : super(new _UrlResponseDiskCacheStubControl.unbound(impl));
+
   UrlResponseDiskCacheStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [UrlResponseDiskCache impl])
       : super(new _UrlResponseDiskCacheStubControl.fromEndpoint(endpoint, impl));
@@ -1014,17 +1048,11 @@ class UrlResponseDiskCacheStub
       core.MojoHandle handle, [UrlResponseDiskCache impl])
       : super(new _UrlResponseDiskCacheStubControl.fromHandle(handle, impl));
 
-  UrlResponseDiskCacheStub.unbound([UrlResponseDiskCache impl])
-      : super(new _UrlResponseDiskCacheStubControl.unbound(impl));
-
   static UrlResponseDiskCacheStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UrlResponseDiskCacheStub"));
     return new UrlResponseDiskCacheStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _UrlResponseDiskCacheStubControl.serviceDescription;
 
 
   dynamic get(String url,[Function responseFactory = null]) {

@@ -9,7 +9,7 @@ import 'package:mojo/core.dart';
 import 'package:_mojo_for_test_only/mojo/examples/echo.mojom.dart';
 
 class EchoClientApplication extends Application {
-  final _echoProxy = new EchoProxy.unbound();
+  final EchoInterfaceRequest _echo = new EchoInterfaceRequest();
 
   EchoClientApplication.fromHandle(MojoHandle handle)
       : super.fromHandle(handle) {
@@ -22,15 +22,15 @@ class EchoClientApplication extends Application {
   void initialize(List<String> arguments, String url) {
     // See README.md for how to specify an alternate server on the command line.
     final server = (arguments.length > 0) ? arguments[1] : "dart_echo_server";
-    connectToService(url.replaceAll("dart_echo_client", server), _echoProxy);
+    connectToService(url.replaceAll("dart_echo_client", server), _echo);
 
-    _echoProxy.echoString("hello world").then((response) {
+    _echo.echoString("hello world").then((response) {
       print("${response.value}");
     }).whenComplete(_closeHandles);
   }
 
   Future _closeHandles() async {
-    await _echoProxy.close();
+    await _echo.close();
     await close();
     MojoHandle.reportLeakedHandles();
   }

@@ -240,12 +240,50 @@ class _LocationServiceServiceDescription implements service_describer.ServiceDes
 
 abstract class LocationService {
   static const String serviceName = "mojo::LocationService";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _LocationServiceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static LocationServiceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    LocationServiceProxy p = new LocationServiceProxy.unbound();
+    String name = serviceName ?? LocationService.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic getNextLocation(LocationServiceUpdatePriority priority,[Function responseFactory = null]);
+}
+
+abstract class LocationServiceInterface
+    implements bindings.MojoInterface<LocationService>,
+               LocationService {
+  factory LocationServiceInterface([LocationService impl]) =>
+      new LocationServiceStub.unbound(impl);
+  factory LocationServiceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [LocationService impl]) =>
+      new LocationServiceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class LocationServiceInterfaceRequest
+    implements bindings.MojoInterface<LocationService>,
+               LocationService {
+  factory LocationServiceInterfaceRequest() =>
+      new LocationServiceProxy.unbound();
 }
 
 class _LocationServiceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<LocationService> {
   _LocationServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -253,9 +291,6 @@ class _LocationServiceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _LocationServiceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _LocationServiceServiceDescription();
 
   String get serviceName => LocationService.serviceName;
 
@@ -288,6 +323,11 @@ class _LocationServiceProxyControl
     }
   }
 
+  LocationService get impl => null;
+  set impl(LocationService _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -296,8 +336,10 @@ class _LocationServiceProxyControl
 }
 
 class LocationServiceProxy
-    extends bindings.Proxy
-    implements LocationService {
+    extends bindings.Proxy<LocationService>
+    implements LocationService,
+               LocationServiceInterface,
+               LocationServiceInterfaceRequest {
   LocationServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _LocationServiceProxyControl.fromEndpoint(endpoint));
@@ -312,13 +354,6 @@ class LocationServiceProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For LocationServiceProxy"));
     return new LocationServiceProxy.fromEndpoint(endpoint);
-  }
-
-  factory LocationServiceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    LocationServiceProxy p = new LocationServiceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -351,6 +386,8 @@ class _LocationServiceStubControl
   }
 
   _LocationServiceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => LocationService.serviceName;
 
 
   LocationServiceGetNextLocationResponseParams _locationServiceGetNextLocationResponseParamsFactory(location_mojom.Location location) {
@@ -424,19 +461,16 @@ class _LocationServiceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _LocationServiceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class LocationServiceStub
     extends bindings.Stub<LocationService>
-    implements LocationService {
+    implements LocationService,
+               LocationServiceInterface,
+               LocationServiceInterfaceRequest {
+  LocationServiceStub.unbound([LocationService impl])
+      : super(new _LocationServiceStubControl.unbound(impl));
+
   LocationServiceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [LocationService impl])
       : super(new _LocationServiceStubControl.fromEndpoint(endpoint, impl));
@@ -445,17 +479,11 @@ class LocationServiceStub
       core.MojoHandle handle, [LocationService impl])
       : super(new _LocationServiceStubControl.fromHandle(handle, impl));
 
-  LocationServiceStub.unbound([LocationService impl])
-      : super(new _LocationServiceStubControl.unbound(impl));
-
   static LocationServiceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For LocationServiceStub"));
     return new LocationServiceStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _LocationServiceStubControl.serviceDescription;
 
 
   dynamic getNextLocation(LocationServiceUpdatePriority priority,[Function responseFactory = null]) {

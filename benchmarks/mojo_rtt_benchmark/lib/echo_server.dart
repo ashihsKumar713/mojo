@@ -10,18 +10,18 @@ import 'package:mojo/core.dart';
 import 'package:_mojo_for_test_only/mojo/examples/echo.mojom.dart';
 
 class EchoImpl implements Echo {
-  EchoStub _stub;
+  EchoInterface _echo;
   EchoApplication _application;
 
   EchoImpl(this._application, MojoMessagePipeEndpoint endpoint) {
-    _stub = new EchoStub.fromEndpoint(endpoint, this);
-    _stub.ctrl.onError = _errorHandler;
+    _echo = new EchoInterface.fromEndpoint(endpoint, this);
+    _echo.ctrl.onError = _errorHandler;
   }
 
   echoString(String value, [Function responseFactory]) =>
       responseFactory(value);
 
-  Future close() => _stub.close();
+  Future close() => _echo.close();
 
   _errorHandler(Object e) => _application.removeService(this);
 }

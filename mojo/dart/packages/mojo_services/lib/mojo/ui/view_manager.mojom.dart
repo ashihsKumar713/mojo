@@ -19,9 +19,9 @@ class _ViewManagerCreateViewParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(32, 0)
   ];
-  Object view = null;
-  Object viewOwner = null;
-  Object viewListener = null;
+  views_mojom.ViewInterfaceRequest view = null;
+  view_token_mojom.ViewOwnerInterfaceRequest viewOwner = null;
+  views_mojom.ViewListenerInterface viewListener = null;
   String label = null;
 
   _ViewManagerCreateViewParams() : super(kVersions.last.size);
@@ -129,8 +129,8 @@ class _ViewManagerCreateViewTreeParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(32, 0)
   ];
-  Object viewTree = null;
-  Object viewTreeListener = null;
+  view_trees_mojom.ViewTreeInterfaceRequest viewTree = null;
+  view_trees_mojom.ViewTreeListenerInterface viewTreeListener = null;
   String label = null;
 
   _ViewManagerCreateViewTreeParams() : super(kVersions.last.size);
@@ -226,8 +226,8 @@ class _ViewManagerRegisterViewAssociateParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(32, 0)
   ];
-  Object viewAssociate = null;
-  Object viewAssociateOwner = null;
+  view_associates_mojom.ViewAssociateInterface viewAssociate = null;
+  view_associates_mojom.ViewAssociateOwnerInterfaceRequest viewAssociateOwner = null;
   String label = null;
 
   _ViewManagerRegisterViewAssociateParams() : super(kVersions.last.size);
@@ -394,15 +394,53 @@ class _ViewManagerServiceDescription implements service_describer.ServiceDescrip
 
 abstract class ViewManager {
   static const String serviceName = "mojo::ui::ViewManager";
-  void createView(Object view, Object viewOwner, Object viewListener, String label);
-  void createViewTree(Object viewTree, Object viewTreeListener, String label);
-  void registerViewAssociate(Object viewAssociate, Object viewAssociateOwner, String label);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ViewManagerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ViewManagerProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ViewManagerProxy p = new ViewManagerProxy.unbound();
+    String name = serviceName ?? ViewManager.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void createView(views_mojom.ViewInterfaceRequest view, view_token_mojom.ViewOwnerInterfaceRequest viewOwner, views_mojom.ViewListenerInterface viewListener, String label);
+  void createViewTree(view_trees_mojom.ViewTreeInterfaceRequest viewTree, view_trees_mojom.ViewTreeListenerInterface viewTreeListener, String label);
+  void registerViewAssociate(view_associates_mojom.ViewAssociateInterface viewAssociate, view_associates_mojom.ViewAssociateOwnerInterfaceRequest viewAssociateOwner, String label);
   void finishedRegisteringViewAssociates();
+}
+
+abstract class ViewManagerInterface
+    implements bindings.MojoInterface<ViewManager>,
+               ViewManager {
+  factory ViewManagerInterface([ViewManager impl]) =>
+      new ViewManagerStub.unbound(impl);
+  factory ViewManagerInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [ViewManager impl]) =>
+      new ViewManagerStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ViewManagerInterfaceRequest
+    implements bindings.MojoInterface<ViewManager>,
+               ViewManager {
+  factory ViewManagerInterfaceRequest() =>
+      new ViewManagerProxy.unbound();
 }
 
 class _ViewManagerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<ViewManager> {
   _ViewManagerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -410,9 +448,6 @@ class _ViewManagerProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ViewManagerProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ViewManagerServiceDescription();
 
   String get serviceName => ViewManager.serviceName;
 
@@ -425,6 +460,11 @@ class _ViewManagerProxyControl
     }
   }
 
+  ViewManager get impl => null;
+  set impl(ViewManager _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -433,8 +473,10 @@ class _ViewManagerProxyControl
 }
 
 class ViewManagerProxy
-    extends bindings.Proxy
-    implements ViewManager {
+    extends bindings.Proxy<ViewManager>
+    implements ViewManager,
+               ViewManagerInterface,
+               ViewManagerInterfaceRequest {
   ViewManagerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewManagerProxyControl.fromEndpoint(endpoint));
@@ -451,15 +493,8 @@ class ViewManagerProxy
     return new ViewManagerProxy.fromEndpoint(endpoint);
   }
 
-  factory ViewManagerProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ViewManagerProxy p = new ViewManagerProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void createView(Object view, Object viewOwner, Object viewListener, String label) {
+  void createView(views_mojom.ViewInterfaceRequest view, view_token_mojom.ViewOwnerInterfaceRequest viewOwner, views_mojom.ViewListenerInterface viewListener, String label) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -472,7 +507,7 @@ class ViewManagerProxy
     ctrl.sendMessage(params,
         _viewManagerMethodCreateViewName);
   }
-  void createViewTree(Object viewTree, Object viewTreeListener, String label) {
+  void createViewTree(view_trees_mojom.ViewTreeInterfaceRequest viewTree, view_trees_mojom.ViewTreeListenerInterface viewTreeListener, String label) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -484,7 +519,7 @@ class ViewManagerProxy
     ctrl.sendMessage(params,
         _viewManagerMethodCreateViewTreeName);
   }
-  void registerViewAssociate(Object viewAssociate, Object viewAssociateOwner, String label) {
+  void registerViewAssociate(view_associates_mojom.ViewAssociateInterface viewAssociate, view_associates_mojom.ViewAssociateOwnerInterfaceRequest viewAssociateOwner, String label) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -525,6 +560,8 @@ class _ViewManagerStubControl
   }
 
   _ViewManagerStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => ViewManager.serviceName;
 
 
 
@@ -589,19 +626,16 @@ class _ViewManagerStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ViewManagerServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ViewManagerStub
     extends bindings.Stub<ViewManager>
-    implements ViewManager {
+    implements ViewManager,
+               ViewManagerInterface,
+               ViewManagerInterfaceRequest {
+  ViewManagerStub.unbound([ViewManager impl])
+      : super(new _ViewManagerStubControl.unbound(impl));
+
   ViewManagerStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewManager impl])
       : super(new _ViewManagerStubControl.fromEndpoint(endpoint, impl));
@@ -610,26 +644,20 @@ class ViewManagerStub
       core.MojoHandle handle, [ViewManager impl])
       : super(new _ViewManagerStubControl.fromHandle(handle, impl));
 
-  ViewManagerStub.unbound([ViewManager impl])
-      : super(new _ViewManagerStubControl.unbound(impl));
-
   static ViewManagerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewManagerStub"));
     return new ViewManagerStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ViewManagerStubControl.serviceDescription;
 
-
-  void createView(Object view, Object viewOwner, Object viewListener, String label) {
+  void createView(views_mojom.ViewInterfaceRequest view, view_token_mojom.ViewOwnerInterfaceRequest viewOwner, views_mojom.ViewListenerInterface viewListener, String label) {
     return impl.createView(view, viewOwner, viewListener, label);
   }
-  void createViewTree(Object viewTree, Object viewTreeListener, String label) {
+  void createViewTree(view_trees_mojom.ViewTreeInterfaceRequest viewTree, view_trees_mojom.ViewTreeListenerInterface viewTreeListener, String label) {
     return impl.createViewTree(viewTree, viewTreeListener, label);
   }
-  void registerViewAssociate(Object viewAssociate, Object viewAssociateOwner, String label) {
+  void registerViewAssociate(view_associates_mojom.ViewAssociateInterface viewAssociate, view_associates_mojom.ViewAssociateOwnerInterfaceRequest viewAssociateOwner, String label) {
     return impl.registerViewAssociate(viewAssociate, viewAssociateOwner, label);
   }
   void finishedRegisteringViewAssociates() {

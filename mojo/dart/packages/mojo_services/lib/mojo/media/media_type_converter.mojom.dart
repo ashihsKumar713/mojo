@@ -147,7 +147,7 @@ class _MediaTypeConverterGetConsumerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object consumer = null;
+  media_transport_mojom.MediaConsumerInterfaceRequest consumer = null;
 
   _MediaTypeConverterGetConsumerParams() : super(kVersions.last.size);
 
@@ -218,7 +218,7 @@ class _MediaTypeConverterGetProducerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object producer = null;
+  media_transport_mojom.MediaProducerInterfaceRequest producer = null;
 
   _MediaTypeConverterGetProducerParams() : super(kVersions.last.size);
 
@@ -301,14 +301,52 @@ class _MediaTypeConverterServiceDescription implements service_describer.Service
 
 abstract class MediaTypeConverter {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _MediaTypeConverterServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static MediaTypeConverterProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    MediaTypeConverterProxy p = new MediaTypeConverterProxy.unbound();
+    String name = serviceName ?? MediaTypeConverter.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic getOutputType([Function responseFactory = null]);
-  void getConsumer(Object consumer);
-  void getProducer(Object producer);
+  void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer);
+  void getProducer(media_transport_mojom.MediaProducerInterfaceRequest producer);
+}
+
+abstract class MediaTypeConverterInterface
+    implements bindings.MojoInterface<MediaTypeConverter>,
+               MediaTypeConverter {
+  factory MediaTypeConverterInterface([MediaTypeConverter impl]) =>
+      new MediaTypeConverterStub.unbound(impl);
+  factory MediaTypeConverterInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [MediaTypeConverter impl]) =>
+      new MediaTypeConverterStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class MediaTypeConverterInterfaceRequest
+    implements bindings.MojoInterface<MediaTypeConverter>,
+               MediaTypeConverter {
+  factory MediaTypeConverterInterfaceRequest() =>
+      new MediaTypeConverterProxy.unbound();
 }
 
 class _MediaTypeConverterProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<MediaTypeConverter> {
   _MediaTypeConverterProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -316,9 +354,6 @@ class _MediaTypeConverterProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _MediaTypeConverterProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _MediaTypeConverterServiceDescription();
 
   String get serviceName => MediaTypeConverter.serviceName;
 
@@ -351,6 +386,11 @@ class _MediaTypeConverterProxyControl
     }
   }
 
+  MediaTypeConverter get impl => null;
+  set impl(MediaTypeConverter _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -359,8 +399,10 @@ class _MediaTypeConverterProxyControl
 }
 
 class MediaTypeConverterProxy
-    extends bindings.Proxy
-    implements MediaTypeConverter {
+    extends bindings.Proxy<MediaTypeConverter>
+    implements MediaTypeConverter,
+               MediaTypeConverterInterface,
+               MediaTypeConverterInterfaceRequest {
   MediaTypeConverterProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaTypeConverterProxyControl.fromEndpoint(endpoint));
@@ -377,13 +419,6 @@ class MediaTypeConverterProxy
     return new MediaTypeConverterProxy.fromEndpoint(endpoint);
   }
 
-  factory MediaTypeConverterProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    MediaTypeConverterProxy p = new MediaTypeConverterProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
-
 
   dynamic getOutputType([Function responseFactory = null]) {
     var params = new _MediaTypeConverterGetOutputTypeParams();
@@ -393,7 +428,7 @@ class MediaTypeConverterProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  void getConsumer(Object consumer) {
+  void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -403,7 +438,7 @@ class MediaTypeConverterProxy
     ctrl.sendMessage(params,
         _mediaTypeConverterMethodGetConsumerName);
   }
-  void getProducer(Object producer) {
+  void getProducer(media_transport_mojom.MediaProducerInterfaceRequest producer) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -433,6 +468,8 @@ class _MediaTypeConverterStubControl
   }
 
   _MediaTypeConverterStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => MediaTypeConverter.serviceName;
 
 
   MediaTypeConverterGetOutputTypeResponseParams _mediaTypeConverterGetOutputTypeResponseParamsFactory(media_types_mojom.MediaType outputType) {
@@ -514,19 +551,16 @@ class _MediaTypeConverterStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _MediaTypeConverterServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class MediaTypeConverterStub
     extends bindings.Stub<MediaTypeConverter>
-    implements MediaTypeConverter {
+    implements MediaTypeConverter,
+               MediaTypeConverterInterface,
+               MediaTypeConverterInterfaceRequest {
+  MediaTypeConverterStub.unbound([MediaTypeConverter impl])
+      : super(new _MediaTypeConverterStubControl.unbound(impl));
+
   MediaTypeConverterStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaTypeConverter impl])
       : super(new _MediaTypeConverterStubControl.fromEndpoint(endpoint, impl));
@@ -535,26 +569,20 @@ class MediaTypeConverterStub
       core.MojoHandle handle, [MediaTypeConverter impl])
       : super(new _MediaTypeConverterStubControl.fromHandle(handle, impl));
 
-  MediaTypeConverterStub.unbound([MediaTypeConverter impl])
-      : super(new _MediaTypeConverterStubControl.unbound(impl));
-
   static MediaTypeConverterStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaTypeConverterStub"));
     return new MediaTypeConverterStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _MediaTypeConverterStubControl.serviceDescription;
-
 
   dynamic getOutputType([Function responseFactory = null]) {
     return impl.getOutputType(responseFactory);
   }
-  void getConsumer(Object consumer) {
+  void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
     return impl.getConsumer(consumer);
   }
-  void getProducer(Object producer) {
+  void getProducer(media_transport_mojom.MediaProducerInterfaceRequest producer) {
     return impl.getProducer(producer);
   }
 }

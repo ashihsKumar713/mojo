@@ -150,7 +150,7 @@ class _ViewGetServiceProviderParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object serviceProvider = null;
+  service_provider_mojom.ServiceProviderInterfaceRequest serviceProvider = null;
 
   _ViewGetServiceProviderParams() : super(kVersions.last.size);
 
@@ -221,7 +221,7 @@ class _ViewCreateSceneParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object scene = null;
+  scenes_mojom.SceneInterfaceRequest scene = null;
 
   _ViewCreateSceneParams() : super(kVersions.last.size);
 
@@ -292,7 +292,7 @@ class _ViewGetContainerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object container = null;
+  view_containers_mojom.ViewContainerInterfaceRequest container = null;
 
   _ViewGetContainerParams() : super(kVersions.last.size);
 
@@ -521,15 +521,53 @@ class _ViewServiceDescription implements service_describer.ServiceDescription {
 
 abstract class View {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ViewServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ViewProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ViewProxy p = new ViewProxy.unbound();
+    String name = serviceName ?? View.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic getToken([Function responseFactory = null]);
-  void getServiceProvider(Object serviceProvider);
-  void createScene(Object scene);
-  void getContainer(Object container);
+  void getServiceProvider(service_provider_mojom.ServiceProviderInterfaceRequest serviceProvider);
+  void createScene(scenes_mojom.SceneInterfaceRequest scene);
+  void getContainer(view_containers_mojom.ViewContainerInterfaceRequest container);
+}
+
+abstract class ViewInterface
+    implements bindings.MojoInterface<View>,
+               View {
+  factory ViewInterface([View impl]) =>
+      new ViewStub.unbound(impl);
+  factory ViewInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [View impl]) =>
+      new ViewStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ViewInterfaceRequest
+    implements bindings.MojoInterface<View>,
+               View {
+  factory ViewInterfaceRequest() =>
+      new ViewProxy.unbound();
 }
 
 class _ViewProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<View> {
   _ViewProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -537,9 +575,6 @@ class _ViewProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ViewProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ViewServiceDescription();
 
   String get serviceName => View.serviceName;
 
@@ -572,6 +607,11 @@ class _ViewProxyControl
     }
   }
 
+  View get impl => null;
+  set impl(View _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -580,8 +620,10 @@ class _ViewProxyControl
 }
 
 class ViewProxy
-    extends bindings.Proxy
-    implements View {
+    extends bindings.Proxy<View>
+    implements View,
+               ViewInterface,
+               ViewInterfaceRequest {
   ViewProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewProxyControl.fromEndpoint(endpoint));
@@ -598,13 +640,6 @@ class ViewProxy
     return new ViewProxy.fromEndpoint(endpoint);
   }
 
-  factory ViewProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ViewProxy p = new ViewProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
-
 
   dynamic getToken([Function responseFactory = null]) {
     var params = new _ViewGetTokenParams();
@@ -614,7 +649,7 @@ class ViewProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  void getServiceProvider(Object serviceProvider) {
+  void getServiceProvider(service_provider_mojom.ServiceProviderInterfaceRequest serviceProvider) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -624,7 +659,7 @@ class ViewProxy
     ctrl.sendMessage(params,
         _viewMethodGetServiceProviderName);
   }
-  void createScene(Object scene) {
+  void createScene(scenes_mojom.SceneInterfaceRequest scene) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -634,7 +669,7 @@ class ViewProxy
     ctrl.sendMessage(params,
         _viewMethodCreateSceneName);
   }
-  void getContainer(Object container) {
+  void getContainer(view_containers_mojom.ViewContainerInterfaceRequest container) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -664,6 +699,8 @@ class _ViewStubControl
   }
 
   _ViewStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => View.serviceName;
 
 
   ViewGetTokenResponseParams _viewGetTokenResponseParamsFactory(view_token_mojom.ViewToken token) {
@@ -750,19 +787,16 @@ class _ViewStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ViewServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ViewStub
     extends bindings.Stub<View>
-    implements View {
+    implements View,
+               ViewInterface,
+               ViewInterfaceRequest {
+  ViewStub.unbound([View impl])
+      : super(new _ViewStubControl.unbound(impl));
+
   ViewStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [View impl])
       : super(new _ViewStubControl.fromEndpoint(endpoint, impl));
@@ -771,29 +805,23 @@ class ViewStub
       core.MojoHandle handle, [View impl])
       : super(new _ViewStubControl.fromHandle(handle, impl));
 
-  ViewStub.unbound([View impl])
-      : super(new _ViewStubControl.unbound(impl));
-
   static ViewStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewStub"));
     return new ViewStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ViewStubControl.serviceDescription;
-
 
   dynamic getToken([Function responseFactory = null]) {
     return impl.getToken(responseFactory);
   }
-  void getServiceProvider(Object serviceProvider) {
+  void getServiceProvider(service_provider_mojom.ServiceProviderInterfaceRequest serviceProvider) {
     return impl.getServiceProvider(serviceProvider);
   }
-  void createScene(Object scene) {
+  void createScene(scenes_mojom.SceneInterfaceRequest scene) {
     return impl.createScene(scene);
   }
-  void getContainer(Object container) {
+  void getContainer(view_containers_mojom.ViewContainerInterfaceRequest container) {
     return impl.getContainer(container);
   }
 }
@@ -813,12 +841,50 @@ class _ViewListenerServiceDescription implements service_describer.ServiceDescri
 
 abstract class ViewListener {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ViewListenerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ViewListenerProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ViewListenerProxy p = new ViewListenerProxy.unbound();
+    String name = serviceName ?? ViewListener.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic onPropertiesChanged(int sceneVersion,view_properties_mojom.ViewProperties properties,[Function responseFactory = null]);
+}
+
+abstract class ViewListenerInterface
+    implements bindings.MojoInterface<ViewListener>,
+               ViewListener {
+  factory ViewListenerInterface([ViewListener impl]) =>
+      new ViewListenerStub.unbound(impl);
+  factory ViewListenerInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [ViewListener impl]) =>
+      new ViewListenerStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ViewListenerInterfaceRequest
+    implements bindings.MojoInterface<ViewListener>,
+               ViewListener {
+  factory ViewListenerInterfaceRequest() =>
+      new ViewListenerProxy.unbound();
 }
 
 class _ViewListenerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<ViewListener> {
   _ViewListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -826,9 +892,6 @@ class _ViewListenerProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ViewListenerProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ViewListenerServiceDescription();
 
   String get serviceName => ViewListener.serviceName;
 
@@ -861,6 +924,11 @@ class _ViewListenerProxyControl
     }
   }
 
+  ViewListener get impl => null;
+  set impl(ViewListener _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -869,8 +937,10 @@ class _ViewListenerProxyControl
 }
 
 class ViewListenerProxy
-    extends bindings.Proxy
-    implements ViewListener {
+    extends bindings.Proxy<ViewListener>
+    implements ViewListener,
+               ViewListenerInterface,
+               ViewListenerInterfaceRequest {
   ViewListenerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewListenerProxyControl.fromEndpoint(endpoint));
@@ -885,13 +955,6 @@ class ViewListenerProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewListenerProxy"));
     return new ViewListenerProxy.fromEndpoint(endpoint);
-  }
-
-  factory ViewListenerProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ViewListenerProxy p = new ViewListenerProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -925,6 +988,8 @@ class _ViewListenerStubControl
   }
 
   _ViewListenerStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => ViewListener.serviceName;
 
 
   ViewListenerOnPropertiesChangedResponseParams _viewListenerOnPropertiesChangedResponseParamsFactory() {
@@ -997,19 +1062,16 @@ class _ViewListenerStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ViewListenerServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ViewListenerStub
     extends bindings.Stub<ViewListener>
-    implements ViewListener {
+    implements ViewListener,
+               ViewListenerInterface,
+               ViewListenerInterfaceRequest {
+  ViewListenerStub.unbound([ViewListener impl])
+      : super(new _ViewListenerStubControl.unbound(impl));
+
   ViewListenerStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewListener impl])
       : super(new _ViewListenerStubControl.fromEndpoint(endpoint, impl));
@@ -1018,17 +1080,11 @@ class ViewListenerStub
       core.MojoHandle handle, [ViewListener impl])
       : super(new _ViewListenerStubControl.fromHandle(handle, impl));
 
-  ViewListenerStub.unbound([ViewListener impl])
-      : super(new _ViewListenerStubControl.unbound(impl));
-
   static ViewListenerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewListenerStub"));
     return new ViewListenerStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ViewListenerStubControl.serviceDescription;
 
 
   dynamic onPropertiesChanged(int sceneVersion,view_properties_mojom.ViewProperties properties,[Function responseFactory = null]) {

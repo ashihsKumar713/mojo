@@ -218,7 +218,7 @@ class _NfcTransmitOnNextConnectionParams extends bindings.Struct {
     const bindings.StructDataHeader(24, 0)
   ];
   NfcData nfcData = null;
-  Object transmission = null;
+  NfcTransmissionInterfaceRequest transmission = null;
 
   _NfcTransmitOnNextConnectionParams() : super(kVersions.last.size);
 
@@ -500,12 +500,50 @@ class _NfcTransmissionServiceDescription implements service_describer.ServiceDes
 
 abstract class NfcTransmission {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _NfcTransmissionServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static NfcTransmissionProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    NfcTransmissionProxy p = new NfcTransmissionProxy.unbound();
+    String name = serviceName ?? NfcTransmission.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void cancel();
+}
+
+abstract class NfcTransmissionInterface
+    implements bindings.MojoInterface<NfcTransmission>,
+               NfcTransmission {
+  factory NfcTransmissionInterface([NfcTransmission impl]) =>
+      new NfcTransmissionStub.unbound(impl);
+  factory NfcTransmissionInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [NfcTransmission impl]) =>
+      new NfcTransmissionStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class NfcTransmissionInterfaceRequest
+    implements bindings.MojoInterface<NfcTransmission>,
+               NfcTransmission {
+  factory NfcTransmissionInterfaceRequest() =>
+      new NfcTransmissionProxy.unbound();
 }
 
 class _NfcTransmissionProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<NfcTransmission> {
   _NfcTransmissionProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -513,9 +551,6 @@ class _NfcTransmissionProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _NfcTransmissionProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _NfcTransmissionServiceDescription();
 
   String get serviceName => NfcTransmission.serviceName;
 
@@ -528,6 +563,11 @@ class _NfcTransmissionProxyControl
     }
   }
 
+  NfcTransmission get impl => null;
+  set impl(NfcTransmission _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -536,8 +576,10 @@ class _NfcTransmissionProxyControl
 }
 
 class NfcTransmissionProxy
-    extends bindings.Proxy
-    implements NfcTransmission {
+    extends bindings.Proxy<NfcTransmission>
+    implements NfcTransmission,
+               NfcTransmissionInterface,
+               NfcTransmissionInterfaceRequest {
   NfcTransmissionProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _NfcTransmissionProxyControl.fromEndpoint(endpoint));
@@ -552,13 +594,6 @@ class NfcTransmissionProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NfcTransmissionProxy"));
     return new NfcTransmissionProxy.fromEndpoint(endpoint);
-  }
-
-  factory NfcTransmissionProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    NfcTransmissionProxy p = new NfcTransmissionProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -591,6 +626,8 @@ class _NfcTransmissionStubControl
   }
 
   _NfcTransmissionStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => NfcTransmission.serviceName;
 
 
 
@@ -640,19 +677,16 @@ class _NfcTransmissionStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _NfcTransmissionServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class NfcTransmissionStub
     extends bindings.Stub<NfcTransmission>
-    implements NfcTransmission {
+    implements NfcTransmission,
+               NfcTransmissionInterface,
+               NfcTransmissionInterfaceRequest {
+  NfcTransmissionStub.unbound([NfcTransmission impl])
+      : super(new _NfcTransmissionStubControl.unbound(impl));
+
   NfcTransmissionStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [NfcTransmission impl])
       : super(new _NfcTransmissionStubControl.fromEndpoint(endpoint, impl));
@@ -661,17 +695,11 @@ class NfcTransmissionStub
       core.MojoHandle handle, [NfcTransmission impl])
       : super(new _NfcTransmissionStubControl.fromHandle(handle, impl));
 
-  NfcTransmissionStub.unbound([NfcTransmission impl])
-      : super(new _NfcTransmissionStubControl.unbound(impl));
-
   static NfcTransmissionStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NfcTransmissionStub"));
     return new NfcTransmissionStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _NfcTransmissionStubControl.serviceDescription;
 
 
   void cancel() {
@@ -694,12 +722,50 @@ class _NfcReceiverServiceDescription implements service_describer.ServiceDescrip
 
 abstract class NfcReceiver {
   static const String serviceName = "nfc::NfcReceiver";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _NfcReceiverServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static NfcReceiverProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    NfcReceiverProxy p = new NfcReceiverProxy.unbound();
+    String name = serviceName ?? NfcReceiver.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void onReceivedNfcData(NfcData nfcData);
+}
+
+abstract class NfcReceiverInterface
+    implements bindings.MojoInterface<NfcReceiver>,
+               NfcReceiver {
+  factory NfcReceiverInterface([NfcReceiver impl]) =>
+      new NfcReceiverStub.unbound(impl);
+  factory NfcReceiverInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [NfcReceiver impl]) =>
+      new NfcReceiverStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class NfcReceiverInterfaceRequest
+    implements bindings.MojoInterface<NfcReceiver>,
+               NfcReceiver {
+  factory NfcReceiverInterfaceRequest() =>
+      new NfcReceiverProxy.unbound();
 }
 
 class _NfcReceiverProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<NfcReceiver> {
   _NfcReceiverProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -707,9 +773,6 @@ class _NfcReceiverProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _NfcReceiverProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _NfcReceiverServiceDescription();
 
   String get serviceName => NfcReceiver.serviceName;
 
@@ -722,6 +785,11 @@ class _NfcReceiverProxyControl
     }
   }
 
+  NfcReceiver get impl => null;
+  set impl(NfcReceiver _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -730,8 +798,10 @@ class _NfcReceiverProxyControl
 }
 
 class NfcReceiverProxy
-    extends bindings.Proxy
-    implements NfcReceiver {
+    extends bindings.Proxy<NfcReceiver>
+    implements NfcReceiver,
+               NfcReceiverInterface,
+               NfcReceiverInterfaceRequest {
   NfcReceiverProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _NfcReceiverProxyControl.fromEndpoint(endpoint));
@@ -746,13 +816,6 @@ class NfcReceiverProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NfcReceiverProxy"));
     return new NfcReceiverProxy.fromEndpoint(endpoint);
-  }
-
-  factory NfcReceiverProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    NfcReceiverProxy p = new NfcReceiverProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -786,6 +849,8 @@ class _NfcReceiverStubControl
   }
 
   _NfcReceiverStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => NfcReceiver.serviceName;
 
 
 
@@ -837,19 +902,16 @@ class _NfcReceiverStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _NfcReceiverServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class NfcReceiverStub
     extends bindings.Stub<NfcReceiver>
-    implements NfcReceiver {
+    implements NfcReceiver,
+               NfcReceiverInterface,
+               NfcReceiverInterfaceRequest {
+  NfcReceiverStub.unbound([NfcReceiver impl])
+      : super(new _NfcReceiverStubControl.unbound(impl));
+
   NfcReceiverStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [NfcReceiver impl])
       : super(new _NfcReceiverStubControl.fromEndpoint(endpoint, impl));
@@ -858,17 +920,11 @@ class NfcReceiverStub
       core.MojoHandle handle, [NfcReceiver impl])
       : super(new _NfcReceiverStubControl.fromHandle(handle, impl));
 
-  NfcReceiverStub.unbound([NfcReceiver impl])
-      : super(new _NfcReceiverStubControl.unbound(impl));
-
   static NfcReceiverStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NfcReceiverStub"));
     return new NfcReceiverStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _NfcReceiverStubControl.serviceDescription;
 
 
   void onReceivedNfcData(NfcData nfcData) {
@@ -893,14 +949,52 @@ class _NfcServiceDescription implements service_describer.ServiceDescription {
 
 abstract class Nfc {
   static const String serviceName = "nfc::Nfc";
-  dynamic transmitOnNextConnection(NfcData nfcData,Object transmission,[Function responseFactory = null]);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _NfcServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static NfcProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    NfcProxy p = new NfcProxy.unbound();
+    String name = serviceName ?? Nfc.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  dynamic transmitOnNextConnection(NfcData nfcData,NfcTransmissionInterfaceRequest transmission,[Function responseFactory = null]);
   void register();
   void unregister();
 }
 
+abstract class NfcInterface
+    implements bindings.MojoInterface<Nfc>,
+               Nfc {
+  factory NfcInterface([Nfc impl]) =>
+      new NfcStub.unbound(impl);
+  factory NfcInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Nfc impl]) =>
+      new NfcStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class NfcInterfaceRequest
+    implements bindings.MojoInterface<Nfc>,
+               Nfc {
+  factory NfcInterfaceRequest() =>
+      new NfcProxy.unbound();
+}
+
 class _NfcProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Nfc> {
   _NfcProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -908,9 +1002,6 @@ class _NfcProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _NfcProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _NfcServiceDescription();
 
   String get serviceName => Nfc.serviceName;
 
@@ -943,6 +1034,11 @@ class _NfcProxyControl
     }
   }
 
+  Nfc get impl => null;
+  set impl(Nfc _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -951,8 +1047,10 @@ class _NfcProxyControl
 }
 
 class NfcProxy
-    extends bindings.Proxy
-    implements Nfc {
+    extends bindings.Proxy<Nfc>
+    implements Nfc,
+               NfcInterface,
+               NfcInterfaceRequest {
   NfcProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _NfcProxyControl.fromEndpoint(endpoint));
@@ -969,15 +1067,8 @@ class NfcProxy
     return new NfcProxy.fromEndpoint(endpoint);
   }
 
-  factory NfcProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    NfcProxy p = new NfcProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  dynamic transmitOnNextConnection(NfcData nfcData,Object transmission,[Function responseFactory = null]) {
+  dynamic transmitOnNextConnection(NfcData nfcData,NfcTransmissionInterfaceRequest transmission,[Function responseFactory = null]) {
     var params = new _NfcTransmitOnNextConnectionParams();
     params.nfcData = nfcData;
     params.transmission = transmission;
@@ -1025,6 +1116,8 @@ class _NfcStubControl
   }
 
   _NfcStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Nfc.serviceName;
 
 
   NfcTransmitOnNextConnectionResponseParams _nfcTransmitOnNextConnectionResponseParamsFactory(bool success) {
@@ -1104,19 +1197,16 @@ class _NfcStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _NfcServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class NfcStub
     extends bindings.Stub<Nfc>
-    implements Nfc {
+    implements Nfc,
+               NfcInterface,
+               NfcInterfaceRequest {
+  NfcStub.unbound([Nfc impl])
+      : super(new _NfcStubControl.unbound(impl));
+
   NfcStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Nfc impl])
       : super(new _NfcStubControl.fromEndpoint(endpoint, impl));
@@ -1125,20 +1215,14 @@ class NfcStub
       core.MojoHandle handle, [Nfc impl])
       : super(new _NfcStubControl.fromHandle(handle, impl));
 
-  NfcStub.unbound([Nfc impl])
-      : super(new _NfcStubControl.unbound(impl));
-
   static NfcStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NfcStub"));
     return new NfcStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _NfcStubControl.serviceDescription;
 
-
-  dynamic transmitOnNextConnection(NfcData nfcData,Object transmission,[Function responseFactory = null]) {
+  dynamic transmitOnNextConnection(NfcData nfcData,NfcTransmissionInterfaceRequest transmission,[Function responseFactory = null]) {
     return impl.transmitOnNextConnection(nfcData,transmission,responseFactory);
   }
   void register() {

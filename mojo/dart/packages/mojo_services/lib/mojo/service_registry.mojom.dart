@@ -16,7 +16,7 @@ class _ServiceRegistryAddServicesParams extends bindings.Struct {
     const bindings.StructDataHeader(24, 0)
   ];
   List<String> interfaceNames = null;
-  Object serviceProvider = null;
+  service_provider_mojom.ServiceProviderInterface serviceProvider = null;
 
   _ServiceRegistryAddServicesParams() : super(kVersions.last.size);
 
@@ -124,12 +124,50 @@ class _ServiceRegistryServiceDescription implements service_describer.ServiceDes
 
 abstract class ServiceRegistry {
   static const String serviceName = "mojo::ServiceRegistry";
-  void addServices(List<String> interfaceNames, Object serviceProvider);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ServiceRegistryServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ServiceRegistryProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ServiceRegistryProxy p = new ServiceRegistryProxy.unbound();
+    String name = serviceName ?? ServiceRegistry.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void addServices(List<String> interfaceNames, service_provider_mojom.ServiceProviderInterface serviceProvider);
+}
+
+abstract class ServiceRegistryInterface
+    implements bindings.MojoInterface<ServiceRegistry>,
+               ServiceRegistry {
+  factory ServiceRegistryInterface([ServiceRegistry impl]) =>
+      new ServiceRegistryStub.unbound(impl);
+  factory ServiceRegistryInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [ServiceRegistry impl]) =>
+      new ServiceRegistryStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ServiceRegistryInterfaceRequest
+    implements bindings.MojoInterface<ServiceRegistry>,
+               ServiceRegistry {
+  factory ServiceRegistryInterfaceRequest() =>
+      new ServiceRegistryProxy.unbound();
 }
 
 class _ServiceRegistryProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<ServiceRegistry> {
   _ServiceRegistryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -137,9 +175,6 @@ class _ServiceRegistryProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ServiceRegistryProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ServiceRegistryServiceDescription();
 
   String get serviceName => ServiceRegistry.serviceName;
 
@@ -152,6 +187,11 @@ class _ServiceRegistryProxyControl
     }
   }
 
+  ServiceRegistry get impl => null;
+  set impl(ServiceRegistry _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -160,8 +200,10 @@ class _ServiceRegistryProxyControl
 }
 
 class ServiceRegistryProxy
-    extends bindings.Proxy
-    implements ServiceRegistry {
+    extends bindings.Proxy<ServiceRegistry>
+    implements ServiceRegistry,
+               ServiceRegistryInterface,
+               ServiceRegistryInterfaceRequest {
   ServiceRegistryProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ServiceRegistryProxyControl.fromEndpoint(endpoint));
@@ -178,15 +220,8 @@ class ServiceRegistryProxy
     return new ServiceRegistryProxy.fromEndpoint(endpoint);
   }
 
-  factory ServiceRegistryProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ServiceRegistryProxy p = new ServiceRegistryProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void addServices(List<String> interfaceNames, Object serviceProvider) {
+  void addServices(List<String> interfaceNames, service_provider_mojom.ServiceProviderInterface serviceProvider) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -217,6 +252,8 @@ class _ServiceRegistryStubControl
   }
 
   _ServiceRegistryStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => ServiceRegistry.serviceName;
 
 
 
@@ -268,19 +305,16 @@ class _ServiceRegistryStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ServiceRegistryServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ServiceRegistryStub
     extends bindings.Stub<ServiceRegistry>
-    implements ServiceRegistry {
+    implements ServiceRegistry,
+               ServiceRegistryInterface,
+               ServiceRegistryInterfaceRequest {
+  ServiceRegistryStub.unbound([ServiceRegistry impl])
+      : super(new _ServiceRegistryStubControl.unbound(impl));
+
   ServiceRegistryStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ServiceRegistry impl])
       : super(new _ServiceRegistryStubControl.fromEndpoint(endpoint, impl));
@@ -289,20 +323,14 @@ class ServiceRegistryStub
       core.MojoHandle handle, [ServiceRegistry impl])
       : super(new _ServiceRegistryStubControl.fromHandle(handle, impl));
 
-  ServiceRegistryStub.unbound([ServiceRegistry impl])
-      : super(new _ServiceRegistryStubControl.unbound(impl));
-
   static ServiceRegistryStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ServiceRegistryStub"));
     return new ServiceRegistryStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ServiceRegistryStubControl.serviceDescription;
 
-
-  void addServices(List<String> interfaceNames, Object serviceProvider) {
+  void addServices(List<String> interfaceNames, service_provider_mojom.ServiceProviderInterface serviceProvider) {
     return impl.addServices(interfaceNames, serviceProvider);
   }
 }

@@ -138,7 +138,7 @@ class _ViewAssociateConnectParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object inspector = null;
+  ViewInspectorInterface inspector = null;
 
   _ViewAssociateConnectParams() : super(kVersions.last.size);
 
@@ -479,7 +479,7 @@ class _ViewInspectorGetHitTesterParams extends bindings.Struct {
     const bindings.StructDataHeader(24, 0)
   ];
   view_tree_token_mojom.ViewTreeToken viewTreeToken = null;
-  Object hitTester = null;
+  hit_tests_mojom.HitTesterInterfaceRequest hitTester = null;
 
   _ViewInspectorGetHitTesterParams() : super(kVersions.last.size);
 
@@ -823,14 +823,52 @@ class _ViewAssociateServiceDescription implements service_describer.ServiceDescr
 
 abstract class ViewAssociate {
   static const String serviceName = "mojo::ui::ViewAssociate";
-  dynamic connect(Object inspector,[Function responseFactory = null]);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ViewAssociateServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ViewAssociateProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ViewAssociateProxy p = new ViewAssociateProxy.unbound();
+    String name = serviceName ?? ViewAssociate.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  dynamic connect(ViewInspectorInterface inspector,[Function responseFactory = null]);
   void connectToViewService(view_token_mojom.ViewToken viewToken, String serviceName_, core.MojoMessagePipeEndpoint pipe);
   void connectToViewTreeService(view_tree_token_mojom.ViewTreeToken viewTreeToken, String serviceName_, core.MojoMessagePipeEndpoint pipe);
 }
 
+abstract class ViewAssociateInterface
+    implements bindings.MojoInterface<ViewAssociate>,
+               ViewAssociate {
+  factory ViewAssociateInterface([ViewAssociate impl]) =>
+      new ViewAssociateStub.unbound(impl);
+  factory ViewAssociateInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [ViewAssociate impl]) =>
+      new ViewAssociateStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ViewAssociateInterfaceRequest
+    implements bindings.MojoInterface<ViewAssociate>,
+               ViewAssociate {
+  factory ViewAssociateInterfaceRequest() =>
+      new ViewAssociateProxy.unbound();
+}
+
 class _ViewAssociateProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<ViewAssociate> {
   _ViewAssociateProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -838,9 +876,6 @@ class _ViewAssociateProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ViewAssociateProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ViewAssociateServiceDescription();
 
   String get serviceName => ViewAssociate.serviceName;
 
@@ -873,6 +908,11 @@ class _ViewAssociateProxyControl
     }
   }
 
+  ViewAssociate get impl => null;
+  set impl(ViewAssociate _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -881,8 +921,10 @@ class _ViewAssociateProxyControl
 }
 
 class ViewAssociateProxy
-    extends bindings.Proxy
-    implements ViewAssociate {
+    extends bindings.Proxy<ViewAssociate>
+    implements ViewAssociate,
+               ViewAssociateInterface,
+               ViewAssociateInterfaceRequest {
   ViewAssociateProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewAssociateProxyControl.fromEndpoint(endpoint));
@@ -899,15 +941,8 @@ class ViewAssociateProxy
     return new ViewAssociateProxy.fromEndpoint(endpoint);
   }
 
-  factory ViewAssociateProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ViewAssociateProxy p = new ViewAssociateProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  dynamic connect(Object inspector,[Function responseFactory = null]) {
+  dynamic connect(ViewInspectorInterface inspector,[Function responseFactory = null]) {
     var params = new _ViewAssociateConnectParams();
     params.inspector = inspector;
     return ctrl.sendMessageWithRequestId(
@@ -960,6 +995,8 @@ class _ViewAssociateStubControl
   }
 
   _ViewAssociateStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => ViewAssociate.serviceName;
 
 
   ViewAssociateConnectResponseParams _viewAssociateConnectResponseParamsFactory(ViewAssociateInfo info) {
@@ -1043,19 +1080,16 @@ class _ViewAssociateStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ViewAssociateServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ViewAssociateStub
     extends bindings.Stub<ViewAssociate>
-    implements ViewAssociate {
+    implements ViewAssociate,
+               ViewAssociateInterface,
+               ViewAssociateInterfaceRequest {
+  ViewAssociateStub.unbound([ViewAssociate impl])
+      : super(new _ViewAssociateStubControl.unbound(impl));
+
   ViewAssociateStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewAssociate impl])
       : super(new _ViewAssociateStubControl.fromEndpoint(endpoint, impl));
@@ -1064,20 +1098,14 @@ class ViewAssociateStub
       core.MojoHandle handle, [ViewAssociate impl])
       : super(new _ViewAssociateStubControl.fromHandle(handle, impl));
 
-  ViewAssociateStub.unbound([ViewAssociate impl])
-      : super(new _ViewAssociateStubControl.unbound(impl));
-
   static ViewAssociateStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewAssociateStub"));
     return new ViewAssociateStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ViewAssociateStubControl.serviceDescription;
 
-
-  dynamic connect(Object inspector,[Function responseFactory = null]) {
+  dynamic connect(ViewInspectorInterface inspector,[Function responseFactory = null]) {
     return impl.connect(inspector,responseFactory);
   }
   void connectToViewService(view_token_mojom.ViewToken viewToken, String serviceName_, core.MojoMessagePipeEndpoint pipe) {
@@ -1102,11 +1130,49 @@ class _ViewAssociateOwnerServiceDescription implements service_describer.Service
 
 abstract class ViewAssociateOwner {
   static const String serviceName = "mojo::ui::ViewAssociateOwner";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ViewAssociateOwnerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ViewAssociateOwnerProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ViewAssociateOwnerProxy p = new ViewAssociateOwnerProxy.unbound();
+    String name = serviceName ?? ViewAssociateOwner.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+}
+
+abstract class ViewAssociateOwnerInterface
+    implements bindings.MojoInterface<ViewAssociateOwner>,
+               ViewAssociateOwner {
+  factory ViewAssociateOwnerInterface([ViewAssociateOwner impl]) =>
+      new ViewAssociateOwnerStub.unbound(impl);
+  factory ViewAssociateOwnerInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [ViewAssociateOwner impl]) =>
+      new ViewAssociateOwnerStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ViewAssociateOwnerInterfaceRequest
+    implements bindings.MojoInterface<ViewAssociateOwner>,
+               ViewAssociateOwner {
+  factory ViewAssociateOwnerInterfaceRequest() =>
+      new ViewAssociateOwnerProxy.unbound();
 }
 
 class _ViewAssociateOwnerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<ViewAssociateOwner> {
   _ViewAssociateOwnerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1114,9 +1180,6 @@ class _ViewAssociateOwnerProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ViewAssociateOwnerProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ViewAssociateOwnerServiceDescription();
 
   String get serviceName => ViewAssociateOwner.serviceName;
 
@@ -1129,6 +1192,11 @@ class _ViewAssociateOwnerProxyControl
     }
   }
 
+  ViewAssociateOwner get impl => null;
+  set impl(ViewAssociateOwner _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1137,8 +1205,10 @@ class _ViewAssociateOwnerProxyControl
 }
 
 class ViewAssociateOwnerProxy
-    extends bindings.Proxy
-    implements ViewAssociateOwner {
+    extends bindings.Proxy<ViewAssociateOwner>
+    implements ViewAssociateOwner,
+               ViewAssociateOwnerInterface,
+               ViewAssociateOwnerInterfaceRequest {
   ViewAssociateOwnerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewAssociateOwnerProxyControl.fromEndpoint(endpoint));
@@ -1153,13 +1223,6 @@ class ViewAssociateOwnerProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewAssociateOwnerProxy"));
     return new ViewAssociateOwnerProxy.fromEndpoint(endpoint);
-  }
-
-  factory ViewAssociateOwnerProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ViewAssociateOwnerProxy p = new ViewAssociateOwnerProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1183,6 +1246,8 @@ class _ViewAssociateOwnerStubControl
   }
 
   _ViewAssociateOwnerStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => ViewAssociateOwner.serviceName;
 
 
 
@@ -1229,19 +1294,16 @@ class _ViewAssociateOwnerStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ViewAssociateOwnerServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ViewAssociateOwnerStub
     extends bindings.Stub<ViewAssociateOwner>
-    implements ViewAssociateOwner {
+    implements ViewAssociateOwner,
+               ViewAssociateOwnerInterface,
+               ViewAssociateOwnerInterfaceRequest {
+  ViewAssociateOwnerStub.unbound([ViewAssociateOwner impl])
+      : super(new _ViewAssociateOwnerStubControl.unbound(impl));
+
   ViewAssociateOwnerStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewAssociateOwner impl])
       : super(new _ViewAssociateOwnerStubControl.fromEndpoint(endpoint, impl));
@@ -1250,17 +1312,11 @@ class ViewAssociateOwnerStub
       core.MojoHandle handle, [ViewAssociateOwner impl])
       : super(new _ViewAssociateOwnerStubControl.fromHandle(handle, impl));
 
-  ViewAssociateOwnerStub.unbound([ViewAssociateOwner impl])
-      : super(new _ViewAssociateOwnerStubControl.unbound(impl));
-
   static ViewAssociateOwnerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewAssociateOwnerStub"));
     return new ViewAssociateOwnerStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ViewAssociateOwnerStubControl.serviceDescription;
 
 
 }
@@ -1281,13 +1337,51 @@ class _ViewInspectorServiceDescription implements service_describer.ServiceDescr
 
 abstract class ViewInspector {
   static const String serviceName = null;
-  dynamic getHitTester(view_tree_token_mojom.ViewTreeToken viewTreeToken,Object hitTester,[Function responseFactory = null]);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ViewInspectorServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ViewInspectorProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ViewInspectorProxy p = new ViewInspectorProxy.unbound();
+    String name = serviceName ?? ViewInspector.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  dynamic getHitTester(view_tree_token_mojom.ViewTreeToken viewTreeToken,hit_tests_mojom.HitTesterInterfaceRequest hitTester,[Function responseFactory = null]);
   dynamic resolveScenes(List<scene_token_mojom.SceneToken> sceneTokens,[Function responseFactory = null]);
+}
+
+abstract class ViewInspectorInterface
+    implements bindings.MojoInterface<ViewInspector>,
+               ViewInspector {
+  factory ViewInspectorInterface([ViewInspector impl]) =>
+      new ViewInspectorStub.unbound(impl);
+  factory ViewInspectorInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [ViewInspector impl]) =>
+      new ViewInspectorStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ViewInspectorInterfaceRequest
+    implements bindings.MojoInterface<ViewInspector>,
+               ViewInspector {
+  factory ViewInspectorInterfaceRequest() =>
+      new ViewInspectorProxy.unbound();
 }
 
 class _ViewInspectorProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<ViewInspector> {
   _ViewInspectorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1295,9 +1389,6 @@ class _ViewInspectorProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ViewInspectorProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ViewInspectorServiceDescription();
 
   String get serviceName => ViewInspector.serviceName;
 
@@ -1350,6 +1441,11 @@ class _ViewInspectorProxyControl
     }
   }
 
+  ViewInspector get impl => null;
+  set impl(ViewInspector _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1358,8 +1454,10 @@ class _ViewInspectorProxyControl
 }
 
 class ViewInspectorProxy
-    extends bindings.Proxy
-    implements ViewInspector {
+    extends bindings.Proxy<ViewInspector>
+    implements ViewInspector,
+               ViewInspectorInterface,
+               ViewInspectorInterfaceRequest {
   ViewInspectorProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewInspectorProxyControl.fromEndpoint(endpoint));
@@ -1376,15 +1474,8 @@ class ViewInspectorProxy
     return new ViewInspectorProxy.fromEndpoint(endpoint);
   }
 
-  factory ViewInspectorProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ViewInspectorProxy p = new ViewInspectorProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  dynamic getHitTester(view_tree_token_mojom.ViewTreeToken viewTreeToken,Object hitTester,[Function responseFactory = null]) {
+  dynamic getHitTester(view_tree_token_mojom.ViewTreeToken viewTreeToken,hit_tests_mojom.HitTesterInterfaceRequest hitTester,[Function responseFactory = null]) {
     var params = new _ViewInspectorGetHitTesterParams();
     params.viewTreeToken = viewTreeToken;
     params.hitTester = hitTester;
@@ -1423,6 +1514,8 @@ class _ViewInspectorStubControl
   }
 
   _ViewInspectorStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => ViewInspector.serviceName;
 
 
   ViewInspectorGetHitTesterResponseParams _viewInspectorGetHitTesterResponseParamsFactory(bool rendererChanged) {
@@ -1523,19 +1616,16 @@ class _ViewInspectorStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ViewInspectorServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ViewInspectorStub
     extends bindings.Stub<ViewInspector>
-    implements ViewInspector {
+    implements ViewInspector,
+               ViewInspectorInterface,
+               ViewInspectorInterfaceRequest {
+  ViewInspectorStub.unbound([ViewInspector impl])
+      : super(new _ViewInspectorStubControl.unbound(impl));
+
   ViewInspectorStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewInspector impl])
       : super(new _ViewInspectorStubControl.fromEndpoint(endpoint, impl));
@@ -1544,20 +1634,14 @@ class ViewInspectorStub
       core.MojoHandle handle, [ViewInspector impl])
       : super(new _ViewInspectorStubControl.fromHandle(handle, impl));
 
-  ViewInspectorStub.unbound([ViewInspector impl])
-      : super(new _ViewInspectorStubControl.unbound(impl));
-
   static ViewInspectorStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewInspectorStub"));
     return new ViewInspectorStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ViewInspectorStubControl.serviceDescription;
 
-
-  dynamic getHitTester(view_tree_token_mojom.ViewTreeToken viewTreeToken,Object hitTester,[Function responseFactory = null]) {
+  dynamic getHitTester(view_tree_token_mojom.ViewTreeToken viewTreeToken,hit_tests_mojom.HitTesterInterfaceRequest hitTester,[Function responseFactory = null]) {
     return impl.getHitTester(viewTreeToken,hitTester,responseFactory);
   }
   dynamic resolveScenes(List<scene_token_mojom.SceneToken> sceneTokens,[Function responseFactory = null]) {

@@ -23,11 +23,49 @@ class _TcpConnectedSocketServiceDescription implements service_describer.Service
 
 abstract class TcpConnectedSocket {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _TcpConnectedSocketServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static TcpConnectedSocketProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    TcpConnectedSocketProxy p = new TcpConnectedSocketProxy.unbound();
+    String name = serviceName ?? TcpConnectedSocket.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+}
+
+abstract class TcpConnectedSocketInterface
+    implements bindings.MojoInterface<TcpConnectedSocket>,
+               TcpConnectedSocket {
+  factory TcpConnectedSocketInterface([TcpConnectedSocket impl]) =>
+      new TcpConnectedSocketStub.unbound(impl);
+  factory TcpConnectedSocketInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [TcpConnectedSocket impl]) =>
+      new TcpConnectedSocketStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class TcpConnectedSocketInterfaceRequest
+    implements bindings.MojoInterface<TcpConnectedSocket>,
+               TcpConnectedSocket {
+  factory TcpConnectedSocketInterfaceRequest() =>
+      new TcpConnectedSocketProxy.unbound();
 }
 
 class _TcpConnectedSocketProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<TcpConnectedSocket> {
   _TcpConnectedSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -35,9 +73,6 @@ class _TcpConnectedSocketProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _TcpConnectedSocketProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _TcpConnectedSocketServiceDescription();
 
   String get serviceName => TcpConnectedSocket.serviceName;
 
@@ -50,6 +85,11 @@ class _TcpConnectedSocketProxyControl
     }
   }
 
+  TcpConnectedSocket get impl => null;
+  set impl(TcpConnectedSocket _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -58,8 +98,10 @@ class _TcpConnectedSocketProxyControl
 }
 
 class TcpConnectedSocketProxy
-    extends bindings.Proxy
-    implements TcpConnectedSocket {
+    extends bindings.Proxy<TcpConnectedSocket>
+    implements TcpConnectedSocket,
+               TcpConnectedSocketInterface,
+               TcpConnectedSocketInterfaceRequest {
   TcpConnectedSocketProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TcpConnectedSocketProxyControl.fromEndpoint(endpoint));
@@ -74,13 +116,6 @@ class TcpConnectedSocketProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TcpConnectedSocketProxy"));
     return new TcpConnectedSocketProxy.fromEndpoint(endpoint);
-  }
-
-  factory TcpConnectedSocketProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    TcpConnectedSocketProxy p = new TcpConnectedSocketProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -104,6 +139,8 @@ class _TcpConnectedSocketStubControl
   }
 
   _TcpConnectedSocketStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => TcpConnectedSocket.serviceName;
 
 
 
@@ -150,19 +187,16 @@ class _TcpConnectedSocketStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _TcpConnectedSocketServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class TcpConnectedSocketStub
     extends bindings.Stub<TcpConnectedSocket>
-    implements TcpConnectedSocket {
+    implements TcpConnectedSocket,
+               TcpConnectedSocketInterface,
+               TcpConnectedSocketInterfaceRequest {
+  TcpConnectedSocketStub.unbound([TcpConnectedSocket impl])
+      : super(new _TcpConnectedSocketStubControl.unbound(impl));
+
   TcpConnectedSocketStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TcpConnectedSocket impl])
       : super(new _TcpConnectedSocketStubControl.fromEndpoint(endpoint, impl));
@@ -171,17 +205,11 @@ class TcpConnectedSocketStub
       core.MojoHandle handle, [TcpConnectedSocket impl])
       : super(new _TcpConnectedSocketStubControl.fromHandle(handle, impl));
 
-  TcpConnectedSocketStub.unbound([TcpConnectedSocket impl])
-      : super(new _TcpConnectedSocketStubControl.unbound(impl));
-
   static TcpConnectedSocketStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TcpConnectedSocketStub"));
     return new TcpConnectedSocketStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _TcpConnectedSocketStubControl.serviceDescription;
 
 
 }

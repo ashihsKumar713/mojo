@@ -374,12 +374,50 @@ class _PredictionServiceServiceDescription implements service_describer.ServiceD
 
 abstract class PredictionService {
   static const String serviceName = "prediction::PredictionService";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _PredictionServiceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static PredictionServiceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    PredictionServiceProxy p = new PredictionServiceProxy.unbound();
+    String name = serviceName ?? PredictionService.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic getPredictionList(PredictionInfo predictionInfo,[Function responseFactory = null]);
+}
+
+abstract class PredictionServiceInterface
+    implements bindings.MojoInterface<PredictionService>,
+               PredictionService {
+  factory PredictionServiceInterface([PredictionService impl]) =>
+      new PredictionServiceStub.unbound(impl);
+  factory PredictionServiceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [PredictionService impl]) =>
+      new PredictionServiceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class PredictionServiceInterfaceRequest
+    implements bindings.MojoInterface<PredictionService>,
+               PredictionService {
+  factory PredictionServiceInterfaceRequest() =>
+      new PredictionServiceProxy.unbound();
 }
 
 class _PredictionServiceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<PredictionService> {
   _PredictionServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -387,9 +425,6 @@ class _PredictionServiceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _PredictionServiceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _PredictionServiceServiceDescription();
 
   String get serviceName => PredictionService.serviceName;
 
@@ -422,6 +457,11 @@ class _PredictionServiceProxyControl
     }
   }
 
+  PredictionService get impl => null;
+  set impl(PredictionService _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -430,8 +470,10 @@ class _PredictionServiceProxyControl
 }
 
 class PredictionServiceProxy
-    extends bindings.Proxy
-    implements PredictionService {
+    extends bindings.Proxy<PredictionService>
+    implements PredictionService,
+               PredictionServiceInterface,
+               PredictionServiceInterfaceRequest {
   PredictionServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _PredictionServiceProxyControl.fromEndpoint(endpoint));
@@ -446,13 +488,6 @@ class PredictionServiceProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For PredictionServiceProxy"));
     return new PredictionServiceProxy.fromEndpoint(endpoint);
-  }
-
-  factory PredictionServiceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    PredictionServiceProxy p = new PredictionServiceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -485,6 +520,8 @@ class _PredictionServiceStubControl
   }
 
   _PredictionServiceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => PredictionService.serviceName;
 
 
   PredictionServiceGetPredictionListResponseParams _predictionServiceGetPredictionListResponseParamsFactory(List<String> predictionList) {
@@ -558,19 +595,16 @@ class _PredictionServiceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _PredictionServiceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class PredictionServiceStub
     extends bindings.Stub<PredictionService>
-    implements PredictionService {
+    implements PredictionService,
+               PredictionServiceInterface,
+               PredictionServiceInterfaceRequest {
+  PredictionServiceStub.unbound([PredictionService impl])
+      : super(new _PredictionServiceStubControl.unbound(impl));
+
   PredictionServiceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [PredictionService impl])
       : super(new _PredictionServiceStubControl.fromEndpoint(endpoint, impl));
@@ -579,17 +613,11 @@ class PredictionServiceStub
       core.MojoHandle handle, [PredictionService impl])
       : super(new _PredictionServiceStubControl.fromHandle(handle, impl));
 
-  PredictionServiceStub.unbound([PredictionService impl])
-      : super(new _PredictionServiceStubControl.unbound(impl));
-
   static PredictionServiceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For PredictionServiceStub"));
     return new PredictionServiceStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _PredictionServiceStubControl.serviceDescription;
 
 
   dynamic getPredictionList(PredictionInfo predictionInfo,[Function responseFactory = null]) {

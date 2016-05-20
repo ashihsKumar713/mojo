@@ -19,15 +19,13 @@ tests(Application application, String url) {
       // includes the 'birthday' field.
 
       // Connect to human resource database.
-      var databaseProxy = new HumanResourceDatabaseProxy.unbound();
-      application.connectToService(
-          "mojo:versioning_test_service", databaseProxy);
+      var database = HumanResourceDatabase.connectToService(
+          application, "mojo:versioning_test_service");
 
       // Query database and get a response back (even though the client does not
       // know about the birthday field).
       bool retrieveFingerPrint = true;
-      var response =
-          await databaseProxy.queryEmployee(1, retrieveFingerPrint);
+      var response = await database.queryEmployee(1, retrieveFingerPrint);
       expect(response.employee.employeeId, equals(1));
       expect(response.employee.name, equals("Homer Simpson"));
       expect(response.employee.department, equals(Department.dev));
@@ -39,61 +37,58 @@ tests(Application application, String url) {
       newEmployee.employeeId = 2;
       newEmployee.name = "Marge Simpson";
       newEmployee.department = Department.sales;
-      response = await databaseProxy.addEmployee(newEmployee);
+      response = await database.addEmployee(newEmployee);
       expect(response.success, isTrue);
 
       // Query for employee #2.
       retrieveFingerPrint = false;
-      response = await databaseProxy.queryEmployee(2, retrieveFingerPrint);
+      response = await database.queryEmployee(2, retrieveFingerPrint);
       expect(response.employee.employeeId, equals(2));
       expect(response.employee.name, equals("Marge Simpson"));
       expect(response.employee.department, equals(Department.sales));
       expect(response.fingerPrint, isNull);
 
       // Disconnect from database.
-      databaseProxy.close();
+      database.close();
     });
 
     test('QueryVersion', () async {
       // Connect to human resource database.
-      var databaseProxy = new HumanResourceDatabaseProxy.unbound();
-      application.connectToService(
-          "mojo:versioning_test_service", databaseProxy);
+      var database = HumanResourceDatabase.connectToService(
+          application, "mojo:versioning_test_service");
       // Query the version.
-      var version = await databaseProxy.ctrl.queryVersion();
+      var version = await database.ctrl.queryVersion();
       // Expect it to be 1.
       expect(version, equals(1));
       // Disconnect from database.
-      databaseProxy.close();
+      database.close();
     });
 
     test('RequireVersion', () async {
       // Connect to human resource database.
-      var databaseProxy = new HumanResourceDatabaseProxy.unbound();
-      application.connectToService(
-          "mojo:versioning_test_service", databaseProxy);
+      var database = HumanResourceDatabase.connectToService(
+          application, "mojo:versioning_test_service");
 
       // Require version 1.
-      databaseProxy.ctrl.requireVersion(1);
-      expect(databaseProxy.ctrl.version, equals(1));
+      database.ctrl.requireVersion(1);
+      expect(database.ctrl.version, equals(1));
 
       // Query for employee #3.
       var retrieveFingerPrint = false;
-      var response =
-          await databaseProxy.queryEmployee(3, retrieveFingerPrint);
+      var response = await database.queryEmployee(3, retrieveFingerPrint);
 
       // Got some kind of response.
       expect(response, isNotNull);
 
       // Require version 3 (which cannot be satisfied).
-      databaseProxy.ctrl.requireVersion(3);
-      expect(databaseProxy.ctrl.version, equals(3));
+      database.ctrl.requireVersion(3);
+      expect(database.ctrl.version, equals(3));
 
       // Query for employee #1, observe that the call fails.
       bool exceptionCaught = false;
       try {
-        response = await databaseProxy.responseOrError(
-            databaseProxy.queryEmployee(1, retrieveFingerPrint));
+        response = await database.responseOrError(
+            database.queryEmployee(1, retrieveFingerPrint));
         fail('Exception should be thrown.');
       } catch (e) {
         exceptionCaught = true;
@@ -106,9 +101,8 @@ tests(Application application, String url) {
 
     test('CallNonexistentMethod', () async {
       // Connect to human resource database.
-      var databaseProxy = new HumanResourceDatabaseProxy.unbound();
-      application.connectToService(
-          "mojo:versioning_test_service", databaseProxy);
+      var database = HumanResourceDatabase.connectToService(
+          application, "mojo:versioning_test_service");
       const fingerPrintLength = 128;
       var fingerPrint = new List(fingerPrintLength);
       for (var i = 0; i < fingerPrintLength; i++) {
@@ -117,15 +111,14 @@ tests(Application application, String url) {
       // Although the client side doesn't know whether the service side supports
       // version 1, calling a version 1 method succeeds as long as the service
       // side supports version 1.
-      var response = await databaseProxy.attachFingerPrint(1, fingerPrint);
+      var response = await database.attachFingerPrint(1, fingerPrint);
       expect(response.success, isTrue);
 
       // Calling a version 2 method (which the service side doesn't support)
       // closes the pipe.
       bool exceptionCaught = false;
       try {
-        response = await databaseProxy
-            .responseOrError(databaseProxy.listEmployeeIds());
+        response = await database.responseOrError(database.listEmployeeIds());
         fail('Exception should be thrown.');
       } catch (e) {
         exceptionCaught = true;

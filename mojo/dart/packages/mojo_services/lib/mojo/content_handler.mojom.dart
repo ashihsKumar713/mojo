@@ -16,7 +16,7 @@ class _ContentHandlerStartApplicationParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(24, 0)
   ];
-  Object application = null;
+  application_mojom.ApplicationInterfaceRequest application = null;
   url_response_mojom.UrlResponse response = null;
 
   _ContentHandlerStartApplicationParams() : super(kVersions.last.size);
@@ -111,12 +111,50 @@ class _ContentHandlerServiceDescription implements service_describer.ServiceDesc
 
 abstract class ContentHandler {
   static const String serviceName = "mojo::ContentHandler";
-  void startApplication(Object application, url_response_mojom.UrlResponse response);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ContentHandlerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ContentHandlerProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ContentHandlerProxy p = new ContentHandlerProxy.unbound();
+    String name = serviceName ?? ContentHandler.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void startApplication(application_mojom.ApplicationInterfaceRequest application, url_response_mojom.UrlResponse response);
+}
+
+abstract class ContentHandlerInterface
+    implements bindings.MojoInterface<ContentHandler>,
+               ContentHandler {
+  factory ContentHandlerInterface([ContentHandler impl]) =>
+      new ContentHandlerStub.unbound(impl);
+  factory ContentHandlerInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [ContentHandler impl]) =>
+      new ContentHandlerStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ContentHandlerInterfaceRequest
+    implements bindings.MojoInterface<ContentHandler>,
+               ContentHandler {
+  factory ContentHandlerInterfaceRequest() =>
+      new ContentHandlerProxy.unbound();
 }
 
 class _ContentHandlerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<ContentHandler> {
   _ContentHandlerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -124,9 +162,6 @@ class _ContentHandlerProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ContentHandlerProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ContentHandlerServiceDescription();
 
   String get serviceName => ContentHandler.serviceName;
 
@@ -139,6 +174,11 @@ class _ContentHandlerProxyControl
     }
   }
 
+  ContentHandler get impl => null;
+  set impl(ContentHandler _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -147,8 +187,10 @@ class _ContentHandlerProxyControl
 }
 
 class ContentHandlerProxy
-    extends bindings.Proxy
-    implements ContentHandler {
+    extends bindings.Proxy<ContentHandler>
+    implements ContentHandler,
+               ContentHandlerInterface,
+               ContentHandlerInterfaceRequest {
   ContentHandlerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ContentHandlerProxyControl.fromEndpoint(endpoint));
@@ -165,15 +207,8 @@ class ContentHandlerProxy
     return new ContentHandlerProxy.fromEndpoint(endpoint);
   }
 
-  factory ContentHandlerProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ContentHandlerProxy p = new ContentHandlerProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void startApplication(Object application, url_response_mojom.UrlResponse response) {
+  void startApplication(application_mojom.ApplicationInterfaceRequest application, url_response_mojom.UrlResponse response) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -204,6 +239,8 @@ class _ContentHandlerStubControl
   }
 
   _ContentHandlerStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => ContentHandler.serviceName;
 
 
 
@@ -255,19 +292,16 @@ class _ContentHandlerStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ContentHandlerServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ContentHandlerStub
     extends bindings.Stub<ContentHandler>
-    implements ContentHandler {
+    implements ContentHandler,
+               ContentHandlerInterface,
+               ContentHandlerInterfaceRequest {
+  ContentHandlerStub.unbound([ContentHandler impl])
+      : super(new _ContentHandlerStubControl.unbound(impl));
+
   ContentHandlerStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ContentHandler impl])
       : super(new _ContentHandlerStubControl.fromEndpoint(endpoint, impl));
@@ -276,20 +310,14 @@ class ContentHandlerStub
       core.MojoHandle handle, [ContentHandler impl])
       : super(new _ContentHandlerStubControl.fromHandle(handle, impl));
 
-  ContentHandlerStub.unbound([ContentHandler impl])
-      : super(new _ContentHandlerStubControl.unbound(impl));
-
   static ContentHandlerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ContentHandlerStub"));
     return new ContentHandlerStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ContentHandlerStubControl.serviceDescription;
 
-
-  void startApplication(Object application, url_response_mojom.UrlResponse response) {
+  void startApplication(application_mojom.ApplicationInterfaceRequest application, url_response_mojom.UrlResponse response) {
     return impl.startApplication(application, response);
   }
 }

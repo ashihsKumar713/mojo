@@ -1100,13 +1100,51 @@ class _GeocoderServiceDescription implements service_describer.ServiceDescriptio
 
 abstract class Geocoder {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _GeocoderServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static GeocoderProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    GeocoderProxy p = new GeocoderProxy.unbound();
+    String name = serviceName ?? Geocoder.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic addressToLocation(String address,Options options,[Function responseFactory = null]);
   dynamic locationToAddress(location_mojom.Location location,Options options,[Function responseFactory = null]);
 }
 
+abstract class GeocoderInterface
+    implements bindings.MojoInterface<Geocoder>,
+               Geocoder {
+  factory GeocoderInterface([Geocoder impl]) =>
+      new GeocoderStub.unbound(impl);
+  factory GeocoderInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Geocoder impl]) =>
+      new GeocoderStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class GeocoderInterfaceRequest
+    implements bindings.MojoInterface<Geocoder>,
+               Geocoder {
+  factory GeocoderInterfaceRequest() =>
+      new GeocoderProxy.unbound();
+}
+
 class _GeocoderProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Geocoder> {
   _GeocoderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1114,9 +1152,6 @@ class _GeocoderProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _GeocoderProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _GeocoderServiceDescription();
 
   String get serviceName => Geocoder.serviceName;
 
@@ -1169,6 +1204,11 @@ class _GeocoderProxyControl
     }
   }
 
+  Geocoder get impl => null;
+  set impl(Geocoder _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1177,8 +1217,10 @@ class _GeocoderProxyControl
 }
 
 class GeocoderProxy
-    extends bindings.Proxy
-    implements Geocoder {
+    extends bindings.Proxy<Geocoder>
+    implements Geocoder,
+               GeocoderInterface,
+               GeocoderInterfaceRequest {
   GeocoderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _GeocoderProxyControl.fromEndpoint(endpoint));
@@ -1193,13 +1235,6 @@ class GeocoderProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For GeocoderProxy"));
     return new GeocoderProxy.fromEndpoint(endpoint);
-  }
-
-  factory GeocoderProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    GeocoderProxy p = new GeocoderProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1243,6 +1278,8 @@ class _GeocoderStubControl
   }
 
   _GeocoderStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Geocoder.serviceName;
 
 
   GeocoderAddressToLocationResponseParams _geocoderAddressToLocationResponseParamsFactory(String status, List<Result> results) {
@@ -1345,19 +1382,16 @@ class _GeocoderStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _GeocoderServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class GeocoderStub
     extends bindings.Stub<Geocoder>
-    implements Geocoder {
+    implements Geocoder,
+               GeocoderInterface,
+               GeocoderInterfaceRequest {
+  GeocoderStub.unbound([Geocoder impl])
+      : super(new _GeocoderStubControl.unbound(impl));
+
   GeocoderStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Geocoder impl])
       : super(new _GeocoderStubControl.fromEndpoint(endpoint, impl));
@@ -1366,17 +1400,11 @@ class GeocoderStub
       core.MojoHandle handle, [Geocoder impl])
       : super(new _GeocoderStubControl.fromHandle(handle, impl));
 
-  GeocoderStub.unbound([Geocoder impl])
-      : super(new _GeocoderStubControl.unbound(impl));
-
   static GeocoderStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For GeocoderStub"));
     return new GeocoderStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _GeocoderStubControl.serviceDescription;
 
 
   dynamic addressToLocation(String address,Options options,[Function responseFactory = null]) {

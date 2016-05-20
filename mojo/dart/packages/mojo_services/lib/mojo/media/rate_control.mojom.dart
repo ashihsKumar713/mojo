@@ -867,6 +867,26 @@ class _RateControlServiceDescription implements service_describer.ServiceDescrip
 
 abstract class RateControl {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _RateControlServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static RateControlProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    RateControlProxy p = new RateControlProxy.unbound();
+    String name = serviceName ?? RateControl.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic getCurrentTransform([Function responseFactory = null]);
   void setCurrentQuad(TimelineQuad quad);
   void setTargetTimelineId(int id);
@@ -876,9 +896,27 @@ abstract class RateControl {
   void cancelPendingChanges();
 }
 
+abstract class RateControlInterface
+    implements bindings.MojoInterface<RateControl>,
+               RateControl {
+  factory RateControlInterface([RateControl impl]) =>
+      new RateControlStub.unbound(impl);
+  factory RateControlInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [RateControl impl]) =>
+      new RateControlStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class RateControlInterfaceRequest
+    implements bindings.MojoInterface<RateControl>,
+               RateControl {
+  factory RateControlInterfaceRequest() =>
+      new RateControlProxy.unbound();
+}
+
 class _RateControlProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<RateControl> {
   _RateControlProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -886,9 +924,6 @@ class _RateControlProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _RateControlProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _RateControlServiceDescription();
 
   String get serviceName => RateControl.serviceName;
 
@@ -921,6 +956,11 @@ class _RateControlProxyControl
     }
   }
 
+  RateControl get impl => null;
+  set impl(RateControl _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -929,8 +969,10 @@ class _RateControlProxyControl
 }
 
 class RateControlProxy
-    extends bindings.Proxy
-    implements RateControl {
+    extends bindings.Proxy<RateControl>
+    implements RateControl,
+               RateControlInterface,
+               RateControlInterfaceRequest {
   RateControlProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _RateControlProxyControl.fromEndpoint(endpoint));
@@ -945,13 +987,6 @@ class RateControlProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For RateControlProxy"));
     return new RateControlProxy.fromEndpoint(endpoint);
-  }
-
-  factory RateControlProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    RateControlProxy p = new RateControlProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1047,6 +1082,8 @@ class _RateControlStubControl
   }
 
   _RateControlStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => RateControl.serviceName;
 
 
   RateControlGetCurrentTransformResponseParams _rateControlGetCurrentTransformResponseParamsFactory(TimelineTransform trans) {
@@ -1146,19 +1183,16 @@ class _RateControlStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _RateControlServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class RateControlStub
     extends bindings.Stub<RateControl>
-    implements RateControl {
+    implements RateControl,
+               RateControlInterface,
+               RateControlInterfaceRequest {
+  RateControlStub.unbound([RateControl impl])
+      : super(new _RateControlStubControl.unbound(impl));
+
   RateControlStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [RateControl impl])
       : super(new _RateControlStubControl.fromEndpoint(endpoint, impl));
@@ -1167,17 +1201,11 @@ class RateControlStub
       core.MojoHandle handle, [RateControl impl])
       : super(new _RateControlStubControl.fromHandle(handle, impl));
 
-  RateControlStub.unbound([RateControl impl])
-      : super(new _RateControlStubControl.unbound(impl));
-
   static RateControlStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For RateControlStub"));
     return new RateControlStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _RateControlStubControl.serviceDescription;
 
 
   dynamic getCurrentTransform([Function responseFactory = null]) {

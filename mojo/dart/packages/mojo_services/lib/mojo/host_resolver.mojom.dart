@@ -221,12 +221,50 @@ class _HostResolverServiceDescription implements service_describer.ServiceDescri
 
 abstract class HostResolver {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _HostResolverServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static HostResolverProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    HostResolverProxy p = new HostResolverProxy.unbound();
+    String name = serviceName ?? HostResolver.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic getHostAddresses(String host,net_address_mojom.NetAddressFamily family,[Function responseFactory = null]);
+}
+
+abstract class HostResolverInterface
+    implements bindings.MojoInterface<HostResolver>,
+               HostResolver {
+  factory HostResolverInterface([HostResolver impl]) =>
+      new HostResolverStub.unbound(impl);
+  factory HostResolverInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [HostResolver impl]) =>
+      new HostResolverStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class HostResolverInterfaceRequest
+    implements bindings.MojoInterface<HostResolver>,
+               HostResolver {
+  factory HostResolverInterfaceRequest() =>
+      new HostResolverProxy.unbound();
 }
 
 class _HostResolverProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<HostResolver> {
   _HostResolverProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -234,9 +272,6 @@ class _HostResolverProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _HostResolverProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _HostResolverServiceDescription();
 
   String get serviceName => HostResolver.serviceName;
 
@@ -269,6 +304,11 @@ class _HostResolverProxyControl
     }
   }
 
+  HostResolver get impl => null;
+  set impl(HostResolver _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -277,8 +317,10 @@ class _HostResolverProxyControl
 }
 
 class HostResolverProxy
-    extends bindings.Proxy
-    implements HostResolver {
+    extends bindings.Proxy<HostResolver>
+    implements HostResolver,
+               HostResolverInterface,
+               HostResolverInterfaceRequest {
   HostResolverProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _HostResolverProxyControl.fromEndpoint(endpoint));
@@ -293,13 +335,6 @@ class HostResolverProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HostResolverProxy"));
     return new HostResolverProxy.fromEndpoint(endpoint);
-  }
-
-  factory HostResolverProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    HostResolverProxy p = new HostResolverProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -333,6 +368,8 @@ class _HostResolverStubControl
   }
 
   _HostResolverStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => HostResolver.serviceName;
 
 
   HostResolverGetHostAddressesResponseParams _hostResolverGetHostAddressesResponseParamsFactory(network_error_mojom.NetworkError result, List<net_address_mojom.NetAddress> addresses) {
@@ -407,19 +444,16 @@ class _HostResolverStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _HostResolverServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class HostResolverStub
     extends bindings.Stub<HostResolver>
-    implements HostResolver {
+    implements HostResolver,
+               HostResolverInterface,
+               HostResolverInterfaceRequest {
+  HostResolverStub.unbound([HostResolver impl])
+      : super(new _HostResolverStubControl.unbound(impl));
+
   HostResolverStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [HostResolver impl])
       : super(new _HostResolverStubControl.fromEndpoint(endpoint, impl));
@@ -428,17 +462,11 @@ class HostResolverStub
       core.MojoHandle handle, [HostResolver impl])
       : super(new _HostResolverStubControl.fromHandle(handle, impl));
 
-  HostResolverStub.unbound([HostResolver impl])
-      : super(new _HostResolverStubControl.unbound(impl));
-
   static HostResolverStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HostResolverStub"));
     return new HostResolverStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _HostResolverStubControl.serviceDescription;
 
 
   dynamic getHostAddresses(String host,net_address_mojom.NetAddressFamily family,[Function responseFactory = null]) {

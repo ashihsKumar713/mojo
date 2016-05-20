@@ -222,7 +222,7 @@ class UdpSocketBindResponseParams extends bindings.Struct {
   ];
   network_error_mojom.NetworkError result = null;
   net_address_mojom.NetAddress boundAddr = null;
-  Object receiver = null;
+  UdpSocketReceiverInterfaceRequest receiver = null;
 
   UdpSocketBindResponseParams() : super(kVersions.last.size);
 
@@ -394,7 +394,7 @@ class UdpSocketConnectResponseParams extends bindings.Struct {
   ];
   network_error_mojom.NetworkError result = null;
   net_address_mojom.NetAddress localAddr = null;
-  Object receiver = null;
+  UdpSocketReceiverInterfaceRequest receiver = null;
 
   UdpSocketConnectResponseParams() : super(kVersions.last.size);
 
@@ -1276,6 +1276,26 @@ class _UdpSocketServiceDescription implements service_describer.ServiceDescripti
 
 abstract class UdpSocket {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _UdpSocketServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static UdpSocketProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    UdpSocketProxy p = new UdpSocketProxy.unbound();
+    String name = serviceName ?? UdpSocket.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic allowAddressReuse([Function responseFactory = null]);
   dynamic bind(net_address_mojom.NetAddress addr,[Function responseFactory = null]);
   dynamic connect(net_address_mojom.NetAddress remoteAddr,[Function responseFactory = null]);
@@ -1286,9 +1306,27 @@ abstract class UdpSocket {
   dynamic sendTo(net_address_mojom.NetAddress destAddr,List<int> data,[Function responseFactory = null]);
 }
 
+abstract class UdpSocketInterface
+    implements bindings.MojoInterface<UdpSocket>,
+               UdpSocket {
+  factory UdpSocketInterface([UdpSocket impl]) =>
+      new UdpSocketStub.unbound(impl);
+  factory UdpSocketInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [UdpSocket impl]) =>
+      new UdpSocketStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class UdpSocketInterfaceRequest
+    implements bindings.MojoInterface<UdpSocket>,
+               UdpSocket {
+  factory UdpSocketInterfaceRequest() =>
+      new UdpSocketProxy.unbound();
+}
+
 class _UdpSocketProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<UdpSocket> {
   _UdpSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1296,9 +1334,6 @@ class _UdpSocketProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _UdpSocketProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _UdpSocketServiceDescription();
 
   String get serviceName => UdpSocket.serviceName;
 
@@ -1451,6 +1486,11 @@ class _UdpSocketProxyControl
     }
   }
 
+  UdpSocket get impl => null;
+  set impl(UdpSocket _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1459,8 +1499,10 @@ class _UdpSocketProxyControl
 }
 
 class UdpSocketProxy
-    extends bindings.Proxy
-    implements UdpSocket {
+    extends bindings.Proxy<UdpSocket>
+    implements UdpSocket,
+               UdpSocketInterface,
+               UdpSocketInterfaceRequest {
   UdpSocketProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _UdpSocketProxyControl.fromEndpoint(endpoint));
@@ -1475,13 +1517,6 @@ class UdpSocketProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UdpSocketProxy"));
     return new UdpSocketProxy.fromEndpoint(endpoint);
-  }
-
-  factory UdpSocketProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    UdpSocketProxy p = new UdpSocketProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1579,20 +1614,22 @@ class _UdpSocketStubControl
 
   _UdpSocketStubControl.unbound([this._impl]) : super.unbound();
 
+  String get serviceName => UdpSocket.serviceName;
+
 
   UdpSocketAllowAddressReuseResponseParams _udpSocketAllowAddressReuseResponseParamsFactory(network_error_mojom.NetworkError result) {
     var result = new UdpSocketAllowAddressReuseResponseParams();
     result.result = result;
     return result;
   }
-  UdpSocketBindResponseParams _udpSocketBindResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundAddr, Object receiver) {
+  UdpSocketBindResponseParams _udpSocketBindResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundAddr, UdpSocketReceiverInterfaceRequest receiver) {
     var result = new UdpSocketBindResponseParams();
     result.result = result;
     result.boundAddr = boundAddr;
     result.receiver = receiver;
     return result;
   }
-  UdpSocketConnectResponseParams _udpSocketConnectResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddr, Object receiver) {
+  UdpSocketConnectResponseParams _udpSocketConnectResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddr, UdpSocketReceiverInterfaceRequest receiver) {
     var result = new UdpSocketConnectResponseParams();
     result.result = result;
     result.localAddr = localAddr;
@@ -1820,19 +1857,16 @@ class _UdpSocketStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _UdpSocketServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class UdpSocketStub
     extends bindings.Stub<UdpSocket>
-    implements UdpSocket {
+    implements UdpSocket,
+               UdpSocketInterface,
+               UdpSocketInterfaceRequest {
+  UdpSocketStub.unbound([UdpSocket impl])
+      : super(new _UdpSocketStubControl.unbound(impl));
+
   UdpSocketStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [UdpSocket impl])
       : super(new _UdpSocketStubControl.fromEndpoint(endpoint, impl));
@@ -1841,17 +1875,11 @@ class UdpSocketStub
       core.MojoHandle handle, [UdpSocket impl])
       : super(new _UdpSocketStubControl.fromHandle(handle, impl));
 
-  UdpSocketStub.unbound([UdpSocket impl])
-      : super(new _UdpSocketStubControl.unbound(impl));
-
   static UdpSocketStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UdpSocketStub"));
     return new UdpSocketStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _UdpSocketStubControl.serviceDescription;
 
 
   dynamic allowAddressReuse([Function responseFactory = null]) {
@@ -1895,12 +1923,50 @@ class _UdpSocketReceiverServiceDescription implements service_describer.ServiceD
 
 abstract class UdpSocketReceiver {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _UdpSocketReceiverServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static UdpSocketReceiverProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    UdpSocketReceiverProxy p = new UdpSocketReceiverProxy.unbound();
+    String name = serviceName ?? UdpSocketReceiver.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void onReceived(network_error_mojom.NetworkError result, net_address_mojom.NetAddress srcAddr, List<int> data);
+}
+
+abstract class UdpSocketReceiverInterface
+    implements bindings.MojoInterface<UdpSocketReceiver>,
+               UdpSocketReceiver {
+  factory UdpSocketReceiverInterface([UdpSocketReceiver impl]) =>
+      new UdpSocketReceiverStub.unbound(impl);
+  factory UdpSocketReceiverInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [UdpSocketReceiver impl]) =>
+      new UdpSocketReceiverStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class UdpSocketReceiverInterfaceRequest
+    implements bindings.MojoInterface<UdpSocketReceiver>,
+               UdpSocketReceiver {
+  factory UdpSocketReceiverInterfaceRequest() =>
+      new UdpSocketReceiverProxy.unbound();
 }
 
 class _UdpSocketReceiverProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<UdpSocketReceiver> {
   _UdpSocketReceiverProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1908,9 +1974,6 @@ class _UdpSocketReceiverProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _UdpSocketReceiverProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _UdpSocketReceiverServiceDescription();
 
   String get serviceName => UdpSocketReceiver.serviceName;
 
@@ -1923,6 +1986,11 @@ class _UdpSocketReceiverProxyControl
     }
   }
 
+  UdpSocketReceiver get impl => null;
+  set impl(UdpSocketReceiver _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1931,8 +1999,10 @@ class _UdpSocketReceiverProxyControl
 }
 
 class UdpSocketReceiverProxy
-    extends bindings.Proxy
-    implements UdpSocketReceiver {
+    extends bindings.Proxy<UdpSocketReceiver>
+    implements UdpSocketReceiver,
+               UdpSocketReceiverInterface,
+               UdpSocketReceiverInterfaceRequest {
   UdpSocketReceiverProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _UdpSocketReceiverProxyControl.fromEndpoint(endpoint));
@@ -1947,13 +2017,6 @@ class UdpSocketReceiverProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UdpSocketReceiverProxy"));
     return new UdpSocketReceiverProxy.fromEndpoint(endpoint);
-  }
-
-  factory UdpSocketReceiverProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    UdpSocketReceiverProxy p = new UdpSocketReceiverProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1989,6 +2052,8 @@ class _UdpSocketReceiverStubControl
   }
 
   _UdpSocketReceiverStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => UdpSocketReceiver.serviceName;
 
 
 
@@ -2040,19 +2105,16 @@ class _UdpSocketReceiverStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _UdpSocketReceiverServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class UdpSocketReceiverStub
     extends bindings.Stub<UdpSocketReceiver>
-    implements UdpSocketReceiver {
+    implements UdpSocketReceiver,
+               UdpSocketReceiverInterface,
+               UdpSocketReceiverInterfaceRequest {
+  UdpSocketReceiverStub.unbound([UdpSocketReceiver impl])
+      : super(new _UdpSocketReceiverStubControl.unbound(impl));
+
   UdpSocketReceiverStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [UdpSocketReceiver impl])
       : super(new _UdpSocketReceiverStubControl.fromEndpoint(endpoint, impl));
@@ -2061,17 +2123,11 @@ class UdpSocketReceiverStub
       core.MojoHandle handle, [UdpSocketReceiver impl])
       : super(new _UdpSocketReceiverStubControl.fromHandle(handle, impl));
 
-  UdpSocketReceiverStub.unbound([UdpSocketReceiver impl])
-      : super(new _UdpSocketReceiverStubControl.unbound(impl));
-
   static UdpSocketReceiverStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UdpSocketReceiverStub"));
     return new UdpSocketReceiverStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _UdpSocketReceiverStubControl.serviceDescription;
 
 
   void onReceived(network_error_mojom.NetworkError result, net_address_mojom.NetAddress srcAddr, List<int> data) {

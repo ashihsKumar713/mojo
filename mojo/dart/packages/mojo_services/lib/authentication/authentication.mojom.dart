@@ -804,6 +804,26 @@ class _AuthenticationServiceServiceDescription implements service_describer.Serv
 
 abstract class AuthenticationService {
   static const String serviceName = "authentication::AuthenticationService";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _AuthenticationServiceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static AuthenticationServiceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    AuthenticationServiceProxy p = new AuthenticationServiceProxy.unbound();
+    String name = serviceName ?? AuthenticationService.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic selectAccount(bool returnLastSelected,[Function responseFactory = null]);
   dynamic getOAuth2Token(String username,List<String> scopes,[Function responseFactory = null]);
   void clearOAuth2Token(String token);
@@ -811,9 +831,27 @@ abstract class AuthenticationService {
   dynamic addAccount(String deviceCode,[Function responseFactory = null]);
 }
 
+abstract class AuthenticationServiceInterface
+    implements bindings.MojoInterface<AuthenticationService>,
+               AuthenticationService {
+  factory AuthenticationServiceInterface([AuthenticationService impl]) =>
+      new AuthenticationServiceStub.unbound(impl);
+  factory AuthenticationServiceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [AuthenticationService impl]) =>
+      new AuthenticationServiceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class AuthenticationServiceInterfaceRequest
+    implements bindings.MojoInterface<AuthenticationService>,
+               AuthenticationService {
+  factory AuthenticationServiceInterfaceRequest() =>
+      new AuthenticationServiceProxy.unbound();
+}
+
 class _AuthenticationServiceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<AuthenticationService> {
   _AuthenticationServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -821,9 +859,6 @@ class _AuthenticationServiceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _AuthenticationServiceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _AuthenticationServiceServiceDescription();
 
   String get serviceName => AuthenticationService.serviceName;
 
@@ -916,6 +951,11 @@ class _AuthenticationServiceProxyControl
     }
   }
 
+  AuthenticationService get impl => null;
+  set impl(AuthenticationService _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -924,8 +964,10 @@ class _AuthenticationServiceProxyControl
 }
 
 class AuthenticationServiceProxy
-    extends bindings.Proxy
-    implements AuthenticationService {
+    extends bindings.Proxy<AuthenticationService>
+    implements AuthenticationService,
+               AuthenticationServiceInterface,
+               AuthenticationServiceInterfaceRequest {
   AuthenticationServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _AuthenticationServiceProxyControl.fromEndpoint(endpoint));
@@ -940,13 +982,6 @@ class AuthenticationServiceProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For AuthenticationServiceProxy"));
     return new AuthenticationServiceProxy.fromEndpoint(endpoint);
-  }
-
-  factory AuthenticationServiceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    AuthenticationServiceProxy p = new AuthenticationServiceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1017,6 +1052,8 @@ class _AuthenticationServiceStubControl
   }
 
   _AuthenticationServiceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => AuthenticationService.serviceName;
 
 
   AuthenticationServiceSelectAccountResponseParams _authenticationServiceSelectAccountResponseParamsFactory(String username, String error) {
@@ -1182,19 +1219,16 @@ class _AuthenticationServiceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _AuthenticationServiceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class AuthenticationServiceStub
     extends bindings.Stub<AuthenticationService>
-    implements AuthenticationService {
+    implements AuthenticationService,
+               AuthenticationServiceInterface,
+               AuthenticationServiceInterfaceRequest {
+  AuthenticationServiceStub.unbound([AuthenticationService impl])
+      : super(new _AuthenticationServiceStubControl.unbound(impl));
+
   AuthenticationServiceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [AuthenticationService impl])
       : super(new _AuthenticationServiceStubControl.fromEndpoint(endpoint, impl));
@@ -1203,17 +1237,11 @@ class AuthenticationServiceStub
       core.MojoHandle handle, [AuthenticationService impl])
       : super(new _AuthenticationServiceStubControl.fromHandle(handle, impl));
 
-  AuthenticationServiceStub.unbound([AuthenticationService impl])
-      : super(new _AuthenticationServiceStubControl.unbound(impl));
-
   static AuthenticationServiceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For AuthenticationServiceStub"));
     return new AuthenticationServiceStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _AuthenticationServiceStubControl.serviceDescription;
 
 
   dynamic selectAccount(bool returnLastSelected,[Function responseFactory = null]) {

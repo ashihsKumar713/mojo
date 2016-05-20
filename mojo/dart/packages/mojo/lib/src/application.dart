@@ -6,7 +6,7 @@ part of application;
 
 class _ApplicationImpl implements application_mojom.Application {
   application_mojom.ApplicationStub _stub;
-  shell_mojom.ShellProxy shell;
+  shell_mojom.ShellInterface shell;
   Application _application;
 
   _ApplicationImpl(
@@ -34,16 +34,19 @@ class _ApplicationImpl implements application_mojom.Application {
     _stub.ctrl.onError = f;
   }
 
-  void initialize(
-      bindings.Proxy shellProxy, List<String> args, String url) {
+  void initialize(shell_mojom.ShellInterface shellInterface,
+                  List<String> args,
+                  String url) {
     assert(shell == null);
-    shell = shellProxy;
+    shell = shellInterface;
     _application.initialize(args, url);
   }
 
   @override
-  void acceptConnection(String requestorUrl, ServiceProviderStub services,
-          bindings.Proxy exposedServices, String resolvedUrl) =>
+  void acceptConnection(String requestorUrl,
+                        ServiceProviderInterfaceRequest services,
+                        ServiceProviderInterface exposedServices,
+                        String resolvedUrl) =>
       _application._acceptConnection(
           requestorUrl, services, exposedServices, resolvedUrl);
 
@@ -103,9 +106,9 @@ abstract class Application implements bindings.ServiceConnector {
     return connection;
   }
 
-  void connectToService(String url, bindings.Proxy proxy,
+  void connectToService(String url, bindings.MojoInterface iface,
       [String serviceName]) {
-    connectToApplication(url).requestService(proxy, serviceName);
+    connectToApplication(url).requestService(iface, serviceName);
   }
 
   void requestQuit() {}

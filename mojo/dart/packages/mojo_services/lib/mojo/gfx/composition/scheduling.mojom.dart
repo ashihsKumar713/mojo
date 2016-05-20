@@ -269,12 +269,50 @@ class _FrameSchedulerServiceDescription implements service_describer.ServiceDesc
 
 abstract class FrameScheduler {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _FrameSchedulerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static FrameSchedulerProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    FrameSchedulerProxy p = new FrameSchedulerProxy.unbound();
+    String name = serviceName ?? FrameScheduler.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic scheduleFrame([Function responseFactory = null]);
+}
+
+abstract class FrameSchedulerInterface
+    implements bindings.MojoInterface<FrameScheduler>,
+               FrameScheduler {
+  factory FrameSchedulerInterface([FrameScheduler impl]) =>
+      new FrameSchedulerStub.unbound(impl);
+  factory FrameSchedulerInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [FrameScheduler impl]) =>
+      new FrameSchedulerStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class FrameSchedulerInterfaceRequest
+    implements bindings.MojoInterface<FrameScheduler>,
+               FrameScheduler {
+  factory FrameSchedulerInterfaceRequest() =>
+      new FrameSchedulerProxy.unbound();
 }
 
 class _FrameSchedulerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<FrameScheduler> {
   _FrameSchedulerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -282,9 +320,6 @@ class _FrameSchedulerProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _FrameSchedulerProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _FrameSchedulerServiceDescription();
 
   String get serviceName => FrameScheduler.serviceName;
 
@@ -317,6 +352,11 @@ class _FrameSchedulerProxyControl
     }
   }
 
+  FrameScheduler get impl => null;
+  set impl(FrameScheduler _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -325,8 +365,10 @@ class _FrameSchedulerProxyControl
 }
 
 class FrameSchedulerProxy
-    extends bindings.Proxy
-    implements FrameScheduler {
+    extends bindings.Proxy<FrameScheduler>
+    implements FrameScheduler,
+               FrameSchedulerInterface,
+               FrameSchedulerInterfaceRequest {
   FrameSchedulerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _FrameSchedulerProxyControl.fromEndpoint(endpoint));
@@ -341,13 +383,6 @@ class FrameSchedulerProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For FrameSchedulerProxy"));
     return new FrameSchedulerProxy.fromEndpoint(endpoint);
-  }
-
-  factory FrameSchedulerProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    FrameSchedulerProxy p = new FrameSchedulerProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -379,6 +414,8 @@ class _FrameSchedulerStubControl
   }
 
   _FrameSchedulerStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => FrameScheduler.serviceName;
 
 
   FrameSchedulerScheduleFrameResponseParams _frameSchedulerScheduleFrameResponseParamsFactory(FrameInfo frameInfo) {
@@ -450,19 +487,16 @@ class _FrameSchedulerStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _FrameSchedulerServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class FrameSchedulerStub
     extends bindings.Stub<FrameScheduler>
-    implements FrameScheduler {
+    implements FrameScheduler,
+               FrameSchedulerInterface,
+               FrameSchedulerInterfaceRequest {
+  FrameSchedulerStub.unbound([FrameScheduler impl])
+      : super(new _FrameSchedulerStubControl.unbound(impl));
+
   FrameSchedulerStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [FrameScheduler impl])
       : super(new _FrameSchedulerStubControl.fromEndpoint(endpoint, impl));
@@ -471,17 +505,11 @@ class FrameSchedulerStub
       core.MojoHandle handle, [FrameScheduler impl])
       : super(new _FrameSchedulerStubControl.fromHandle(handle, impl));
 
-  FrameSchedulerStub.unbound([FrameScheduler impl])
-      : super(new _FrameSchedulerStubControl.unbound(impl));
-
   static FrameSchedulerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For FrameSchedulerStub"));
     return new FrameSchedulerStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _FrameSchedulerStubControl.serviceDescription;
 
 
   dynamic scheduleFrame([Function responseFactory = null]) {

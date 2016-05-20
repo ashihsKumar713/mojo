@@ -178,7 +178,7 @@ class _RendererGetSchedulerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object scheduler = null;
+  scheduling_mojom.FrameSchedulerInterfaceRequest scheduler = null;
 
   _RendererGetSchedulerParams() : super(kVersions.last.size);
 
@@ -249,7 +249,7 @@ class _RendererGetHitTesterParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object hitTester = null;
+  hit_tests_mojom.HitTesterInterfaceRequest hitTester = null;
 
   _RendererGetHitTesterParams() : super(kVersions.last.size);
 
@@ -333,15 +333,53 @@ class _RendererServiceDescription implements service_describer.ServiceDescriptio
 
 abstract class Renderer {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _RendererServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static RendererProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    RendererProxy p = new RendererProxy.unbound();
+    String name = serviceName ?? Renderer.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void setRootScene(scene_token_mojom.SceneToken sceneToken, int sceneVersion, geometry_mojom.Rect viewport);
   void clearRootScene();
-  void getScheduler(Object scheduler);
-  void getHitTester(Object hitTester);
+  void getScheduler(scheduling_mojom.FrameSchedulerInterfaceRequest scheduler);
+  void getHitTester(hit_tests_mojom.HitTesterInterfaceRequest hitTester);
+}
+
+abstract class RendererInterface
+    implements bindings.MojoInterface<Renderer>,
+               Renderer {
+  factory RendererInterface([Renderer impl]) =>
+      new RendererStub.unbound(impl);
+  factory RendererInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Renderer impl]) =>
+      new RendererStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class RendererInterfaceRequest
+    implements bindings.MojoInterface<Renderer>,
+               Renderer {
+  factory RendererInterfaceRequest() =>
+      new RendererProxy.unbound();
 }
 
 class _RendererProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Renderer> {
   _RendererProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -349,9 +387,6 @@ class _RendererProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _RendererProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _RendererServiceDescription();
 
   String get serviceName => Renderer.serviceName;
 
@@ -364,6 +399,11 @@ class _RendererProxyControl
     }
   }
 
+  Renderer get impl => null;
+  set impl(Renderer _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -372,8 +412,10 @@ class _RendererProxyControl
 }
 
 class RendererProxy
-    extends bindings.Proxy
-    implements Renderer {
+    extends bindings.Proxy<Renderer>
+    implements Renderer,
+               RendererInterface,
+               RendererInterfaceRequest {
   RendererProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _RendererProxyControl.fromEndpoint(endpoint));
@@ -388,13 +430,6 @@ class RendererProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For RendererProxy"));
     return new RendererProxy.fromEndpoint(endpoint);
-  }
-
-  factory RendererProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    RendererProxy p = new RendererProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -419,7 +454,7 @@ class RendererProxy
     ctrl.sendMessage(params,
         _rendererMethodClearRootSceneName);
   }
-  void getScheduler(Object scheduler) {
+  void getScheduler(scheduling_mojom.FrameSchedulerInterfaceRequest scheduler) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -429,7 +464,7 @@ class RendererProxy
     ctrl.sendMessage(params,
         _rendererMethodGetSchedulerName);
   }
-  void getHitTester(Object hitTester) {
+  void getHitTester(hit_tests_mojom.HitTesterInterfaceRequest hitTester) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -459,6 +494,8 @@ class _RendererStubControl
   }
 
   _RendererStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Renderer.serviceName;
 
 
 
@@ -523,19 +560,16 @@ class _RendererStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _RendererServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class RendererStub
     extends bindings.Stub<Renderer>
-    implements Renderer {
+    implements Renderer,
+               RendererInterface,
+               RendererInterfaceRequest {
+  RendererStub.unbound([Renderer impl])
+      : super(new _RendererStubControl.unbound(impl));
+
   RendererStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Renderer impl])
       : super(new _RendererStubControl.fromEndpoint(endpoint, impl));
@@ -544,17 +578,11 @@ class RendererStub
       core.MojoHandle handle, [Renderer impl])
       : super(new _RendererStubControl.fromHandle(handle, impl));
 
-  RendererStub.unbound([Renderer impl])
-      : super(new _RendererStubControl.unbound(impl));
-
   static RendererStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For RendererStub"));
     return new RendererStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _RendererStubControl.serviceDescription;
 
 
   void setRootScene(scene_token_mojom.SceneToken sceneToken, int sceneVersion, geometry_mojom.Rect viewport) {
@@ -563,10 +591,10 @@ class RendererStub
   void clearRootScene() {
     return impl.clearRootScene();
   }
-  void getScheduler(Object scheduler) {
+  void getScheduler(scheduling_mojom.FrameSchedulerInterfaceRequest scheduler) {
     return impl.getScheduler(scheduler);
   }
-  void getHitTester(Object hitTester) {
+  void getHitTester(hit_tests_mojom.HitTesterInterfaceRequest hitTester) {
     return impl.getHitTester(hitTester);
   }
 }

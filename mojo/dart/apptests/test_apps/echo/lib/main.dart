@@ -10,16 +10,16 @@ import 'package:mojo/core.dart';
 import 'package:_mojo_for_test_only/test/echo_service.mojom.dart';
 
 class EchoServiceImpl implements EchoService {
-  EchoServiceStub _stub;
+  EchoServiceInterface _service;
   Application _application;
 
   EchoServiceImpl(this._application, MojoMessagePipeEndpoint endpoint) {
-    _stub = new EchoServiceStub.fromEndpoint(endpoint, this);
+    _service = new EchoServiceInterface.fromEndpoint(endpoint, this);
   }
 
   dynamic echoString(String value, [Function responseFactory]) {
     if (value == "quit") {
-      _stub.close();
+      _service.close();
     }
     return responseFactory(value);
   }
@@ -27,7 +27,7 @@ class EchoServiceImpl implements EchoService {
   dynamic delayedEchoString(String value, int millis,
       [Function responseFactory]) {
     if (value == "quit") {
-      _stub.close();
+      _service.close();
     }
     return new Future.delayed(
         new Duration(milliseconds: millis), () => responseFactory(value));
@@ -40,7 +40,7 @@ class EchoServiceImpl implements EchoService {
   void quit() {}
 
   static void _swapImpls(EchoServiceImpl impl) {
-    final stub = impl._stub;
+    final stub = impl._service;
     final app = impl._application;
     // It is not allowed to do an unbind in the midst of handling an event, so
     // it is delayed until popping back out to the event loop.

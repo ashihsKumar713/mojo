@@ -227,12 +227,50 @@ class _ViewOwnerServiceDescription implements service_describer.ServiceDescripti
 
 abstract class ViewOwner {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ViewOwnerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ViewOwnerProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ViewOwnerProxy p = new ViewOwnerProxy.unbound();
+    String name = serviceName ?? ViewOwner.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic getToken([Function responseFactory = null]);
+}
+
+abstract class ViewOwnerInterface
+    implements bindings.MojoInterface<ViewOwner>,
+               ViewOwner {
+  factory ViewOwnerInterface([ViewOwner impl]) =>
+      new ViewOwnerStub.unbound(impl);
+  factory ViewOwnerInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [ViewOwner impl]) =>
+      new ViewOwnerStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ViewOwnerInterfaceRequest
+    implements bindings.MojoInterface<ViewOwner>,
+               ViewOwner {
+  factory ViewOwnerInterfaceRequest() =>
+      new ViewOwnerProxy.unbound();
 }
 
 class _ViewOwnerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<ViewOwner> {
   _ViewOwnerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -240,9 +278,6 @@ class _ViewOwnerProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ViewOwnerProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ViewOwnerServiceDescription();
 
   String get serviceName => ViewOwner.serviceName;
 
@@ -275,6 +310,11 @@ class _ViewOwnerProxyControl
     }
   }
 
+  ViewOwner get impl => null;
+  set impl(ViewOwner _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -283,8 +323,10 @@ class _ViewOwnerProxyControl
 }
 
 class ViewOwnerProxy
-    extends bindings.Proxy
-    implements ViewOwner {
+    extends bindings.Proxy<ViewOwner>
+    implements ViewOwner,
+               ViewOwnerInterface,
+               ViewOwnerInterfaceRequest {
   ViewOwnerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ViewOwnerProxyControl.fromEndpoint(endpoint));
@@ -299,13 +341,6 @@ class ViewOwnerProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewOwnerProxy"));
     return new ViewOwnerProxy.fromEndpoint(endpoint);
-  }
-
-  factory ViewOwnerProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ViewOwnerProxy p = new ViewOwnerProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -337,6 +372,8 @@ class _ViewOwnerStubControl
   }
 
   _ViewOwnerStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => ViewOwner.serviceName;
 
 
   ViewOwnerGetTokenResponseParams _viewOwnerGetTokenResponseParamsFactory(ViewToken token) {
@@ -408,19 +445,16 @@ class _ViewOwnerStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ViewOwnerServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ViewOwnerStub
     extends bindings.Stub<ViewOwner>
-    implements ViewOwner {
+    implements ViewOwner,
+               ViewOwnerInterface,
+               ViewOwnerInterfaceRequest {
+  ViewOwnerStub.unbound([ViewOwner impl])
+      : super(new _ViewOwnerStubControl.unbound(impl));
+
   ViewOwnerStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ViewOwner impl])
       : super(new _ViewOwnerStubControl.fromEndpoint(endpoint, impl));
@@ -429,17 +463,11 @@ class ViewOwnerStub
       core.MojoHandle handle, [ViewOwner impl])
       : super(new _ViewOwnerStubControl.fromHandle(handle, impl));
 
-  ViewOwnerStub.unbound([ViewOwner impl])
-      : super(new _ViewOwnerStubControl.unbound(impl));
-
   static ViewOwnerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewOwnerStub"));
     return new ViewOwnerStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ViewOwnerStubControl.serviceDescription;
 
 
   dynamic getToken([Function responseFactory = null]) {

@@ -521,14 +521,52 @@ class _UrlLoaderServiceDescription implements service_describer.ServiceDescripti
 
 abstract class UrlLoader {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _UrlLoaderServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static UrlLoaderProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    UrlLoaderProxy p = new UrlLoaderProxy.unbound();
+    String name = serviceName ?? UrlLoader.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic start(url_request_mojom.UrlRequest request,[Function responseFactory = null]);
   dynamic followRedirect([Function responseFactory = null]);
   dynamic queryStatus([Function responseFactory = null]);
 }
 
+abstract class UrlLoaderInterface
+    implements bindings.MojoInterface<UrlLoader>,
+               UrlLoader {
+  factory UrlLoaderInterface([UrlLoader impl]) =>
+      new UrlLoaderStub.unbound(impl);
+  factory UrlLoaderInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [UrlLoader impl]) =>
+      new UrlLoaderStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class UrlLoaderInterfaceRequest
+    implements bindings.MojoInterface<UrlLoader>,
+               UrlLoader {
+  factory UrlLoaderInterfaceRequest() =>
+      new UrlLoaderProxy.unbound();
+}
+
 class _UrlLoaderProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<UrlLoader> {
   _UrlLoaderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -536,9 +574,6 @@ class _UrlLoaderProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _UrlLoaderProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _UrlLoaderServiceDescription();
 
   String get serviceName => UrlLoader.serviceName;
 
@@ -611,6 +646,11 @@ class _UrlLoaderProxyControl
     }
   }
 
+  UrlLoader get impl => null;
+  set impl(UrlLoader _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -619,8 +659,10 @@ class _UrlLoaderProxyControl
 }
 
 class UrlLoaderProxy
-    extends bindings.Proxy
-    implements UrlLoader {
+    extends bindings.Proxy<UrlLoader>
+    implements UrlLoader,
+               UrlLoaderInterface,
+               UrlLoaderInterfaceRequest {
   UrlLoaderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _UrlLoaderProxyControl.fromEndpoint(endpoint));
@@ -635,13 +677,6 @@ class UrlLoaderProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UrlLoaderProxy"));
     return new UrlLoaderProxy.fromEndpoint(endpoint);
-  }
-
-  factory UrlLoaderProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    UrlLoaderProxy p = new UrlLoaderProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -690,6 +725,8 @@ class _UrlLoaderStubControl
   }
 
   _UrlLoaderStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => UrlLoader.serviceName;
 
 
   UrlLoaderStartResponseParams _urlLoaderStartResponseParamsFactory(url_response_mojom.UrlResponse response) {
@@ -813,19 +850,16 @@ class _UrlLoaderStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _UrlLoaderServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class UrlLoaderStub
     extends bindings.Stub<UrlLoader>
-    implements UrlLoader {
+    implements UrlLoader,
+               UrlLoaderInterface,
+               UrlLoaderInterfaceRequest {
+  UrlLoaderStub.unbound([UrlLoader impl])
+      : super(new _UrlLoaderStubControl.unbound(impl));
+
   UrlLoaderStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [UrlLoader impl])
       : super(new _UrlLoaderStubControl.fromEndpoint(endpoint, impl));
@@ -834,17 +868,11 @@ class UrlLoaderStub
       core.MojoHandle handle, [UrlLoader impl])
       : super(new _UrlLoaderStubControl.fromHandle(handle, impl));
 
-  UrlLoaderStub.unbound([UrlLoader impl])
-      : super(new _UrlLoaderStubControl.unbound(impl));
-
   static UrlLoaderStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UrlLoaderStub"));
     return new UrlLoaderStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _UrlLoaderStubControl.serviceDescription;
 
 
   dynamic start(url_request_mojom.UrlRequest request,[Function responseFactory = null]) {

@@ -2580,14 +2580,14 @@ class HandleUnion extends bindings.Union {
     _tag = HandleUnionTag.fSharedBuffer;
     _data = value;
   }
-  Object get fSmallCache {
+  SmallCacheInterface get fSmallCache {
     if (_tag != HandleUnionTag.fSmallCache) {
       throw new bindings.UnsetUnionTagError(_tag, HandleUnionTag.fSmallCache);
     }
     return _data;
   }
 
-  set fSmallCache(Object value) {
+  set fSmallCache(SmallCacheInterface value) {
     _tag = HandleUnionTag.fSmallCache;
     _data = value;
   }
@@ -2967,13 +2967,51 @@ class _SmallCacheServiceDescription implements service_describer.ServiceDescript
 
 abstract class SmallCache {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _SmallCacheServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static SmallCacheProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    SmallCacheProxy p = new SmallCacheProxy.unbound();
+    String name = serviceName ?? SmallCache.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void setIntValue(int intValue);
   dynamic getIntValue([Function responseFactory = null]);
 }
 
+abstract class SmallCacheInterface
+    implements bindings.MojoInterface<SmallCache>,
+               SmallCache {
+  factory SmallCacheInterface([SmallCache impl]) =>
+      new SmallCacheStub.unbound(impl);
+  factory SmallCacheInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [SmallCache impl]) =>
+      new SmallCacheStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class SmallCacheInterfaceRequest
+    implements bindings.MojoInterface<SmallCache>,
+               SmallCache {
+  factory SmallCacheInterfaceRequest() =>
+      new SmallCacheProxy.unbound();
+}
+
 class _SmallCacheProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<SmallCache> {
   _SmallCacheProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -2981,9 +3019,6 @@ class _SmallCacheProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _SmallCacheProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _SmallCacheServiceDescription();
 
   String get serviceName => SmallCache.serviceName;
 
@@ -3016,6 +3051,11 @@ class _SmallCacheProxyControl
     }
   }
 
+  SmallCache get impl => null;
+  set impl(SmallCache _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -3024,8 +3064,10 @@ class _SmallCacheProxyControl
 }
 
 class SmallCacheProxy
-    extends bindings.Proxy
-    implements SmallCache {
+    extends bindings.Proxy<SmallCache>
+    implements SmallCache,
+               SmallCacheInterface,
+               SmallCacheInterfaceRequest {
   SmallCacheProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SmallCacheProxyControl.fromEndpoint(endpoint));
@@ -3040,13 +3082,6 @@ class SmallCacheProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SmallCacheProxy"));
     return new SmallCacheProxy.fromEndpoint(endpoint);
-  }
-
-  factory SmallCacheProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    SmallCacheProxy p = new SmallCacheProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -3088,6 +3123,8 @@ class _SmallCacheStubControl
   }
 
   _SmallCacheStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => SmallCache.serviceName;
 
 
   SmallCacheGetIntValueResponseParams _smallCacheGetIntValueResponseParamsFactory(int intValue) {
@@ -3164,19 +3201,16 @@ class _SmallCacheStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _SmallCacheServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class SmallCacheStub
     extends bindings.Stub<SmallCache>
-    implements SmallCache {
+    implements SmallCache,
+               SmallCacheInterface,
+               SmallCacheInterfaceRequest {
+  SmallCacheStub.unbound([SmallCache impl])
+      : super(new _SmallCacheStubControl.unbound(impl));
+
   SmallCacheStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [SmallCache impl])
       : super(new _SmallCacheStubControl.fromEndpoint(endpoint, impl));
@@ -3185,17 +3219,11 @@ class SmallCacheStub
       core.MojoHandle handle, [SmallCache impl])
       : super(new _SmallCacheStubControl.fromHandle(handle, impl));
 
-  SmallCacheStub.unbound([SmallCache impl])
-      : super(new _SmallCacheStubControl.unbound(impl));
-
   static SmallCacheStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SmallCacheStub"));
     return new SmallCacheStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _SmallCacheStubControl.serviceDescription;
 
 
   void setIntValue(int intValue) {
@@ -3221,12 +3249,50 @@ class _UnionInterfaceServiceDescription implements service_describer.ServiceDesc
 
 abstract class UnionInterface {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _UnionInterfaceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static UnionInterfaceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    UnionInterfaceProxy p = new UnionInterfaceProxy.unbound();
+    String name = serviceName ?? UnionInterface.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic echo(PodUnion inVal,[Function responseFactory = null]);
+}
+
+abstract class UnionInterfaceInterface
+    implements bindings.MojoInterface<UnionInterface>,
+               UnionInterface {
+  factory UnionInterfaceInterface([UnionInterface impl]) =>
+      new UnionInterfaceStub.unbound(impl);
+  factory UnionInterfaceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [UnionInterface impl]) =>
+      new UnionInterfaceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class UnionInterfaceInterfaceRequest
+    implements bindings.MojoInterface<UnionInterface>,
+               UnionInterface {
+  factory UnionInterfaceInterfaceRequest() =>
+      new UnionInterfaceProxy.unbound();
 }
 
 class _UnionInterfaceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<UnionInterface> {
   _UnionInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -3234,9 +3300,6 @@ class _UnionInterfaceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _UnionInterfaceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _UnionInterfaceServiceDescription();
 
   String get serviceName => UnionInterface.serviceName;
 
@@ -3269,6 +3332,11 @@ class _UnionInterfaceProxyControl
     }
   }
 
+  UnionInterface get impl => null;
+  set impl(UnionInterface _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -3277,8 +3345,10 @@ class _UnionInterfaceProxyControl
 }
 
 class UnionInterfaceProxy
-    extends bindings.Proxy
-    implements UnionInterface {
+    extends bindings.Proxy<UnionInterface>
+    implements UnionInterface,
+               UnionInterfaceInterface,
+               UnionInterfaceInterfaceRequest {
   UnionInterfaceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _UnionInterfaceProxyControl.fromEndpoint(endpoint));
@@ -3293,13 +3363,6 @@ class UnionInterfaceProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UnionInterfaceProxy"));
     return new UnionInterfaceProxy.fromEndpoint(endpoint);
-  }
-
-  factory UnionInterfaceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    UnionInterfaceProxy p = new UnionInterfaceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -3332,6 +3395,8 @@ class _UnionInterfaceStubControl
   }
 
   _UnionInterfaceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => UnionInterface.serviceName;
 
 
   UnionInterfaceEchoResponseParams _unionInterfaceEchoResponseParamsFactory(PodUnion outVal) {
@@ -3405,19 +3470,16 @@ class _UnionInterfaceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _UnionInterfaceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class UnionInterfaceStub
     extends bindings.Stub<UnionInterface>
-    implements UnionInterface {
+    implements UnionInterface,
+               UnionInterfaceInterface,
+               UnionInterfaceInterfaceRequest {
+  UnionInterfaceStub.unbound([UnionInterface impl])
+      : super(new _UnionInterfaceStubControl.unbound(impl));
+
   UnionInterfaceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [UnionInterface impl])
       : super(new _UnionInterfaceStubControl.fromEndpoint(endpoint, impl));
@@ -3426,17 +3488,11 @@ class UnionInterfaceStub
       core.MojoHandle handle, [UnionInterface impl])
       : super(new _UnionInterfaceStubControl.fromHandle(handle, impl));
 
-  UnionInterfaceStub.unbound([UnionInterface impl])
-      : super(new _UnionInterfaceStubControl.unbound(impl));
-
   static UnionInterfaceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UnionInterfaceStub"));
     return new UnionInterfaceStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _UnionInterfaceStubControl.serviceDescription;
 
 
   dynamic echo(PodUnion inVal,[Function responseFactory = null]) {

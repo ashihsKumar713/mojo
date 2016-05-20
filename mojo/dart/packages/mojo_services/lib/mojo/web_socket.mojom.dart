@@ -18,7 +18,7 @@ class _WebSocketConnectParams extends bindings.Struct {
   List<String> protocols = null;
   String origin = null;
   core.MojoDataPipeConsumer sendStream = null;
-  Object client = null;
+  WebSocketClientInterface client = null;
 
   _WebSocketConnectParams() : super(kVersions.last.size);
 
@@ -931,16 +931,54 @@ class _WebSocketServiceDescription implements service_describer.ServiceDescripti
 
 abstract class WebSocket {
   static const String serviceName = null;
-  void connect(String url, List<String> protocols, String origin, core.MojoDataPipeConsumer sendStream, Object client);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _WebSocketServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static WebSocketProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    WebSocketProxy p = new WebSocketProxy.unbound();
+    String name = serviceName ?? WebSocket.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void connect(String url, List<String> protocols, String origin, core.MojoDataPipeConsumer sendStream, WebSocketClientInterface client);
   void send(bool fin, WebSocketMessageType type, int numBytes);
   void flowControl(int quota);
   void close_(int code, String reason);
   static const int kAbnormalCloseCode = 1006;
 }
 
+abstract class WebSocketInterface
+    implements bindings.MojoInterface<WebSocket>,
+               WebSocket {
+  factory WebSocketInterface([WebSocket impl]) =>
+      new WebSocketStub.unbound(impl);
+  factory WebSocketInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [WebSocket impl]) =>
+      new WebSocketStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class WebSocketInterfaceRequest
+    implements bindings.MojoInterface<WebSocket>,
+               WebSocket {
+  factory WebSocketInterfaceRequest() =>
+      new WebSocketProxy.unbound();
+}
+
 class _WebSocketProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<WebSocket> {
   _WebSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -948,9 +986,6 @@ class _WebSocketProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _WebSocketProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _WebSocketServiceDescription();
 
   String get serviceName => WebSocket.serviceName;
 
@@ -963,6 +998,11 @@ class _WebSocketProxyControl
     }
   }
 
+  WebSocket get impl => null;
+  set impl(WebSocket _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -971,8 +1011,10 @@ class _WebSocketProxyControl
 }
 
 class WebSocketProxy
-    extends bindings.Proxy
-    implements WebSocket {
+    extends bindings.Proxy<WebSocket>
+    implements WebSocket,
+               WebSocketInterface,
+               WebSocketInterfaceRequest {
   WebSocketProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _WebSocketProxyControl.fromEndpoint(endpoint));
@@ -989,15 +1031,8 @@ class WebSocketProxy
     return new WebSocketProxy.fromEndpoint(endpoint);
   }
 
-  factory WebSocketProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    WebSocketProxy p = new WebSocketProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void connect(String url, List<String> protocols, String origin, core.MojoDataPipeConsumer sendStream, Object client) {
+  void connect(String url, List<String> protocols, String origin, core.MojoDataPipeConsumer sendStream, WebSocketClientInterface client) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1065,6 +1100,8 @@ class _WebSocketStubControl
 
   _WebSocketStubControl.unbound([this._impl]) : super.unbound();
 
+  String get serviceName => WebSocket.serviceName;
+
 
 
   dynamic handleMessage(bindings.ServiceMessage message) {
@@ -1130,19 +1167,16 @@ class _WebSocketStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _WebSocketServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class WebSocketStub
     extends bindings.Stub<WebSocket>
-    implements WebSocket {
+    implements WebSocket,
+               WebSocketInterface,
+               WebSocketInterfaceRequest {
+  WebSocketStub.unbound([WebSocket impl])
+      : super(new _WebSocketStubControl.unbound(impl));
+
   WebSocketStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [WebSocket impl])
       : super(new _WebSocketStubControl.fromEndpoint(endpoint, impl));
@@ -1151,20 +1185,14 @@ class WebSocketStub
       core.MojoHandle handle, [WebSocket impl])
       : super(new _WebSocketStubControl.fromHandle(handle, impl));
 
-  WebSocketStub.unbound([WebSocket impl])
-      : super(new _WebSocketStubControl.unbound(impl));
-
   static WebSocketStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For WebSocketStub"));
     return new WebSocketStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _WebSocketStubControl.serviceDescription;
 
-
-  void connect(String url, List<String> protocols, String origin, core.MojoDataPipeConsumer sendStream, Object client) {
+  void connect(String url, List<String> protocols, String origin, core.MojoDataPipeConsumer sendStream, WebSocketClientInterface client) {
     return impl.connect(url, protocols, origin, sendStream, client);
   }
   void send(bool fin, WebSocketMessageType type, int numBytes) {
@@ -1197,6 +1225,26 @@ class _WebSocketClientServiceDescription implements service_describer.ServiceDes
 
 abstract class WebSocketClient {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _WebSocketClientServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static WebSocketClientProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    WebSocketClientProxy p = new WebSocketClientProxy.unbound();
+    String name = serviceName ?? WebSocketClient.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void didConnect(String selectedSubprotocol, String extensions, core.MojoDataPipeConsumer receiveStream);
   void didReceiveData(bool fin, WebSocketMessageType type, int numBytes);
   void didReceiveFlowControl(int quota);
@@ -1204,9 +1252,27 @@ abstract class WebSocketClient {
   void didClose(bool wasClean, int code, String reason);
 }
 
+abstract class WebSocketClientInterface
+    implements bindings.MojoInterface<WebSocketClient>,
+               WebSocketClient {
+  factory WebSocketClientInterface([WebSocketClient impl]) =>
+      new WebSocketClientStub.unbound(impl);
+  factory WebSocketClientInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [WebSocketClient impl]) =>
+      new WebSocketClientStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class WebSocketClientInterfaceRequest
+    implements bindings.MojoInterface<WebSocketClient>,
+               WebSocketClient {
+  factory WebSocketClientInterfaceRequest() =>
+      new WebSocketClientProxy.unbound();
+}
+
 class _WebSocketClientProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<WebSocketClient> {
   _WebSocketClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1214,9 +1280,6 @@ class _WebSocketClientProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _WebSocketClientProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _WebSocketClientServiceDescription();
 
   String get serviceName => WebSocketClient.serviceName;
 
@@ -1229,6 +1292,11 @@ class _WebSocketClientProxyControl
     }
   }
 
+  WebSocketClient get impl => null;
+  set impl(WebSocketClient _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1237,8 +1305,10 @@ class _WebSocketClientProxyControl
 }
 
 class WebSocketClientProxy
-    extends bindings.Proxy
-    implements WebSocketClient {
+    extends bindings.Proxy<WebSocketClient>
+    implements WebSocketClient,
+               WebSocketClientInterface,
+               WebSocketClientInterfaceRequest {
   WebSocketClientProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _WebSocketClientProxyControl.fromEndpoint(endpoint));
@@ -1253,13 +1323,6 @@ class WebSocketClientProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For WebSocketClientProxy"));
     return new WebSocketClientProxy.fromEndpoint(endpoint);
-  }
-
-  factory WebSocketClientProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    WebSocketClientProxy p = new WebSocketClientProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1340,6 +1403,8 @@ class _WebSocketClientStubControl
 
   _WebSocketClientStubControl.unbound([this._impl]) : super.unbound();
 
+  String get serviceName => WebSocketClient.serviceName;
+
 
 
   dynamic handleMessage(bindings.ServiceMessage message) {
@@ -1410,19 +1475,16 @@ class _WebSocketClientStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _WebSocketClientServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class WebSocketClientStub
     extends bindings.Stub<WebSocketClient>
-    implements WebSocketClient {
+    implements WebSocketClient,
+               WebSocketClientInterface,
+               WebSocketClientInterfaceRequest {
+  WebSocketClientStub.unbound([WebSocketClient impl])
+      : super(new _WebSocketClientStubControl.unbound(impl));
+
   WebSocketClientStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [WebSocketClient impl])
       : super(new _WebSocketClientStubControl.fromEndpoint(endpoint, impl));
@@ -1431,17 +1493,11 @@ class WebSocketClientStub
       core.MojoHandle handle, [WebSocketClient impl])
       : super(new _WebSocketClientStubControl.fromHandle(handle, impl));
 
-  WebSocketClientStub.unbound([WebSocketClient impl])
-      : super(new _WebSocketClientStubControl.unbound(impl));
-
   static WebSocketClientStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For WebSocketClientStub"));
     return new WebSocketClientStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _WebSocketClientStubControl.serviceDescription;
 
 
   void didConnect(String selectedSubprotocol, String extensions, core.MojoDataPipeConsumer receiveStream) {

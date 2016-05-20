@@ -23,31 +23,30 @@ import 'package:_mojo_for_test_only/test/pingpong_service.mojom.dart'
 tests(Application application, String url) {
   group('Service Describer Apptests', () {
     test('PingPong Service Verification', () async {
-      var serviceDescriberProxy = new service_describer.ServiceDescriberProxy.
-          unbound();
-      serviceDescriberProxy.ctrl.errorFuture.then((v) =>
-          fail('There was an error $v'));
-      application.connectToService("mojo:dart_pingpong", serviceDescriberProxy);
+      var serviceDescriber =
+          new service_describer.ServiceDescriberInterfaceRequest();
+      serviceDescriber.ctrl.errorFuture.then(
+          (v) => fail('There was an error $v'));
+      application.connectToService("mojo:dart_pingpong", serviceDescriber);
 
-      var serviceDescriptionProxy =
-          new service_describer.ServiceDescriptionProxy.unbound();
-      serviceDescriptionProxy.ctrl.errorFuture.then(
+      var serviceDescription =
+          new service_describer.ServiceDescriptionInterfaceRequest();
+      serviceDescription.ctrl.errorFuture.then(
           (v) => fail('There was an error $v'));
 
-      serviceDescriberProxy.describeService(
-          "test::PingPongService", serviceDescriptionProxy);
+      serviceDescriber.describeService(
+          "test::PingPongService", serviceDescription);
 
       // Compare the service description obtained by the service describer and
       // the expected description taken from the pingpong service import.
-      var serviceDescription = serviceDescriptionProxy;
-      var serviceDescription2 = pingpong_service.PingPongServiceStub.
+      var serviceDescription2 = pingpong_service.PingPongService.
         serviceDescription;
 
       Function identity = (v) => v;
 
       // Top-level Mojom Interfaces must match.
       mojom_types.MojomInterface interfaceA =
-          (await serviceDescriptionProxy.responseOrError(
+          (await serviceDescription.responseOrError(
               serviceDescription.getTopLevelInterface())).mojomInterface;
 
       mojom_types.MojomInterface interfaceB = serviceDescription2.
@@ -63,7 +62,7 @@ tests(Application application, String url) {
       // Use getTypeDefinition() to get the type and check that it
       // is named "PingPongClient".
       mojom_types.MojomInterface pingPongClientInterface =
-         (await serviceDescriptionProxy.responseOrError(
+         (await serviceDescription.responseOrError(
               serviceDescription.getTypeDefinition(typeKey))).type.
              interfaceType;
       expect(pingPongClientInterface.declData.shortName,
@@ -71,7 +70,7 @@ tests(Application application, String url) {
 
       // Check that the mojom type definitions match between mappings.
       // For simplicity, check in a shallow manner.
-      var actualDescriptions = (await serviceDescriptionProxy.responseOrError(
+      var actualDescriptions = (await serviceDescription.responseOrError(
           serviceDescription.getAllTypeDefinitions())).definitions;
       var expectedDescriptions = serviceDescription2.
           getAllTypeDefinitions(identity);
@@ -82,8 +81,8 @@ tests(Application application, String url) {
         expect(a.runtimeType, equals(e.runtimeType));
       });
 
-      await serviceDescriptionProxy.close();
-      await serviceDescriberProxy.close();
+      await serviceDescription.close();
+      await serviceDescriber.close();
     });
   });
 }

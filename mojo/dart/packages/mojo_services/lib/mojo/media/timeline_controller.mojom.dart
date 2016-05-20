@@ -188,7 +188,7 @@ class _MediaTimelineControllerAddControlSiteParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object controlSite = null;
+  MediaTimelineControlSiteInterface controlSite = null;
 
   _MediaTimelineControllerAddControlSiteParams() : super(kVersions.last.size);
 
@@ -618,7 +618,7 @@ class _MediaTimelineControllerGetControlSiteParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object controlSite = null;
+  MediaTimelineControlSiteInterfaceRequest controlSite = null;
 
   _MediaTimelineControllerGetControlSiteParams() : super(kVersions.last.size);
 
@@ -848,7 +848,7 @@ class _MediaTimelineControlSiteGetTimelineConsumerParams extends bindings.Struct
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object timelineConsumer = null;
+  timelines_mojom.TimelineConsumerInterfaceRequest timelineConsumer = null;
 
   _MediaTimelineControlSiteGetTimelineConsumerParams() : super(kVersions.last.size);
 
@@ -932,17 +932,55 @@ class _MediaTimelineControllerServiceDescription implements service_describer.Se
 
 abstract class MediaTimelineController {
   static const String serviceName = null;
-  void addControlSite(Object controlSite);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _MediaTimelineControllerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static MediaTimelineControllerProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    MediaTimelineControllerProxy p = new MediaTimelineControllerProxy.unbound();
+    String name = serviceName ?? MediaTimelineController.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void addControlSite(MediaTimelineControlSiteInterface controlSite);
   dynamic getStatus(int versionLastSeen,[Function responseFactory = null]);
   dynamic setTimelineTransform(int subjectTime,int subjectDelta,int referenceDelta,int effectiveSubjectTime,int effectiveReferenceTime,[Function responseFactory = null]);
-  void getControlSite(Object controlSite);
+  void getControlSite(MediaTimelineControlSiteInterfaceRequest controlSite);
   static const int kUnspecifiedTime = 9223372036854775807;
   static const int kInitialStatus = 0;
 }
 
+abstract class MediaTimelineControllerInterface
+    implements bindings.MojoInterface<MediaTimelineController>,
+               MediaTimelineController {
+  factory MediaTimelineControllerInterface([MediaTimelineController impl]) =>
+      new MediaTimelineControllerStub.unbound(impl);
+  factory MediaTimelineControllerInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [MediaTimelineController impl]) =>
+      new MediaTimelineControllerStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class MediaTimelineControllerInterfaceRequest
+    implements bindings.MojoInterface<MediaTimelineController>,
+               MediaTimelineController {
+  factory MediaTimelineControllerInterfaceRequest() =>
+      new MediaTimelineControllerProxy.unbound();
+}
+
 class _MediaTimelineControllerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<MediaTimelineController> {
   _MediaTimelineControllerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -950,9 +988,6 @@ class _MediaTimelineControllerProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _MediaTimelineControllerProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _MediaTimelineControllerServiceDescription();
 
   String get serviceName => MediaTimelineController.serviceName;
 
@@ -1005,6 +1040,11 @@ class _MediaTimelineControllerProxyControl
     }
   }
 
+  MediaTimelineController get impl => null;
+  set impl(MediaTimelineController _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1013,8 +1053,10 @@ class _MediaTimelineControllerProxyControl
 }
 
 class MediaTimelineControllerProxy
-    extends bindings.Proxy
-    implements MediaTimelineController {
+    extends bindings.Proxy<MediaTimelineController>
+    implements MediaTimelineController,
+               MediaTimelineControllerInterface,
+               MediaTimelineControllerInterfaceRequest {
   MediaTimelineControllerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaTimelineControllerProxyControl.fromEndpoint(endpoint));
@@ -1031,15 +1073,8 @@ class MediaTimelineControllerProxy
     return new MediaTimelineControllerProxy.fromEndpoint(endpoint);
   }
 
-  factory MediaTimelineControllerProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    MediaTimelineControllerProxy p = new MediaTimelineControllerProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void addControlSite(Object controlSite) {
+  void addControlSite(MediaTimelineControlSiteInterface controlSite) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1071,7 +1106,7 @@ class MediaTimelineControllerProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  void getControlSite(Object controlSite) {
+  void getControlSite(MediaTimelineControlSiteInterfaceRequest controlSite) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1101,6 +1136,8 @@ class _MediaTimelineControllerStubControl
   }
 
   _MediaTimelineControllerStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => MediaTimelineController.serviceName;
 
 
   MediaTimelineControllerGetStatusResponseParams _mediaTimelineControllerGetStatusResponseParamsFactory(int version, MediaTimelineControllerStatus status) {
@@ -1212,19 +1249,16 @@ class _MediaTimelineControllerStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _MediaTimelineControllerServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class MediaTimelineControllerStub
     extends bindings.Stub<MediaTimelineController>
-    implements MediaTimelineController {
+    implements MediaTimelineController,
+               MediaTimelineControllerInterface,
+               MediaTimelineControllerInterfaceRequest {
+  MediaTimelineControllerStub.unbound([MediaTimelineController impl])
+      : super(new _MediaTimelineControllerStubControl.unbound(impl));
+
   MediaTimelineControllerStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaTimelineController impl])
       : super(new _MediaTimelineControllerStubControl.fromEndpoint(endpoint, impl));
@@ -1233,20 +1267,14 @@ class MediaTimelineControllerStub
       core.MojoHandle handle, [MediaTimelineController impl])
       : super(new _MediaTimelineControllerStubControl.fromHandle(handle, impl));
 
-  MediaTimelineControllerStub.unbound([MediaTimelineController impl])
-      : super(new _MediaTimelineControllerStubControl.unbound(impl));
-
   static MediaTimelineControllerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaTimelineControllerStub"));
     return new MediaTimelineControllerStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _MediaTimelineControllerStubControl.serviceDescription;
 
-
-  void addControlSite(Object controlSite) {
+  void addControlSite(MediaTimelineControlSiteInterface controlSite) {
     return impl.addControlSite(controlSite);
   }
   dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
@@ -1255,7 +1283,7 @@ class MediaTimelineControllerStub
   dynamic setTimelineTransform(int subjectTime,int subjectDelta,int referenceDelta,int effectiveSubjectTime,int effectiveReferenceTime,[Function responseFactory = null]) {
     return impl.setTimelineTransform(subjectTime,subjectDelta,referenceDelta,effectiveSubjectTime,effectiveReferenceTime,responseFactory);
   }
-  void getControlSite(Object controlSite) {
+  void getControlSite(MediaTimelineControlSiteInterfaceRequest controlSite) {
     return impl.getControlSite(controlSite);
   }
 }
@@ -1276,14 +1304,52 @@ class _MediaTimelineControlSiteServiceDescription implements service_describer.S
 
 abstract class MediaTimelineControlSite {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _MediaTimelineControlSiteServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static MediaTimelineControlSiteProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    MediaTimelineControlSiteProxy p = new MediaTimelineControlSiteProxy.unbound();
+    String name = serviceName ?? MediaTimelineControlSite.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic getStatus(int versionLastSeen,[Function responseFactory = null]);
-  void getTimelineConsumer(Object timelineConsumer);
+  void getTimelineConsumer(timelines_mojom.TimelineConsumerInterfaceRequest timelineConsumer);
   static const int kInitialStatus = 0;
+}
+
+abstract class MediaTimelineControlSiteInterface
+    implements bindings.MojoInterface<MediaTimelineControlSite>,
+               MediaTimelineControlSite {
+  factory MediaTimelineControlSiteInterface([MediaTimelineControlSite impl]) =>
+      new MediaTimelineControlSiteStub.unbound(impl);
+  factory MediaTimelineControlSiteInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [MediaTimelineControlSite impl]) =>
+      new MediaTimelineControlSiteStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class MediaTimelineControlSiteInterfaceRequest
+    implements bindings.MojoInterface<MediaTimelineControlSite>,
+               MediaTimelineControlSite {
+  factory MediaTimelineControlSiteInterfaceRequest() =>
+      new MediaTimelineControlSiteProxy.unbound();
 }
 
 class _MediaTimelineControlSiteProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<MediaTimelineControlSite> {
   _MediaTimelineControlSiteProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1291,9 +1357,6 @@ class _MediaTimelineControlSiteProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _MediaTimelineControlSiteProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _MediaTimelineControlSiteServiceDescription();
 
   String get serviceName => MediaTimelineControlSite.serviceName;
 
@@ -1326,6 +1389,11 @@ class _MediaTimelineControlSiteProxyControl
     }
   }
 
+  MediaTimelineControlSite get impl => null;
+  set impl(MediaTimelineControlSite _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1334,8 +1402,10 @@ class _MediaTimelineControlSiteProxyControl
 }
 
 class MediaTimelineControlSiteProxy
-    extends bindings.Proxy
-    implements MediaTimelineControlSite {
+    extends bindings.Proxy<MediaTimelineControlSite>
+    implements MediaTimelineControlSite,
+               MediaTimelineControlSiteInterface,
+               MediaTimelineControlSiteInterfaceRequest {
   MediaTimelineControlSiteProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaTimelineControlSiteProxyControl.fromEndpoint(endpoint));
@@ -1352,13 +1422,6 @@ class MediaTimelineControlSiteProxy
     return new MediaTimelineControlSiteProxy.fromEndpoint(endpoint);
   }
 
-  factory MediaTimelineControlSiteProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    MediaTimelineControlSiteProxy p = new MediaTimelineControlSiteProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
-
 
   dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
     var params = new _MediaTimelineControlSiteGetStatusParams();
@@ -1369,7 +1432,7 @@ class MediaTimelineControlSiteProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  void getTimelineConsumer(Object timelineConsumer) {
+  void getTimelineConsumer(timelines_mojom.TimelineConsumerInterfaceRequest timelineConsumer) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1399,6 +1462,8 @@ class _MediaTimelineControlSiteStubControl
   }
 
   _MediaTimelineControlSiteStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => MediaTimelineControlSite.serviceName;
 
 
   MediaTimelineControlSiteGetStatusResponseParams _mediaTimelineControlSiteGetStatusResponseParamsFactory(int version, MediaTimelineControlSiteStatus status) {
@@ -1478,19 +1543,16 @@ class _MediaTimelineControlSiteStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _MediaTimelineControlSiteServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class MediaTimelineControlSiteStub
     extends bindings.Stub<MediaTimelineControlSite>
-    implements MediaTimelineControlSite {
+    implements MediaTimelineControlSite,
+               MediaTimelineControlSiteInterface,
+               MediaTimelineControlSiteInterfaceRequest {
+  MediaTimelineControlSiteStub.unbound([MediaTimelineControlSite impl])
+      : super(new _MediaTimelineControlSiteStubControl.unbound(impl));
+
   MediaTimelineControlSiteStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaTimelineControlSite impl])
       : super(new _MediaTimelineControlSiteStubControl.fromEndpoint(endpoint, impl));
@@ -1499,23 +1561,17 @@ class MediaTimelineControlSiteStub
       core.MojoHandle handle, [MediaTimelineControlSite impl])
       : super(new _MediaTimelineControlSiteStubControl.fromHandle(handle, impl));
 
-  MediaTimelineControlSiteStub.unbound([MediaTimelineControlSite impl])
-      : super(new _MediaTimelineControlSiteStubControl.unbound(impl));
-
   static MediaTimelineControlSiteStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaTimelineControlSiteStub"));
     return new MediaTimelineControlSiteStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _MediaTimelineControlSiteStubControl.serviceDescription;
-
 
   dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
     return impl.getStatus(versionLastSeen,responseFactory);
   }
-  void getTimelineConsumer(Object timelineConsumer) {
+  void getTimelineConsumer(timelines_mojom.TimelineConsumerInterfaceRequest timelineConsumer) {
     return impl.getTimelineConsumer(timelineConsumer);
   }
 }

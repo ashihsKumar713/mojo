@@ -14,19 +14,27 @@ class ProxyError {
 
 /// Generated ProxyControl classes implement this interface.
 /// ProxyControl objects are accessible through the [ctrl] field on Proxies.
-abstract class ProxyControl implements ProxyMessageHandler {
+abstract class ProxyControl<T> implements ProxyMessageHandler {
+  // TODO(zra): This is only used by ApplicationConnection.requestService(), so
+  // try to remove when/after ApplicationConnection is removed/refactored.
   String get serviceName;
+
+  // Currently we don't have impl hooked up to anything for Proxies, but we have
+  // the field here so that there is a consistent interface with Stubs. By
+  // having the field here we can also retain the option of hooking a proxy
+  // up to something other than the remote implementation in the future.
+  T impl;
 }
 
 /// Generated Proxy classes extend this base class.
-class Proxy {
+class Proxy<T> implements MojoInterface<T> {
   // In general it's probalby better to avoid adding fields and methods to this
   // class. Names added to this class have to be mangled by Mojo bindings
   // generation to avoid name conflicts.
 
   /// Proxies control the ProxyMessageHandler by way of this [ProxyControl]
   /// object.
-  final ProxyControl ctrl;
+  final ProxyControl<T> ctrl;
 
   Proxy(this.ctrl);
 
@@ -39,6 +47,14 @@ class Proxy {
   /// ctrl.responseOrError(). If a Mojo interface has a method
   /// 'responseOrError', its name will be mangled to be 'responseOrError_'.
   Future responseOrError(Future f) => ctrl.responseOrError(f);
+
+  /// This getter and setter pair is for convenience and simply forwards to
+  /// ctrl.impl. If a Mojo interface has a method 'close', its name will be
+  /// mangled to be 'impl_'.
+  T get impl => ctrl.impl;
+  set impl(T impl) {
+    ctrl.impl = impl;
+  }
 }
 
 /// Generated Proxy classes have a factory Proxy.connectToService which takes
@@ -51,7 +67,8 @@ abstract class ServiceConnector {
   void connectToService(String url, Proxy proxy, [String serviceName]);
 }
 
-abstract class ProxyMessageHandler extends core.MojoEventHandler {
+abstract class ProxyMessageHandler extends core.MojoEventHandler
+                                   implements MojoInterfaceControl {
   HashMap<int, Completer> _completerMap = new HashMap<int, Completer>();
   Completer _errorCompleter = new Completer();
   Set<Completer> _errorCompleters;

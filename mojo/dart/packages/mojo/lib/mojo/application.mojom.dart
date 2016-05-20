@@ -16,7 +16,7 @@ class _ApplicationInitializeParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(32, 0)
   ];
-  Object shell = null;
+  shell_mojom.ShellInterface shell = null;
   List<String> args = null;
   String url = null;
 
@@ -131,8 +131,8 @@ class _ApplicationAcceptConnectionParams extends bindings.Struct {
     const bindings.StructDataHeader(40, 0)
   ];
   String requestorUrl = null;
-  Object services = null;
-  Object exposedServices = null;
+  service_provider_mojom.ServiceProviderInterfaceRequest services = null;
+  service_provider_mojom.ServiceProviderInterface exposedServices = null;
   String resolvedUrl = null;
 
   _ApplicationAcceptConnectionParams() : super(kVersions.last.size);
@@ -310,14 +310,52 @@ class _ApplicationServiceDescription implements service_describer.ServiceDescrip
 
 abstract class Application {
   static const String serviceName = null;
-  void initialize(Object shell, List<String> args, String url);
-  void acceptConnection(String requestorUrl, Object services, Object exposedServices, String resolvedUrl);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ApplicationServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ApplicationProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ApplicationProxy p = new ApplicationProxy.unbound();
+    String name = serviceName ?? Application.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void initialize(shell_mojom.ShellInterface shell, List<String> args, String url);
+  void acceptConnection(String requestorUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices, String resolvedUrl);
   void requestQuit();
+}
+
+abstract class ApplicationInterface
+    implements bindings.MojoInterface<Application>,
+               Application {
+  factory ApplicationInterface([Application impl]) =>
+      new ApplicationStub.unbound(impl);
+  factory ApplicationInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Application impl]) =>
+      new ApplicationStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ApplicationInterfaceRequest
+    implements bindings.MojoInterface<Application>,
+               Application {
+  factory ApplicationInterfaceRequest() =>
+      new ApplicationProxy.unbound();
 }
 
 class _ApplicationProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Application> {
   _ApplicationProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -325,9 +363,6 @@ class _ApplicationProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ApplicationProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ApplicationServiceDescription();
 
   String get serviceName => Application.serviceName;
 
@@ -340,6 +375,11 @@ class _ApplicationProxyControl
     }
   }
 
+  Application get impl => null;
+  set impl(Application _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -348,8 +388,10 @@ class _ApplicationProxyControl
 }
 
 class ApplicationProxy
-    extends bindings.Proxy
-    implements Application {
+    extends bindings.Proxy<Application>
+    implements Application,
+               ApplicationInterface,
+               ApplicationInterfaceRequest {
   ApplicationProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ApplicationProxyControl.fromEndpoint(endpoint));
@@ -366,15 +408,8 @@ class ApplicationProxy
     return new ApplicationProxy.fromEndpoint(endpoint);
   }
 
-  factory ApplicationProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ApplicationProxy p = new ApplicationProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void initialize(Object shell, List<String> args, String url) {
+  void initialize(shell_mojom.ShellInterface shell, List<String> args, String url) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -386,7 +421,7 @@ class ApplicationProxy
     ctrl.sendMessage(params,
         _applicationMethodInitializeName);
   }
-  void acceptConnection(String requestorUrl, Object services, Object exposedServices, String resolvedUrl) {
+  void acceptConnection(String requestorUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices, String resolvedUrl) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -428,6 +463,8 @@ class _ApplicationStubControl
   }
 
   _ApplicationStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Application.serviceName;
 
 
 
@@ -487,19 +524,16 @@ class _ApplicationStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ApplicationServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ApplicationStub
     extends bindings.Stub<Application>
-    implements Application {
+    implements Application,
+               ApplicationInterface,
+               ApplicationInterfaceRequest {
+  ApplicationStub.unbound([Application impl])
+      : super(new _ApplicationStubControl.unbound(impl));
+
   ApplicationStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Application impl])
       : super(new _ApplicationStubControl.fromEndpoint(endpoint, impl));
@@ -508,23 +542,17 @@ class ApplicationStub
       core.MojoHandle handle, [Application impl])
       : super(new _ApplicationStubControl.fromHandle(handle, impl));
 
-  ApplicationStub.unbound([Application impl])
-      : super(new _ApplicationStubControl.unbound(impl));
-
   static ApplicationStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ApplicationStub"));
     return new ApplicationStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ApplicationStubControl.serviceDescription;
 
-
-  void initialize(Object shell, List<String> args, String url) {
+  void initialize(shell_mojom.ShellInterface shell, List<String> args, String url) {
     return impl.initialize(shell, args, url);
   }
-  void acceptConnection(String requestorUrl, Object services, Object exposedServices, String resolvedUrl) {
+  void acceptConnection(String requestorUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices, String resolvedUrl) {
     return impl.acceptConnection(requestorUrl, services, exposedServices, resolvedUrl);
   }
   void requestQuit() {

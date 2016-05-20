@@ -660,7 +660,7 @@ class _DartSideSetClientParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object cppSide = null;
+  CppSideInterface cppSide = null;
 
   _DartSideSetClientParams() : super(kVersions.last.size);
 
@@ -887,15 +887,53 @@ class _CppSideServiceDescription implements service_describer.ServiceDescription
 
 abstract class CppSide {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _CppSideServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static CppSideProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    CppSideProxy p = new CppSideProxy.unbound();
+    String name = serviceName ?? CppSide.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void startTest();
   void testFinished();
   void pingResponse();
   void echoResponse(EchoArgsList list);
 }
 
+abstract class CppSideInterface
+    implements bindings.MojoInterface<CppSide>,
+               CppSide {
+  factory CppSideInterface([CppSide impl]) =>
+      new CppSideStub.unbound(impl);
+  factory CppSideInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [CppSide impl]) =>
+      new CppSideStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class CppSideInterfaceRequest
+    implements bindings.MojoInterface<CppSide>,
+               CppSide {
+  factory CppSideInterfaceRequest() =>
+      new CppSideProxy.unbound();
+}
+
 class _CppSideProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<CppSide> {
   _CppSideProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -903,9 +941,6 @@ class _CppSideProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _CppSideProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _CppSideServiceDescription();
 
   String get serviceName => CppSide.serviceName;
 
@@ -918,6 +953,11 @@ class _CppSideProxyControl
     }
   }
 
+  CppSide get impl => null;
+  set impl(CppSide _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -926,8 +966,10 @@ class _CppSideProxyControl
 }
 
 class CppSideProxy
-    extends bindings.Proxy
-    implements CppSide {
+    extends bindings.Proxy<CppSide>
+    implements CppSide,
+               CppSideInterface,
+               CppSideInterfaceRequest {
   CppSideProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _CppSideProxyControl.fromEndpoint(endpoint));
@@ -942,13 +984,6 @@ class CppSideProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For CppSideProxy"));
     return new CppSideProxy.fromEndpoint(endpoint);
-  }
-
-  factory CppSideProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    CppSideProxy p = new CppSideProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1010,6 +1045,8 @@ class _CppSideStubControl
 
   _CppSideStubControl.unbound([this._impl]) : super.unbound();
 
+  String get serviceName => CppSide.serviceName;
+
 
 
   dynamic handleMessage(bindings.ServiceMessage message) {
@@ -1069,19 +1106,16 @@ class _CppSideStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _CppSideServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class CppSideStub
     extends bindings.Stub<CppSide>
-    implements CppSide {
+    implements CppSide,
+               CppSideInterface,
+               CppSideInterfaceRequest {
+  CppSideStub.unbound([CppSide impl])
+      : super(new _CppSideStubControl.unbound(impl));
+
   CppSideStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [CppSide impl])
       : super(new _CppSideStubControl.fromEndpoint(endpoint, impl));
@@ -1090,17 +1124,11 @@ class CppSideStub
       core.MojoHandle handle, [CppSide impl])
       : super(new _CppSideStubControl.fromHandle(handle, impl));
 
-  CppSideStub.unbound([CppSide impl])
-      : super(new _CppSideStubControl.unbound(impl));
-
   static CppSideStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For CppSideStub"));
     return new CppSideStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _CppSideStubControl.serviceDescription;
 
 
   void startTest() {
@@ -1134,14 +1162,52 @@ class _DartSideServiceDescription implements service_describer.ServiceDescriptio
 
 abstract class DartSide {
   static const String serviceName = null;
-  void setClient(Object cppSide);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _DartSideServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static DartSideProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    DartSideProxy p = new DartSideProxy.unbound();
+    String name = serviceName ?? DartSide.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void setClient(CppSideInterface cppSide);
   void ping();
   void echo(int numIterations, EchoArgs arg);
 }
 
+abstract class DartSideInterface
+    implements bindings.MojoInterface<DartSide>,
+               DartSide {
+  factory DartSideInterface([DartSide impl]) =>
+      new DartSideStub.unbound(impl);
+  factory DartSideInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [DartSide impl]) =>
+      new DartSideStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class DartSideInterfaceRequest
+    implements bindings.MojoInterface<DartSide>,
+               DartSide {
+  factory DartSideInterfaceRequest() =>
+      new DartSideProxy.unbound();
+}
+
 class _DartSideProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<DartSide> {
   _DartSideProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1149,9 +1215,6 @@ class _DartSideProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _DartSideProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _DartSideServiceDescription();
 
   String get serviceName => DartSide.serviceName;
 
@@ -1164,6 +1227,11 @@ class _DartSideProxyControl
     }
   }
 
+  DartSide get impl => null;
+  set impl(DartSide _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1172,8 +1240,10 @@ class _DartSideProxyControl
 }
 
 class DartSideProxy
-    extends bindings.Proxy
-    implements DartSide {
+    extends bindings.Proxy<DartSide>
+    implements DartSide,
+               DartSideInterface,
+               DartSideInterfaceRequest {
   DartSideProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _DartSideProxyControl.fromEndpoint(endpoint));
@@ -1190,15 +1260,8 @@ class DartSideProxy
     return new DartSideProxy.fromEndpoint(endpoint);
   }
 
-  factory DartSideProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    DartSideProxy p = new DartSideProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void setClient(Object cppSide) {
+  void setClient(CppSideInterface cppSide) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1248,6 +1311,8 @@ class _DartSideStubControl
   }
 
   _DartSideStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => DartSide.serviceName;
 
 
 
@@ -1307,19 +1372,16 @@ class _DartSideStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _DartSideServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class DartSideStub
     extends bindings.Stub<DartSide>
-    implements DartSide {
+    implements DartSide,
+               DartSideInterface,
+               DartSideInterfaceRequest {
+  DartSideStub.unbound([DartSide impl])
+      : super(new _DartSideStubControl.unbound(impl));
+
   DartSideStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [DartSide impl])
       : super(new _DartSideStubControl.fromEndpoint(endpoint, impl));
@@ -1328,20 +1390,14 @@ class DartSideStub
       core.MojoHandle handle, [DartSide impl])
       : super(new _DartSideStubControl.fromHandle(handle, impl));
 
-  DartSideStub.unbound([DartSide impl])
-      : super(new _DartSideStubControl.unbound(impl));
-
   static DartSideStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For DartSideStub"));
     return new DartSideStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _DartSideStubControl.serviceDescription;
 
-
-  void setClient(Object cppSide) {
+  void setClient(CppSideInterface cppSide) {
     return impl.setClient(cppSide);
   }
   void ping() {

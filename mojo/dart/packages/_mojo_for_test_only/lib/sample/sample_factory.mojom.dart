@@ -23,7 +23,7 @@ class Request extends bindings.Struct {
   int x = 0;
   core.MojoMessagePipeEndpoint pipe = null;
   List<core.MojoMessagePipeEndpoint> morePipes = null;
-  Object obj = null;
+  sample_import_mojom.ImportedInterfaceInterface obj = null;
 
   Request() : super(kVersions.last.size);
 
@@ -729,7 +729,7 @@ class _FactoryCreateNamedObjectParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object obj = null;
+  NamedObjectInterfaceRequest obj = null;
 
   _FactoryCreateNamedObjectParams() : super(kVersions.last.size);
 
@@ -800,7 +800,7 @@ class _FactoryRequestImportedInterfaceParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object obj = null;
+  sample_import_mojom.ImportedInterfaceInterfaceRequest obj = null;
 
   _FactoryRequestImportedInterfaceParams() : super(kVersions.last.size);
 
@@ -871,7 +871,7 @@ class FactoryRequestImportedInterfaceResponseParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object obj = null;
+  sample_import_mojom.ImportedInterfaceInterfaceRequest obj = null;
 
   FactoryRequestImportedInterfaceResponseParams() : super(kVersions.last.size);
 
@@ -942,7 +942,7 @@ class _FactoryTakeImportedInterfaceParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object obj = null;
+  sample_import_mojom.ImportedInterfaceInterface obj = null;
 
   _FactoryTakeImportedInterfaceParams() : super(kVersions.last.size);
 
@@ -1013,7 +1013,7 @@ class FactoryTakeImportedInterfaceResponseParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object obj = null;
+  sample_import_mojom.ImportedInterfaceInterface obj = null;
 
   FactoryTakeImportedInterfaceResponseParams() : super(kVersions.last.size);
 
@@ -1098,13 +1098,51 @@ class _NamedObjectServiceDescription implements service_describer.ServiceDescrip
 
 abstract class NamedObject {
   static const String serviceName = "sample::NamedObject";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _NamedObjectServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static NamedObjectProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    NamedObjectProxy p = new NamedObjectProxy.unbound();
+    String name = serviceName ?? NamedObject.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void setName(String name);
   dynamic getName([Function responseFactory = null]);
 }
 
+abstract class NamedObjectInterface
+    implements bindings.MojoInterface<NamedObject>,
+               NamedObject {
+  factory NamedObjectInterface([NamedObject impl]) =>
+      new NamedObjectStub.unbound(impl);
+  factory NamedObjectInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [NamedObject impl]) =>
+      new NamedObjectStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class NamedObjectInterfaceRequest
+    implements bindings.MojoInterface<NamedObject>,
+               NamedObject {
+  factory NamedObjectInterfaceRequest() =>
+      new NamedObjectProxy.unbound();
+}
+
 class _NamedObjectProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<NamedObject> {
   _NamedObjectProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1112,9 +1150,6 @@ class _NamedObjectProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _NamedObjectProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _NamedObjectServiceDescription();
 
   String get serviceName => NamedObject.serviceName;
 
@@ -1147,6 +1182,11 @@ class _NamedObjectProxyControl
     }
   }
 
+  NamedObject get impl => null;
+  set impl(NamedObject _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1155,8 +1195,10 @@ class _NamedObjectProxyControl
 }
 
 class NamedObjectProxy
-    extends bindings.Proxy
-    implements NamedObject {
+    extends bindings.Proxy<NamedObject>
+    implements NamedObject,
+               NamedObjectInterface,
+               NamedObjectInterfaceRequest {
   NamedObjectProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _NamedObjectProxyControl.fromEndpoint(endpoint));
@@ -1171,13 +1213,6 @@ class NamedObjectProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NamedObjectProxy"));
     return new NamedObjectProxy.fromEndpoint(endpoint);
-  }
-
-  factory NamedObjectProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    NamedObjectProxy p = new NamedObjectProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1219,6 +1254,8 @@ class _NamedObjectStubControl
   }
 
   _NamedObjectStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => NamedObject.serviceName;
 
 
   NamedObjectGetNameResponseParams _namedObjectGetNameResponseParamsFactory(String name) {
@@ -1295,19 +1332,16 @@ class _NamedObjectStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _NamedObjectServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class NamedObjectStub
     extends bindings.Stub<NamedObject>
-    implements NamedObject {
+    implements NamedObject,
+               NamedObjectInterface,
+               NamedObjectInterfaceRequest {
+  NamedObjectStub.unbound([NamedObject impl])
+      : super(new _NamedObjectStubControl.unbound(impl));
+
   NamedObjectStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [NamedObject impl])
       : super(new _NamedObjectStubControl.fromEndpoint(endpoint, impl));
@@ -1316,17 +1350,11 @@ class NamedObjectStub
       core.MojoHandle handle, [NamedObject impl])
       : super(new _NamedObjectStubControl.fromHandle(handle, impl));
 
-  NamedObjectStub.unbound([NamedObject impl])
-      : super(new _NamedObjectStubControl.unbound(impl));
-
   static NamedObjectStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NamedObjectStub"));
     return new NamedObjectStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _NamedObjectStubControl.serviceDescription;
 
 
   void setName(String name) {
@@ -1356,16 +1384,54 @@ class _FactoryServiceDescription implements service_describer.ServiceDescription
 
 abstract class Factory {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _FactoryServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static FactoryProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    FactoryProxy p = new FactoryProxy.unbound();
+    String name = serviceName ?? Factory.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic doStuff(Request request,core.MojoMessagePipeEndpoint pipe,[Function responseFactory = null]);
   dynamic doStuff2(core.MojoDataPipeConsumer pipe,[Function responseFactory = null]);
-  void createNamedObject(Object obj);
-  dynamic requestImportedInterface(Object obj,[Function responseFactory = null]);
-  dynamic takeImportedInterface(Object obj,[Function responseFactory = null]);
+  void createNamedObject(NamedObjectInterfaceRequest obj);
+  dynamic requestImportedInterface(sample_import_mojom.ImportedInterfaceInterfaceRequest obj,[Function responseFactory = null]);
+  dynamic takeImportedInterface(sample_import_mojom.ImportedInterfaceInterface obj,[Function responseFactory = null]);
+}
+
+abstract class FactoryInterface
+    implements bindings.MojoInterface<Factory>,
+               Factory {
+  factory FactoryInterface([Factory impl]) =>
+      new FactoryStub.unbound(impl);
+  factory FactoryInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Factory impl]) =>
+      new FactoryStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class FactoryInterfaceRequest
+    implements bindings.MojoInterface<Factory>,
+               Factory {
+  factory FactoryInterfaceRequest() =>
+      new FactoryProxy.unbound();
 }
 
 class _FactoryProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Factory> {
   _FactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1373,9 +1439,6 @@ class _FactoryProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _FactoryProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _FactoryServiceDescription();
 
   String get serviceName => Factory.serviceName;
 
@@ -1468,6 +1531,11 @@ class _FactoryProxyControl
     }
   }
 
+  Factory get impl => null;
+  set impl(Factory _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1476,8 +1544,10 @@ class _FactoryProxyControl
 }
 
 class FactoryProxy
-    extends bindings.Proxy
-    implements Factory {
+    extends bindings.Proxy<Factory>
+    implements Factory,
+               FactoryInterface,
+               FactoryInterfaceRequest {
   FactoryProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _FactoryProxyControl.fromEndpoint(endpoint));
@@ -1492,13 +1562,6 @@ class FactoryProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For FactoryProxy"));
     return new FactoryProxy.fromEndpoint(endpoint);
-  }
-
-  factory FactoryProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    FactoryProxy p = new FactoryProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1521,7 +1584,7 @@ class FactoryProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  void createNamedObject(Object obj) {
+  void createNamedObject(NamedObjectInterfaceRequest obj) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1531,7 +1594,7 @@ class FactoryProxy
     ctrl.sendMessage(params,
         _factoryMethodCreateNamedObjectName);
   }
-  dynamic requestImportedInterface(Object obj,[Function responseFactory = null]) {
+  dynamic requestImportedInterface(sample_import_mojom.ImportedInterfaceInterfaceRequest obj,[Function responseFactory = null]) {
     var params = new _FactoryRequestImportedInterfaceParams();
     params.obj = obj;
     return ctrl.sendMessageWithRequestId(
@@ -1540,7 +1603,7 @@ class FactoryProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  dynamic takeImportedInterface(Object obj,[Function responseFactory = null]) {
+  dynamic takeImportedInterface(sample_import_mojom.ImportedInterfaceInterface obj,[Function responseFactory = null]) {
     var params = new _FactoryTakeImportedInterfaceParams();
     params.obj = obj;
     return ctrl.sendMessageWithRequestId(
@@ -1570,6 +1633,8 @@ class _FactoryStubControl
 
   _FactoryStubControl.unbound([this._impl]) : super.unbound();
 
+  String get serviceName => Factory.serviceName;
+
 
   FactoryDoStuffResponseParams _factoryDoStuffResponseParamsFactory(Response response, String text) {
     var result = new FactoryDoStuffResponseParams();
@@ -1582,12 +1647,12 @@ class _FactoryStubControl
     result.text = text;
     return result;
   }
-  FactoryRequestImportedInterfaceResponseParams _factoryRequestImportedInterfaceResponseParamsFactory(Object obj) {
+  FactoryRequestImportedInterfaceResponseParams _factoryRequestImportedInterfaceResponseParamsFactory(sample_import_mojom.ImportedInterfaceInterfaceRequest obj) {
     var result = new FactoryRequestImportedInterfaceResponseParams();
     result.obj = obj;
     return result;
   }
-  FactoryTakeImportedInterfaceResponseParams _factoryTakeImportedInterfaceResponseParamsFactory(Object obj) {
+  FactoryTakeImportedInterfaceResponseParams _factoryTakeImportedInterfaceResponseParamsFactory(sample_import_mojom.ImportedInterfaceInterface obj) {
     var result = new FactoryTakeImportedInterfaceResponseParams();
     result.obj = obj;
     return result;
@@ -1729,19 +1794,16 @@ class _FactoryStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _FactoryServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class FactoryStub
     extends bindings.Stub<Factory>
-    implements Factory {
+    implements Factory,
+               FactoryInterface,
+               FactoryInterfaceRequest {
+  FactoryStub.unbound([Factory impl])
+      : super(new _FactoryStubControl.unbound(impl));
+
   FactoryStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Factory impl])
       : super(new _FactoryStubControl.fromEndpoint(endpoint, impl));
@@ -1750,17 +1812,11 @@ class FactoryStub
       core.MojoHandle handle, [Factory impl])
       : super(new _FactoryStubControl.fromHandle(handle, impl));
 
-  FactoryStub.unbound([Factory impl])
-      : super(new _FactoryStubControl.unbound(impl));
-
   static FactoryStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For FactoryStub"));
     return new FactoryStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _FactoryStubControl.serviceDescription;
 
 
   dynamic doStuff(Request request,core.MojoMessagePipeEndpoint pipe,[Function responseFactory = null]) {
@@ -1769,13 +1825,13 @@ class FactoryStub
   dynamic doStuff2(core.MojoDataPipeConsumer pipe,[Function responseFactory = null]) {
     return impl.doStuff2(pipe,responseFactory);
   }
-  void createNamedObject(Object obj) {
+  void createNamedObject(NamedObjectInterfaceRequest obj) {
     return impl.createNamedObject(obj);
   }
-  dynamic requestImportedInterface(Object obj,[Function responseFactory = null]) {
+  dynamic requestImportedInterface(sample_import_mojom.ImportedInterfaceInterfaceRequest obj,[Function responseFactory = null]) {
     return impl.requestImportedInterface(obj,responseFactory);
   }
-  dynamic takeImportedInterface(Object obj,[Function responseFactory = null]) {
+  dynamic takeImportedInterface(sample_import_mojom.ImportedInterfaceInterface obj,[Function responseFactory = null]) {
     return impl.takeImportedInterface(obj,responseFactory);
   }
 }

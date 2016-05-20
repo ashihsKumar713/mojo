@@ -49,8 +49,8 @@ class LocalServiceProvider implements ServiceProvider {
 /// [Application.acceptConnection].
 ///
 /// To request a service (e.g. `Foo`) from the remote application:
-///   var fooProxy =
-///       applicationConnection.requestService(new FooProxy.unbound());
+///   var foo = new FooInterfaceRequest();
+///   applicationConnection.requestService(foo);
 ///
 /// To provide a service to the remote application, specify a function that
 /// instantiantes a service. For example:
@@ -90,25 +90,24 @@ class ApplicationConnection {
     _fallbackServiceFactory = f;
   }
 
-  bindings.Proxy requestService(bindings.Proxy proxy,
-      [String serviceName]) {
-    if (proxy.ctrl.isBound ||
+  void requestService(bindings.MojoInterface iface, [String serviceName]) {
+    if (iface.ctrl.isBound ||
         (remoteServiceProvider == null) ||
         !remoteServiceProvider.ctrl.isBound) {
       throw new core.MojoApiError(
-          "The proxy is bound, or there is no remove service provider proxy");
+          "The interface is already bound, "
+          "or there is no remote service provider");
     }
 
-    var name = serviceName ?? proxy.ctrl.serviceName;
+    var name = serviceName ?? iface.ctrl.serviceName;
     if ((name == null) || name.isEmpty) {
       throw new core.MojoApiError(
           "If an interface has no ServiceName, then one must be provided.");
     }
 
     var pipe = new core.MojoMessagePipe();
-    proxy.ctrl.bind(pipe.endpoints[0]);
+    iface.ctrl.bind(pipe.endpoints[0]);
     remoteServiceProvider.connectToService_(name, pipe.endpoints[1]);
-    return proxy;
   }
 
   /// Prepares this connection to provide the specified service when a call for

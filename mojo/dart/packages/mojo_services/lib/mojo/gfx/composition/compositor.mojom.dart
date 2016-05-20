@@ -19,7 +19,7 @@ class _CompositorCreateSceneParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(24, 0)
   ];
-  Object scene = null;
+  scenes_mojom.SceneInterfaceRequest scene = null;
   String label = null;
 
   _CompositorCreateSceneParams() : super(kVersions.last.size);
@@ -176,8 +176,8 @@ class _CompositorCreateRendererParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(32, 0)
   ];
-  Object contextProvider = null;
-  Object renderer = null;
+  context_provider_mojom.ContextProviderInterface contextProvider = null;
+  renderers_mojom.RendererInterfaceRequest renderer = null;
   String label = null;
 
   _CompositorCreateRendererParams() : super(kVersions.last.size);
@@ -284,13 +284,51 @@ class _CompositorServiceDescription implements service_describer.ServiceDescript
 
 abstract class Compositor {
   static const String serviceName = "mojo::gfx::composition::Compositor";
-  dynamic createScene(Object scene,String label,[Function responseFactory = null]);
-  void createRenderer(Object contextProvider, Object renderer, String label);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _CompositorServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static CompositorProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    CompositorProxy p = new CompositorProxy.unbound();
+    String name = serviceName ?? Compositor.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  dynamic createScene(scenes_mojom.SceneInterfaceRequest scene,String label,[Function responseFactory = null]);
+  void createRenderer(context_provider_mojom.ContextProviderInterface contextProvider, renderers_mojom.RendererInterfaceRequest renderer, String label);
+}
+
+abstract class CompositorInterface
+    implements bindings.MojoInterface<Compositor>,
+               Compositor {
+  factory CompositorInterface([Compositor impl]) =>
+      new CompositorStub.unbound(impl);
+  factory CompositorInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Compositor impl]) =>
+      new CompositorStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class CompositorInterfaceRequest
+    implements bindings.MojoInterface<Compositor>,
+               Compositor {
+  factory CompositorInterfaceRequest() =>
+      new CompositorProxy.unbound();
 }
 
 class _CompositorProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Compositor> {
   _CompositorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -298,9 +336,6 @@ class _CompositorProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _CompositorProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _CompositorServiceDescription();
 
   String get serviceName => Compositor.serviceName;
 
@@ -333,6 +368,11 @@ class _CompositorProxyControl
     }
   }
 
+  Compositor get impl => null;
+  set impl(Compositor _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -341,8 +381,10 @@ class _CompositorProxyControl
 }
 
 class CompositorProxy
-    extends bindings.Proxy
-    implements Compositor {
+    extends bindings.Proxy<Compositor>
+    implements Compositor,
+               CompositorInterface,
+               CompositorInterfaceRequest {
   CompositorProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _CompositorProxyControl.fromEndpoint(endpoint));
@@ -359,15 +401,8 @@ class CompositorProxy
     return new CompositorProxy.fromEndpoint(endpoint);
   }
 
-  factory CompositorProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    CompositorProxy p = new CompositorProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  dynamic createScene(Object scene,String label,[Function responseFactory = null]) {
+  dynamic createScene(scenes_mojom.SceneInterfaceRequest scene,String label,[Function responseFactory = null]) {
     var params = new _CompositorCreateSceneParams();
     params.scene = scene;
     params.label = label;
@@ -377,7 +412,7 @@ class CompositorProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  void createRenderer(Object contextProvider, Object renderer, String label) {
+  void createRenderer(context_provider_mojom.ContextProviderInterface contextProvider, renderers_mojom.RendererInterfaceRequest renderer, String label) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -409,6 +444,8 @@ class _CompositorStubControl
   }
 
   _CompositorStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Compositor.serviceName;
 
 
   CompositorCreateSceneResponseParams _compositorCreateSceneResponseParamsFactory(scene_token_mojom.SceneToken sceneToken) {
@@ -487,19 +524,16 @@ class _CompositorStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _CompositorServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class CompositorStub
     extends bindings.Stub<Compositor>
-    implements Compositor {
+    implements Compositor,
+               CompositorInterface,
+               CompositorInterfaceRequest {
+  CompositorStub.unbound([Compositor impl])
+      : super(new _CompositorStubControl.unbound(impl));
+
   CompositorStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Compositor impl])
       : super(new _CompositorStubControl.fromEndpoint(endpoint, impl));
@@ -508,23 +542,17 @@ class CompositorStub
       core.MojoHandle handle, [Compositor impl])
       : super(new _CompositorStubControl.fromHandle(handle, impl));
 
-  CompositorStub.unbound([Compositor impl])
-      : super(new _CompositorStubControl.unbound(impl));
-
   static CompositorStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For CompositorStub"));
     return new CompositorStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _CompositorStubControl.serviceDescription;
 
-
-  dynamic createScene(Object scene,String label,[Function responseFactory = null]) {
+  dynamic createScene(scenes_mojom.SceneInterfaceRequest scene,String label,[Function responseFactory = null]) {
     return impl.createScene(scene,label,responseFactory);
   }
-  void createRenderer(Object contextProvider, Object renderer, String label) {
+  void createRenderer(context_provider_mojom.ContextProviderInterface contextProvider, renderers_mojom.RendererInterfaceRequest renderer, String label) {
     return impl.createRenderer(contextProvider, renderer, label);
   }
 }

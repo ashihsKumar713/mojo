@@ -29,7 +29,7 @@ class EchoApplication extends Application {
       ApplicationConnection connection) {
     connection.provideService(EchoService.serviceName,
       (endpoint) => new DummyEchoServiceImpl(),
-      description: EchoServiceStub.serviceDescription);
+      description: EchoService.serviceDescription);
   }
 }
 

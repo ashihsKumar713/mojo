@@ -25,7 +25,7 @@ class _NetworkServiceCreateUrlLoaderParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object loader = null;
+  url_loader_mojom.UrlLoaderInterfaceRequest loader = null;
 
   _NetworkServiceCreateUrlLoaderParams() : super(kVersions.last.size);
 
@@ -96,7 +96,7 @@ class _NetworkServiceGetCookieStoreParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object cookieStore = null;
+  cookie_store_mojom.CookieStoreInterfaceRequest cookieStore = null;
 
   _NetworkServiceGetCookieStoreParams() : super(kVersions.last.size);
 
@@ -167,7 +167,7 @@ class _NetworkServiceCreateWebSocketParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object socket = null;
+  web_socket_mojom.WebSocketInterfaceRequest socket = null;
 
   _NetworkServiceCreateWebSocketParams() : super(kVersions.last.size);
 
@@ -239,7 +239,7 @@ class _NetworkServiceCreateTcpBoundSocketParams extends bindings.Struct {
     const bindings.StructDataHeader(24, 0)
   ];
   net_address_mojom.NetAddress localAddress = null;
-  Object boundSocket = null;
+  tcp_bound_socket_mojom.TcpBoundSocketInterfaceRequest boundSocket = null;
 
   _NetworkServiceCreateTcpBoundSocketParams() : super(kVersions.last.size);
 
@@ -414,7 +414,7 @@ class _NetworkServiceCreateTcpConnectedSocketParams extends bindings.Struct {
   net_address_mojom.NetAddress remoteAddress = null;
   core.MojoDataPipeConsumer sendStream = null;
   core.MojoDataPipeProducer receiveStream = null;
-  Object clientSocket = null;
+  tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket = null;
 
   _NetworkServiceCreateTcpConnectedSocketParams() : super(kVersions.last.size);
 
@@ -610,7 +610,7 @@ class _NetworkServiceCreateUdpSocketParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object socket = null;
+  udp_socket_mojom.UdpSocketInterfaceRequest socket = null;
 
   _NetworkServiceCreateUdpSocketParams() : super(kVersions.last.size);
 
@@ -682,7 +682,7 @@ class _NetworkServiceCreateHttpServerParams extends bindings.Struct {
     const bindings.StructDataHeader(24, 0)
   ];
   net_address_mojom.NetAddress localAddress = null;
-  Object delegate = null;
+  http_server_mojom.HttpServerDelegateInterface delegate = null;
 
   _NetworkServiceCreateHttpServerParams() : super(kVersions.last.size);
 
@@ -854,7 +854,7 @@ class _NetworkServiceRegisterUrlLoaderInterceptorParams extends bindings.Struct 
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object factory = null;
+  url_loader_interceptor_mojom.UrlLoaderInterceptorFactoryInterface factory = null;
 
   _NetworkServiceRegisterUrlLoaderInterceptorParams() : super(kVersions.last.size);
 
@@ -925,7 +925,7 @@ class _NetworkServiceCreateHostResolverParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object hostResolver = null;
+  host_resolver_mojom.HostResolverInterfaceRequest hostResolver = null;
 
   _NetworkServiceCreateHostResolverParams() : super(kVersions.last.size);
 
@@ -1014,20 +1014,58 @@ class _NetworkServiceServiceDescription implements service_describer.ServiceDesc
 
 abstract class NetworkService {
   static const String serviceName = "mojo::NetworkService";
-  void createUrlLoader(Object loader);
-  void getCookieStore(Object cookieStore);
-  void createWebSocket(Object socket);
-  dynamic createTcpBoundSocket(net_address_mojom.NetAddress localAddress,Object boundSocket,[Function responseFactory = null]);
-  dynamic createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]);
-  void createUdpSocket(Object socket);
-  dynamic createHttpServer(net_address_mojom.NetAddress localAddress,Object delegate,[Function responseFactory = null]);
-  void registerUrlLoaderInterceptor(Object factory);
-  void createHostResolver(Object hostResolver);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _NetworkServiceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static NetworkServiceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    NetworkServiceProxy p = new NetworkServiceProxy.unbound();
+    String name = serviceName ?? NetworkService.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void createUrlLoader(url_loader_mojom.UrlLoaderInterfaceRequest loader);
+  void getCookieStore(cookie_store_mojom.CookieStoreInterfaceRequest cookieStore);
+  void createWebSocket(web_socket_mojom.WebSocketInterfaceRequest socket);
+  dynamic createTcpBoundSocket(net_address_mojom.NetAddress localAddress,tcp_bound_socket_mojom.TcpBoundSocketInterfaceRequest boundSocket,[Function responseFactory = null]);
+  dynamic createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]);
+  void createUdpSocket(udp_socket_mojom.UdpSocketInterfaceRequest socket);
+  dynamic createHttpServer(net_address_mojom.NetAddress localAddress,http_server_mojom.HttpServerDelegateInterface delegate,[Function responseFactory = null]);
+  void registerUrlLoaderInterceptor(url_loader_interceptor_mojom.UrlLoaderInterceptorFactoryInterface factory);
+  void createHostResolver(host_resolver_mojom.HostResolverInterfaceRequest hostResolver);
+}
+
+abstract class NetworkServiceInterface
+    implements bindings.MojoInterface<NetworkService>,
+               NetworkService {
+  factory NetworkServiceInterface([NetworkService impl]) =>
+      new NetworkServiceStub.unbound(impl);
+  factory NetworkServiceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [NetworkService impl]) =>
+      new NetworkServiceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class NetworkServiceInterfaceRequest
+    implements bindings.MojoInterface<NetworkService>,
+               NetworkService {
+  factory NetworkServiceInterfaceRequest() =>
+      new NetworkServiceProxy.unbound();
 }
 
 class _NetworkServiceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<NetworkService> {
   _NetworkServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1035,9 +1073,6 @@ class _NetworkServiceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _NetworkServiceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _NetworkServiceServiceDescription();
 
   String get serviceName => NetworkService.serviceName;
 
@@ -1110,6 +1145,11 @@ class _NetworkServiceProxyControl
     }
   }
 
+  NetworkService get impl => null;
+  set impl(NetworkService _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1118,8 +1158,10 @@ class _NetworkServiceProxyControl
 }
 
 class NetworkServiceProxy
-    extends bindings.Proxy
-    implements NetworkService {
+    extends bindings.Proxy<NetworkService>
+    implements NetworkService,
+               NetworkServiceInterface,
+               NetworkServiceInterfaceRequest {
   NetworkServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _NetworkServiceProxyControl.fromEndpoint(endpoint));
@@ -1136,15 +1178,8 @@ class NetworkServiceProxy
     return new NetworkServiceProxy.fromEndpoint(endpoint);
   }
 
-  factory NetworkServiceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    NetworkServiceProxy p = new NetworkServiceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void createUrlLoader(Object loader) {
+  void createUrlLoader(url_loader_mojom.UrlLoaderInterfaceRequest loader) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1154,7 +1189,7 @@ class NetworkServiceProxy
     ctrl.sendMessage(params,
         _networkServiceMethodCreateUrlLoaderName);
   }
-  void getCookieStore(Object cookieStore) {
+  void getCookieStore(cookie_store_mojom.CookieStoreInterfaceRequest cookieStore) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1164,7 +1199,7 @@ class NetworkServiceProxy
     ctrl.sendMessage(params,
         _networkServiceMethodGetCookieStoreName);
   }
-  void createWebSocket(Object socket) {
+  void createWebSocket(web_socket_mojom.WebSocketInterfaceRequest socket) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1174,7 +1209,7 @@ class NetworkServiceProxy
     ctrl.sendMessage(params,
         _networkServiceMethodCreateWebSocketName);
   }
-  dynamic createTcpBoundSocket(net_address_mojom.NetAddress localAddress,Object boundSocket,[Function responseFactory = null]) {
+  dynamic createTcpBoundSocket(net_address_mojom.NetAddress localAddress,tcp_bound_socket_mojom.TcpBoundSocketInterfaceRequest boundSocket,[Function responseFactory = null]) {
     var params = new _NetworkServiceCreateTcpBoundSocketParams();
     params.localAddress = localAddress;
     params.boundSocket = boundSocket;
@@ -1184,7 +1219,7 @@ class NetworkServiceProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  dynamic createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]) {
+  dynamic createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]) {
     var params = new _NetworkServiceCreateTcpConnectedSocketParams();
     params.remoteAddress = remoteAddress;
     params.sendStream = sendStream;
@@ -1196,7 +1231,7 @@ class NetworkServiceProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  void createUdpSocket(Object socket) {
+  void createUdpSocket(udp_socket_mojom.UdpSocketInterfaceRequest socket) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1206,7 +1241,7 @@ class NetworkServiceProxy
     ctrl.sendMessage(params,
         _networkServiceMethodCreateUdpSocketName);
   }
-  dynamic createHttpServer(net_address_mojom.NetAddress localAddress,Object delegate,[Function responseFactory = null]) {
+  dynamic createHttpServer(net_address_mojom.NetAddress localAddress,http_server_mojom.HttpServerDelegateInterface delegate,[Function responseFactory = null]) {
     var params = new _NetworkServiceCreateHttpServerParams();
     params.localAddress = localAddress;
     params.delegate = delegate;
@@ -1216,7 +1251,7 @@ class NetworkServiceProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  void registerUrlLoaderInterceptor(Object factory) {
+  void registerUrlLoaderInterceptor(url_loader_interceptor_mojom.UrlLoaderInterceptorFactoryInterface factory) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1226,7 +1261,7 @@ class NetworkServiceProxy
     ctrl.sendMessage(params,
         _networkServiceMethodRegisterUrlLoaderInterceptorName);
   }
-  void createHostResolver(Object hostResolver) {
+  void createHostResolver(host_resolver_mojom.HostResolverInterfaceRequest hostResolver) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1256,6 +1291,8 @@ class _NetworkServiceStubControl
   }
 
   _NetworkServiceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => NetworkService.serviceName;
 
 
   NetworkServiceCreateTcpBoundSocketResponseParams _networkServiceCreateTcpBoundSocketResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo) {
@@ -1416,19 +1453,16 @@ class _NetworkServiceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _NetworkServiceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class NetworkServiceStub
     extends bindings.Stub<NetworkService>
-    implements NetworkService {
+    implements NetworkService,
+               NetworkServiceInterface,
+               NetworkServiceInterfaceRequest {
+  NetworkServiceStub.unbound([NetworkService impl])
+      : super(new _NetworkServiceStubControl.unbound(impl));
+
   NetworkServiceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [NetworkService impl])
       : super(new _NetworkServiceStubControl.fromEndpoint(endpoint, impl));
@@ -1437,44 +1471,38 @@ class NetworkServiceStub
       core.MojoHandle handle, [NetworkService impl])
       : super(new _NetworkServiceStubControl.fromHandle(handle, impl));
 
-  NetworkServiceStub.unbound([NetworkService impl])
-      : super(new _NetworkServiceStubControl.unbound(impl));
-
   static NetworkServiceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NetworkServiceStub"));
     return new NetworkServiceStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _NetworkServiceStubControl.serviceDescription;
 
-
-  void createUrlLoader(Object loader) {
+  void createUrlLoader(url_loader_mojom.UrlLoaderInterfaceRequest loader) {
     return impl.createUrlLoader(loader);
   }
-  void getCookieStore(Object cookieStore) {
+  void getCookieStore(cookie_store_mojom.CookieStoreInterfaceRequest cookieStore) {
     return impl.getCookieStore(cookieStore);
   }
-  void createWebSocket(Object socket) {
+  void createWebSocket(web_socket_mojom.WebSocketInterfaceRequest socket) {
     return impl.createWebSocket(socket);
   }
-  dynamic createTcpBoundSocket(net_address_mojom.NetAddress localAddress,Object boundSocket,[Function responseFactory = null]) {
+  dynamic createTcpBoundSocket(net_address_mojom.NetAddress localAddress,tcp_bound_socket_mojom.TcpBoundSocketInterfaceRequest boundSocket,[Function responseFactory = null]) {
     return impl.createTcpBoundSocket(localAddress,boundSocket,responseFactory);
   }
-  dynamic createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,Object clientSocket,[Function responseFactory = null]) {
+  dynamic createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]) {
     return impl.createTcpConnectedSocket(remoteAddress,sendStream,receiveStream,clientSocket,responseFactory);
   }
-  void createUdpSocket(Object socket) {
+  void createUdpSocket(udp_socket_mojom.UdpSocketInterfaceRequest socket) {
     return impl.createUdpSocket(socket);
   }
-  dynamic createHttpServer(net_address_mojom.NetAddress localAddress,Object delegate,[Function responseFactory = null]) {
+  dynamic createHttpServer(net_address_mojom.NetAddress localAddress,http_server_mojom.HttpServerDelegateInterface delegate,[Function responseFactory = null]) {
     return impl.createHttpServer(localAddress,delegate,responseFactory);
   }
-  void registerUrlLoaderInterceptor(Object factory) {
+  void registerUrlLoaderInterceptor(url_loader_interceptor_mojom.UrlLoaderInterceptorFactoryInterface factory) {
     return impl.registerUrlLoaderInterceptor(factory);
   }
-  void createHostResolver(Object hostResolver) {
+  void createHostResolver(host_resolver_mojom.HostResolverInterfaceRequest hostResolver) {
     return impl.createHostResolver(hostResolver);
   }
 }

@@ -483,6 +483,26 @@ class _MediaPlayerServiceDescription implements service_describer.ServiceDescrip
 
 abstract class MediaPlayer {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _MediaPlayerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static MediaPlayerProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    MediaPlayerProxy p = new MediaPlayerProxy.unbound();
+    String name = serviceName ?? MediaPlayer.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void play();
   void pause();
   void seek(int position);
@@ -490,9 +510,27 @@ abstract class MediaPlayer {
   static const int kInitialStatus = 0;
 }
 
+abstract class MediaPlayerInterface
+    implements bindings.MojoInterface<MediaPlayer>,
+               MediaPlayer {
+  factory MediaPlayerInterface([MediaPlayer impl]) =>
+      new MediaPlayerStub.unbound(impl);
+  factory MediaPlayerInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [MediaPlayer impl]) =>
+      new MediaPlayerStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class MediaPlayerInterfaceRequest
+    implements bindings.MojoInterface<MediaPlayer>,
+               MediaPlayer {
+  factory MediaPlayerInterfaceRequest() =>
+      new MediaPlayerProxy.unbound();
+}
+
 class _MediaPlayerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<MediaPlayer> {
   _MediaPlayerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -500,9 +538,6 @@ class _MediaPlayerProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _MediaPlayerProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _MediaPlayerServiceDescription();
 
   String get serviceName => MediaPlayer.serviceName;
 
@@ -535,6 +570,11 @@ class _MediaPlayerProxyControl
     }
   }
 
+  MediaPlayer get impl => null;
+  set impl(MediaPlayer _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -543,8 +583,10 @@ class _MediaPlayerProxyControl
 }
 
 class MediaPlayerProxy
-    extends bindings.Proxy
-    implements MediaPlayer {
+    extends bindings.Proxy<MediaPlayer>
+    implements MediaPlayer,
+               MediaPlayerInterface,
+               MediaPlayerInterfaceRequest {
   MediaPlayerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaPlayerProxyControl.fromEndpoint(endpoint));
@@ -559,13 +601,6 @@ class MediaPlayerProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaPlayerProxy"));
     return new MediaPlayerProxy.fromEndpoint(endpoint);
-  }
-
-  factory MediaPlayerProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    MediaPlayerProxy p = new MediaPlayerProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -626,6 +661,8 @@ class _MediaPlayerStubControl
   }
 
   _MediaPlayerStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => MediaPlayer.serviceName;
 
 
   MediaPlayerGetStatusResponseParams _mediaPlayerGetStatusResponseParamsFactory(int version, MediaPlayerStatus status) {
@@ -711,19 +748,16 @@ class _MediaPlayerStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _MediaPlayerServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class MediaPlayerStub
     extends bindings.Stub<MediaPlayer>
-    implements MediaPlayer {
+    implements MediaPlayer,
+               MediaPlayerInterface,
+               MediaPlayerInterfaceRequest {
+  MediaPlayerStub.unbound([MediaPlayer impl])
+      : super(new _MediaPlayerStubControl.unbound(impl));
+
   MediaPlayerStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaPlayer impl])
       : super(new _MediaPlayerStubControl.fromEndpoint(endpoint, impl));
@@ -732,17 +766,11 @@ class MediaPlayerStub
       core.MojoHandle handle, [MediaPlayer impl])
       : super(new _MediaPlayerStubControl.fromHandle(handle, impl));
 
-  MediaPlayerStub.unbound([MediaPlayer impl])
-      : super(new _MediaPlayerStubControl.unbound(impl));
-
   static MediaPlayerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaPlayerStub"));
     return new MediaPlayerStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _MediaPlayerStubControl.serviceDescription;
 
 
   void play() {

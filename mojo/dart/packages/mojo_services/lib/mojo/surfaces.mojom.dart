@@ -888,7 +888,7 @@ class _SurfaceSetResourceReturnerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object returner = null;
+  ResourceReturnerInterface returner = null;
 
   _SurfaceSetResourceReturnerParams() : super(kVersions.last.size);
 
@@ -1258,12 +1258,50 @@ class _ResourceReturnerServiceDescription implements service_describer.ServiceDe
 
 abstract class ResourceReturner {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ResourceReturnerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ResourceReturnerProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ResourceReturnerProxy p = new ResourceReturnerProxy.unbound();
+    String name = serviceName ?? ResourceReturner.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void returnResources(List<ReturnedResource> resources);
+}
+
+abstract class ResourceReturnerInterface
+    implements bindings.MojoInterface<ResourceReturner>,
+               ResourceReturner {
+  factory ResourceReturnerInterface([ResourceReturner impl]) =>
+      new ResourceReturnerStub.unbound(impl);
+  factory ResourceReturnerInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [ResourceReturner impl]) =>
+      new ResourceReturnerStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ResourceReturnerInterfaceRequest
+    implements bindings.MojoInterface<ResourceReturner>,
+               ResourceReturner {
+  factory ResourceReturnerInterfaceRequest() =>
+      new ResourceReturnerProxy.unbound();
 }
 
 class _ResourceReturnerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<ResourceReturner> {
   _ResourceReturnerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1271,9 +1309,6 @@ class _ResourceReturnerProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ResourceReturnerProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ResourceReturnerServiceDescription();
 
   String get serviceName => ResourceReturner.serviceName;
 
@@ -1286,6 +1321,11 @@ class _ResourceReturnerProxyControl
     }
   }
 
+  ResourceReturner get impl => null;
+  set impl(ResourceReturner _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1294,8 +1334,10 @@ class _ResourceReturnerProxyControl
 }
 
 class ResourceReturnerProxy
-    extends bindings.Proxy
-    implements ResourceReturner {
+    extends bindings.Proxy<ResourceReturner>
+    implements ResourceReturner,
+               ResourceReturnerInterface,
+               ResourceReturnerInterfaceRequest {
   ResourceReturnerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ResourceReturnerProxyControl.fromEndpoint(endpoint));
@@ -1310,13 +1352,6 @@ class ResourceReturnerProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ResourceReturnerProxy"));
     return new ResourceReturnerProxy.fromEndpoint(endpoint);
-  }
-
-  factory ResourceReturnerProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ResourceReturnerProxy p = new ResourceReturnerProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1350,6 +1385,8 @@ class _ResourceReturnerStubControl
   }
 
   _ResourceReturnerStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => ResourceReturner.serviceName;
 
 
 
@@ -1401,19 +1438,16 @@ class _ResourceReturnerStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ResourceReturnerServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ResourceReturnerStub
     extends bindings.Stub<ResourceReturner>
-    implements ResourceReturner {
+    implements ResourceReturner,
+               ResourceReturnerInterface,
+               ResourceReturnerInterfaceRequest {
+  ResourceReturnerStub.unbound([ResourceReturner impl])
+      : super(new _ResourceReturnerStubControl.unbound(impl));
+
   ResourceReturnerStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ResourceReturner impl])
       : super(new _ResourceReturnerStubControl.fromEndpoint(endpoint, impl));
@@ -1422,17 +1456,11 @@ class ResourceReturnerStub
       core.MojoHandle handle, [ResourceReturner impl])
       : super(new _ResourceReturnerStubControl.fromHandle(handle, impl));
 
-  ResourceReturnerStub.unbound([ResourceReturner impl])
-      : super(new _ResourceReturnerStubControl.unbound(impl));
-
   static ResourceReturnerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ResourceReturnerStub"));
     return new ResourceReturnerStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ResourceReturnerStubControl.serviceDescription;
 
 
   void returnResources(List<ReturnedResource> resources) {
@@ -1459,16 +1487,54 @@ class _SurfaceServiceDescription implements service_describer.ServiceDescription
 
 abstract class Surface {
   static const String serviceName = "mojo::Surface";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _SurfaceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static SurfaceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    SurfaceProxy p = new SurfaceProxy.unbound();
+    String name = serviceName ?? Surface.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic getIdNamespace([Function responseFactory = null]);
-  void setResourceReturner(Object returner);
+  void setResourceReturner(ResourceReturnerInterface returner);
   void createSurface(int idLocal);
   dynamic submitFrame(int idLocal,Frame frame,[Function responseFactory = null]);
   void destroySurface(int idLocal);
 }
 
+abstract class SurfaceInterface
+    implements bindings.MojoInterface<Surface>,
+               Surface {
+  factory SurfaceInterface([Surface impl]) =>
+      new SurfaceStub.unbound(impl);
+  factory SurfaceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Surface impl]) =>
+      new SurfaceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class SurfaceInterfaceRequest
+    implements bindings.MojoInterface<Surface>,
+               Surface {
+  factory SurfaceInterfaceRequest() =>
+      new SurfaceProxy.unbound();
+}
+
 class _SurfaceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Surface> {
   _SurfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1476,9 +1542,6 @@ class _SurfaceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _SurfaceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _SurfaceServiceDescription();
 
   String get serviceName => Surface.serviceName;
 
@@ -1531,6 +1594,11 @@ class _SurfaceProxyControl
     }
   }
 
+  Surface get impl => null;
+  set impl(Surface _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1539,8 +1607,10 @@ class _SurfaceProxyControl
 }
 
 class SurfaceProxy
-    extends bindings.Proxy
-    implements Surface {
+    extends bindings.Proxy<Surface>
+    implements Surface,
+               SurfaceInterface,
+               SurfaceInterfaceRequest {
   SurfaceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SurfaceProxyControl.fromEndpoint(endpoint));
@@ -1557,13 +1627,6 @@ class SurfaceProxy
     return new SurfaceProxy.fromEndpoint(endpoint);
   }
 
-  factory SurfaceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    SurfaceProxy p = new SurfaceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
-
 
   dynamic getIdNamespace([Function responseFactory = null]) {
     var params = new _SurfaceGetIdNamespaceParams();
@@ -1573,7 +1636,7 @@ class SurfaceProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  void setResourceReturner(Object returner) {
+  void setResourceReturner(ResourceReturnerInterface returner) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1633,6 +1696,8 @@ class _SurfaceStubControl
   }
 
   _SurfaceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Surface.serviceName;
 
 
   SurfaceGetIdNamespaceResponseParams _surfaceGetIdNamespaceResponseParamsFactory(int idNamespace) {
@@ -1745,19 +1810,16 @@ class _SurfaceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _SurfaceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class SurfaceStub
     extends bindings.Stub<Surface>
-    implements Surface {
+    implements Surface,
+               SurfaceInterface,
+               SurfaceInterfaceRequest {
+  SurfaceStub.unbound([Surface impl])
+      : super(new _SurfaceStubControl.unbound(impl));
+
   SurfaceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Surface impl])
       : super(new _SurfaceStubControl.fromEndpoint(endpoint, impl));
@@ -1766,23 +1828,17 @@ class SurfaceStub
       core.MojoHandle handle, [Surface impl])
       : super(new _SurfaceStubControl.fromHandle(handle, impl));
 
-  SurfaceStub.unbound([Surface impl])
-      : super(new _SurfaceStubControl.unbound(impl));
-
   static SurfaceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SurfaceStub"));
     return new SurfaceStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _SurfaceStubControl.serviceDescription;
-
 
   dynamic getIdNamespace([Function responseFactory = null]) {
     return impl.getIdNamespace(responseFactory);
   }
-  void setResourceReturner(Object returner) {
+  void setResourceReturner(ResourceReturnerInterface returner) {
     return impl.setResourceReturner(returner);
   }
   void createSurface(int idLocal) {

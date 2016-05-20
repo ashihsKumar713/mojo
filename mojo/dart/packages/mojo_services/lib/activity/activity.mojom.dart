@@ -697,7 +697,7 @@ class _ActivityGetUserFeedbackParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object userFeedback = null;
+  UserFeedbackInterfaceRequest userFeedback = null;
 
   _ActivityGetUserFeedbackParams() : super(kVersions.last.size);
 
@@ -1681,7 +1681,27 @@ class _ActivityServiceDescription implements service_describer.ServiceDescriptio
 
 abstract class Activity {
   static const String serviceName = "activity::Activity";
-  void getUserFeedback(Object userFeedback);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ActivityServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ActivityProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ActivityProxy p = new ActivityProxy.unbound();
+    String name = serviceName ?? Activity.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void getUserFeedback(UserFeedbackInterfaceRequest userFeedback);
   void startActivity(Intent intent);
   void finishCurrentActivity();
   void setTaskDescription(TaskDescription description);
@@ -1689,9 +1709,27 @@ abstract class Activity {
   void setRequestedOrientation(ScreenOrientation orientation);
 }
 
+abstract class ActivityInterface
+    implements bindings.MojoInterface<Activity>,
+               Activity {
+  factory ActivityInterface([Activity impl]) =>
+      new ActivityStub.unbound(impl);
+  factory ActivityInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Activity impl]) =>
+      new ActivityStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ActivityInterfaceRequest
+    implements bindings.MojoInterface<Activity>,
+               Activity {
+  factory ActivityInterfaceRequest() =>
+      new ActivityProxy.unbound();
+}
+
 class _ActivityProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Activity> {
   _ActivityProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1699,9 +1737,6 @@ class _ActivityProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ActivityProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ActivityServiceDescription();
 
   String get serviceName => Activity.serviceName;
 
@@ -1714,6 +1749,11 @@ class _ActivityProxyControl
     }
   }
 
+  Activity get impl => null;
+  set impl(Activity _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1722,8 +1762,10 @@ class _ActivityProxyControl
 }
 
 class ActivityProxy
-    extends bindings.Proxy
-    implements Activity {
+    extends bindings.Proxy<Activity>
+    implements Activity,
+               ActivityInterface,
+               ActivityInterfaceRequest {
   ActivityProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ActivityProxyControl.fromEndpoint(endpoint));
@@ -1740,15 +1782,8 @@ class ActivityProxy
     return new ActivityProxy.fromEndpoint(endpoint);
   }
 
-  factory ActivityProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ActivityProxy p = new ActivityProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void getUserFeedback(Object userFeedback) {
+  void getUserFeedback(UserFeedbackInterfaceRequest userFeedback) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1828,6 +1863,8 @@ class _ActivityStubControl
 
   _ActivityStubControl.unbound([this._impl]) : super.unbound();
 
+  String get serviceName => Activity.serviceName;
+
 
 
   dynamic handleMessage(bindings.ServiceMessage message) {
@@ -1901,19 +1938,16 @@ class _ActivityStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ActivityServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ActivityStub
     extends bindings.Stub<Activity>
-    implements Activity {
+    implements Activity,
+               ActivityInterface,
+               ActivityInterfaceRequest {
+  ActivityStub.unbound([Activity impl])
+      : super(new _ActivityStubControl.unbound(impl));
+
   ActivityStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Activity impl])
       : super(new _ActivityStubControl.fromEndpoint(endpoint, impl));
@@ -1922,20 +1956,14 @@ class ActivityStub
       core.MojoHandle handle, [Activity impl])
       : super(new _ActivityStubControl.fromHandle(handle, impl));
 
-  ActivityStub.unbound([Activity impl])
-      : super(new _ActivityStubControl.unbound(impl));
-
   static ActivityStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ActivityStub"));
     return new ActivityStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ActivityStubControl.serviceDescription;
 
-
-  void getUserFeedback(Object userFeedback) {
+  void getUserFeedback(UserFeedbackInterfaceRequest userFeedback) {
     return impl.getUserFeedback(userFeedback);
   }
   void startActivity(Intent intent) {
@@ -1972,14 +2000,52 @@ class _PathServiceServiceDescription implements service_describer.ServiceDescrip
 
 abstract class PathService {
   static const String serviceName = "activity::PathService";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _PathServiceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static PathServiceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    PathServiceProxy p = new PathServiceProxy.unbound();
+    String name = serviceName ?? PathService.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic getAppDataDir([Function responseFactory = null]);
   dynamic getFilesDir([Function responseFactory = null]);
   dynamic getCacheDir([Function responseFactory = null]);
 }
 
+abstract class PathServiceInterface
+    implements bindings.MojoInterface<PathService>,
+               PathService {
+  factory PathServiceInterface([PathService impl]) =>
+      new PathServiceStub.unbound(impl);
+  factory PathServiceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [PathService impl]) =>
+      new PathServiceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class PathServiceInterfaceRequest
+    implements bindings.MojoInterface<PathService>,
+               PathService {
+  factory PathServiceInterfaceRequest() =>
+      new PathServiceProxy.unbound();
+}
+
 class _PathServiceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<PathService> {
   _PathServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1987,9 +2053,6 @@ class _PathServiceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _PathServiceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _PathServiceServiceDescription();
 
   String get serviceName => PathService.serviceName;
 
@@ -2062,6 +2125,11 @@ class _PathServiceProxyControl
     }
   }
 
+  PathService get impl => null;
+  set impl(PathService _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -2070,8 +2138,10 @@ class _PathServiceProxyControl
 }
 
 class PathServiceProxy
-    extends bindings.Proxy
-    implements PathService {
+    extends bindings.Proxy<PathService>
+    implements PathService,
+               PathServiceInterface,
+               PathServiceInterfaceRequest {
   PathServiceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _PathServiceProxyControl.fromEndpoint(endpoint));
@@ -2086,13 +2156,6 @@ class PathServiceProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For PathServiceProxy"));
     return new PathServiceProxy.fromEndpoint(endpoint);
-  }
-
-  factory PathServiceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    PathServiceProxy p = new PathServiceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -2140,6 +2203,8 @@ class _PathServiceStubControl
   }
 
   _PathServiceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => PathService.serviceName;
 
 
   PathServiceGetAppDataDirResponseParams _pathServiceGetAppDataDirResponseParamsFactory(String path) {
@@ -2261,19 +2326,16 @@ class _PathServiceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _PathServiceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class PathServiceStub
     extends bindings.Stub<PathService>
-    implements PathService {
+    implements PathService,
+               PathServiceInterface,
+               PathServiceInterfaceRequest {
+  PathServiceStub.unbound([PathService impl])
+      : super(new _PathServiceStubControl.unbound(impl));
+
   PathServiceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [PathService impl])
       : super(new _PathServiceStubControl.fromEndpoint(endpoint, impl));
@@ -2282,17 +2344,11 @@ class PathServiceStub
       core.MojoHandle handle, [PathService impl])
       : super(new _PathServiceStubControl.fromHandle(handle, impl));
 
-  PathServiceStub.unbound([PathService impl])
-      : super(new _PathServiceStubControl.unbound(impl));
-
   static PathServiceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For PathServiceStub"));
     return new PathServiceStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _PathServiceStubControl.serviceDescription;
 
 
   dynamic getAppDataDir([Function responseFactory = null]) {
@@ -2322,13 +2378,51 @@ class _UserFeedbackServiceDescription implements service_describer.ServiceDescri
 
 abstract class UserFeedback {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _UserFeedbackServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static UserFeedbackProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    UserFeedbackProxy p = new UserFeedbackProxy.unbound();
+    String name = serviceName ?? UserFeedback.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void performHapticFeedback(HapticFeedbackType type);
   void performAuralFeedback(AuralFeedbackType type);
 }
 
+abstract class UserFeedbackInterface
+    implements bindings.MojoInterface<UserFeedback>,
+               UserFeedback {
+  factory UserFeedbackInterface([UserFeedback impl]) =>
+      new UserFeedbackStub.unbound(impl);
+  factory UserFeedbackInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [UserFeedback impl]) =>
+      new UserFeedbackStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class UserFeedbackInterfaceRequest
+    implements bindings.MojoInterface<UserFeedback>,
+               UserFeedback {
+  factory UserFeedbackInterfaceRequest() =>
+      new UserFeedbackProxy.unbound();
+}
+
 class _UserFeedbackProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<UserFeedback> {
   _UserFeedbackProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -2336,9 +2430,6 @@ class _UserFeedbackProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _UserFeedbackProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _UserFeedbackServiceDescription();
 
   String get serviceName => UserFeedback.serviceName;
 
@@ -2351,6 +2442,11 @@ class _UserFeedbackProxyControl
     }
   }
 
+  UserFeedback get impl => null;
+  set impl(UserFeedback _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -2359,8 +2455,10 @@ class _UserFeedbackProxyControl
 }
 
 class UserFeedbackProxy
-    extends bindings.Proxy
-    implements UserFeedback {
+    extends bindings.Proxy<UserFeedback>
+    implements UserFeedback,
+               UserFeedbackInterface,
+               UserFeedbackInterfaceRequest {
   UserFeedbackProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _UserFeedbackProxyControl.fromEndpoint(endpoint));
@@ -2375,13 +2473,6 @@ class UserFeedbackProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UserFeedbackProxy"));
     return new UserFeedbackProxy.fromEndpoint(endpoint);
-  }
-
-  factory UserFeedbackProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    UserFeedbackProxy p = new UserFeedbackProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -2425,6 +2516,8 @@ class _UserFeedbackStubControl
   }
 
   _UserFeedbackStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => UserFeedback.serviceName;
 
 
 
@@ -2481,19 +2574,16 @@ class _UserFeedbackStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _UserFeedbackServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class UserFeedbackStub
     extends bindings.Stub<UserFeedback>
-    implements UserFeedback {
+    implements UserFeedback,
+               UserFeedbackInterface,
+               UserFeedbackInterfaceRequest {
+  UserFeedbackStub.unbound([UserFeedback impl])
+      : super(new _UserFeedbackStubControl.unbound(impl));
+
   UserFeedbackStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [UserFeedback impl])
       : super(new _UserFeedbackStubControl.fromEndpoint(endpoint, impl));
@@ -2502,17 +2592,11 @@ class UserFeedbackStub
       core.MojoHandle handle, [UserFeedback impl])
       : super(new _UserFeedbackStubControl.fromHandle(handle, impl));
 
-  UserFeedbackStub.unbound([UserFeedback impl])
-      : super(new _UserFeedbackStubControl.unbound(impl));
-
   static UserFeedbackStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UserFeedbackStub"));
     return new UserFeedbackStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _UserFeedbackStubControl.serviceDescription;
 
 
   void performHapticFeedback(HapticFeedbackType type) {

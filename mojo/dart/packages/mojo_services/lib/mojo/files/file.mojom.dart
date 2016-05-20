@@ -1693,7 +1693,7 @@ class _FileDupParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object file = null;
+  FileInterfaceRequest file = null;
 
   _FileDupParams() : super(kVersions.last.size);
 
@@ -1840,7 +1840,7 @@ class _FileReopenParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object file = null;
+  FileInterfaceRequest file = null;
   int openFlags = 0;
 
   _FileReopenParams() : super(kVersions.last.size);
@@ -2345,6 +2345,26 @@ class _FileServiceDescription implements service_describer.ServiceDescription {
 
 abstract class File {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _FileServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static FileProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    FileProxy p = new FileProxy.unbound();
+    String name = serviceName ?? File.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic close_([Function responseFactory = null]);
   dynamic read(int numBytesToRead,int offset,types_mojom.Whence whence,[Function responseFactory = null]);
   dynamic write(List<int> bytesToWrite,int offset,types_mojom.Whence whence,[Function responseFactory = null]);
@@ -2355,15 +2375,33 @@ abstract class File {
   dynamic stat([Function responseFactory = null]);
   dynamic truncate(int size,[Function responseFactory = null]);
   dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]);
-  dynamic dup(Object file,[Function responseFactory = null]);
-  dynamic reopen(Object file,int openFlags,[Function responseFactory = null]);
+  dynamic dup(FileInterfaceRequest file,[Function responseFactory = null]);
+  dynamic reopen(FileInterfaceRequest file,int openFlags,[Function responseFactory = null]);
   dynamic asBuffer([Function responseFactory = null]);
   dynamic ioctl(int request,List<int> inValues,[Function responseFactory = null]);
 }
 
+abstract class FileInterface
+    implements bindings.MojoInterface<File>,
+               File {
+  factory FileInterface([File impl]) =>
+      new FileStub.unbound(impl);
+  factory FileInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [File impl]) =>
+      new FileStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class FileInterfaceRequest
+    implements bindings.MojoInterface<File>,
+               File {
+  factory FileInterfaceRequest() =>
+      new FileProxy.unbound();
+}
+
 class _FileProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<File> {
   _FileProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -2371,9 +2409,6 @@ class _FileProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _FileProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _FileServiceDescription();
 
   String get serviceName => File.serviceName;
 
@@ -2666,6 +2701,11 @@ class _FileProxyControl
     }
   }
 
+  File get impl => null;
+  set impl(File _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -2674,8 +2714,10 @@ class _FileProxyControl
 }
 
 class FileProxy
-    extends bindings.Proxy
-    implements File {
+    extends bindings.Proxy<File>
+    implements File,
+               FileInterface,
+               FileInterfaceRequest {
   FileProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _FileProxyControl.fromEndpoint(endpoint));
@@ -2690,13 +2732,6 @@ class FileProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For FileProxy"));
     return new FileProxy.fromEndpoint(endpoint);
-  }
-
-  factory FileProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    FileProxy p = new FileProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -2798,7 +2833,7 @@ class FileProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  dynamic dup(Object file,[Function responseFactory = null]) {
+  dynamic dup(FileInterfaceRequest file,[Function responseFactory = null]) {
     var params = new _FileDupParams();
     params.file = file;
     return ctrl.sendMessageWithRequestId(
@@ -2807,7 +2842,7 @@ class FileProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  dynamic reopen(Object file,int openFlags,[Function responseFactory = null]) {
+  dynamic reopen(FileInterfaceRequest file,int openFlags,[Function responseFactory = null]) {
     var params = new _FileReopenParams();
     params.file = file;
     params.openFlags = openFlags;
@@ -2855,6 +2890,8 @@ class _FileStubControl
   }
 
   _FileStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => File.serviceName;
 
 
   FileCloseResponseParams _fileCloseResponseParamsFactory(types_mojom.Error err) {
@@ -3278,19 +3315,16 @@ class _FileStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _FileServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class FileStub
     extends bindings.Stub<File>
-    implements File {
+    implements File,
+               FileInterface,
+               FileInterfaceRequest {
+  FileStub.unbound([File impl])
+      : super(new _FileStubControl.unbound(impl));
+
   FileStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [File impl])
       : super(new _FileStubControl.fromEndpoint(endpoint, impl));
@@ -3299,17 +3333,11 @@ class FileStub
       core.MojoHandle handle, [File impl])
       : super(new _FileStubControl.fromHandle(handle, impl));
 
-  FileStub.unbound([File impl])
-      : super(new _FileStubControl.unbound(impl));
-
   static FileStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For FileStub"));
     return new FileStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _FileStubControl.serviceDescription;
 
 
   dynamic close_([Function responseFactory = null]) {
@@ -3342,10 +3370,10 @@ class FileStub
   dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]) {
     return impl.touch(atime,mtime,responseFactory);
   }
-  dynamic dup(Object file,[Function responseFactory = null]) {
+  dynamic dup(FileInterfaceRequest file,[Function responseFactory = null]) {
     return impl.dup(file,responseFactory);
   }
-  dynamic reopen(Object file,int openFlags,[Function responseFactory = null]) {
+  dynamic reopen(FileInterfaceRequest file,int openFlags,[Function responseFactory = null]) {
     return impl.reopen(file,openFlags,responseFactory);
   }
   dynamic asBuffer([Function responseFactory = null]) {

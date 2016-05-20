@@ -15,7 +15,7 @@ class _TraceProviderStartTracingParams extends bindings.Struct {
     const bindings.StructDataHeader(24, 0)
   ];
   String categories = null;
-  Object recorder = null;
+  TraceRecorderInterface recorder = null;
 
   _TraceProviderStartTracingParams() : super(kVersions.last.size);
 
@@ -381,13 +381,51 @@ class _TraceProviderServiceDescription implements service_describer.ServiceDescr
 
 abstract class TraceProvider {
   static const String serviceName = "tracing::TraceProvider";
-  void startTracing(String categories, Object recorder);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _TraceProviderServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static TraceProviderProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    TraceProviderProxy p = new TraceProviderProxy.unbound();
+    String name = serviceName ?? TraceProvider.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void startTracing(String categories, TraceRecorderInterface recorder);
   void stopTracing();
+}
+
+abstract class TraceProviderInterface
+    implements bindings.MojoInterface<TraceProvider>,
+               TraceProvider {
+  factory TraceProviderInterface([TraceProvider impl]) =>
+      new TraceProviderStub.unbound(impl);
+  factory TraceProviderInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [TraceProvider impl]) =>
+      new TraceProviderStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class TraceProviderInterfaceRequest
+    implements bindings.MojoInterface<TraceProvider>,
+               TraceProvider {
+  factory TraceProviderInterfaceRequest() =>
+      new TraceProviderProxy.unbound();
 }
 
 class _TraceProviderProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<TraceProvider> {
   _TraceProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -395,9 +433,6 @@ class _TraceProviderProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _TraceProviderProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _TraceProviderServiceDescription();
 
   String get serviceName => TraceProvider.serviceName;
 
@@ -410,6 +445,11 @@ class _TraceProviderProxyControl
     }
   }
 
+  TraceProvider get impl => null;
+  set impl(TraceProvider _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -418,8 +458,10 @@ class _TraceProviderProxyControl
 }
 
 class TraceProviderProxy
-    extends bindings.Proxy
-    implements TraceProvider {
+    extends bindings.Proxy<TraceProvider>
+    implements TraceProvider,
+               TraceProviderInterface,
+               TraceProviderInterfaceRequest {
   TraceProviderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TraceProviderProxyControl.fromEndpoint(endpoint));
@@ -436,15 +478,8 @@ class TraceProviderProxy
     return new TraceProviderProxy.fromEndpoint(endpoint);
   }
 
-  factory TraceProviderProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    TraceProviderProxy p = new TraceProviderProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void startTracing(String categories, Object recorder) {
+  void startTracing(String categories, TraceRecorderInterface recorder) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -484,6 +519,8 @@ class _TraceProviderStubControl
   }
 
   _TraceProviderStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => TraceProvider.serviceName;
 
 
 
@@ -538,19 +575,16 @@ class _TraceProviderStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _TraceProviderServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class TraceProviderStub
     extends bindings.Stub<TraceProvider>
-    implements TraceProvider {
+    implements TraceProvider,
+               TraceProviderInterface,
+               TraceProviderInterfaceRequest {
+  TraceProviderStub.unbound([TraceProvider impl])
+      : super(new _TraceProviderStubControl.unbound(impl));
+
   TraceProviderStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TraceProvider impl])
       : super(new _TraceProviderStubControl.fromEndpoint(endpoint, impl));
@@ -559,20 +593,14 @@ class TraceProviderStub
       core.MojoHandle handle, [TraceProvider impl])
       : super(new _TraceProviderStubControl.fromHandle(handle, impl));
 
-  TraceProviderStub.unbound([TraceProvider impl])
-      : super(new _TraceProviderStubControl.unbound(impl));
-
   static TraceProviderStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TraceProviderStub"));
     return new TraceProviderStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _TraceProviderStubControl.serviceDescription;
 
-
-  void startTracing(String categories, Object recorder) {
+  void startTracing(String categories, TraceRecorderInterface recorder) {
     return impl.startTracing(categories, recorder);
   }
   void stopTracing() {
@@ -595,12 +623,50 @@ class _TraceRecorderServiceDescription implements service_describer.ServiceDescr
 
 abstract class TraceRecorder {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _TraceRecorderServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static TraceRecorderProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    TraceRecorderProxy p = new TraceRecorderProxy.unbound();
+    String name = serviceName ?? TraceRecorder.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void record(String json);
+}
+
+abstract class TraceRecorderInterface
+    implements bindings.MojoInterface<TraceRecorder>,
+               TraceRecorder {
+  factory TraceRecorderInterface([TraceRecorder impl]) =>
+      new TraceRecorderStub.unbound(impl);
+  factory TraceRecorderInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [TraceRecorder impl]) =>
+      new TraceRecorderStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class TraceRecorderInterfaceRequest
+    implements bindings.MojoInterface<TraceRecorder>,
+               TraceRecorder {
+  factory TraceRecorderInterfaceRequest() =>
+      new TraceRecorderProxy.unbound();
 }
 
 class _TraceRecorderProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<TraceRecorder> {
   _TraceRecorderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -608,9 +674,6 @@ class _TraceRecorderProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _TraceRecorderProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _TraceRecorderServiceDescription();
 
   String get serviceName => TraceRecorder.serviceName;
 
@@ -623,6 +686,11 @@ class _TraceRecorderProxyControl
     }
   }
 
+  TraceRecorder get impl => null;
+  set impl(TraceRecorder _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -631,8 +699,10 @@ class _TraceRecorderProxyControl
 }
 
 class TraceRecorderProxy
-    extends bindings.Proxy
-    implements TraceRecorder {
+    extends bindings.Proxy<TraceRecorder>
+    implements TraceRecorder,
+               TraceRecorderInterface,
+               TraceRecorderInterfaceRequest {
   TraceRecorderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TraceRecorderProxyControl.fromEndpoint(endpoint));
@@ -647,13 +717,6 @@ class TraceRecorderProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TraceRecorderProxy"));
     return new TraceRecorderProxy.fromEndpoint(endpoint);
-  }
-
-  factory TraceRecorderProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    TraceRecorderProxy p = new TraceRecorderProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -687,6 +750,8 @@ class _TraceRecorderStubControl
   }
 
   _TraceRecorderStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => TraceRecorder.serviceName;
 
 
 
@@ -738,19 +803,16 @@ class _TraceRecorderStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _TraceRecorderServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class TraceRecorderStub
     extends bindings.Stub<TraceRecorder>
-    implements TraceRecorder {
+    implements TraceRecorder,
+               TraceRecorderInterface,
+               TraceRecorderInterfaceRequest {
+  TraceRecorderStub.unbound([TraceRecorder impl])
+      : super(new _TraceRecorderStubControl.unbound(impl));
+
   TraceRecorderStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TraceRecorder impl])
       : super(new _TraceRecorderStubControl.fromEndpoint(endpoint, impl));
@@ -759,17 +821,11 @@ class TraceRecorderStub
       core.MojoHandle handle, [TraceRecorder impl])
       : super(new _TraceRecorderStubControl.fromHandle(handle, impl));
 
-  TraceRecorderStub.unbound([TraceRecorder impl])
-      : super(new _TraceRecorderStubControl.unbound(impl));
-
   static TraceRecorderStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TraceRecorderStub"));
     return new TraceRecorderStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _TraceRecorderStubControl.serviceDescription;
 
 
   void record(String json) {
@@ -793,13 +849,51 @@ class _TraceCollectorServiceDescription implements service_describer.ServiceDesc
 
 abstract class TraceCollector {
   static const String serviceName = "tracing::TraceCollector";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _TraceCollectorServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static TraceCollectorProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    TraceCollectorProxy p = new TraceCollectorProxy.unbound();
+    String name = serviceName ?? TraceCollector.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void start(core.MojoDataPipeProducer stream, String categories);
   void stopAndFlush();
 }
 
+abstract class TraceCollectorInterface
+    implements bindings.MojoInterface<TraceCollector>,
+               TraceCollector {
+  factory TraceCollectorInterface([TraceCollector impl]) =>
+      new TraceCollectorStub.unbound(impl);
+  factory TraceCollectorInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [TraceCollector impl]) =>
+      new TraceCollectorStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class TraceCollectorInterfaceRequest
+    implements bindings.MojoInterface<TraceCollector>,
+               TraceCollector {
+  factory TraceCollectorInterfaceRequest() =>
+      new TraceCollectorProxy.unbound();
+}
+
 class _TraceCollectorProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<TraceCollector> {
   _TraceCollectorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -807,9 +901,6 @@ class _TraceCollectorProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _TraceCollectorProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _TraceCollectorServiceDescription();
 
   String get serviceName => TraceCollector.serviceName;
 
@@ -822,6 +913,11 @@ class _TraceCollectorProxyControl
     }
   }
 
+  TraceCollector get impl => null;
+  set impl(TraceCollector _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -830,8 +926,10 @@ class _TraceCollectorProxyControl
 }
 
 class TraceCollectorProxy
-    extends bindings.Proxy
-    implements TraceCollector {
+    extends bindings.Proxy<TraceCollector>
+    implements TraceCollector,
+               TraceCollectorInterface,
+               TraceCollectorInterfaceRequest {
   TraceCollectorProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _TraceCollectorProxyControl.fromEndpoint(endpoint));
@@ -846,13 +944,6 @@ class TraceCollectorProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TraceCollectorProxy"));
     return new TraceCollectorProxy.fromEndpoint(endpoint);
-  }
-
-  factory TraceCollectorProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    TraceCollectorProxy p = new TraceCollectorProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -896,6 +987,8 @@ class _TraceCollectorStubControl
   }
 
   _TraceCollectorStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => TraceCollector.serviceName;
 
 
 
@@ -950,19 +1043,16 @@ class _TraceCollectorStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _TraceCollectorServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class TraceCollectorStub
     extends bindings.Stub<TraceCollector>
-    implements TraceCollector {
+    implements TraceCollector,
+               TraceCollectorInterface,
+               TraceCollectorInterfaceRequest {
+  TraceCollectorStub.unbound([TraceCollector impl])
+      : super(new _TraceCollectorStubControl.unbound(impl));
+
   TraceCollectorStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [TraceCollector impl])
       : super(new _TraceCollectorStubControl.fromEndpoint(endpoint, impl));
@@ -971,17 +1061,11 @@ class TraceCollectorStub
       core.MojoHandle handle, [TraceCollector impl])
       : super(new _TraceCollectorStubControl.fromHandle(handle, impl));
 
-  TraceCollectorStub.unbound([TraceCollector impl])
-      : super(new _TraceCollectorStubControl.unbound(impl));
-
   static TraceCollectorStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TraceCollectorStub"));
     return new TraceCollectorStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _TraceCollectorStubControl.serviceDescription;
 
 
   void start(core.MojoDataPipeProducer stream, String categories) {

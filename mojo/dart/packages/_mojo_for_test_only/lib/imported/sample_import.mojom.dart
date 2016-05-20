@@ -357,12 +357,50 @@ class _ImportedInterfaceServiceDescription implements service_describer.ServiceD
 
 abstract class ImportedInterface {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ImportedInterfaceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ImportedInterfaceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ImportedInterfaceProxy p = new ImportedInterfaceProxy.unbound();
+    String name = serviceName ?? ImportedInterface.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   void doSomething();
+}
+
+abstract class ImportedInterfaceInterface
+    implements bindings.MojoInterface<ImportedInterface>,
+               ImportedInterface {
+  factory ImportedInterfaceInterface([ImportedInterface impl]) =>
+      new ImportedInterfaceStub.unbound(impl);
+  factory ImportedInterfaceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [ImportedInterface impl]) =>
+      new ImportedInterfaceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ImportedInterfaceInterfaceRequest
+    implements bindings.MojoInterface<ImportedInterface>,
+               ImportedInterface {
+  factory ImportedInterfaceInterfaceRequest() =>
+      new ImportedInterfaceProxy.unbound();
 }
 
 class _ImportedInterfaceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<ImportedInterface> {
   _ImportedInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -370,9 +408,6 @@ class _ImportedInterfaceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ImportedInterfaceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ImportedInterfaceServiceDescription();
 
   String get serviceName => ImportedInterface.serviceName;
 
@@ -385,6 +420,11 @@ class _ImportedInterfaceProxyControl
     }
   }
 
+  ImportedInterface get impl => null;
+  set impl(ImportedInterface _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -393,8 +433,10 @@ class _ImportedInterfaceProxyControl
 }
 
 class ImportedInterfaceProxy
-    extends bindings.Proxy
-    implements ImportedInterface {
+    extends bindings.Proxy<ImportedInterface>
+    implements ImportedInterface,
+               ImportedInterfaceInterface,
+               ImportedInterfaceInterfaceRequest {
   ImportedInterfaceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ImportedInterfaceProxyControl.fromEndpoint(endpoint));
@@ -409,13 +451,6 @@ class ImportedInterfaceProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ImportedInterfaceProxy"));
     return new ImportedInterfaceProxy.fromEndpoint(endpoint);
-  }
-
-  factory ImportedInterfaceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ImportedInterfaceProxy p = new ImportedInterfaceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -448,6 +483,8 @@ class _ImportedInterfaceStubControl
   }
 
   _ImportedInterfaceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => ImportedInterface.serviceName;
 
 
 
@@ -497,19 +534,16 @@ class _ImportedInterfaceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ImportedInterfaceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ImportedInterfaceStub
     extends bindings.Stub<ImportedInterface>
-    implements ImportedInterface {
+    implements ImportedInterface,
+               ImportedInterfaceInterface,
+               ImportedInterfaceInterfaceRequest {
+  ImportedInterfaceStub.unbound([ImportedInterface impl])
+      : super(new _ImportedInterfaceStubControl.unbound(impl));
+
   ImportedInterfaceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [ImportedInterface impl])
       : super(new _ImportedInterfaceStubControl.fromEndpoint(endpoint, impl));
@@ -518,17 +552,11 @@ class ImportedInterfaceStub
       core.MojoHandle handle, [ImportedInterface impl])
       : super(new _ImportedInterfaceStubControl.fromHandle(handle, impl));
 
-  ImportedInterfaceStub.unbound([ImportedInterface impl])
-      : super(new _ImportedInterfaceStubControl.unbound(impl));
-
   static ImportedInterfaceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ImportedInterfaceStub"));
     return new ImportedInterfaceStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ImportedInterfaceStubControl.serviceDescription;
 
 
   void doSomething() {

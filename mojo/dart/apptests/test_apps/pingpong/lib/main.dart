@@ -11,39 +11,34 @@ import 'package:mojo/core.dart';
 import 'package:_mojo_for_test_only/test/pingpong_service.mojom.dart';
 
 class PingPongClientImpl implements PingPongClient {
-  final PingPongClientStub stub;
+  PingPongClientInterface client;
   Completer _completer;
   int _count;
 
-  PingPongClientImpl.unbound(this._count, this._completer)
-      : stub = new PingPongClientStub.unbound() {
-    stub.impl = this;
+  PingPongClientImpl(this._count, this._completer) {
+    client = new PingPongClientInterface(this);
   }
 
   void pong(int pongValue) {
     if (pongValue == _count) {
       _completer.complete(null);
-      stub.close();
+      client.close();
     }
   }
 }
 
 class PingPongServiceImpl implements PingPongService {
-  PingPongServiceStub _stub;
+  PingPongService _service;
   Application _application;
-  PingPongClientProxy _pingPongClient;
+  PingPongClient _pingPongClient;
 
   PingPongServiceImpl(this._application, MojoMessagePipeEndpoint endpoint) {
-    _stub = new PingPongServiceStub.fromEndpoint(endpoint, this);
+    _service = new PingPongServiceInterface.fromEndpoint(endpoint, this);
   }
 
-  PingPongServiceImpl.fromStub(this._stub) {
-    _stub.impl = this;
-  }
-
-  void setClient(Proxy proxy) {
+  void setClient(PingPongClientInterface client) {
     assert(_pingPongClient == null);
-    _pingPongClient = proxy;
+    _pingPongClient = client;
   }
 
   void ping(int pingValue) {
@@ -58,11 +53,11 @@ class PingPongServiceImpl implements PingPongService {
       return responseFactory(false);
     }
     var completer = new Completer();
-    var pingPongService = new PingPongServiceProxy.unbound();
+    var pingPongService = new PingPongServiceInterfaceRequest();
     _application.connectToService(url, pingPongService);
 
-    var pingPongClient = new PingPongClientImpl.unbound(count, completer);
-    pingPongService.setClient(pingPongClient.stub);
+    var pingPongClient = new PingPongClientImpl(count, completer);
+    pingPongService.setClient(pingPongClient.client);
 
     for (var i = 0; i < count; i++) {
       pingPongService.ping(i);
@@ -73,12 +68,12 @@ class PingPongServiceImpl implements PingPongService {
     return responseFactory(true);
   }
 
-  Future pingTargetService(Proxy proxy, int count,
+  Future pingTargetService(PingPongServiceInterface service, int count,
       [Function responseFactory]) async {
-    var pingPongService = proxy;
+    var pingPongService = service;
     var completer = new Completer();
-    var client = new PingPongClientImpl.unbound(count, completer);
-    pingPongService.setClient(client.stub);
+    var client = new PingPongClientImpl(count, completer);
+    pingPongService.setClient(client.client);
 
     for (var i = 0; i < count; i++) {
       pingPongService.ping(i);
@@ -89,30 +84,29 @@ class PingPongServiceImpl implements PingPongService {
     return responseFactory(true);
   }
 
-  getPingPongService(PingPongServiceStub serviceStub) {
-    var targetServiceProxy = new PingPongServiceProxy.unbound();
-    _application.connectToService(
-        "mojo:dart_pingpong_target", targetServiceProxy);
+  getPingPongService(PingPongServiceInterfaceRequest service) {
+    var targetService = new PingPongServiceInterfaceRequest();
+    _application.connectToService("mojo:dart_pingpong_target", targetService);
 
     // Pass along the interface request to another implementation of the
     // service.
-    targetServiceProxy.getPingPongService(serviceStub);
-    targetServiceProxy.close();
+    targetService.getPingPongService(service);
+    targetService.close();
   }
 
-  getPingPongServiceDelayed(PingPongServiceStub serviceStub) {
+  getPingPongServiceDelayed(PingPongServiceInterfaceRequest service) {
     Timer.run(() {
-      var endpoint = serviceStub.ctrl.unbind();
+      var endpoint = service.ctrl.unbind();
       new Timer(const Duration(milliseconds: 10), () {
-        var targetServiceProxy = new PingPongServiceProxy.unbound();
+        var targetService = new PingPongServiceInterfaceRequest();
         _application.connectToService(
-            "mojo:dart_pingpong_target", targetServiceProxy);
+            "mojo:dart_pingpong_target", targetService);
 
         // Pass along the interface request to another implementation of the
         // service.
-        serviceStub.ctrl.bind(endpoint);
-        targetServiceProxy.getPingPongService(serviceStub);
-        targetServiceProxy.close();
+        service.ctrl.bind(endpoint);
+        targetService.getPingPongService(service);
+        targetService.close();
       });
     });
   }
@@ -128,7 +122,7 @@ class PingPongApplication extends Application {
       ApplicationConnection connection) {
     connection.provideService(PingPongService.serviceName,
         (endpoint) => new PingPongServiceImpl(this, endpoint),
-        description: PingPongServiceStub.serviceDescription);
+        description: PingPongService.serviceDescription);
   }
 }
 

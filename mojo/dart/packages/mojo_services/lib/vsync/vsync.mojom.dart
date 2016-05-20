@@ -154,12 +154,50 @@ class _VSyncProviderServiceDescription implements service_describer.ServiceDescr
 
 abstract class VSyncProvider {
   static const String serviceName = "vsync::VSyncProvider";
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _VSyncProviderServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static VSyncProviderProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    VSyncProviderProxy p = new VSyncProviderProxy.unbound();
+    String name = serviceName ?? VSyncProvider.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic awaitVSync([Function responseFactory = null]);
+}
+
+abstract class VSyncProviderInterface
+    implements bindings.MojoInterface<VSyncProvider>,
+               VSyncProvider {
+  factory VSyncProviderInterface([VSyncProvider impl]) =>
+      new VSyncProviderStub.unbound(impl);
+  factory VSyncProviderInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [VSyncProvider impl]) =>
+      new VSyncProviderStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class VSyncProviderInterfaceRequest
+    implements bindings.MojoInterface<VSyncProvider>,
+               VSyncProvider {
+  factory VSyncProviderInterfaceRequest() =>
+      new VSyncProviderProxy.unbound();
 }
 
 class _VSyncProviderProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<VSyncProvider> {
   _VSyncProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -167,9 +205,6 @@ class _VSyncProviderProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _VSyncProviderProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _VSyncProviderServiceDescription();
 
   String get serviceName => VSyncProvider.serviceName;
 
@@ -202,6 +237,11 @@ class _VSyncProviderProxyControl
     }
   }
 
+  VSyncProvider get impl => null;
+  set impl(VSyncProvider _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -210,8 +250,10 @@ class _VSyncProviderProxyControl
 }
 
 class VSyncProviderProxy
-    extends bindings.Proxy
-    implements VSyncProvider {
+    extends bindings.Proxy<VSyncProvider>
+    implements VSyncProvider,
+               VSyncProviderInterface,
+               VSyncProviderInterfaceRequest {
   VSyncProviderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _VSyncProviderProxyControl.fromEndpoint(endpoint));
@@ -226,13 +268,6 @@ class VSyncProviderProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For VSyncProviderProxy"));
     return new VSyncProviderProxy.fromEndpoint(endpoint);
-  }
-
-  factory VSyncProviderProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    VSyncProviderProxy p = new VSyncProviderProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -264,6 +299,8 @@ class _VSyncProviderStubControl
   }
 
   _VSyncProviderStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => VSyncProvider.serviceName;
 
 
   VSyncProviderAwaitVSyncResponseParams _vSyncProviderAwaitVSyncResponseParamsFactory(int timeStamp) {
@@ -335,19 +372,16 @@ class _VSyncProviderStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _VSyncProviderServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class VSyncProviderStub
     extends bindings.Stub<VSyncProvider>
-    implements VSyncProvider {
+    implements VSyncProvider,
+               VSyncProviderInterface,
+               VSyncProviderInterfaceRequest {
+  VSyncProviderStub.unbound([VSyncProvider impl])
+      : super(new _VSyncProviderStubControl.unbound(impl));
+
   VSyncProviderStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [VSyncProvider impl])
       : super(new _VSyncProviderStubControl.fromEndpoint(endpoint, impl));
@@ -356,17 +390,11 @@ class VSyncProviderStub
       core.MojoHandle handle, [VSyncProvider impl])
       : super(new _VSyncProviderStubControl.fromHandle(handle, impl));
 
-  VSyncProviderStub.unbound([VSyncProvider impl])
-      : super(new _VSyncProviderStubControl.unbound(impl));
-
   static VSyncProviderStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For VSyncProviderStub"));
     return new VSyncProviderStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _VSyncProviderStubControl.serviceDescription;
 
 
   dynamic awaitVSync([Function responseFactory = null]) {

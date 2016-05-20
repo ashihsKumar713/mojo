@@ -338,7 +338,7 @@ class _AudioTrackConfigureParams extends bindings.Struct {
     const bindings.StructDataHeader(24, 0)
   ];
   AudioTrackConfiguration configuration = null;
-  Object pipe = null;
+  media_transport_mojom.MediaConsumerInterfaceRequest pipe = null;
 
   _AudioTrackConfigureParams() : super(kVersions.last.size);
 
@@ -422,7 +422,7 @@ class _AudioTrackGetRateControlParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object rateControl = null;
+  rate_control_mojom.RateControlInterfaceRequest rateControl = null;
 
   _AudioTrackGetRateControlParams() : super(kVersions.last.size);
 
@@ -578,17 +578,55 @@ class _AudioTrackServiceDescription implements service_describer.ServiceDescript
 
 abstract class AudioTrack {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _AudioTrackServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static AudioTrackProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    AudioTrackProxy p = new AudioTrackProxy.unbound();
+    String name = serviceName ?? AudioTrack.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic describe([Function responseFactory = null]);
-  void configure(AudioTrackConfiguration configuration, Object pipe);
-  void getRateControl(Object rateControl);
+  void configure(AudioTrackConfiguration configuration, media_transport_mojom.MediaConsumerInterfaceRequest pipe);
+  void getRateControl(rate_control_mojom.RateControlInterfaceRequest rateControl);
   void setGain(double dbGain);
   static const double kMutedGain = -160.0;
   static const double kMaxGain = 20.0;
 }
 
+abstract class AudioTrackInterface
+    implements bindings.MojoInterface<AudioTrack>,
+               AudioTrack {
+  factory AudioTrackInterface([AudioTrack impl]) =>
+      new AudioTrackStub.unbound(impl);
+  factory AudioTrackInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [AudioTrack impl]) =>
+      new AudioTrackStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class AudioTrackInterfaceRequest
+    implements bindings.MojoInterface<AudioTrack>,
+               AudioTrack {
+  factory AudioTrackInterfaceRequest() =>
+      new AudioTrackProxy.unbound();
+}
+
 class _AudioTrackProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<AudioTrack> {
   _AudioTrackProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -596,9 +634,6 @@ class _AudioTrackProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _AudioTrackProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _AudioTrackServiceDescription();
 
   String get serviceName => AudioTrack.serviceName;
 
@@ -631,6 +666,11 @@ class _AudioTrackProxyControl
     }
   }
 
+  AudioTrack get impl => null;
+  set impl(AudioTrack _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -639,8 +679,10 @@ class _AudioTrackProxyControl
 }
 
 class AudioTrackProxy
-    extends bindings.Proxy
-    implements AudioTrack {
+    extends bindings.Proxy<AudioTrack>
+    implements AudioTrack,
+               AudioTrackInterface,
+               AudioTrackInterfaceRequest {
   AudioTrackProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _AudioTrackProxyControl.fromEndpoint(endpoint));
@@ -657,13 +699,6 @@ class AudioTrackProxy
     return new AudioTrackProxy.fromEndpoint(endpoint);
   }
 
-  factory AudioTrackProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    AudioTrackProxy p = new AudioTrackProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
-
 
   dynamic describe([Function responseFactory = null]) {
     var params = new _AudioTrackDescribeParams();
@@ -673,7 +708,7 @@ class AudioTrackProxy
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
-  void configure(AudioTrackConfiguration configuration, Object pipe) {
+  void configure(AudioTrackConfiguration configuration, media_transport_mojom.MediaConsumerInterfaceRequest pipe) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -684,7 +719,7 @@ class AudioTrackProxy
     ctrl.sendMessage(params,
         _audioTrackMethodConfigureName);
   }
-  void getRateControl(Object rateControl) {
+  void getRateControl(rate_control_mojom.RateControlInterfaceRequest rateControl) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -724,6 +759,8 @@ class _AudioTrackStubControl
   }
 
   _AudioTrackStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => AudioTrack.serviceName;
 
 
   AudioTrackDescribeResponseParams _audioTrackDescribeResponseParamsFactory(AudioTrackDescriptor descriptor) {
@@ -810,19 +847,16 @@ class _AudioTrackStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _AudioTrackServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class AudioTrackStub
     extends bindings.Stub<AudioTrack>
-    implements AudioTrack {
+    implements AudioTrack,
+               AudioTrackInterface,
+               AudioTrackInterfaceRequest {
+  AudioTrackStub.unbound([AudioTrack impl])
+      : super(new _AudioTrackStubControl.unbound(impl));
+
   AudioTrackStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [AudioTrack impl])
       : super(new _AudioTrackStubControl.fromEndpoint(endpoint, impl));
@@ -831,26 +865,20 @@ class AudioTrackStub
       core.MojoHandle handle, [AudioTrack impl])
       : super(new _AudioTrackStubControl.fromHandle(handle, impl));
 
-  AudioTrackStub.unbound([AudioTrack impl])
-      : super(new _AudioTrackStubControl.unbound(impl));
-
   static AudioTrackStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For AudioTrackStub"));
     return new AudioTrackStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _AudioTrackStubControl.serviceDescription;
-
 
   dynamic describe([Function responseFactory = null]) {
     return impl.describe(responseFactory);
   }
-  void configure(AudioTrackConfiguration configuration, Object pipe) {
+  void configure(AudioTrackConfiguration configuration, media_transport_mojom.MediaConsumerInterfaceRequest pipe) {
     return impl.configure(configuration, pipe);
   }
-  void getRateControl(Object rateControl) {
+  void getRateControl(rate_control_mojom.RateControlInterfaceRequest rateControl) {
     return impl.getRateControl(rateControl);
   }
   void setGain(double dbGain) {

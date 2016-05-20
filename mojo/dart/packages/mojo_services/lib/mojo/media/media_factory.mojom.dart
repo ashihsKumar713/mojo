@@ -21,8 +21,8 @@ class _MediaFactoryCreatePlayerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(24, 0)
   ];
-  Object reader = null;
-  Object player = null;
+  seeking_reader_mojom.SeekingReaderInterface reader = null;
+  media_player_mojom.MediaPlayerInterfaceRequest player = null;
 
   _MediaFactoryCreatePlayerParams() : super(kVersions.last.size);
 
@@ -105,9 +105,9 @@ class _MediaFactoryCreateSourceParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(32, 0)
   ];
-  Object reader = null;
+  seeking_reader_mojom.SeekingReaderInterface reader = null;
   List<media_types_mojom.MediaTypeSet> allowedMediaTypes = null;
-  Object source = null;
+  media_source_mojom.MediaSourceInterfaceRequest source = null;
 
   _MediaFactoryCreateSourceParams() : super(kVersions.last.size);
 
@@ -222,7 +222,7 @@ class _MediaFactoryCreateSinkParams extends bindings.Struct {
   ];
   String destinationUrl = null;
   media_types_mojom.MediaType mediaType = null;
-  Object sink = null;
+  media_sink_mojom.MediaSinkInterfaceRequest sink = null;
 
   _MediaFactoryCreateSinkParams() : super(kVersions.last.size);
 
@@ -318,8 +318,8 @@ class _MediaFactoryCreateDemuxParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(24, 0)
   ];
-  Object reader = null;
-  Object demux = null;
+  seeking_reader_mojom.SeekingReaderInterface reader = null;
+  media_demux_mojom.MediaDemuxInterfaceRequest demux = null;
 
   _MediaFactoryCreateDemuxParams() : super(kVersions.last.size);
 
@@ -403,7 +403,7 @@ class _MediaFactoryCreateDecoderParams extends bindings.Struct {
     const bindings.StructDataHeader(24, 0)
   ];
   media_types_mojom.MediaType inputMediaType = null;
-  Object decoder = null;
+  media_type_converter_mojom.MediaTypeConverterInterfaceRequest decoder = null;
 
   _MediaFactoryCreateDecoderParams() : super(kVersions.last.size);
 
@@ -488,7 +488,7 @@ class _MediaFactoryCreateNetworkReaderParams extends bindings.Struct {
     const bindings.StructDataHeader(24, 0)
   ];
   String url = null;
-  Object reader = null;
+  seeking_reader_mojom.SeekingReaderInterfaceRequest reader = null;
 
   _MediaFactoryCreateNetworkReaderParams() : super(kVersions.last.size);
 
@@ -586,17 +586,55 @@ class _MediaFactoryServiceDescription implements service_describer.ServiceDescri
 
 abstract class MediaFactory {
   static const String serviceName = "mojo::media::MediaFactory";
-  void createPlayer(Object reader, Object player);
-  void createSource(Object reader, List<media_types_mojom.MediaTypeSet> allowedMediaTypes, Object source);
-  void createSink(String destinationUrl, media_types_mojom.MediaType mediaType, Object sink);
-  void createDemux(Object reader, Object demux);
-  void createDecoder(media_types_mojom.MediaType inputMediaType, Object decoder);
-  void createNetworkReader(String url, Object reader);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _MediaFactoryServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static MediaFactoryProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    MediaFactoryProxy p = new MediaFactoryProxy.unbound();
+    String name = serviceName ?? MediaFactory.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void createPlayer(seeking_reader_mojom.SeekingReaderInterface reader, media_player_mojom.MediaPlayerInterfaceRequest player);
+  void createSource(seeking_reader_mojom.SeekingReaderInterface reader, List<media_types_mojom.MediaTypeSet> allowedMediaTypes, media_source_mojom.MediaSourceInterfaceRequest source);
+  void createSink(String destinationUrl, media_types_mojom.MediaType mediaType, media_sink_mojom.MediaSinkInterfaceRequest sink);
+  void createDemux(seeking_reader_mojom.SeekingReaderInterface reader, media_demux_mojom.MediaDemuxInterfaceRequest demux);
+  void createDecoder(media_types_mojom.MediaType inputMediaType, media_type_converter_mojom.MediaTypeConverterInterfaceRequest decoder);
+  void createNetworkReader(String url, seeking_reader_mojom.SeekingReaderInterfaceRequest reader);
+}
+
+abstract class MediaFactoryInterface
+    implements bindings.MojoInterface<MediaFactory>,
+               MediaFactory {
+  factory MediaFactoryInterface([MediaFactory impl]) =>
+      new MediaFactoryStub.unbound(impl);
+  factory MediaFactoryInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [MediaFactory impl]) =>
+      new MediaFactoryStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class MediaFactoryInterfaceRequest
+    implements bindings.MojoInterface<MediaFactory>,
+               MediaFactory {
+  factory MediaFactoryInterfaceRequest() =>
+      new MediaFactoryProxy.unbound();
 }
 
 class _MediaFactoryProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<MediaFactory> {
   _MediaFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -604,9 +642,6 @@ class _MediaFactoryProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _MediaFactoryProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _MediaFactoryServiceDescription();
 
   String get serviceName => MediaFactory.serviceName;
 
@@ -619,6 +654,11 @@ class _MediaFactoryProxyControl
     }
   }
 
+  MediaFactory get impl => null;
+  set impl(MediaFactory _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -627,8 +667,10 @@ class _MediaFactoryProxyControl
 }
 
 class MediaFactoryProxy
-    extends bindings.Proxy
-    implements MediaFactory {
+    extends bindings.Proxy<MediaFactory>
+    implements MediaFactory,
+               MediaFactoryInterface,
+               MediaFactoryInterfaceRequest {
   MediaFactoryProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _MediaFactoryProxyControl.fromEndpoint(endpoint));
@@ -645,15 +687,8 @@ class MediaFactoryProxy
     return new MediaFactoryProxy.fromEndpoint(endpoint);
   }
 
-  factory MediaFactoryProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    MediaFactoryProxy p = new MediaFactoryProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
-  }
 
-
-  void createPlayer(Object reader, Object player) {
+  void createPlayer(seeking_reader_mojom.SeekingReaderInterface reader, media_player_mojom.MediaPlayerInterfaceRequest player) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -664,7 +699,7 @@ class MediaFactoryProxy
     ctrl.sendMessage(params,
         _mediaFactoryMethodCreatePlayerName);
   }
-  void createSource(Object reader, List<media_types_mojom.MediaTypeSet> allowedMediaTypes, Object source) {
+  void createSource(seeking_reader_mojom.SeekingReaderInterface reader, List<media_types_mojom.MediaTypeSet> allowedMediaTypes, media_source_mojom.MediaSourceInterfaceRequest source) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -676,7 +711,7 @@ class MediaFactoryProxy
     ctrl.sendMessage(params,
         _mediaFactoryMethodCreateSourceName);
   }
-  void createSink(String destinationUrl, media_types_mojom.MediaType mediaType, Object sink) {
+  void createSink(String destinationUrl, media_types_mojom.MediaType mediaType, media_sink_mojom.MediaSinkInterfaceRequest sink) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -688,7 +723,7 @@ class MediaFactoryProxy
     ctrl.sendMessage(params,
         _mediaFactoryMethodCreateSinkName);
   }
-  void createDemux(Object reader, Object demux) {
+  void createDemux(seeking_reader_mojom.SeekingReaderInterface reader, media_demux_mojom.MediaDemuxInterfaceRequest demux) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -699,7 +734,7 @@ class MediaFactoryProxy
     ctrl.sendMessage(params,
         _mediaFactoryMethodCreateDemuxName);
   }
-  void createDecoder(media_types_mojom.MediaType inputMediaType, Object decoder) {
+  void createDecoder(media_types_mojom.MediaType inputMediaType, media_type_converter_mojom.MediaTypeConverterInterfaceRequest decoder) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -710,7 +745,7 @@ class MediaFactoryProxy
     ctrl.sendMessage(params,
         _mediaFactoryMethodCreateDecoderName);
   }
-  void createNetworkReader(String url, Object reader) {
+  void createNetworkReader(String url, seeking_reader_mojom.SeekingReaderInterfaceRequest reader) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -741,6 +776,8 @@ class _MediaFactoryStubControl
   }
 
   _MediaFactoryStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => MediaFactory.serviceName;
 
 
 
@@ -817,19 +854,16 @@ class _MediaFactoryStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _MediaFactoryServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class MediaFactoryStub
     extends bindings.Stub<MediaFactory>
-    implements MediaFactory {
+    implements MediaFactory,
+               MediaFactoryInterface,
+               MediaFactoryInterfaceRequest {
+  MediaFactoryStub.unbound([MediaFactory impl])
+      : super(new _MediaFactoryStubControl.unbound(impl));
+
   MediaFactoryStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [MediaFactory impl])
       : super(new _MediaFactoryStubControl.fromEndpoint(endpoint, impl));
@@ -838,35 +872,29 @@ class MediaFactoryStub
       core.MojoHandle handle, [MediaFactory impl])
       : super(new _MediaFactoryStubControl.fromHandle(handle, impl));
 
-  MediaFactoryStub.unbound([MediaFactory impl])
-      : super(new _MediaFactoryStubControl.unbound(impl));
-
   static MediaFactoryStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaFactoryStub"));
     return new MediaFactoryStub.fromEndpoint(endpoint);
   }
 
-  static service_describer.ServiceDescription get serviceDescription =>
-      _MediaFactoryStubControl.serviceDescription;
 
-
-  void createPlayer(Object reader, Object player) {
+  void createPlayer(seeking_reader_mojom.SeekingReaderInterface reader, media_player_mojom.MediaPlayerInterfaceRequest player) {
     return impl.createPlayer(reader, player);
   }
-  void createSource(Object reader, List<media_types_mojom.MediaTypeSet> allowedMediaTypes, Object source) {
+  void createSource(seeking_reader_mojom.SeekingReaderInterface reader, List<media_types_mojom.MediaTypeSet> allowedMediaTypes, media_source_mojom.MediaSourceInterfaceRequest source) {
     return impl.createSource(reader, allowedMediaTypes, source);
   }
-  void createSink(String destinationUrl, media_types_mojom.MediaType mediaType, Object sink) {
+  void createSink(String destinationUrl, media_types_mojom.MediaType mediaType, media_sink_mojom.MediaSinkInterfaceRequest sink) {
     return impl.createSink(destinationUrl, mediaType, sink);
   }
-  void createDemux(Object reader, Object demux) {
+  void createDemux(seeking_reader_mojom.SeekingReaderInterface reader, media_demux_mojom.MediaDemuxInterfaceRequest demux) {
     return impl.createDemux(reader, demux);
   }
-  void createDecoder(media_types_mojom.MediaType inputMediaType, Object decoder) {
+  void createDecoder(media_types_mojom.MediaType inputMediaType, media_type_converter_mojom.MediaTypeConverterInterfaceRequest decoder) {
     return impl.createDecoder(inputMediaType, decoder);
   }
-  void createNetworkReader(String url, Object reader) {
+  void createNetworkReader(String url, seeking_reader_mojom.SeekingReaderInterfaceRequest reader) {
     return impl.createNetworkReader(url, reader);
   }
 }

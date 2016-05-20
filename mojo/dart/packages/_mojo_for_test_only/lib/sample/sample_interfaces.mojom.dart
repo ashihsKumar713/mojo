@@ -1365,6 +1365,26 @@ class _ProviderServiceDescription implements service_describer.ServiceDescriptio
 
 abstract class Provider {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _ProviderServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static ProviderProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    ProviderProxy p = new ProviderProxy.unbound();
+    String name = serviceName ?? Provider.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic echoString(String a,[Function responseFactory = null]);
   dynamic echoStrings(String a,String b,[Function responseFactory = null]);
   dynamic echoMessagePipeHandle(core.MojoMessagePipeEndpoint a,[Function responseFactory = null]);
@@ -1372,9 +1392,27 @@ abstract class Provider {
   dynamic echoInt(int a,[Function responseFactory = null]);
 }
 
+abstract class ProviderInterface
+    implements bindings.MojoInterface<Provider>,
+               Provider {
+  factory ProviderInterface([Provider impl]) =>
+      new ProviderStub.unbound(impl);
+  factory ProviderInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [Provider impl]) =>
+      new ProviderStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class ProviderInterfaceRequest
+    implements bindings.MojoInterface<Provider>,
+               Provider {
+  factory ProviderInterfaceRequest() =>
+      new ProviderProxy.unbound();
+}
+
 class _ProviderProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<Provider> {
   _ProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1382,9 +1420,6 @@ class _ProviderProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _ProviderProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _ProviderServiceDescription();
 
   String get serviceName => Provider.serviceName;
 
@@ -1497,6 +1532,11 @@ class _ProviderProxyControl
     }
   }
 
+  Provider get impl => null;
+  set impl(Provider _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1505,8 +1545,10 @@ class _ProviderProxyControl
 }
 
 class ProviderProxy
-    extends bindings.Proxy
-    implements Provider {
+    extends bindings.Proxy<Provider>
+    implements Provider,
+               ProviderInterface,
+               ProviderInterfaceRequest {
   ProviderProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _ProviderProxyControl.fromEndpoint(endpoint));
@@ -1521,13 +1563,6 @@ class ProviderProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ProviderProxy"));
     return new ProviderProxy.fromEndpoint(endpoint);
-  }
-
-  factory ProviderProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    ProviderProxy p = new ProviderProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1597,6 +1632,8 @@ class _ProviderStubControl
   }
 
   _ProviderStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => Provider.serviceName;
 
 
   ProviderEchoStringResponseParams _providerEchoStringResponseParamsFactory(String a) {
@@ -1779,19 +1816,16 @@ class _ProviderStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _ProviderServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class ProviderStub
     extends bindings.Stub<Provider>
-    implements Provider {
+    implements Provider,
+               ProviderInterface,
+               ProviderInterfaceRequest {
+  ProviderStub.unbound([Provider impl])
+      : super(new _ProviderStubControl.unbound(impl));
+
   ProviderStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [Provider impl])
       : super(new _ProviderStubControl.fromEndpoint(endpoint, impl));
@@ -1800,17 +1834,11 @@ class ProviderStub
       core.MojoHandle handle, [Provider impl])
       : super(new _ProviderStubControl.fromHandle(handle, impl));
 
-  ProviderStub.unbound([Provider impl])
-      : super(new _ProviderStubControl.unbound(impl));
-
   static ProviderStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ProviderStub"));
     return new ProviderStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _ProviderStubControl.serviceDescription;
 
 
   dynamic echoString(String a,[Function responseFactory = null]) {
@@ -1846,13 +1874,51 @@ class _IntegerAccessorServiceDescription implements service_describer.ServiceDes
 
 abstract class IntegerAccessor {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _IntegerAccessorServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static IntegerAccessorProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    IntegerAccessorProxy p = new IntegerAccessorProxy.unbound();
+    String name = serviceName ?? IntegerAccessor.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic getInteger([Function responseFactory = null]);
   void setInteger(int data, Enum type);
 }
 
+abstract class IntegerAccessorInterface
+    implements bindings.MojoInterface<IntegerAccessor>,
+               IntegerAccessor {
+  factory IntegerAccessorInterface([IntegerAccessor impl]) =>
+      new IntegerAccessorStub.unbound(impl);
+  factory IntegerAccessorInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [IntegerAccessor impl]) =>
+      new IntegerAccessorStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class IntegerAccessorInterfaceRequest
+    implements bindings.MojoInterface<IntegerAccessor>,
+               IntegerAccessor {
+  factory IntegerAccessorInterfaceRequest() =>
+      new IntegerAccessorProxy.unbound();
+}
+
 class _IntegerAccessorProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<IntegerAccessor> {
   _IntegerAccessorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1860,9 +1926,6 @@ class _IntegerAccessorProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _IntegerAccessorProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _IntegerAccessorServiceDescription();
 
   String get serviceName => IntegerAccessor.serviceName;
 
@@ -1895,6 +1958,11 @@ class _IntegerAccessorProxyControl
     }
   }
 
+  IntegerAccessor get impl => null;
+  set impl(IntegerAccessor _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -1903,8 +1971,10 @@ class _IntegerAccessorProxyControl
 }
 
 class IntegerAccessorProxy
-    extends bindings.Proxy
-    implements IntegerAccessor {
+    extends bindings.Proxy<IntegerAccessor>
+    implements IntegerAccessor,
+               IntegerAccessorInterface,
+               IntegerAccessorInterfaceRequest {
   IntegerAccessorProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _IntegerAccessorProxyControl.fromEndpoint(endpoint));
@@ -1919,13 +1989,6 @@ class IntegerAccessorProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For IntegerAccessorProxy"));
     return new IntegerAccessorProxy.fromEndpoint(endpoint);
-  }
-
-  factory IntegerAccessorProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    IntegerAccessorProxy p = new IntegerAccessorProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -1968,6 +2031,8 @@ class _IntegerAccessorStubControl
   }
 
   _IntegerAccessorStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => IntegerAccessor.serviceName;
 
 
   IntegerAccessorGetIntegerResponseParams _integerAccessorGetIntegerResponseParamsFactory(int data, Enum type) {
@@ -2045,19 +2110,16 @@ class _IntegerAccessorStubControl
   }
 
   int get version => 3;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _IntegerAccessorServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class IntegerAccessorStub
     extends bindings.Stub<IntegerAccessor>
-    implements IntegerAccessor {
+    implements IntegerAccessor,
+               IntegerAccessorInterface,
+               IntegerAccessorInterfaceRequest {
+  IntegerAccessorStub.unbound([IntegerAccessor impl])
+      : super(new _IntegerAccessorStubControl.unbound(impl));
+
   IntegerAccessorStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [IntegerAccessor impl])
       : super(new _IntegerAccessorStubControl.fromEndpoint(endpoint, impl));
@@ -2066,17 +2128,11 @@ class IntegerAccessorStub
       core.MojoHandle handle, [IntegerAccessor impl])
       : super(new _IntegerAccessorStubControl.fromHandle(handle, impl));
 
-  IntegerAccessorStub.unbound([IntegerAccessor impl])
-      : super(new _IntegerAccessorStubControl.unbound(impl));
-
   static IntegerAccessorStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For IntegerAccessorStub"));
     return new IntegerAccessorStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _IntegerAccessorStubControl.serviceDescription;
 
 
   dynamic getInteger([Function responseFactory = null]) {
@@ -2104,14 +2160,52 @@ class _SampleInterfaceServiceDescription implements service_describer.ServiceDes
 
 abstract class SampleInterface {
   static const String serviceName = null;
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _SampleInterfaceServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static SampleInterfaceProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    SampleInterfaceProxy p = new SampleInterfaceProxy.unbound();
+    String name = serviceName ?? SampleInterface.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
   dynamic sampleMethod1(int in1,String in2,[Function responseFactory = null]);
   void sampleMethod0();
   void sampleMethod2();
 }
 
+abstract class SampleInterfaceInterface
+    implements bindings.MojoInterface<SampleInterface>,
+               SampleInterface {
+  factory SampleInterfaceInterface([SampleInterface impl]) =>
+      new SampleInterfaceStub.unbound(impl);
+  factory SampleInterfaceInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [SampleInterface impl]) =>
+      new SampleInterfaceStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class SampleInterfaceInterfaceRequest
+    implements bindings.MojoInterface<SampleInterface>,
+               SampleInterface {
+  factory SampleInterfaceInterfaceRequest() =>
+      new SampleInterfaceProxy.unbound();
+}
+
 class _SampleInterfaceProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl {
+    implements bindings.ProxyControl<SampleInterface> {
   _SampleInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -2119,9 +2213,6 @@ class _SampleInterfaceProxyControl
       core.MojoHandle handle) : super.fromHandle(handle);
 
   _SampleInterfaceProxyControl.unbound() : super.unbound();
-
-  service_describer.ServiceDescription get serviceDescription =>
-      new _SampleInterfaceServiceDescription();
 
   String get serviceName => SampleInterface.serviceName;
 
@@ -2154,6 +2245,11 @@ class _SampleInterfaceProxyControl
     }
   }
 
+  SampleInterface get impl => null;
+  set impl(SampleInterface _) {
+    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
+  }
+
   @override
   String toString() {
     var superString = super.toString();
@@ -2162,8 +2258,10 @@ class _SampleInterfaceProxyControl
 }
 
 class SampleInterfaceProxy
-    extends bindings.Proxy
-    implements SampleInterface {
+    extends bindings.Proxy<SampleInterface>
+    implements SampleInterface,
+               SampleInterfaceInterface,
+               SampleInterfaceInterfaceRequest {
   SampleInterfaceProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
       : super(new _SampleInterfaceProxyControl.fromEndpoint(endpoint));
@@ -2178,13 +2276,6 @@ class SampleInterfaceProxy
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SampleInterfaceProxy"));
     return new SampleInterfaceProxy.fromEndpoint(endpoint);
-  }
-
-  factory SampleInterfaceProxy.connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    SampleInterfaceProxy p = new SampleInterfaceProxy.unbound();
-    s.connectToService(url, p, serviceName);
-    return p;
   }
 
 
@@ -2236,6 +2327,8 @@ class _SampleInterfaceStubControl
   }
 
   _SampleInterfaceStubControl.unbound([this._impl]) : super.unbound();
+
+  String get serviceName => SampleInterface.serviceName;
 
 
   SampleInterfaceSampleMethod1ResponseParams _sampleInterfaceSampleMethod1ResponseParamsFactory(String out1, Enum out2) {
@@ -2316,19 +2409,16 @@ class _SampleInterfaceStubControl
   }
 
   int get version => 0;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _SampleInterfaceServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
 }
 
 class SampleInterfaceStub
     extends bindings.Stub<SampleInterface>
-    implements SampleInterface {
+    implements SampleInterface,
+               SampleInterfaceInterface,
+               SampleInterfaceInterfaceRequest {
+  SampleInterfaceStub.unbound([SampleInterface impl])
+      : super(new _SampleInterfaceStubControl.unbound(impl));
+
   SampleInterfaceStub.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint, [SampleInterface impl])
       : super(new _SampleInterfaceStubControl.fromEndpoint(endpoint, impl));
@@ -2337,17 +2427,11 @@ class SampleInterfaceStub
       core.MojoHandle handle, [SampleInterface impl])
       : super(new _SampleInterfaceStubControl.fromHandle(handle, impl));
 
-  SampleInterfaceStub.unbound([SampleInterface impl])
-      : super(new _SampleInterfaceStubControl.unbound(impl));
-
   static SampleInterfaceStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SampleInterfaceStub"));
     return new SampleInterfaceStub.fromEndpoint(endpoint);
   }
-
-  static service_describer.ServiceDescription get serviceDescription =>
-      _SampleInterfaceStubControl.serviceDescription;
 
 
   dynamic sampleMethod1(int in1,String in2,[Function responseFactory = null]) {

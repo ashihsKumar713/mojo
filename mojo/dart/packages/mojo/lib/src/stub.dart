@@ -7,11 +7,16 @@ part of bindings;
 /// Generated StubControl classes implement this interface.
 /// StubControl objects are accessible through the [ctrl] field on Stubs.
 abstract class StubControl<T> implements StubMessageHandler {
+  // TODO(zra): This is only used by ApplicationConnection.requestService(), so
+  // try to remove when/after ApplicationConnection is removed/refactored.
+  String get serviceName;
+
+  /// [impl] refers to the implementation of the methods of the interface T.
   T impl;
 }
 
 /// Generated Stub classes extend this base class.
-class Stub<T> {
+class Stub<T> implements MojoInterface<T> {
   // In general it's probalby better to avoid adding fields and methods to this
   // class. Names added to this class have to be mangled by Mojo bindings
   // generation to avoid name conflicts.
@@ -28,7 +33,7 @@ class Stub<T> {
   Future close({bool immediate: false}) => ctrl.close(immediate: immediate);
 
   /// This getter and setter pair is for convenience and simply forwards to
-  /// ctrl.impl. If a Mojo interface has a method 'close', its name will be
+  /// ctrl.impl. If a Mojo interface has a method 'impl', its name will be
   /// mangled to be 'impl_'.
   T get impl => ctrl.impl;
   set impl(T impl) {
@@ -36,7 +41,8 @@ class Stub<T> {
   }
 }
 
-abstract class StubMessageHandler extends core.MojoEventHandler {
+abstract class StubMessageHandler extends core.MojoEventHandler
+                                  implements MojoInterfaceControl {
   int _outstandingResponseFutures = 0;
   bool _isClosing = false;
   Completer _closeCompleter;
