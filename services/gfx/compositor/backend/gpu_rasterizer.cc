@@ -13,7 +13,6 @@
 #include <MGL/mgl.h>
 #include <MGL/mgl_echo.h>
 #include <MGL/mgl_onscreen.h>
-#include <MGL/mgl_signal_sync_point.h>
 
 #include "base/bind.h"
 #include "base/location.h"
@@ -21,29 +20,27 @@
 #include "base/message_loop/message_loop.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "services/gfx/compositor/backend/vsync_scheduler.h"
 #include "services/gfx/compositor/render/render_frame.h"
 
 namespace compositor {
 namespace {
+// Timeout for receiving initial viewport parameters from the GPU service.
 constexpr int64_t kViewportParameterTimeoutMs = 1000;
+
+// Default vsync interval when the GPU service failed to provide viewport
+// parameters promptly.
 constexpr int64_t kDefaultVsyncIntervalUs = 100000;  // deliberately sluggish
 }
 
 GpuRasterizer::GpuRasterizer(mojo::ContextProviderPtr context_provider,
-                             const scoped_refptr<VsyncScheduler>& scheduler,
-                             const scoped_refptr<base::TaskRunner>& task_runner,
-                             const base::Closure& error_callback)
+                             Callbacks* callbacks)
     : context_provider_(context_provider.Pass()),
-      scheduler_(scheduler),
-      task_runner_(task_runner),
-      error_callback_(error_callback),
+      callbacks_(callbacks),
       viewport_parameter_listener_binding_(this),
       viewport_parameter_timeout_(false, false),
       weak_ptr_factory_(this) {
   DCHECK(context_provider_);
-  DCHECK(scheduler_);
-  DCHECK(task_runner_);
+  DCHECK(callbacks_);
 
   context_provider_.set_connection_error_handler(
       base::Bind(&GpuRasterizer::OnContextProviderConnectionError,
@@ -76,12 +73,13 @@ void GpuRasterizer::InitContext(
 
   if (!command_buffer) {
     LOG(ERROR) << "Could not create GL context.";
-    PostErrorCallback();
+    callbacks_->OnRasterizerError();
     return;
   }
 
   gl_context_ = mojo::GLContext::CreateFromCommandBuffer(
       mojo::CommandBufferPtr::Create(std::move(command_buffer)));
+  DCHECK(!gl_context_->is_lost());
   gl_context_->AddObserver(this);
   ganesh_context_ = new mojo::skia::GaneshContext(gl_context_);
 
@@ -94,18 +92,19 @@ void GpuRasterizer::InitContext(
         base::Bind(&GpuRasterizer::OnViewportParameterTimeout,
                    base::Unretained(this)));
   }
-
-  if (frame_)
-    Draw();
 }
 
 void GpuRasterizer::AbandonContext() {
-  if (gl_context_)
-    scheduler_->Stop();
-
   if (viewport_parameter_listener_binding_.is_bound()) {
     viewport_parameter_timeout_.Stop();
     viewport_parameter_listener_binding_.Close();
+  }
+
+  if (ready_) {
+    while (frames_in_progress_)
+      DrawFinished(false /*presented*/);
+    ready_ = false;
+    callbacks_->OnRasterizerSuspended();
   }
 }
 
@@ -124,15 +123,14 @@ void GpuRasterizer::DestroyContext() {
 
 void GpuRasterizer::OnContextProviderConnectionError() {
   LOG(ERROR) << "Context provider connection lost.";
-  PostErrorCallback();
+
+  callbacks_->OnRasterizerError();
 }
 
 void GpuRasterizer::OnContextLost() {
   LOG(WARNING) << "GL context lost!";
 
   AbandonContext();
-  frames_pending_ = 0u;
-
   base::MessageLoop::current()->PostTask(
       FROM_HERE, base::Bind(&GpuRasterizer::RecreateContextAfterLoss,
                             weak_ptr_factory_.GetWeakPtr()));
@@ -167,71 +165,33 @@ void GpuRasterizer::OnVSyncParametersUpdated(int64_t timebase,
   }
   vsync_timebase_ = timebase;
   vsync_interval_ = interval;
-
-  if (gl_context_ && !gl_context_->is_lost())
-    ApplyViewportParameters();
+  ApplyViewportParameters();
 }
 
 void GpuRasterizer::ApplyViewportParameters() {
   DCHECK(have_viewport_parameters_);
-  DCHECK(gl_context_);
 
-  // TODO(jeffbrown): This shouldn't be hardcoded.
-  // Need to do some real tuning and possibly determine values adaptively.
-  int64_t update_phase = -vsync_interval_;
-  int64_t snapshot_phase = -vsync_interval_ / 6;
-  int64_t presentation_phase = vsync_interval_;
-  if (!scheduler_->Start(vsync_timebase_, vsync_interval_, update_phase,
-                         snapshot_phase, presentation_phase)) {
-    LOG(ERROR) << "Received invalid vsync parameters: timebase="
-               << vsync_timebase_ << ", interval=" << vsync_interval_;
-    PostErrorCallback();
+  if (gl_context_ && !gl_context_->is_lost()) {
+    ready_ = true;
+    callbacks_->OnRasterizerReady(vsync_timebase_, vsync_interval_);
   }
 }
 
-constexpr uint32_t kMaxFramesPending = 2;
-
-void GpuRasterizer::SubmitFrame(const scoped_refptr<RenderFrame>& frame,
-                                const FrameCallback& frame_callback) {
-  TRACE_EVENT0("gfx", "GpuRasterizer::SubmitFrame");
+void GpuRasterizer::DrawFrame(const scoped_refptr<RenderFrame>& frame) {
   DCHECK(frame);
-
-  if (frame_ && !frame_callback_.is_null())
-    frame_callback_.Run(false);  // frame discarded
-
-  frame_ = frame;
-  frame_callback_ = frame_callback;
-
-  if (gl_context_ && !gl_context_->is_lost()) {
-    if (frames_pending_ == kMaxFramesPending) {
-      TRACE_EVENT_INSTANT0("gfx", "GpuRasterizer dropping",
-                           TRACE_EVENT_SCOPE_THREAD);
-      LOG(ERROR) << "too many frames pending, dropping";
-      frame_callback_.Run(false);
-      return;
-    }
-    Draw();
-  } else
-    frame_callback_.Run(false);
-}
-
-static void DidEcho(void* context) {
-  TRACE_EVENT_ASYNC_END0("gfx", "SwapBuffers Echo", context);
-  auto cb = static_cast<base::Closure*>(context);
-  cb->Run();
-  delete cb;
-}
-
-void GpuRasterizer::Draw() {
-  TRACE_EVENT0("gfx", "GpuRasterizer::Draw");
+  DCHECK(ready_);
   DCHECK(gl_context_);
+  DCHECK(!gl_context_->is_lost());
   DCHECK(ganesh_context_);
-  DCHECK(frame_);
+
+  uint32_t frame_number = total_frames_++;
+  frames_in_progress_++;
+  TRACE_EVENT1("gfx", "GpuRasterizer::DrawFrame", "num", frame_number);
 
   mojo::GLContext::Scope gl_scope(gl_context_);
 
   // Update the viewport.
-  const SkIRect& viewport = frame_->viewport();
+  const SkIRect& viewport = frame->viewport();
   bool stale_surface = false;
   if (!ganesh_surface_ ||
       ganesh_surface_->surface()->width() != viewport.width() ||
@@ -241,7 +201,7 @@ void GpuRasterizer::Draw() {
     stale_surface = true;
   }
 
-  // Paint the frame.
+  // Draw the frame content.
   {
     mojo::skia::GaneshContext::Scope ganesh_scope(ganesh_context_);
 
@@ -250,38 +210,36 @@ void GpuRasterizer::Draw() {
           new mojo::skia::GaneshFramebufferSurface(ganesh_scope));
     }
 
-    frame_->Paint(ganesh_surface_->canvas());
+    frame->Draw(ganesh_surface_->canvas());
   }
 
-  // Swap buffers and listen for completion.
-  // TODO: Investigate using |MGLSignalSyncPoint| to wait for completion.
+  // Swap buffers.
   {
     TRACE_EVENT0("gfx", "MGLSwapBuffers");
     MGLSwapBuffers();
   }
-  base::Closure* echo_callback = new base::Closure(
-      base::Bind(&GpuRasterizer::DidEchoCallback,
-                 weak_ptr_factory_.GetWeakPtr(), frame_callback_));
-  frame_callback_.Reset();
-  TRACE_EVENT_ASYNC_BEGIN0("gfx", "SwapBuffers Echo", echo_callback);
-  MGLEcho(DidEcho, echo_callback);
-  frames_pending_++;
-  TRACE_COUNTER1("gfx", "GpuRasterizer::frames_pending_", frames_pending_);
+
+  // Listen for completion.
+  TRACE_EVENT_ASYNC_BEGIN0("gfx", "MGLEcho", frame_number);
+  MGLEcho(&GpuRasterizer::OnMGLEchoReply, this);
 }
 
-void GpuRasterizer::DidEchoCallback(FrameCallback frame_callback) {
-  frames_pending_--;
-  TRACE_COUNTER1("gfx", "GpuRasterizer::frames_pending_", frames_pending_);
-  TRACE_EVENT0("gfx", "GpuRasterizer::DidEchoCallback");
-  // Signal pending callback for backpressure.
-  if (!frame_callback.is_null()) {
-    frame_callback.Run(true);
-    frame_callback.Reset();
-  }
+void GpuRasterizer::DrawFinished(bool presented) {
+  DCHECK(frames_in_progress_);
+
+  uint32_t frame_number = total_frames_ - frames_in_progress_;
+  frames_in_progress_--;
+  TRACE_EVENT2("gfx", "GpuRasterizer::DrawFinished", "num", frame_number,
+               "presented", presented);
+  TRACE_EVENT_ASYNC_END0("gfx", "MGLEcho", frame_number);
+
+  callbacks_->OnRasterizerFinishedDraw(presented);
 }
 
-void GpuRasterizer::PostErrorCallback() {
-  task_runner_->PostTask(FROM_HERE, error_callback_);
+void GpuRasterizer::OnMGLEchoReply(void* context) {
+  auto rasterizer = static_cast<GpuRasterizer*>(context);
+  if (rasterizer->ready_)
+    rasterizer->DrawFinished(true /*presented*/);
 }
 
 }  // namespace compositor

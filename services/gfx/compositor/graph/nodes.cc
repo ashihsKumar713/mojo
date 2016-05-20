@@ -195,9 +195,9 @@ void Node::TraverseSnapshottedChildren(const SceneContent* content,
   }
 }
 
-void Node::RecordPicture(const SceneContent* content,
-                         const Snapshot* snapshot,
-                         SkCanvas* canvas) const {
+void Node::Paint(const SceneContent* content,
+                 const Snapshot* snapshot,
+                 SkCanvas* canvas) const {
   DCHECK(content);
   DCHECK(snapshot);
   DCHECK(canvas);
@@ -211,15 +211,15 @@ void Node::RecordPicture(const SceneContent* content,
       canvas->clipRect(content_clip_->To<SkRect>());
   }
 
-  RecordPictureInner(content, snapshot, canvas);
+  PaintInner(content, snapshot, canvas);
 
   if (must_save)
     canvas->restore();
 }
 
-void Node::RecordPictureInner(const SceneContent* content,
-                              const Snapshot* snapshot,
-                              SkCanvas* canvas) const {
+void Node::PaintInner(const SceneContent* content,
+                      const Snapshot* snapshot,
+                      SkCanvas* canvas) const {
   DCHECK(content);
   DCHECK(snapshot);
   DCHECK(canvas);
@@ -227,7 +227,7 @@ void Node::RecordPictureInner(const SceneContent* content,
   TraverseSnapshottedChildren(
       content, snapshot,
       [this, content, snapshot, canvas](const Node* child_node) -> bool {
-        child_node->RecordPicture(content, snapshot, canvas);
+        child_node->Paint(content, snapshot, canvas);
         return true;
       });
 }
@@ -340,9 +340,9 @@ RectNode::RectNode(uint32_t node_id,
 
 RectNode::~RectNode() {}
 
-void RectNode::RecordPictureInner(const SceneContent* content,
-                                  const Snapshot* snapshot,
-                                  SkCanvas* canvas) const {
+void RectNode::PaintInner(const SceneContent* content,
+                          const Snapshot* snapshot,
+                          SkCanvas* canvas) const {
   DCHECK(content);
   DCHECK(snapshot);
   DCHECK(canvas);
@@ -351,7 +351,7 @@ void RectNode::RecordPictureInner(const SceneContent* content,
   paint.setColor(MakeSkColor(color_));
   canvas->drawRect(content_rect_.To<SkRect>(), paint);
 
-  Node::RecordPictureInner(content, snapshot, canvas);
+  Node::PaintInner(content, snapshot, canvas);
 }
 
 ImageNode::ImageNode(
@@ -386,9 +386,9 @@ bool ImageNode::RecordContent(SceneContentBuilder* builder) const {
                                   node_id());
 }
 
-void ImageNode::RecordPictureInner(const SceneContent* content,
-                                   const Snapshot* snapshot,
-                                   SkCanvas* canvas) const {
+void ImageNode::PaintInner(const SceneContent* content,
+                           const Snapshot* snapshot,
+                           SkCanvas* canvas) const {
   DCHECK(content);
   DCHECK(snapshot);
   DCHECK(canvas);
@@ -407,7 +407,7 @@ void ImageNode::RecordPictureInner(const SceneContent* content,
                                              image_resource->image()->height()),
                         content_rect_.To<SkRect>(), &paint);
 
-  Node::RecordPictureInner(content, snapshot, canvas);
+  Node::PaintInner(content, snapshot, canvas);
 }
 
 SceneNode::SceneNode(
@@ -451,9 +451,9 @@ Snapshot::Disposition SceneNode::RecordSnapshot(
   return Node::RecordSnapshot(content, builder);
 }
 
-void SceneNode::RecordPictureInner(const SceneContent* content,
-                                   const Snapshot* snapshot,
-                                   SkCanvas* canvas) const {
+void SceneNode::PaintInner(const SceneContent* content,
+                           const Snapshot* snapshot,
+                           SkCanvas* canvas) const {
   DCHECK(content);
   DCHECK(snapshot);
   DCHECK(canvas);
@@ -461,9 +461,9 @@ void SceneNode::RecordPictureInner(const SceneContent* content,
   const SceneContent* resolved_content =
       snapshot->GetResolvedSceneContent(this);
   DCHECK(resolved_content);
-  resolved_content->RecordPicture(snapshot, canvas);
+  resolved_content->Paint(snapshot, canvas);
 
-  Node::RecordPictureInner(content, snapshot, canvas);
+  Node::PaintInner(content, snapshot, canvas);
 }
 
 bool SceneNode::HitTestInner(
@@ -515,9 +515,9 @@ LayerNode::LayerNode(
 
 LayerNode::~LayerNode() {}
 
-void LayerNode::RecordPictureInner(const SceneContent* content,
-                                   const Snapshot* snapshot,
-                                   SkCanvas* canvas) const {
+void LayerNode::PaintInner(const SceneContent* content,
+                           const Snapshot* snapshot,
+                           SkCanvas* canvas) const {
   DCHECK(content);
   DCHECK(snapshot);
   DCHECK(canvas);
@@ -526,7 +526,7 @@ void LayerNode::RecordPictureInner(const SceneContent* content,
   SetPaintForBlend(&paint, blend_.get());
 
   canvas->saveLayer(layer_rect_.To<SkRect>(), &paint);
-  Node::RecordPictureInner(content, snapshot, canvas);
+  Node::PaintInner(content, snapshot, canvas);
   canvas->restore();
 }
 

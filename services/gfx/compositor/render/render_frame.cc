@@ -5,34 +5,42 @@
 #include "services/gfx/compositor/render/render_frame.h"
 
 #include "base/logging.h"
+#include "base/trace_event/trace_event.h"
 #include "skia/ext/refptr.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPicture.h"
 
 namespace compositor {
 
-RenderFrame::RenderFrame(const SkIRect& viewport,
-                         const mojo::gfx::composition::FrameInfo& frame_info)
-    : viewport_(viewport), frame_info_(frame_info) {
+RenderFrame::RenderFrame(const Metadata& metadata, const SkIRect& viewport)
+    : metadata_(metadata), viewport_(viewport) {
   DCHECK(!viewport_.isEmpty());
 }
 
-RenderFrame::RenderFrame(const SkIRect& viewport,
-                         const mojo::gfx::composition::FrameInfo& frame_info,
+RenderFrame::RenderFrame(const Metadata& metadata,
+                         const SkIRect& viewport,
                          const skia::RefPtr<SkPicture>& picture)
-    : viewport_(viewport), frame_info_(frame_info), picture_(picture) {
+    : metadata_(metadata), viewport_(viewport), picture_(picture) {
   DCHECK(!viewport_.isEmpty());
 }
 
 RenderFrame::~RenderFrame() {}
 
-void RenderFrame::Paint(SkCanvas* canvas) const {
+void RenderFrame::Draw(SkCanvas* canvas) const {
   DCHECK(canvas);
+  TRACE_EVENT0("gfx", "RenderFrame::Draw");
 
   // TODO: Consider using GrDrawContext instead of SkCanvas.
   canvas->clear(SK_ColorBLACK);
   if (picture_)
     canvas->drawPicture(picture_.get());
 }
+
+RenderFrame::Metadata::Metadata(
+    const mojo::gfx::composition::FrameInfo& frame_info,
+    int64_t composition_time)
+    : frame_info_(frame_info), composition_time_(composition_time) {}
+
+RenderFrame::Metadata::~Metadata() {}
 
 }  // namespace compositor

@@ -59,8 +59,8 @@ class SceneContent : public base::RefCounted<SceneContent> {
   // Returns true if this content satisfies a request for the specified version.
   bool MatchesVersion(uint32_t requested_version) const;
 
-  // Called to record drawing commands from a snapshot.
-  void RecordPicture(const Snapshot* snapshot, SkCanvas* canvas) const;
+  // Paints the content of the scene to a recording canvas.
+  void Paint(const Snapshot* snapshot, SkCanvas* canvas) const;
 
   // Performs a hit test at the specified point.
   // The |scene_point| is the hit tested point in the scene's coordinate space.

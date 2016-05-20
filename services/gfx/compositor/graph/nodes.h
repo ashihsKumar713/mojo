@@ -70,10 +70,10 @@ class Node : public base::RefCounted<Node> {
   virtual Snapshot::Disposition RecordSnapshot(const SceneContent* content,
                                                SnapshotBuilder* builder) const;
 
-  // Called to record drawing commands from a snapshot.
-  void RecordPicture(const SceneContent* content,
-                     const Snapshot* snapshot,
-                     SkCanvas* canvas) const;
+  // Paints the content of the node to a recording canvas.
+  void Paint(const SceneContent* content,
+             const Snapshot* snapshot,
+             SkCanvas* canvas) const;
 
   // Performs a hit test at the specified point.
   // The |point| is the hit tested point in the parent's coordinate space.
@@ -100,9 +100,9 @@ class Node : public base::RefCounted<Node> {
                                    const Snapshot* snapshot,
                                    const Func& func) const;
 
-  virtual void RecordPictureInner(const SceneContent* content,
-                                  const Snapshot* snapshot,
-                                  SkCanvas* canvas) const;
+  virtual void PaintInner(const SceneContent* content,
+                          const Snapshot* snapshot,
+                          SkCanvas* canvas) const;
 
   virtual bool HitTestInner(
       const SceneContent* content,
@@ -148,9 +148,9 @@ class RectNode : public Node {
  protected:
   ~RectNode() override;
 
-  void RecordPictureInner(const SceneContent* content,
-                          const Snapshot* snapshot,
-                          SkCanvas* canvas) const override;
+  void PaintInner(const SceneContent* content,
+                  const Snapshot* snapshot,
+                  SkCanvas* canvas) const override;
 
  private:
   mojo::RectF const content_rect_;
@@ -185,9 +185,9 @@ class ImageNode : public Node {
  protected:
   ~ImageNode() override;
 
-  void RecordPictureInner(const SceneContent* content,
-                          const Snapshot* snapshot,
-                          SkCanvas* canvas) const override;
+  void PaintInner(const SceneContent* content,
+                  const Snapshot* snapshot,
+                  SkCanvas* canvas) const override;
 
  private:
   mojo::RectF const content_rect_;
@@ -223,9 +223,9 @@ class SceneNode : public Node {
  protected:
   ~SceneNode() override;
 
-  void RecordPictureInner(const SceneContent* content,
-                          const Snapshot* snapshot,
-                          SkCanvas* canvas) const override;
+  void PaintInner(const SceneContent* content,
+                  const Snapshot* snapshot,
+                  SkCanvas* canvas) const override;
 
   bool HitTestInner(
       const SceneContent* content,
@@ -261,9 +261,9 @@ class LayerNode : public Node {
  protected:
   ~LayerNode() override;
 
-  void RecordPictureInner(const SceneContent* content,
-                          const Snapshot* snapshot,
-                          SkCanvas* canvas) const override;
+  void PaintInner(const SceneContent* content,
+                  const Snapshot* snapshot,
+                  SkCanvas* canvas) const override;
 
  private:
   mojo::RectF const layer_rect_;

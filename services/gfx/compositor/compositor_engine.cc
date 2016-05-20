@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "mojo/services/gfx/composition/cpp/formatting.h"
 #include "mojo/skia/type_converters.h"
 #include "services/gfx/compositor/backend/gpu_output.h"
@@ -350,10 +351,28 @@ SceneDef::Disposition CompositorEngine::PresentScene(
   return disposition;
 }
 
+void CompositorEngine::ComposeRenderer(
+    RendererState* renderer_state,
+    const mojo::gfx::composition::FrameInfo& frame_info) {
+  DCHECK(IsRendererStateRegisteredDebug(renderer_state));
+  DVLOG(2) << "ComposeRenderer: renderer_state=" << renderer_state;
+
+  TRACE_EVENT1("gfx", "CompositorEngine::ComposeRenderer", "renderer",
+               renderer_state->FormattedLabel());
+
+  int64_t composition_time = MojoGetTimeTicksNow();
+  PresentRenderer(renderer_state, frame_info.presentation_time);
+  SnapshotRenderer(renderer_state);
+  PaintRenderer(renderer_state, frame_info, composition_time);
+}
+
 void CompositorEngine::PresentRenderer(RendererState* renderer_state,
                                        int64_t presentation_time) {
   DCHECK(IsRendererStateRegisteredDebug(renderer_state));
   DVLOG(2) << "PresentRenderer: renderer_state=" << renderer_state;
+
+  TRACE_EVENT1("gfx", "CompositorEngine::PresentRenderer", "renderer",
+               renderer_state->FormattedLabel());
 
   // TODO(jeffbrown): Be more selective and do this work only for scenes
   // associated with the renderer that actually have pending updates.
@@ -369,11 +388,12 @@ void CompositorEngine::PresentRenderer(RendererState* renderer_state,
     DestroyScene(scene_state);
 }
 
-void CompositorEngine::SnapshotRenderer(
-    RendererState* renderer_state,
-    const mojo::gfx::composition::FrameInfo& frame_info) {
+void CompositorEngine::SnapshotRenderer(RendererState* renderer_state) {
   DCHECK(IsRendererStateRegisteredDebug(renderer_state));
   DVLOG(2) << "SnapshotRenderer: renderer_state=" << renderer_state;
+
+  TRACE_EVENT1("gfx", "CompositorEngine::SnapshotRenderer", "renderer",
+               renderer_state->FormattedLabel());
 
   if (VLOG_IS_ON(2)) {
     std::ostringstream block_log;
@@ -391,19 +411,6 @@ void CompositorEngine::SnapshotRenderer(
   } else {
     SnapshotRendererInner(renderer_state, nullptr);
   }
-
-  if (renderer_state->visible_snapshot()) {
-    DCHECK(!renderer_state->visible_snapshot()->is_blocked());
-    renderer_state->output()->SubmitFrame(
-        renderer_state->visible_snapshot()->CreateFrame(
-            renderer_state->root_scene_viewport(), frame_info));
-  } else {
-    SkIRect viewport = renderer_state->root_scene_viewport().To<SkIRect>();
-    if (!viewport.isEmpty()) {
-      renderer_state->output()->SubmitFrame(
-          new RenderFrame(viewport, frame_info));
-    }
-  }
 }
 
 void CompositorEngine::SnapshotRendererInner(RendererState* renderer_state,
@@ -418,6 +425,34 @@ void CompositorEngine::SnapshotRendererInner(RendererState* renderer_state,
   renderer_state->SetSnapshot(
       universe_.SnapshotScene(renderer_state->root_scene()->scene_token(),
                               renderer_state->root_scene_version(), block_log));
+}
+
+void CompositorEngine::PaintRenderer(
+    RendererState* renderer_state,
+    const mojo::gfx::composition::FrameInfo& frame_info,
+    int64_t composition_time) {
+  DCHECK(IsRendererStateRegisteredDebug(renderer_state));
+  DVLOG(2) << "PaintRenderer: renderer_state=" << renderer_state;
+
+  TRACE_EVENT1("gfx", "CompositorEngine::PaintRenderer", "renderer",
+               renderer_state->FormattedLabel());
+
+  RenderFrame::Metadata frame_metadata(frame_info, composition_time);
+
+  if (renderer_state->visible_snapshot()) {
+    // The renderer has snapshotted content; paint and submit it.
+    DCHECK(!renderer_state->visible_snapshot()->is_blocked());
+    renderer_state->output()->SubmitFrame(
+        renderer_state->visible_snapshot()->Paint(
+            frame_metadata, renderer_state->root_scene_viewport()));
+  } else {
+    // The renderer does not have any content; submit an empty (black) frame.
+    SkIRect viewport = renderer_state->root_scene_viewport().To<SkIRect>();
+    if (!viewport.isEmpty()) {
+      renderer_state->output()->SubmitFrame(
+          new RenderFrame(frame_metadata, viewport));
+    }
+  }
 }
 
 void CompositorEngine::ScheduleFrameForRenderer(
@@ -463,8 +498,7 @@ void CompositorEngine::OnOutputSnapshotRequest(
     return;
   DCHECK(IsRendererStateRegisteredDebug(renderer_state));
 
-  PresentRenderer(renderer_state, frame_info.presentation_time);
-  SnapshotRenderer(renderer_state, frame_info);
+  ComposeRenderer(renderer_state, frame_info);
 }
 
 void CompositorEngine::OnPresentScene(

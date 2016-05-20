@@ -7,11 +7,9 @@
 
 #include <memory>
 
-#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task_runner.h"
 #include "base/timer/timer.h"
 #include "mojo/gpu/gl_context.h"
 #include "mojo/public/cpp/bindings/binding.h"
@@ -22,30 +20,48 @@
 namespace compositor {
 
 class RenderFrame;
-class VsyncScheduler;
 
-// Ganesh-based rasterizer which runs on a separate thread from the compositor.
-// Calls into this object, including its creation, must be posted to the
-// correct message loop by the output.
+// Ganesh-based rasterizer.
+// Maintains a GL context and draws frames on demand.
+//
+// This object runs on a separate thread from the rest of the compositor.
+// It is not threadsafe; all calls into this object, including its creation,
+// must run on the rasterizer thread.
 class GpuRasterizer : public mojo::ViewportParameterListener,
                       public mojo::GLContext::Observer {
  public:
-  // Callback invoked when a frame completes.
-  // |presented| is true if the frame was actually presented, false if
-  // the frame was discarded.
-  using FrameCallback = base::Callback<void(bool presented)>;
+  // Callbacks from the rasterizer.
+  // These calls always run on the rasterizer thread.
+  class Callbacks {
+   public:
+    virtual ~Callbacks() {}
+
+    // Called when the rasterizer is ready to start drawing.
+    // May be called repeatedly with new parameters.
+    virtual void OnRasterizerReady(int64_t vsync_timebase,
+                                   int64_t vsync_interval) = 0;
+
+    // Called when the rasterizer can't draw anymore.
+    virtual void OnRasterizerSuspended() = 0;
+
+    // Called when the rasterizer finished drawing a frame.
+    // |presented| is true if the frame was actually presented, false if
+    // the frame was discarded.
+    virtual void OnRasterizerFinishedDraw(bool presented) = 0;
+
+    // Called when an unrecoverable error occurs and the rasterizer needs
+    // to be shut down soon.
+    virtual void OnRasterizerError() = 0;
+  };
 
   GpuRasterizer(mojo::ContextProviderPtr context_provider,
-                const scoped_refptr<VsyncScheduler>& scheduler,
-                const scoped_refptr<base::TaskRunner>& task_runner,
-                const base::Closure& error_callback);
+                Callbacks* callbacks);
   ~GpuRasterizer() override;
 
-  // Submits a frame to be drawn.
-  // If the GL context isn't ready yet, the frame will be retained unless
-  // superceded by another frame.
-  void SubmitFrame(const scoped_refptr<RenderFrame>& frame,
-                   const FrameCallback& frame_callback);
+  // Draws the specified frame.
+  // Each frame will be acknowledged by a called to |OnRasterizerFinishedDraw|
+  // in the order submitted.  The rasterizer must be in a ready state.
+  void DrawFrame(const scoped_refptr<RenderFrame>& frame);
 
  private:
   // |ViewportParameterListener|:
@@ -63,29 +79,25 @@ class GpuRasterizer : public mojo::ViewportParameterListener,
   void OnViewportParameterTimeout();
   void ApplyViewportParameters();
 
-  void DidEchoCallback(FrameCallback frame_callback);
-  void Draw();
-
-  void PostErrorCallback();
+  void DrawFinished(bool presented);
+  static void OnMGLEchoReply(void* context);
 
   mojo::ContextProviderPtr context_provider_;
-  scoped_refptr<VsyncScheduler> scheduler_;
-  scoped_refptr<base::TaskRunner> task_runner_;
-  base::Closure error_callback_;
+  Callbacks* callbacks_;
 
   scoped_refptr<mojo::GLContext> gl_context_;
   scoped_refptr<mojo::skia::GaneshContext> ganesh_context_;
   std::unique_ptr<mojo::skia::GaneshFramebufferSurface> ganesh_surface_;
-
-  scoped_refptr<RenderFrame> frame_;
-  FrameCallback frame_callback_;
 
   mojo::Binding<ViewportParameterListener> viewport_parameter_listener_binding_;
   base::Timer viewport_parameter_timeout_;
   bool have_viewport_parameters_ = false;
   int64_t vsync_timebase_ = 0u;
   int64_t vsync_interval_ = 0u;
-  uint32_t frames_pending_ = 0u;
+
+  bool ready_ = false;
+  uint32_t total_frames_ = 0u;
+  uint32_t frames_in_progress_ = 0u;
 
   base::WeakPtrFactory<GpuRasterizer> weak_ptr_factory_;
 

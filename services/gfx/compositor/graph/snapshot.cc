@@ -8,7 +8,6 @@
 #include "mojo/services/gfx/composition/cpp/formatting.h"
 #include "mojo/skia/type_converters.h"
 #include "services/gfx/compositor/graph/scene_content.h"
-#include "services/gfx/compositor/render/render_frame.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/utils/SkMatrix44.h"
@@ -24,9 +23,9 @@ bool Snapshot::HasDependency(
   return dependencies_.find(scene_token.value) != dependencies_.end();
 }
 
-scoped_refptr<RenderFrame> Snapshot::CreateFrame(
-    const mojo::Rect& viewport,
-    const mojo::gfx::composition::FrameInfo& frame_info) const {
+scoped_refptr<RenderFrame> Snapshot::Paint(
+    const RenderFrame::Metadata& metadata,
+    const mojo::Rect& viewport) const {
   DCHECK(!is_blocked());
   DCHECK(root_scene_content_);
 
@@ -34,8 +33,8 @@ scoped_refptr<RenderFrame> Snapshot::CreateFrame(
 
   SkPictureRecorder recorder;
   recorder.beginRecording(SkRect::Make(sk_viewport));
-  root_scene_content_->RecordPicture(this, recorder.getRecordingCanvas());
-  return new RenderFrame(sk_viewport, frame_info,
+  root_scene_content_->Paint(this, recorder.getRecordingCanvas());
+  return new RenderFrame(metadata, sk_viewport,
                          skia::AdoptRef(recorder.endRecordingAsPicture()));
 }
 

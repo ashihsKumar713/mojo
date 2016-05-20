@@ -30,11 +30,10 @@ bool SceneContent::MatchesVersion(uint32_t requested_version) const {
          version_ == mojo::gfx::composition::kSceneVersionNone;
 }
 
-void SceneContent::RecordPicture(const Snapshot* snapshot,
-                                 SkCanvas* canvas) const {
+void SceneContent::Paint(const Snapshot* snapshot, SkCanvas* canvas) const {
   const Node* root = GetRootNodeIfExists();
   if (root)
-    root->RecordPicture(this, snapshot, canvas);
+    root->Paint(this, snapshot, canvas);
 }
 
 bool SceneContent::HitTest(

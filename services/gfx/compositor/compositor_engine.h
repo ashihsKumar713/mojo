@@ -89,12 +89,29 @@ class CompositorEngine {
   SceneDef::Disposition PresentScene(SceneState* scene_state,
                                      int64_t presentation_time);
 
+  // Starts the process of composing the contents of the renderer to
+  // produce a new frame.
+  void ComposeRenderer(RendererState* renderer_state,
+                       const mojo::gfx::composition::FrameInfo& frame_info);
+
+  // Applies and validates scene updates from all scenes which are included
+  // in the renderer's scene graph.
   void PresentRenderer(RendererState* renderer_state,
                        int64_t presentation_time);
-  void SnapshotRenderer(RendererState* renderer_state,
-                        const mojo::gfx::composition::FrameInfo& frame_info);
+
+  // Resolves scene dependencies and captures a snapshot of the current
+  // state of the renderer's scene graph.
+  void SnapshotRenderer(RendererState* renderer_state);
   void SnapshotRendererInner(RendererState* renderer_state,
                              std::ostream* block_log);
+
+  // Paints the renderer's current snapshot and submits a frame of content
+  // to the output for display.
+  void PaintRenderer(RendererState* renderer_state,
+                     const mojo::gfx::composition::FrameInfo& frame_info,
+                     int64_t composition_time);
+
+  // Schedules the next frame to be rendered, if needed.
   void ScheduleFrameForRenderer(RendererState* renderer_state,
                                 Scheduler::SchedulingMode scheduling_mode);
 

@@ -14,13 +14,13 @@
 #include "mojo/services/geometry/interfaces/geometry.mojom.h"
 #include "mojo/services/gfx/composition/interfaces/hit_tests.mojom.h"
 #include "mojo/services/gfx/composition/interfaces/scheduling.mojom.h"
+#include "services/gfx/compositor/render/render_frame.h"
 
 namespace compositor {
 
 class Node;
 class SceneContent;
 class SceneNode;
-class RenderFrame;
 
 // Describes a single frame snapshot of the scene graph, sufficient for
 // rendering and hit testing.  When the snapshot is made, all predicated and
@@ -63,11 +63,10 @@ class Snapshot : public base::RefCounted<Snapshot> {
   bool HasDependency(
       const mojo::gfx::composition::SceneToken& scene_token) const;
 
-  // Creates a frame for rendering.
+  // Paints the content of the snapshot to produce a frame to be rendered.
   // Only valid if |!is_blocked()|.
-  scoped_refptr<RenderFrame> CreateFrame(
-      const mojo::Rect& viewport,
-      const mojo::gfx::composition::FrameInfo& frame_info) const;
+  scoped_refptr<RenderFrame> Paint(const RenderFrame::Metadata& metadata,
+                                   const mojo::Rect& viewport) const;
 
   // Performs a hit test at the specified point, populating the result.
   // Only valid if |!is_blocked()|.
