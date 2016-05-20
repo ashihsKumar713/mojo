@@ -8,6 +8,13 @@
 #include "base/bind_helpers.h"
 
 namespace compositor {
+namespace {
+void RunScheduleFrameCallback(
+    const RendererImpl::ScheduleFrameCallback& callback,
+    mojo::gfx::composition::FrameInfoPtr info) {
+  callback.Run(info.Pass());
+}
+}  // namespace
 
 RendererImpl::RendererImpl(
     CompositorEngine* engine,
@@ -35,6 +42,17 @@ void RendererImpl::SetRootScene(
 
 void RendererImpl::ClearRootScene() {
   engine_->ClearRootScene(state_);
+}
+
+void RendererImpl::GetScheduler(
+    mojo::InterfaceRequest<mojo::gfx::composition::FrameScheduler>
+        scheduler_request) {
+  scheduler_bindings_.AddBinding(this, scheduler_request.Pass());
+}
+
+void RendererImpl::ScheduleFrame(const ScheduleFrameCallback& callback) {
+  engine_->ScheduleFrame(state_,
+                         base::Bind(&RunScheduleFrameCallback, callback));
 }
 
 void RendererImpl::HitTest(mojo::PointFPtr point,

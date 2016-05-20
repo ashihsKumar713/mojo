@@ -10,6 +10,7 @@ import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as servic
 import 'package:mojo_services/mojo/geometry.mojom.dart' as geometry_mojom;
 import 'package:mojo_services/mojo/gfx/composition/hit_tests.mojom.dart' as hit_tests_mojom;
 import 'package:mojo_services/mojo/gfx/composition/scene_token.mojom.dart' as scene_token_mojom;
+import 'package:mojo_services/mojo/gfx/composition/scheduling.mojom.dart' as scheduling_mojom;
 
 
 
@@ -173,6 +174,77 @@ class _RendererClearRootSceneParams extends bindings.Struct {
 }
 
 
+class _RendererGetSchedulerParams extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(16, 0)
+  ];
+  Object scheduler = null;
+
+  _RendererGetSchedulerParams() : super(kVersions.last.size);
+
+  static _RendererGetSchedulerParams deserialize(bindings.Message message) {
+    var decoder = new bindings.Decoder(message);
+    var result = decode(decoder);
+    if (decoder.excessHandles != null) {
+      decoder.excessHandles.forEach((h) => h.close());
+    }
+    return result;
+  }
+
+  static _RendererGetSchedulerParams decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    _RendererGetSchedulerParams result = new _RendererGetSchedulerParams();
+
+    var mainDataHeader = decoder0.decodeStructDataHeader();
+    if (mainDataHeader.version <= kVersions.last.version) {
+      // Scan in reverse order to optimize for more recent versions.
+      for (int i = kVersions.length - 1; i >= 0; --i) {
+        if (mainDataHeader.version >= kVersions[i].version) {
+          if (mainDataHeader.size == kVersions[i].size) {
+            // Found a match.
+            break;
+          }
+          throw new bindings.MojoCodecError(
+              'Header size doesn\'t correspond to known version size.');
+        }
+      }
+    } else if (mainDataHeader.size < kVersions.last.size) {
+      throw new bindings.MojoCodecError(
+        'Message newer than the last known version cannot be shorter than '
+        'required by the last known version.');
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.scheduler = decoder0.decodeInterfaceRequest(8, false, scheduling_mojom.FrameSchedulerStub.newFromEndpoint);
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    try {
+      encoder0.encodeInterfaceRequest(scheduler, 8, false);
+    } on bindings.MojoCodecError catch(e) {
+      e.message = "Error encountered while encoding field "
+          "scheduler of struct _RendererGetSchedulerParams: $e";
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "_RendererGetSchedulerParams("
+           "scheduler: $scheduler" ")";
+  }
+
+  Map toJson() {
+    throw new bindings.MojoCodecError(
+        'Object containing handles cannot be encoded to JSON.');
+  }
+}
+
+
 class _RendererGetHitTesterParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
@@ -245,7 +317,8 @@ class _RendererGetHitTesterParams extends bindings.Struct {
 
 const int _rendererMethodSetRootSceneName = 0;
 const int _rendererMethodClearRootSceneName = 1;
-const int _rendererMethodGetHitTesterName = 2;
+const int _rendererMethodGetSchedulerName = 2;
+const int _rendererMethodGetHitTesterName = 3;
 
 class _RendererServiceDescription implements service_describer.ServiceDescription {
   dynamic getTopLevelInterface([Function responseFactory]) =>
@@ -262,6 +335,7 @@ abstract class Renderer {
   static const String serviceName = null;
   void setRootScene(scene_token_mojom.SceneToken sceneToken, int sceneVersion, geometry_mojom.Rect viewport);
   void clearRootScene();
+  void getScheduler(Object scheduler);
   void getHitTester(Object hitTester);
 }
 
@@ -345,6 +419,16 @@ class RendererProxy
     ctrl.sendMessage(params,
         _rendererMethodClearRootSceneName);
   }
+  void getScheduler(Object scheduler) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _RendererGetSchedulerParams();
+    params.scheduler = scheduler;
+    ctrl.sendMessage(params,
+        _rendererMethodGetSchedulerName);
+  }
   void getHitTester(Object hitTester) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
@@ -395,6 +479,11 @@ class _RendererStubControl
         break;
       case _rendererMethodClearRootSceneName:
         _impl.clearRootScene();
+        break;
+      case _rendererMethodGetSchedulerName:
+        var params = _RendererGetSchedulerParams.deserialize(
+            message.payload);
+        _impl.getScheduler(params.scheduler);
         break;
       case _rendererMethodGetHitTesterName:
         var params = _RendererGetHitTesterParams.deserialize(
@@ -473,6 +562,9 @@ class RendererStub
   }
   void clearRootScene() {
     return impl.clearRootScene();
+  }
+  void getScheduler(Object scheduler) {
+    return impl.getScheduler(scheduler);
   }
   void getHitTester(Object hitTester) {
     return impl.getHitTester(hitTester);

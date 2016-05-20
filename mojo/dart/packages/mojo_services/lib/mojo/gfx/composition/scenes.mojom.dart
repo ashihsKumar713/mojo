@@ -549,7 +549,7 @@ class _SceneGetSchedulerParams extends bindings.Struct {
     }
     if (mainDataHeader.version >= 0) {
       
-      result.scheduler = decoder0.decodeInterfaceRequest(8, false, scheduling_mojom.SceneSchedulerStub.newFromEndpoint);
+      result.scheduler = decoder0.decodeInterfaceRequest(8, false, scheduling_mojom.FrameSchedulerStub.newFromEndpoint);
     }
     return result;
   }

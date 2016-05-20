@@ -18,6 +18,7 @@ namespace compositor {
 // Renderer interface implementation.
 // This object is owned by its associated RendererState.
 class RendererImpl : public mojo::gfx::composition::Renderer,
+                     public mojo::gfx::composition::FrameScheduler,
                      public mojo::gfx::composition::HitTester {
  public:
   RendererImpl(CompositorEngine* engine,
@@ -36,8 +37,14 @@ class RendererImpl : public mojo::gfx::composition::Renderer,
                     uint32 scene_version,
                     mojo::RectPtr viewport) override;
   void ClearRootScene() override;
+  void GetScheduler(
+      mojo::InterfaceRequest<mojo::gfx::composition::FrameScheduler>
+          scheduler_request) override;
   void GetHitTester(mojo::InterfaceRequest<mojo::gfx::composition::HitTester>
                         hit_tester_request) override;
+
+  // |FrameScheduler|:
+  void ScheduleFrame(const ScheduleFrameCallback& callback) override;
 
   // |HitTester|:
   void HitTest(mojo::PointFPtr point, const HitTestCallback& callback) override;
@@ -45,6 +52,7 @@ class RendererImpl : public mojo::gfx::composition::Renderer,
   CompositorEngine* const engine_;
   RendererState* const state_;
   mojo::Binding<mojo::gfx::composition::Renderer> renderer_binding_;
+  mojo::BindingSet<mojo::gfx::composition::FrameScheduler> scheduler_bindings_;
   mojo::BindingSet<mojo::gfx::composition::HitTester> hit_tester_bindings;
 
   DISALLOW_COPY_AND_ASSIGN(RendererImpl);

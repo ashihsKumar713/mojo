@@ -15,14 +15,14 @@ Choreographer::Choreographer(mojo::gfx::composition::Scene* scene,
                              ChoreographerDelegate* delegate)
     : delegate_(delegate) {
   DCHECK(delegate_);
-  scene->GetScheduler(mojo::GetProxy(&scene_scheduler_));
+  scene->GetScheduler(mojo::GetProxy(&frame_scheduler_));
 }
 
 Choreographer::Choreographer(
-    mojo::gfx::composition::SceneSchedulerPtr scene_scheduler,
+    mojo::gfx::composition::FrameSchedulerPtr frame_scheduler,
     ChoreographerDelegate* delegate)
-    : scene_scheduler_(scene_scheduler.Pass()), delegate_(delegate) {
-  DCHECK(scene_scheduler_);
+    : frame_scheduler_(frame_scheduler.Pass()), delegate_(delegate) {
+  DCHECK(frame_scheduler_);
   DCHECK(delegate_);
 }
 
@@ -38,7 +38,7 @@ void Choreographer::ScheduleDraw() {
 void Choreographer::ScheduleFrame() {
   if (!frame_scheduled_) {
     frame_scheduled_ = true;
-    scene_scheduler_->ScheduleFrame(
+    frame_scheduler_->ScheduleFrame(
         base::Bind(&Choreographer::DoFrame, base::Unretained(this)));
   }
 }

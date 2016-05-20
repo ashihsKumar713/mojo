@@ -14,24 +14,7 @@ SceneState::SceneState(mojo::gfx::composition::SceneTokenPtr scene_token,
   DCHECK(scene_token_);
 }
 
-SceneState::~SceneState() {
-  // The scene implementation and all of its bindings must be destroyed
-  // before any pending callbacks are dropped on the floor.
-  scene_impl_.reset();
-  pending_frame_callbacks_.clear();
-}
-
-void SceneState::AddSceneFrameCallback(const SceneFrameCallback& callback) {
-  pending_frame_callbacks_.push_back(callback);
-}
-
-void SceneState::DispatchSceneFrameCallbacks(
-    const mojo::gfx::composition::FrameInfo& frame_info) {
-  for (auto& callback : pending_frame_callbacks_) {
-    callback.Run(frame_info.Clone());
-  }
-  pending_frame_callbacks_.clear();
-}
+SceneState::~SceneState() {}
 
 std::ostream& operator<<(std::ostream& os, SceneState* scene_state) {
   if (!scene_state)

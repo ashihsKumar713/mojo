@@ -215,10 +215,12 @@ void CompositorEngine::Publish(
 }
 
 void CompositorEngine::ScheduleFrame(SceneState* scene_state,
-                                     const SceneFrameCallback& callback) {
+                                     const FrameCallback& callback) {
   DCHECK(IsSceneStateRegisteredDebug(scene_state));
+  DVLOG(1) << "ScheduleFrame: scene=" << scene_state;
 
-  scene_state->AddSceneFrameCallback(callback);
+  if (!scene_state->frame_dispatcher().AddCallback(callback))
+    return;
 
   // TODO(jeffbrown): Be more selective and do this work only for scenes
   // which are strongly associated with the renderer so it doesn't receive
@@ -274,6 +276,18 @@ void CompositorEngine::ClearRootScene(RendererState* renderer_state) {
     ScheduleFrameForRenderer(renderer_state,
                              Scheduler::SchedulingMode::kSnapshot);
   }
+}
+
+void CompositorEngine::ScheduleFrame(RendererState* renderer_state,
+                                     const FrameCallback& callback) {
+  DCHECK(IsRendererStateRegisteredDebug(renderer_state));
+  DVLOG(1) << "ScheduleFrame: renderer=" << renderer_state;
+
+  if (!renderer_state->frame_dispatcher().AddCallback(callback))
+    return;
+
+  ScheduleFrameForRenderer(renderer_state,
+                           Scheduler::SchedulingMode::kUpdateAndSnapshot);
 }
 
 void CompositorEngine::HitTest(
@@ -483,10 +497,12 @@ void CompositorEngine::OnOutputUpdateRequest(
     return;
   DCHECK(IsRendererStateRegisteredDebug(renderer_state));
 
+  renderer_state->frame_dispatcher().DispatchCallbacks(frame_info);
+
   // TODO(jeffbrown): Be more selective and do this work only for scenes
   // associated with the renderer.
   for (auto& pair : scenes_by_token_) {
-    pair.second->DispatchSceneFrameCallbacks(frame_info);
+    pair.second->frame_dispatcher().DispatchCallbacks(frame_info);
   }
 }
 

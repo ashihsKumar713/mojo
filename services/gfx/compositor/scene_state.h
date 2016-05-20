@@ -8,19 +8,16 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/services/gfx/composition/cpp/formatting.h"
 #include "mojo/services/gfx/composition/interfaces/scenes.mojom.h"
+#include "services/gfx/compositor/frame_dispatcher.h"
 #include "services/gfx/compositor/graph/scene_def.h"
 
 namespace compositor {
-
-using SceneFrameCallback =
-    base::Callback<void(mojo::gfx::composition::FrameInfoPtr)>;
 
 // Describes the state of a particular scene.
 // This object is owned by the CompositorEngine that created it.
@@ -54,15 +51,15 @@ class SceneState {
   // Gets the underlying scene definition, never null.
   SceneDef* scene_def() { return &scene_def_; }
 
-  void AddSceneFrameCallback(const SceneFrameCallback& callback);
-  void DispatchSceneFrameCallbacks(
-      const mojo::gfx::composition::FrameInfo& frame_info);
+  FrameDispatcher& frame_dispatcher() { return frame_dispatcher_; }
 
  private:
   mojo::gfx::composition::SceneTokenPtr scene_token_;
+
+  FrameDispatcher frame_dispatcher_;  // must be before scene_impl_
   std::unique_ptr<mojo::gfx::composition::Scene> scene_impl_;
+
   mojo::gfx::composition::SceneListenerPtr scene_listener_;
-  std::vector<SceneFrameCallback> pending_frame_callbacks_;
 
   SceneDef scene_def_;
 

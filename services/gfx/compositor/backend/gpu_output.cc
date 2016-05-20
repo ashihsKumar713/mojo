@@ -35,6 +35,7 @@ GpuOutput::GpuOutput(
     : compositor_task_runner_(base::MessageLoop::current()->task_runner()),
       vsync_scheduler_(
           new VsyncScheduler(compositor_task_runner_, scheduler_callbacks)),
+      error_callback_(error_callback),
       rasterizer_thread_(new base::Thread("gpu_rasterizer")),
       rasterizer_initialized_(true, false) {
   DCHECK(context_provider);

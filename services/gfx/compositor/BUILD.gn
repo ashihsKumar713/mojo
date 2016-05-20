@@ -22,6 +22,8 @@ source_set("common") {
     "compositor_engine.h",
     "compositor_impl.cc",
     "compositor_impl.h",
+    "frame_dispatcher.cc",
+    "frame_dispatcher.h",
     "graph/nodes.cc",
     "graph/nodes.h",
     "graph/resources.cc",
@@ -91,12 +93,15 @@ mojo_native_application("apptests") {
 
   sources = [
     "backend/vsync_scheduler_unittest.cc",
+    "tests/scheduling_apptest.cc",
   ]
 
   deps = [
     ":common",
     "//base/test:test_support",
     "//mojo/application:test_support",
+    "//mojo/services/gfx/composition/interfaces:interfaces_sync",
+    "//mojo/services/native_viewport/interfaces",
     "//testing/gtest",
   ]
 }

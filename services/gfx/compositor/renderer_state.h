@@ -13,6 +13,7 @@
 #include "mojo/services/gfx/composition/cpp/formatting.h"
 #include "mojo/services/gfx/composition/interfaces/compositor.mojom.h"
 #include "services/gfx/compositor/backend/output.h"
+#include "services/gfx/compositor/frame_dispatcher.h"
 #include "services/gfx/compositor/graph/snapshot.h"
 #include "services/gfx/compositor/scene_state.h"
 
@@ -71,6 +72,8 @@ class RendererState {
   // If the snapshot is not blocked, also updates |visible_snapshot()|.
   void SetSnapshot(const scoped_refptr<const Snapshot>& snapshot);
 
+  FrameDispatcher& frame_dispatcher() { return frame_dispatcher_; }
+
   const std::string& label() { return label_; }
   std::string FormattedLabel();
 
@@ -80,6 +83,7 @@ class RendererState {
   const std::string label_;
   std::string formatted_label_cache_;
 
+  FrameDispatcher frame_dispatcher_;  // must be before renderer_impl_
   std::unique_ptr<mojo::gfx::composition::Renderer> renderer_impl_;
 
   SceneState* root_scene_ = nullptr;

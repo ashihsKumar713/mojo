@@ -18,7 +18,7 @@ namespace compositor {
 // Scene interface implementation.
 // This object is owned by its associated SceneState.
 class SceneImpl : public mojo::gfx::composition::Scene,
-                  public mojo::gfx::composition::SceneScheduler {
+                  public mojo::gfx::composition::FrameScheduler {
  public:
   SceneImpl(
       CompositorEngine* engine,
@@ -37,16 +37,16 @@ class SceneImpl : public mojo::gfx::composition::Scene,
   void Update(mojo::gfx::composition::SceneUpdatePtr update) override;
   void Publish(mojo::gfx::composition::SceneMetadataPtr metadata) override;
   void GetScheduler(
-      mojo::InterfaceRequest<mojo::gfx::composition::SceneScheduler>
+      mojo::InterfaceRequest<mojo::gfx::composition::FrameScheduler>
           scheduler_request) override;
 
-  // |SceneScheduler|:
+  // |FrameScheduler|:
   void ScheduleFrame(const ScheduleFrameCallback& callback) override;
 
   CompositorEngine* const engine_;
   SceneState* const state_;
   mojo::Binding<mojo::gfx::composition::Scene> scene_binding_;
-  mojo::BindingSet<mojo::gfx::composition::SceneScheduler> scheduler_bindings_;
+  mojo::BindingSet<mojo::gfx::composition::FrameScheduler> scheduler_bindings_;
 
   DISALLOW_COPY_AND_ASSIGN(SceneImpl);
 };

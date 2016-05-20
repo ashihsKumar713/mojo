@@ -42,14 +42,14 @@ void SceneImpl::Publish(mojo::gfx::composition::SceneMetadataPtr metadata) {
 }
 
 void SceneImpl::GetScheduler(
-    mojo::InterfaceRequest<mojo::gfx::composition::SceneScheduler>
+    mojo::InterfaceRequest<mojo::gfx::composition::FrameScheduler>
         scheduler_request) {
   scheduler_bindings_.AddBinding(this, scheduler_request.Pass());
 }
 
 void SceneImpl::ScheduleFrame(const ScheduleFrameCallback& callback) {
   engine_->ScheduleFrame(state_,
-                         base::Bind(&RunScheduleFrameCallback, callback));
+                         base::Bind(RunScheduleFrameCallback, callback));
 }
 
 }  // namespace compositor

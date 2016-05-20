@@ -124,14 +124,14 @@ class FrameInfo extends bindings.Struct {
 }
 
 
-class _SceneSchedulerScheduleFrameParams extends bindings.Struct {
+class _FrameSchedulerScheduleFrameParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(8, 0)
   ];
 
-  _SceneSchedulerScheduleFrameParams() : super(kVersions.last.size);
+  _FrameSchedulerScheduleFrameParams() : super(kVersions.last.size);
 
-  static _SceneSchedulerScheduleFrameParams deserialize(bindings.Message message) {
+  static _FrameSchedulerScheduleFrameParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
     if (decoder.excessHandles != null) {
@@ -140,11 +140,11 @@ class _SceneSchedulerScheduleFrameParams extends bindings.Struct {
     return result;
   }
 
-  static _SceneSchedulerScheduleFrameParams decode(bindings.Decoder decoder0) {
+  static _FrameSchedulerScheduleFrameParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _SceneSchedulerScheduleFrameParams result = new _SceneSchedulerScheduleFrameParams();
+    _FrameSchedulerScheduleFrameParams result = new _FrameSchedulerScheduleFrameParams();
 
     var mainDataHeader = decoder0.decodeStructDataHeader();
     if (mainDataHeader.version <= kVersions.last.version) {
@@ -172,7 +172,7 @@ class _SceneSchedulerScheduleFrameParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_SceneSchedulerScheduleFrameParams("")";
+    return "_FrameSchedulerScheduleFrameParams("")";
   }
 
   Map toJson() {
@@ -182,15 +182,15 @@ class _SceneSchedulerScheduleFrameParams extends bindings.Struct {
 }
 
 
-class SceneSchedulerScheduleFrameResponseParams extends bindings.Struct {
+class FrameSchedulerScheduleFrameResponseParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
   FrameInfo frameInfo = null;
 
-  SceneSchedulerScheduleFrameResponseParams() : super(kVersions.last.size);
+  FrameSchedulerScheduleFrameResponseParams() : super(kVersions.last.size);
 
-  static SceneSchedulerScheduleFrameResponseParams deserialize(bindings.Message message) {
+  static FrameSchedulerScheduleFrameResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
     if (decoder.excessHandles != null) {
@@ -199,11 +199,11 @@ class SceneSchedulerScheduleFrameResponseParams extends bindings.Struct {
     return result;
   }
 
-  static SceneSchedulerScheduleFrameResponseParams decode(bindings.Decoder decoder0) {
+  static FrameSchedulerScheduleFrameResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    SceneSchedulerScheduleFrameResponseParams result = new SceneSchedulerScheduleFrameResponseParams();
+    FrameSchedulerScheduleFrameResponseParams result = new FrameSchedulerScheduleFrameResponseParams();
 
     var mainDataHeader = decoder0.decodeStructDataHeader();
     if (mainDataHeader.version <= kVersions.last.version) {
@@ -237,13 +237,13 @@ class SceneSchedulerScheduleFrameResponseParams extends bindings.Struct {
       encoder0.encodeStruct(frameInfo, 8, false);
     } on bindings.MojoCodecError catch(e) {
       e.message = "Error encountered while encoding field "
-          "frameInfo of struct SceneSchedulerScheduleFrameResponseParams: $e";
+          "frameInfo of struct FrameSchedulerScheduleFrameResponseParams: $e";
       rethrow;
     }
   }
 
   String toString() {
-    return "SceneSchedulerScheduleFrameResponseParams("
+    return "FrameSchedulerScheduleFrameResponseParams("
            "frameInfo: $frameInfo" ")";
   }
 
@@ -254,9 +254,9 @@ class SceneSchedulerScheduleFrameResponseParams extends bindings.Struct {
   }
 }
 
-const int _sceneSchedulerMethodScheduleFrameName = 0;
+const int _frameSchedulerMethodScheduleFrameName = 0;
 
-class _SceneSchedulerServiceDescription implements service_describer.ServiceDescription {
+class _FrameSchedulerServiceDescription implements service_describer.ServiceDescription {
   dynamic getTopLevelInterface([Function responseFactory]) =>
       responseFactory(null);
 
@@ -267,31 +267,31 @@ class _SceneSchedulerServiceDescription implements service_describer.ServiceDesc
       responseFactory(null);
 }
 
-abstract class SceneScheduler {
+abstract class FrameScheduler {
   static const String serviceName = null;
   dynamic scheduleFrame([Function responseFactory = null]);
 }
 
-class _SceneSchedulerProxyControl
+class _FrameSchedulerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl {
-  _SceneSchedulerProxyControl.fromEndpoint(
+  _FrameSchedulerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _SceneSchedulerProxyControl.fromHandle(
+  _FrameSchedulerProxyControl.fromHandle(
       core.MojoHandle handle) : super.fromHandle(handle);
 
-  _SceneSchedulerProxyControl.unbound() : super.unbound();
+  _FrameSchedulerProxyControl.unbound() : super.unbound();
 
   service_describer.ServiceDescription get serviceDescription =>
-      new _SceneSchedulerServiceDescription();
+      new _FrameSchedulerServiceDescription();
 
-  String get serviceName => SceneScheduler.serviceName;
+  String get serviceName => FrameScheduler.serviceName;
 
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
-      case _sceneSchedulerMethodScheduleFrameName:
-        var r = SceneSchedulerScheduleFrameResponseParams.deserialize(
+      case _frameSchedulerMethodScheduleFrameName:
+        var r = FrameSchedulerScheduleFrameResponseParams.deserialize(
             message.payload);
         if (!message.header.hasRequestId) {
           proxyError("Expected a message with a valid request Id.");
@@ -320,69 +320,69 @@ class _SceneSchedulerProxyControl
   @override
   String toString() {
     var superString = super.toString();
-    return "_SceneSchedulerProxyControl($superString)";
+    return "_FrameSchedulerProxyControl($superString)";
   }
 }
 
-class SceneSchedulerProxy
+class FrameSchedulerProxy
     extends bindings.Proxy
-    implements SceneScheduler {
-  SceneSchedulerProxy.fromEndpoint(
+    implements FrameScheduler {
+  FrameSchedulerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
-      : super(new _SceneSchedulerProxyControl.fromEndpoint(endpoint));
+      : super(new _FrameSchedulerProxyControl.fromEndpoint(endpoint));
 
-  SceneSchedulerProxy.fromHandle(core.MojoHandle handle)
-      : super(new _SceneSchedulerProxyControl.fromHandle(handle));
+  FrameSchedulerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _FrameSchedulerProxyControl.fromHandle(handle));
 
-  SceneSchedulerProxy.unbound()
-      : super(new _SceneSchedulerProxyControl.unbound());
+  FrameSchedulerProxy.unbound()
+      : super(new _FrameSchedulerProxyControl.unbound());
 
-  static SceneSchedulerProxy newFromEndpoint(
+  static FrameSchedulerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SceneSchedulerProxy"));
-    return new SceneSchedulerProxy.fromEndpoint(endpoint);
+    assert(endpoint.setDescription("For FrameSchedulerProxy"));
+    return new FrameSchedulerProxy.fromEndpoint(endpoint);
   }
 
-  factory SceneSchedulerProxy.connectToService(
+  factory FrameSchedulerProxy.connectToService(
       bindings.ServiceConnector s, String url, [String serviceName]) {
-    SceneSchedulerProxy p = new SceneSchedulerProxy.unbound();
+    FrameSchedulerProxy p = new FrameSchedulerProxy.unbound();
     s.connectToService(url, p, serviceName);
     return p;
   }
 
 
   dynamic scheduleFrame([Function responseFactory = null]) {
-    var params = new _SceneSchedulerScheduleFrameParams();
+    var params = new _FrameSchedulerScheduleFrameParams();
     return ctrl.sendMessageWithRequestId(
         params,
-        _sceneSchedulerMethodScheduleFrameName,
+        _frameSchedulerMethodScheduleFrameName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
 }
 
-class _SceneSchedulerStubControl
+class _FrameSchedulerStubControl
     extends bindings.StubMessageHandler
-    implements bindings.StubControl<SceneScheduler> {
-  SceneScheduler _impl;
+    implements bindings.StubControl<FrameScheduler> {
+  FrameScheduler _impl;
 
-  _SceneSchedulerStubControl.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint, [SceneScheduler impl])
+  _FrameSchedulerStubControl.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [FrameScheduler impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  _SceneSchedulerStubControl.fromHandle(
-      core.MojoHandle handle, [SceneScheduler impl])
+  _FrameSchedulerStubControl.fromHandle(
+      core.MojoHandle handle, [FrameScheduler impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  _SceneSchedulerStubControl.unbound([this._impl]) : super.unbound();
+  _FrameSchedulerStubControl.unbound([this._impl]) : super.unbound();
 
 
-  SceneSchedulerScheduleFrameResponseParams _sceneSchedulerScheduleFrameResponseParamsFactory(FrameInfo frameInfo) {
-    var result = new SceneSchedulerScheduleFrameResponseParams();
+  FrameSchedulerScheduleFrameResponseParams _frameSchedulerScheduleFrameResponseParamsFactory(FrameInfo frameInfo) {
+    var result = new FrameSchedulerScheduleFrameResponseParams();
     result.frameInfo = frameInfo;
     return result;
   }
@@ -397,14 +397,14 @@ class _SceneSchedulerStubControl
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
-      case _sceneSchedulerMethodScheduleFrameName:
-        var response = _impl.scheduleFrame(_sceneSchedulerScheduleFrameResponseParamsFactory);
+      case _frameSchedulerMethodScheduleFrameName:
+        var response = _impl.scheduleFrame(_frameSchedulerScheduleFrameResponseParamsFactory);
         if (response is Future) {
           return response.then((response) {
             if (response != null) {
               return buildResponseWithId(
                   response,
-                  _sceneSchedulerMethodScheduleFrameName,
+                  _frameSchedulerMethodScheduleFrameName,
                   message.header.requestId,
                   bindings.MessageHeader.kMessageIsResponse);
             }
@@ -412,7 +412,7 @@ class _SceneSchedulerStubControl
         } else if (response != null) {
           return buildResponseWithId(
               response,
-              _sceneSchedulerMethodScheduleFrameName,
+              _frameSchedulerMethodScheduleFrameName,
               message.header.requestId,
               bindings.MessageHeader.kMessageIsResponse);
         }
@@ -424,8 +424,8 @@ class _SceneSchedulerStubControl
     return null;
   }
 
-  SceneScheduler get impl => _impl;
-  set impl(SceneScheduler d) {
+  FrameScheduler get impl => _impl;
+  set impl(FrameScheduler d) {
     if (d == null) {
       throw new core.MojoApiError("$this: Cannot set a null implementation");
     }
@@ -446,7 +446,7 @@ class _SceneSchedulerStubControl
   @override
   String toString() {
     var superString = super.toString();
-    return "_SceneSchedulerStubControl($superString)";
+    return "_FrameSchedulerStubControl($superString)";
   }
 
   int get version => 0;
@@ -454,34 +454,34 @@ class _SceneSchedulerStubControl
   static service_describer.ServiceDescription _cachedServiceDescription;
   static service_describer.ServiceDescription get serviceDescription {
     if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _SceneSchedulerServiceDescription();
+      _cachedServiceDescription = new _FrameSchedulerServiceDescription();
     }
     return _cachedServiceDescription;
   }
 }
 
-class SceneSchedulerStub
-    extends bindings.Stub<SceneScheduler>
-    implements SceneScheduler {
-  SceneSchedulerStub.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint, [SceneScheduler impl])
-      : super(new _SceneSchedulerStubControl.fromEndpoint(endpoint, impl));
+class FrameSchedulerStub
+    extends bindings.Stub<FrameScheduler>
+    implements FrameScheduler {
+  FrameSchedulerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [FrameScheduler impl])
+      : super(new _FrameSchedulerStubControl.fromEndpoint(endpoint, impl));
 
-  SceneSchedulerStub.fromHandle(
-      core.MojoHandle handle, [SceneScheduler impl])
-      : super(new _SceneSchedulerStubControl.fromHandle(handle, impl));
+  FrameSchedulerStub.fromHandle(
+      core.MojoHandle handle, [FrameScheduler impl])
+      : super(new _FrameSchedulerStubControl.fromHandle(handle, impl));
 
-  SceneSchedulerStub.unbound([SceneScheduler impl])
-      : super(new _SceneSchedulerStubControl.unbound(impl));
+  FrameSchedulerStub.unbound([FrameScheduler impl])
+      : super(new _FrameSchedulerStubControl.unbound(impl));
 
-  static SceneSchedulerStub newFromEndpoint(
+  static FrameSchedulerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For SceneSchedulerStub"));
-    return new SceneSchedulerStub.fromEndpoint(endpoint);
+    assert(endpoint.setDescription("For FrameSchedulerStub"));
+    return new FrameSchedulerStub.fromEndpoint(endpoint);
   }
 
   static service_describer.ServiceDescription get serviceDescription =>
-      _SceneSchedulerStubControl.serviceDescription;
+      _FrameSchedulerStubControl.serviceDescription;
 
 
   dynamic scheduleFrame([Function responseFactory = null]) {

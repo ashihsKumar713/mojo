@@ -15,6 +15,10 @@ tests = [
     "test": "mojo:clipboard_apptests",
   },
   {
+    "test": "mojo:compositor_apptests",
+    "shell-args": ["--args-for=mojo:native_viewport_service --use-test-config"],
+  },
+  {
     "test": "mojo:example_apptests",
     # ExampleApplicationTest.CheckCommandLineArg checks --example_apptest_arg.
     "test-args": ["--example_apptest_arg"],

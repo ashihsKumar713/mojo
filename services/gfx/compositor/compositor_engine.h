@@ -57,7 +57,7 @@ class CompositorEngine {
 
   // Schedules a frame callback.
   void ScheduleFrame(SceneState* scene_state,
-                     const SceneFrameCallback& callback);
+                     const FrameCallback& callback);
 
   // RENDERER REQUESTS
 
@@ -71,6 +71,10 @@ class CompositorEngine {
   // Removes the root scene.
   // Destroys |renderer_state| if an error occurs.
   void ClearRootScene(RendererState* renderer_state);
+
+  // Schedules a frame callback.
+  void ScheduleFrame(RendererState* renderer_state,
+                     const FrameCallback& callback);
 
   // Performs a hit test.
   void HitTest(

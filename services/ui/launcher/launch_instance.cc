@@ -62,7 +62,7 @@ void LaunchInstance::InitViewport() {
 
   auto requested_configuration = mojo::SurfaceConfiguration::New();
   viewport_->Create(
-      size.Clone(), requested_configuration.Pass(),
+      size.Pass(), requested_configuration.Pass(),
       base::Bind(&LaunchInstance::OnViewportCreated, base::Unretained(this)));
 }
 

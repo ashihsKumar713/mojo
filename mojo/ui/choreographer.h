@@ -43,13 +43,13 @@ class Choreographer {
  public:
   Choreographer(mojo::gfx::composition::Scene* scene,
                 ChoreographerDelegate* delegate);
-  Choreographer(mojo::gfx::composition::SceneSchedulerPtr scene_scheduler,
+  Choreographer(mojo::gfx::composition::FrameSchedulerPtr frame_scheduler,
                 ChoreographerDelegate* delegate);
   ~Choreographer();
 
   // Gets the scene scheduler.
-  mojo::gfx::composition::SceneScheduler* scene_scheduler() {
-    return scene_scheduler_.get();
+  mojo::gfx::composition::FrameScheduler* frame_scheduler() {
+    return frame_scheduler_.get();
   }
 
   // Gets the frame tracker.
@@ -57,11 +57,11 @@ class Choreographer {
     return frame_tracker_;
   }
 
-  // Schedules a call to the delegate's |OnDraw| using the scene scheduler.
+  // Schedules a call to the delegate's |OnDraw| using the frame scheduler.
   void ScheduleDraw();
 
  private:
-  mojo::gfx::composition::SceneSchedulerPtr scene_scheduler_;
+  mojo::gfx::composition::FrameSchedulerPtr frame_scheduler_;
   ChoreographerDelegate* delegate_;
   mojo::gfx::composition::FrameTracker frame_tracker_;
 
