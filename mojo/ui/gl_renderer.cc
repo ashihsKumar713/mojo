@@ -103,8 +103,15 @@ mojo::gfx::composition::ResourcePtr GLRenderer::DrawGL(
                               GL_RENDERBUFFER, depth_buffer);
   }
 
-  DCHECK_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
-            glCheckFramebufferStatus(GL_FRAMEBUFFER));
+#if DCHECK_IS_ON()
+  // This check causes a flush of the GL pipeline which is too expensive
+  // even in debug mode so only check it the first time as a sanity check.
+  if (!checked_framebuffer_status_) {
+    DCHECK_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+              glCheckFramebufferStatus(GL_FRAMEBUFFER));
+    checked_framebuffer_status_ = true;
+  }
+#endif
 
   glViewport(0, 0, size.width, size.height);
   callback.Run(gl_scope, size);

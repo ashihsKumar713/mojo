@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -102,6 +103,10 @@ class GLRenderer {
 
   std::deque<GLRecycledTextureInfo> recycled_textures_;
   uint32_t bound_textures_ = 0u;
+
+#if DCHECK_IS_ON()
+  bool checked_framebuffer_status_ = false;
+#endif
 
   base::WeakPtrFactory<mojo::ui::GLRenderer> weak_factory_;
 

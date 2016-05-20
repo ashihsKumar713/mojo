@@ -41,7 +41,7 @@ void ReleaseThunk(void* data) {
   info.fID = texture_id;
 
   GrBackendTextureDesc desc;
-  desc.fFlags = kRenderTarget_GrBackendTextureFlag;
+  desc.fFlags = kNone_GrBackendTextureFlag;
   desc.fWidth = width;
   desc.fHeight = height;
   desc.fConfig = kSkia8888_GrPixelConfig;
@@ -84,7 +84,7 @@ GrTexture* MailboxTextureImageGenerator::onGenerateTexture(
   info.fID = texture_id;
 
   GrBackendTextureDesc desc;
-  desc.fFlags = kRenderTarget_GrBackendTextureFlag;
+  desc.fFlags = kNone_GrBackendTextureFlag;
   desc.fWidth = getInfo().width();
   desc.fHeight = getInfo().height();
   desc.fConfig = kSkia8888_GrPixelConfig;
