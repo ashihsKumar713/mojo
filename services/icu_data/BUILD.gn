@@ -27,6 +27,8 @@ mojo_native_application("icu_data") {
   ]
 }
 
+# Library that allows the service code to be included directly into the
+# embedding shell. Used by https://manganese.googlesource.com/.
 source_set("lib") {
   sources = [
     "icu_data_impl.cc",

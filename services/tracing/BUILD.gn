@@ -16,6 +16,8 @@ mojo_native_application("tracing") {
   ]
 }
 
+# Library that allows the service code to be included directly into the
+# embedding shell. Used by https://manganese.googlesource.com/.
 source_set("lib") {
   sources = [
     "trace_data_sink.cc",

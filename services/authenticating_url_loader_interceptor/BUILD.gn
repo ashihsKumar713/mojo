@@ -17,6 +17,8 @@ mojo_native_application("authenticating_url_loader_interceptor") {
   ]
 }
 
+# Library that allows the service code to be included directly into the
+# embedding shell. Used by https://manganese.googlesource.com/.
 source_set("lib") {
   sources = [
     "authenticating_url_loader_interceptor.cc",
