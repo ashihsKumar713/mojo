@@ -94,6 +94,8 @@ def GNArgsForConfig(config):
     if gn_args["mojo_use_go"]:
       gn_args["go_build_tool"] = config.values.get("go_build_tool")
 
+  gn_args["dart_boringssl_path"] = config.values.get("boringssl_path", "")
+
   extra_args = config.values.get("gn_args")
   if extra_args:
     for arg in extra_args.split():
@@ -140,6 +142,7 @@ def ConfigForGNArgs(args):
     config_args["target_sysroot"] = args.get("target_sysroot")
   if "toolchain_prefix" in args:
     config_args["toolchain_prefix"] = args.get("toolchain_prefix")
+  config_args["boringssl_path"] = args.get("dart_boringssl_path")
   return Config(**config_args)
 
 

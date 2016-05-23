@@ -168,8 +168,8 @@ patch class _Directory {
     return streamController.stream;
   }
 
-  /* patch */ List listSync({bool recursive: false,
-                             bool followLinks: true}) {
+  /* patch */ List<FileSystemEntity> listSync({bool recursive: false,
+                                               bool followLinks: true}) {
     return _onSyncOperation();
   }
 

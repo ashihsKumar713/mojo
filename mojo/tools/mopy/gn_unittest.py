@@ -28,6 +28,7 @@ class GTestListTestsTest(unittest.TestCase):
       "use_nacl": [False, True],
       "mojo_use_go": [False],
       "dcheck_always_on": [False, True],
+      "boringssl_path": [""],
     }
     if sys.platform == "darwin":
       configs_to_test["target_os"].remove("linux")
@@ -54,6 +55,7 @@ class GTestListTestsTest(unittest.TestCase):
       "mojo_use_nacl": [False, True],
       "mojo_use_go": [False],
       "dcheck_always_on": [False, True],
+      "dart_boringssl_path": [""],
     }
 
     for args in _iterate_over_config(configs_to_test):

@@ -99,6 +99,8 @@ def _args_to_config(args):
   if 'package_name' in args:
     additional_args['package_name'] = args.package_name
 
+  additional_args['boringssl_path'] = Paths().boringssl_path
+
   return Config(target_os=target_os, target_cpu=target_cpu,
                 is_debug=is_debug, is_official_build=args.official,
                 dcheck_always_on=args.dcheck_always_on,

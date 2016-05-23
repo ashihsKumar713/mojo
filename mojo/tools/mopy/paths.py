@@ -18,6 +18,8 @@ class Paths(object):
     self.mojo_dir = os.path.join(self.src_root, "mojo")
     self.adb_path = os.path.join(self.src_root, 'third_party', 'android_tools',
                                  'sdk', 'platform-tools', 'adb')
+    self.boringssl_path = os.path.join(self.src_root, 'third_party',
+                                       'boringssl')
 
     self.go_tool_path = None
     if config:
