@@ -17,6 +17,8 @@ mojo_android_java_application("speech_recognizer") {
   ]
 }
 
+# Library that allows the service code to be included directly into the
+# embedding shell. Used by https://manganese.googlesource.com/.
 android_library("speech_recognizer_lib") {
   java_files = [
     "src/org/chromium/mojo/speech_recognizer/SpeechRecognizerApplicationDelegate.java",

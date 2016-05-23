@@ -15,7 +15,7 @@ import org.chromium.mojom.mojo.Shell;
 /**
  * An ApplicationDelegate for the SpeechRecognizer service.
  */
-final class SpeechRecognizerApplicationDelegate implements ApplicationDelegate {
+public final class SpeechRecognizerApplicationDelegate implements ApplicationDelegate {
     private Context mContext;
 
     public SpeechRecognizerApplicationDelegate(Context context) {
