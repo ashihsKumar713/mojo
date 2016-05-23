@@ -100,6 +100,26 @@ MojoResult MojoSystemImplGetRights(MojoSystemImpl system,
   return core->GetRights(handle, MakeUserPointer(rights));
 }
 
+MojoResult MojoSystemImplDuplicateHandleWithReducedRights(
+    MojoSystemImpl system,
+    MojoHandle handle,
+    MojoHandleRights rights_to_remove,
+    MojoHandle* new_handle) {
+  mojo::system::Core* core = static_cast<mojo::system::Core*>(system);
+  DCHECK(core);
+  return core->DuplicateHandleWithReducedRights(handle, rights_to_remove,
+                                                MakeUserPointer(new_handle));
+}
+
+MojoResult MojoSystemImplDuplicateHandle(MojoSystemImpl system,
+                                         MojoHandle handle,
+                                         MojoHandle* new_handle) {
+  mojo::system::Core* core = static_cast<mojo::system::Core*>(system);
+  DCHECK(core);
+  return core->DuplicateHandleWithReducedRights(handle, MOJO_HANDLE_RIGHT_NONE,
+                                                MakeUserPointer(new_handle));
+}
+
 MojoResult MojoSystemImplWait(MojoSystemImpl system,
                               MojoHandle handle,
                               MojoHandleSignals signals,

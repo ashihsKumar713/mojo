@@ -25,6 +25,8 @@ const struct nacl_irt_mojo kIrtMojo = {
     MojoGetTimeTicksNow,
     MojoClose,
     MojoGetRights,
+    MojoDuplicateHandleWithReducedRights,
+    MojoDuplicateHandle,
     MojoWait,
     MojoWaitMany,
     MojoCreateMessagePipe,
