@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/message_loop/message_loop.h"
-#include "shell/application_manager/application_manager.h"
 
 namespace shell {
 

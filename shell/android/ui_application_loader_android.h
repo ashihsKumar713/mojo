@@ -35,9 +35,7 @@ class UIApplicationLoader : public ApplicationLoader {
   class UILoader;
 
   // These functions are exected on the background thread. They call through
-  // to |background_loader_| to do the actual loading.
-  // TODO: having this code take a |manager| is fragile (as ApplicationManager
-  // isn't thread safe).
+  // to |loader_| to do the actual loading.
   void LoadOnUIThread(
       const GURL& url,
       mojo::InterfaceRequest<mojo::Application> application_request);
