@@ -155,7 +155,7 @@ class _NativeViewportEventDispatcherServiceDescription implements service_descri
 }
 
 abstract class NativeViewportEventDispatcher {
-  static const String serviceName = "mojo::NativeViewportEventDispatcher";
+  static const String serviceName = null;
 
   static service_describer.ServiceDescription _cachedServiceDescription;
   static service_describer.ServiceDescription get serviceDescription {
