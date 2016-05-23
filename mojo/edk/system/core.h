@@ -117,6 +117,10 @@ class Core {
   // "mojo/public/c/system/handle.h":
   MojoResult Close(MojoHandle handle);
   MojoResult GetRights(MojoHandle handle, UserPointer<MojoHandleRights> rights);
+  MojoResult DuplicateHandleWithReducedRights(
+      MojoHandle handle,
+      MojoHandleRights rights_to_remove,
+      UserPointer<MojoHandle> new_handle);
 
   // These methods correspond to the API functions defined in
   // "mojo/public/c/system/wait.h":

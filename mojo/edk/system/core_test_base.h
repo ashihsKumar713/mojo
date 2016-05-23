@@ -46,7 +46,8 @@ class CoreTestBase : public testing::Test {
   void TearDown() override;
 
  protected:
-  // |info| must remain alive until the returned handle is closed.
+  // |info| must remain alive until the returned handle and any handles
+  // duplicated from it are closed.
   MojoHandle CreateMockHandle(MockHandleInfo* info);
 
   Core* core() { return core_.get(); }
@@ -66,6 +67,7 @@ class CoreTestBase_MockHandleInfo {
   unsigned GetCtorCallCount() const;
   unsigned GetDtorCallCount() const;
   unsigned GetCloseCallCount() const;
+  unsigned GetDuplicateDispatcherCallCount() const;
   unsigned GetWriteMessageCallCount() const;
   unsigned GetReadMessageCallCount() const;
   unsigned GetWriteDataCallCount() const;
@@ -88,6 +90,7 @@ class CoreTestBase_MockHandleInfo {
   void IncrementCtorCallCount();
   void IncrementDtorCallCount();
   void IncrementCloseCallCount();
+  void IncrementDuplicateDispatcherCallCount();
   void IncrementWriteMessageCallCount();
   void IncrementReadMessageCallCount();
   void IncrementWriteDataCallCount();
@@ -112,6 +115,7 @@ class CoreTestBase_MockHandleInfo {
   unsigned ctor_call_count_ MOJO_GUARDED_BY(mutex_) = 0;
   unsigned dtor_call_count_ MOJO_GUARDED_BY(mutex_) = 0;
   unsigned close_call_count_ MOJO_GUARDED_BY(mutex_) = 0;
+  unsigned duplicate_dispatcher_call_count_ MOJO_GUARDED_BY(mutex_) = 0;
   unsigned write_message_call_count_ MOJO_GUARDED_BY(mutex_) = 0;
   unsigned read_message_call_count_ MOJO_GUARDED_BY(mutex_) = 0;
   unsigned write_data_call_count_ MOJO_GUARDED_BY(mutex_) = 0;

@@ -96,6 +96,8 @@ class SharedBufferDispatcher final : public SimpleDispatcher {
 
   // |Dispatcher| protected methods:
   void CloseImplNoLock() override;
+  MojoResult DuplicateDispatcherImplNoLock(
+      util::RefPtr<Dispatcher>* new_dispatcher) override;
   util::RefPtr<Dispatcher> CreateEquivalentDispatcherAndCloseImplNoLock(
       MessagePipe* message_pipe,
       unsigned port) override;

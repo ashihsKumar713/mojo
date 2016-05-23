@@ -186,6 +186,35 @@ MojoResult Core::GetRights(MojoHandle handle,
   return MOJO_RESULT_OK;
 }
 
+MojoResult Core::DuplicateHandleWithReducedRights(
+    MojoHandle handle,
+    MojoHandleRights rights_to_remove,
+    UserPointer<MojoHandle> new_handle) {
+  Handle h;
+  MojoResult result = GetHandle(handle, &h);
+  if (result != MOJO_RESULT_OK)
+    return result;
+
+  if (!h.has_all_rights(MOJO_HANDLE_RIGHT_DUPLICATE))
+    return MOJO_RESULT_PERMISSION_DENIED;
+
+  RefPtr<Dispatcher> new_dispatcher;
+  result = h.dispatcher->DuplicateDispatcher(&new_dispatcher);
+  if (result != MOJO_RESULT_OK)
+    return result;
+
+  MojoHandle new_handle_value =
+      AddHandle(Handle(new_dispatcher.Clone(), h.rights & ~rights_to_remove));
+  if (new_handle_value == MOJO_HANDLE_INVALID) {
+    LOG(ERROR) << "Handle table full";
+    new_dispatcher->Close();
+    return MOJO_RESULT_RESOURCE_EXHAUSTED;
+  }
+
+  new_handle.Put(new_handle_value);
+  return MOJO_RESULT_OK;
+}
+
 MojoResult Core::Wait(MojoHandle handle,
                       MojoHandleSignals signals,
                       MojoDeadline deadline,
@@ -598,15 +627,15 @@ MojoResult Core::CreateSharedBuffer(
     return result;
   }
 
-  MojoHandle h = AddHandle(
+  MojoHandle handle = AddHandle(
       Handle(dispatcher.Clone(), SharedBufferDispatcher::kDefaultHandleRights));
-  if (h == MOJO_HANDLE_INVALID) {
+  if (handle == MOJO_HANDLE_INVALID) {
     LOG(ERROR) << "Handle table full";
     dispatcher->Close();
     return MOJO_RESULT_RESOURCE_EXHAUSTED;
   }
 
-  shared_buffer_handle.Put(h);
+  shared_buffer_handle.Put(handle);
   return MOJO_RESULT_OK;
 }
 
@@ -633,14 +662,15 @@ MojoResult Core::DuplicateBufferHandle(
   if (result != MOJO_RESULT_OK)
     return result;
 
-  MojoHandle new_handle = AddHandle(Handle(new_dispatcher.Clone(), h.rights));
-  if (new_handle == MOJO_HANDLE_INVALID) {
+  MojoHandle new_handle_value =
+      AddHandle(Handle(new_dispatcher.Clone(), h.rights));
+  if (new_handle_value == MOJO_HANDLE_INVALID) {
     LOG(ERROR) << "Handle table full";
     new_dispatcher->Close();
     return MOJO_RESULT_RESOURCE_EXHAUSTED;
   }
 
-  new_buffer_handle.Put(new_handle);
+  new_buffer_handle.Put(new_handle_value);
   return MOJO_RESULT_OK;
 }
 

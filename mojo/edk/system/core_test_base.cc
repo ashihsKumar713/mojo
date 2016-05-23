@@ -56,6 +56,13 @@ class MockDispatcher : public Dispatcher {
     mutex().AssertHeld();
   }
 
+  MojoResult DuplicateDispatcherImplNoLock(
+      util::RefPtr<Dispatcher>* new_dispatcher) override {
+    info_->IncrementDuplicateDispatcherCallCount();
+    *new_dispatcher = MockDispatcher::Create(info_);
+    return MOJO_RESULT_OK;
+  }
+
   MojoResult WriteMessageImplNoLock(UserPointer<const void> bytes,
                                     uint32_t num_bytes,
                                     std::vector<HandleTransport>* transports,
@@ -261,6 +268,11 @@ unsigned CoreTestBase_MockHandleInfo::GetCloseCallCount() const {
   return close_call_count_;
 }
 
+unsigned CoreTestBase_MockHandleInfo::GetDuplicateDispatcherCallCount() const {
+  MutexLocker locker(&mutex_);
+  return duplicate_dispatcher_call_count_;
+}
+
 unsigned CoreTestBase_MockHandleInfo::GetWriteMessageCallCount() const {
   MutexLocker locker(&mutex_);
   return write_message_call_count_;
@@ -355,6 +367,11 @@ void CoreTestBase_MockHandleInfo::IncrementDtorCallCount() {
 void CoreTestBase_MockHandleInfo::IncrementCloseCallCount() {
   MutexLocker locker(&mutex_);
   close_call_count_++;
+}
+
+void CoreTestBase_MockHandleInfo::IncrementDuplicateDispatcherCallCount() {
+  MutexLocker locker(&mutex_);
+  duplicate_dispatcher_call_count_++;
 }
 
 void CoreTestBase_MockHandleInfo::IncrementWriteMessageCallCount() {

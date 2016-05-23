@@ -65,6 +65,12 @@ MockSimpleDispatcher::MockSimpleDispatcher(const HandleSignalsState& state)
 
 MockSimpleDispatcher::~MockSimpleDispatcher() {}
 
+MojoResult MockSimpleDispatcher::DuplicateDispatcherImplNoLock(
+    util::RefPtr<Dispatcher>* new_dispatcher) {
+  *new_dispatcher = MakeRefCounted<MockSimpleDispatcher>(state_);
+  return MOJO_RESULT_OK;
+}
+
 RefPtr<Dispatcher>
 MockSimpleDispatcher::CreateEquivalentDispatcherAndCloseImplNoLock(
     MessagePipe* /*message_pipe*/,
