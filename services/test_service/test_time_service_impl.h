@@ -12,13 +12,16 @@
 #include "services/test_service/test_service.mojom.h"
 
 namespace mojo {
+
+class ApplicationImplBase;
+
 namespace test {
 
 class TrackedService;
 
 class TestTimeServiceImpl : public TestTimeService {
  public:
-  TestTimeServiceImpl(ApplicationImpl* app_impl,
+  TestTimeServiceImpl(ApplicationImplBase* application,
                       InterfaceRequest<TestTimeService> request);
   ~TestTimeServiceImpl() override;
 
@@ -28,7 +31,7 @@ class TestTimeServiceImpl : public TestTimeService {
   void StartTrackingRequests(const mojo::Callback<void()>& callback) override;
 
  private:
-  ApplicationImpl* app_impl_;
+  ApplicationImplBase* const application_;
   scoped_ptr<TrackedService> tracking_;
   StrongBinding<TestTimeService> binding_;
   MOJO_DISALLOW_COPY_AND_ASSIGN(TestTimeServiceImpl);

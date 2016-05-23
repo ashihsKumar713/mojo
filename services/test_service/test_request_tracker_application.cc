@@ -4,35 +4,26 @@
 
 #include "services/test_service/test_request_tracker_application.h"
 
-#include <memory>
-
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/test_service/test_time_service_impl.h"
 
 namespace mojo {
 namespace test {
 
-TestRequestTrackerApplication::TestRequestTrackerApplication()
-    : app_impl_(nullptr) {
-}
+TestRequestTrackerApplication::TestRequestTrackerApplication() {}
 
-TestRequestTrackerApplication::~TestRequestTrackerApplication() {
-}
+TestRequestTrackerApplication::~TestRequestTrackerApplication() {}
 
-void TestRequestTrackerApplication::Initialize(ApplicationImpl* app) {
-  app_impl_ = app;
-}
-
-bool TestRequestTrackerApplication::ConfigureIncomingConnection(
+bool TestRequestTrackerApplication::OnAcceptConnection(
     ServiceProviderImpl* service_provider_impl) {
   // Every instance of the service and recorder shares the context.
   // Note, this app is single-threaded, so this is thread safe.
   service_provider_impl->AddService<TestTimeService>(
       [this](const ConnectionContext& connection_context,
              InterfaceRequest<TestTimeService> request) {
-        new TestTimeServiceImpl(app_impl_, request.Pass());
+        new TestTimeServiceImpl(this, request.Pass());
       });
   service_provider_impl->AddService<TestRequestTracker>(
       [this](const ConnectionContext& connection_context,
@@ -51,8 +42,7 @@ bool TestRequestTrackerApplication::ConfigureIncomingConnection(
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunner runner(
-      std::unique_ptr<mojo::test::TestRequestTrackerApplication>(
-          new mojo::test::TestRequestTrackerApplication()));
-  return runner.Run(application_request);
+  mojo::test::TestRequestTrackerApplication app;
+  mojo::RunApplication(application_request, &app);
+  return MOJO_RESULT_OK;
 }

@@ -5,32 +5,25 @@
 #ifndef SERVICES_TEST_SERVICE_TEST_SERVICE_APPLICATION_H_
 #define SERVICES_TEST_SERVICE_TEST_SERVICE_APPLICATION_H_
 
-#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/system/macros.h"
 
 namespace mojo {
 namespace test {
 
-class TestService;
-class TestTimeService;
-
-class TestServiceApplication : public ApplicationDelegate {
+class TestServiceApplication : public ApplicationImplBase {
  public:
   TestServiceApplication();
   ~TestServiceApplication() override;
 
-  void Initialize(ApplicationImpl* app) override;
-
-  // ApplicationDelegate implementation.
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override;
+  // |ApplicationImplBase| method:
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override;
 
   void AddRef();
   void ReleaseRef();
 
  private:
   int ref_count_;
-  ApplicationImpl* app_impl_;
 
   MOJO_DISALLOW_COPY_AND_ASSIGN(TestServiceApplication);
 };

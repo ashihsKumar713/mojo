@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/time/time.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "services/test_service/test_request_tracker.mojom.h"
 #include "services/test_service/test_time_service_impl.h"
@@ -13,18 +13,16 @@ namespace mojo {
 namespace test {
 
 TestTimeServiceImpl::TestTimeServiceImpl(
-    ApplicationImpl* app_impl,
+    ApplicationImplBase* application,
     InterfaceRequest<TestTimeService> request)
-    : app_impl_(app_impl), binding_(this, request.Pass()) {
-}
+    : application_(application), binding_(this, request.Pass()) {}
 
-TestTimeServiceImpl::~TestTimeServiceImpl() {
-}
+TestTimeServiceImpl::~TestTimeServiceImpl() {}
 
 void TestTimeServiceImpl::StartTrackingRequests(
     const mojo::Callback<void()>& callback) {
   TestRequestTrackerPtr tracker;
-  ConnectToService(app_impl_->shell(), "mojo:test_request_tracker_app",
+  ConnectToService(application_->shell(), "mojo:test_request_tracker_app",
                    GetProxy(&tracker));
   tracking_.reset(new TrackedService(tracker.Pass(), Name_, callback));
 }

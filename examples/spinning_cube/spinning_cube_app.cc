@@ -10,10 +10,9 @@
 #include "base/bind.h"
 #include "examples/spinning_cube/gles2_client_impl.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "mojo/public/cpp/utility/run_loop.h"
@@ -22,7 +21,7 @@
 
 namespace examples {
 
-class SpinningCubeApp : public mojo::ApplicationDelegate,
+class SpinningCubeApp : public mojo::ApplicationImplBase,
                         public mojo::NativeViewportEventDispatcher {
  public:
   SpinningCubeApp() : dispatcher_binding_(this) {}
@@ -32,8 +31,9 @@ class SpinningCubeApp : public mojo::ApplicationDelegate,
     mojo::ignore_result(gles2_client_.release());
   }
 
-  void Initialize(mojo::ApplicationImpl* app) override {
-    mojo::ConnectToService(app->shell(), "mojo:native_viewport_service",
+  // |ApplicationImplBase| overrides:
+  void OnInitialize() override {
+    mojo::ConnectToService(shell(), "mojo:native_viewport_service",
                            GetProxy(&viewport_));
     viewport_.set_connection_error_handler(
         [this]() { OnViewportConnectionError(); });
@@ -94,7 +94,7 @@ class SpinningCubeApp : public mojo::ApplicationDelegate,
 }  // namespace examples
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunner runner(std::unique_ptr<examples::SpinningCubeApp>(
-      new examples::SpinningCubeApp()));
-  return runner.Run(application_request);
+  examples::SpinningCubeApp spinning_cube_app;
+  mojo::RunApplication(application_request, &spinning_cube_app);
+  return MOJO_RESULT_OK;
 }

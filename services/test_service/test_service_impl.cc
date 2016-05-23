@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "services/test_service/test_service_application.h"
 #include "services/test_service/test_time_service_impl.h"
@@ -16,18 +15,14 @@
 namespace mojo {
 namespace test {
 
-TestServiceImpl::TestServiceImpl(ApplicationImpl* app_impl,
-                                 TestServiceApplication* application,
+TestServiceImpl::TestServiceImpl(TestServiceApplication* application,
                                  InterfaceRequest<TestService> request)
-    : application_(application),
-      app_impl_(app_impl),
-      binding_(this, request.Pass()) {
+    : application_(application), binding_(this, request.Pass()) {
   binding_.set_connection_error_handler(
       [this]() { application_->ReleaseRef(); });
 }
 
-TestServiceImpl::~TestServiceImpl() {
-}
+TestServiceImpl::~TestServiceImpl() {}
 
 void TestServiceImpl::Ping(const mojo::Callback<void()>& callback) {
   if (tracking_)
@@ -44,7 +39,7 @@ void SendTimeResponse(
 void TestServiceImpl::ConnectToAppAndGetTime(
     const mojo::String& app_url,
     const mojo::Callback<void(int64_t)>& callback) {
-  ConnectToService(app_impl_->shell(), app_url, GetProxy(&time_service_));
+  ConnectToService(application_->shell(), app_url, GetProxy(&time_service_));
   if (tracking_) {
     tracking_->RecordNewRequest();
     time_service_->StartTrackingRequests(mojo::Callback<void()>());
@@ -55,7 +50,7 @@ void TestServiceImpl::ConnectToAppAndGetTime(
 void TestServiceImpl::StartTrackingRequests(
     const mojo::Callback<void()>& callback) {
   TestRequestTrackerPtr tracker;
-  ConnectToService(app_impl_->shell(), "mojo:test_request_tracker_app",
+  ConnectToService(application_->shell(), "mojo:test_request_tracker_app",
                    GetProxy(&tracker));
   tracking_.reset(new TrackedService(tracker.Pass(), Name_, callback));
 }

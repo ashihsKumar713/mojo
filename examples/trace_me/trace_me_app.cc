@@ -13,7 +13,6 @@
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/application_runner.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 
 // This is an example app that uses implementation of tracing from mojo/common

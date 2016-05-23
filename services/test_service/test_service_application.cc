@@ -6,39 +6,31 @@
 
 #include <assert.h>
 
-#include <memory>
-
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
-#include "mojo/public/cpp/utility/run_loop.h"
 #include "services/test_service/test_service_impl.h"
 #include "services/test_service/test_time_service_impl.h"
 
 namespace mojo {
 namespace test {
 
-TestServiceApplication::TestServiceApplication()
-    : ref_count_(0), app_impl_(nullptr) {}
+TestServiceApplication::TestServiceApplication() : ref_count_(0) {}
 
 TestServiceApplication::~TestServiceApplication() {}
 
-void TestServiceApplication::Initialize(ApplicationImpl* app) {
-  app_impl_ = app;
-}
-
-bool TestServiceApplication::ConfigureIncomingConnection(
+bool TestServiceApplication::OnAcceptConnection(
     ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<TestService>(
       [this](const ConnectionContext& connection_context,
              InterfaceRequest<TestService> request) {
-        new TestServiceImpl(app_impl_, this, request.Pass());
+        new TestServiceImpl(this, request.Pass());
         AddRef();
       });
   service_provider_impl->AddService<TestTimeService>(
       [this](const ConnectionContext& connection_context,
              InterfaceRequest<TestTimeService> request) {
-        new TestTimeServiceImpl(app_impl_, request.Pass());
+        new TestTimeServiceImpl(this, request.Pass());
       });
   return true;
 }
@@ -52,15 +44,14 @@ void TestServiceApplication::ReleaseRef() {
   assert(ref_count_ > 0);
   ref_count_--;
   if (ref_count_ <= 0)
-    RunLoop::current()->Quit();
+    TerminateApplication();
 }
 
 }  // namespace test
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunner runner(
-      std::unique_ptr<mojo::test::TestServiceApplication>(
-          new mojo::test::TestServiceApplication()));
-  return runner.Run(application_request);
+  mojo::test::TestServiceApplication app;
+  mojo::RunApplication(application_request, &app);
+  return MOJO_RESULT_OK;
 }
