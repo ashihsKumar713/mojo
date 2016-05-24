@@ -36,7 +36,7 @@ TimelineControlSite::TimelineControlSite()
           status = MediaTimelineControlSiteStatus::New();
           status->timeline_transform =
               TimelineTransform::From(current_timeline_function_);
-          status->end_of_stream = false; // TODO(dalesat): Provide this.
+          status->end_of_stream = ReachedEndOfStreamUnsafe();
         }
         callback.Run(version, status.Pass());
       });
@@ -82,6 +82,29 @@ void TimelineControlSite::SnapshotCurrentFunction(int64_t reference_time,
   if (generation) {
     *generation = generation_;
   }
+
+  if (ReachedEndOfStreamUnsafe() && !end_of_stream_published_) {
+    end_of_stream_published_ = true;
+    task_runner_->PostTask(
+        FROM_HERE, base::Bind(&MojoPublisher<GetStatusCallback>::SendUpdates,
+                              base::Unretained(&status_publisher_)));
+  }
+}
+
+void TimelineControlSite::SetEndOfStreamPts(int64_t end_of_stream_pts) {
+  base::AutoLock lock(lock_);
+  if (end_of_stream_pts_ != end_of_stream_pts) {
+    end_of_stream_pts_ = end_of_stream_pts;
+    end_of_stream_published_ = false;
+  }
+}
+
+bool TimelineControlSite::ReachedEndOfStreamUnsafe() {
+  lock_.AssertAcquired();
+
+  return end_of_stream_pts_ != kUnspecifiedTime &&
+         current_timeline_function_(Timeline::local_now()) >=
+             end_of_stream_pts_;
 }
 
 void TimelineControlSite::GetStatus(uint64_t version_last_seen,
@@ -114,6 +137,12 @@ void TimelineControlSite::SetTimelineTransform(
   RCHECK(effective_subject_time == kUnspecifiedTime ||
          current_timeline_function_.subject_delta() != 0);
   RCHECK(reference_delta != 0);
+
+  if (subject_time != kUnspecifiedTime &&
+      end_of_stream_pts_ != kUnspecifiedTime) {
+    end_of_stream_pts_ = kUnspecifiedTime;
+    end_of_stream_published_ = false;
+  }
 
   if (effective_subject_time != kUnspecifiedTime) {
     // Infer effective_reference_time from effective_subject_time.

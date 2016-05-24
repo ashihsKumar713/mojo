@@ -20,8 +20,7 @@ std::unique_ptr<MediaTest> MediaTest::Create(
 }
 
 MediaTest::MediaTest(mojo::ApplicationImpl* app,
-                     const std::string& input_file_name)
-    : state_(MediaState::UNPREPARED) {
+                     const std::string& input_file_name) {
   MediaFactoryPtr factory;
   ConnectToService(app->shell(), "mojo:media_factory", GetProxy(&factory));
 
@@ -57,11 +56,17 @@ void MediaTest::HandleStatusUpdates(uint64_t version,
                                     MediaPlayerStatusPtr status) {
   if (status) {
     // Process status received from the player.
-    previous_state_ = state_;
-    state_ = status->state;
-
     if (status->timeline_transform) {
       timeline_function_ = status->timeline_transform.To<TimelineFunction>();
+    }
+
+    previous_state_ = state_;
+    if (status->end_of_stream) {
+      state_ = State::kEnded;
+    } else if (timeline_function_.subject_delta() == 0) {
+      state_ = State::kPaused;
+    } else {
+      state_ = State::kPlaying;
     }
 
     metadata_ = status->metadata.Pass();

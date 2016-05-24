@@ -7,101 +7,9 @@ import 'dart:async';
 import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
-import 'package:mojo_services/mojo/media/media_state.mojom.dart' as media_state_mojom;
 import 'package:mojo_services/mojo/media/media_transport.mojom.dart' as media_transport_mojom;
-import 'package:mojo_services/mojo/timelines.mojom.dart' as timelines_mojom;
+import 'package:mojo_services/mojo/media/timeline_controller.mojom.dart' as timeline_controller_mojom;
 
-
-
-class MediaSinkStatus extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(24, 0)
-  ];
-  media_state_mojom.MediaState state = null;
-  timelines_mojom.TimelineTransform timelineTransform = null;
-
-  MediaSinkStatus() : super(kVersions.last.size);
-
-  static MediaSinkStatus deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
-
-  static MediaSinkStatus decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    MediaSinkStatus result = new MediaSinkStatus();
-
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
-    if (mainDataHeader.version >= 0) {
-      
-        result.state = media_state_mojom.MediaState.decode(decoder0, 8);
-        if (result.state == null) {
-          throw new bindings.MojoCodecError(
-            'Trying to decode null union for non-nullable media_state_mojom.MediaState.');
-        }
-    }
-    if (mainDataHeader.version >= 0) {
-      
-      var decoder1 = decoder0.decodePointer(16, true);
-      result.timelineTransform = timelines_mojom.TimelineTransform.decode(decoder1);
-    }
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    try {
-      encoder0.encodeEnum(state, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "state of struct MediaSinkStatus: $e";
-      rethrow;
-    }
-    try {
-      encoder0.encodeStruct(timelineTransform, 16, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "timelineTransform of struct MediaSinkStatus: $e";
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "MediaSinkStatus("
-           "state: $state" ", "
-           "timelineTransform: $timelineTransform" ")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    map["state"] = state;
-    map["timelineTransform"] = timelineTransform;
-    return map;
-  }
-}
 
 
 class _MediaSinkGetConsumerParams extends bindings.Struct {
@@ -175,15 +83,15 @@ class _MediaSinkGetConsumerParams extends bindings.Struct {
 }
 
 
-class _MediaSinkGetStatusParams extends bindings.Struct {
+class _MediaSinkGetTimelineControlSiteParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  int versionLastSeen = 0;
+  timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite = null;
 
-  _MediaSinkGetStatusParams() : super(kVersions.last.size);
+  _MediaSinkGetTimelineControlSiteParams() : super(kVersions.last.size);
 
-  static _MediaSinkGetStatusParams deserialize(bindings.Message message) {
+  static _MediaSinkGetTimelineControlSiteParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
     if (decoder.excessHandles != null) {
@@ -192,11 +100,11 @@ class _MediaSinkGetStatusParams extends bindings.Struct {
     return result;
   }
 
-  static _MediaSinkGetStatusParams decode(bindings.Decoder decoder0) {
+  static _MediaSinkGetTimelineControlSiteParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaSinkGetStatusParams result = new _MediaSinkGetStatusParams();
+    _MediaSinkGetTimelineControlSiteParams result = new _MediaSinkGetTimelineControlSiteParams();
 
     var mainDataHeader = decoder0.decodeStructDataHeader();
     if (mainDataHeader.version <= kVersions.last.version) {
@@ -218,7 +126,7 @@ class _MediaSinkGetStatusParams extends bindings.Struct {
     }
     if (mainDataHeader.version >= 0) {
       
-      result.versionLastSeen = decoder0.decodeUint64(8);
+      result.timelineControlSite = decoder0.decodeInterfaceRequest(8, false, timeline_controller_mojom.MediaTimelineControlSiteStub.newFromEndpoint);
     }
     return result;
   }
@@ -226,233 +134,27 @@ class _MediaSinkGetStatusParams extends bindings.Struct {
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
     try {
-      encoder0.encodeUint64(versionLastSeen, 8);
+      encoder0.encodeInterfaceRequest(timelineControlSite, 8, false);
     } on bindings.MojoCodecError catch(e) {
       e.message = "Error encountered while encoding field "
-          "versionLastSeen of struct _MediaSinkGetStatusParams: $e";
+          "timelineControlSite of struct _MediaSinkGetTimelineControlSiteParams: $e";
       rethrow;
     }
   }
 
   String toString() {
-    return "_MediaSinkGetStatusParams("
-           "versionLastSeen: $versionLastSeen" ")";
+    return "_MediaSinkGetTimelineControlSiteParams("
+           "timelineControlSite: $timelineControlSite" ")";
   }
 
   Map toJson() {
-    Map map = new Map();
-    map["versionLastSeen"] = versionLastSeen;
-    return map;
-  }
-}
-
-
-class MediaSinkGetStatusResponseParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(24, 0)
-  ];
-  int version = 0;
-  MediaSinkStatus status = null;
-
-  MediaSinkGetStatusResponseParams() : super(kVersions.last.size);
-
-  static MediaSinkGetStatusResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
-
-  static MediaSinkGetStatusResponseParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    MediaSinkGetStatusResponseParams result = new MediaSinkGetStatusResponseParams();
-
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
-    if (mainDataHeader.version >= 0) {
-      
-      result.version = decoder0.decodeUint64(8);
-    }
-    if (mainDataHeader.version >= 0) {
-      
-      var decoder1 = decoder0.decodePointer(16, false);
-      result.status = MediaSinkStatus.decode(decoder1);
-    }
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    try {
-      encoder0.encodeUint64(version, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "version of struct MediaSinkGetStatusResponseParams: $e";
-      rethrow;
-    }
-    try {
-      encoder0.encodeStruct(status, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "status of struct MediaSinkGetStatusResponseParams: $e";
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "MediaSinkGetStatusResponseParams("
-           "version: $version" ", "
-           "status: $status" ")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    map["version"] = version;
-    map["status"] = status;
-    return map;
-  }
-}
-
-
-class _MediaSinkPlayParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(8, 0)
-  ];
-
-  _MediaSinkPlayParams() : super(kVersions.last.size);
-
-  static _MediaSinkPlayParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
-
-  static _MediaSinkPlayParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    _MediaSinkPlayParams result = new _MediaSinkPlayParams();
-
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    encoder.getStructEncoderAtOffset(kVersions.last);
-  }
-
-  String toString() {
-    return "_MediaSinkPlayParams("")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    return map;
-  }
-}
-
-
-class _MediaSinkPauseParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(8, 0)
-  ];
-
-  _MediaSinkPauseParams() : super(kVersions.last.size);
-
-  static _MediaSinkPauseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
-
-  static _MediaSinkPauseParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    _MediaSinkPauseParams result = new _MediaSinkPauseParams();
-
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    encoder.getStructEncoderAtOffset(kVersions.last);
-  }
-
-  String toString() {
-    return "_MediaSinkPauseParams("")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    return map;
+    throw new bindings.MojoCodecError(
+        'Object containing handles cannot be encoded to JSON.');
   }
 }
 
 const int _mediaSinkMethodGetConsumerName = 0;
-const int _mediaSinkMethodGetStatusName = 1;
-const int _mediaSinkMethodPlayName = 2;
-const int _mediaSinkMethodPauseName = 3;
+const int _mediaSinkMethodGetTimelineControlSiteName = 1;
 
 class _MediaSinkServiceDescription implements service_describer.ServiceDescription {
   dynamic getTopLevelInterface([Function responseFactory]) =>
@@ -488,10 +190,7 @@ abstract class MediaSink {
     return p;
   }
   void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer);
-  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]);
-  void play();
-  void pause();
-  static const int kInitialStatus = 0;
+  void getTimelineControlSite(timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite);
 }
 
 abstract class MediaSinkInterface
@@ -527,26 +226,6 @@ class _MediaSinkProxyControl
 
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
-      case _mediaSinkMethodGetStatusName:
-        var r = MediaSinkGetStatusResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
-        }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
-        break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
         close(immediate: true);
@@ -598,32 +277,15 @@ class MediaSinkProxy
     ctrl.sendMessage(params,
         _mediaSinkMethodGetConsumerName);
   }
-  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
-    var params = new _MediaSinkGetStatusParams();
-    params.versionLastSeen = versionLastSeen;
-    return ctrl.sendMessageWithRequestId(
-        params,
-        _mediaSinkMethodGetStatusName,
-        -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
-  }
-  void play() {
+  void getTimelineControlSite(timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
     }
-    var params = new _MediaSinkPlayParams();
+    var params = new _MediaSinkGetTimelineControlSiteParams();
+    params.timelineControlSite = timelineControlSite;
     ctrl.sendMessage(params,
-        _mediaSinkMethodPlayName);
-  }
-  void pause() {
-    if (!ctrl.isBound) {
-      ctrl.proxyError("The Proxy is closed.");
-      return;
-    }
-    var params = new _MediaSinkPauseParams();
-    ctrl.sendMessage(params,
-        _mediaSinkMethodPauseName);
+        _mediaSinkMethodGetTimelineControlSiteName);
   }
 }
 
@@ -649,12 +311,6 @@ class _MediaSinkStubControl
   String get serviceName => MediaSink.serviceName;
 
 
-  MediaSinkGetStatusResponseParams _mediaSinkGetStatusResponseParamsFactory(int version, MediaSinkStatus status) {
-    var result = new MediaSinkGetStatusResponseParams();
-    result.version = version;
-    result.status = status;
-    return result;
-  }
 
   dynamic handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
@@ -671,33 +327,10 @@ class _MediaSinkStubControl
             message.payload);
         _impl.getConsumer(params.consumer);
         break;
-      case _mediaSinkMethodGetStatusName:
-        var params = _MediaSinkGetStatusParams.deserialize(
+      case _mediaSinkMethodGetTimelineControlSiteName:
+        var params = _MediaSinkGetTimelineControlSiteParams.deserialize(
             message.payload);
-        var response = _impl.getStatus(params.versionLastSeen,_mediaSinkGetStatusResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaSinkMethodGetStatusName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaSinkMethodGetStatusName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
-        break;
-      case _mediaSinkMethodPlayName:
-        _impl.play();
-        break;
-      case _mediaSinkMethodPauseName:
-        _impl.pause();
+        _impl.getTimelineControlSite(params.timelineControlSite);
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
@@ -760,14 +393,8 @@ class MediaSinkStub
   void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
     return impl.getConsumer(consumer);
   }
-  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
-    return impl.getStatus(versionLastSeen,responseFactory);
-  }
-  void play() {
-    return impl.play();
-  }
-  void pause() {
-    return impl.pause();
+  void getTimelineControlSite(timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite) {
+    return impl.getTimelineControlSite(timelineControlSite);
   }
 }
 

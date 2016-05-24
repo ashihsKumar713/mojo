@@ -485,8 +485,46 @@ class _MediaTimelineControllerServiceDescription implements service_describer.Se
 
 abstract class MediaTimelineController {
   static const String serviceName = null;
-  void addControlSite(Object controlSite);
-  void getControlSite(Object controlSite);
+
+  static service_describer.ServiceDescription _cachedServiceDescription;
+  static service_describer.ServiceDescription get serviceDescription {
+    if (_cachedServiceDescription == null) {
+      _cachedServiceDescription = new _MediaTimelineControllerServiceDescription();
+    }
+    return _cachedServiceDescription;
+  }
+
+  static MediaTimelineControllerProxy connectToService(
+      bindings.ServiceConnector s, String url, [String serviceName]) {
+    MediaTimelineControllerProxy p = new MediaTimelineControllerProxy.unbound();
+    String name = serviceName ?? MediaTimelineController.serviceName;
+    if ((name == null) || name.isEmpty) {
+      throw new core.MojoApiError(
+          "If an interface has no ServiceName, then one must be provided.");
+    }
+    s.connectToService(url, p, name);
+    return p;
+  }
+  void addControlSite(MediaTimelineControlSiteInterface controlSite);
+  void getControlSite(MediaTimelineControlSiteInterfaceRequest controlSite);
+}
+
+abstract class MediaTimelineControllerInterface
+    implements bindings.MojoInterface<MediaTimelineController>,
+               MediaTimelineController {
+  factory MediaTimelineControllerInterface([MediaTimelineController impl]) =>
+      new MediaTimelineControllerStub.unbound(impl);
+  factory MediaTimelineControllerInterface.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint,
+      [MediaTimelineController impl]) =>
+      new MediaTimelineControllerStub.fromEndpoint(endpoint, impl);
+}
+
+abstract class MediaTimelineControllerInterfaceRequest
+    implements bindings.MojoInterface<MediaTimelineController>,
+               MediaTimelineController {
+  factory MediaTimelineControllerInterfaceRequest() =>
+      new MediaTimelineControllerProxy.unbound();
 }
 
 class _MediaTimelineControllerProxyControl
@@ -555,7 +593,7 @@ class MediaTimelineControllerProxy
     ctrl.sendMessage(params,
         _mediaTimelineControllerMethodAddControlSiteName);
   }
-  void getControlSite(Object controlSite) {
+  void getControlSite(MediaTimelineControlSiteInterfaceRequest controlSite) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -671,7 +709,7 @@ class MediaTimelineControllerStub
   void addControlSite(MediaTimelineControlSiteInterface controlSite) {
     return impl.addControlSite(controlSite);
   }
-  void getControlSite(Object controlSite) {
+  void getControlSite(MediaTimelineControlSiteInterfaceRequest controlSite) {
     return impl.getControlSite(controlSite);
   }
 }

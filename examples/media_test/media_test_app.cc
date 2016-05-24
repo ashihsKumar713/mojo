@@ -105,8 +105,8 @@ class MediaTestApp : public mojo::ApplicationDelegate {
   }
 
   void HandleMediaTestUpdateCallback() {
-    if (media_test_->state() == MediaState::ENDED &&
-        media_test_->previous_state() != MediaState::ENDED) {
+    if (media_test_->state() == MediaTest::State::kEnded &&
+        media_test_->previous_state() != MediaTest::State::kEnded) {
       // MediaTest doesn't appreciate being deleted in this callback.
       // Next time Poll runs, we move on to the next file.
       base::MessageLoop::current()->PostTask(
@@ -169,15 +169,11 @@ class MediaTestApp : public mojo::ApplicationDelegate {
   // Returns a string describing the MediaTest object's state.
   const char* state_string() const {
     switch (media_test_->state()) {
-      case MediaState::FAULT:
-        return "FAULT";
-      case MediaState::UNPREPARED:
-        return "unprepared";
-      case MediaState::PAUSED:
+      case MediaTest::State::kPaused:
         return "paused";
-      case MediaState::PLAYING:
+      case MediaTest::State::kPlaying:
         return "playing";
-      case MediaState::ENDED:
+      case MediaTest::State::kEnded:
         return "ended";
     }
     return "UNSUPPORTED STATE VALUE";
@@ -237,13 +233,13 @@ class MediaTestApp : public mojo::ApplicationDelegate {
   // Toggles between play and pause (prepared) states.
   void TogglePlayPause() {
     switch (media_test_->state()) {
-      case MediaState::PAUSED:
+      case MediaTest::State::kPaused:
         media_test_->Play();
         break;
-      case MediaState::PLAYING:
+      case MediaTest::State::kPlaying:
         media_test_->Pause();
         break;
-      case MediaState::ENDED:
+      case MediaTest::State::kEnded:
         if (input_file_names_.size() == 1) {
           // Replaying the only file. Reuse the same MediaTest instance.
           media_test_->Seek(0);

@@ -4,6 +4,7 @@
 
 #include "base/logging.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/services/media/common/cpp/timeline.h"
 #include "services/media/factory_service/media_player_impl.h"
 #include "services/media/framework/parts/reader.h"
 #include "services/media/framework/util/callback_joiner.h"
@@ -26,14 +27,14 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
     : MediaFactoryService::Product<MediaPlayer>(this, request.Pass(), owner) {
   DCHECK(reader);
 
-  status_publisher_.SetCallbackRunner(
-      [this](const GetStatusCallback& callback, uint64_t version) {
-        MediaPlayerStatusPtr status = MediaPlayerStatus::New();
-        status->state = reported_media_state_;
-        status->timeline_transform = transform_.Clone();
-        status->metadata = metadata_.Clone();
-        callback.Run(version, status.Pass());
-      });
+  status_publisher_.SetCallbackRunner([this](const GetStatusCallback& callback,
+                                             uint64_t version) {
+    MediaPlayerStatusPtr status = MediaPlayerStatus::New();
+    status->timeline_transform = TimelineTransform::From(timeline_function_);
+    status->end_of_stream = AllSinksAtEndOfStream();
+    status->metadata = metadata_.Clone();
+    callback.Run(version, status.Pass());
+  });
 
   state_ = State::kWaiting;
 
@@ -71,7 +72,6 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
     callback_joiner->WhenJoined([this]() {
       // The enabled streams are prepared.
       factory_.reset();
-      SetReportedMediaState(MediaState::PAUSED);
       state_ = State::kPaused;
       Update();
     });
@@ -84,63 +84,38 @@ void MediaPlayerImpl::Update() {
   while (true) {
     switch (state_) {
       case State::kPaused:
-        if (target_position_ != kNotSeeking) {
+        if (target_position_ != kUnspecifiedTime) {
           WhenPausedAndSeeking();
           break;
         }
 
-        if (target_state_ == MediaState::PLAYING) {
+        if (target_state_ == State::kPlaying) {
           if (!flushed_) {
-            ChangeSinkStates(MediaState::PLAYING);
-            state_ = State::kWaitingForSinksToPlay;
+            SetSinkTimelineTransforms(1, 1);
+            state_ = State::kWaiting;
             break;
           }
 
           flushed_ = false;
           state_ = State::kWaiting;
           demux_->Prime([this]() {
-            ChangeSinkStates(MediaState::PLAYING);
-            state_ = State::kWaitingForSinksToPlay;
+            SetSinkTimelineTransforms(1, 1);
+            state_ = State::kWaiting;
             Update();
           });
         }
         return;
 
-      case State::kWaitingForSinksToPlay:
-        if (AllSinksAre(SinkState::kPlayingOrEnded)) {
-          state_ = State::kPlaying;
-          if (target_state_ == MediaState::PLAYING) {
-            SetReportedMediaState(MediaState::PLAYING);
-          }
-        }
-        return;
-
       case State::kPlaying:
-        if (target_position_ != kNotSeeking ||
-            target_state_ == MediaState::PAUSED) {
-          ChangeSinkStates(MediaState::PAUSED);
-          state_ = State::kWaitingForSinksToPause;
+        if (target_position_ != kUnspecifiedTime ||
+            target_state_ == State::kPaused) {
+          SetSinkTimelineTransforms(1, 0);
+          state_ = State::kWaiting;
           break;
         }
 
-        if (AllSinksAre(SinkState::kEnded)) {
-          target_state_ = MediaState::ENDED;
-          SetReportedMediaState(MediaState::ENDED);
-          state_ = State::kPaused;
-          break;
-        }
-        return;
-
-      case State::kWaitingForSinksToPause:
-        if (AllSinksAre(SinkState::kPausedOrEnded)) {
-          if (target_state_ == MediaState::PAUSED) {
-            if (AllSinksAre(SinkState::kEnded)) {
-              SetReportedMediaState(MediaState::ENDED);
-            } else {
-              SetReportedMediaState(MediaState::PAUSED);
-            }
-          }
-
+        if (AllSinksAtEndOfStream()) {
+          target_state_ = State::kPaused;
           state_ = State::kPaused;
           break;
         }
@@ -166,69 +141,71 @@ void MediaPlayerImpl::WhenPausedAndSeeking() {
 
 void MediaPlayerImpl::WhenFlushedAndSeeking() {
   state_ = State::kWaiting;
-  DCHECK(target_position_ != kNotSeeking);
+  DCHECK(target_position_ != kUnspecifiedTime);
   demux_->Seek(target_position_, [this]() {
-    target_position_ = kNotSeeking;
+    transform_subject_time_ = target_position_;
+    target_position_ = kUnspecifiedTime;
     state_ = State::kPaused;
     Update();
   });
 }
 
-void MediaPlayerImpl::ChangeSinkStates(MediaState media_state) {
-  for (auto& stream : streams_) {
-    if (stream->enabled_) {
-      if (media_state == MediaState::PAUSED) {
-        stream->sink_->Pause();
-      } else {
-        stream->sink_->Play();
-      }
-    }
-  }
+void MediaPlayerImpl::SetSinkTimelineTransforms(uint32_t reference_delta,
+                                                uint32_t subject_delta) {
+  SetSinkTimelineTransforms(
+      transform_subject_time_, reference_delta, subject_delta,
+      Timeline::local_now() + kMinimumLeadTime, kUnspecifiedTime);
 }
 
-bool MediaPlayerImpl::AllSinksAre(SinkState sink_state) {
+void MediaPlayerImpl::SetSinkTimelineTransforms(
+    int64_t subject_time,
+    uint32_t reference_delta,
+    uint32_t subject_delta,
+    int64_t effective_reference_time,
+    int64_t effective_subject_time) {
+  std::shared_ptr<CallbackJoiner> callback_joiner = CallbackJoiner::Create();
+
   for (auto& stream : streams_) {
     if (stream->enabled_) {
-      switch (sink_state) {
-        case SinkState::kPaused:
-          if (stream->state_ != MediaState::PAUSED) {
-            return false;
-          }
-          break;
-        case SinkState::kPlaying:
-          if (stream->state_ != MediaState::PLAYING) {
-            return false;
-          }
-          break;
-        case SinkState::kEnded:
-          if (stream->state_ != MediaState::ENDED) {
-            return false;
-          }
-          break;
-        case SinkState::kPausedOrEnded:
-          if (stream->state_ != MediaState::PAUSED &&
-              stream->state_ != MediaState::ENDED) {
-            return false;
-          }
-          break;
-        case SinkState::kPlayingOrEnded:
-          if (stream->state_ != MediaState::PLAYING &&
-              stream->state_ != MediaState::ENDED) {
-            return false;
-          }
-          break;
-      }
+      DCHECK(stream->timeline_consumer_);
+      callback_joiner->Spawn();
+      stream->timeline_consumer_->SetTimelineTransform(
+          subject_time, reference_delta, subject_delta,
+          effective_reference_time, effective_subject_time,
+          [this, callback_joiner](bool completed) {
+            callback_joiner->Complete();
+          });
     }
   }
 
-  return true;
+  transform_subject_time_ = kUnspecifiedTime;
+
+  callback_joiner->WhenJoined([this, subject_delta]() {
+    RCHECK(state_ == State::kWaiting);
+
+    if (subject_delta == 0) {
+      state_ = State::kPaused;
+    } else {
+      state_ = State::kPlaying;
+    }
+
+    Update();
+  });
 }
 
-void MediaPlayerImpl::SetReportedMediaState(MediaState media_state) {
-  if (reported_media_state_ != media_state) {
-    reported_media_state_ = media_state;
-    status_publisher_.SendUpdates();
+bool MediaPlayerImpl::AllSinksAtEndOfStream() {
+  int result = false;
+
+  for (auto& stream : streams_) {
+    if (stream->enabled_) {
+      result = stream->end_of_stream_;
+      if (!result) {
+        break;
+      }
+    }
   }
+
+  return result;
 }
 
 void MediaPlayerImpl::GetStatus(uint64_t version_last_seen,
@@ -237,12 +214,12 @@ void MediaPlayerImpl::GetStatus(uint64_t version_last_seen,
 }
 
 void MediaPlayerImpl::Play() {
-  target_state_ = MediaState::PLAYING;
+  target_state_ = State::kPlaying;
   Update();
 }
 
 void MediaPlayerImpl::Pause() {
-  target_state_ = MediaState::PAUSED;
+  target_state_ = State::kPaused;
   Update();
 }
 
@@ -304,24 +281,22 @@ void MediaPlayerImpl::CreateSink(Stream* stream,
   DCHECK(factory_);
 
   factory_->CreateSink(url, input_media_type.Clone(), GetProxy(&stream->sink_));
+  stream->sink_->GetTimelineControlSite(
+      GetProxy(&stream->timeline_control_site_));
+
+  HandleTimelineControlSiteStatusUpdates(stream);
+
+  stream->timeline_control_site_->GetTimelineConsumer(
+      GetProxy(&stream->timeline_consumer_));
 
   MediaConsumerPtr consumer;
   stream->sink_->GetConsumer(GetProxy(&consumer));
 
-  stream->decoded_producer_->Connect(
-      consumer.Pass(), [this, callback, stream]() {
-        stream->decoded_producer_.reset();
-
-        DCHECK(stream->state_ == MediaState::UNPREPARED);
-        DCHECK(reported_media_state_ == MediaState::UNPREPARED ||
-               reported_media_state_ == MediaState::FAULT);
-
-        stream->state_ = MediaState::PAUSED;
-
-        HandleSinkStatusUpdates(stream);
-
-        callback();
-      });
+  stream->decoded_producer_->Connect(consumer.Pass(),
+                                     [this, callback, stream]() {
+                                       stream->decoded_producer_.reset();
+                                       callback();
+                                     });
 }
 
 void MediaPlayerImpl::HandleDemuxMetadataUpdates(uint64_t version,
@@ -337,21 +312,22 @@ void MediaPlayerImpl::HandleDemuxMetadataUpdates(uint64_t version,
                       });
 }
 
-void MediaPlayerImpl::HandleSinkStatusUpdates(Stream* stream,
-                                              uint64_t version,
-                                              MediaSinkStatusPtr status) {
-  if (status && status->state > MediaState::UNPREPARED) {
-    // We transition to PAUSED when Connect completes.
-    DCHECK(stream->state_ > MediaState::UNPREPARED);
-    stream->state_ = status->state;
-    transform_ = status->timeline_transform.Pass();
+void MediaPlayerImpl::HandleTimelineControlSiteStatusUpdates(
+    Stream* stream,
+    uint64_t version,
+    MediaTimelineControlSiteStatusPtr status) {
+  if (status) {
+    // TODO(dalesat): Why does one sink determine timeline_function_?
+    timeline_function_ = status->timeline_transform.To<TimelineFunction>();
+    stream->end_of_stream_ = status->end_of_stream;
     status_publisher_.SendUpdates();
     Update();
   }
 
-  stream->sink_->GetStatus(
-      version, [this, stream](uint64_t version, MediaSinkStatusPtr status) {
-        HandleSinkStatusUpdates(stream, version, status.Pass());
+  stream->timeline_control_site_->GetStatus(
+      version, [this, stream](uint64_t version,
+                              MediaTimelineControlSiteStatusPtr status) {
+        HandleTimelineControlSiteStatusUpdates(stream, version, status.Pass());
       });
 }
 

@@ -45,10 +45,12 @@ void AudioTrackController::Configure(
   MediaConsumerPtr consumer;
   audio_track_->Configure(config.Pass(), GetProxy(&consumer));
 
-  MediaTimelineControlSitePtr timeline_control_site;
-  audio_track_->GetTimelineControlSite(GetProxy(&timeline_control_site));
+  callback(consumer.Pass());
+}
 
-  callback(consumer.Pass(), timeline_control_site.Pass());
+void AudioTrackController::GetTimelineControlSite(
+    InterfaceRequest<MediaTimelineControlSite> req) {
+  audio_track_->GetTimelineControlSite(req.Pass());
 }
 
 }  // namespace media

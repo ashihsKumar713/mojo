@@ -9,9 +9,8 @@
 
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/services/media/common/cpp/timeline_function.h"
 #include "mojo/services/media/control/interfaces/media_sink.mojom.h"
-#include "services/media/common/mojo_publisher.h"
+#include "mojo/services/media/core/interfaces/timeline_controller.mojom.h"
 #include "services/media/factory_service/audio_track_controller.h"
 #include "services/media/factory_service/factory_service.h"
 #include "services/media/framework/graph.h"
@@ -39,12 +38,8 @@ class MediaSinkImpl : public MediaFactoryService::Product<MediaSink>,
   // MediaSink implementation.
   void GetConsumer(InterfaceRequest<MediaConsumer> consumer) override;
 
-  void GetStatus(uint64_t version_last_seen,
-                 const GetStatusCallback& callback) override;
-
-  void Play() override;
-
-  void Pause() override;
+  void GetTimelineControlSite(
+      InterfaceRequest<MediaTimelineControlSite> req) override;
 
  private:
   MediaSinkImpl(const String& destination_url,
@@ -52,23 +47,11 @@ class MediaSinkImpl : public MediaFactoryService::Product<MediaSink>,
                 InterfaceRequest<MediaSink> request,
                 MediaFactoryService* owner);
 
-  // Sets the rate if the producer is ready and the target rate differs from
-  // the current rate.
-  void MaybeSetRate();
-
   Incident ready_;
   Graph graph_;
   std::shared_ptr<MojoConsumer> consumer_;
   std::shared_ptr<MojoProducer> producer_;
   std::unique_ptr<AudioTrackController> controller_;
-  TimelineConsumerPtr timeline_consumer_;
-  float rate_ = 0.0f;
-  float target_rate_ = 0.0f;
-  MediaState producer_state_ = MediaState::UNPREPARED;
-  TimelineFunction timeline_function_;
-  TimelineRate frames_per_ns_;
-  bool flushed_ = true;
-  MojoPublisher<GetStatusCallback> status_publisher_;
 };
 
 }  // namespace media

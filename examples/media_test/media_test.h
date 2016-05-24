@@ -19,6 +19,8 @@ namespace examples {
 // Model for media test application.
 class MediaTest {
  public:
+  enum class State { kPaused, kPlaying, kEnded };
+
   using UpdateCallback = std::function<void()>;
 
   static std::unique_ptr<MediaTest> Create(mojo::ApplicationImpl* app,
@@ -41,10 +43,10 @@ class MediaTest {
   void Seek(int64_t position_ns) { media_player_->Seek(position_ns); }
 
   // Returns the previous state of the player.
-  MediaState previous_state() const { return previous_state_; }
+  State previous_state() const { return previous_state_; }
 
   // Returns the current state of the player.
-  MediaState state() const { return state_; }
+  State state() const { return state_; }
 
   // Returns the current presentation time in nanoseconds.
   int64_t position_ns() const;
@@ -61,8 +63,8 @@ class MediaTest {
                            MediaPlayerStatusPtr status = nullptr);
 
   MediaPlayerPtr media_player_;
-  MediaState previous_state_ = MediaState::UNPREPARED;
-  MediaState state_ = MediaState::UNPREPARED;
+  State previous_state_ = State::kPaused;
+  State state_ = State::kPaused;
   TimelineFunction timeline_function_;
   MediaMetadataPtr metadata_;
   UpdateCallback update_callback_;

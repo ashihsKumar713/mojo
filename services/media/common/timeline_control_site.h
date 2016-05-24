@@ -38,6 +38,9 @@ class TimelineControlSite : public MediaTimelineControlSite,
                                TimelineFunction* out,
                                uint32_t* generation = nullptr);
 
+  // Sets the current end_of_stream status published by the control site.
+  void SetEndOfStreamPts(int64_t end_of_stream_pts);
+
   // MediaTimelineControlSite implementation.
   void GetStatus(uint64_t version_last_seen,
                  const GetStatusCallback& callback) override;
@@ -68,6 +71,9 @@ class TimelineControlSite : public MediaTimelineControlSite,
     return pending_timeline_function_.reference_time() != kUnspecifiedTime;
   }
 
+  // Determines whether end-of-stream has been reached.
+  bool ReachedEndOfStreamUnsafe();
+
   // Unbinds from clients and resets to initial state.
   void ResetUnsafe();
 
@@ -85,6 +91,8 @@ class TimelineControlSite : public MediaTimelineControlSite,
   TimelineFunction pending_timeline_function_;
   SetTimelineTransformCallback set_timeline_transform_callback_;
   uint32_t generation_ = 1;
+  int64_t end_of_stream_pts_ = kUnspecifiedTime;
+  bool end_of_stream_published_ = false;
   // END fields synchronized using lock_.
 };
 

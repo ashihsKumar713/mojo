@@ -21,7 +21,6 @@ namespace media {
 // Mojo defines versions of operator<< for this that produce only numbers.
 const char* StringFromMediaTypeMedium(MediaTypeMedium value);
 const char* StringFromAudioSampleFormat(AudioSampleFormat value);
-const char* StringFromMediaState(MediaState value);
 
 // The following overloads add newlines.
 

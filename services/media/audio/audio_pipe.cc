@@ -18,12 +18,14 @@ AudioPipe::AudioPacketRef::AudioPacketRef(
     AudioServerImpl* server,
     std::vector<Region>&& regions,  // NOLINT(build/c++11)
     int64_t start_pts,
-    int64_t end_pts)
+    int64_t end_pts,
+    uint32_t frame_count)
   : state_(std::move(state)),
     server_(server),
     regions_(std::move(regions)),
     start_pts_(start_pts),
-    end_pts_(end_pts)  {
+    end_pts_(end_pts),
+    frame_count_(frame_count) {
   DCHECK(state_);
   DCHECK(server_);
 }
@@ -130,7 +132,8 @@ void AudioPipe::OnPacketReceived(MediaPacketStatePtr state) {
                            server_,
                            std::move(regions),
                            start_pts,
-                           next_pts_)));
+                           next_pts_,
+                           frame_count)));
 
    if (!prime_callback_.is_null()) {
      // Prime was requested. Call the callback to indicate priming is complete.

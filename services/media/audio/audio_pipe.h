@@ -58,7 +58,10 @@ class AudioPipe : public MediaPipeBase {
 
     // Accessor for the regions in the shared buffer which contain the actual
     // sample data.
-    const std::vector<Region>& regions() const { return  regions_; }
+    const std::vector<Region>& regions() const { return regions_; }
+
+    uint32_t frame_count() const { return frame_count_; }
+    const MediaPacketStatePtr& state() const { return state_; }
 
    private:
     friend class AudioPipe;
@@ -66,7 +69,8 @@ class AudioPipe : public MediaPipeBase {
                    AudioServerImpl* server,
                    std::vector<Region>&& regions,  // NOLINT(build/c++11)
                    int64_t start_pts,
-                   int64_t end_pts);
+                   int64_t end_pts,
+                   uint32_t frame_count);
 
     MediaPacketStatePtr state_;
     AudioServerImpl* server_;
@@ -74,6 +78,7 @@ class AudioPipe : public MediaPipeBase {
     std::vector<Region> regions_;
     int64_t start_pts_;
     int64_t end_pts_;
+    uint32_t frame_count_;
   };
 
   AudioPipe(AudioTrackImpl* owner, AudioServerImpl* server);

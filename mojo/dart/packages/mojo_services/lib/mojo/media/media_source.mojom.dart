@@ -8,7 +8,6 @@ import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
 import 'package:mojo_services/mojo/media/media_metadata.mojom.dart' as media_metadata_mojom;
-import 'package:mojo_services/mojo/media/media_state.mojom.dart' as media_state_mojom;
 import 'package:mojo_services/mojo/media/media_transport.mojom.dart' as media_transport_mojom;
 import 'package:mojo_services/mojo/media/media_types.mojom.dart' as media_types_mojom;
 
@@ -118,9 +117,8 @@ class MediaSourceStreamDescriptor extends bindings.Struct {
 
 class MediaSourceStatus extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(24, 0)
+    const bindings.StructDataHeader(16, 0)
   ];
-  media_state_mojom.MediaState state = null;
   media_metadata_mojom.MediaMetadata metadata = null;
 
   MediaSourceStatus() : super(kVersions.last.size);
@@ -160,15 +158,7 @@ class MediaSourceStatus extends bindings.Struct {
     }
     if (mainDataHeader.version >= 0) {
       
-        result.state = media_state_mojom.MediaState.decode(decoder0, 8);
-        if (result.state == null) {
-          throw new bindings.MojoCodecError(
-            'Trying to decode null union for non-nullable media_state_mojom.MediaState.');
-        }
-    }
-    if (mainDataHeader.version >= 0) {
-      
-      var decoder1 = decoder0.decodePointer(16, true);
+      var decoder1 = decoder0.decodePointer(8, true);
       result.metadata = media_metadata_mojom.MediaMetadata.decode(decoder1);
     }
     return result;
@@ -177,14 +167,7 @@ class MediaSourceStatus extends bindings.Struct {
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
     try {
-      encoder0.encodeEnum(state, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "state of struct MediaSourceStatus: $e";
-      rethrow;
-    }
-    try {
-      encoder0.encodeStruct(metadata, 16, true);
+      encoder0.encodeStruct(metadata, 8, true);
     } on bindings.MojoCodecError catch(e) {
       e.message = "Error encountered while encoding field "
           "metadata of struct MediaSourceStatus: $e";
@@ -194,13 +177,11 @@ class MediaSourceStatus extends bindings.Struct {
 
   String toString() {
     return "MediaSourceStatus("
-           "state: $state" ", "
            "metadata: $metadata" ")";
   }
 
   Map toJson() {
     Map map = new Map();
-    map["state"] = state;
     map["metadata"] = metadata;
     return map;
   }

@@ -19,7 +19,6 @@ namespace media {
 // Implements MediaProducer to forward a stream across mojo.
 class MojoProducer : public MediaProducer, public ActiveSink {
  public:
-  using StatusCallback = std::function<void(MediaState)>;
   using PrimeConnectionCallback = mojo::Callback<void()>;
   using FlushConnectionCallback = mojo::Callback<void()>;
 
@@ -38,13 +37,6 @@ class MojoProducer : public MediaProducer, public ActiveSink {
 
   // Unprimes and tells the connected consumer to flush.
   void FlushConnection(const FlushConnectionCallback& callback);
-
-  // Sets a callback for reporting status updates.
-  void SetStatusCallback(const StatusCallback& callback);
-
-  // Gets the first presentation time seen on any packet after the most recent
-  // flush or, if there has never been a flush, the first packet supplied.
-  int64_t GetFirstPtsSinceFlush();
 
   // ActiveSink implementation.
   PayloadAllocator* allocator() override;
@@ -66,9 +58,6 @@ class MojoProducer : public MediaProducer, public ActiveSink {
   // TODO(dalesat): Don't use a raw pointer, if possible.
   void SendPacket(Packet* packet_raw_ptr, MediaPacketPtr media_packet);
 
-  // Sets the current state and calls the registered callback, if there is one.
-  void SetState(MediaState state);
-
   // Creates a MediaPacket from a Packet.
   MediaPacketPtr CreateMediaPacket(const PacketPtr& packet);
 
@@ -77,15 +66,11 @@ class MojoProducer : public MediaProducer, public ActiveSink {
 
   BindingSet<MediaProducer> bindings_;
   MediaConsumerPtr consumer_;
-  StatusCallback status_callback_;
 
   mutable base::Lock lock_;
   // THE FIELDS BELOW SHOULD ONLY BE ACCESSED WITH lock_ TAKEN.
-  MediaState state_ = MediaState::UNPREPARED;
-  bool end_of_stream_ = false;
   DemandCallback demand_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  int64_t first_pts_since_flush_ = Packet::kUnknownPts;
   // TODO(dalesat): Base this logic on presentation time or duration.
   uint32_t max_pushes_outstanding_ = 0;
   uint32_t current_pushes_outstanding_ = 0;

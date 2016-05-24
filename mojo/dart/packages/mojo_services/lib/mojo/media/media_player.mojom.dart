@@ -8,7 +8,6 @@ import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
 import 'package:mojo_services/mojo/media/media_metadata.mojom.dart' as media_metadata_mojom;
-import 'package:mojo_services/mojo/media/media_state.mojom.dart' as media_state_mojom;
 import 'package:mojo_services/mojo/timelines.mojom.dart' as timelines_mojom;
 
 
@@ -17,8 +16,8 @@ class MediaPlayerStatus extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(32, 0)
   ];
-  media_state_mojom.MediaState state = null;
   timelines_mojom.TimelineTransform timelineTransform = null;
+  bool endOfStream = false;
   media_metadata_mojom.MediaMetadata metadata = null;
 
   MediaPlayerStatus() : super(kVersions.last.size);
@@ -58,16 +57,12 @@ class MediaPlayerStatus extends bindings.Struct {
     }
     if (mainDataHeader.version >= 0) {
       
-        result.state = media_state_mojom.MediaState.decode(decoder0, 8);
-        if (result.state == null) {
-          throw new bindings.MojoCodecError(
-            'Trying to decode null union for non-nullable media_state_mojom.MediaState.');
-        }
+      var decoder1 = decoder0.decodePointer(8, true);
+      result.timelineTransform = timelines_mojom.TimelineTransform.decode(decoder1);
     }
     if (mainDataHeader.version >= 0) {
       
-      var decoder1 = decoder0.decodePointer(16, true);
-      result.timelineTransform = timelines_mojom.TimelineTransform.decode(decoder1);
+      result.endOfStream = decoder0.decodeBool(16, 0);
     }
     if (mainDataHeader.version >= 0) {
       
@@ -80,17 +75,17 @@ class MediaPlayerStatus extends bindings.Struct {
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
     try {
-      encoder0.encodeEnum(state, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "state of struct MediaPlayerStatus: $e";
-      rethrow;
-    }
-    try {
-      encoder0.encodeStruct(timelineTransform, 16, true);
+      encoder0.encodeStruct(timelineTransform, 8, true);
     } on bindings.MojoCodecError catch(e) {
       e.message = "Error encountered while encoding field "
           "timelineTransform of struct MediaPlayerStatus: $e";
+      rethrow;
+    }
+    try {
+      encoder0.encodeBool(endOfStream, 16, 0);
+    } on bindings.MojoCodecError catch(e) {
+      e.message = "Error encountered while encoding field "
+          "endOfStream of struct MediaPlayerStatus: $e";
       rethrow;
     }
     try {
@@ -104,15 +99,15 @@ class MediaPlayerStatus extends bindings.Struct {
 
   String toString() {
     return "MediaPlayerStatus("
-           "state: $state" ", "
            "timelineTransform: $timelineTransform" ", "
+           "endOfStream: $endOfStream" ", "
            "metadata: $metadata" ")";
   }
 
   Map toJson() {
     Map map = new Map();
-    map["state"] = state;
     map["timelineTransform"] = timelineTransform;
+    map["endOfStream"] = endOfStream;
     map["metadata"] = metadata;
     return map;
   }

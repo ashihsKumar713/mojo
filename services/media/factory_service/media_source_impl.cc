@@ -41,7 +41,6 @@ MediaSourceImpl::MediaSourceImpl(
   status_publisher_.SetCallbackRunner(
       [this](const GetStatusCallback& callback, uint64_t version) {
         MediaSourceStatusPtr status = MediaSourceStatus::New();
-        status->state = state_;
         status->metadata =
             demux_ ? MediaMetadata::From(demux_->metadata()) : nullptr;
         callback.Run(version, status.Pass());
@@ -49,15 +48,15 @@ MediaSourceImpl::MediaSourceImpl(
 
   std::shared_ptr<Reader> reader_ptr = MojoReader::Create(reader.Pass());
   if (!reader_ptr) {
-    NOTREACHED() << "couldn't create reader";
-    state_ = MediaState::FAULT;
+    LOG(ERROR) << "couldn't create reader";
+    // TODO(dalesat): Add problem reporting.
     return;
   }
 
   demux_ = Demux::Create(reader_ptr);
   if (!demux_) {
-    NOTREACHED() << "couldn't create demux";
-    state_ = MediaState::FAULT;
+    LOG(ERROR) << "couldn't create demux";
+    // TODO(dalesat): Add problem reporting.
     return;
   }
 
@@ -138,7 +137,6 @@ void MediaSourceImpl::Prepare(const PrepareCallback& callback) {
     stream->EnsureSink();
   }
   graph_.Prepare();
-  state_ = MediaState::PAUSED;
   callback.Run();
   status_publisher_.SendUpdates();
 }

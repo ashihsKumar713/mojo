@@ -384,21 +384,5 @@ const char* StringFromAudioSampleFormat(AudioSampleFormat value) {
   return "UNKNOWN FORMAT";
 }
 
-const char* StringFromMediaState(MediaState value) {
-  switch (value) {
-    case MediaState::FAULT:
-      return "FAULT";
-    case MediaState::UNPREPARED:
-      return "UNPREPARED";
-    case MediaState::PAUSED:
-      return "PAUSED";
-    case MediaState::PLAYING:
-      return "PLAYING";
-    case MediaState::ENDED:
-      return "ENDED";
-  }
-  return "UNKNOWN MEDIA STATE";
-}
-
 }  // namespace media
 }  // namespace mojo

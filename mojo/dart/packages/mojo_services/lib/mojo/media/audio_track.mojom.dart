@@ -422,7 +422,7 @@ class _AudioTrackGetTimelineControlSiteParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  Object timelineControlSite = null;
+  timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite = null;
 
   _AudioTrackGetTimelineControlSiteParams() : super(kVersions.last.size);
 
@@ -599,8 +599,8 @@ abstract class AudioTrack {
     return p;
   }
   dynamic describe([Function responseFactory = null]);
-  void configure(AudioTrackConfiguration configuration, Object pipe);
-  void getTimelineControlSite(Object timelineControlSite);
+  void configure(AudioTrackConfiguration configuration, media_transport_mojom.MediaConsumerInterfaceRequest pipe);
+  void getTimelineControlSite(timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite);
   void setGain(double dbGain);
   static const double kMutedGain = -160.0;
   static const double kMaxGain = 20.0;
@@ -719,7 +719,7 @@ class AudioTrackProxy
     ctrl.sendMessage(params,
         _audioTrackMethodConfigureName);
   }
-  void getTimelineControlSite(Object timelineControlSite) {
+  void getTimelineControlSite(timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -878,7 +878,7 @@ class AudioTrackStub
   void configure(AudioTrackConfiguration configuration, media_transport_mojom.MediaConsumerInterfaceRequest pipe) {
     return impl.configure(configuration, pipe);
   }
-  void getTimelineControlSite(Object timelineControlSite) {
+  void getTimelineControlSite(timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite) {
     return impl.getTimelineControlSite(timelineControlSite);
   }
   void setGain(double dbGain) {

@@ -118,7 +118,6 @@ class MediaSourceImpl : public MediaFactoryService::Product<MediaSource>,
   std::shared_ptr<Demux> demux_;
   Incident init_complete_;
   std::vector<std::unique_ptr<Stream>> streams_;
-  MediaState state_ = MediaState::UNPREPARED;
   MojoPublisher<GetStatusCallback> status_publisher_;
 };
 

@@ -59,7 +59,6 @@ bindings_sources = [
   "lib/mojo/media/media_player.mojom.dart",
   "lib/mojo/media/media_sink.mojom.dart",
   "lib/mojo/media/media_source.mojom.dart",
-  "lib/mojo/media/media_state.mojom.dart",
   "lib/mojo/media/media_transport.mojom.dart",
   "lib/mojo/media/media_type_converter.mojom.dart",
   "lib/mojo/media/media_types.mojom.dart",

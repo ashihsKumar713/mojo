@@ -42,7 +42,6 @@ void MojoProducer::PrimeConnection(const PrimeConnectionCallback& callback) {
 
   DCHECK(demand_callback_);
   demand_callback_(demand);
-  SetState(MediaState::PAUSED);
 
   if (consumer_.is_bound()) {
     consumer_->Prime([this, callback]() { callback.Run(); });
@@ -65,17 +64,6 @@ void MojoProducer::FlushConnection(const FlushConnectionCallback& callback) {
   } else {
     callback.Run();
   }
-
-  first_pts_since_flush_ = Packet::kUnknownPts;
-  end_of_stream_ = false;
-}
-
-void MojoProducer::SetStatusCallback(const StatusCallback& callback) {
-  status_callback_ = callback;
-}
-
-int64_t MojoProducer::GetFirstPtsSinceFlush() {
-  return first_pts_since_flush_;
 }
 
 PayloadAllocator* MojoProducer::allocator() {
@@ -89,22 +77,9 @@ void MojoProducer::SetDemandCallback(const DemandCallback& demand_callback) {
 Demand MojoProducer::SupplyPacket(PacketPtr packet) {
   DCHECK(packet);
 
-  if (first_pts_since_flush_ == Packet::kUnknownPts) {
-    first_pts_since_flush_ = packet->pts();
-  }
-
   // If we're not connected, throw the packet away.
   if (!consumer_.is_bound()) {
-    if (packet->end_of_stream()) {
-      {
-        base::AutoLock lock(lock_);
-        end_of_stream_ = true;
-      }
-      SetState(MediaState::ENDED);
-      return Demand::kNegative;
-    }
-
-    return Demand::kNeutral;
+    return packet->end_of_stream() ? Demand::kNegative : Demand::kNeutral;
   }
 
   Demand demand;
@@ -112,12 +87,10 @@ Demand MojoProducer::SupplyPacket(PacketPtr packet) {
   {
     base::AutoLock lock(lock_);
     DCHECK(current_pushes_outstanding_ < max_pushes_outstanding_);
-    DCHECK(!end_of_stream_) << "packet pushed after end-of-stream";
 
     ++current_pushes_outstanding_;
 
     if (packet->end_of_stream()) {
-      end_of_stream_ = true;
       demand = Demand::kNegative;
       max_pushes_outstanding_ = 0;
     } else {
@@ -153,7 +126,6 @@ void MojoProducer::Connect(InterfaceHandle<MediaConsumer> consumer,
 void MojoProducer::Disconnect() {
   DCHECK(demand_callback_);
   demand_callback_(Demand::kNegative);
-  SetState(MediaState::UNPREPARED);
   consumer_.reset();
 }
 
@@ -174,20 +146,7 @@ void MojoProducer::SendPacket(Packet* packet_raw_ptr,
 
         DCHECK(demand_callback_);
         demand_callback_(demand);
-
-        if (end_of_stream_ && packet->end_of_stream()) {
-          SetState(MediaState::ENDED);
-        }
       });
-}
-
-void MojoProducer::SetState(MediaState state) {
-  if (state_ != state) {
-    state_ = state;
-    if (status_callback_) {
-      status_callback_(state_);
-    }
-  }
 }
 
 MediaPacketPtr MojoProducer::CreateMediaPacket(const PacketPtr& packet) {

@@ -331,6 +331,12 @@ void AudioTrackImpl::OnPacketReceived(AudioPipe::AudioPacketRefPtr packet) {
     DCHECK(output);
     output->PushToPendingQueue(packet);
   }
+
+  if (packet->state()->packet()->end_of_stream) {
+    timeline_control_site_.SetEndOfStreamPts(
+        (packet->state()->packet()->pts + packet->frame_count()) /
+            frames_per_ns_);
+  }
 }
 
 bool AudioTrackImpl::OnFlushRequested(const MediaConsumer::FlushCallback& cbk) {
