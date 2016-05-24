@@ -44,7 +44,7 @@ void TestServiceApplication::ReleaseRef() {
   assert(ref_count_ > 0);
   ref_count_--;
   if (ref_count_ <= 0)
-    TerminateApplication();
+    TerminateApplication(MOJO_RESULT_OK);
 }
 
 }  // namespace test
@@ -52,6 +52,5 @@ void TestServiceApplication::ReleaseRef() {
 
 MojoResult MojoMain(MojoHandle application_request) {
   mojo::test::TestServiceApplication app;
-  mojo::RunApplication(application_request, &app);
-  return MOJO_RESULT_OK;
+  return mojo::RunApplication(application_request, &app);
 }
