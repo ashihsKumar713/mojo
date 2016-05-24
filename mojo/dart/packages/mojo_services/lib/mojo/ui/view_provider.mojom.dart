@@ -14,11 +14,10 @@ import 'package:mojo_services/mojo/ui/view_token.mojom.dart' as view_token_mojom
 
 class _ViewProviderCreateViewParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(24, 0)
+    const bindings.StructDataHeader(16, 0)
   ];
   view_token_mojom.ViewOwnerInterfaceRequest viewOwner = null;
   service_provider_mojom.ServiceProviderInterfaceRequest services = null;
-  service_provider_mojom.ServiceProviderInterface exposedServices = null;
 
   _ViewProviderCreateViewParams() : super(kVersions.last.size);
 
@@ -63,10 +62,6 @@ class _ViewProviderCreateViewParams extends bindings.Struct {
       
       result.services = decoder0.decodeInterfaceRequest(12, true, service_provider_mojom.ServiceProviderStub.newFromEndpoint);
     }
-    if (mainDataHeader.version >= 0) {
-      
-      result.exposedServices = decoder0.decodeServiceInterface(16, true, service_provider_mojom.ServiceProviderProxy.newFromEndpoint);
-    }
     return result;
   }
 
@@ -86,20 +81,12 @@ class _ViewProviderCreateViewParams extends bindings.Struct {
           "services of struct _ViewProviderCreateViewParams: $e";
       rethrow;
     }
-    try {
-      encoder0.encodeInterface(exposedServices, 16, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "exposedServices of struct _ViewProviderCreateViewParams: $e";
-      rethrow;
-    }
   }
 
   String toString() {
     return "_ViewProviderCreateViewParams("
            "viewOwner: $viewOwner" ", "
-           "services: $services" ", "
-           "exposedServices: $exposedServices" ")";
+           "services: $services" ")";
   }
 
   Map toJson() {
@@ -143,7 +130,7 @@ abstract class ViewProvider {
     s.connectToService(url, p, name);
     return p;
   }
-  void createView(view_token_mojom.ViewOwnerInterfaceRequest viewOwner, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices);
+  void createView(view_token_mojom.ViewOwnerInterfaceRequest viewOwner, service_provider_mojom.ServiceProviderInterfaceRequest services);
 }
 
 abstract class ViewProviderInterface
@@ -220,7 +207,7 @@ class ViewProviderProxy
   }
 
 
-  void createView(view_token_mojom.ViewOwnerInterfaceRequest viewOwner, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices) {
+  void createView(view_token_mojom.ViewOwnerInterfaceRequest viewOwner, service_provider_mojom.ServiceProviderInterfaceRequest services) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -228,7 +215,6 @@ class ViewProviderProxy
     var params = new _ViewProviderCreateViewParams();
     params.viewOwner = viewOwner;
     params.services = services;
-    params.exposedServices = exposedServices;
     ctrl.sendMessage(params,
         _viewProviderMethodCreateViewName);
   }
@@ -270,7 +256,7 @@ class _ViewProviderStubControl
       case _viewProviderMethodCreateViewName:
         var params = _ViewProviderCreateViewParams.deserialize(
             message.payload);
-        _impl.createView(params.viewOwner, params.services, params.exposedServices);
+        _impl.createView(params.viewOwner, params.services);
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
@@ -330,8 +316,8 @@ class ViewProviderStub
   }
 
 
-  void createView(view_token_mojom.ViewOwnerInterfaceRequest viewOwner, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices) {
-    return impl.createView(viewOwner, services, exposedServices);
+  void createView(view_token_mojom.ViewOwnerInterfaceRequest viewOwner, service_provider_mojom.ServiceProviderInterfaceRequest services) {
+    return impl.createView(viewOwner, services);
   }
 }
 

@@ -58,8 +58,8 @@ class MotermExampleAppView {
     // Create the moterm view and pass it back to the client directly.
     mojo::ConnectToService(moterm_app.get(), GetProxy(&moterm_view_provider_));
     mojo::ServiceProviderPtr moterm_service_provider;
-    moterm_view_provider_->CreateView(
-        view_owner_request.Pass(), GetProxy(&moterm_service_provider), nullptr);
+    moterm_view_provider_->CreateView(view_owner_request.Pass(),
+                                      GetProxy(&moterm_service_provider));
 
     // Connect to the moterm terminal service associated with the view
     // we just created.
@@ -165,8 +165,7 @@ class MotermExampleApp : public mojo::ui::ViewProviderApp {
   void CreateView(
       const std::string& connection_url,
       mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
-      mojo::InterfaceRequest<mojo::ServiceProvider> services,
-      mojo::InterfaceHandle<mojo::ServiceProvider> exposed_services) override {
+      mojo::InterfaceRequest<mojo::ServiceProvider> services) override {
     new MotermExampleAppView(app_impl()->shell(), view_owner_request.Pass());
   }
 

@@ -272,8 +272,7 @@ class PDFContentViewProviderApp : public mojo::ui::ViewProviderApp {
   void CreateView(
       const std::string& connection_url,
       mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
-      mojo::InterfaceRequest<mojo::ServiceProvider> services,
-      mojo::InterfaceHandle<mojo::ServiceProvider> exposed_services) override {
+      mojo::InterfaceRequest<mojo::ServiceProvider> services) override {
     new PDFDocumentView(mojo::CreateApplicationConnector(app_impl()->shell()),
                         view_owner_request.Pass(), pdf_document_);
   }

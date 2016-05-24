@@ -46,14 +46,9 @@ class ViewProviderApp : public ApplicationDelegate {
   //
   // The |services| parameter is used to receive services from the view
   // on behalf of the caller.
-  //
-  // The |exposed_services| parameters is used to provide services to
-  // the view from the caller.
-  virtual void CreateView(
-      const std::string& view_provider_url,
-      InterfaceRequest<ViewOwner> view_owner_request,
-      InterfaceRequest<ServiceProvider> services,
-      InterfaceHandle<ServiceProvider> exposed_services) = 0;
+  virtual void CreateView(const std::string& view_provider_url,
+                          InterfaceRequest<ViewOwner> view_owner_request,
+                          InterfaceRequest<ServiceProvider> services) = 0;
 
  private:
   class DelegatingViewProvider;
@@ -61,8 +56,7 @@ class ViewProviderApp : public ApplicationDelegate {
   void CreateView(DelegatingViewProvider* provider,
                   const std::string& view_provider_url,
                   InterfaceRequest<ViewOwner> view_owner_request,
-                  InterfaceRequest<ServiceProvider> services,
-                  InterfaceHandle<ServiceProvider> exposed_services);
+                  InterfaceRequest<ServiceProvider> services);
 
   ApplicationImpl* app_impl_ = nullptr;
   StrongBindingSet<ViewProvider> bindings_;

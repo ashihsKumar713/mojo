@@ -47,7 +47,7 @@ void TileView::ConnectViews() {
     LOG(INFO) << "Connecting to view: child_key=" << child_key
               << ", url=" << url;
     mojo::ui::ViewOwnerPtr child_view_owner;
-    provider->CreateView(mojo::GetProxy(&child_view_owner), nullptr, nullptr);
+    provider->CreateView(mojo::GetProxy(&child_view_owner), nullptr);
 
     GetViewContainer()->AddChild(child_key, child_view_owner.Pass());
     views_.emplace(std::make_pair(

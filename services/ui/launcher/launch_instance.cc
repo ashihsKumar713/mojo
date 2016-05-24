@@ -41,8 +41,7 @@ void LaunchInstance::Launch() {
   mojo::ConnectToService(app_impl_->shell(), app_url_,
                          GetProxy(&client_view_provider));
 
-  client_view_provider->CreateView(GetProxy(&client_view_owner_), nullptr,
-                                   nullptr);
+  client_view_provider->CreateView(GetProxy(&client_view_owner_), nullptr);
 }
 
 void LaunchInstance::InitViewport() {
