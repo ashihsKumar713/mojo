@@ -19,6 +19,7 @@ mojo_native_application("play_wav") {
     "//mojo/services/media/audio/interfaces",
     "//mojo/services/media/common/cpp",
     "//mojo/services/media/common/interfaces",
+    "//mojo/services/media/core/interfaces",
     "//mojo/services/network/interfaces",
   ]
 
@@ -34,6 +35,7 @@ mojo_native_application("play_tone") {
     "//mojo/services/media/audio/interfaces",
     "//mojo/services/media/common/cpp",
     "//mojo/services/media/common/interfaces",
+    "//mojo/services/media/core/interfaces",
   ]
 
   sources = [

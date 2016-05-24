@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_MEDIA_FRAMEWORK_MOJO_PUBLISHER_H_
-#define SERVICES_MEDIA_FRAMEWORK_MOJO_PUBLISHER_H_
+#ifndef SERVICES_MEDIA_COMMON_MOJO_PUBLISHER_H_
+#define SERVICES_MEDIA_COMMON_MOJO_PUBLISHER_H_
 
 #include <functional>
 #include <vector>
@@ -62,4 +62,4 @@ class MojoPublisher {
 }  // namespace media
 }  // namespace mojo
 
-#endif  // SERVICES_MEDIA_FRAMEWORK_MOJO_MOJO_ALLOCATOR_H_
+#endif  // SERVICES_MEDIA_COMMON_MOJO_PUBLISHER_H_

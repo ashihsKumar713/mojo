@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
+const int kUnspecifiedTime = 9223372036854775807;
 
 
 
@@ -359,7 +360,6 @@ abstract class TimelineConsumer {
     return p;
   }
   dynamic setTimelineTransform(int subjectTime,int referenceDelta,int subjectDelta,int effectiveReferenceTime,int effectiveSubjectTime,[Function responseFactory = null]);
-  static const int kUnspecifiedTime = 9223372036854775807;
 }
 
 abstract class TimelineConsumerInterface

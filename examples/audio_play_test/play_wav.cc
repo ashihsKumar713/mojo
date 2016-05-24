@@ -128,7 +128,7 @@ class PlayWAVApp : public ApplicationDelegate {
   AudioServerPtr               audio_server_;
   AudioTrackPtr                audio_track_;
   AudioPipePtr                 audio_pipe_;
-  RateControlPtr               rate_control_;
+  TimelineConsumerPtr          timeline_consumer_;
   AudioPacket                  audio_packet_;
   PacketCbk                    playout_complete_cbk_;
   NetworkServicePtr            network_service_;
@@ -196,7 +196,7 @@ void PlayWAVApp::Quit() {
   url_loader_.reset();
   network_service_.reset();
   audio_pipe_.reset();
-  rate_control_.reset();
+  timeline_consumer_.reset();
   audio_track_.reset();
   audio_server_.reset();
 }
@@ -290,11 +290,12 @@ void PlayWAVApp::ProcessHTTPResponse(URLResponsePtr resp) {
   MediaConsumerPtr media_pipe;
   audio_track_->Configure(cfg.Pass(), GetProxy(&media_pipe));
 
-  // Grab the rate control interface for our audio renderer.
-  audio_track_->GetRateControl(GetProxy(&rate_control_));
-  rate_control_.set_connection_error_handler([this]() {
-    OnConnectionError("rate_control");
-  });
+  // Grab the timeline consumer interface for our audio renderer.
+  MediaTimelineControlSitePtr timeline_control_site;
+  audio_track_->GetTimelineControlSite(GetProxy(&timeline_control_site));
+  timeline_control_site->GetTimelineConsumer(GetProxy(&timeline_consumer_));
+  timeline_consumer_.set_connection_error_handler(
+      [this]() { OnConnectionError("timeline_consumer"); });
 
   // Set up our media pipe helper, configure its callback and water marks to
   // kick off the playback process.
@@ -501,8 +502,9 @@ void PlayWAVApp::OnNeedsData(MediaResult res) {
   }
 
   if (!clock_started_ && (audio_pipe_->AboveHiWater() || !payload_len_)) {
-    LocalTime sched = LocalClock::now() + local_time::from_msec(50);
-    rate_control_->SetRateAtTargetTime(1, 1, sched.time_since_epoch().count());
+    timeline_consumer_->SetTimelineTransform(
+        kUnspecifiedTime, 1, 1, kUnspecifiedTime, kUnspecifiedTime,
+        [](bool completed) {});
     clock_started_ = true;
   }
 }

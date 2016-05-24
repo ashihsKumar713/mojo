@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/services/media/common/cpp/linear_transform.h"
+#include "mojo/services/media/common/cpp/timeline_function.h"
 #include "mojo/services/media/common/interfaces/rate_control.mojom.h"
 #include "mojo/services/media/control/interfaces/media_factory.mojom.h"
 #include "mojo/services/media/control/interfaces/media_player.mojom.h"
@@ -63,7 +63,7 @@ class MediaTest {
   MediaPlayerPtr media_player_;
   MediaState previous_state_ = MediaState::UNPREPARED;
   MediaState state_ = MediaState::UNPREPARED;
-  LinearTransform transform_ = LinearTransform(0, 0, 1, 0);
+  TimelineFunction timeline_function_;
   MediaMetadataPtr metadata_;
   UpdateCallback update_callback_;
 

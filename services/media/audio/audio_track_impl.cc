@@ -7,6 +7,7 @@
 
 #include "base/logging.h"
 #include "mojo/services/media/common/cpp/linear_transform.h"
+#include "mojo/services/media/common/cpp/timeline.h"
 #include "services/media/audio/audio_output_manager.h"
 #include "services/media/audio/audio_server_impl.h"
 #include "services/media/audio/audio_track_impl.h"
@@ -72,7 +73,7 @@ void AudioTrackImpl::Shutdown() {
   // for the service to destroy us.  Run some DCHECK sanity checks and get out.
   if (!binding_.is_bound()) {
     DCHECK(!pipe_.IsInitialized());
-    DCHECK(!rate_control_.is_bound());
+    DCHECK(!timeline_control_site_.is_bound());
     DCHECK(!outputs_.size());
     return;
   }
@@ -84,7 +85,7 @@ void AudioTrackImpl::Shutdown() {
   // reset all of our internal state and close any other client connections in
   // the process.
   pipe_.Reset();
-  rate_control_.Reset();
+  timeline_control_site_.Reset();
   outputs_.clear();
 
   DCHECK(owner_);
@@ -193,6 +194,8 @@ void AudioTrackImpl::Configure(AudioTrackConfigurationPtr configuration,
     return;
   }
 
+  frames_per_ns_ =
+      TimelineRate(cfg->frames_per_second, Timeline::ns_from_seconds(1));
 
   // Figure out the rate we need to scale by in order to produce our fixed
   // point timestamps.
@@ -262,10 +265,9 @@ void AudioTrackImpl::Configure(AudioTrackConfigurationPtr configuration,
   owner_->GetOutputManager().SelectOutputsForTrack(strong_this);
 }
 
-void AudioTrackImpl::GetRateControl(InterfaceRequest<RateControl> req) {
-  if (!rate_control_.Bind(req.Pass())) {
-    Shutdown();
-  }
+void AudioTrackImpl::GetTimelineControlSite(
+    InterfaceRequest<MediaTimelineControlSite> req) {
+  timeline_control_site_.Bind(req.Pass());
 }
 
 void AudioTrackImpl::SetGain(float db_gain) {
@@ -304,6 +306,23 @@ void AudioTrackImpl::RemoveOutput(AudioTrackToOutputLinkPtr link) {
     // something about this?
     DCHECK(false);
   }
+}
+
+void AudioTrackImpl::SnapshotRateTrans(LinearTransform* out,
+                                       uint32_t* generation) {
+  TimelineFunction timeline_function;
+  timeline_control_site_.SnapshotCurrentFunction(
+      Timeline::local_now(), &timeline_function, generation);
+
+  // The control site works in ns units. We want the rate in frames per
+  // nanosecond, so we convert here.
+  TimelineRate rate_in_frames_per_ns =
+      timeline_function.rate() * frames_per_ns_;
+
+  *out = LinearTransform(timeline_function.reference_time(),
+                         rate_in_frames_per_ns.subject_delta(),
+                         rate_in_frames_per_ns.reference_delta(),
+                         timeline_function.subject_time() * frames_per_ns_);
 }
 
 void AudioTrackImpl::OnPacketReceived(AudioPipe::AudioPacketRefPtr packet) {

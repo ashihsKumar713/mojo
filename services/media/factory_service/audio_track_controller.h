@@ -19,7 +19,7 @@ class AudioTrackController {
   using GetSupportedMediaTypesCallback = std::function<void(
       std::unique_ptr<std::vector<std::unique_ptr<StreamTypeSet>>>)>;
   using ConfigureCallback =
-      std::function<void(MediaConsumerPtr, RateControlPtr)>;
+      std::function<void(MediaConsumerPtr, MediaTimelineControlSitePtr)>;
 
   AudioTrackController(const String& url, ApplicationImpl* app);
 

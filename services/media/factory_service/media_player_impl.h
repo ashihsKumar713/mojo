@@ -13,8 +13,8 @@
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
 #include "mojo/services/media/control/interfaces/media_factory.mojom.h"
 #include "mojo/services/media/core/interfaces/seeking_reader.mojom.h"
+#include "services/media/common/mojo_publisher.h"
 #include "services/media/factory_service/factory_service.h"
-#include "services/media/factory_service/mojo_publisher.h"
 
 namespace mojo {
 namespace media {

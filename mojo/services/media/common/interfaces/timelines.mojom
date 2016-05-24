@@ -7,6 +7,9 @@ module mojo;
 
 // TODO(dalesat): Move out of media to somewhere more generic.
 
+// Used as a placefolder for unspecified time values.
+const int64 kUnspecifiedTime = 0x7fffffffffffffff;
+
 // Represents the relationship between and subject timeline and a reference
 // timeline.
 //
@@ -37,8 +40,6 @@ struct TimelineTransform {
 
 // A push-mode consumer of timeline updates.
 interface TimelineConsumer {
-  const int64 kUnspecifiedTime = 0x7fffffffffffffff;
-
   // Sets the timeline transform at the indicated effective time. Exactly one
   // of the effective_*_time values must be kUnspecifiedTime.
   // effective_subject_time can only be specified if the current subject_delta

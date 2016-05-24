@@ -7,7 +7,7 @@ module mojo.media;
 
 import "mojo/services/media/common/interfaces/media_metadata.mojom";
 import "mojo/services/media/common/interfaces/media_state.mojom";
-import "mojo/services/media/common/interfaces/rate_control.mojom";
+import "mojo/services/media/common/interfaces/timelines.mojom";
 
 // Plays media.
 interface MediaPlayer {
@@ -40,7 +40,7 @@ struct MediaPlayerStatus {
 
   // Transform translating local time to presentation time. Reverse translation
   // (presentation time to local time) is only valid when media is playing.
-  TimelineTransform? timeline_transform;
+  mojo.TimelineTransform? timeline_transform;
 
   // Describes the media.
   MediaMetadata? metadata;

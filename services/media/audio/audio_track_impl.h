@@ -15,7 +15,7 @@
 #include "mojo/services/media/common/cpp/linear_transform.h"
 #include "services/media/audio/audio_pipe.h"
 #include "services/media/audio/fwd_decls.h"
-#include "services/media/common/rate_control_base.h"
+#include "services/media/common/timeline_control_site.h"
 
 namespace mojo {
 namespace media {
@@ -41,9 +41,7 @@ class AudioTrackImpl : public AudioTrack {
 
   // Accessors used by AudioOutputs during mixing to access parameters which are
   // important for the mixing process.
-  void SnapshotRateTrans(LinearTransform* out, uint32_t* generation = nullptr) {
-    rate_control_.SnapshotCurrentTransform(out, generation);
-  }
+  void SnapshotRateTrans(LinearTransform* out, uint32_t* generation = nullptr);
 
   const LinearTransform::Ratio& FractionalFrameToMediaTimeRatio() const {
     return frame_to_media_ratio_;
@@ -63,7 +61,8 @@ class AudioTrackImpl : public AudioTrack {
   void Describe(const DescribeCallback& cbk) override;
   void Configure(AudioTrackConfigurationPtr configuration,
                  InterfaceRequest<MediaConsumer> req) override;
-  void GetRateControl(InterfaceRequest<RateControl> req) override;
+  void GetTimelineControlSite(InterfaceRequest<MediaTimelineControlSite> req)
+      override;
   void SetGain(float db_gain) override;
 
   // Methods called by our AudioPipe.
@@ -80,7 +79,8 @@ class AudioTrackImpl : public AudioTrack {
   AudioServerImpl*          owner_;
   Binding<AudioTrack>       binding_;
   AudioPipe                 pipe_;
-  RateControlBase           rate_control_;
+  TimelineControlSite       timeline_control_site_;
+  TimelineRate              frames_per_ns_;
   LinearTransform::Ratio    frame_to_media_ratio_;
   uint32_t                  bytes_per_frame_ = 1;
   AudioMediaTypeDetailsPtr  format_;

@@ -9,7 +9,7 @@ import "mojo/services/media/common/interfaces/media_common.mojom";
 import "mojo/services/media/common/interfaces/media_state.mojom";
 import "mojo/services/media/common/interfaces/media_transport.mojom";
 import "mojo/services/media/common/interfaces/media_types.mojom";
-import "mojo/services/media/common/interfaces/rate_control.mojom";
+import "mojo/services/media/common/interfaces/timelines.mojom";
 
 // TODO(dalesat): Define a media sink that multiplexes streams.
 
@@ -44,5 +44,5 @@ struct MediaSinkStatus {
 
   // Transform translating local time to presentation time. Reverse translation
   // (presentation time to local time) is only valid when media is playing.
-  TimelineTransform? timeline_transform;
+  mojo.TimelineTransform? timeline_transform;
 };

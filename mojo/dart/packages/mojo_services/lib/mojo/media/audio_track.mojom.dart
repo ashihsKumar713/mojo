@@ -9,7 +9,7 @@ import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
 import 'package:mojo_services/mojo/media/media_transport.mojom.dart' as media_transport_mojom;
 import 'package:mojo_services/mojo/media/media_types.mojom.dart' as media_types_mojom;
-import 'package:mojo_services/mojo/media/rate_control.mojom.dart' as rate_control_mojom;
+import 'package:mojo_services/mojo/media/timeline_controller.mojom.dart' as timeline_controller_mojom;
 
 
 
@@ -418,15 +418,15 @@ class _AudioTrackConfigureParams extends bindings.Struct {
 }
 
 
-class _AudioTrackGetRateControlParams extends bindings.Struct {
+class _AudioTrackGetTimelineControlSiteParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  rate_control_mojom.RateControlInterfaceRequest rateControl = null;
+  Object timelineControlSite = null;
 
-  _AudioTrackGetRateControlParams() : super(kVersions.last.size);
+  _AudioTrackGetTimelineControlSiteParams() : super(kVersions.last.size);
 
-  static _AudioTrackGetRateControlParams deserialize(bindings.Message message) {
+  static _AudioTrackGetTimelineControlSiteParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
     if (decoder.excessHandles != null) {
@@ -435,11 +435,11 @@ class _AudioTrackGetRateControlParams extends bindings.Struct {
     return result;
   }
 
-  static _AudioTrackGetRateControlParams decode(bindings.Decoder decoder0) {
+  static _AudioTrackGetTimelineControlSiteParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _AudioTrackGetRateControlParams result = new _AudioTrackGetRateControlParams();
+    _AudioTrackGetTimelineControlSiteParams result = new _AudioTrackGetTimelineControlSiteParams();
 
     var mainDataHeader = decoder0.decodeStructDataHeader();
     if (mainDataHeader.version <= kVersions.last.version) {
@@ -461,7 +461,7 @@ class _AudioTrackGetRateControlParams extends bindings.Struct {
     }
     if (mainDataHeader.version >= 0) {
       
-      result.rateControl = decoder0.decodeInterfaceRequest(8, false, rate_control_mojom.RateControlStub.newFromEndpoint);
+      result.timelineControlSite = decoder0.decodeInterfaceRequest(8, false, timeline_controller_mojom.MediaTimelineControlSiteStub.newFromEndpoint);
     }
     return result;
   }
@@ -469,17 +469,17 @@ class _AudioTrackGetRateControlParams extends bindings.Struct {
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
     try {
-      encoder0.encodeInterfaceRequest(rateControl, 8, false);
+      encoder0.encodeInterfaceRequest(timelineControlSite, 8, false);
     } on bindings.MojoCodecError catch(e) {
       e.message = "Error encountered while encoding field "
-          "rateControl of struct _AudioTrackGetRateControlParams: $e";
+          "timelineControlSite of struct _AudioTrackGetTimelineControlSiteParams: $e";
       rethrow;
     }
   }
 
   String toString() {
-    return "_AudioTrackGetRateControlParams("
-           "rateControl: $rateControl" ")";
+    return "_AudioTrackGetTimelineControlSiteParams("
+           "timelineControlSite: $timelineControlSite" ")";
   }
 
   Map toJson() {
@@ -562,7 +562,7 @@ class _AudioTrackSetGainParams extends bindings.Struct {
 
 const int _audioTrackMethodDescribeName = 0;
 const int _audioTrackMethodConfigureName = 1;
-const int _audioTrackMethodGetRateControlName = 2;
+const int _audioTrackMethodGetTimelineControlSiteName = 2;
 const int _audioTrackMethodSetGainName = 3;
 
 class _AudioTrackServiceDescription implements service_describer.ServiceDescription {
@@ -599,8 +599,8 @@ abstract class AudioTrack {
     return p;
   }
   dynamic describe([Function responseFactory = null]);
-  void configure(AudioTrackConfiguration configuration, media_transport_mojom.MediaConsumerInterfaceRequest pipe);
-  void getRateControl(rate_control_mojom.RateControlInterfaceRequest rateControl);
+  void configure(AudioTrackConfiguration configuration, Object pipe);
+  void getTimelineControlSite(Object timelineControlSite);
   void setGain(double dbGain);
   static const double kMutedGain = -160.0;
   static const double kMaxGain = 20.0;
@@ -719,15 +719,15 @@ class AudioTrackProxy
     ctrl.sendMessage(params,
         _audioTrackMethodConfigureName);
   }
-  void getRateControl(rate_control_mojom.RateControlInterfaceRequest rateControl) {
+  void getTimelineControlSite(Object timelineControlSite) {
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
     }
-    var params = new _AudioTrackGetRateControlParams();
-    params.rateControl = rateControl;
+    var params = new _AudioTrackGetTimelineControlSiteParams();
+    params.timelineControlSite = timelineControlSite;
     ctrl.sendMessage(params,
-        _audioTrackMethodGetRateControlName);
+        _audioTrackMethodGetTimelineControlSiteName);
   }
   void setGain(double dbGain) {
     if (!ctrl.isBound) {
@@ -804,10 +804,10 @@ class _AudioTrackStubControl
             message.payload);
         _impl.configure(params.configuration, params.pipe);
         break;
-      case _audioTrackMethodGetRateControlName:
-        var params = _AudioTrackGetRateControlParams.deserialize(
+      case _audioTrackMethodGetTimelineControlSiteName:
+        var params = _AudioTrackGetTimelineControlSiteParams.deserialize(
             message.payload);
-        _impl.getRateControl(params.rateControl);
+        _impl.getTimelineControlSite(params.timelineControlSite);
         break;
       case _audioTrackMethodSetGainName:
         var params = _AudioTrackSetGainParams.deserialize(
@@ -878,8 +878,8 @@ class AudioTrackStub
   void configure(AudioTrackConfiguration configuration, media_transport_mojom.MediaConsumerInterfaceRequest pipe) {
     return impl.configure(configuration, pipe);
   }
-  void getRateControl(rate_control_mojom.RateControlInterfaceRequest rateControl) {
-    return impl.getRateControl(rateControl);
+  void getTimelineControlSite(Object timelineControlSite) {
+    return impl.getTimelineControlSite(timelineControlSite);
   }
   void setGain(double dbGain) {
     return impl.setGain(dbGain);

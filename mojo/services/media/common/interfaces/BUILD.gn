@@ -12,7 +12,6 @@ mojom("interfaces") {
     "media_state.mojom",
     "media_transport.mojom",
     "media_types.mojom",
-    "rate_control.mojom",
     "timelines.mojom",
   ]
 }

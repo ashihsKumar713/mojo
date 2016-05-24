@@ -9,11 +9,11 @@
 
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/services/media/common/cpp/linear_transform.h"
+#include "mojo/services/media/common/cpp/timeline_function.h"
 #include "mojo/services/media/control/interfaces/media_sink.mojom.h"
+#include "services/media/common/mojo_publisher.h"
 #include "services/media/factory_service/audio_track_controller.h"
 #include "services/media/factory_service/factory_service.h"
-#include "services/media/factory_service/mojo_publisher.h"
 #include "services/media/framework/graph.h"
 #include "services/media/framework/parts/decoder.h"
 #include "services/media/framework/util/incident.h"
@@ -61,13 +61,12 @@ class MediaSinkImpl : public MediaFactoryService::Product<MediaSink>,
   std::shared_ptr<MojoConsumer> consumer_;
   std::shared_ptr<MojoProducer> producer_;
   std::unique_ptr<AudioTrackController> controller_;
-  RateControlPtr rate_control_;
+  TimelineConsumerPtr timeline_consumer_;
   float rate_ = 0.0f;
   float target_rate_ = 0.0f;
   MediaState producer_state_ = MediaState::UNPREPARED;
-  LinearTransform transform_ = LinearTransform(0, 0, 1, 0);
-  TimelineTransformPtr status_transform_;
-  uint32_t frames_per_second_ = 0u;
+  TimelineFunction timeline_function_;
+  TimelineRate frames_per_ns_;
   bool flushed_ = true;
   MojoPublisher<GetStatusCallback> status_publisher_;
 };

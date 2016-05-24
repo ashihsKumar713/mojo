@@ -4,8 +4,8 @@
 
 #include "examples/media_test/media_test.h"
 #include "mojo/public/cpp/application/connect.h"
-#include "mojo/services/media/common/cpp/linear_transform.h"
-#include "mojo/services/media/common/cpp/local_time.h"
+#include "mojo/services/media/common/cpp/timeline.h"
+#include "mojo/services/media/common/cpp/timeline_function.h"
 #include "mojo/services/media/control/interfaces/media_factory.mojom.h"
 
 namespace mojo {
@@ -35,10 +35,8 @@ MediaTest::MediaTest(mojo::ApplicationImpl* app,
 MediaTest::~MediaTest() {}
 
 int64_t MediaTest::position_ns() const {
-  // Apply the transform to the current time.
-  int64_t position;
-  transform_.DoForwardTransform(LocalClock::now().time_since_epoch().count(),
-                                &position);
+  // Apply the timeline function to the current time.
+  int64_t position = timeline_function_(Timeline::local_now());
 
   if (position < 0) {
     position = 0;
@@ -62,15 +60,8 @@ void MediaTest::HandleStatusUpdates(uint64_t version,
     previous_state_ = state_;
     state_ = status->state;
 
-    // Create a linear transform that translates local time to presentation
-    // time. Note that 'reference' here refers to the presentation time, and
-    // 'target' refers to the local time.
     if (status->timeline_transform) {
-      transform_ =
-          LinearTransform(status->timeline_transform->quad->target_offset,
-                          status->timeline_transform->quad->reference_delta,
-                          status->timeline_transform->quad->target_delta,
-                          status->timeline_transform->quad->reference_offset);
+      timeline_function_ = status->timeline_transform.To<TimelineFunction>();
     }
 
     metadata_ = status->metadata.Pass();

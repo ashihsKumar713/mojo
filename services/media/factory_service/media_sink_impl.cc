@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/logging.h"
-#include "mojo/services/media/common/cpp/linear_transform.h"
-#include "mojo/services/media/common/cpp/local_time.h"
+#include "mojo/services/media/common/cpp/timeline.h"
+#include "mojo/services/media/common/cpp/timeline_function.h"
 #include "services/media/factory_service/media_sink_impl.h"
 #include "services/media/framework/util/conversion_pipeline_builder.h"
 #include "services/media/framework_mojo/mojo_type_conversions.h"
@@ -32,15 +32,15 @@ MediaSinkImpl::MediaSinkImpl(const String& destination_url,
   DCHECK(destination_url);
   DCHECK(media_type);
 
-  status_publisher_.SetCallbackRunner(
-      [this](const GetStatusCallback& callback, uint64_t version) {
-        MediaSinkStatusPtr status = MediaSinkStatus::New();
-        status->state = (producer_state_ == MediaState::PAUSED && rate_ != 0.0)
-                            ? MediaState::PLAYING
-                            : producer_state_;
-        status->timeline_transform = status_transform_.Clone();
-        callback.Run(version, status.Pass());
-      });
+  status_publisher_.SetCallbackRunner([this](const GetStatusCallback& callback,
+                                             uint64_t version) {
+    MediaSinkStatusPtr status = MediaSinkStatus::New();
+    status->state = (producer_state_ == MediaState::PAUSED && rate_ != 0.0)
+                        ? MediaState::PLAYING
+                        : producer_state_;
+    status->timeline_transform = TimelineTransform::From(timeline_function_);
+    callback.Run(version, status.Pass());
+  });
 
   PartRef consumer_ref = graph_.Add(consumer_);
   PartRef producer_ref = graph_.Add(producer_);
@@ -112,7 +112,10 @@ MediaSinkImpl::MediaSinkImpl(const String& destination_url,
     graph_.ConnectOutputToPart(out, producer_ref);
 
     if (producer_stream_type->medium() == StreamType::Medium::kAudio) {
-      frames_per_second_ = producer_stream_type->audio()->frames_per_second();
+      frames_per_ns_ =
+          TimelineRate(producer_stream_type->audio()->frames_per_second(),
+                       Timeline::ns_from_seconds(1));
+
     } else {
       // Unsupported producer stream type.
       LOG(ERROR) << "unsupported producer stream type";
@@ -121,10 +124,12 @@ MediaSinkImpl::MediaSinkImpl(const String& destination_url,
 
     controller_->Configure(
         std::move(producer_stream_type),
-        [this](MediaConsumerPtr consumer, RateControlPtr rate_control) {
+        [this](MediaConsumerPtr consumer,
+               MediaTimelineControlSitePtr timeline_control_site) {
           DCHECK(consumer);
-          DCHECK(rate_control);
-          rate_control_ = rate_control.Pass();
+          DCHECK(timeline_control_site);
+          timeline_control_site->GetTimelineConsumer(
+              GetProxy(&timeline_consumer_));
           producer_->Connect(consumer.Pass(), [this]() {
             graph_.Prepare();
             ready_.Occur();
@@ -160,99 +165,46 @@ void MediaSinkImpl::MaybeSetRate() {
     return;
   }
 
-  if (!rate_control_) {
+  if (!timeline_consumer_) {
     rate_ = target_rate_;
     status_publisher_.SendUpdates();
     return;
   }
 
-  // Desired rate in frames per second.
-  LinearTransform::Ratio rate_frames_per_second(
-      static_cast<uint32_t>(frames_per_second_ * target_rate_), 1);
+  // TODO(dalesat): start_local_time and start_presentation_time should be
+  // supplied via the mojo interface. For now, start_local_time is hard-coded
+  // to be 30ms in the future, and start_presentation_time is grabbed from the
+  // first primed packet or is calculated from start_local_time based on the
+  // previous timeline function.
 
-  // Local time rate in seconds_per_tick.
-  LinearTransform::Ratio local_seconds_per_tick(LocalDuration::period::num,
-                                                LocalDuration::period::den);
-
-  // Desired rate in frames per local tick.
-  LinearTransform::Ratio rate_frames_per_tick;
-  bool success = LinearTransform::Ratio::Compose(
-      local_seconds_per_tick, rate_frames_per_second, &rate_frames_per_tick);
-  DCHECK(success)
-      << "LinearTransform::Ratio::Compose reports loss of precision";
-
-  // TODO(dalesat): start_local_time should be supplied via the mojo interface.
-  // For now, it's hard-coded to be 30ms in the future.
   // The local time when we want the rate to change.
-  int64_t start_local_time =
-      (LocalClock::now().time_since_epoch() + std::chrono::milliseconds(30))
-          .count();
+  int64_t start_local_time = Timeline::local_now() + Timeline::ns_from_ms(30);
 
   // The media time corresponding to start_local_time.
-  int64_t start_media_time;
+  int64_t start_presentation_time;
   if (flushed_ && producer_->GetFirstPtsSinceFlush() != Packet::kUnknownPts) {
     // We're getting started initially or after a flush/prime, so the media
     // time corresponding to start_local_time should be the PTS of
-    // the first packet.
-    start_media_time = producer_->GetFirstPtsSinceFlush();
+    // the first packet converted to ns (rather than frame) units.
+    start_presentation_time =
+        producer_->GetFirstPtsSinceFlush() / frames_per_ns_;
   } else {
     // We're resuming, so the media time corresponding to start_local_time can
     // be calculated using the existing transform.
-    success =
-        transform_.DoForwardTransform(start_local_time, &start_media_time);
-    DCHECK(success)
-        << "LinearTransform::DoForwardTransform reports loss of precision";
+    start_presentation_time = timeline_function_(start_local_time);
   }
 
   flushed_ = false;
 
   // Update the transform.
-  transform_ =
-      LinearTransform(start_local_time, rate_frames_per_tick, start_media_time);
+  timeline_function_ = TimelineFunction(
+      start_local_time, start_presentation_time, TimelineRate(target_rate_));
 
   // Set the rate.
-  TimelineQuadPtr rate_quad = TimelineQuad::New();
-  rate_quad->reference_offset = start_media_time;
-  rate_quad->target_offset = start_local_time;
-  rate_quad->reference_delta = rate_frames_per_tick.numerator;
-  rate_quad->target_delta = rate_frames_per_tick.denominator;
-
-  rate_control_->SetCurrentQuad(rate_quad.Pass());
-
-  // Get the frame rate in frames per local tick.
-  LinearTransform::Ratio frame_rate_frames_per_second(frames_per_second_, 1);
-  LinearTransform::Ratio frame_rate_frames_per_tick;
-  success = LinearTransform::Ratio::Compose(local_seconds_per_tick,
-                                            frame_rate_frames_per_second,
-                                            &frame_rate_frames_per_tick);
-  DCHECK(success)
-      << "LinearTransform::Ratio::Compose reports loss of precision";
-
-  // Create a LinearTransform to translate from presentation units to
-  // local duration units.
-  LinearTransform local_to_presentation(0, frame_rate_frames_per_tick, 0);
-
-  status_transform_ = TimelineTransform::New();
-  status_transform_->quad = TimelineQuad::New();
-
-  // Translate the current transform quad so the presentation time units
-  // are the same as the local time units.
-  success = local_to_presentation.DoReverseTransform(
-      start_media_time, &status_transform_->quad->reference_offset);
-  DCHECK(success)
-      << "LinearTransform::DoReverseTransform reports loss of precision";
-  status_transform_->quad->target_offset = start_local_time;
-  int64_t presentation_delta;
-  success = local_to_presentation.DoReverseTransform(
-      static_cast<int64_t>(rate_frames_per_tick.numerator),
-      &presentation_delta);
-  DCHECK(success)
-      << "LinearTransform::DoReverseTransform reports loss of precision";
-  status_transform_->quad->reference_delta =
-      static_cast<uint32_t>(presentation_delta);
-  status_transform_->quad->target_delta = rate_frames_per_tick.denominator;
-  LinearTransform::Ratio::Reduce(&status_transform_->quad->reference_delta,
-                                 &status_transform_->quad->target_delta);
+  timeline_consumer_->SetTimelineTransform(
+      timeline_function_.subject_time(), timeline_function_.reference_delta(),
+      timeline_function_.subject_delta(), timeline_function_.reference_time(),
+      kUnspecifiedTime, [](bool completed) {});
 
   rate_ = target_rate_;
   status_publisher_.SendUpdates();

@@ -9,7 +9,7 @@ import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
 import 'package:mojo_services/mojo/media/media_state.mojom.dart' as media_state_mojom;
 import 'package:mojo_services/mojo/media/media_transport.mojom.dart' as media_transport_mojom;
-import 'package:mojo_services/mojo/media/rate_control.mojom.dart' as rate_control_mojom;
+import 'package:mojo_services/mojo/timelines.mojom.dart' as timelines_mojom;
 
 
 
@@ -18,7 +18,7 @@ class MediaSinkStatus extends bindings.Struct {
     const bindings.StructDataHeader(24, 0)
   ];
   media_state_mojom.MediaState state = null;
-  rate_control_mojom.TimelineTransform timelineTransform = null;
+  timelines_mojom.TimelineTransform timelineTransform = null;
 
   MediaSinkStatus() : super(kVersions.last.size);
 
@@ -66,7 +66,7 @@ class MediaSinkStatus extends bindings.Struct {
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(16, true);
-      result.timelineTransform = rate_control_mojom.TimelineTransform.decode(decoder1);
+      result.timelineTransform = timelines_mojom.TimelineTransform.decode(decoder1);
     }
     return result;
   }

@@ -16,7 +16,7 @@
 #include "mojo/services/media/common/cpp/circular_buffer_media_pipe_adapter.h"
 #include "mojo/services/media/common/cpp/linear_transform.h"
 #include "mojo/services/media/common/cpp/local_time.h"
-#include "mojo/services/media/common/interfaces/rate_control.mojom.h"
+#include "mojo/services/media/common/interfaces/timelines.mojom.h"
 
 namespace mojo {
 namespace media {
@@ -52,8 +52,8 @@ class PlayToneApp : public ApplicationDelegate {
   void OnConnectionError(const std::string& connection_name);
 
   AudioServerPtr audio_server_;
-  AudioTrackPtr  audio_track_;
-  RateControlPtr rate_control_;
+  AudioTrackPtr audio_track_;
+  TimelineConsumerPtr timeline_consumer_;
   std::unique_ptr<CircularBufferMediaPipeAdapter> audio_pipe_;
 
   bool     clock_started_ = false;
@@ -64,7 +64,7 @@ class PlayToneApp : public ApplicationDelegate {
 };
 
 void PlayToneApp::Quit() {
-  rate_control_.reset();
+  timeline_consumer_.reset();
   audio_pipe_.reset();
   audio_track_.reset();
   audio_server_.reset();
@@ -115,11 +115,12 @@ void PlayToneApp::Initialize(ApplicationImpl* app) {
   // TODO(johngro): do something useful with our capabilities description.
   sink_desc.reset();
 
-  // Grab the rate control interface for our audio renderer.
-  audio_track_->GetRateControl(GetProxy(&rate_control_));
-  rate_control_.set_connection_error_handler([this]() {
-    OnConnectionError("rate_control");
-  });
+  // Grab the timeline consumer interface for our audio renderer.
+  MediaTimelineControlSitePtr timeline_control_site;
+  audio_track_->GetTimelineControlSite(GetProxy(&timeline_control_site));
+  timeline_control_site->GetTimelineConsumer(GetProxy(&timeline_consumer_));
+  timeline_consumer_.set_connection_error_handler(
+      [this]() { OnConnectionError("timeline_consumer"); });
 
   // Configure our sink for 16-bit 48KHz mono.
   AudioTrackConfigurationPtr cfg = AudioTrackConfiguration::New();
@@ -204,20 +205,11 @@ void PlayToneApp::GenerateToneCbk(MediaResult res) {
   }
 
   if (!clock_started_) {
-    // In theory, this could be done at compile time using std::ratio, but
-    // std::ratio is prohibited.
-    LinearTransform::Ratio audio_rate(SAMP_FREQ, 1);
-    LinearTransform::Ratio local_time_rate(LocalDuration::period::num,
-                                           LocalDuration::period::den);
-    LinearTransform::Ratio rate;
-    bool success = LinearTransform::Ratio::Compose(local_time_rate,
-                                                   audio_rate,
-                                                   &rate);
-    MOJO_DCHECK(success);  // assert that there was no loss of precision.
+    MOJO_LOG(INFO) << "Setting rate 1/1";
 
-    MOJO_LOG(INFO) << "Setting rate " << rate;
-
-    rate_control_->SetRate(rate.numerator, rate.denominator);
+    timeline_consumer_->SetTimelineTransform(
+        kUnspecifiedTime, 1, 1, kUnspecifiedTime, kUnspecifiedTime,
+        [](bool completed) {});
     clock_started_ = true;
   }
 }

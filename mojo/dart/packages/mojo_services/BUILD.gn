@@ -63,7 +63,6 @@ bindings_sources = [
   "lib/mojo/media/media_transport.mojom.dart",
   "lib/mojo/media/media_type_converter.mojom.dart",
   "lib/mojo/media/media_types.mojom.dart",
-  "lib/mojo/media/rate_control.mojom.dart",
   "lib/mojo/media/timeline_controller.mojom.dart",
   "lib/mojo/native_viewport_event_dispatcher.mojom.dart",
   "lib/mojo/navigation.mojom.dart",

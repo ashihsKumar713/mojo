@@ -259,23 +259,6 @@ std::ostream& operator<<(std::ostream& os,
   return os << outdent;
 }
 
-std::ostream& operator<<(std::ostream& os, const TimelineQuadPtr& value) {
-  if (!value) {
-    return os << "<nullptr>" << std::endl;
-  } else {
-    os << std::endl;
-  }
-
-  os << indent;
-  os << begl << "int64 reference_offset: " << value->reference_offset
-     << std::endl;
-  os << begl << "int64 target_offset: " << value->target_offset << std::endl;
-  os << begl << "int32 reference_delta: " << value->reference_delta
-     << std::endl;
-  os << begl << "uint32 target_delta: " << value->target_delta << std::endl;
-  return os << outdent;
-}
-
 std::ostream& operator<<(std::ostream& os, const TimelineTransformPtr& value) {
   if (!value) {
     return os << "<nullptr>" << std::endl;
@@ -284,11 +267,12 @@ std::ostream& operator<<(std::ostream& os, const TimelineTransformPtr& value) {
   }
 
   os << indent;
-  os << begl << "TimelineQuad quad: " << value->quad;
-  os << begl << "uint32 reference_timeline_id: " << value->reference_timeline_id
+  os << begl << "int64 reference_time: " << value->reference_time
      << std::endl;
-  os << begl << "uint32 target_timeline_id: " << value->target_timeline_id
+  os << begl << "int64 subject_time: " << value->subject_time << std::endl;
+  os << begl << "uint32 reference_delta: " << value->reference_delta
      << std::endl;
+  os << begl << "uint32 subject_delta: " << value->subject_delta << std::endl;
   return os << outdent;
 }
 
