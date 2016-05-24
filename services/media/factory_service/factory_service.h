@@ -5,77 +5,23 @@
 #ifndef MOJO_SERVICES_MEDIA_FACTORY_FACTORY_SERVICE_H_
 #define MOJO_SERVICES_MEDIA_FACTORY_FACTORY_SERVICE_H_
 
-#include <unordered_set>
-
 #include "mojo/common/binding_set.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/services/media/control/interfaces/media_factory.mojom.h"
+#include "services/util/cpp/factory_service_base.h"
 
 namespace mojo {
 namespace media {
 
-class MediaFactoryService : public ApplicationDelegate,
+class MediaFactoryService : public util::FactoryServiceBase,
                             public MediaFactory {
  public:
-  // Provides common behavior for all objects created by the factory service.
-  class ProductBase : public std::enable_shared_from_this<ProductBase> {
-   public:
-    virtual ~ProductBase();
-
-   protected:
-    ProductBase(MediaFactoryService* owner);
-
-    // Returns the ApplicationImpl.
-    ApplicationImpl* app() {
-      DCHECK(owner_->app_);
-      return owner_->app_;
-    }
-
-    // Tells the factory service to release this product.
-    void ReleaseFromOwner() {
-      size_t erased = owner_->products_.erase(shared_from_this());
-      DCHECK(erased);
-    }
-
-   private:
-    MediaFactoryService* owner_;
-  };
-
-  template <typename Interface>
-  class Product : public ProductBase {
-   public:
-    virtual ~Product() {}
-
-   protected:
-    Product(Interface* impl,
-            InterfaceRequest<Interface> request,
-            MediaFactoryService* owner)
-        : ProductBase(owner), binding_(impl, request.Pass()) {
-      DCHECK(impl);
-      binding_.set_connection_error_handler([this]() { ReleaseFromOwner(); });
-    }
-
-    // Closes the binding and calls ReleaseFromOwner.
-    void UnbindAndReleaseFromOwner() {
-      if (binding_.is_bound()) {
-        binding_.Close();
-      }
-
-      ReleaseFromOwner();
-    }
-
-   private:
-    Binding<Interface> binding_;
-  };
-
   MediaFactoryService();
 
   ~MediaFactoryService() override;
 
   // ApplicationDelegate implementation.
-  void Initialize(ApplicationImpl* app) override;
-
   bool ConfigureIncomingConnection(
       ServiceProviderImpl* service_provider_impl) override;
 
@@ -102,20 +48,7 @@ class MediaFactoryService : public ApplicationDelegate,
 
  private:
   BindingSet<MediaFactory> bindings_;
-  ApplicationImpl* app_;
-  std::unordered_set<std::shared_ptr<ProductBase>> products_;
 };
-
-// For use by products when handling mojo requests.
-// Checks the condition, and, if it's false, unbinds, releases from the owner
-// and calls return. Doesn't support stream arguments.
-// TODO(dalesat): Support stream arguments.
-#define RCHECK(condition)                                         \
-  if (!(condition)) {                                             \
-    LOG(ERROR) << "request precondition failed: " #condition "."; \
-    UnbindAndReleaseFromOwner();                                  \
-    return;                                                       \
-  }
 
 }  // namespace media
 }  // namespace mojo
