@@ -8,7 +8,6 @@
 #include "base/macros.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/services/media/common/cpp/timeline_function.h"
-#include "mojo/services/media/common/interfaces/rate_control.mojom.h"
 #include "mojo/services/media/control/interfaces/media_factory.mojom.h"
 #include "mojo/services/media/control/interfaces/media_player.mojom.h"
 

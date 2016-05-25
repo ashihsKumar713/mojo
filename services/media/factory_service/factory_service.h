@@ -46,6 +46,9 @@ class MediaFactoryService : public util::FactoryServiceBase,
   void CreateNetworkReader(const String& url,
                            InterfaceRequest<SeekingReader> reader) override;
 
+  void CreateTimelineController(
+      InterfaceRequest<MediaTimelineController> timeline_controller) override;
+
  private:
   BindingSet<MediaFactory> bindings_;
 };

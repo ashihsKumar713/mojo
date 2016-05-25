@@ -9,8 +9,7 @@ namespace mojo {
 namespace media {
 
 MojoPullModeProducer::MojoPullModeProducer()
-    : state_(MediaState::UNPREPARED),
-      demand_(Demand::kNegative),
+    : demand_(Demand::kNegative),
       pts_(0),
       cached_packet_(nullptr) {}
 
@@ -26,13 +25,6 @@ void MojoPullModeProducer::AddBinding(
 void MojoPullModeProducer::GetBuffer(const GetBufferCallback& callback) {
   if (!mojo_allocator_.initialized()) {
     mojo_allocator_.InitNew(256 * 1024);  // TODO(dalesat): Made up!
-  }
-
-  {
-    base::AutoLock lock(lock_);
-    if (state_ == MediaState::UNPREPARED) {
-      state_ = MediaState::PAUSED;
-    }
   }
 
   callback.Run(mojo_allocator_.GetDuplicateHandle());
@@ -52,11 +44,11 @@ void MojoPullModeProducer::PullPacket(MediaPacketPtr to_release,
   {
     base::AutoLock lock(lock_);
 
-    if (state_ == MediaState::UNPREPARED) {
+    //if (state_ == MediaState::UNPREPARED) {
       // The consumer has yet to call GetBuffer. This request will have to wait.
-      pending_pulls_.push_back(callback);
-      return;
-    }
+    //  pending_pulls_.push_back(callback);
+    //  return;
+    //}
 
     DCHECK(mojo_allocator_.initialized());
 
@@ -111,7 +103,6 @@ void MojoPullModeProducer::SetDemandCallback(
 Demand MojoPullModeProducer::SupplyPacket(PacketPtr packet) {
   base::AutoLock lock(lock_);
   DCHECK(demand_ != Demand::kNegative) << "packet pushed with negative demand";
-  DCHECK(state_ != MediaState::ENDED) << "packet pushed after end-of-stream";
 
   DCHECK(!cached_packet_);
 
@@ -119,7 +110,6 @@ Demand MojoPullModeProducer::SupplyPacket(PacketPtr packet) {
   // happen if a pull client disconnects unexpectedly.
   if (bindings_.size() == 0) {
     demand_ = Demand::kNegative;
-    state_ = MediaState::UNPREPARED;
     // TODO(dalesat): More shutdown?
     return demand_;
   }
@@ -152,11 +142,11 @@ bool MojoPullModeProducer::MaybeHandlePullUnsafe(
   DCHECK(!callback.is_null());
   lock_.AssertAcquired();
 
-  if (state_ == MediaState::ENDED) {
+  //if (state_ == MediaState::ENDED) {
     // At end-of-stream. Respond with empty end-of-stream packet.
-    HandlePullWithPacketUnsafe(callback, Packet::CreateEndOfStream(pts_));
-    return true;
-  }
+  //  HandlePullWithPacketUnsafe(callback, Packet::CreateEndOfStream(pts_));
+  //  return true;
+  //}
 
   if (!cached_packet_) {
     // Waiting for packet or end-of-stream indication.

@@ -14,6 +14,7 @@ import 'package:mojo_services/mojo/media/media_source.mojom.dart' as media_sourc
 import 'package:mojo_services/mojo/media/media_type_converter.mojom.dart' as media_type_converter_mojom;
 import 'package:mojo_services/mojo/media/media_types.mojom.dart' as media_types_mojom;
 import 'package:mojo_services/mojo/media/seeking_reader.mojom.dart' as seeking_reader_mojom;
+import 'package:mojo_services/mojo/media/timeline_controller.mojom.dart' as timeline_controller_mojom;
 
 
 
@@ -566,12 +567,84 @@ class _MediaFactoryCreateNetworkReaderParams extends bindings.Struct {
   }
 }
 
+
+class _MediaFactoryCreateTimelineControllerParams extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(16, 0)
+  ];
+  timeline_controller_mojom.MediaTimelineControllerInterfaceRequest timelineController = null;
+
+  _MediaFactoryCreateTimelineControllerParams() : super(kVersions.last.size);
+
+  static _MediaFactoryCreateTimelineControllerParams deserialize(bindings.Message message) {
+    var decoder = new bindings.Decoder(message);
+    var result = decode(decoder);
+    if (decoder.excessHandles != null) {
+      decoder.excessHandles.forEach((h) => h.close());
+    }
+    return result;
+  }
+
+  static _MediaFactoryCreateTimelineControllerParams decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    _MediaFactoryCreateTimelineControllerParams result = new _MediaFactoryCreateTimelineControllerParams();
+
+    var mainDataHeader = decoder0.decodeStructDataHeader();
+    if (mainDataHeader.version <= kVersions.last.version) {
+      // Scan in reverse order to optimize for more recent versions.
+      for (int i = kVersions.length - 1; i >= 0; --i) {
+        if (mainDataHeader.version >= kVersions[i].version) {
+          if (mainDataHeader.size == kVersions[i].size) {
+            // Found a match.
+            break;
+          }
+          throw new bindings.MojoCodecError(
+              'Header size doesn\'t correspond to known version size.');
+        }
+      }
+    } else if (mainDataHeader.size < kVersions.last.size) {
+      throw new bindings.MojoCodecError(
+        'Message newer than the last known version cannot be shorter than '
+        'required by the last known version.');
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.timelineController = decoder0.decodeInterfaceRequest(8, false, timeline_controller_mojom.MediaTimelineControllerStub.newFromEndpoint);
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    try {
+      encoder0.encodeInterfaceRequest(timelineController, 8, false);
+    } on bindings.MojoCodecError catch(e) {
+      e.message = "Error encountered while encoding field "
+          "timelineController of struct _MediaFactoryCreateTimelineControllerParams: $e";
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "_MediaFactoryCreateTimelineControllerParams("
+           "timelineController: $timelineController" ")";
+  }
+
+  Map toJson() {
+    throw new bindings.MojoCodecError(
+        'Object containing handles cannot be encoded to JSON.');
+  }
+}
+
 const int _mediaFactoryMethodCreatePlayerName = 0;
 const int _mediaFactoryMethodCreateSourceName = 1;
 const int _mediaFactoryMethodCreateSinkName = 2;
 const int _mediaFactoryMethodCreateDemuxName = 3;
 const int _mediaFactoryMethodCreateDecoderName = 4;
 const int _mediaFactoryMethodCreateNetworkReaderName = 5;
+const int _mediaFactoryMethodCreateTimelineControllerName = 6;
 
 class _MediaFactoryServiceDescription implements service_describer.ServiceDescription {
   dynamic getTopLevelInterface([Function responseFactory]) =>
@@ -612,6 +685,7 @@ abstract class MediaFactory {
   void createDemux(seeking_reader_mojom.SeekingReaderInterface reader, media_demux_mojom.MediaDemuxInterfaceRequest demux);
   void createDecoder(media_types_mojom.MediaType inputMediaType, media_type_converter_mojom.MediaTypeConverterInterfaceRequest decoder);
   void createNetworkReader(String url, seeking_reader_mojom.SeekingReaderInterfaceRequest reader);
+  void createTimelineController(timeline_controller_mojom.MediaTimelineControllerInterfaceRequest timelineController);
 }
 
 abstract class MediaFactoryInterface
@@ -756,6 +830,16 @@ class MediaFactoryProxy
     ctrl.sendMessage(params,
         _mediaFactoryMethodCreateNetworkReaderName);
   }
+  void createTimelineController(timeline_controller_mojom.MediaTimelineControllerInterfaceRequest timelineController) {
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaFactoryCreateTimelineControllerParams();
+    params.timelineController = timelineController;
+    ctrl.sendMessage(params,
+        _mediaFactoryMethodCreateTimelineControllerName);
+  }
 }
 
 class _MediaFactoryStubControl
@@ -820,6 +904,11 @@ class _MediaFactoryStubControl
         var params = _MediaFactoryCreateNetworkReaderParams.deserialize(
             message.payload);
         _impl.createNetworkReader(params.url, params.reader);
+        break;
+      case _mediaFactoryMethodCreateTimelineControllerName:
+        var params = _MediaFactoryCreateTimelineControllerParams.deserialize(
+            message.payload);
+        _impl.createTimelineController(params.timelineController);
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
@@ -896,6 +985,9 @@ class MediaFactoryStub
   }
   void createNetworkReader(String url, seeking_reader_mojom.SeekingReaderInterfaceRequest reader) {
     return impl.createNetworkReader(url, reader);
+  }
+  void createTimelineController(timeline_controller_mojom.MediaTimelineControllerInterfaceRequest timelineController) {
+    return impl.createTimelineController(timelineController);
   }
 }
 

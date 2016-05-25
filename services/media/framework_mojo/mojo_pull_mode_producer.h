@@ -9,7 +9,6 @@
 
 #include "base/synchronization/lock.h"
 #include "mojo/common/binding_set.h"
-#include "mojo/services/media/common/interfaces/media_state.mojom.h"
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
 #include "services/media/framework/models/active_sink.h"
 #include "services/media/framework_mojo/mojo_allocator.h"
@@ -72,7 +71,6 @@ class MojoPullModeProducer : public MediaPullModeProducer, public ActiveSink {
 
   mutable base::Lock lock_;
   // THE FIELDS BELOW SHOULD ONLY BE ACCESSED WITH lock_ TAKEN.
-  MediaState state_;
   Demand demand_;
   int64_t pts_;
 

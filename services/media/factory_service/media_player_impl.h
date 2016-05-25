@@ -15,6 +15,7 @@
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
 #include "mojo/services/media/control/interfaces/media_factory.mojom.h"
 #include "mojo/services/media/core/interfaces/seeking_reader.mojom.h"
+#include "mojo/services/media/core/interfaces/timeline_controller.mojom.h"
 #include "services/media/common/mojo_publisher.h"
 #include "services/media/factory_service/factory_service.h"
 #include "services/media/framework/util/callback_joiner.h"
@@ -54,16 +55,13 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
   };
 
   struct Stream {
-    Stream(size_t index, MediaTypePtr media_type);
+    Stream();
     ~Stream();
-    size_t index_;
-    bool enabled_ = false;
-    bool end_of_stream_ = false;
-    MediaTypePtr media_type_;
+    // TODO(dalesat): Have the sink enlist the decoder.
     MediaTypeConverterPtr decoder_;
     MediaSinkPtr sink_;
-    MediaTimelineControlSitePtr timeline_control_site_;
-    TimelineConsumerPtr timeline_consumer_;
+    // The following fields are just temporaries used to solve lambda capture
+    // problems.
     MediaProducerPtr encoded_producer_;
     MediaProducerPtr decoded_producer_;
   };
@@ -81,25 +79,15 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
   // Handles seeking in paused state with flushed pipeline.
   void WhenFlushedAndSeeking();
 
-  // Sets the timeline transforms on all the sinks. transform_subject_time_ is
-  // used for the subject_time, and the effective_reference_time is now plus an
-  // epsilon.
-  void SetSinkTimelineTransforms(uint32_t reference_delta,
-                                 uint32_t subject_delta);
-
-  // Sets the timeline transforms on all the sinks.
-  void SetSinkTimelineTransforms(int64_t subject_time,
-                                 uint32_t reference_delta,
-                                 uint32_t subject_delta,
-                                 int64_t effective_reference_time,
-                                 int64_t effective_subject_time);
-
-  // Determines if all the enabled sinks have reached end-of-stream. Returns
-  // false if there are no enabled streams.
-  bool AllSinksAtEndOfStream();
+  // Sets the timeline transform. transform_subject_time_ is used for the
+  // subject_time, and the effective_reference_time is now plus
+  // kMinimumLeadTime.
+  void SetTimelineTransform(uint32_t reference_delta, uint32_t subject_delta);
 
   // Prepares a stream.
   void PrepareStream(Stream* stream,
+                     size_t index,
+                     const MediaTypePtr& input_media_type,
                      const String& url,
                      const std::function<void()>& callback);
 
@@ -115,19 +103,22 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
       uint64_t version = MediaDemux::kInitialMetadata,
       MediaMetadataPtr metadata = nullptr);
 
-  // Handles a status update from a control site. When called with the default
+  // Handles a status update from the control site. When called with the default
   // argument values, initiates control site. status updates.
   void HandleTimelineControlSiteStatusUpdates(
-      Stream* stream,
       uint64_t version = MediaTimelineControlSite::kInitialStatus,
       MediaTimelineControlSiteStatusPtr status = nullptr);
 
   MediaFactoryPtr factory_;
   MediaDemuxPtr demux_;
+  MediaTimelineControllerPtr timeline_controller_;
+  MediaTimelineControlSitePtr timeline_control_site_;
+  TimelineConsumerPtr timeline_consumer_;
   std::vector<std::unique_ptr<Stream>> streams_;
   State state_ = State::kWaiting;
   State target_state_ = State::kPaused;
   bool flushed_ = true;
+  bool end_of_stream_ = false;
   int64_t target_position_ = kUnspecifiedTime;
   int64_t transform_subject_time_ = kUnspecifiedTime;
   TimelineFunction timeline_function_;

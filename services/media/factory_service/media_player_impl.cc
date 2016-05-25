@@ -31,7 +31,7 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
                                              uint64_t version) {
     MediaPlayerStatusPtr status = MediaPlayerStatus::New();
     status->timeline_transform = TimelineTransform::From(timeline_function_);
-    status->end_of_stream = AllSinksAtEndOfStream();
+    status->end_of_stream = end_of_stream_;
     status->metadata = metadata_.Clone();
     callback.Run(version, status.Pass());
   });
@@ -41,27 +41,29 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
   ConnectToService(app()->shell(), "mojo:media_factory", GetProxy(&factory_));
 
   factory_->CreateDemux(reader.Pass(), GetProxy(&demux_));
-
   HandleDemuxMetadataUpdates();
+
+  factory_->CreateTimelineController(GetProxy(&timeline_controller_));
+  timeline_controller_->GetControlSite(GetProxy(&timeline_control_site_));
+  timeline_control_site_->GetTimelineConsumer(GetProxy(&timeline_consumer_));
+  HandleTimelineControlSiteStatusUpdates();
 
   demux_->Describe([this](mojo::Array<MediaTypePtr> stream_types) {
     // Populate streams_ and enable the streams we want.
     std::shared_ptr<CallbackJoiner> callback_joiner = CallbackJoiner::Create();
 
     for (MediaTypePtr& stream_type : stream_types) {
-      streams_.push_back(std::unique_ptr<Stream>(
-          new Stream(streams_.size(), stream_type.Pass())));
+      streams_.push_back(std::unique_ptr<Stream>(new Stream()));
       Stream& stream = *streams_.back();
-      switch (stream.media_type_->medium) {
+      switch (stream_type->medium) {
         case MediaTypeMedium::AUDIO:
-          stream.enabled_ = true;
-          PrepareStream(&stream, "mojo:audio_server",
-                        callback_joiner->NewCallback());
+          PrepareStream(&stream, streams_.size() - 1, stream_type,
+                        "mojo:audio_server", callback_joiner->NewCallback());
           break;
         case MediaTypeMedium::VIDEO:
-          stream.enabled_ = true;
           // TODO(dalesat): Send video somewhere.
-          PrepareStream(&stream, "nowhere", callback_joiner->NewCallback());
+          PrepareStream(&stream, streams_.size() - 1, stream_type, "nowhere",
+                        callback_joiner->NewCallback());
           break;
         // TODO(dalesat): Enable other stream types.
         default:
@@ -91,7 +93,7 @@ void MediaPlayerImpl::Update() {
 
         if (target_state_ == State::kPlaying) {
           if (!flushed_) {
-            SetSinkTimelineTransforms(1, 1);
+            SetTimelineTransform(1, 1);
             state_ = State::kWaiting;
             break;
           }
@@ -99,7 +101,7 @@ void MediaPlayerImpl::Update() {
           flushed_ = false;
           state_ = State::kWaiting;
           demux_->Prime([this]() {
-            SetSinkTimelineTransforms(1, 1);
+            SetTimelineTransform(1, 1);
             state_ = State::kWaiting;
             Update();
           });
@@ -109,12 +111,12 @@ void MediaPlayerImpl::Update() {
       case State::kPlaying:
         if (target_position_ != kUnspecifiedTime ||
             target_state_ == State::kPaused) {
-          SetSinkTimelineTransforms(1, 0);
+          SetTimelineTransform(1, 0);
           state_ = State::kWaiting;
           break;
         }
 
-        if (AllSinksAtEndOfStream()) {
+        if (end_of_stream_) {
           target_state_ = State::kPaused;
           state_ = State::kPaused;
           break;
@@ -150,62 +152,22 @@ void MediaPlayerImpl::WhenFlushedAndSeeking() {
   });
 }
 
-void MediaPlayerImpl::SetSinkTimelineTransforms(uint32_t reference_delta,
-                                                uint32_t subject_delta) {
-  SetSinkTimelineTransforms(
+void MediaPlayerImpl::SetTimelineTransform(uint32_t reference_delta,
+                                           uint32_t subject_delta) {
+  timeline_consumer_->SetTimelineTransform(
       transform_subject_time_, reference_delta, subject_delta,
-      Timeline::local_now() + kMinimumLeadTime, kUnspecifiedTime);
-}
+      Timeline::local_now() + kMinimumLeadTime, kUnspecifiedTime,
+      [this, subject_delta](bool completed) {
+        RCHECK(state_ == State::kWaiting);
 
-void MediaPlayerImpl::SetSinkTimelineTransforms(
-    int64_t subject_time,
-    uint32_t reference_delta,
-    uint32_t subject_delta,
-    int64_t effective_reference_time,
-    int64_t effective_subject_time) {
-  std::shared_ptr<CallbackJoiner> callback_joiner = CallbackJoiner::Create();
+        if (subject_delta == 0) {
+          state_ = State::kPaused;
+        } else {
+          state_ = State::kPlaying;
+        }
 
-  for (auto& stream : streams_) {
-    if (stream->enabled_) {
-      DCHECK(stream->timeline_consumer_);
-      callback_joiner->Spawn();
-      stream->timeline_consumer_->SetTimelineTransform(
-          subject_time, reference_delta, subject_delta,
-          effective_reference_time, effective_subject_time,
-          [this, callback_joiner](bool completed) {
-            callback_joiner->Complete();
-          });
-    }
-  }
-
-  transform_subject_time_ = kUnspecifiedTime;
-
-  callback_joiner->WhenJoined([this, subject_delta]() {
-    RCHECK(state_ == State::kWaiting);
-
-    if (subject_delta == 0) {
-      state_ = State::kPaused;
-    } else {
-      state_ = State::kPlaying;
-    }
-
-    Update();
-  });
-}
-
-bool MediaPlayerImpl::AllSinksAtEndOfStream() {
-  int result = false;
-
-  for (auto& stream : streams_) {
-    if (stream->enabled_) {
-      result = stream->end_of_stream_;
-      if (!result) {
-        break;
-      }
-    }
-  }
-
-  return result;
+        Update();
+      });
 }
 
 void MediaPlayerImpl::GetStatus(uint64_t version_last_seen,
@@ -229,19 +191,21 @@ void MediaPlayerImpl::Seek(int64_t position) {
 }
 
 void MediaPlayerImpl::PrepareStream(Stream* stream,
+                                    size_t index,
+                                    const MediaTypePtr& input_media_type,
                                     const String& url,
                                     const std::function<void()>& callback) {
   DCHECK(factory_);
 
-  demux_->GetProducer(stream->index_, GetProxy(&stream->encoded_producer_));
+  demux_->GetProducer(index, GetProxy(&stream->encoded_producer_));
 
-  if (stream->media_type_->encoding != MediaType::kAudioEncodingLpcm &&
-      stream->media_type_->encoding != MediaType::kVideoEncodingUncompressed) {
+  if (input_media_type->encoding != MediaType::kAudioEncodingLpcm &&
+      input_media_type->encoding != MediaType::kVideoEncodingUncompressed) {
     std::shared_ptr<CallbackJoiner> callback_joiner = CallbackJoiner::Create();
 
     // Compressed media. Insert a decoder in front of the sink. The sink would
     // add its own internal decoder, but we want to test the decoder.
-    factory_->CreateDecoder(stream->media_type_.Clone(),
+    factory_->CreateDecoder(input_media_type.Clone(),
                             GetProxy(&stream->decoder_));
 
     MediaConsumerPtr decoder_consumer;
@@ -268,7 +232,7 @@ void MediaPlayerImpl::PrepareStream(Stream* stream,
     // would work for compressed media as well (the sink would decode), but we
     // want to test the decoder.
     stream->decoded_producer_ = stream->encoded_producer_.Pass();
-    CreateSink(stream, stream->media_type_, url, callback);
+    CreateSink(stream, input_media_type, url, callback);
   }
 }
 
@@ -281,13 +245,11 @@ void MediaPlayerImpl::CreateSink(Stream* stream,
   DCHECK(factory_);
 
   factory_->CreateSink(url, input_media_type.Clone(), GetProxy(&stream->sink_));
-  stream->sink_->GetTimelineControlSite(
-      GetProxy(&stream->timeline_control_site_));
 
-  HandleTimelineControlSiteStatusUpdates(stream);
+  MediaTimelineControlSitePtr timeline_control_site;
+  stream->sink_->GetTimelineControlSite(GetProxy(&timeline_control_site));
 
-  stream->timeline_control_site_->GetTimelineConsumer(
-      GetProxy(&stream->timeline_consumer_));
+  timeline_controller_->AddControlSite(timeline_control_site.Pass());
 
   MediaConsumerPtr consumer;
   stream->sink_->GetConsumer(GetProxy(&consumer));
@@ -313,26 +275,23 @@ void MediaPlayerImpl::HandleDemuxMetadataUpdates(uint64_t version,
 }
 
 void MediaPlayerImpl::HandleTimelineControlSiteStatusUpdates(
-    Stream* stream,
     uint64_t version,
     MediaTimelineControlSiteStatusPtr status) {
   if (status) {
-    // TODO(dalesat): Why does one sink determine timeline_function_?
     timeline_function_ = status->timeline_transform.To<TimelineFunction>();
-    stream->end_of_stream_ = status->end_of_stream;
+    end_of_stream_ = status->end_of_stream;
     status_publisher_.SendUpdates();
     Update();
   }
 
-  stream->timeline_control_site_->GetStatus(
-      version, [this, stream](uint64_t version,
-                              MediaTimelineControlSiteStatusPtr status) {
-        HandleTimelineControlSiteStatusUpdates(stream, version, status.Pass());
+  timeline_control_site_->GetStatus(
+      version,
+      [this](uint64_t version, MediaTimelineControlSiteStatusPtr status) {
+        HandleTimelineControlSiteStatusUpdates(version, status.Pass());
       });
 }
 
-MediaPlayerImpl::Stream::Stream(size_t index, MediaTypePtr media_type)
-    : index_(index), media_type_(media_type.Pass()) {}
+MediaPlayerImpl::Stream::Stream() {}
 
 MediaPlayerImpl::Stream::~Stream() {}
 

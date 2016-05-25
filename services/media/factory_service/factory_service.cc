@@ -8,6 +8,7 @@
 #include "services/media/factory_service/media_player_impl.h"
 #include "services/media/factory_service/media_sink_impl.h"
 #include "services/media/factory_service/media_source_impl.h"
+#include "services/media/factory_service/media_timeline_controller_impl.h"
 #include "services/media/factory_service/network_reader_impl.h"
 
 namespace mojo {
@@ -62,6 +63,12 @@ void MediaFactoryService::CreateNetworkReader(
     const String& url,
     InterfaceRequest<SeekingReader> reader) {
   AddProduct(NetworkReaderImpl::Create(url, reader.Pass(), this));
+}
+
+void MediaFactoryService::CreateTimelineController(
+    InterfaceRequest<MediaTimelineController> timeline_controller) {
+  AddProduct(
+      MediaTimelineControllerImpl::Create(timeline_controller.Pass(), this));
 }
 
 }  // namespace media

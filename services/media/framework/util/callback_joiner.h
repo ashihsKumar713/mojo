@@ -73,7 +73,7 @@ class CallbackJoiner : public std::enable_shared_from_this<CallbackJoiner> {
     DCHECK(counter_ != 0);
     --counter_;
     if (counter_ == 0) {
-      mojo::Callback<void()> join_callback;
+      Callback<void()> join_callback;
       join_callback = join_callback_;
       join_callback_.reset();
       join_callback.Run();
@@ -97,7 +97,7 @@ class CallbackJoiner : public std::enable_shared_from_this<CallbackJoiner> {
   // immediately. If child operations are pending, the callback is copied. The
   // copy called later (and reset) when all child oeprations have completed.
   // Only one callback at a time can be registered with WhenJoined.
-  void WhenJoined(const mojo::Callback<void()>& join_callback) {
+  void WhenJoined(const Callback<void()>& join_callback) {
     DCHECK(join_callback_.is_null());
     if (counter_ == 0) {
       join_callback.Run();
@@ -116,7 +116,7 @@ class CallbackJoiner : public std::enable_shared_from_this<CallbackJoiner> {
 
  private:
   size_t counter_ = 0;
-  mojo::Callback<void()> join_callback_;
+  Callback<void()> join_callback_;
 };
 
 }  // namespace media

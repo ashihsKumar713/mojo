@@ -28,6 +28,8 @@ mojo_native_application("media_factory") {
     "media_sink_impl.h",
     "media_source_impl.cc",
     "media_source_impl.h",
+    "media_timeline_controller_impl.cc",
+    "media_timeline_controller_impl.h",
     "network_reader_impl.cc",
     "network_reader_impl.h",
   ]
