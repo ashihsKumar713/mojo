@@ -1792,6 +1792,40 @@ TEST_F(CoreTest, MessagePipeBasicLocalHandlePassing3) {
   }
 }
 
+// Tests not having versus not having the transfer right.
+TEST_F(CoreTest, MessagePipeBasicLocalHandlePassing4) {
+  MojoHandle h0 = MOJO_HANDLE_INVALID;
+  MojoHandle h1 = MOJO_HANDLE_INVALID;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            core()->CreateMessagePipe(NullUserPointer(), MakeUserPointer(&h0),
+                                      MakeUserPointer(&h1)));
+
+  MojoHandle h_transferrable = MOJO_HANDLE_INVALID;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            core()->CreateSharedBuffer(NullUserPointer(), 100,
+                                       MakeUserPointer(&h_transferrable)));
+  MojoHandle h_not_transferrable = MOJO_HANDLE_INVALID;
+  EXPECT_EQ(MOJO_RESULT_OK, core()->DuplicateHandleWithReducedRights(
+                                h_transferrable, MOJO_HANDLE_RIGHT_TRANSFER,
+                                MakeUserPointer(&h_not_transferrable)));
+
+  // We can send |h_transferrable|.
+  EXPECT_EQ(MOJO_RESULT_OK,
+            core()->WriteMessage(h0, NullUserPointer(), 0,
+                                 MakeUserPointer(&h_transferrable), 1,
+                                 MOJO_WRITE_MESSAGE_FLAG_NONE));
+
+  // But not |h_not_transferrable|.
+  EXPECT_EQ(MOJO_RESULT_PERMISSION_DENIED,
+            core()->WriteMessage(h0, NullUserPointer(), 0,
+                                 MakeUserPointer(&h_not_transferrable), 1,
+                                 MOJO_WRITE_MESSAGE_FLAG_NONE));
+
+  EXPECT_EQ(MOJO_RESULT_OK, core()->Close(h0));
+  EXPECT_EQ(MOJO_RESULT_OK, core()->Close(h1));
+  EXPECT_EQ(MOJO_RESULT_OK, core()->Close(h_not_transferrable));
+}
+
 struct TestAsyncWaiter {
   TestAsyncWaiter() : result(MOJO_RESULT_UNKNOWN) {}
 

@@ -143,6 +143,11 @@ MojoResult HandleTable::MarkBusyAndStartTransport(
       error_result = MOJO_RESULT_BUSY;
       break;
     }
+    // Note: "Busy" is "preferred" over "permission denied".
+    if (!entries[i]->handle.has_all_rights(MOJO_HANDLE_RIGHT_TRANSFER)) {
+      error_result = MOJO_RESULT_PERMISSION_DENIED;
+      break;
+    }
     // Note: By marking the handle as busy here, we're also preventing the
     // same handle from being sent multiple times in the same message.
     entries[i]->busy = true;

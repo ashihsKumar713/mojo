@@ -75,8 +75,9 @@ class HandleTable {
   bool AddHandleVector(HandleVector* handles, MojoHandle* handle_values);
 
   // Tries to mark the given handle values as busy and start transport on them
-  // (i.e., take their dispatcher locks); |transports| must be sized to contain
-  // |num_handles| elements. On failure, returns them to their original
+  // (i.e., take their dispatcher locks). The handles to be transported must all
+  // have the |MOJO_HANDLE_RIGHT_TRANSFER| right. |transports| must be sized to
+  // contain |num_handles| elements. On failure, returns them to their original
   // (non-busy, unlocked state).
   MojoResult MarkBusyAndStartTransport(
       MojoHandle disallowed_handle,
