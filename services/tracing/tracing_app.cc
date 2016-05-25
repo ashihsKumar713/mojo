@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/message_loop/message_loop.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/system/wait.h"
 
 namespace tracing {
@@ -15,7 +16,7 @@ TracingApp::TracingApp() : collector_binding_(this), tracing_active_(false) {}
 
 TracingApp::~TracingApp() {}
 
-bool TracingApp::ConfigureIncomingConnection(
+bool TracingApp::OnAcceptConnection(
     mojo::ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<TraceCollector>(
       [this](const mojo::ConnectionContext& connection_context,

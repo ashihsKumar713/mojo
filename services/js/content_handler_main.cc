@@ -5,23 +5,22 @@
 #include "base/i18n/icu_util.h"
 #include "gin/array_buffer.h"
 #include "gin/public/isolate_holder.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/application/content_handler_factory.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "services/js/js_app.h"
 
 namespace js {
 
-class JsContentHandler : public mojo::ApplicationDelegate,
+class JsContentHandler : public mojo::ApplicationImplBase,
                          public mojo::ContentHandlerFactory::ManagedDelegate {
  public:
   JsContentHandler() {}
 
  private:
-  // Overridden from mojo::ApplicationDelegate:
-  void Initialize(mojo::ApplicationImpl* app) override {
+  // Overridden from mojo::ApplicationImplBase:
+  void OnInitialize() override {
     static const char v8Flags[] = "--harmony-classes";
     v8::V8::SetFlagsFromString(v8Flags, sizeof(v8Flags) - 1);
     base::i18n::InitializeICU();
@@ -29,15 +28,15 @@ class JsContentHandler : public mojo::ApplicationDelegate,
                                    gin::ArrayBufferAllocator::SharedInstance());
   }
 
-  // Overridden from ApplicationDelegate:
-  bool ConfigureIncomingConnection(
+  // Overridden from mojo::ApplicationImplBase:
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<mojo::ContentHandler>(
         mojo::ContentHandlerFactory::GetInterfaceRequestHandler(this));
     return true;
   }
 
-  // Overridden from ContentHandlerFactory::ManagedDelegate:
+  // Overridden from mojo::ContentHandlerFactory::ManagedDelegate:
   scoped_ptr<mojo::ContentHandlerFactory::HandledApplicationHolder>
   CreateApplication(
       mojo::InterfaceRequest<mojo::Application> application_request,
@@ -52,6 +51,6 @@ class JsContentHandler : public mojo::ApplicationDelegate,
 }  // namespace js
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new js::JsContentHandler);
-  return runner.Run(application_request);
+  js::JsContentHandler js_content_handler;
+  return mojo::RunMainApplication(application_request, &js_content_handler);
 }

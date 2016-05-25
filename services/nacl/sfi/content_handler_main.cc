@@ -6,15 +6,14 @@
 #include "base/files/scoped_file.h"
 #include "base/message_loop/message_loop.h"
 #include "build/build_config.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/application/content_handler_factory.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
 #include "mojo/message_pump/message_pump_mojo.h"
 #include "mojo/nacl/sfi/nacl_bindings/monacl_sel_main.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/services/network/interfaces/network_service.mojom.h"
 #include "mojo/services/network/interfaces/url_loader.mojom.h"
@@ -71,21 +70,29 @@ NaClDesc* FileStreamToNaClDesc(FILE* file_stream) {
 
 }  // namespace
 
-class NaClContentHandler : public mojo::ApplicationDelegate,
+class NaClContentHandler : public mojo::ApplicationImplBase,
                            public mojo::ContentHandlerFactory::Delegate {
  public:
   NaClContentHandler() {}
 
  private:
-  // Overridden from ApplicationDelegate:
-  void Initialize(mojo::ApplicationImpl* app) override {
-    url_ = GURL(app->url());
+  // Overridden from ApplicationImplBase:
+  void OnInitialize() override {
+    url_ = GURL(url());
 
     mojo::NetworkServicePtr network_service;
-    mojo::ConnectToService(app->shell(), "mojo:network_service",
+    mojo::ConnectToService(shell(), "mojo:network_service",
                            GetProxy(&network_service));
 
     network_service->CreateURLLoader(GetProxy(&url_loader_));
+  }
+
+  // Overridden from ApplicationImplBase:
+  bool OnAcceptConnection(
+      mojo::ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<mojo::ContentHandler>(
+        mojo::ContentHandlerFactory::GetInterfaceRequestHandler(this));
+    return true;
   }
 
   void LoadIRT(mojo::URLLoaderPtr& url_loader) {
@@ -100,14 +107,6 @@ class NaClContentHandler : public mojo::ApplicationDelegate,
 
     irt_fp_ = TempFileForURL(url_loader, irt_url);
     CHECK(irt_fp_) << "Could not acquire the IRT";
-  }
-
-  // Overridden from ApplicationDelegate:
-  bool ConfigureIncomingConnection(
-      mojo::ServiceProviderImpl* service_provider_impl) override {
-    service_provider_impl->AddService<mojo::ContentHandler>(
-        mojo::ContentHandlerFactory::GetInterfaceRequestHandler(this));
-    return true;
   }
 
   // Overridden from ContentHandlerFactory::Delegate:
@@ -151,7 +150,6 @@ class NaClContentHandler : public mojo::ApplicationDelegate,
 }  // namespace nacl
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(
-      new nacl::content_handler::NaClContentHandler());
-  return runner.Run(application_request);
+  nacl::content_handler::NaClContentHandler nacl_content_handler;
+  return mojo::RunMainApplication(application_request, &nacl_content_handler);
 }

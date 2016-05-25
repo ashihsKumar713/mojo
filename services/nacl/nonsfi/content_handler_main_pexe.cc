@@ -5,9 +5,9 @@
 #include <fcntl.h>
 
 #include "base/files/file_util.h"
+#include "base/message_loop/message_loop.h"
 #include "base/sha1.h"
 #include "base/strings/string_number_conversions.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/application/content_handler_factory.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
 #include "mojo/file_utils/file_util.h"
@@ -15,9 +15,9 @@
 #include "mojo/nacl/nonsfi/file_util.h"
 #include "mojo/nacl/nonsfi/nexe_launcher_nonsfi.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/bindings/array.h"
 #include "mojo/public/cpp/bindings/synchronous_interface_ptr.h"
 #include "mojo/services/files/interfaces/directory.mojom-sync.h"
@@ -28,19 +28,19 @@
 namespace nacl {
 namespace content_handler {
 
-class PexeContentHandler : public mojo::ApplicationDelegate,
+class PexeContentHandler : public mojo::ApplicationImplBase,
                            public mojo::ContentHandlerFactory::Delegate {
  public:
   PexeContentHandler() {}
 
  private:
-  // Overridden from ApplicationDelegate:
-  void Initialize(mojo::ApplicationImpl* app) override {
-    mojo::ConnectToService(app->shell(), "mojo:pnacl_compile",
+  // Overridden from ApplicationImplBase:
+  void OnInitialize() override {
+    mojo::ConnectToService(shell(), "mojo:pnacl_compile",
                            GetSynchronousProxy(&compiler_init_));
-    mojo::ConnectToService(app->shell(), "mojo:pnacl_link",
+    mojo::ConnectToService(shell(), "mojo:pnacl_link",
                            GetSynchronousProxy(&linker_init_));
-    mojo::ConnectToService(app->shell(), "mojo:files", GetProxy(&files_));
+    mojo::ConnectToService(shell(), "mojo:files", GetProxy(&files_));
     mojo::files::Error error = mojo::files::Error::INTERNAL;
     files_->OpenFileSystem("app_persistent_cache",
                            GetSynchronousProxy(&nexe_cache_directory_),
@@ -49,8 +49,8 @@ class PexeContentHandler : public mojo::ApplicationDelegate,
     CHECK_EQ(mojo::files::Error::OK, error);
   }
 
-  // Overridden from ApplicationDelegate:
-  bool ConfigureIncomingConnection(
+  // Overridden from ApplicationImplBase:
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<mojo::ContentHandler>(
         mojo::ContentHandlerFactory::GetInterfaceRequestHandler(this));
@@ -162,7 +162,6 @@ class PexeContentHandler : public mojo::ApplicationDelegate,
 }  // namespace nacl
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(
-      new nacl::content_handler::PexeContentHandler());
-  return runner.Run(application_request);
+  nacl::content_handler::PexeContentHandler pexe_content_handler;
+  return mojo::RunMainApplication(application_request, &pexe_content_handler);
 }

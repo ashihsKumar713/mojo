@@ -10,12 +10,11 @@
 #include "base/i18n/icu_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/application/content_handler_factory.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/python/src/common.h"
 #include "third_party/zlib/google/zip_reader.h"
 #include "url/gurl.h"
@@ -34,7 +33,7 @@ namespace python {
 namespace content_handler {
 
 using mojo::Application;
-using mojo::ApplicationDelegate;
+using mojo::ApplicationImplBase;
 using mojo::ContentHandlerFactory;
 using mojo::InterfaceRequest;
 using mojo::ScopedDataPipeConsumerHandle;
@@ -201,14 +200,14 @@ class PythonContentHandler : public ContentHandlerFactory::Delegate {
   DISALLOW_COPY_AND_ASSIGN(PythonContentHandler);
 };
 
-class PythonContentHandlerApp : public ApplicationDelegate {
+class PythonContentHandlerApp : public ApplicationImplBase {
  public:
   PythonContentHandlerApp()
       : content_handler_(false), debug_content_handler_(true) {}
 
  private:
-  // Overridden from ApplicationDelegate:
-  bool ConfigureIncomingConnection(
+  // Overridden from ApplicationImplBase:
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     if (IsDebug(service_provider_impl->connection_context().connection_url)) {
       service_provider_impl->AddService<mojo::ContentHandler>(
@@ -243,7 +242,8 @@ class PythonContentHandlerApp : public ApplicationDelegate {
 }  // namespace services
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(
-      new services::python::content_handler::PythonContentHandlerApp());
-  return runner.Run(application_request);
+  services::python::content_handler::PythonContentHandlerApp
+      python_content_handler_app;
+  return mojo::RunMainApplication(application_request,
+                                  &python_content_handler_app);
 }

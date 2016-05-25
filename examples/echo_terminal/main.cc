@@ -8,10 +8,10 @@
 #include "base/bind_helpers.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/common/binding_set.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/services/files/interfaces/file.mojom.h"
 #include "mojo/services/files/interfaces/types.mojom.h"
@@ -95,16 +95,15 @@ class TerminalEchoer {
   DISALLOW_COPY_AND_ASSIGN(TerminalEchoer);
 };
 
-class EchoTerminalApp
-    : public mojo::ApplicationDelegate,
-      public mojo::terminal::TerminalClient {
+class EchoTerminalApp : public mojo::ApplicationImplBase,
+                        public mojo::terminal::TerminalClient {
  public:
   EchoTerminalApp() {}
   ~EchoTerminalApp() override {}
 
  private:
-  // |ApplicationDelegate| override:
-  bool ConfigureIncomingConnection(
+  // |ApplicationImplBase| override:
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<mojo::terminal::TerminalClient>(
         [this](const mojo::ConnectionContext& connection_context,
@@ -130,6 +129,6 @@ class EchoTerminalApp
 };
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new EchoTerminalApp());
-  return runner.Run(application_request);
+  EchoTerminalApp echo_terminal_app;
+  return mojo::RunMainApplication(application_request, &echo_terminal_app);
 }

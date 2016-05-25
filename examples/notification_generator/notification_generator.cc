@@ -6,12 +6,12 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "mojo/application/application_runner_chromium.h"
+#include "base/message_loop/message_loop.h"
 #include "mojo/common/binding_set.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/services/notifications/interfaces/notifications.mojom.h"
 
 namespace examples {
@@ -19,16 +19,16 @@ namespace examples {
 static const base::TimeDelta kDefaultMessageDelay =
     base::TimeDelta::FromMilliseconds(3000);
 
-class NotificationGeneratorDelegate : public mojo::ApplicationDelegate,
-                                      public notifications::NotificationClient {
+class NotificationGeneratorApp : public mojo::ApplicationImplBase,
+                                 public notifications::NotificationClient {
  public:
-  NotificationGeneratorDelegate() {}
+  NotificationGeneratorApp() {}
 
-  ~NotificationGeneratorDelegate() override {}
+  ~NotificationGeneratorApp() override {}
 
-  // mojo::ApplicationDelegate implementation.
-  void Initialize(mojo::ApplicationImpl* app) override {
-    mojo::ConnectToService(app->shell(), "mojo:notifications",
+  // mojo::ApplicationImplBase implementation.
+  void OnInitialize() override {
+    mojo::ConnectToService(shell(), "mojo:notifications",
                            GetProxy(&notification_service_));
     PostFirstNotification();
   }
@@ -47,17 +47,15 @@ class NotificationGeneratorDelegate : public mojo::ApplicationDelegate,
   void PostFirstNotification() {
     PostNotification("First notification", "Next: Second will be created",
                      &first_notification_);
-    PostDelayed(
-        base::Bind(&NotificationGeneratorDelegate::PostSecondNotification,
-                   base::Unretained(this)));
+    PostDelayed(base::Bind(&NotificationGeneratorApp::PostSecondNotification,
+                           base::Unretained(this)));
   }
 
   void PostSecondNotification() {
     PostNotification("Second notification", "Next: First will be updated",
                      &second_notification_);
-    PostDelayed(
-        base::Bind(&NotificationGeneratorDelegate::UpdateFirstNotification,
-                   base::Unretained(this)));
+    PostDelayed(base::Bind(&NotificationGeneratorApp::UpdateFirstNotification,
+                           base::Unretained(this)));
   }
 
   void PostNotification(const char* title,
@@ -76,23 +74,20 @@ class NotificationGeneratorDelegate : public mojo::ApplicationDelegate,
     first_notification_->Update(
         CreateNotificationData("First notification updated",
                                "Next: both cancelled; repeat").Pass());
-    PostDelayed(
-        base::Bind(&NotificationGeneratorDelegate::CancelSecondNotification,
-                   base::Unretained(this)));
+    PostDelayed(base::Bind(&NotificationGeneratorApp::CancelSecondNotification,
+                           base::Unretained(this)));
   }
 
   void CancelSecondNotification() {
     second_notification_->Cancel();
-    PostDelayed(
-        base::Bind(&NotificationGeneratorDelegate::CancelFirstNotification,
-                   base::Unretained(this)));
+    PostDelayed(base::Bind(&NotificationGeneratorApp::CancelFirstNotification,
+                           base::Unretained(this)));
   }
 
   void CancelFirstNotification() {
     first_notification_->Cancel();
-    PostDelayed(
-        base::Bind(&NotificationGeneratorDelegate::PostFirstNotification,
-                   base::Unretained(this)));
+    PostDelayed(base::Bind(&NotificationGeneratorApp::PostFirstNotification,
+                           base::Unretained(this)));
   }
 
   notifications::NotificationDataPtr CreateNotificationData(const char* title,
@@ -117,13 +112,13 @@ class NotificationGeneratorDelegate : public mojo::ApplicationDelegate,
   notifications::NotificationPtr dismissed_notification_;
   notifications::NotificationPtr select_notification_;
 
-  DISALLOW_COPY_AND_ASSIGN(NotificationGeneratorDelegate);
+  DISALLOW_COPY_AND_ASSIGN(NotificationGeneratorApp);
 };
 
 }  // namespace examples
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(
-      new examples::NotificationGeneratorDelegate);
-  return runner.Run(application_request);
+  examples::NotificationGeneratorApp notification_generator_app;
+  return mojo::RunMainApplication(application_request,
+                                  &notification_generator_app);
 }

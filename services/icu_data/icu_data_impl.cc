@@ -12,7 +12,7 @@ namespace icu_data {
 ICUDataImpl::ICUDataImpl() {}
 ICUDataImpl::~ICUDataImpl() {}
 
-bool ICUDataImpl::ConfigureIncomingConnection(
+bool ICUDataImpl::OnAcceptConnection(
     mojo::ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<ICUData>(
       [this](const mojo::ConnectionContext& connection_context,

@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/clipboard/clipboard_standalone_impl.h"
 
-class Delegate : public mojo::ApplicationDelegate {
- public:
-  Delegate() {}
-  ~Delegate() override {}
+namespace {
 
-  // mojo::ApplicationDelegate implementation.
-  bool ConfigureIncomingConnection(
+class ClipboardApp : public mojo::ApplicationImplBase {
+ public:
+  ClipboardApp() {}
+  ~ClipboardApp() override {}
+
+  // mojo::ApplicationImplBase override.
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<mojo::Clipboard>(
         [](const mojo::ConnectionContext& connection_context,
@@ -27,7 +29,9 @@ class Delegate : public mojo::ApplicationDelegate {
   }
 };
 
+}  // namespace
+
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new Delegate);
-  return runner.Run(application_request);
+  ClipboardApp clipboard_app;
+  return mojo::RunMainApplication(application_request, &clipboard_app);
 }

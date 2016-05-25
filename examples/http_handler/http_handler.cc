@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/bindings/interface_ptr.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/services/http_server/cpp/http_server_util.h"
@@ -21,20 +20,20 @@ namespace examples {
 // This is an example of a self-contained HTTP handler. It uses the HTTP Server
 // service to handle the HTTP protocol details, and just contains the logic for
 // handling its registered urls.
-class HttpHandler : public ApplicationDelegate,
+class HttpHandler : public ApplicationImplBase,
                     public http_server::HttpHandler {
  public:
   HttpHandler() : binding_(this) {}
   ~HttpHandler() override {}
 
  private:
-  // ApplicationDelegate:
-  void Initialize(ApplicationImpl* app) override {
+  // ApplicationImplBase override:
+  void OnInitialize() override {
     http_server::HttpHandlerPtr http_handler_ptr;
     binding_.Bind(GetProxy(&http_handler_ptr));
 
     http_server::HttpServerFactoryPtr http_server_factory;
-    ConnectToService(app->shell(), "mojo:http_server",
+    ConnectToService(shell(), "mojo:http_server",
                      GetProxy(&http_server_factory));
 
     mojo::NetAddressPtr local_address(mojo::NetAddress::New());
@@ -76,6 +75,6 @@ class HttpHandler : public ApplicationDelegate,
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new mojo::examples::HttpHandler());
-  return runner.Run(application_request);
+  mojo::examples::HttpHandler http_handler;
+  return mojo::RunMainApplication(application_request, &http_handler);
 }

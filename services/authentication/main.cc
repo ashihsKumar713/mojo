@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/common/binding_set.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/public/cpp/system/macros.h"
@@ -17,20 +16,18 @@
 
 namespace authentication {
 
-class GoogleAccountManagerApp : public mojo::ApplicationDelegate {
+class GoogleAccountManagerApp : public mojo::ApplicationImplBase {
  public:
   GoogleAccountManagerApp() {}
   ~GoogleAccountManagerApp() override {}
 
-  void Initialize(mojo::ApplicationImpl* app) override {
-    mojo::ConnectToService(app->shell(), "mojo:network_service",
+  void OnInitialize() override {
+    mojo::ConnectToService(shell(), "mojo:network_service",
                            GetProxy(&network_service_));
-    mojo::ConnectToService(app->shell(), "mojo:files", GetProxy(&files_));
-
-    app_url_ = app->url();
+    mojo::ConnectToService(shell(), "mojo:files", GetProxy(&files_));
   }
 
-  bool ConfigureIncomingConnection(
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<AuthenticationService>(
         [this](const mojo::ConnectionContext& connection_context,
@@ -44,7 +41,7 @@ class GoogleAccountManagerApp : public mojo::ApplicationDelegate {
             LOG(FATAL) << "Unable to initialize accounts DB";
           }
           new authentication::GoogleAuthenticationServiceImpl(
-              request.Pass(), app_url_, network_service_, directory);
+              request.Pass(), url(), network_service_, directory);
         });
     return true;
   }
@@ -52,7 +49,6 @@ class GoogleAccountManagerApp : public mojo::ApplicationDelegate {
  private:
   mojo::NetworkServicePtr network_service_;
   mojo::files::FilesPtr files_;
-  std::string app_url_;
 
   DISALLOW_COPY_AND_ASSIGN(GoogleAccountManagerApp);
 };
@@ -60,7 +56,7 @@ class GoogleAccountManagerApp : public mojo::ApplicationDelegate {
 }  // namespace authentication
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(
-      new authentication::GoogleAccountManagerApp());
-  return runner.Run(application_request);
+  authentication::GoogleAccountManagerApp google_account_manager_app;
+  return mojo::RunMainApplication(application_request,
+                                  &google_account_manager_app);
 }

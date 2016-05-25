@@ -4,30 +4,29 @@
 
 #include "base/macros.h"
 #include "base/threading/sequenced_worker_pool.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/asset_bundle/asset_unpacker_impl.h"
 
 namespace mojo {
 namespace asset_bundle {
 
-class AssetBundleApp : public ApplicationDelegate {
+class AssetBundleApp : public ApplicationImplBase {
  public:
   AssetBundleApp() {}
   ~AssetBundleApp() override {}
 
  private:
-  // |ApplicationDelegate| override:
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override {
+  // |ApplicationImplBase| override:
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<AssetUnpacker>(
         [this](const ConnectionContext& connection_context,
                InterfaceRequest<AssetUnpacker> asset_unpacker_request) {
           // Lazily initialize |sequenced_worker_pool_|. (We can't create it in
           // the constructor, since AtExitManager is only created in
-          // ApplicationRunnerChromium::Run().)
+          // mojo::RunMainApplication().)
           if (!sequenced_worker_pool_) {
             // TODO(vtl): What's the "right" way to choose the maximum number of
             // threads?
@@ -54,7 +53,6 @@ class AssetBundleApp : public ApplicationDelegate {
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(
-      new mojo::asset_bundle::AssetBundleApp());
-  return runner.Run(application_request);
+  mojo::asset_bundle::AssetBundleApp asset_bundle_app;
+  return mojo::RunMainApplication(application_request, &asset_bundle_app);
 }

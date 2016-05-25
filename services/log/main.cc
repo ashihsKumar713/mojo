@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "mojo/services/log/interfaces/log.mojom.h"
@@ -19,15 +19,14 @@ namespace log {
 
 // Provides the mojo.log.Log service.  Binds a new Log implementation for each
 // Log interface request.
-class LogApp : public ApplicationDelegate {
+class LogApp : public ApplicationImplBase {
  public:
   LogApp() {}
   ~LogApp() override {}
 
  private:
-  // |ApplicationDelegate| override:
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override {
+  // |ApplicationImplBase| override:
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<Log>(
         [](const ConnectionContext& connection_context,
            InterfaceRequest<Log> log_request) {
@@ -46,6 +45,6 @@ class LogApp : public ApplicationDelegate {
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new mojo::log::LogApp());
-  return runner.Run(application_request);
+  mojo::log::LogApp log_app;
+  return mojo::RunMainApplication(application_request, &log_app);
 }

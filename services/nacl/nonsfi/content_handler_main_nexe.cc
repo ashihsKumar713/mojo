@@ -5,29 +5,26 @@
 #include <fcntl.h>
 
 #include "base/files/file_util.h"
-#include "mojo/application/application_runner_chromium.h"
+#include "base/message_loop/message_loop.h"
 #include "mojo/application/content_handler_factory.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
 #include "mojo/message_pump/message_pump_mojo.h"
 #include "mojo/nacl/nonsfi/nexe_launcher_nonsfi.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 
 namespace nacl {
 namespace content_handler {
 
-class NaClContentHandler : public mojo::ApplicationDelegate,
+class NaClContentHandler : public mojo::ApplicationImplBase,
                            public mojo::ContentHandlerFactory::Delegate {
  public:
   NaClContentHandler() {}
 
  private:
-  // Overridden from ApplicationDelegate:
-  void Initialize(mojo::ApplicationImpl* app) override {}
-
-  // Overridden from ApplicationDelegate:
-  bool ConfigureIncomingConnection(
+  // Overridden from ApplicationImplBase:
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<mojo::ContentHandler>(
         mojo::ContentHandlerFactory::GetInterfaceRequestHandler(this));
@@ -64,7 +61,6 @@ class NaClContentHandler : public mojo::ApplicationDelegate,
 }  // namespace nacl
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(
-      new nacl::content_handler::NaClContentHandler());
-  return runner.Run(application_request);
+  nacl::content_handler::NaClContentHandler nacl_content_handler;
+  return mojo::RunMainApplication(application_request, &nacl_content_handler);
 }

@@ -10,8 +10,7 @@
 #include "base/memory/scoped_vector.h"
 #include "mojo/common/binding_set.h"
 #include "mojo/common/interface_ptr_set.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/services/tracing/interfaces/trace_provider_registry.mojom.h"
 #include "mojo/services/tracing/interfaces/tracing.mojom.h"
@@ -20,7 +19,7 @@
 
 namespace tracing {
 
-class TracingApp : public mojo::ApplicationDelegate,
+class TracingApp : public mojo::ApplicationImplBase,
                    public TraceCollector,
                    public TraceProviderRegistry {
  public:
@@ -28,8 +27,8 @@ class TracingApp : public mojo::ApplicationDelegate,
   ~TracingApp() override;
 
  private:
-  // mojo::ApplicationDelegate implementation.
-  bool ConfigureIncomingConnection(
+  // mojo::ApplicationImplBase override.
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override;
 
   // TraceCollector implementation.
