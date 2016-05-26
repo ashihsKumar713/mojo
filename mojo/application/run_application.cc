@@ -86,9 +86,9 @@ void TerminateApplication(MojoResult result) {
   ResultHolder* result_holder =
       static_cast<ResultHolder*>(g_current_result_holder.Get());
   DCHECK(result_holder);
-  DCHECK(!result_holder->is_set);
   result_holder->result = result;
 #if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
+  DCHECK(!result_holder->is_set);
   result_holder->is_set = true;
 #endif
 }
