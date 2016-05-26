@@ -30,7 +30,7 @@ void LauncherApp::Initialize(mojo::ApplicationImpl* app_impl) {
   settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   logging::InitLogging(settings);
 
-  tracing_.Initialize(app_impl_);
+  tracing_.Initialize(app_impl_->shell(), &app_impl_->args());
   TRACE_EVENT0("launcher", __func__);
 
   InitCompositor();

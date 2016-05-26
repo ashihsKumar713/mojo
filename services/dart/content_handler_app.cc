@@ -132,9 +132,9 @@ bool DartContentHandlerApp::run_on_message_loop() const {
 
 void DartContentHandlerApp::Initialize(mojo::ApplicationImpl* app) {
   // Tracing of content handler and controller.
-  tracing_.Initialize(app);
+  tracing_.Initialize(app->shell(), &app->args());
   // Tracing of isolates and VM.
-  dart_tracing_.Initialize(app);
+  dart_tracing_.Initialize(app->shell());
 
   // TODO(qsr): This has no effect for now, as the tracing infrastructure
   // doesn't allow to trace anything before the tracing app connects to the

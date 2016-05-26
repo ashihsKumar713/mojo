@@ -29,7 +29,7 @@ void InputManagerApp::Initialize(mojo::ApplicationImpl* app_impl) {
   settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   logging::InitLogging(settings);
 
-  tracing_.Initialize(app_impl);
+  tracing_.Initialize(app_impl->shell(), &app_impl->args());
 }
 
 bool InputManagerApp::ConfigureIncomingConnection(

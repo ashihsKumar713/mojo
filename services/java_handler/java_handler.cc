@@ -90,7 +90,7 @@ void JavaHandler::RunApplication(
 }
 
 void JavaHandler::Initialize(mojo::ApplicationImpl* app) {
-  tracing_.Initialize(app);
+  tracing_.Initialize(app->shell(), &app->args());
   handler_task_runner_ = base::MessageLoop::current()->task_runner();
   mojo::ConnectToService(app->shell(), "mojo:url_response_disk_cache",
                          GetProxy(&url_response_disk_cache_));

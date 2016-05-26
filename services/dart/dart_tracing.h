@@ -48,7 +48,7 @@ class DartTracingImpl {
 
   // This connects to the tracing service and registers ourselves to provide
   // tracing data on demand.
-  void Initialize(mojo::ApplicationImpl* app);
+  void Initialize(mojo::Shell* shell);
 
  private:
   DartTraceProvider provider_impl_;

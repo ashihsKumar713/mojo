@@ -50,7 +50,7 @@ class EchoClientDelegate : public ApplicationDelegate {
         benchmark_duration_(base::TimeDelta::FromSeconds(10)) {}
 
   void Initialize(ApplicationImpl* app) override {
-    tracing_.Initialize(app);
+    tracing_.Initialize(app->shell(), &app->args());
 
     ParseArguments(app);
 

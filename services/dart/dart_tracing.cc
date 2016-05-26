@@ -133,9 +133,9 @@ DartTracingImpl::DartTracingImpl() {
 DartTracingImpl::~DartTracingImpl() {
 }
 
-void DartTracingImpl::Initialize(mojo::ApplicationImpl* app) {
+void DartTracingImpl::Initialize(mojo::Shell* shell) {
   tracing::TraceProviderRegistryPtr registry;
-  ConnectToService(app->shell(), "mojo:tracing", GetProxy(&registry));
+  ConnectToService(shell, "mojo:tracing", GetProxy(&registry));
 
   mojo::InterfaceHandle<tracing::TraceProvider> provider;
   provider_impl_.Bind(GetProxy(&provider));

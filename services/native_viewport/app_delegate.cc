@@ -33,7 +33,7 @@ void NativeViewportAppDelegate::Initialize(mojo::ApplicationImpl* application) {
   application_ = application;
 
   InitLogging(application);
-  tracing_.Initialize(application);
+  tracing_.Initialize(application->shell(), &application->args());
 
   // Apply the switch for kTouchEvents to CommandLine (if set). This allows
   // redirecting the mouse to a touch device on X for testing.
