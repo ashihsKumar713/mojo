@@ -34,22 +34,25 @@ class GpuOutput : public Output, private GpuRasterizer::Callbacks {
   void SubmitFrame(const scoped_refptr<RenderFrame>& frame) override;
 
  private:
-  struct FrameData : public base::RefCountedThreadSafe<FrameData> {
-    FrameData(const scoped_refptr<RenderFrame>& frame, int64_t submit_time);
+  struct FrameData {
+    enum class State {
+      Pending,  // initial state waiting for draw to start
+      Drawing,  // draw has started
+      Finished  // draw has finished
+    };
 
-    void Recycle();
+    FrameData(const scoped_refptr<RenderFrame>& frame, int64_t submit_time);
+    ~FrameData();
+
+    void ResetDrawState();
 
     const scoped_refptr<RenderFrame> frame;
     const int64_t submit_time;
-    bool drawn = false;     // set when DrawFrame is called
-    int64_t draw_time = 0;  // 0 if not drawn
-    int64_t wait_time = 0;  // 0 if not drawn
+    State state = State::Pending;
+    int64_t draw_started_time = 0;  // time when drawing began
+    int64_t draw_issued_time = 0;   // time when awaiting for finish began
 
    private:
-    friend class base::RefCountedThreadSafe<FrameData>;
-
-    ~FrameData();
-
     DISALLOW_COPY_AND_ASSIGN(FrameData);
   };
 
@@ -86,12 +89,20 @@ class GpuOutput : public Output, private GpuRasterizer::Callbacks {
   struct {
     std::mutex mutex;  // guards all shared state
 
-    // The most recently submitted frame.
-    // Only null until the first frame has been submitted.
-    scoped_refptr<FrameData> current_frame_data;
-
-    // Frames drawn and awaiting completion by the rasterizer.
-    std::queue<scoped_refptr<FrameData>> drawn_frames_awaiting_finish;
+    // Queue of frames.
+    //
+    // The head of this queue consists of up to |pipeline_depth| frames
+    // which are drawn and awaiting finish.  These frames are popped off
+    // the queue when finished unless the queue would become empty (such
+    // that we always retain the current frame as the tail).
+    //
+    // The tail of this queue is a single frame which is either drawn or
+    // finished and represents the current (most recently submitted)
+    // content.
+    //
+    // The queue is only ever empty until the first frame is submitted.
+    // Subsequently, it always contains at least one frame.
+    std::queue<std::unique_ptr<FrameData>> frames;
 
     // Set to true when the rasterizer is ready to draw.
     bool rasterizer_ready = false;

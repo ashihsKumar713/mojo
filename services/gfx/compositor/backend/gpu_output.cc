@@ -18,9 +18,9 @@
 namespace compositor {
 namespace {
 constexpr const char* kPipelineDepthSwitch = "pipeline-depth";
-constexpr uint32_t kDefaultPipelineDepth = 2u;  // ideally should be 1
+constexpr uint32_t kDefaultPipelineDepth = 1u;
 constexpr uint32_t kMinPipelineDepth = 1u;
-constexpr uint32_t kMaxPipelineDepth = 10u;
+constexpr uint32_t kMaxPipelineDepth = 10u;  // for experimentation
 
 scoped_ptr<base::MessagePump> CreateMessagePumpMojo() {
   return base::MessageLoop::CreateMessagePumpForType(
@@ -86,24 +86,48 @@ void GpuOutput::SubmitFrame(const scoped_refptr<RenderFrame>& frame) {
   TRACE_EVENT0("gfx", "GpuOutput::SubmitFrame");
 
   const int64_t submit_time = MojoGetTimeTicksNow();
-  scoped_refptr<FrameData> frame_data(
-      new FrameData(frame, submit_time));  // drop outside lock
+
+  // Note: we may swap an old frame into |frame_data| to keep alive until
+  // we exit the lock.
+  std::unique_ptr<FrameData> frame_data(new FrameData(frame, submit_time));
   {
     std::lock_guard<std::mutex> lock(shared_state_.mutex);
 
-    TRACE_EVENT_FLOW_BEGIN0("gfx", "Frame Queued", frame_data.get());
-    shared_state_.current_frame_data.swap(frame_data);
-    if (frame_data && !frame_data->drawn) {
-      // Dropped an undrawn frame.
-      DVLOG(2) << "Rasterizer stalled, dropping frame to catch up.";
+    // Enqueue the frame, ensuring that the queue only contains at most
+    // one pending or scheduled frame.  If the last frame hasn't been drawn by
+    // now then the rasterizer must be falling behind.
+    if (shared_state_.frames.empty() ||
+        shared_state_.frames.back()->state == FrameData::State::Drawing) {
+      // The queue is busy drawing.  Enqueue the new frame at the end.
+      shared_state_.frames.emplace(std::move(frame_data));
+    } else if (shared_state_.frames.back()->state ==
+               FrameData::State::Finished) {
+      // The queue contains a finished frame which we had retained to prevent
+      // the queue from becoming empty and losing track of the current frame.
+      // Replace it with the new frame.
+      DCHECK(shared_state_.frames.size() == 1u);
+      shared_state_.frames.back().swap(frame_data);
+    } else {
+      // The queue already contains a pending frame which means the rasterizer
+      // has gotten so far behind it wasn't even able to issue the previous
+      // undrawn frame.  Replace it with the new frame, thereby ensuring
+      // the queue never contains more than one pending frame at a time.
+      DCHECK(shared_state_.frames.back()->state == FrameData::State::Pending);
+      shared_state_.frames.back().swap(frame_data);
       TRACE_EVENT_FLOW_END1("gfx", "Frame Queued", frame_data.get(), "drawn",
                             false);
+      DVLOG(2) << "Rasterizer stalled, dropped a frame to catch up.";
     }
 
-    // TODO(jeffbrown): If the draw queue is full, we should pause
+    TRACE_EVENT_FLOW_BEGIN0("gfx", "Frame Queued",
+                            shared_state_.frames.back().get());
+
+    if (!shared_state_.rasterizer_ready)
+      return;
+
+    // TODO(jeffbrown): If the draw queue is overfull, we should pause
     // scheduling until the queue drains.
-    if (shared_state_.rasterizer_ready &&
-        shared_state_.drawn_frames_awaiting_finish.size() < pipeline_depth_)
+    if (shared_state_.frames.size() <= pipeline_depth_)
       ScheduleDrawLocked();
   }
 }
@@ -134,15 +158,14 @@ void GpuOutput::OnRasterizerReady(int64_t vsync_timebase,
     if (shared_state_.rasterizer_ready)
       return;
 
-    DCHECK(shared_state_.drawn_frames_awaiting_finish.empty());
     shared_state_.rasterizer_ready = true;
 
-    if (!shared_state_.current_frame_data)
+    if (shared_state_.frames.empty())
       return;
 
-    shared_state_.current_frame_data->Recycle();
+    shared_state_.frames.back()->ResetDrawState();
     TRACE_EVENT_FLOW_BEGIN0("gfx", "Frame Queued",
-                            shared_state_.current_frame_data.get());
+                            shared_state_.frames.back().get());
     ScheduleDrawLocked();
   }
 }
@@ -169,8 +192,9 @@ void GpuOutput::OnRasterizerError() {
 }
 
 void GpuOutput::ScheduleDrawLocked() {
-  DCHECK(shared_state_.current_frame_data);
-  DCHECK(!shared_state_.current_frame_data->drawn);
+  DCHECK(!shared_state_.frames.empty());
+  DCHECK(shared_state_.frames.back()->state == FrameData::State::Pending);
+  DCHECK(shared_state_.frames.size() <= pipeline_depth_);
 
   if (shared_state_.draw_scheduled)
     return;
@@ -184,32 +208,31 @@ void GpuOutput::OnDraw() {
   DCHECK(rasterizer_task_runner_->RunsTasksOnCurrentThread());
   TRACE_EVENT0("gfx", "GpuOutput::OnDraw");
 
-  scoped_refptr<FrameData> frame_data;  // used outside lock
+  FrameData* frame_data;  // used outside lock
   {
     std::lock_guard<std::mutex> lock(shared_state_.mutex);
 
     DCHECK(shared_state_.draw_scheduled);
-    DCHECK(shared_state_.current_frame_data);
-    DCHECK(!shared_state_.current_frame_data->drawn);
+    DCHECK(!shared_state_.frames.empty());
+    DCHECK(shared_state_.frames.back()->state == FrameData::State::Pending);
 
     shared_state_.draw_scheduled = false;
-
-    if (!shared_state_.rasterizer_ready ||
-        shared_state_.drawn_frames_awaiting_finish.size() >= pipeline_depth_)
+    if (!shared_state_.rasterizer_ready)
       return;
 
-    frame_data = shared_state_.current_frame_data;
-    frame_data->drawn = true;
-    frame_data->draw_time = MojoGetTimeTicksNow();
-    TRACE_EVENT_FLOW_END1("gfx", "Frame Queued", frame_data.get(), "drawn",
-                          true);
-
-    TRACE_EVENT_ASYNC_BEGIN0("gfx", "Rasterize", frame_data.get());
-    shared_state_.drawn_frames_awaiting_finish.emplace(frame_data);
+    frame_data = shared_state_.frames.back().get();
+    frame_data->state = FrameData::State::Drawing;
+    frame_data->draw_started_time = MojoGetTimeTicksNow();
+    TRACE_EVENT_FLOW_END1("gfx", "Frame Queued", frame_data, "drawn", true);
   }
 
+  // It is safe to access |frame_data| outside of the lock here because
+  // it will not be dequeued until |OnRasterizerFinishedDraw| gets posted
+  // to this thread's message loop.  Moreover |SubmitFrame| will not discard
+  // or replace the frame because its state is |Drawing|.
+  TRACE_EVENT_ASYNC_BEGIN0("gfx", "Rasterize", frame_data);
   rasterizer_->DrawFrame(frame_data->frame);
-  frame_data->wait_time = MojoGetTimeTicksNow();
+  frame_data->draw_issued_time = MojoGetTimeTicksNow();
 }
 
 void GpuOutput::OnRasterizerFinishedDraw(bool presented) {
@@ -217,19 +240,23 @@ void GpuOutput::OnRasterizerFinishedDraw(bool presented) {
   TRACE_EVENT0("gfx", "GpuOutput::OnRasterizerFinishedDraw");
 
   const int64_t finish_time = MojoGetTimeTicksNow();
-  scoped_refptr<FrameData> frame_data;  // drop outside lock
+
+  // Note: we may swap an old frame into |old_frame_data| to keep alive until
+  // we exit the lock.
+  std::unique_ptr<FrameData> old_frame_data;
   {
     std::lock_guard<std::mutex> lock(shared_state_.mutex);
 
     DCHECK(shared_state_.rasterizer_ready);
-    DCHECK(!shared_state_.drawn_frames_awaiting_finish.empty());
-    size_t draw_queue_depth = shared_state_.drawn_frames_awaiting_finish.size();
-    shared_state_.drawn_frames_awaiting_finish.front().swap(frame_data);
-    shared_state_.drawn_frames_awaiting_finish.pop();
+    DCHECK(!shared_state_.frames.empty());
+
+    FrameData* frame_data = shared_state_.frames.front().get();
     DCHECK(frame_data);
-    DCHECK(frame_data->drawn);
-    TRACE_EVENT_ASYNC_END1("gfx", "Rasterize", frame_data.get(), "presented",
+    DCHECK(frame_data->state == FrameData::State::Drawing);
+    TRACE_EVENT_ASYNC_END1("gfx", "Rasterize", frame_data, "presented",
                            presented);
+
+    frame_data->state = FrameData::State::Finished;
 
     // TODO(jeffbrown): Adjust scheduler behavior based on observed timing.
     // Note: These measurements don't account for systematic downstream delay
@@ -242,16 +269,17 @@ void GpuOutput::OnRasterizerFinishedDraw(bool presented) {
       const int64_t frame_time = frame_info.frame_time;
       const int64_t presentation_time = frame_info.presentation_time;
       const int64_t composition_time = frame_metadata.composition_time();
-      const int64_t draw_time = frame_data->draw_time;
-      const int64_t wait_time = frame_data->wait_time;
+      const int64_t draw_started_time = frame_data->draw_started_time;
+      const int64_t draw_issued_time = frame_data->draw_issued_time;
       const int64_t submit_time = frame_data->submit_time;
+      const size_t draw_queue_depth = shared_state_.frames.size();
 
       DVLOG(2) << "Presented frame: composition latency "
                << (composition_time - frame_time) << " us, submission latency "
                << (submit_time - composition_time) << " us, queue latency "
-               << (draw_time - submit_time) << " us, draw latency "
-               << (wait_time - draw_time) << " us, GPU latency "
-               << (finish_time - wait_time) << " us, total latency "
+               << (draw_started_time - submit_time) << " us, draw latency "
+               << (draw_issued_time - draw_started_time) << " us, GPU latency "
+               << (finish_time - draw_issued_time) << " us, total latency "
                << (finish_time - frame_time) << " us, presentation time error "
                << (finish_time - presentation_time) << " us"
                << ", draw queue depth " << draw_queue_depth;
@@ -259,9 +287,12 @@ void GpuOutput::OnRasterizerFinishedDraw(bool presented) {
       DVLOG(2) << "Rasterizer dropped frame.";
     }
 
-    DCHECK(shared_state_.current_frame_data);
-    if (!shared_state_.current_frame_data->drawn)
-      ScheduleDrawLocked();
+    if (shared_state_.frames.size() > 1u) {
+      shared_state_.frames.front().swap(old_frame_data);
+      shared_state_.frames.pop();
+      if (shared_state_.frames.back()->state == FrameData::State::Pending)
+        ScheduleDrawLocked();
+    }
   }
 }
 
@@ -295,10 +326,10 @@ GpuOutput::FrameData::FrameData(const scoped_refptr<RenderFrame>& frame,
 
 GpuOutput::FrameData::~FrameData() {}
 
-void GpuOutput::FrameData::Recycle() {
-  drawn = false;
-  draw_time = 0;
-  wait_time = 0;
+void GpuOutput::FrameData::ResetDrawState() {
+  state = State::Pending;
+  draw_started_time = 0;
+  draw_issued_time = 0;
 }
 
 }  // namespace compositor
