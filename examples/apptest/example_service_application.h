@@ -6,20 +6,19 @@
 #define MOJO_EXAMPLES_TEST_EXAMPLE_SERVICE_APPLICATION_H_
 
 #include "examples/apptest/example_service_impl.h"
-#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/system/macros.h"
 
 namespace mojo {
 
-class ExampleServiceApplication : public ApplicationDelegate {
+class ExampleServiceApplication : public ApplicationImplBase {
  public:
   ExampleServiceApplication();
   ~ExampleServiceApplication() override;
 
  private:
-  // ApplicationDelegate implementation.
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override;
+  // ApplicationImplBase override.
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override;
 
   MOJO_DISALLOW_COPY_AND_ASSIGN(ExampleServiceApplication);
 };

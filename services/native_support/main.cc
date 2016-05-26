@@ -6,9 +6,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_loop.h"
 #include "base/threading/sequenced_worker_pool.h"
-#include "mojo/application/application_runner_chromium.h"
+#include "mojo/application/run_application_options_chromium.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/services/native_support/interfaces/process.mojom.h"
 #include "services/native_support/process_impl.h"
@@ -18,17 +19,18 @@ namespace native_support {
 // TODO(vtl): Having to manually choose an arbitrary number is dumb.
 const size_t kMaxWorkerThreads = 16;
 
-class NativeSupportApp : public mojo::ApplicationDelegate {
+class NativeSupportApp : public mojo::ApplicationImplBase {
  public:
   NativeSupportApp() {}
   ~NativeSupportApp() override {
-    if (worker_pool_)
-      worker_pool_->Shutdown();
+    // TODO(vtl): Doing this here is a bit of a hack, but we may not
+    // consistently call |OnQuit()|.
+    OnQuit();
   }
 
  private:
-  // |mojo::ApplicationDelegate| override:
-  bool ConfigureIncomingConnection(
+  // |mojo::ApplicationImplBase| overrides:
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<Process>([this](
         const mojo::ConnectionContext& connection_context,
@@ -42,6 +44,13 @@ class NativeSupportApp : public mojo::ApplicationDelegate {
     return true;
   }
 
+  void OnQuit() override {
+    if (worker_pool_) {
+      worker_pool_->Shutdown();
+      worker_pool_ = nullptr;
+    }
+  }
+
   scoped_refptr<base::SequencedWorkerPool> worker_pool_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeSupportApp);
@@ -50,9 +59,9 @@ class NativeSupportApp : public mojo::ApplicationDelegate {
 }  // namespace native_support
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(
-      new native_support::NativeSupportApp());
+  native_support::NativeSupportApp native_support_app;
   // We need an I/O message loop, since we'll want to watch FDs.
-  runner.set_message_loop_type(base::MessageLoop::TYPE_IO);
-  return runner.Run(application_request);
+  mojo::RunApplicationOptionsChromium options(base::MessageLoop::TYPE_IO);
+  return mojo::RunMainApplication(application_request, &native_support_app,
+                                  &options);
 }

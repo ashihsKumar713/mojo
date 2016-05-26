@@ -7,27 +7,26 @@
 #include <iostream>
 
 #include "base/bind.h"
+#include "base/message_loop/message_loop.h"
 #include "examples/media_test/keystroke.h"
 #include "examples/media_test/media_test.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 
 namespace mojo {
 namespace media {
 namespace examples {
 
-class MediaTestApp : public mojo::ApplicationDelegate {
+class MediaTestApp : public mojo::ApplicationImplBase {
  public:
   MediaTestApp() {}
 
   ~MediaTestApp() override {}
 
-  // ApplicationDelegate implementation.
-  void Initialize(mojo::ApplicationImpl* app) override {
-    app_ = app;
-    ProcessArgs(app->args());
+  // ApplicationImplBase overrides.
+  void OnInitialize() override {
+    ProcessArgs(args());
 
     std::cout << std::endl << "MEDIA TEST" << std::endl << std::endl;
 
@@ -95,7 +94,7 @@ class MediaTestApp : public mojo::ApplicationDelegate {
   // input_file_names_iter_.
   void CreateNewMediaTest() {
     MOJO_DCHECK(input_file_names_iter_ != input_file_names_.end());
-    media_test_ = MediaTest::Create(app_, *input_file_names_iter_);
+    media_test_ = MediaTest::Create(shell(), *input_file_names_iter_);
 
     metadata_shown_ = false;
     media_test_->RegisterUpdateCallback(
@@ -294,7 +293,6 @@ class MediaTestApp : public mojo::ApplicationDelegate {
 
   const char* clear_line() const { return paint_ ? kClearLine : ""; }
 
-  mojo::ApplicationImpl* app_;
   std::unique_ptr<MediaTest> media_test_;
   std::deque<std::string> input_file_names_;
   decltype(input_file_names_.begin()) input_file_names_iter_;
@@ -315,7 +313,6 @@ const char* MediaTestApp::kUp = "\033[A";
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(
-      new mojo::media::examples::MediaTestApp);
-  return runner.Run(application_request);
+  mojo::media::examples::MediaTestApp media_test_app;
+  return mojo::RunMainApplication(application_request, &media_test_app);
 }

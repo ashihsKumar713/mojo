@@ -6,7 +6,6 @@
 #define SERVICES_PREDICTION_PREDICTION_SERVICE_IMPL_H_
 
 #include "base/memory/scoped_ptr.h"
-#include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/services/prediction/interfaces/prediction.mojom.h"
 #include "services/prediction/dictionary_service.h"
@@ -30,16 +29,6 @@ class PredictionServiceImpl : public PredictionService {
   DictionaryService dictionary_service_;
 
   DISALLOW_COPY_AND_ASSIGN(PredictionServiceImpl);
-};
-
-class PredictionServiceDelegate : public mojo::ApplicationDelegate {
- public:
-  PredictionServiceDelegate();
-  ~PredictionServiceDelegate() override;
-
-  // mojo::ApplicationDelegate implementation
-  bool ConfigureIncomingConnection(
-      mojo::ServiceProviderImpl* service_provider_impl) override;
 };
 
 }  // namespace prediction

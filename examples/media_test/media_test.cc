@@ -14,15 +14,14 @@ namespace examples {
 
 // static
 std::unique_ptr<MediaTest> MediaTest::Create(
-    mojo::ApplicationImpl* app,
+    mojo::Shell* shell,
     const std::string& input_file_name) {
-  return std::unique_ptr<MediaTest>(new MediaTest(app, input_file_name));
+  return std::unique_ptr<MediaTest>(new MediaTest(shell, input_file_name));
 }
 
-MediaTest::MediaTest(mojo::ApplicationImpl* app,
-                     const std::string& input_file_name) {
+MediaTest::MediaTest(mojo::Shell* shell, const std::string& input_file_name) {
   MediaFactoryPtr factory;
-  ConnectToService(app->shell(), "mojo:media_factory", GetProxy(&factory));
+  ConnectToService(shell, "mojo:media_factory", GetProxy(&factory));
 
   SeekingReaderPtr reader;
   factory->CreateNetworkReader(input_file_name, GetProxy(&reader));

@@ -4,7 +4,7 @@
 
 #include "services/authenticating_url_loader_interceptor/authenticating_url_loader_interceptor_app.h"
 
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/authenticating_url_loader_interceptor/authenticating_url_loader_interceptor_meta_factory_impl.h"
 
 namespace mojo {
@@ -13,14 +13,9 @@ AuthenticatingURLLoaderInterceptorApp::AuthenticatingURLLoaderInterceptorApp() {
 }
 
 AuthenticatingURLLoaderInterceptorApp::
-    ~AuthenticatingURLLoaderInterceptorApp() {
-}
+    ~AuthenticatingURLLoaderInterceptorApp() {}
 
-void AuthenticatingURLLoaderInterceptorApp::Initialize(ApplicationImpl* app) {
-  app_ = app;
-}
-
-bool AuthenticatingURLLoaderInterceptorApp::ConfigureIncomingConnection(
+bool AuthenticatingURLLoaderInterceptorApp::OnAcceptConnection(
     ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<
       AuthenticatingURLLoaderInterceptorMetaFactory>([this](
@@ -31,8 +26,8 @@ bool AuthenticatingURLLoaderInterceptorApp::ConfigureIncomingConnection(
     if (app_url.is_valid()) {
       app_origin = app_url.GetOrigin();
     }
-    new AuthenticatingURLLoaderInterceptorMetaFactoryImpl(request.Pass(), app_,
-                                                          &tokens_[app_origin]);
+    new AuthenticatingURLLoaderInterceptorMetaFactoryImpl(
+        request.Pass(), shell(), &tokens_[app_origin]);
   });
   return true;
 }

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "services/authenticating_url_loader_interceptor/authenticating_url_loader_interceptor.h"
 
@@ -20,15 +19,13 @@ AuthenticatingURLLoaderInterceptorFactory::
         mojo::InterfaceRequest<URLLoaderInterceptorFactory> request,
         mojo::InterfaceHandle<authentication::AuthenticationService>
             authentication_service,
-        mojo::ApplicationImpl* app,
+        mojo::Shell* shell,
         std::map<GURL, std::string>* cached_tokens)
     : binding_(this, request.Pass()),
       authentication_service_(authentication::AuthenticationServicePtr::Create(
           std::move(authentication_service))),
-      app_(app),
       cached_tokens_(cached_tokens) {
-  ConnectToService(app_->shell(), "mojo:network_service",
-                   GetProxy(&network_service_));
+  ConnectToService(shell, "mojo:network_service", GetProxy(&network_service_));
   authentication_service_.set_connection_error_handler(
       [this]() { ClearAuthenticationService(); });
 }

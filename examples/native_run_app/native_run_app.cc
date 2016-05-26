@@ -22,11 +22,11 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/string_split.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
@@ -220,21 +220,19 @@ class TerminalClientImpl : public TerminalClient {
   DISALLOW_COPY_AND_ASSIGN(TerminalClientImpl);
 };
 
-class NativeRunApp : public mojo::ApplicationDelegate {
+class NativeRunApp : public mojo::ApplicationImplBase {
  public:
-  NativeRunApp() : application_impl_(nullptr) {}
+  NativeRunApp() {}
   ~NativeRunApp() override {}
 
  private:
-  // |mojo::ApplicationDelegate|:
-  void Initialize(mojo::ApplicationImpl* application_impl) override {
-    DCHECK(!application_impl_);
-    application_impl_ = application_impl;
-    mojo::ConnectToService(application_impl_->shell(), "mojo:native_support",
+  // |mojo::ApplicationImplBase| overrides:
+  void OnInitialize() override {
+    mojo::ConnectToService(shell(), "mojo:native_support",
                            GetProxy(&native_support_process_));
   }
 
-  bool ConfigureIncomingConnection(
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<TerminalClient>(
         [this](const mojo::ConnectionContext& connection_context,
@@ -245,13 +243,12 @@ class NativeRunApp : public mojo::ApplicationDelegate {
     return true;
   }
 
-  mojo::ApplicationImpl* application_impl_;
   native_support::ProcessPtr native_support_process_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeRunApp);
 };
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new NativeRunApp());
-  return runner.Run(application_request);
+  NativeRunApp native_run_app;
+  return mojo::RunMainApplication(application_request, &native_run_app);
 }

@@ -6,10 +6,9 @@
 #include <memory>
 
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/utility/run_loop.h"
 #include "mojo/services/media/audio/interfaces/audio_server.mojom.h"
 #include "mojo/services/media/audio/interfaces/audio_track.mojom.h"
@@ -36,13 +35,13 @@ static inline constexpr uint32_t USecToBytes(uint64_t usec) {
   return ((usec * SAMP_FREQ) / 1000000) * FRAME_BYTES;
 }
 
-class PlayToneApp : public ApplicationDelegate {
+class PlayToneApp : public ApplicationImplBase {
  public:
-  ~PlayToneApp() override { Quit(); }
+  ~PlayToneApp() override { OnQuit(); }
 
-  // ApplicationDelegate
-  void Initialize(ApplicationImpl* app) override;
-  void Quit() override;
+  // ApplicationImplBase overrides:
+  void OnInitialize() override;
+  void OnQuit() override;
 
  private:
   void GenerateToneCbk(MediaResult res);
@@ -63,15 +62,15 @@ class PlayToneApp : public ApplicationDelegate {
   bool     shutting_down_ = false;
 };
 
-void PlayToneApp::Quit() {
+void PlayToneApp::OnQuit() {
   timeline_consumer_.reset();
   audio_pipe_.reset();
   audio_track_.reset();
   audio_server_.reset();
 }
 
-void PlayToneApp::Initialize(ApplicationImpl* app) {
-  mojo::ConnectToService(app->shell(), "mojo:audio_server",
+void PlayToneApp::OnInitialize() {
+  mojo::ConnectToService(shell(), "mojo:audio_server",
                          GetProxy(&audio_server_));
   audio_server_.set_connection_error_handler([this]() {
     OnConnectionError("audio_server");
@@ -233,7 +232,7 @@ void PlayToneApp::PostShutdown() {
 }
 
 void PlayToneApp::Shutdown() {
-  Quit();
+  OnQuit();
   RunLoop::current()->Quit();
 }
 
@@ -243,8 +242,6 @@ void PlayToneApp::Shutdown() {
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle app_request) {
-  mojo::ApplicationRunner runner(
-      std::unique_ptr<mojo::media::audio::examples::PlayToneApp>(
-          new mojo::media::audio::examples::PlayToneApp()));
-  return runner.Run(app_request);
+  mojo::media::audio::examples::PlayToneApp play_tone_app;
+  return mojo::RunMainApplication(app_request, &play_tone_app);
 }

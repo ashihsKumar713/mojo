@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "mojo/public/cpp/application/application_impl.h"
 #include "services/authenticating_url_loader_interceptor/authenticating_url_loader_interceptor_factory.h"
 
 namespace mojo {
@@ -15,14 +14,14 @@ AuthenticatingURLLoaderInterceptorMetaFactoryImpl::
     AuthenticatingURLLoaderInterceptorMetaFactoryImpl(
         mojo::InterfaceRequest<AuthenticatingURLLoaderInterceptorMetaFactory>
             request,
-        mojo::ApplicationImpl* app,
+        mojo::Shell* shell,
         std::map<GURL, std::string>* cached_tokens)
-    : binding_(this, request.Pass()), app_(app), cached_tokens_(cached_tokens) {
-}
+    : binding_(this, request.Pass()),
+      shell_(shell),
+      cached_tokens_(cached_tokens) {}
 
 AuthenticatingURLLoaderInterceptorMetaFactoryImpl::
-    ~AuthenticatingURLLoaderInterceptorMetaFactoryImpl() {
-}
+    ~AuthenticatingURLLoaderInterceptorMetaFactoryImpl() {}
 
 void AuthenticatingURLLoaderInterceptorMetaFactoryImpl::
     CreateURLLoaderInterceptorFactory(
@@ -30,7 +29,7 @@ void AuthenticatingURLLoaderInterceptorMetaFactoryImpl::
         InterfaceHandle<authentication::AuthenticationService>
             authentication_service) {
   new AuthenticatingURLLoaderInterceptorFactory(
-      factory_request.Pass(), std::move(authentication_service), app_,
+      factory_request.Pass(), std::move(authentication_service), shell_,
       cached_tokens_);
 }
 

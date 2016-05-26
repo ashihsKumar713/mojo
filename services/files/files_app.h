@@ -6,21 +6,19 @@
 #define SERVICES_FILES_FILES_APP_H_
 
 #include "base/macros.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/service_provider_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 
 namespace mojo {
 namespace files {
 
-class FilesApp : public ApplicationDelegate {
+class FilesApp : public ApplicationImplBase {
  public:
   FilesApp();
   ~FilesApp() override;
 
  private:
-  // |ApplicationDelegate| override:
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override;
+  // |ApplicationImplBase| override:
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override;
 
   DISALLOW_COPY_AND_ASSIGN(FilesApp);
 };

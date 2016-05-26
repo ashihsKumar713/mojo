@@ -16,18 +16,19 @@
 
 namespace mojo {
 
-class ApplicationImpl;
-
 class AuthenticatingURLLoaderInterceptor;
+class Shell;
 
 class AuthenticatingURLLoaderInterceptorFactory
     : public URLLoaderInterceptorFactory {
  public:
+  // TODO(vtl): Maybe this should take an |ApplicationConnectorPtr| instead of a
+  // |Shell*|.
   AuthenticatingURLLoaderInterceptorFactory(
       mojo::InterfaceRequest<URLLoaderInterceptorFactory> request,
       mojo::InterfaceHandle<authentication::AuthenticationService>
           authentication_service,
-      mojo::ApplicationImpl* app,
+      mojo::Shell* shell,
       std::map<GURL, std::string>* cached_tokens);
   ~AuthenticatingURLLoaderInterceptorFactory() override;
 
@@ -61,7 +62,6 @@ class AuthenticatingURLLoaderInterceptorFactory
 
   StrongBinding<URLLoaderInterceptorFactory> binding_;
   authentication::AuthenticationServicePtr authentication_service_;
-  ApplicationImpl* app_;
   std::map<GURL, std::string>* cached_tokens_;
   std::map<GURL, std::string> cached_accounts_;
   NetworkServicePtr network_service_;

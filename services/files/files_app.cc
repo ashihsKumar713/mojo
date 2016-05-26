@@ -4,6 +4,7 @@
 
 #include "services/files/files_app.h"
 
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/services/files/interfaces/files.mojom.h"
 #include "services/files/files_impl.h"
 
@@ -13,8 +14,7 @@ namespace files {
 FilesApp::FilesApp() {}
 FilesApp::~FilesApp() {}
 
-bool FilesApp::ConfigureIncomingConnection(
-    ServiceProviderImpl* service_provider_impl) {
+bool FilesApp::OnAcceptConnection(ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<Files>(
       [](const ConnectionContext& connection_context,
          InterfaceRequest<Files> files_request) {

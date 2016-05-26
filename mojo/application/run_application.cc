@@ -12,6 +12,7 @@
 #include "base/message_loop/message_loop.h"
 #include "base/threading/thread_local_storage.h"
 #include "build/build_config.h"
+#include "mojo/application/run_application_options_chromium.h"
 #include "mojo/message_pump/message_pump_mojo.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -38,7 +39,8 @@ struct ResultHolder {
 }  // namespace
 
 MojoResult RunMainApplication(MojoHandle application_request_handle,
-                              ApplicationImplBase* application_impl) {
+                              ApplicationImplBase* application_impl,
+                              const RunApplicationOptions* options) {
   base::CommandLine::Init(0, nullptr);
   base::AtExitManager at_exit;
 
@@ -48,20 +50,28 @@ MojoResult RunMainApplication(MojoHandle application_request_handle,
   base::debug::EnableInProcessStackDumping();
 #endif
 
-  return RunApplication(application_request_handle, application_impl);
+  return RunApplication(application_request_handle, application_impl, options);
 }
 
 MojoResult RunApplication(MojoHandle application_request_handle,
-                          ApplicationImplBase* application_impl) {
+                          ApplicationImplBase* application_impl,
+                          const RunApplicationOptions* options) {
   DCHECK(!g_current_result_holder.Get());
 
   ResultHolder result_holder;
   g_current_result_holder.Set(&result_holder);
 
-  std::unique_ptr<base::MessageLoop> loop;
-  // TODO(vtl): Support other types of message loops. (That's why I'm leaving
-  // |loop| as a unique_ptr.)
-  loop.reset(new base::MessageLoop(common::MessagePumpMojo::Create()));
+  // Note: If |options| is non-null, it better point to a
+  // |RunApplicationOptionsChromium|.
+  base::MessageLoop::Type message_loop_type =
+      options
+          ? static_cast<const RunApplicationOptionsChromium*>(options)
+                ->message_loop_type
+          : base::MessageLoop::TYPE_CUSTOM;
+  std::unique_ptr<base::MessageLoop> loop(
+      (message_loop_type == base::MessageLoop::TYPE_CUSTOM)
+          ? new base::MessageLoop(common::MessagePumpMojo::Create())
+          : new base::MessageLoop(message_loop_type));
   application_impl->Bind(InterfaceRequest<Application>(
       MakeScopedHandle(MessagePipeHandle(application_request_handle))));
   loop->Run();

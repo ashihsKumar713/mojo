@@ -5,10 +5,9 @@
 #include <memory>
 
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "mojo/public/cpp/utility/run_loop.h"
@@ -49,13 +48,13 @@ static constexpr uint32_t BUF_LO_WATER_USEC = 400000;
 static constexpr uint32_t BUF_HI_WATER_USEC = 450000;
 static constexpr uint32_t CHUNK_SIZE_USEC   = 10000;
 
-class PlayWAVApp : public ApplicationDelegate {
+class PlayWAVApp : public ApplicationImplBase {
  public:
-  ~PlayWAVApp() override { Quit(); }
+  ~PlayWAVApp() override { OnQuit(); }
 
-  // ApplicationDelegate
-  void Initialize(ApplicationImpl* app) override;
-  void Quit() override;
+  // ApplicationImplBase overrides:
+  void OnInitialize() override;
+  void OnQuit() override;
 
  private:
   using AudioPipePtr = std::unique_ptr<CircularBufferMediaPipeAdapter>;
@@ -157,13 +156,13 @@ const std::set<uint16_t> PlayWAVApp::VALID_BITS_PER_SAMPLES({
   8, 16,
 });
 
-void PlayWAVApp::Initialize(ApplicationImpl* app) {
-  ConnectToService(app->shell(), "mojo:audio_server", GetProxy(&audio_server_));
+void PlayWAVApp::OnInitialize() {
+  ConnectToService(shell(), "mojo:audio_server", GetProxy(&audio_server_));
   audio_server_.set_connection_error_handler([this]() {
     OnConnectionError("audio_server");
   });
 
-  ConnectToService(app->shell(), "mojo:network_service",
+  ConnectToService(shell(), "mojo:network_service",
                    GetProxy(&network_service_));
   audio_server_.set_connection_error_handler([this]() {
     OnConnectionError("network_service");
@@ -186,7 +185,7 @@ void PlayWAVApp::Initialize(ApplicationImpl* app) {
   url_loader_->Start(req.Pass(), URLLoader::StartCallback(cbk));
 }
 
-void PlayWAVApp::Quit() {
+void PlayWAVApp::OnQuit() {
   if (audio_packet_.packet()) {
     MOJO_DCHECK(audio_pipe_);
     audio_pipe_->CancelMediaPacket(&audio_packet_);
@@ -547,7 +546,7 @@ void PlayWAVApp::PostShutdown() {
 // pattern for shutting down an app has been established, come back here and
 // remove all this junk.
 void PlayWAVApp::Shutdown() {
-  Quit();
+  OnQuit();
   RunLoop::current()->Quit();
 }
 
@@ -557,8 +556,6 @@ void PlayWAVApp::Shutdown() {
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle app_request) {
-  mojo::ApplicationRunner runner(
-      std::unique_ptr<mojo::media::audio::examples::PlayWAVApp>(
-          new mojo::media::audio::examples::PlayWAVApp()));
-  return runner.Run(app_request);
+  mojo::media::audio::examples::PlayWAVApp play_wav_app;
+  return mojo::RunMainApplication(app_request, &play_wav_app);
 }

@@ -7,6 +7,7 @@ source_set("application") {
     "application_runner_chromium.cc",
     "application_runner_chromium.h",
     "run_application.cc",
+    "run_application_options_chromium.h",
   ]
 
   public_deps = [

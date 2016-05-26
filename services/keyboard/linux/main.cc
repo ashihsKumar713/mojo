@@ -3,12 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
-#include "base/threading/sequenced_worker_pool.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/services/native_viewport/interfaces/native_viewport_event_dispatcher.mojom.h"
 #include "services/keyboard/linux/keyboard_service_impl.h"
@@ -34,15 +31,14 @@ private:
   DISALLOW_COPY_AND_ASSIGN(KeyboardServiceFactoryImpl);
 };
 
-class KeyboardServiceApp : public mojo::ApplicationDelegate {
+class KeyboardServiceApp : public mojo::ApplicationImplBase {
  public:
   KeyboardServiceApp() {}
   ~KeyboardServiceApp() override {}
 
  private:
-
-  // |ApplicationDelegate| override:
-  bool ConfigureIncomingConnection(
+  // |ApplicationImplBase| override:
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<KeyboardServiceFactory>([](
         const mojo::ConnectionContext& connection_context,
@@ -60,7 +56,6 @@ class KeyboardServiceApp : public mojo::ApplicationDelegate {
 }  // namespace keyboard
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(
-      new keyboard::KeyboardServiceApp());
-  return runner.Run(application_request);
+  keyboard::KeyboardServiceApp keyboard_service_app;
+  return mojo::RunMainApplication(application_request, &keyboard_service_app);
 }

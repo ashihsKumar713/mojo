@@ -4,8 +4,9 @@
 
 #include "services/prediction/prediction_service_impl.h"
 
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/public/c/system/main.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 
 namespace prediction {
@@ -30,24 +31,27 @@ void PredictionServiceImpl::GetPredictionList(
   callback.Run(prediction_list.Pass());
 }
 
-PredictionServiceDelegate::PredictionServiceDelegate() {}
+// TODO(vtl): Maybe this (and MojoMain()) should go in a different file?
+class PredictionServiceApp : public mojo::ApplicationImplBase {
+ public:
+  PredictionServiceApp() {}
+  ~PredictionServiceApp() override {}
 
-PredictionServiceDelegate::~PredictionServiceDelegate() {}
-
-bool PredictionServiceDelegate::ConfigureIncomingConnection(
-    mojo::ServiceProviderImpl* service_provider_impl) {
-  service_provider_impl->AddService<PredictionService>(
-      [](const mojo::ConnectionContext& connection_context,
-         mojo::InterfaceRequest<PredictionService> prediction_service_request) {
-        new PredictionServiceImpl(prediction_service_request.Pass());
-      });
-  return true;
-}
+  // mojo::ApplicationImplBase override:
+  bool OnAcceptConnection(
+      mojo::ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<PredictionService>([](
+        const mojo::ConnectionContext& connection_context,
+        mojo::InterfaceRequest<PredictionService> prediction_service_request) {
+      new PredictionServiceImpl(prediction_service_request.Pass());
+    });
+    return true;
+  }
+};
 
 }  // namespace prediction
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(
-      new prediction::PredictionServiceDelegate());
-  return runner.Run(application_request);
+  prediction::PredictionServiceApp prediction_service_app;
+  return mojo::RunMainApplication(application_request, &prediction_service_app);
 }

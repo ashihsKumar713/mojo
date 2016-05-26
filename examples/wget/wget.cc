@@ -4,13 +4,10 @@
 
 #include <stdio.h>
 
-#include <memory>
-
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "mojo/public/cpp/utility/run_loop.h"
 #include "mojo/services/network/interfaces/network_service.mojom.h"
@@ -75,12 +72,12 @@ class ResponsePrinter {
 
 }  // namespace
 
-class WGetApp : public ApplicationDelegate {
+class WGetApp : public ApplicationImplBase {
  public:
-  void Initialize(ApplicationImpl* app) override {
-    ConnectToService(app->shell(), "mojo:network_service",
+  void OnInitialize() override {
+    ConnectToService(shell(), "mojo:network_service",
                      GetProxy(&network_service_));
-    Start(app->args());
+    Start(args());
   }
 
  private:
@@ -114,7 +111,6 @@ class WGetApp : public ApplicationDelegate {
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunner runner(
-      std::unique_ptr<mojo::examples::WGetApp>(new mojo::examples::WGetApp()));
-  return runner.Run(application_request);
+  mojo::examples::WGetApp wget_app;
+  return mojo::RunMainApplication(application_request, &wget_app);
 }

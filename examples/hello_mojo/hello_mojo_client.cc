@@ -4,15 +4,13 @@
 
 #include <stdio.h>
 
-#include <memory>
 #include <string>
 
 #include "examples/hello_mojo/hello_mojo.mojom.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "mojo/public/cpp/utility/run_loop.h"
 
@@ -20,13 +18,13 @@ using examples::HelloMojoPtr;
 
 namespace {
 
-class HelloMojoClientApp : public mojo::ApplicationDelegate {
+class HelloMojoClientApp : public mojo::ApplicationImplBase {
  public:
   HelloMojoClientApp() {}
   ~HelloMojoClientApp() override {}
 
-  void Initialize(mojo::ApplicationImpl* application) override {
-    mojo::ConnectToService(application->shell(), "mojo:hello_mojo_server",
+  void OnInitialize() override {
+    mojo::ConnectToService(shell(), "mojo:hello_mojo_server",
                            GetProxy(&hello_mojo_));
 
     DoIt("hello");
@@ -48,7 +46,6 @@ class HelloMojoClientApp : public mojo::ApplicationDelegate {
 }  // namespace
 
 MojoResult MojoMain(MojoHandle application_request) {
-  return mojo::ApplicationRunner(std::unique_ptr<mojo::ApplicationDelegate>(
-                                     new HelloMojoClientApp()))
-      .Run(application_request);
+  HelloMojoClientApp hello_mojo_client_app;
+  return mojo::RunMainApplication(application_request, &hello_mojo_client_app);
 }

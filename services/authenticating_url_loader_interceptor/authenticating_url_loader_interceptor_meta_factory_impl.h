@@ -16,7 +16,7 @@
 
 namespace mojo {
 
-class ApplicationImpl;
+class Shell;
 
 class AuthenticatingURLLoaderInterceptorMetaFactoryImpl
     : public AuthenticatingURLLoaderInterceptorMetaFactory {
@@ -24,7 +24,7 @@ class AuthenticatingURLLoaderInterceptorMetaFactoryImpl
   AuthenticatingURLLoaderInterceptorMetaFactoryImpl(
       mojo::InterfaceRequest<AuthenticatingURLLoaderInterceptorMetaFactory>
           request,
-      mojo::ApplicationImpl* app,
+      mojo::Shell* shell,
       std::map<GURL, std::string>* cached_tokens);
   ~AuthenticatingURLLoaderInterceptorMetaFactoryImpl() override;
 
@@ -36,7 +36,7 @@ class AuthenticatingURLLoaderInterceptorMetaFactoryImpl
           authentication_service) override;
 
   StrongBinding<AuthenticatingURLLoaderInterceptorMetaFactory> binding_;
-  ApplicationImpl* app_;
+  Shell* const shell_;
   std::map<GURL, std::string>* cached_tokens_;
 };
 

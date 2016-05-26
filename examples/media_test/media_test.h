@@ -6,12 +6,14 @@
 #define EXAMPLES_MEDIA_TEST_MEDIA_TEST_H_
 
 #include "base/macros.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/services/media/common/cpp/timeline_function.h"
 #include "mojo/services/media/control/interfaces/media_factory.mojom.h"
 #include "mojo/services/media/control/interfaces/media_player.mojom.h"
 
 namespace mojo {
+
+class Shell;
+
 namespace media {
 namespace examples {
 
@@ -22,7 +24,7 @@ class MediaTest {
 
   using UpdateCallback = std::function<void()>;
 
-  static std::unique_ptr<MediaTest> Create(mojo::ApplicationImpl* app,
+  static std::unique_ptr<MediaTest> Create(mojo::Shell* shell,
                                            const std::string& input_file_name);
 
   ~MediaTest();
@@ -54,7 +56,7 @@ class MediaTest {
   const MediaMetadataPtr& metadata() const;
 
  private:
-  MediaTest(mojo::ApplicationImpl* app, const std::string& input_file_name);
+  MediaTest(mojo::Shell* shell, const std::string& input_file_name);
 
   // Handles a status update from the player. When called with the default
   // argument values, initiates status updates.

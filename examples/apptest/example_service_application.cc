@@ -4,10 +4,8 @@
 
 #include "examples/apptest/example_service_application.h"
 
-#include <memory>
-
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 
 namespace mojo {
@@ -16,7 +14,7 @@ ExampleServiceApplication::ExampleServiceApplication() {}
 
 ExampleServiceApplication::~ExampleServiceApplication() {}
 
-bool ExampleServiceApplication::ConfigureIncomingConnection(
+bool ExampleServiceApplication::OnAcceptConnection(
     ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<ExampleService>(
       [](const ConnectionContext& connection_context,
@@ -30,8 +28,7 @@ bool ExampleServiceApplication::ConfigureIncomingConnection(
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunner runner(
-      std::unique_ptr<mojo::ExampleServiceApplication>(
-          new mojo::ExampleServiceApplication()));
-  return runner.Run(application_request);
+  mojo::ExampleServiceApplication example_service_application;
+  return mojo::RunMainApplication(application_request,
+                                  &example_service_application);
 }
