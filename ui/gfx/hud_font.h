@@ -5,15 +5,15 @@
 #ifndef UI_GFX_HUD_FONT_H_
 #define UI_GFX_HUD_FONT_H_
 
-#include "skia/ext/refptr.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/gfx_export.h"
 
 class SkTypeface;
 
 namespace gfx {
 
-GFX_EXPORT void SetHudTypeface(skia::RefPtr<SkTypeface> typeface);
-GFX_EXPORT skia::RefPtr<SkTypeface> GetHudTypeface();
+GFX_EXPORT void SetHudTypeface(sk_sp<SkTypeface> typeface);
+GFX_EXPORT sk_sp<SkTypeface> GetHudTypeface();
 
 }  // namespace gfx
 

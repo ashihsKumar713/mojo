@@ -30,7 +30,7 @@ class PNGView : public mojo::ui::GaneshView {
  public:
   PNGView(mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
           mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
-          const skia::RefPtr<SkImage>& image)
+          const sk_sp<SkImage>& image)
       : GaneshView(app_connector.Pass(),
                    view_owner_request.Pass(),
                    "PNGViewer"),
@@ -104,14 +104,14 @@ class PNGView : public mojo::ui::GaneshView {
         nullptr);
   }
 
-  skia::RefPtr<SkImage> image_;
+  sk_sp<SkImage> image_;
 
   DISALLOW_COPY_AND_ASSIGN(PNGView);
 };
 
 class PNGContentViewProviderApp : public mojo::ui::ViewProviderApp {
  public:
-  PNGContentViewProviderApp(skia::RefPtr<SkImage> image) : image_(image) {
+  PNGContentViewProviderApp(sk_sp<SkImage> image) : image_(image) {
     DCHECK(image_);
   }
 
@@ -126,7 +126,7 @@ class PNGContentViewProviderApp : public mojo::ui::ViewProviderApp {
   }
 
  private:
-  skia::RefPtr<SkImage> image_;
+  sk_sp<SkImage> image_;
 
   DISALLOW_COPY_AND_ASSIGN(PNGContentViewProviderApp);
 };
@@ -151,8 +151,7 @@ class PNGContentViewerApp : public mojo::ui::ContentViewerApp {
       return nullptr;
     }
 
-    return new PNGContentViewProviderApp(
-        skia::AdoptRef(SkImage::NewFromBitmap(bitmap)));
+    return new PNGContentViewProviderApp(SkImage::MakeFromBitmap(bitmap));
   }
 
  private:

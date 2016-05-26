@@ -48,7 +48,7 @@ class PDFDocument {
 
   uint32_t page_count() { return page_count_; }
 
-  skia::RefPtr<SkImage> DrawPage(int page_index, const mojo::Size& size) {
+  sk_sp<SkImage> DrawPage(int page_index, const mojo::Size& size) {
     FPDF_PAGE page = FPDF_LoadPage(doc_, page_index);
 
     double width_pts = FPDF_GetPageWidth(page);
@@ -64,8 +64,7 @@ class PDFDocument {
     }
 
     int stride = width * 4;
-    skia::RefPtr<SkData> pixels =
-        skia::AdoptRef(SkData::NewUninitialized(stride * height));
+    sk_sp<SkData> pixels = SkData::MakeUninitialized(stride * height);
     DCHECK(pixels);
 
     FPDF_BITMAP bitmap = FPDFBitmap_CreateEx(width, height, FPDFBitmap_BGRA,
@@ -78,7 +77,7 @@ class PDFDocument {
 
     SkImageInfo info = SkImageInfo::Make(width, height, kBGRA_8888_SkColorType,
                                          kOpaque_SkAlphaType);
-    return skia::AdoptRef(SkImage::NewRasterData(info, pixels.get(), stride));
+    return SkImage::MakeRasterData(info, pixels, stride);
   }
 
  private:
@@ -244,13 +243,13 @@ class PDFDocumentView : public mojo::ui::GaneshView,
   }
 
   void Redraw() {
-    cached_image_.clear();
+    cached_image_.reset();
     choreographer_.ScheduleDraw();
   }
 
   std::shared_ptr<PDFDocument> pdf_document_;
   uint32_t page_ = 0u;
-  skia::RefPtr<SkImage> cached_image_;
+  sk_sp<SkImage> cached_image_;
 
   mojo::ui::Choreographer choreographer_;
   mojo::ui::InputHandler input_handler_;

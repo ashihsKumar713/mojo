@@ -15,7 +15,7 @@
 #include "base/threading/thread.h"
 #include "mojo/ui/base_view.h"
 #include "mojo/ui/choreographer.h"
-#include "skia/ext/refptr.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkPicture;
 
@@ -82,7 +82,7 @@ class NoodlesView : public mojo::ui::BaseView,
               const base::TimeDelta& time_delta) override;
 
   void UpdateFrame();
-  skia::RefPtr<SkPicture> CreatePicture();
+  sk_sp<SkPicture> CreatePicture();
 
   mojo::ui::Choreographer choreographer_;
 

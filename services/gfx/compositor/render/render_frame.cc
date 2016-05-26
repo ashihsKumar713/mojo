@@ -6,9 +6,9 @@
 
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
-#include "skia/ext/refptr.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPicture.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace compositor {
 
@@ -19,7 +19,7 @@ RenderFrame::RenderFrame(const Metadata& metadata, const SkIRect& viewport)
 
 RenderFrame::RenderFrame(const Metadata& metadata,
                          const SkIRect& viewport,
-                         const skia::RefPtr<SkPicture>& picture)
+                         const sk_sp<SkPicture>& picture)
     : metadata_(metadata), viewport_(viewport), picture_(picture) {
   DCHECK(!viewport_.isEmpty());
 }

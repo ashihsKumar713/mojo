@@ -8,8 +8,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/services/gfx/composition/interfaces/scheduling.mojom.h"
-#include "skia/ext/refptr.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkCanvas;
 class SkPicture;
@@ -46,7 +46,7 @@ class RenderFrame : public base::RefCountedThreadSafe<RenderFrame> {
   // Creates render frame backed by a picture.
   RenderFrame(const Metadata& metadata,
               const SkIRect& viewport,
-              const skia::RefPtr<SkPicture>& picture);
+              const sk_sp<SkPicture>& picture);
 
   // Gets metadata about the frame.
   const Metadata& metadata() const { return metadata_; }
@@ -55,7 +55,7 @@ class RenderFrame : public base::RefCountedThreadSafe<RenderFrame> {
   const SkIRect& viewport() const { return viewport_; }
 
   // Gets the underlying picture to rasterize, or null if the frame is empty.
-  const skia::RefPtr<SkPicture>& picture() const { return picture_; }
+  const sk_sp<SkPicture>& picture() const { return picture_; }
 
   // Draws the contents of the frame to a canvas.
   void Draw(SkCanvas* canvas) const;
@@ -68,7 +68,7 @@ class RenderFrame : public base::RefCountedThreadSafe<RenderFrame> {
 
   Metadata metadata_;
   SkIRect viewport_;
-  skia::RefPtr<SkPicture> picture_;
+  sk_sp<SkPicture> picture_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrame);
 };

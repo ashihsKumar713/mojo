@@ -109,7 +109,7 @@ void NoodlesView::OnDraw(const mojo::gfx::composition::FrameInfo& frame_info,
   }
 }
 
-skia::RefPtr<SkPicture> NoodlesView::CreatePicture() {
+sk_sp<SkPicture> NoodlesView::CreatePicture() {
   constexpr int count = 4;
   constexpr int padding = 1;
 
@@ -140,7 +140,7 @@ skia::RefPtr<SkPicture> NoodlesView::CreatePicture() {
     canvas->drawPath(path, paint);
   }
 
-  return skia::AdoptRef(recorder.endRecordingAsPicture());
+  return recorder.finishRecordingAsPicture();
 }
 
 NoodlesView::FrameQueue::FrameQueue() {}

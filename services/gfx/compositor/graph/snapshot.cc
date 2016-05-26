@@ -8,9 +8,9 @@
 #include "mojo/services/gfx/composition/cpp/formatting.h"
 #include "mojo/skia/type_converters.h"
 #include "services/gfx/compositor/graph/scene_content.h"
+#include "third_party/skia/include/core/SkMatrix44.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkRect.h"
-#include "third_party/skia/include/utils/SkMatrix44.h"
 
 namespace compositor {
 
@@ -35,7 +35,7 @@ scoped_refptr<RenderFrame> Snapshot::Paint(
   recorder.beginRecording(SkRect::Make(sk_viewport));
   root_scene_content_->Paint(this, recorder.getRecordingCanvas());
   return new RenderFrame(metadata, sk_viewport,
-                         skia::AdoptRef(recorder.endRecordingAsPicture()));
+                         recorder.finishRecordingAsPicture());
 }
 
 void Snapshot::HitTest(const mojo::PointF& point,

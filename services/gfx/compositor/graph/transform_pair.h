@@ -5,7 +5,7 @@
 #ifndef SERVICES_GFX_COMPOSITOR_GRAPH_TRANSFORM_PAIR_H_
 #define SERVICES_GFX_COMPOSITOR_GRAPH_TRANSFORM_PAIR_H_
 
-#include "third_party/skia/include/utils/SkMatrix44.h"
+#include "third_party/skia/include/core/SkMatrix44.h"
 
 namespace compositor {
 

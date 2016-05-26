@@ -10,14 +10,14 @@
 namespace gfx {
 
 namespace {
-base::LazyInstance<skia::RefPtr<SkTypeface>> g_hud_typeface;
+base::LazyInstance<sk_sp<SkTypeface>> g_hud_typeface;
 }  // namespace
 
-void SetHudTypeface(skia::RefPtr<SkTypeface> typeface) {
+void SetHudTypeface(sk_sp<SkTypeface> typeface) {
   g_hud_typeface.Get() = typeface;
 }
 
-skia::RefPtr<SkTypeface> GetHudTypeface() {
+sk_sp<SkTypeface> GetHudTypeface() {
   // nullptr is fine; caller will create its own in that case.
   return g_hud_typeface.Get();
 }

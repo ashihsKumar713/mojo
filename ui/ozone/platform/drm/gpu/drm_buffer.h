@@ -6,7 +6,7 @@
 #define UI_OZONE_PLATFORM_DRM_GPU_DRM_BUFFER_H_
 
 #include "base/macros.h"
-#include "skia/ext/refptr.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/ozone/ozone_export.h"
 #include "ui/ozone/platform/drm/gpu/scanout_buffer.h"
@@ -57,7 +57,7 @@ class OZONE_EXPORT DrmBuffer : public ScanoutBuffer {
   uint32_t framebuffer_ = 0;
 
   // Wrapper around the native pixel memory.
-  skia::RefPtr<SkSurface> surface_;
+  sk_sp<SkSurface> surface_;
 
   DISALLOW_COPY_AND_ASSIGN(DrmBuffer);
 };

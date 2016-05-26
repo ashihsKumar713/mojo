@@ -55,7 +55,7 @@ class RenderImage::Generator : public mojo::skia::MailboxTextureImageGenerator {
   scoped_refptr<Releaser> releaser_;
 };
 
-RenderImage::RenderImage(const skia::RefPtr<SkImage>& image,
+RenderImage::RenderImage(const sk_sp<SkImage>& image,
                          const scoped_refptr<Releaser>& releaser)
     : image_(image), releaser_(releaser) {
   DCHECK(image_);
@@ -73,12 +73,12 @@ scoped_refptr<RenderImage> RenderImage::CreateFromMailboxTexture(
     const scoped_refptr<base::TaskRunner>& task_runner,
     const base::Closure& release_task) {
   scoped_refptr<Releaser> releaser = new Releaser(task_runner, release_task);
-  skia::RefPtr<SkImage> image = skia::AdoptRef(SkImage::NewFromGenerator(
+  sk_sp<SkImage> image = SkImage::MakeFromGenerator(
       new Generator(releaser, mailbox_name, sync_point, width, height,
                     origin == mojo::gfx::composition::MailboxTextureResource::
                                   Origin::BOTTOM_LEFT
                         ? kBottomLeft_GrSurfaceOrigin
-                        : kTopLeft_GrSurfaceOrigin)));
+                        : kTopLeft_GrSurfaceOrigin));
   if (!image)
     return nullptr;
 

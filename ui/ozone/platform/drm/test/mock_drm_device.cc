@@ -203,8 +203,7 @@ bool MockDrmDevice::CreateDumbBuffer(const SkImageInfo& info,
   *handle = allocate_buffer_count_++;
   *stride = info.minRowBytes();
   void* pixels = new char[info.getSafeSize(*stride)];
-  buffers_.push_back(
-      skia::AdoptRef(SkSurface::NewRasterDirect(info, pixels, *stride)));
+  buffers_.push_back(SkSurface::MakeRasterDirect(info, pixels, *stride));
   buffers_[*handle]->getCanvas()->clear(SK_ColorBLACK);
 
   return true;

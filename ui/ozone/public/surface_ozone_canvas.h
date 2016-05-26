@@ -7,7 +7,7 @@
 
 #include "base/basictypes.h"
 #include "base/memory/scoped_ptr.h"
-#include "skia/ext/refptr.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/ozone/ozone_base_export.h"
 
 class SkSurface;
@@ -28,7 +28,7 @@ class OZONE_BASE_EXPORT SurfaceOzoneCanvas {
   virtual ~SurfaceOzoneCanvas() {}
 
   // Returns an SkSurface for drawing on the window.
-  virtual skia::RefPtr<SkSurface> GetSurface() = 0;
+  virtual sk_sp<SkSurface> GetSurface() = 0;
 
   // Attempts to resize the canvas to match the viewport size. After
   // resizing, the compositor must call GetCanvas() to get the next

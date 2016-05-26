@@ -24,13 +24,12 @@ void ReleaseThunk(void* data) {
 }
 }  // namespace
 
-::skia::RefPtr<SkImage> CreateImageFromTexture(
-    const GaneshContext::Scope& scope,
-    uint32_t texture_id,
-    uint32_t width,
-    uint32_t height,
-    GrSurfaceOrigin origin,
-    const base::Closure& release_callback) {
+sk_sp<SkImage> CreateImageFromTexture(const GaneshContext::Scope& scope,
+                                      uint32_t texture_id,
+                                      uint32_t width,
+                                      uint32_t height,
+                                      GrSurfaceOrigin origin,
+                                      const base::Closure& release_callback) {
   DCHECK(texture_id);
   DCHECK(width);
   DCHECK(height);
@@ -47,9 +46,9 @@ void ReleaseThunk(void* data) {
   desc.fConfig = kSkia8888_GrPixelConfig;
   desc.fOrigin = origin;
   desc.fTextureHandle = reinterpret_cast<GrBackendObject>(&info);
-  return ::skia::AdoptRef(SkImage::NewFromTexture(
-      scope.gr_context().get(), desc, kPremul_SkAlphaType, &ReleaseThunk,
-      new base::Closure(release_callback)));
+  return SkImage::MakeFromTexture(scope.gr_context().get(), desc,
+                                  kPremul_SkAlphaType, &ReleaseThunk,
+                                  new base::Closure(release_callback));
 }
 
 MailboxTextureImageGenerator::MailboxTextureImageGenerator(

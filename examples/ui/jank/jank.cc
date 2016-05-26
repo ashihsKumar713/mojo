@@ -59,9 +59,9 @@ class JankView : public mojo::ui::GaneshView,
       : GaneshView(app_connector.Pass(), view_owner_request.Pass(), "Jank"),
         choreographer_(scene(), this),
         input_handler_(GetViewServiceProvider(), this),
-        typeface_(skia::AdoptRef(SkTypeface::CreateFromStream(
+        typeface_(SkTypeface::MakeFromStream(
             new SkMemoryStream(font_data::kDejaVuSansMonoRegular.data,
-                               font_data::kDejaVuSansMonoRegular.size)))) {}
+                               font_data::kDejaVuSansMonoRegular.size))) {}
 
   ~JankView() override {}
 
@@ -163,7 +163,7 @@ class JankView : public mojo::ui::GaneshView,
     textPaint.setColor(SK_ColorBLACK);
     textPaint.setTextSize(16);
     textPaint.setTextEncoding(SkPaint::kUTF8_TextEncoding);
-    textPaint.setTypeface(typeface_.get());
+    textPaint.setTypeface(typeface_);
     textPaint.setAntiAlias(true);
     SkRect textBounds;
     textPaint.measureText(label, strlen(label), &textBounds);
@@ -195,7 +195,7 @@ class JankView : public mojo::ui::GaneshView,
 
   mojo::ui::Choreographer choreographer_;
   mojo::ui::InputHandler input_handler_;
-  skia::RefPtr<SkTypeface> typeface_;
+  sk_sp<SkTypeface> typeface_;
   int64_t stutter_end_time_ = 0u;
 
   DISALLOW_COPY_AND_ASSIGN(JankView);

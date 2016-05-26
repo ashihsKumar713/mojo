@@ -13,8 +13,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/task_runner.h"
 #include "mojo/services/gfx/composition/interfaces/resources.mojom.h"
-#include "skia/ext/refptr.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace compositor {
 
@@ -29,7 +29,7 @@ class RenderImage : public base::RefCountedThreadSafe<RenderImage> {
   class Generator;
 
  public:
-  RenderImage(const skia::RefPtr<SkImage>& image,
+  RenderImage(const sk_sp<SkImage>& image,
               const scoped_refptr<Releaser>& releaser);
 
   // Creates a new image backed by a mailbox texture.
@@ -51,14 +51,14 @@ class RenderImage : public base::RefCountedThreadSafe<RenderImage> {
   uint32_t height() const { return image_->height(); }
 
   // Gets the underlying image to rasterize, never null.
-  const skia::RefPtr<SkImage>& image() const { return image_; }
+  const sk_sp<SkImage>& image() const { return image_; }
 
  private:
   friend class base::RefCountedThreadSafe<RenderImage>;
 
   ~RenderImage();
 
-  skia::RefPtr<SkImage> image_;
+  sk_sp<SkImage> image_;
   scoped_refptr<Releaser> releaser_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderImage);

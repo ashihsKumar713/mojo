@@ -32,10 +32,10 @@ const uint32_t kDefaultCrtc = 1;
 const uint32_t kDefaultConnector = 2;
 const int kDefaultCursorSize = 64;
 
-std::vector<skia::RefPtr<SkSurface>> GetCursorBuffers(
+std::vector<sk_sp<SkSurface>> GetCursorBuffers(
     const scoped_refptr<ui::MockDrmDevice> drm) {
-  std::vector<skia::RefPtr<SkSurface>> cursor_buffers;
-  for (const skia::RefPtr<SkSurface>& cursor_buffer : drm->buffers()) {
+  std::vector<sk_sp<SkSurface>> cursor_buffers;
+  for (const sk_sp<SkSurface>& cursor_buffer : drm->buffers()) {
     if (cursor_buffer->width() == kDefaultCursorSize &&
         cursor_buffer->height() == kDefaultCursorSize) {
       cursor_buffers.push_back(cursor_buffer);
@@ -107,7 +107,7 @@ TEST_F(DrmWindowTest, SetCursorImage) {
                   gfx::Point(4, 2), 0);
 
   SkBitmap cursor;
-  std::vector<skia::RefPtr<SkSurface>> cursor_buffers = GetCursorBuffers(drm_);
+  std::vector<sk_sp<SkSurface>> cursor_buffers = GetCursorBuffers(drm_);
   EXPECT_EQ(2u, cursor_buffers.size());
 
   // Buffers 1 is the cursor backbuffer we just drew in.

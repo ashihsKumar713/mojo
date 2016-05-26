@@ -12,7 +12,7 @@
 namespace examples {
 
 Frame::Frame(const mojo::Size& size,
-             skia::RefPtr<SkPicture> picture,
+             sk_sp<SkPicture> picture,
              mojo::gfx::composition::SceneMetadataPtr scene_metadata)
     : size_(size), picture_(picture), scene_metadata_(scene_metadata.Pass()) {
   DCHECK(picture_);

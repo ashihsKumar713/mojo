@@ -87,7 +87,7 @@ _BANNED_CPP_FUNCTIONS = (
       'SkRefPtr',
       (
         'The use of SkRefPtr is prohibited. ',
-        'Please use skia::RefPtr instead.'
+        'Please use sk_sp instead.'
       ),
       True,
       (),
@@ -96,7 +96,7 @@ _BANNED_CPP_FUNCTIONS = (
       'SkAutoRef',
       (
         'The indirect use of SkRefPtr via SkAutoRef is prohibited. ',
-        'Please use skia::RefPtr instead.'
+        'Please use sk_sp instead.'
       ),
       True,
       (),
@@ -105,7 +105,7 @@ _BANNED_CPP_FUNCTIONS = (
       'SkAutoTUnref',
       (
         'The use of SkAutoTUnref is dangerous because it implicitly ',
-        'converts to a raw pointer. Please use skia::RefPtr instead.'
+        'converts to a raw pointer. Please use sk_sp instead.'
       ),
       True,
       (),
@@ -115,7 +115,7 @@ _BANNED_CPP_FUNCTIONS = (
       (
         'The indirect use of SkAutoTUnref through SkAutoUnref is dangerous ',
         'because it implicitly converts to a raw pointer. ',
-        'Please use skia::RefPtr instead.'
+        'Please use sk_sp instead.'
       ),
       True,
       (),

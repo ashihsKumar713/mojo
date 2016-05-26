@@ -65,13 +65,13 @@ MotermView::MotermView(
     });
   }
 
-  regular_typeface_ = skia::AdoptRef(SkTypeface::CreateFromStream(
+  regular_typeface_ = SkTypeface::MakeFromStream(
       new SkMemoryStream(font_data::kDejaVuSansMonoRegular.data,
-                         font_data::kDejaVuSansMonoRegular.size)));
+                         font_data::kDejaVuSansMonoRegular.size));
 
   // TODO(vtl): This duplicates some code.
   SkPaint fg_paint;
-  fg_paint.setTypeface(regular_typeface_.get());
+  fg_paint.setTypeface(regular_typeface_);
   fg_paint.setTextSize(16);
   // Figure out appropriate metrics.
   SkPaint::FontMetrics fm = {};
@@ -275,7 +275,7 @@ void MotermView::DrawContent(
   bg_paint.setStyle(SkPaint::kFill_Style);
 
   SkPaint fg_paint;
-  fg_paint.setTypeface(regular_typeface_.get());
+  fg_paint.setTypeface(regular_typeface_);
   fg_paint.setTextSize(16);
   fg_paint.setTextEncoding(SkPaint::kUTF32_TextEncoding);
 

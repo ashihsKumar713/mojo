@@ -101,7 +101,7 @@ class MotermView : public mojo::ui::GaneshView,
   // If we skip drawing despite being forced to, we should force the next draw.
   bool force_next_draw_;
 
-  skia::RefPtr<SkTypeface> regular_typeface_;
+  sk_sp<SkTypeface> regular_typeface_;
 
   int ascent_;
   int line_height_;

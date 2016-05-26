@@ -46,7 +46,7 @@ bool SoftwareRenderer::Initialize() {
 void SoftwareRenderer::RenderFrame() {
   float fraction = NextFraction();
 
-  skia::RefPtr<SkSurface> surface = software_surface_->GetSurface();
+  sk_sp<SkSurface> surface = software_surface_->GetSurface();
 
   SkColor color =
       SkColorSetARGB(0xff, 0, 0xff * fraction, 0xff * (1 - fraction));

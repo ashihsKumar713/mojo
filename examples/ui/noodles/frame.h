@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "mojo/services/geometry/interfaces/geometry.mojom.h"
 #include "mojo/services/gfx/composition/interfaces/scenes.mojom.h"
-#include "skia/ext/refptr.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkCanvas;
 class SkPicture;
@@ -21,7 +21,7 @@ namespace examples {
 class Frame {
  public:
   Frame(const mojo::Size& size,
-        skia::RefPtr<SkPicture> picture,
+        sk_sp<SkPicture> picture,
         mojo::gfx::composition::SceneMetadataPtr scene_metadata);
   ~Frame();
 
@@ -35,7 +35,7 @@ class Frame {
 
  private:
   mojo::Size size_;
-  skia::RefPtr<SkPicture> picture_;
+  sk_sp<SkPicture> picture_;
   mojo::gfx::composition::SceneMetadataPtr scene_metadata_;
 
   DISALLOW_COPY_AND_ASSIGN(Frame);

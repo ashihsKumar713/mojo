@@ -43,14 +43,14 @@ DrmSurface::DrmSurface(DrmWindow* window_delegate)
 DrmSurface::~DrmSurface() {
 }
 
-skia::RefPtr<SkSurface> DrmSurface::GetSurface() {
+sk_sp<SkSurface> DrmSurface::GetSurface() {
   return surface_;
 }
 
 void DrmSurface::ResizeCanvas(const gfx::Size& viewport_size) {
   SkImageInfo info = SkImageInfo::MakeN32(
       viewport_size.width(), viewport_size.height(), kOpaque_SkAlphaType);
-  surface_ = skia::AdoptRef(SkSurface::NewRaster(info));
+  surface_ = SkSurface::MakeRaster(info);
 
   HardwareDisplayController* controller = window_delegate_->GetController();
   if (!controller)
@@ -70,7 +70,7 @@ void DrmSurface::PresentCanvas(const gfx::Rect& damage) {
   // Create a snapshot of the requested drawing. If we get here again before
   // presenting, just add the additional damage.
   pending_image_damage_.Union(damage);
-  pending_image_ = skia::AdoptRef(surface_->newImageSnapshot());
+  pending_image_ = surface_->makeImageSnapshot();
 
   if (!pending_pageflip_)
     SchedulePageFlip();

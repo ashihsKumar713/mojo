@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "mojo/skia/ganesh_context.h"
-#include "skia/ext/refptr.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace mojo {
@@ -35,7 +35,7 @@ class GaneshTextureSurface {
 
  private:
   std::unique_ptr<GLTexture> texture_;
-  ::skia::RefPtr<SkSurface> surface_;
+  sk_sp<SkSurface> surface_;
 
   DISALLOW_COPY_AND_ASSIGN(GaneshTextureSurface);
 };

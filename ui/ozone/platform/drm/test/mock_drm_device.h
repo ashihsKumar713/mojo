@@ -9,7 +9,7 @@
 #include <queue>
 #include <vector>
 
-#include "skia/ext/refptr.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 
@@ -49,9 +49,7 @@ class MockDrmDevice : public ui::DrmDevice {
 
   uint32_t current_framebuffer() const { return current_framebuffer_; }
 
-  const std::vector<skia::RefPtr<SkSurface>> buffers() const {
-    return buffers_;
-  }
+  const std::vector<sk_sp<SkSurface>> buffers() const { return buffers_; }
 
   uint32_t get_cursor_handle_for_crtc(uint32_t crtc) const {
     const auto it = crtc_cursor_map_.find(crtc);
@@ -137,7 +135,7 @@ class MockDrmDevice : public ui::DrmDevice {
 
   uint32_t current_framebuffer_;
 
-  std::vector<skia::RefPtr<SkSurface>> buffers_;
+  std::vector<sk_sp<SkSurface>> buffers_;
 
   std::map<uint32_t, uint32_t> crtc_cursor_map_;
 

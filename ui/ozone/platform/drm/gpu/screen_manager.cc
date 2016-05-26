@@ -58,7 +58,7 @@ void FillModesetBuffer(const scoped_refptr<DrmDevice>& drm,
     return;
   }
 
-  skia::RefPtr<SkImage> image = saved_buffer.image();
+  sk_sp<SkImage> image = saved_buffer.image();
   SkPaint paint;
   // Copy the source buffer. Do not perform any blending.
   paint.setXfermodeMode(SkXfermode::kSrc_Mode);

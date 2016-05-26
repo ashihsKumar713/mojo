@@ -105,7 +105,7 @@ TEST_F(DrmSurfaceTest, CheckSurfaceContents) {
   drm_->RunCallbacks();
 
   SkBitmap image;
-  std::vector<skia::RefPtr<SkSurface>> framebuffers;
+  std::vector<sk_sp<SkSurface>> framebuffers;
   for (const auto& buffer : drm_->buffers()) {
     // Skip cursor buffers.
     if (buffer->width() == kDefaultCursorSize &&
@@ -157,7 +157,7 @@ TEST_F(DrmSurfaceTest, CheckSurfaceContentsAfter2QueuedPresents) {
   drm_->RunCallbacks();
 
   SkBitmap image;
-  std::vector<skia::RefPtr<SkSurface>> framebuffers;
+  std::vector<sk_sp<SkSurface>> framebuffers;
   for (const auto& buffer : drm_->buffers()) {
     // Skip cursor buffers.
     if (buffer->width() == kDefaultCursorSize &&

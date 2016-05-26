@@ -29,7 +29,7 @@ class OZONE_EXPORT DrmSurface : public SurfaceOzoneCanvas {
   ~DrmSurface() override;
 
   // SurfaceOzoneCanvas:
-  skia::RefPtr<SkSurface> GetSurface() override;
+  sk_sp<SkSurface> GetSurface() override;
   void ResizeCanvas(const gfx::Size& viewport_size) override;
   void PresentCanvas(const gfx::Rect& damage) override;
   scoped_ptr<gfx::VSyncProvider> CreateVSyncProvider() override;
@@ -47,13 +47,13 @@ class OZONE_EXPORT DrmSurface : public SurfaceOzoneCanvas {
   scoped_refptr<DrmBuffer> front_buffer_;
   scoped_refptr<DrmBuffer> back_buffer_;
 
-  skia::RefPtr<SkSurface> surface_;
+  sk_sp<SkSurface> surface_;
   gfx::Rect last_damage_;
 
   // Keep track of the requested image and damage for the last presentation.
   // This will be used to update the scanout buffers once the previous page flip
   // events completes.
-  skia::RefPtr<SkImage> pending_image_;
+  sk_sp<SkImage> pending_image_;
   gfx::Rect pending_image_damage_;
   bool pending_pageflip_ = false;
 

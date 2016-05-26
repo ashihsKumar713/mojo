@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "third_party/skia/include/utils/SkMatrix44.h"
+#include "third_party/skia/include/core/SkMatrix44.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/vector2d_f.h"
 
@@ -25,10 +25,7 @@ class Vector3dF;
 // copy/assign.
 class GFX_EXPORT Transform {
  public:
-
-  enum SkipInitialization {
-    kSkipInitialization
-  };
+  enum SkipInitialization { kSkipInitialization };
 
   Transform() : matrix_(SkMatrix44::kIdentity_Constructor) {}
 
@@ -261,11 +258,9 @@ class GFX_EXPORT Transform {
   std::string ToString() const;
 
  private:
-  void TransformPointInternal(const SkMatrix44& xform,
-                              Point* point) const;
+  void TransformPointInternal(const SkMatrix44& xform, Point* point) const;
 
-  void TransformPointInternal(const SkMatrix44& xform,
-                              Point3F* point) const;
+  void TransformPointInternal(const SkMatrix44& xform, Point3F* point) const;
 
   SkMatrix44 matrix_;
 

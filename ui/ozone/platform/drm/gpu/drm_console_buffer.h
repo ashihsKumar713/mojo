@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "skia/ext/refptr.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 class SkCanvas;
@@ -26,9 +26,7 @@ class DrmConsoleBuffer {
   ~DrmConsoleBuffer();
 
   SkCanvas* canvas() { return surface_->getCanvas(); }
-  skia::RefPtr<SkImage> image() {
-    return skia::AdoptRef(surface_->newImageSnapshot());
-  }
+  sk_sp<SkImage> image() { return surface_->makeImageSnapshot(); }
 
   // Memory map the backing pixels and wrap them in |surface_|.
   bool Initialize();
@@ -37,7 +35,7 @@ class DrmConsoleBuffer {
   scoped_refptr<DrmDevice> drm_;
 
   // Wrapper around the native pixel memory.
-  skia::RefPtr<SkSurface> surface_;
+  sk_sp<SkSurface> surface_;
 
   // Length of a row of pixels.
   uint32_t stride_ = 0;
