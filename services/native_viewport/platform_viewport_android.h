@@ -20,7 +20,7 @@ class GLInProcessContext;
 }
 
 namespace mojo {
-class ApplicationImpl;
+class Shell;
 }
 
 struct ANativeWindow;
@@ -31,8 +31,7 @@ class PlatformViewportAndroid : public PlatformViewport {
  public:
   static bool Register(JNIEnv* env);
 
-  explicit PlatformViewportAndroid(mojo::ApplicationImpl* application,
-                                   Delegate* delegate);
+  explicit PlatformViewportAndroid(mojo::Shell* shell, Delegate* delegate);
   virtual ~PlatformViewportAndroid();
 
   void Destroy(JNIEnv* env, jobject obj);
@@ -69,7 +68,7 @@ class PlatformViewportAndroid : public PlatformViewport {
 
   void ReleaseWindow();
 
-  mojo::ApplicationImpl* application_;
+  mojo::Shell* const shell_;
   NativeViewportSupportServicePtr support_service_;
   Delegate* const delegate_;
   JavaObjectWeakGlobalRef java_platform_viewport_android_;

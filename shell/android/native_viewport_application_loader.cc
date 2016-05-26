@@ -33,8 +33,8 @@ bool NativeViewportApplicationLoader::ConfigureIncomingConnection(
              InterfaceRequest<mojo::NativeViewport> native_viewport_request) {
         if (!gpu_state_)
           gpu_state_ = new gles2::GpuState();
-        new native_viewport::NativeViewportImpl(app_.get(), false, gpu_state_,
-                                                native_viewport_request.Pass());
+        new native_viewport::NativeViewportImpl(
+            app_->shell(), false, gpu_state_, native_viewport_request.Pass());
       });
   service_provider_impl->AddService<mojo::Gpu>(
       [this](const ConnectionContext& connection_context,

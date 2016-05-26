@@ -124,9 +124,8 @@ class PlatformViewportOzone : public PlatformViewport,
 };
 
 // static
-scoped_ptr<PlatformViewport> PlatformViewport::Create(
-    mojo::ApplicationImpl* application_,
-    Delegate* delegate) {
+scoped_ptr<PlatformViewport> PlatformViewport::Create(mojo::Shell* shell,
+                                                      Delegate* delegate) {
   return scoped_ptr<PlatformViewport>(new PlatformViewportOzone(delegate))
       .Pass();
 }

@@ -16,7 +16,7 @@ class Rect;
 }
 
 namespace mojo {
-class ApplicationImpl;
+class Shell;
 }
 
 namespace native_viewport {
@@ -45,7 +45,9 @@ class PlatformViewport {
   virtual gfx::Size GetSize() = 0;
   virtual void SetBounds(const gfx::Rect& bounds) = 0;
 
-  static scoped_ptr<PlatformViewport> Create(mojo::ApplicationImpl* application,
+  // TODO(vtl): Maybe this should take an
+  // |InterfaceHandle<ApplicationConnector>| instead of a |Shell*|.
+  static scoped_ptr<PlatformViewport> Create(mojo::Shell* shell,
                                              Delegate* delegate);
 };
 

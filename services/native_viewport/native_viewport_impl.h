@@ -21,7 +21,7 @@ class GpuState;
 }
 
 namespace mojo {
-class ApplicationImpl;
+class Shell;
 }
 
 namespace ui {
@@ -37,7 +37,9 @@ namespace native_viewport {
 class NativeViewportImpl : public mojo::NativeViewport,
                            public PlatformViewport::Delegate {
  public:
-  NativeViewportImpl(mojo::ApplicationImpl* application,
+  // TODO(vtl): Maybe this should take an
+  // |InterfaceHandle<ApplicationConnector>| instead of a |Shell*|.
+  NativeViewportImpl(mojo::Shell* shell,
                      bool is_headless,
                      const scoped_refptr<gles2::GpuState>& gpu_state,
                      mojo::InterfaceRequest<mojo::NativeViewport> request);
@@ -71,8 +73,8 @@ class NativeViewportImpl : public mojo::NativeViewport,
   // with.
   void AckEvent(int32 pointer_id);
 
-  mojo::ApplicationImpl* application_;
-  bool is_headless_;
+  mojo::Shell* const shell_;
+  const bool is_headless_;
   scoped_ptr<PlatformViewport> platform_viewport_;
   OnscreenContextProvider context_provider_;
   bool sent_metrics_;

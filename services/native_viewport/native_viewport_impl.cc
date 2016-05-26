@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "mojo/converters/geometry/geometry_type_converters.h"
 #include "mojo/converters/native_viewport/surface_configuration_type_converters.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "services/gles2/gpu_state.h"
 #include "services/native_viewport/platform_viewport_headless.h"
 #include "ui/events/event.h"
@@ -20,11 +19,11 @@
 namespace native_viewport {
 
 NativeViewportImpl::NativeViewportImpl(
-    mojo::ApplicationImpl* application,
+    mojo::Shell* shell,
     bool is_headless,
     const scoped_refptr<gles2::GpuState>& gpu_state,
     mojo::InterfaceRequest<mojo::NativeViewport> request)
-    : application_(application),
+    : shell_(shell),
       is_headless_(is_headless),
       context_provider_(gpu_state),
       sent_metrics_(false),
@@ -52,7 +51,7 @@ void NativeViewportImpl::Create(
   if (is_headless_)
     platform_viewport_ = PlatformViewportHeadless::Create(this);
   else
-    platform_viewport_ = PlatformViewport::Create(application_, this);
+    platform_viewport_ = PlatformViewport::Create(shell_, this);
   platform_viewport_->Init(gfx::Rect(size.To<gfx::Size>()));
 }
 

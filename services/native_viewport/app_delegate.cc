@@ -66,7 +66,7 @@ bool NativeViewportAppDelegate::ConfigureIncomingConnection(
       mojo::InterfaceRequest<mojo::NativeViewport> native_viewport_request) {
     if (!gpu_state_.get())
       gpu_state_ = new gles2::GpuState();
-    new NativeViewportImpl(application_, is_headless_, gpu_state_,
+    new NativeViewportImpl(application_->shell(), is_headless_, gpu_state_,
                            native_viewport_request.Pass());
   });
 

@@ -12,7 +12,6 @@
 #include "jni/PlatformViewportAndroid_jni.h"
 #include "mojo/converters/geometry/geometry_type_converters.h"
 #include "mojo/converters/input_events/input_events_type_converters.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "services/native_viewport/native_viewport_support.mojom.h"
 #include "ui/events/event.h"
@@ -55,10 +54,9 @@ bool PlatformViewportAndroid::Register(JNIEnv* env) {
   return RegisterNativesImpl(env);
 }
 
-PlatformViewportAndroid::PlatformViewportAndroid(
-    mojo::ApplicationImpl* application,
-    Delegate* delegate)
-    : application_(application),
+PlatformViewportAndroid::PlatformViewportAndroid(mojo::Shell* shell,
+                                                 Delegate* delegate)
+    : shell_(shell),
       delegate_(delegate),
       window_(NULL),
       id_generator_(0),
@@ -167,7 +165,7 @@ void PlatformViewportAndroid::Init(const gfx::Rect& bounds) {
   Java_PlatformViewportAndroid_createRequest(env,
                                              reinterpret_cast<intptr_t>(this));
 
-  mojo::ConnectToService(application_->shell(), "mojo:native_viewport_support",
+  mojo::ConnectToService(shell_, "mojo:native_viewport_support",
                          GetProxy(&support_service_));
   support_service_->CreateNewNativeWindow(
       base::Bind(&PlatformViewportAndroid::Close, weak_factory_.GetWeakPtr()));
@@ -208,11 +206,10 @@ void PlatformViewportAndroid::ReleaseWindow() {
 // PlatformViewport, public:
 
 // static
-scoped_ptr<PlatformViewport> PlatformViewport::Create(
-    mojo::ApplicationImpl* application_,
-    Delegate* delegate) {
+scoped_ptr<PlatformViewport> PlatformViewport::Create(mojo::Shell* shell,
+                                                      Delegate* delegate) {
   return scoped_ptr<PlatformViewport>(
-             new PlatformViewportAndroid(application_, delegate))
+             new PlatformViewportAndroid(shell, delegate))
       .Pass();
 }
 

@@ -162,9 +162,8 @@ class PlatformViewportX11 : public PlatformViewport,
 };
 
 // static
-scoped_ptr<PlatformViewport> PlatformViewport::Create(
-    mojo::ApplicationImpl* application_,
-    Delegate* delegate) {
+scoped_ptr<PlatformViewport> PlatformViewport::Create(mojo::Shell* shell,
+                                                      Delegate* delegate) {
   return make_scoped_ptr(new PlatformViewportX11(delegate));
 }
 
