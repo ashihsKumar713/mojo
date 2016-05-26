@@ -322,9 +322,7 @@ func translateStructField(f *mojom.StructField) (field mojom_types.StructField) 
 		field.DefaultValue = translateDefaultFieldValue(f.DefaultValue)
 	}
 	if emitComputedPackingData {
-		// TODO(rudominer) Check the allowed size of offsets. The type used in
-		// mojom_types.mojom might need to be changed.
-		field.Offset = int32(f.Offset())
+		field.Offset = f.Offset()
 		field.Bit = int8(f.Bit())
 		field.MinVersion = f.MinVersion()
 	}

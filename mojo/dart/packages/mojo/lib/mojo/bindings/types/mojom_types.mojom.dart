@@ -829,7 +829,7 @@ class StructField extends bindings.Struct {
     }
     if (mainDataHeader.version >= 0) {
       
-      result.offset = decoder0.decodeInt32(48);
+      result.offset = decoder0.decodeUint32(48);
     }
     if (mainDataHeader.version >= 0) {
       
@@ -866,7 +866,7 @@ class StructField extends bindings.Struct {
       rethrow;
     }
     try {
-      encoder0.encodeInt32(offset, 48);
+      encoder0.encodeUint32(offset, 48);
     } on bindings.MojoCodecError catch(e) {
       e.message = "Error encountered while encoding field "
           "offset of struct StructField: $e";

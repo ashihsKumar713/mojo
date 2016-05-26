@@ -459,7 +459,7 @@ type StructField struct {
 	DeclData *DeclarationData
 	Type Type
 	DefaultValue DefaultFieldValue
-	Offset int32
+	Offset uint32
 	Bit int8
 	MinVersion uint32
 }
@@ -490,7 +490,7 @@ func (s *StructField) Encode(encoder *bindings.Encoder) error {
 			return err
 		}
 	}
-	if err := encoder.WriteInt32(s.Offset); err != nil {
+	if err := encoder.WriteUint32(s.Offset); err != nil {
 		return err
 	}
 	if err := encoder.WriteInt8(s.Bit); err != nil {
@@ -560,7 +560,7 @@ func (s *StructField) Decode(decoder *bindings.Decoder) error {
 		}
 	}
 	if header.ElementsOrVersion >= 0 {
-		value0, err := decoder.ReadInt32()
+		value0, err := decoder.ReadUint32()
 		if err != nil {
 			return err
 		}
