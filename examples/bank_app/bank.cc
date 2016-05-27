@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "examples/bank_app/bank.mojom.h"
 #include "mojo/common/binding_set.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/public/cpp/utility/run_loop.h"
@@ -45,17 +42,17 @@ class BankUser {
   std::string *user_;
 };
 
-class BankApp : public mojo::ApplicationDelegate {
+class BankApp : public mojo::ApplicationImplBase {
  public:
   BankApp() {}
 
-  void Initialize(mojo::ApplicationImpl* app) override {
-    mojo::ConnectToService(app->shell(), "mojo:principal_service",
+  // ApplicationImplBase overrides:
+  void OnInitialize() override {
+    mojo::ConnectToService(shell(), "mojo:principal_service",
                            GetProxy(&login_service_));
   }
 
-  // From ApplicationDelegate
-  bool ConfigureIncomingConnection(
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     std::string url = service_provider_impl->connection_context().remote_url;
     if (url.length() > 0) {
@@ -93,7 +90,6 @@ class BankApp : public mojo::ApplicationDelegate {
 }  // namespace examples
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunner runner(
-      std::unique_ptr<examples::BankApp>(new examples::BankApp()));
-  return runner.Run(application_request);
+  examples::BankApp bank_app;
+  return mojo::RunMainApplication(application_request, &bank_app);
 }

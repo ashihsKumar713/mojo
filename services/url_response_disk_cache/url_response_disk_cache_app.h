@@ -8,26 +8,23 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task_runner.h"
-#include "base/threading/sequenced_worker_pool.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/services/url_response_disk_cache/interfaces/url_response_disk_cache.mojom.h"
 #include "services/url_response_disk_cache/url_response_disk_cache_db.h"
 #include "services/url_response_disk_cache/url_response_disk_cache_delegate.h"
 
 namespace mojo {
 
-class URLResponseDiskCacheApp : public ApplicationDelegate {
+class URLResponseDiskCacheApp : public ApplicationImplBase {
  public:
   explicit URLResponseDiskCacheApp(scoped_refptr<base::TaskRunner> task_runner,
                                    URLResponseDiskCacheDelegate* delegate);
   ~URLResponseDiskCacheApp() override;
 
  private:
-  // ApplicationDelegate:
-  void Initialize(ApplicationImpl* app) override;
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override;
+  // ApplicationImplBase:
+  void OnInitialize() override;
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override;
 
   scoped_refptr<base::TaskRunner> task_runner_;
   scoped_refptr<URLResponseDiskCacheDB> db_;

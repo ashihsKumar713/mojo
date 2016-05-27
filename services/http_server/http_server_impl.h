@@ -16,7 +16,7 @@
 #include "third_party/re2/re2/re2.h"
 
 namespace mojo {
-class ApplicationImpl;
+class Shell;
 }  // namespace mojo
 
 namespace http_server {
@@ -26,7 +26,9 @@ class HttpServerFactoryImpl;
 
 class HttpServerImpl : public HttpServer {
  public:
-  HttpServerImpl(mojo::ApplicationImpl* app,
+  // TODO(vtl): Possibly this should take an
+  // |InterfaceHandle<ApplicationConnector>| instead of a |Shell*|.
+  HttpServerImpl(mojo::Shell* shell,
                  HttpServerFactoryImpl* factory,
                  mojo::NetAddressPtr requested_local_address);
   ~HttpServerImpl() override;

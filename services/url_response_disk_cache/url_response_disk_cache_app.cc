@@ -5,6 +5,7 @@
 #include "services/url_response_disk_cache/url_response_disk_cache_app.h"
 
 #include "base/command_line.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/url_response_disk_cache/url_response_disk_cache_impl.h"
 
 namespace mojo {
@@ -14,16 +15,15 @@ URLResponseDiskCacheApp::URLResponseDiskCacheApp(
     URLResponseDiskCacheDelegate* delegate)
     : task_runner_(task_runner), delegate_(delegate) {}
 
-URLResponseDiskCacheApp::~URLResponseDiskCacheApp() {
-}
+URLResponseDiskCacheApp::~URLResponseDiskCacheApp() {}
 
-void URLResponseDiskCacheApp::Initialize(ApplicationImpl* app) {
-  base::CommandLine command_line(app->args());
+void URLResponseDiskCacheApp::OnInitialize() {
+  base::CommandLine command_line(args());
   bool force_clean = command_line.HasSwitch("clear");
   db_ = URLResponseDiskCacheImpl::CreateDB(task_runner_, force_clean);
 }
 
-bool URLResponseDiskCacheApp::ConfigureIncomingConnection(
+bool URLResponseDiskCacheApp::OnAcceptConnection(
     ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<URLResponseDiskCache>([this](
       const ConnectionContext& connection_context,

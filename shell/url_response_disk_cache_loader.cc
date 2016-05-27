@@ -9,17 +9,15 @@ namespace shell {
 URLResponseDiskCacheLoader::URLResponseDiskCacheLoader(
     scoped_refptr<base::TaskRunner> task_runner,
     mojo::URLResponseDiskCacheDelegate* delegate)
-    : url_response_disk_cache_(task_runner, delegate) {}
+    : url_response_disk_cache_app_(task_runner, delegate) {}
 
-URLResponseDiskCacheLoader::~URLResponseDiskCacheLoader() {
-}
+URLResponseDiskCacheLoader::~URLResponseDiskCacheLoader() {}
 
 void URLResponseDiskCacheLoader::Load(
     const GURL& url,
     mojo::InterfaceRequest<mojo::Application> application_request) {
   DCHECK(application_request.is_pending());
-  application_.reset(new mojo::ApplicationImpl(&url_response_disk_cache_,
-                                               application_request.Pass()));
+  url_response_disk_cache_app_.Bind(application_request.Pass());
 }
 
 }  // namespace shell

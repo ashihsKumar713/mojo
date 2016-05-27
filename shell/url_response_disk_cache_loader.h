@@ -6,7 +6,6 @@
 #define SHELL_URL_RESPONSE_DISK_CACHE_LOADER_H_
 
 #include "base/macros.h"
-#include "base/memory/scoped_ptr.h"
 #include "base/task_runner.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "services/url_response_disk_cache/url_response_disk_cache_app.h"
@@ -26,8 +25,7 @@ class URLResponseDiskCacheLoader : public ApplicationLoader {
       const GURL& url,
       mojo::InterfaceRequest<mojo::Application> application_request) override;
 
-  mojo::URLResponseDiskCacheApp url_response_disk_cache_;
-  scoped_ptr<mojo::ApplicationImpl> application_;
+  mojo::URLResponseDiskCacheApp url_response_disk_cache_app_;
 
   DISALLOW_COPY_AND_ASSIGN(URLResponseDiskCacheLoader);
 };

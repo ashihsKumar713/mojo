@@ -10,9 +10,8 @@
 
 namespace http_server {
 
-HttpServerFactoryImpl::HttpServerFactoryImpl(mojo::ApplicationImpl* app) {
-  app_ = app;
-}
+HttpServerFactoryImpl::HttpServerFactoryImpl(mojo::Shell* shell)
+    : shell_(shell) {}
 
 HttpServerFactoryImpl::~HttpServerFactoryImpl() {
   // Free the http servers.
@@ -77,12 +76,12 @@ void HttpServerFactoryImpl::CreateHttpServer(
   if (key.second) {  // If the port is non-zero.
     if (!port_indicated_servers_.count(key)) {
       port_indicated_servers_[key] =
-          new HttpServerImpl(app_, this, local_address.Pass());
+          new HttpServerImpl(shell_, this, local_address.Pass());
     }
     port_indicated_servers_[key]->AddBinding(server_request.Pass());
   } else {
     HttpServerImpl* server =
-        new HttpServerImpl(app_, this, local_address.Pass());
+        new HttpServerImpl(shell_, this, local_address.Pass());
     server->AddBinding(server_request.Pass());
     port_any_servers_.insert(server);
   }

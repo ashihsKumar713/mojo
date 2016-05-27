@@ -22,8 +22,8 @@ class Shell;
 class AuthenticatingURLLoaderInterceptorFactory
     : public URLLoaderInterceptorFactory {
  public:
-  // TODO(vtl): Maybe this should take an |ApplicationConnectorPtr| instead of a
-  // |Shell*|.
+  // TODO(vtl): Maybe this should take an
+  // |InterfaceHandle<ApplicationConnector>| instead of a |Shell*|.
   AuthenticatingURLLoaderInterceptorFactory(
       mojo::InterfaceRequest<URLLoaderInterceptorFactory> request,
       mojo::InterfaceHandle<authentication::AuthenticationService>

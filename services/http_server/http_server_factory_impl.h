@@ -16,7 +16,7 @@
 #include "mojo/services/network/interfaces/net_address.mojom.h"
 
 namespace mojo {
-class ApplicationImpl;
+class Shell;
 }  // namespace mojo
 
 namespace http_server {
@@ -25,7 +25,9 @@ class HttpServerImpl;
 
 class HttpServerFactoryImpl : public HttpServerFactory {
  public:
-  HttpServerFactoryImpl(mojo::ApplicationImpl* app);
+  // TODO(vtl): Possibly this should take an
+  // |InterfaceHandle<ApplicationConnector>| instead of a |Shell*|.
+  explicit HttpServerFactoryImpl(mojo::Shell* shell);
   ~HttpServerFactoryImpl() override;
 
   void AddBinding(mojo::InterfaceRequest<HttpServerFactory> request);
@@ -54,7 +56,7 @@ class HttpServerFactoryImpl : public HttpServerFactory {
   // other clients.
   std::set<HttpServerImpl*> port_any_servers_;
 
-  mojo::ApplicationImpl* app_;
+  mojo::Shell* const shell_;
 };
 
 }  // namespace http_server

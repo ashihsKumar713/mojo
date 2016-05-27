@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "examples/bank_app/bank.mojom.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/utility/run_loop.h"
 #include "mojo/services/vanadium/security/interfaces/principal.mojom.h"
 
@@ -24,10 +21,10 @@ class LoginHandler {
   }
 };
 
-class BankCustomer : public mojo::ApplicationDelegate {
+class BankCustomer : public mojo::ApplicationImplBase {
  public:
-  void Initialize(mojo::ApplicationImpl* app) override {
-    mojo::ConnectToService(app->shell(), "mojo:principal_service",
+  void OnInitialize() override {
+    mojo::ConnectToService(shell(), "mojo:principal_service",
                            GetProxy(&login_service_));
 
     // Login to the principal service to get a user identity.
@@ -38,7 +35,7 @@ class BankCustomer : public mojo::ApplicationDelegate {
     }
 
     BankPtr bank;
-    mojo::ConnectToService(app->shell(), "mojo:bank", GetProxy(&bank));
+    mojo::ConnectToService(shell(), "mojo:bank", GetProxy(&bank));
     bank->Deposit(500/*usd*/);
     bank->Withdraw(100/*usd*/);
     auto gb_callback = [](const int32_t& balance) {
@@ -47,9 +44,8 @@ class BankCustomer : public mojo::ApplicationDelegate {
     bank->GetBalance(mojo::Callback<void(const int32_t&)>(gb_callback));
     bank.WaitForIncomingResponse();
   }
-  void Quit() override {
-    login_service_->Logout();
-  }
+  void OnQuit() override { login_service_->Logout(); }
+
  private:
   vanadium::PrincipalServicePtr login_service_;
 };
@@ -57,7 +53,6 @@ class BankCustomer : public mojo::ApplicationDelegate {
 }  // namespace examples
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunner runner(
-      std::unique_ptr<examples::BankCustomer>(new examples::BankCustomer()));
-  return runner.Run(application_request);
+  examples::BankCustomer bank_customer;
+  return mojo::RunMainApplication(application_request, &bank_customer);
 }

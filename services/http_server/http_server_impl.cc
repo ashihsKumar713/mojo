@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/services/http_server/cpp/http_server_util.h"
@@ -17,14 +16,14 @@
 
 namespace http_server {
 
-HttpServerImpl::HttpServerImpl(mojo::ApplicationImpl* app,
+HttpServerImpl::HttpServerImpl(mojo::Shell* shell,
                                HttpServerFactoryImpl* factory,
                                mojo::NetAddressPtr requested_local_address)
     : factory_(factory),
       requested_local_address_(requested_local_address.Pass()),
       assigned_port_(0),
       weak_ptr_factory_(this) {
-  mojo::ConnectToService(app->shell(), "mojo:network_service",
+  mojo::ConnectToService(shell, "mojo:network_service",
                          GetProxy(&network_service_));
   Start();
 }

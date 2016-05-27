@@ -9,12 +9,11 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "examples/indirect_service/indirect_service_demo.mojom.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/message_pump/message_pump_mojo.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 
 namespace mojo {
 namespace examples {
@@ -91,13 +90,13 @@ class DemoTask {
 // show that the DemoTask threads are accessing the Integer in parallel.
 // The fact that only one digit appears in each column shows that things
 // are working correctly.
-class IndirectServiceDemoAppDelegate : public ApplicationDelegate {
+class IndirectServiceDemoApp : public ApplicationImplBase {
  public:
-  void Initialize(ApplicationImpl* app) override {
+  void OnInitialize() override {
     IntegerServicePtr indirect_service_delegate;
-    ConnectToService(app->shell(), "mojo:indirect_integer_service",
+    ConnectToService(shell(), "mojo:indirect_integer_service",
                      GetProxy(&indirect_integer_service_));
-    ConnectToService(app->shell(), "mojo:integer_service",
+    ConnectToService(shell(), "mojo:integer_service",
                      GetProxy(&indirect_service_delegate));
     indirect_integer_service_->Set(
         indirect_service_delegate.PassInterfaceHandle());
@@ -106,8 +105,7 @@ class IndirectServiceDemoAppDelegate : public ApplicationDelegate {
       IntegerServicePtr integer_service;
       indirect_integer_service_->Get(GetProxy(&integer_service));
       DemoTaskFinishedCallback finished_callback = base::Bind(
-          &IndirectServiceDemoAppDelegate::FinishDemoTask,
-          base::Unretained(this),
+          &IndirectServiceDemoApp::FinishDemoTask, base::Unretained(this),
           base::Unretained(base::MessageLoop::current()));
       // We're passing the integer_service_ proxy to another thread, so
       // use its MessagePipe.
@@ -127,11 +125,10 @@ class IndirectServiceDemoAppDelegate : public ApplicationDelegate {
   void FinishDemoTask(base::MessageLoop *run_loop,
                       DemoTask* task,
                       const std::vector<int32_t>& results) {
-    run_loop->PostTask(FROM_HERE, base::Bind(
-        &IndirectServiceDemoAppDelegate::DoFinishDemoTask,
-        base::Unretained(this),
-        base::Unretained(task),
-        results));
+    run_loop->PostTask(
+        FROM_HERE,
+        base::Bind(&IndirectServiceDemoApp::DoFinishDemoTask,
+                   base::Unretained(this), base::Unretained(task), results));
   }
 
   void DoFinishDemoTask(DemoTask* task, const std::vector<int32_t>& results) {
@@ -142,19 +139,18 @@ class IndirectServiceDemoAppDelegate : public ApplicationDelegate {
     tasks_.erase(std::remove(tasks_.begin(), tasks_.end(), task), tasks_.end());
     delete task; // Stop the DemoTask's thread etc.
     if (tasks_.empty())
-      ApplicationImpl::Terminate();
+      TerminateMainApplication(MOJO_RESULT_OK);
   }
 
   IndirectIntegerServicePtr indirect_integer_service_;
   std::vector<DemoTask*> tasks_;
 };
 
-
 }  // namespace examples
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(
-      new mojo::examples::IndirectServiceDemoAppDelegate);
-  return runner.Run(application_request);
+  mojo::examples::IndirectServiceDemoApp indirect_service_demo_app;
+  return mojo::RunMainApplication(application_request,
+                                  &indirect_service_demo_app);
 }

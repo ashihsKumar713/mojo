@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/bindings/callback.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
@@ -38,33 +36,26 @@ class PingableImpl : public Pingable {
   std::string connection_url_;
 };
 
-class PingableApp : public mojo::ApplicationDelegate {
+class PingableApp : public mojo::ApplicationImplBase {
  public:
   PingableApp() {}
   ~PingableApp() override {}
 
  private:
-  // ApplicationDelegate:
-  void Initialize(mojo::ApplicationImpl* impl) override {
-    app_url_ = impl->url();
-  }
-
-  bool ConfigureIncomingConnection(
+  // ApplicationImplBase:
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<Pingable>(
         [this](const mojo::ConnectionContext& connection_context,
                mojo::InterfaceRequest<Pingable> pingable_request) {
-          new PingableImpl(pingable_request.Pass(), app_url_,
+          new PingableImpl(pingable_request.Pass(), url(),
                            connection_context.connection_url);
         });
     return true;
   }
-
-  std::string app_url_;
 };
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunner runner(
-      std::unique_ptr<PingableApp>(new PingableApp()));
-  return runner.Run(application_request);
+  PingableApp pingable_app;
+  return mojo::RunMainApplication(application_request, &pingable_app);
 }

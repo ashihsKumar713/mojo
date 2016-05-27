@@ -6,15 +6,11 @@
 // is the blocking, synchronous version of mojom interface calls (typically used
 // via InterfacePtr<>).
 
-#include <memory>
-#include <utility>
-
 #include "examples/echo/echo.mojom-sync.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/bindings/synchronous_interface_ptr.h"
 #include "mojo/public/cpp/environment/logging.h"
 #include "mojo/public/cpp/utility/run_loop.h"
@@ -22,12 +18,11 @@
 namespace mojo {
 namespace examples {
 
-class EchoClientDelegate : public ApplicationDelegate {
+class EchoClientApp : public ApplicationImplBase {
  public:
-  void Initialize(ApplicationImpl* app) override {
+  void OnInitialize() override {
     SynchronousInterfacePtr<Echo> echo;
-    ConnectToService(app->shell(), "mojo:echo_server",
-                     GetSynchronousProxy(&echo));
+    ConnectToService(shell(), "mojo:echo_server", GetSynchronousProxy(&echo));
 
     mojo::String out = "yo!";
     MOJO_CHECK(echo->EchoString("hello", &out));
@@ -40,8 +35,6 @@ class EchoClientDelegate : public ApplicationDelegate {
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunner runner(
-      std::unique_ptr<mojo::examples::EchoClientDelegate>(
-          new mojo::examples::EchoClientDelegate()));
-  return runner.Run(application_request);
+  mojo::examples::EchoClientApp echo_client_app;
+  return mojo::RunMainApplication(application_request, &echo_client_app);
 }
