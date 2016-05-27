@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "base/logging.h"
 #include "mojo/nacl/nonsfi/file_util.h"
 #include "mojo/nacl/nonsfi/nexe_launcher_nonsfi.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/nacl/nonsfi/kPnaclTranslatorCompile.h"
@@ -41,13 +39,12 @@ class StrongBindingPexeCompilerImpl : public PexeCompilerImpl {
   StrongBinding<PexeCompilerInit> strong_binding_;
 };
 
-class MultiPexeCompiler : public ApplicationDelegate {
+class MultiPexeCompiler : public ApplicationImplBase {
  public:
   MultiPexeCompiler() {}
 
-  // From ApplicationDelegate
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override {
+  // From ApplicationImplBase
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<PexeCompilerInit>(
         [](const ConnectionContext& connection_context,
            InterfaceRequest<PexeCompilerInit> request) {
@@ -61,7 +58,6 @@ class MultiPexeCompiler : public ApplicationDelegate {
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunner runner(std::unique_ptr<mojo::nacl::MultiPexeCompiler>(
-      new mojo::nacl::MultiPexeCompiler()));
-  return runner.Run(application_request);
+  mojo::nacl::MultiPexeCompiler multi_pexe_compiler;
+  return mojo::RunMainApplication(application_request, &multi_pexe_compiler);
 }

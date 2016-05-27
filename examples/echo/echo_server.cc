@@ -7,8 +7,8 @@
 #include "examples/echo/echo.mojom.h"
 #include "mojo/common/binding_set.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 
@@ -50,13 +50,12 @@ class StrongBindingEchoImpl : public EchoImpl {
 };
 
 // MultiServer creates a new object to handle each message pipe.
-class MultiServer : public mojo::ApplicationDelegate {
+class MultiServer : public mojo::ApplicationImplBase {
  public:
   MultiServer() {}
 
-  // From ApplicationDelegate
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override {
+  // From ApplicationImplBase
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<Echo>(
         [](const mojo::ConnectionContext& connection_context,
            mojo::InterfaceRequest<Echo> echo_request) {
@@ -70,13 +69,12 @@ class MultiServer : public mojo::ApplicationDelegate {
 
 // SingletonServer uses the same object to handle all message pipes. Useful
 // for stateless operation.
-class SingletonServer : public mojo::ApplicationDelegate {
+class SingletonServer : public mojo::ApplicationImplBase {
  public:
   SingletonServer() {}
 
-  // From ApplicationDelegate
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override {
+  // From ApplicationImplBase
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<Echo>(
         [this](const mojo::ConnectionContext& connection_context,
                mojo::InterfaceRequest<Echo> echo_request) {
@@ -99,13 +97,12 @@ class SingletonServer : public mojo::ApplicationDelegate {
 // not reliable. There's a race condition because a second client could bind
 // to the server before the first client called EchoString(). Therefore, this
 // is an example of how not to write your code.
-class OneAtATimeServer : public mojo::ApplicationDelegate {
+class OneAtATimeServer : public mojo::ApplicationImplBase {
  public:
   OneAtATimeServer() : binding_(&echo_impl_) {}
 
-  // From ApplicationDelegate
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override {
+  // From ApplicationImplBase
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<Echo>(
         [this](const mojo::ConnectionContext& connection_context,
                mojo::InterfaceRequest<Echo> echo_request) {
@@ -125,10 +122,8 @@ class OneAtATimeServer : public mojo::ApplicationDelegate {
 
 MojoResult MojoMain(MojoHandle application_request) {
   // Uncomment one of the three servers at a time to see it work:
-  mojo::ApplicationRunner runner(std::unique_ptr<mojo::examples::MultiServer>(
-      new mojo::examples::MultiServer()));
-  // mojo::ApplicationRunner runner(new mojo::examples::SingletonServer());
-  // mojo::ApplicationRunner runner(new mojo::examples::OneAtATimeServer());
-
-  return runner.Run(application_request);
+  mojo::examples::MultiServer server_app;
+  // mojo::examples::SingletonServer server_app;
+  // mojo::examples::OneAtATimeServer server_app;
+  return mojo::RunMainApplication(application_request, &server_app);
 }

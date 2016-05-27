@@ -4,13 +4,12 @@
 
 #include <stdio.h>
 
-#include <memory>
 #include <utility>
 
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "mojo/services/content_handler/interfaces/content_handler.mojom.h"
@@ -92,15 +91,12 @@ class ContentHandlerImpl : public ContentHandler {
   MOJO_DISALLOW_COPY_AND_ASSIGN(ContentHandlerImpl);
 };
 
-class ContentHandlerApp : public ApplicationDelegate {
+class ContentHandlerApp : public ApplicationImplBase {
  public:
   ContentHandlerApp() {}
   ~ContentHandlerApp() override {}
 
-  void Initialize(ApplicationImpl* app) override {}
-
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override {
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<ContentHandler>(
         [](const ConnectionContext& connection_context,
            InterfaceRequest<ContentHandler> content_handler_request) {
@@ -117,8 +113,6 @@ class ContentHandlerApp : public ApplicationDelegate {
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunner runner(
-      std::unique_ptr<mojo::examples::ContentHandlerApp>(
-          new mojo::examples::ContentHandlerApp()));
-  return runner.Run(application_request);
+  mojo::examples::ContentHandlerApp content_handler_app;
+  return mojo::RunMainApplication(application_request, &content_handler_app);
 }

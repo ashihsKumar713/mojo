@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <cstdlib>
-#include <memory>
+#include <stdlib.h>
 
 #include "mojo/common/binding_set.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/services/device_info/interfaces/device_info.mojom.h"
 
@@ -18,7 +17,7 @@ namespace device_info {
 
 // This is a native Mojo application which implements |DeviceInfo| interface for
 // Linux.
-class DeviceInfo : public ApplicationDelegate, public mojo::DeviceInfo {
+class DeviceInfoApp : public ApplicationImplBase, public mojo::DeviceInfo {
  public:
   // We look for the 'DISPLAY' environment variable. If present, then we assume
   // it to be a desktop, else we assume it to be a commandline
@@ -27,9 +26,8 @@ class DeviceInfo : public ApplicationDelegate, public mojo::DeviceInfo {
                                    : DeviceInfo::DeviceType::HEADLESS);
   }
 
-  // |ApplicationDelegate| override.
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override {
+  // |ApplicationImplBase| override.
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<mojo::DeviceInfo>(
         [this](const ConnectionContext& connection_context,
                InterfaceRequest<mojo::DeviceInfo> device_info_request) {
@@ -47,8 +45,6 @@ class DeviceInfo : public ApplicationDelegate, public mojo::DeviceInfo {
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunner runner(
-      std::unique_ptr<mojo::services::device_info::DeviceInfo>(
-          new mojo::services::device_info::DeviceInfo()));
-  return runner.Run(application_request);
+  mojo::services::device_info::DeviceInfoApp device_info_app;
+  return mojo::RunMainApplication(application_request, &device_info_app);
 }

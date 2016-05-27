@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "examples/indirect_service/indirect_service_demo.mojom.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_runner.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 
@@ -29,10 +27,9 @@ class IntegerServiceImpl : public IntegerService {
   StrongBinding<IntegerService> binding_;
 };
 
-class IntegerServiceAppDelegate : public ApplicationDelegate {
+class IntegerServiceApp : public ApplicationImplBase {
  public:
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override {
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<IntegerService>(
         [](const ConnectionContext& connection_context,
            InterfaceRequest<IntegerService> request) {
@@ -46,9 +43,7 @@ class IntegerServiceAppDelegate : public ApplicationDelegate {
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunner runner(
-      std::unique_ptr<mojo::examples::IntegerServiceAppDelegate>(
-          new mojo::examples::IntegerServiceAppDelegate));
-  return runner.Run(application_request);
+  mojo::examples::IntegerServiceApp integer_service_app;
+  return mojo::RunMainApplication(application_request, &integer_service_app);
 }
 
