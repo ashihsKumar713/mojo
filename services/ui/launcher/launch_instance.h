@@ -15,6 +15,7 @@
 #include "mojo/services/native_viewport/interfaces/native_viewport.mojom.h"
 #include "mojo/services/native_viewport/interfaces/native_viewport_event_dispatcher.mojom.h"
 #include "mojo/services/ui/views/interfaces/view_manager.mojom.h"
+#include "mojo/services/ui/views/interfaces/view_provider.mojom.h"
 
 namespace launcher {
 
@@ -23,7 +24,8 @@ class LauncherViewTree;
 class LaunchInstance : public mojo::NativeViewportEventDispatcher {
  public:
   LaunchInstance(mojo::ApplicationImpl* app_impl,
-                 const std::string& app_url,
+                 mojo::NativeViewportPtr viewport,
+                 mojo::ui::ViewProviderPtr view_provider,
                  mojo::gfx::composition::Compositor* compositor,
                  mojo::ui::ViewManager* view_manager,
                  const base::Closure& shutdown_callback);
@@ -43,13 +45,13 @@ class LaunchInstance : public mojo::NativeViewportEventDispatcher {
   void RequestUpdatedViewportMetrics();
 
   mojo::ApplicationImpl* app_impl_;
-  std::string app_url_;
+  mojo::NativeViewportPtr viewport_;
+  mojo::ui::ViewProviderPtr view_provider_;
 
   mojo::gfx::composition::Compositor* compositor_;
   mojo::ui::ViewManager* view_manager_;
   base::Closure shutdown_callback_;
 
-  mojo::NativeViewportPtr viewport_;
   mojo::Binding<NativeViewportEventDispatcher>
       viewport_event_dispatcher_binding_;
 

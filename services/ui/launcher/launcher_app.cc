@@ -105,11 +105,32 @@ bool LauncherApp::ConfigureIncomingConnection(
 }
 
 void LauncherApp::Launch(const mojo::String& application_url) {
+  DVLOG(1) << "Launching " << application_url;
+
+  mojo::NativeViewportPtr viewport;
+  mojo::ConnectToService(app_impl_->shell(), "mojo:native_viewport_service",
+                         GetProxy(&viewport));
+
+  mojo::ui::ViewProviderPtr view_provider;
+  mojo::ConnectToService(app_impl_->shell(), application_url,
+                         GetProxy(&view_provider));
+
+  LaunchInternal(viewport.Pass(), view_provider.Pass());
+}
+void LauncherApp::LaunchOnViewport(
+    mojo::InterfaceHandle<mojo::NativeViewport> viewport,
+    mojo::InterfaceHandle<mojo::ui::ViewProvider> view_provider) {
+  LaunchInternal(mojo::NativeViewportPtr::Create(viewport.Pass()),
+                 mojo::ui::ViewProviderPtr::Create(view_provider.Pass()));
+}
+
+void LauncherApp::LaunchInternal(mojo::NativeViewportPtr viewport,
+                                 mojo::ui::ViewProviderPtr view_provider) {
   uint32_t next_id = next_id_++;
   std::unique_ptr<LaunchInstance> instance(new LaunchInstance(
-      app_impl_, application_url, compositor_.get(), view_manager_.get(),
-      base::Bind(&LauncherApp::OnLaunchTermination, base::Unretained(this),
-                 next_id)));
+      app_impl_, viewport.Pass(), view_provider.Pass(), compositor_.get(),
+      view_manager_.get(), base::Bind(&LauncherApp::OnLaunchTermination,
+                                      base::Unretained(this), next_id)));
   instance->Launch();
   launch_instances_.emplace(next_id, std::move(instance));
 }

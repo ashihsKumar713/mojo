@@ -12,18 +12,19 @@
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
-#include "mojo/services/ui/views/interfaces/view_provider.mojom.h"
 #include "services/ui/launcher/launcher_view_tree.h"
 
 namespace launcher {
 
 LaunchInstance::LaunchInstance(mojo::ApplicationImpl* app_impl,
-                               const std::string& app_url,
+                               mojo::NativeViewportPtr viewport,
+                               mojo::ui::ViewProviderPtr view_provider,
                                mojo::gfx::composition::Compositor* compositor,
                                mojo::ui::ViewManager* view_manager,
                                const base::Closure& shutdown_callback)
     : app_impl_(app_impl),
-      app_url_(app_url),
+      viewport_(viewport.Pass()),
+      view_provider_(view_provider.Pass()),
       compositor_(compositor),
       view_manager_(view_manager),
       shutdown_callback_(shutdown_callback),
@@ -32,21 +33,15 @@ LaunchInstance::LaunchInstance(mojo::ApplicationImpl* app_impl,
 LaunchInstance::~LaunchInstance() {}
 
 void LaunchInstance::Launch() {
-  DVLOG(1) << "Launching " << app_url_;
   TRACE_EVENT0("launcher", __func__);
 
   InitViewport();
 
-  mojo::ui::ViewProviderPtr client_view_provider;
-  mojo::ConnectToService(app_impl_->shell(), app_url_,
-                         GetProxy(&client_view_provider));
-
-  client_view_provider->CreateView(GetProxy(&client_view_owner_), nullptr);
+  view_provider_->CreateView(GetProxy(&client_view_owner_), nullptr);
+  view_provider_.reset();
 }
 
 void LaunchInstance::InitViewport() {
-  mojo::ConnectToService(app_impl_->shell(), "mojo:native_viewport_service",
-                         GetProxy(&viewport_));
   viewport_.set_connection_error_handler(base::Bind(
       &LaunchInstance::OnViewportConnectionError, base::Unretained(this)));
 

@@ -32,7 +32,12 @@ class LauncherApp : public mojo::ApplicationDelegate, public Launcher {
 
   // |Launcher|:
   void Launch(const mojo::String& application_url) override;
+  void LaunchOnViewport(
+      mojo::InterfaceHandle<mojo::NativeViewport> viewport,
+      mojo::InterfaceHandle<mojo::ui::ViewProvider> view_provider) override;
 
+  void LaunchInternal(mojo::NativeViewportPtr viewport,
+                      mojo::ui::ViewProviderPtr view_provider);
   void OnLaunchTermination(uint32_t id);
 
   void OnCompositorConnectionError();
