@@ -18,9 +18,9 @@
 #include "services/media/framework/parts/demux.h"
 #include "services/media/framework/parts/null_sink.h"
 #include "services/media/framework/parts/reader.h"
-#include "services/media/framework/util/incident.h"
 #include "services/media/framework_mojo/mojo_producer.h"
 #include "services/media/framework_mojo/mojo_pull_mode_producer.h"
+#include "services/util/cpp/incident.h"
 
 namespace mojo {
 namespace media {

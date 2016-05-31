@@ -12,7 +12,7 @@
 #include "base/synchronization/lock.h"
 #include "services/media/framework/parts/reader.h"
 #include "services/media/framework/parts/sparse_byte_buffer.h"
-#include "services/media/framework/util/incident.h"
+#include "services/util/cpp/incident.h"
 
 namespace mojo {
 namespace media {

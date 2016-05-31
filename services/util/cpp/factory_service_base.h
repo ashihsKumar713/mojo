@@ -27,8 +27,8 @@ class FactoryServiceBase : public ApplicationDelegate {
 
     // Returns the ApplicationImpl.
     ApplicationImpl* app() {
-      DCHECK(owner_->app_);
-      return owner_->app_;
+      DCHECK(owner_->app());
+      return owner_->app();
     }
 
     // Tells the factory service to release this product.
@@ -71,6 +71,8 @@ class FactoryServiceBase : public ApplicationDelegate {
   FactoryServiceBase();
 
   ~FactoryServiceBase() override;
+
+  ApplicationImpl* app() { return app_; }
 
   // ApplicationDelegate implementation.
   void Initialize(ApplicationImpl* app) override;

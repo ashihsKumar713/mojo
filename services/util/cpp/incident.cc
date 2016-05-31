@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/media/framework/util/incident.h"
+#include "services/util/cpp/incident.h"
 
 namespace mojo {
-namespace media {
 
 Incident::Incident() {}
 
@@ -50,5 +49,4 @@ void ThreadsafeIncident::Occur() {
   }
 }
 
-}  // namespace media
 }  // namespace mojo

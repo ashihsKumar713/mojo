@@ -10,7 +10,7 @@
 #include "base/single_thread_task_runner.h"
 #include "mojo/services/media/core/interfaces/seeking_reader.mojom.h"
 #include "services/media/framework/parts/reader.h"
-#include "services/media/framework/util/incident.h"
+#include "services/util/cpp/incident.h"
 
 namespace mojo {
 namespace media {

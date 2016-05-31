@@ -78,8 +78,6 @@ source_set("framework") {
     "util/conversion_pipeline_builder.h",
     "util/formatting.cc",
     "util/formatting.h",
-    "util/incident.cc",
-    "util/incident.h",
     "util/lpcm_util.cc",
     "util/lpcm_util.h",
     "util/safe_clone.h",
@@ -89,6 +87,7 @@ source_set("framework") {
     "//base",
     "//mojo/public/cpp/application",
     "//mojo/public/cpp/bindings:callback",
+    "//services/util/cpp",
   ]
 }
 
@@ -98,7 +97,6 @@ mojo_native_application("apptests") {
   testonly = true
 
   sources = [
-    "test/incident_test.cc",
     "test/sparse_byte_buffer_test.cc",
     "test/test_base.h",
   ]
@@ -109,5 +107,6 @@ mojo_native_application("apptests") {
     "//mojo/application",
     "//mojo/application:test_support",
     "//services/media/framework_create",
+    "//services/util/cpp",
   ]
 }

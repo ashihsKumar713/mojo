@@ -86,6 +86,7 @@ group("tests") {
     "//services/native_support:apptests",
     "//services/prediction:apptests",
     "//services/ui/view_manager:view_manager_apptests",
+    "//services/util/cpp:apptests",
   ]
 
   # TODO: fix ffmpeg build

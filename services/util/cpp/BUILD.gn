@@ -10,6 +10,8 @@ source_set("cpp") {
   sources = [
     "factory_service_base.cc",
     "factory_service_base.h",
+    "incident.cc",
+    "incident.h",
   ]
 
   deps = [
@@ -17,5 +19,22 @@ source_set("cpp") {
     "//mojo/application",
     "//mojo/common",
     "//mojo/public/cpp/application",
+  ]
+}
+
+mojo_native_application("apptests") {
+  output_name = "services_util_cpp_apptests"
+
+  testonly = true
+
+  sources = [
+    "test/incident_test.cc",
+  ]
+
+  deps = [
+    ":cpp",
+    "//base",
+    "//mojo/application",
+    "//mojo/application:test_support",
   ]
 }

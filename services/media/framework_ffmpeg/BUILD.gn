@@ -48,6 +48,7 @@ source_set("framework_ffmpeg") {
     "//base",
     "//mojo/common",
     "//services/media/framework",
+    "//services/util/cpp",
     "//third_party/ffmpeg",
   ]
 

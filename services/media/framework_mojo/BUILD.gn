@@ -31,5 +31,6 @@ source_set("framework_mojo") {
     "//mojo/services/media/core/interfaces",
     "//mojo/services/network/interfaces",
     "//services/media/framework",
+    "//services/util/cpp",
   ]
 }

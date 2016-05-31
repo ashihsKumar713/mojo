@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/media/framework/test/test_base.h"
-#include "services/media/framework/util/incident.h"
+#include "services/util/cpp/incident.h"
+#include "services/util/cpp/test/test_base.h"
 
 namespace mojo {
-namespace media {
 namespace {
 
 class IncidentTest : public TestBase {};
@@ -216,5 +215,4 @@ TEST_F(ThreadsafeIncidentTest, When_After_Delete) {
 }
 
 }  // namespace
-}  // namespace media
 }  // namespace mojo
