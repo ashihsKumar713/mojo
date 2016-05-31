@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
@@ -75,6 +76,7 @@ class HttpHandler : public ApplicationImplBase,
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
+  mojo::ScopedChromiumInit init;
   mojo::examples::HttpHandler http_handler;
-  return mojo::RunMainApplication(application_request, &http_handler);
+  return mojo::RunApplication(application_request, &http_handler);
 }

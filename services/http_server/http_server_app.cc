@@ -41,5 +41,5 @@ class HttpServerApp : public mojo::ApplicationImplBase {
 
 MojoResult MojoMain(MojoHandle application_request) {
   http_server::HttpServerApp http_server_app;
-  return mojo::RunMainApplication(application_request, &http_server_app);
+  return mojo::RunApplication(application_request, &http_server_app);
 }

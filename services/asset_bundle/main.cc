@@ -4,6 +4,7 @@
 
 #include "base/macros.h"
 #include "base/threading/sequenced_worker_pool.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/run_application.h"
@@ -25,8 +26,9 @@ class AssetBundleApp : public ApplicationImplBase {
         [this](const ConnectionContext& connection_context,
                InterfaceRequest<AssetUnpacker> asset_unpacker_request) {
           // Lazily initialize |sequenced_worker_pool_|. (We can't create it in
-          // the constructor, since AtExitManager is only created in
-          // mojo::RunMainApplication().)
+          // the constructor, since the message loop (which implies that there's
+          // a current SingleThreadTaskRunner) is only created in
+          // mojo::RunApplication().)
           if (!sequenced_worker_pool_) {
             // TODO(vtl): What's the "right" way to choose the maximum number of
             // threads?
@@ -53,6 +55,7 @@ class AssetBundleApp : public ApplicationImplBase {
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
+  mojo::ScopedChromiumInit init;
   mojo::asset_bundle::AssetBundleApp asset_bundle_app;
-  return mojo::RunMainApplication(application_request, &asset_bundle_app);
+  return mojo::RunApplication(application_request, &asset_bundle_app);
 }

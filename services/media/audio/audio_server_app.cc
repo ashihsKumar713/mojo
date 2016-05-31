@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/logging.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
@@ -33,6 +34,7 @@ bool AudioServerApp::OnAcceptConnection(
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle app_request) {
+  mojo::ScopedChromiumInit init;
   mojo::media::audio::AudioServerApp audio_server_app;
-  return mojo::RunMainApplication(app_request, &audio_server_app);
+  return mojo::RunApplication(app_request, &audio_server_app);
 }

@@ -114,5 +114,5 @@ class ContentHandlerApp : public ApplicationImplBase {
 
 MojoResult MojoMain(MojoHandle application_request) {
   mojo::examples::ContentHandlerApp content_handler_app;
-  return mojo::RunMainApplication(application_request, &content_handler_app);
+  return mojo::RunApplication(application_request, &content_handler_app);
 }

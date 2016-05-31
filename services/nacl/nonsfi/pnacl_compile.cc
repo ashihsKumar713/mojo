@@ -59,5 +59,5 @@ class MultiPexeCompiler : public ApplicationImplBase {
 
 MojoResult MojoMain(MojoHandle application_request) {
   mojo::nacl::MultiPexeCompiler multi_pexe_compiler;
-  return mojo::RunMainApplication(application_request, &multi_pexe_compiler);
+  return mojo::RunApplication(application_request, &multi_pexe_compiler);
 }

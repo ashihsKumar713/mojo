@@ -4,6 +4,7 @@
 
 #include "services/prediction/prediction_service_impl.h"
 
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/run_application.h"
@@ -52,6 +53,7 @@ class PredictionServiceApp : public mojo::ApplicationImplBase {
 }  // namespace prediction
 
 MojoResult MojoMain(MojoHandle application_request) {
+  mojo::ScopedChromiumInit init;
   prediction::PredictionServiceApp prediction_service_app;
-  return mojo::RunMainApplication(application_request, &prediction_service_app);
+  return mojo::RunApplication(application_request, &prediction_service_app);
 }

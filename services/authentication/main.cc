@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "mojo/common/binding_set.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
@@ -56,7 +57,7 @@ class GoogleAccountManagerApp : public mojo::ApplicationImplBase {
 }  // namespace authentication
 
 MojoResult MojoMain(MojoHandle application_request) {
+  mojo::ScopedChromiumInit init;
   authentication::GoogleAccountManagerApp google_account_manager_app;
-  return mojo::RunMainApplication(application_request,
-                                  &google_account_manager_app);
+  return mojo::RunApplication(application_request, &google_account_manager_app);
 }

@@ -25,7 +25,7 @@
 //
 //  MojoResult MojoMain(MojoHandle app_request) {
 //    MyApp app;
-//    return mojo::RunMainApplication(&app);
+//    return mojo::RunApplication(&app);
 //  }
 
 #ifndef MOJO_SERVICES_LOG_CPP_LOG_CLIENT_H_

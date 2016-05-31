@@ -43,5 +43,5 @@ bool TestRequestTrackerApplication::OnAcceptConnection(
 
 MojoResult MojoMain(MojoHandle application_request) {
   mojo::test::TestRequestTrackerApplication app;
-  return mojo::RunMainApplication(application_request, &app);
+  return mojo::RunApplication(application_request, &app);
 }

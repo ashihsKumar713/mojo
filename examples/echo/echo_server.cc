@@ -125,5 +125,5 @@ MojoResult MojoMain(MojoHandle application_request) {
   mojo::examples::MultiServer server_app;
   // mojo::examples::SingletonServer server_app;
   // mojo::examples::OneAtATimeServer server_app;
-  return mojo::RunMainApplication(application_request, &server_app);
+  return mojo::RunApplication(application_request, &server_app);
 }

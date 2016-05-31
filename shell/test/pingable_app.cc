@@ -57,5 +57,5 @@ class PingableApp : public mojo::ApplicationImplBase {
 
 MojoResult MojoMain(MojoHandle application_request) {
   PingableApp pingable_app;
-  return mojo::RunMainApplication(application_request, &pingable_app);
+  return mojo::RunApplication(application_request, &pingable_app);
 }

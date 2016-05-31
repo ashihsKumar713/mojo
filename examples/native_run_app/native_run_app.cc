@@ -23,6 +23,7 @@
 #include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
@@ -252,6 +253,7 @@ class NativeRunApp : public mojo::ApplicationImplBase {
 };
 
 MojoResult MojoMain(MojoHandle application_request) {
+  mojo::ScopedChromiumInit init;
   NativeRunApp native_run_app;
-  return mojo::RunMainApplication(application_request, &native_run_app);
+  return mojo::RunApplication(application_request, &native_run_app);
 }

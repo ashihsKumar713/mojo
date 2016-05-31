@@ -60,5 +60,5 @@ class HelloMojoServerApp : public mojo::ApplicationImplBase {
 
 MojoResult MojoMain(MojoHandle application_request) {
   HelloMojoServerApp hello_mojo_server_app;
-  return mojo::RunMainApplication(application_request, &hello_mojo_server_app);
+  return mojo::RunApplication(application_request, &hello_mojo_server_app);
 }

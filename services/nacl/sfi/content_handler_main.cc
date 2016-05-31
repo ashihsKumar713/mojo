@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "mojo/application/content_handler_factory.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/message_pump/message_pump_mojo.h"
 #include "mojo/nacl/sfi/nacl_bindings/monacl_sel_main.h"
 #include "mojo/public/c/system/main.h"
@@ -150,6 +151,7 @@ class NaClContentHandler : public mojo::ApplicationImplBase,
 }  // namespace nacl
 
 MojoResult MojoMain(MojoHandle application_request) {
+  mojo::ScopedChromiumInit init;
   nacl::content_handler::NaClContentHandler nacl_content_handler;
-  return mojo::RunMainApplication(application_request, &nacl_content_handler);
+  return mojo::RunApplication(application_request, &nacl_content_handler);
 }

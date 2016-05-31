@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NATIVE_VIEWPORT_APP_DELEGATE_OZONE_H_
-#define SERVICES_NATIVE_VIEWPORT_APP_DELEGATE_OZONE_H_
+#ifndef SERVICES_NATIVE_VIEWPORT_OZONE_NATIVE_VIEWPORT_APP_OZONE_H_
+#define SERVICES_NATIVE_VIEWPORT_OZONE_NATIVE_VIEWPORT_APP_OZONE_H_
 
-#include "services/native_viewport/app_delegate.h"
+#include "services/native_viewport/native_viewport_app.h"
 #include "services/native_viewport/ozone/display_manager.h"
 
 namespace native_viewport {
 
-class NativeViewportOzoneAppDelegate : public NativeViewportAppDelegate {
+class NativeViewportAppOzone : public NativeViewportApp {
  public:
-  using NativeViewportAppDelegate::Create;
+  using NativeViewportApp::Create;
 
-  void Initialize(mojo::ApplicationImpl* application) override;
-  bool ConfigureIncomingConnection(
+  void OnInitialize() override;
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override;
 
  private:
@@ -24,4 +24,4 @@ class NativeViewportOzoneAppDelegate : public NativeViewportAppDelegate {
 
 }  // namespace native_viewport
 
-#endif
+#endif  // SERVICES_NATIVE_VIEWPORT_OZONE_NATIVE_VIEWPORT_APP_OZONE_H_

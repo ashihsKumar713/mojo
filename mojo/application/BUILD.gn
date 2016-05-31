@@ -11,11 +11,11 @@ source_set("application") {
   ]
 
   public_deps = [
+    "//mojo/environment:chromium",
     "//mojo/public/cpp/application",
   ]
   deps = [
     "//base",
-    "//mojo/environment:chromium",
     "//mojo/message_pump",
     "//mojo/public/cpp/system",
   ]

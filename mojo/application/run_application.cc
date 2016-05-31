@@ -9,8 +9,9 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/debug/stack_trace.h"
+#include "base/lazy_instance.h"
 #include "base/message_loop/message_loop.h"
-#include "base/threading/thread_local_storage.h"
+#include "base/threading/thread_local.h"
 #include "build/build_config.h"
 #include "mojo/application/run_application_options_chromium.h"
 #include "mojo/message_pump/message_pump_mojo.h"
@@ -20,8 +21,6 @@
 namespace mojo {
 
 namespace {
-
-base::ThreadLocalStorage::StaticSlot g_current_result_holder = TLS_INITIALIZER;
 
 // We store a pointer to a |ResultHolder|, which just stores a |MojoResult|, in
 // TLS so that |TerminateApplication()| can provide the result that
@@ -36,30 +35,18 @@ struct ResultHolder {
   MojoResult result = MOJO_RESULT_OK;
 };
 
+base::LazyInstance<base::ThreadLocalPointer<ResultHolder>>::Leaky
+    g_current_result_holder = LAZY_INSTANCE_INITIALIZER;
+
 }  // namespace
-
-MojoResult RunMainApplication(MojoHandle application_request_handle,
-                              ApplicationImplBase* application_impl,
-                              const RunApplicationOptions* options) {
-  base::CommandLine::Init(0, nullptr);
-  base::AtExitManager at_exit;
-
-  g_current_result_holder.Initialize(nullptr);
-
-#if !defined(NDEBUG) && !defined(OS_NACL)
-  base::debug::EnableInProcessStackDumping();
-#endif
-
-  return RunApplication(application_request_handle, application_impl, options);
-}
 
 MojoResult RunApplication(MojoHandle application_request_handle,
                           ApplicationImplBase* application_impl,
                           const RunApplicationOptions* options) {
-  DCHECK(!g_current_result_holder.Get());
+  DCHECK(!g_current_result_holder.Pointer()->Get());
 
   ResultHolder result_holder;
-  g_current_result_holder.Set(&result_holder);
+  g_current_result_holder.Pointer()->Set(&result_holder);
 
   // Note: If |options| is non-null, it better point to a
   // |RunApplicationOptionsChromium|.
@@ -76,7 +63,7 @@ MojoResult RunApplication(MojoHandle application_request_handle,
       MakeScopedHandle(MessagePipeHandle(application_request_handle))));
   loop->Run();
 
-  g_current_result_holder.Set(nullptr);
+  g_current_result_holder.Pointer()->Set(nullptr);
 
   // TODO(vtl): We'd like to enable the following assertion, but we quit the
   // current message loop directly in various places.
@@ -85,16 +72,11 @@ MojoResult RunApplication(MojoHandle application_request_handle,
   return result_holder.result;
 }
 
-void TerminateMainApplication(MojoResult result) {
-  TerminateApplication(result);
-}
-
 void TerminateApplication(MojoResult result) {
   DCHECK(base::MessageLoop::current()->is_running());
   base::MessageLoop::current()->Quit();
 
-  ResultHolder* result_holder =
-      static_cast<ResultHolder*>(g_current_result_holder.Get());
+  ResultHolder* result_holder = g_current_result_holder.Pointer()->Get();
   DCHECK(result_holder);
   result_holder->result = result;
 #if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)

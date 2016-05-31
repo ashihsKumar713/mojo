@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "mojo/application/content_handler_factory.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/file_utils/file_util.h"
 #include "mojo/message_pump/message_pump_mojo.h"
 #include "mojo/nacl/nonsfi/file_util.h"
@@ -162,6 +163,7 @@ class PexeContentHandler : public mojo::ApplicationImplBase,
 }  // namespace nacl
 
 MojoResult MojoMain(MojoHandle application_request) {
+  mojo::ScopedChromiumInit init;
   nacl::content_handler::PexeContentHandler pexe_content_handler;
-  return mojo::RunMainApplication(application_request, &pexe_content_handler);
+  return mojo::RunApplication(application_request, &pexe_content_handler);
 }

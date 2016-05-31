@@ -56,5 +56,5 @@ class MultiPexeLinker : public ApplicationImplBase {
 
 MojoResult MojoMain(MojoHandle application_request) {
   mojo::nacl::MultiPexeLinker multi_pexe_linker;
-  return mojo::RunMainApplication(application_request, &multi_pexe_linker);
+  return mojo::RunApplication(application_request, &multi_pexe_linker);
 }

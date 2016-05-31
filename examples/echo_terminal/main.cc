@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "mojo/common/binding_set.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/run_application.h"
@@ -129,6 +130,7 @@ class EchoTerminalApp : public mojo::ApplicationImplBase,
 };
 
 MojoResult MojoMain(MojoHandle application_request) {
+  mojo::ScopedChromiumInit init;
   EchoTerminalApp echo_terminal_app;
-  return mojo::RunMainApplication(application_request, &echo_terminal_app);
+  return mojo::RunApplication(application_request, &echo_terminal_app);
 }

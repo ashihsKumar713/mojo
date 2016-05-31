@@ -557,5 +557,5 @@ void PlayWAVApp::Shutdown() {
 
 MojoResult MojoMain(MojoHandle app_request) {
   mojo::media::audio::examples::PlayWAVApp play_wav_app;
-  return mojo::RunMainApplication(app_request, &play_wav_app);
+  return mojo::RunApplication(app_request, &play_wav_app);
 }

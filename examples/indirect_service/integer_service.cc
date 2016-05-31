@@ -44,6 +44,6 @@ class IntegerServiceApp : public ApplicationImplBase {
 
 MojoResult MojoMain(MojoHandle application_request) {
   mojo::examples::IntegerServiceApp integer_service_app;
-  return mojo::RunMainApplication(application_request, &integer_service_app);
+  return mojo::RunApplication(application_request, &integer_service_app);
 }
 

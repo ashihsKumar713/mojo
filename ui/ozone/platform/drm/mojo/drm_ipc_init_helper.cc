@@ -19,12 +19,12 @@ class DrmIpcInitHelperMojo : public IpcInitHelperMojo {
   DrmIpcInitHelperMojo();
   ~DrmIpcInitHelperMojo();
 
-  void HostInitialize(mojo::ApplicationImpl* application) override;
-  bool HostConfigureIncomingConnection(
+  void HostInitialize(mojo::Shell* shell) override;
+  bool HostAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override;
 
-  void GpuInitialize(mojo::ApplicationImpl* application) override;
-  bool GpuConfigureIncomingConnection(
+  void GpuInitialize(mojo::Shell* shell) override;
+  bool GpuAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override;
 
  private:
@@ -36,19 +36,19 @@ DrmIpcInitHelperMojo::DrmIpcInitHelperMojo() {}
 
 DrmIpcInitHelperMojo::~DrmIpcInitHelperMojo() {}
 
-void DrmIpcInitHelperMojo::HostInitialize(mojo::ApplicationImpl* application) {
-  mojo::ConnectToService(application->shell(), "mojo:native_viewport_service",
+void DrmIpcInitHelperMojo::HostInitialize(mojo::Shell* shell) {
+  mojo::ConnectToService(shell, "mojo:native_viewport_service",
                          GetProxy(&ozone_drm_gpu_));
   new MojoDrmHostDelegate(ozone_drm_gpu_.get());
 }
 
-void DrmIpcInitHelperMojo::GpuInitialize(mojo::ApplicationImpl* application) {
-  mojo::ConnectToService(application->shell(), "mojo:native_viewport_service",
+void DrmIpcInitHelperMojo::GpuInitialize(mojo::Shell* shell) {
+  mojo::ConnectToService(shell, "mojo:native_viewport_service",
                          GetProxy(&ozone_drm_host_));
   new MojoDrmGpuDelegate(ozone_drm_host_.get());
 }
 
-bool DrmIpcInitHelperMojo::HostConfigureIncomingConnection(
+bool DrmIpcInitHelperMojo::HostAcceptConnection(
     mojo::ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<mojo::OzoneDrmHost>(
       [](const mojo::ConnectionContext& connection_context,
@@ -58,7 +58,7 @@ bool DrmIpcInitHelperMojo::HostConfigureIncomingConnection(
   return true;
 }
 
-bool DrmIpcInitHelperMojo::GpuConfigureIncomingConnection(
+bool DrmIpcInitHelperMojo::GpuAcceptConnection(
     mojo::ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<mojo::OzoneDrmGpu>(
       [](const mojo::ConnectionContext& connection_context,

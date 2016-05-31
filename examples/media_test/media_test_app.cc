@@ -10,6 +10,7 @@
 #include "base/message_loop/message_loop.h"
 #include "examples/media_test/keystroke.h"
 #include "examples/media_test/media_test.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/run_application.h"
@@ -313,6 +314,7 @@ const char* MediaTestApp::kUp = "\033[A";
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
+  mojo::ScopedChromiumInit init;
   mojo::media::examples::MediaTestApp media_test_app;
-  return mojo::RunMainApplication(application_request, &media_test_app);
+  return mojo::RunApplication(application_request, &media_test_app);
 }

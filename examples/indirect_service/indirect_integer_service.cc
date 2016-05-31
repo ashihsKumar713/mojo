@@ -64,6 +64,6 @@ class IndirectIntegerServiceApp : public ApplicationImplBase {
 
 MojoResult MojoMain(MojoHandle application_request) {
   mojo::examples::IndirectIntegerServiceApp indirect_integer_service_app;
-  return mojo::RunMainApplication(application_request,
-                                  &indirect_integer_service_app);
+  return mojo::RunApplication(application_request,
+                              &indirect_integer_service_app);
 }

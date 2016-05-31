@@ -6,6 +6,7 @@
 #include "gin/array_buffer.h"
 #include "gin/public/isolate_holder.h"
 #include "mojo/application/content_handler_factory.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/run_application.h"
@@ -51,6 +52,7 @@ class JsContentHandler : public mojo::ApplicationImplBase,
 }  // namespace js
 
 MojoResult MojoMain(MojoHandle application_request) {
+  mojo::ScopedChromiumInit init;
   js::JsContentHandler js_content_handler;
-  return mojo::RunMainApplication(application_request, &js_content_handler);
+  return mojo::RunApplication(application_request, &js_content_handler);
 }

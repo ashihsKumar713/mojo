@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/run_application.h"
@@ -32,6 +33,7 @@ class ClipboardApp : public mojo::ApplicationImplBase {
 }  // namespace
 
 MojoResult MojoMain(MojoHandle application_request) {
+  mojo::ScopedChromiumInit init;
   ClipboardApp clipboard_app;
-  return mojo::RunMainApplication(application_request, &clipboard_app);
+  return mojo::RunApplication(application_request, &clipboard_app);
 }

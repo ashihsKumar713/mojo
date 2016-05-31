@@ -2,38 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/native_viewport/ozone/app_delegate_ozone.h"
+#include "services/native_viewport/ozone/native_viewport_app_ozone.h"
 #include "ui/ozone/public/ipc_init_helper_mojo.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace native_viewport {
 
-void NativeViewportOzoneAppDelegate::Initialize(
-    mojo::ApplicationImpl* application) {
-  NativeViewportAppDelegate::Initialize(application);
+void NativeViewportAppOzone::OnInitialize() {
+  NativeViewportApp::OnInitialize();
 
   ui::OzonePlatform::InitializeForUI();
 
   auto ipc_init_helper = static_cast<ui::IpcInitHelperMojo*>(
       ui::OzonePlatform::GetInstance()->GetIpcInitHelperOzone());
 
-  ipc_init_helper->HostInitialize(application);
-  ipc_init_helper->GpuInitialize(application);
+  ipc_init_helper->HostInitialize(shell());
+  ipc_init_helper->GpuInitialize(shell());
 
   display_manager_.reset(new DisplayManager());
 }
 
-bool NativeViewportOzoneAppDelegate::ConfigureIncomingConnection(
+bool NativeViewportAppOzone::OnAcceptConnection(
     ServiceProviderImpl* service_provider_impl) {
-  if (!NativeViewportAppDelegate::ConfigureIncomingConnection(
-          service_provider_impl))
+  if (!NativeViewportApp::OnAcceptConnection(service_provider_impl))
     return false;
 
   auto ipc_init_helper = static_cast<ui::IpcInitHelperMojo*>(
       ui::OzonePlatform::GetInstance()->GetIpcInitHelperOzone());
 
-  ipc_init_helper->HostConfigureIncomingConnection(connection);
-  ipc_init_helper->GpuConfigureIncomingConnection(connection);
+  ipc_init_helper->HostAcceptConnection(service_provider_impl);
+  ipc_init_helper->GpuAcceptConnection(service_provider_impl);
 
   return true;
 }

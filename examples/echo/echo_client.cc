@@ -38,5 +38,5 @@ class EchoClientApp : public ApplicationImplBase {
 
 MojoResult MojoMain(MojoHandle application_request) {
   mojo::examples::EchoClientApp echo_client_app;
-  return mojo::RunMainApplication(application_request, &echo_client_app);
+  return mojo::RunApplication(application_request, &echo_client_app);
 }

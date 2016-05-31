@@ -91,5 +91,5 @@ class BankApp : public mojo::ApplicationImplBase {
 
 MojoResult MojoMain(MojoHandle application_request) {
   examples::BankApp bank_app;
-  return mojo::RunMainApplication(application_request, &bank_app);
+  return mojo::RunApplication(application_request, &bank_app);
 }

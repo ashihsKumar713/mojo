@@ -112,5 +112,5 @@ class WGetApp : public ApplicationImplBase {
 
 MojoResult MojoMain(MojoHandle application_request) {
   mojo::examples::WGetApp wget_app;
-  return mojo::RunMainApplication(application_request, &wget_app);
+  return mojo::RunApplication(application_request, &wget_app);
 }

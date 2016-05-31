@@ -12,9 +12,9 @@ if (is_android) {
 
   group("native_viewport") {
     deps = [
+      ":jni_headers",
       ":lib",
       ":native_viewport_java",
-      ":jni_headers",
     ]
   }
 
@@ -24,10 +24,10 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//services/keyboard",
-      "//mojo/services/keyboard/interfaces:interfaces_java",
       "//mojo/public/java:bindings",
       "//mojo/public/java:system",
+      "//mojo/services/keyboard/interfaces:interfaces_java",
+      "//services/keyboard",
     ]
   }
 
@@ -48,7 +48,6 @@ if (is_android) {
   mojo_native_application("native_viewport") {
     output_name = "native_viewport_service"
     sources = [
-      "app_delegate.cc",
       "main.cc",
     ]
     deps = [
@@ -58,8 +57,8 @@ if (is_android) {
       "//mojo/application",
       "//mojo/common:tracing_impl",
       "//mojo/public/cpp/bindings:bindings",
-      "//mojo/services/native_viewport/interfaces",
       "//mojo/services/native_viewport/cpp:args",
+      "//mojo/services/native_viewport/interfaces",
       "//services/gles2",
       "//ui/events",
       "//ui/events/platform",
@@ -67,12 +66,20 @@ if (is_android) {
     ]
 
     if (use_ozone) {
-      sources += [ "ozone/app_delegate_ozone.cc" ]
+      sources += [
+        "ozone/native_viewport_app_ozone.cc",
+        "ozone/native_viewport_app_ozone.h",
+      ]
       deps += [
         "//mojo/services/ozone_drm_gpu/interfaces",
         "//mojo/services/ozone_drm_host/interfaces",
         "//ui/events/ozone:events_ozone_evdev",
         "//ui/ozone",
+      ]
+    } else {
+      sources += [
+        "native_viewport_app.cc",
+        "native_viewport_app.h",
       ]
     }
   }
@@ -106,16 +113,16 @@ source_set("lib") {
     "//mojo/converters/input_events",
     "//mojo/converters/native_viewport",
     "//mojo/environment:chromium",
-    "//services/gles2",
     "//mojo/services/geometry/interfaces",
     "//mojo/services/native_viewport/interfaces",
+    "//services/gles2",
+    "//ui/display/types",
     "//ui/events",
     "//ui/events/platform",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/platform_window",
-    "//ui/display/types",
   ]
 
   if (is_android) {

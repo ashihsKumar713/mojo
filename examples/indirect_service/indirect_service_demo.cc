@@ -9,6 +9,7 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "examples/indirect_service/indirect_service_demo.mojom.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/message_pump/message_pump_mojo.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
@@ -139,7 +140,7 @@ class IndirectServiceDemoApp : public ApplicationImplBase {
     tasks_.erase(std::remove(tasks_.begin(), tasks_.end(), task), tasks_.end());
     delete task; // Stop the DemoTask's thread etc.
     if (tasks_.empty())
-      TerminateMainApplication(MOJO_RESULT_OK);
+      TerminateApplication(MOJO_RESULT_OK);
   }
 
   IndirectIntegerServicePtr indirect_integer_service_;
@@ -150,7 +151,7 @@ class IndirectServiceDemoApp : public ApplicationImplBase {
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
+  mojo::ScopedChromiumInit init;
   mojo::examples::IndirectServiceDemoApp indirect_service_demo_app;
-  return mojo::RunMainApplication(application_request,
-                                  &indirect_service_demo_app);
+  return mojo::RunApplication(application_request, &indirect_service_demo_app);
 }

@@ -46,5 +46,5 @@ class DeviceInfoApp : public ApplicationImplBase, public mojo::DeviceInfo {
 
 MojoResult MojoMain(MojoHandle application_request) {
   mojo::services::device_info::DeviceInfoApp device_info_app;
-  return mojo::RunMainApplication(application_request, &device_info_app);
+  return mojo::RunApplication(application_request, &device_info_app);
 }

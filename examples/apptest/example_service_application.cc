@@ -29,6 +29,6 @@ bool ExampleServiceApplication::OnAcceptConnection(
 
 MojoResult MojoMain(MojoHandle application_request) {
   mojo::ExampleServiceApplication example_service_application;
-  return mojo::RunMainApplication(application_request,
-                                  &example_service_application);
+  return mojo::RunApplication(application_request,
+                              &example_service_application);
 }

@@ -5,23 +5,26 @@
 #ifndef UI_OZONE_PUBLIC_IPC_INIT_HELPER_MOJO_H_
 #define UI_OZONE_PUBLIC_IPC_INIT_HELPER_MOJO_H_
 
-#include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "ui/ozone/public/ipc_init_helper_ozone.h"
+
+namespace mojo {
+class ServiceProviderImpl;
+class Shell;
+}  // namespace mojo
 
 namespace ui {
 
 class IpcInitHelperMojo : public IpcInitHelperOzone {
  public:
-  virtual void HostInitialize(mojo::ApplicationImpl* application) = 0;
-  virtual bool HostConfigureIncomingConnection(
+  virtual void HostInitialize(mojo::Shell* shell) = 0;
+  virtual bool HostAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) = 0;
 
-  virtual void GpuInitialize(mojo::ApplicationImpl* application) = 0;
-  virtual bool GpuConfigureIncomingConnection(
+  virtual void GpuInitialize(mojo::Shell* shell) = 0;
+  virtual bool GpuAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) = 0;
 };
 
 }  // namespace ui
 
-#endif
+#endif  // UI_OZONE_PUBLIC_IPC_INIT_HELPER_MOJO_H_

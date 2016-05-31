@@ -54,5 +54,5 @@ class BankCustomer : public mojo::ApplicationImplBase {
 
 MojoResult MojoMain(MojoHandle application_request) {
   examples::BankCustomer bank_customer;
-  return mojo::RunMainApplication(application_request, &bank_customer);
+  return mojo::RunApplication(application_request, &bank_customer);
 }

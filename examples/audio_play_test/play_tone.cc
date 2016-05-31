@@ -243,5 +243,5 @@ void PlayToneApp::Shutdown() {
 
 MojoResult MojoMain(MojoHandle app_request) {
   mojo::media::audio::examples::PlayToneApp play_tone_app;
-  return mojo::RunMainApplication(app_request, &play_tone_app);
+  return mojo::RunApplication(app_request, &play_tone_app);
 }

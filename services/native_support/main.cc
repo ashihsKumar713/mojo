@@ -7,6 +7,7 @@
 #include "base/message_loop/message_loop.h"
 #include "base/threading/sequenced_worker_pool.h"
 #include "mojo/application/run_application_options_chromium.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/run_application.h"
@@ -23,9 +24,8 @@ class NativeSupportApp : public mojo::ApplicationImplBase {
  public:
   NativeSupportApp() {}
   ~NativeSupportApp() override {
-    // TODO(vtl): Doing this here is a bit of a hack, but we may not
-    // consistently call |OnQuit()|.
-    OnQuit();
+    if (worker_pool_)
+      worker_pool_->Shutdown();
   }
 
  private:
@@ -44,13 +44,6 @@ class NativeSupportApp : public mojo::ApplicationImplBase {
     return true;
   }
 
-  void OnQuit() override {
-    if (worker_pool_) {
-      worker_pool_->Shutdown();
-      worker_pool_ = nullptr;
-    }
-  }
-
   scoped_refptr<base::SequencedWorkerPool> worker_pool_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeSupportApp);
@@ -59,9 +52,10 @@ class NativeSupportApp : public mojo::ApplicationImplBase {
 }  // namespace native_support
 
 MojoResult MojoMain(MojoHandle application_request) {
+  mojo::ScopedChromiumInit init;
   native_support::NativeSupportApp native_support_app;
   // We need an I/O message loop, since we'll want to watch FDs.
   mojo::RunApplicationOptionsChromium options(base::MessageLoop::TYPE_IO);
-  return mojo::RunMainApplication(application_request, &native_support_app,
-                                  &options);
+  return mojo::RunApplication(application_request, &native_support_app,
+                              &options);
 }

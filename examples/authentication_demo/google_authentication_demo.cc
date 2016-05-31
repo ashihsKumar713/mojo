@@ -128,5 +128,5 @@ class GoogleAuthApp : public mojo::ApplicationImplBase {
 
 MojoResult MojoMain(MojoHandle application_request) {
   examples::authentication::GoogleAuthApp google_auth_app;
-  return mojo::RunMainApplication(application_request, &google_auth_app);
+  return mojo::RunApplication(application_request, &google_auth_app);
 }

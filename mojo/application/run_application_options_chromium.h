@@ -10,8 +10,7 @@
 
 namespace mojo {
 
-// Options for the "chromium" implementation of |RunMainApplication()| and
-// |RunApplication()|.
+// Options for the "chromium" implementation of |RunApplication()|.
 class RunApplicationOptionsChromium : public RunApplicationOptions {
  public:
   explicit RunApplicationOptionsChromium(

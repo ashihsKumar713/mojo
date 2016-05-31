@@ -47,5 +47,5 @@ class HelloMojoClientApp : public mojo::ApplicationImplBase {
 
 MojoResult MojoMain(MojoHandle application_request) {
   HelloMojoClientApp hello_mojo_client_app;
-  return mojo::RunMainApplication(application_request, &hello_mojo_client_app);
+  return mojo::RunApplication(application_request, &hello_mojo_client_app);
 }

@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "mojo/application/content_handler_factory.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/run_application.h"
@@ -242,8 +243,8 @@ class PythonContentHandlerApp : public ApplicationImplBase {
 }  // namespace services
 
 MojoResult MojoMain(MojoHandle application_request) {
+  mojo::ScopedChromiumInit init;
   services::python::content_handler::PythonContentHandlerApp
       python_content_handler_app;
-  return mojo::RunMainApplication(application_request,
-                                  &python_content_handler_app);
+  return mojo::RunApplication(application_request, &python_content_handler_app);
 }

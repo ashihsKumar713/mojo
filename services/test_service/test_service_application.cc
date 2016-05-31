@@ -52,5 +52,5 @@ void TestServiceApplication::ReleaseRef() {
 
 MojoResult MojoMain(MojoHandle application_request) {
   mojo::test::TestServiceApplication app;
-  return mojo::RunMainApplication(application_request, &app);
+  return mojo::RunApplication(application_request, &app);
 }

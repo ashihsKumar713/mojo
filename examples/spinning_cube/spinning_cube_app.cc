@@ -95,5 +95,5 @@ class SpinningCubeApp : public mojo::ApplicationImplBase,
 
 MojoResult MojoMain(MojoHandle application_request) {
   examples::SpinningCubeApp spinning_cube_app;
-  return mojo::RunMainApplication(application_request, &spinning_cube_app);
+  return mojo::RunApplication(application_request, &spinning_cube_app);
 }
