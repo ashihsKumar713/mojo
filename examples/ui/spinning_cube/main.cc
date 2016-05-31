@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "examples/ui/spinning_cube/spinning_cube_app.h"
-#include "mojo/application/application_runner_chromium.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
+#include "mojo/public/cpp/application/run_application.h"
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new examples::SpinningCubeApp);
-  return runner.Run(application_request);
+  mojo::ScopedChromiumInit init;
+  examples::SpinningCubeApp spinning_cube_app;
+  return mojo::RunApplication(application_request, &spinning_cube_app);
 }

@@ -17,7 +17,7 @@ void ShapesApp::CreateView(
     const std::string& connection_url,
     mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
     mojo::InterfaceRequest<mojo::ServiceProvider> services) {
-  new ShapesView(mojo::CreateApplicationConnector(app_impl()->shell()),
+  new ShapesView(mojo::CreateApplicationConnector(shell()),
                  view_owner_request.Pass());
 }
 

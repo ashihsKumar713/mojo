@@ -24,7 +24,7 @@ void TileApp::CreateView(
     return;
   }
 
-  new TileView(mojo::CreateApplicationConnector(app_impl()->shell()),
+  new TileView(mojo::CreateApplicationConnector(shell()),
                view_owner_request.Pass(), params);
 }
 

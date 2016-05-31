@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "examples/shadows/shadows_app.h"
-#include "mojo/application/application_runner_chromium.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
+#include "mojo/public/cpp/application/run_application.h"
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new examples::ShadowsApp);
-  return runner.Run(application_request);
+  mojo::ScopedChromiumInit init;
+  examples::ShadowsApp shadows_app;
+  return mojo::RunApplication(application_request, &shadows_app);
 }

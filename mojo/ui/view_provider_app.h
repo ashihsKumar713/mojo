@@ -8,14 +8,14 @@
 #include <string>
 
 #include "mojo/common/strong_binding_set.h"
-#include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/service_provider_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "mojo/services/ui/views/interfaces/view_provider.mojom.h"
 
 namespace mojo {
+
+class ServiceProviderImpl;
+
 namespace ui {
 
 // Abstract implementation of a simple application that offers a ViewProvider.
@@ -23,17 +23,14 @@ namespace ui {
 //
 // It is not necessary to use this class to implement all ViewProviders.
 // This class is merely intended to make the simple apps easier to write.
-class ViewProviderApp : public ApplicationDelegate {
+class ViewProviderApp : public ApplicationImplBase {
  public:
   ViewProviderApp();
   ~ViewProviderApp() override;
 
-  ApplicationImpl* app_impl() { return app_impl_; }
-
-  // |ApplicationDelegate|:
-  void Initialize(ApplicationImpl* app) override;
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override;
+  // |ApplicationImplBase|:
+  void OnInitialize() override;
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override;
 
   // Called by the ViewProvider to create a view.
   // This method may be called multiple times in the case where the
@@ -58,7 +55,6 @@ class ViewProviderApp : public ApplicationDelegate {
                   InterfaceRequest<ViewOwner> view_owner_request,
                   InterfaceRequest<ServiceProvider> services);
 
-  ApplicationImpl* app_impl_ = nullptr;
   StrongBindingSet<ViewProvider> bindings_;
 
   MOJO_DISALLOW_COPY_AND_ASSIGN(ViewProviderApp);

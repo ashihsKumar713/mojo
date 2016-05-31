@@ -8,14 +8,16 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/scoped_ptr.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/ui/choreographer.h"
 #include "mojo/ui/content_viewer_app.h"
 #include "mojo/ui/ganesh_view.h"
 #include "mojo/ui/input_handler.h"
+#include "mojo/ui/view_provider_app.h"
 #include "third_party/pdfium/fpdfsdk/include/fpdf_ext.h"
 #include "third_party/pdfium/fpdfsdk/include/fpdfview.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -272,7 +274,7 @@ class PDFContentViewProviderApp : public mojo::ui::ViewProviderApp {
       const std::string& connection_url,
       mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
       mojo::InterfaceRequest<mojo::ServiceProvider> services) override {
-    new PDFDocumentView(mojo::CreateApplicationConnector(app_impl()->shell()),
+    new PDFDocumentView(mojo::CreateApplicationConnector(shell()),
                         view_owner_request.Pass(), pdf_document_);
   }
 
@@ -311,6 +313,7 @@ class PDFContentViewerApp : public mojo::ui::ContentViewerApp {
 }  // namespace examples
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new examples::PDFContentViewerApp());
-  return runner.Run(application_request);
+  mojo::ScopedChromiumInit init;
+  examples::PDFContentViewerApp pdf_content_viewer_app;
+  return mojo::RunApplication(application_request, &pdf_content_viewer_app);
 }

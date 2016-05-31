@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 
 namespace mojo {
 namespace ui {
@@ -37,17 +38,15 @@ ViewProviderApp::ViewProviderApp() {}
 
 ViewProviderApp::~ViewProviderApp() {}
 
-void ViewProviderApp::Initialize(mojo::ApplicationImpl* app_impl) {
-  app_impl_ = app_impl;
-
+void ViewProviderApp::OnInitialize() {
   auto command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv(app_impl_->args());
+  command_line->InitFromArgv(args());
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   logging::InitLogging(settings);
 }
 
-bool ViewProviderApp::ConfigureIncomingConnection(
+bool ViewProviderApp::OnAcceptConnection(
     ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<ViewProvider>(
       [this](const ConnectionContext& connection_context,

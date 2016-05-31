@@ -6,6 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
+#include "mojo/ui/view_provider_app.h"
 
 namespace mojo {
 namespace ui {
@@ -37,17 +39,15 @@ ContentViewerApp::ContentViewerApp() {}
 
 ContentViewerApp::~ContentViewerApp() {}
 
-void ContentViewerApp::Initialize(mojo::ApplicationImpl* app_impl) {
-  app_impl_ = app_impl;
-
+void ContentViewerApp::OnInitialize() {
   auto command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv(app_impl_->args());
+  command_line->InitFromArgv(args());
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   logging::InitLogging(settings);
 }
 
-bool ContentViewerApp::ConfigureIncomingConnection(
+bool ContentViewerApp::OnAcceptConnection(
     ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<ContentHandler>([this](
       const ConnectionContext& connection_context,
@@ -63,12 +63,13 @@ void ContentViewerApp::StartViewer(
     const std::string& content_handler_url,
     mojo::InterfaceRequest<mojo::Application> application_request,
     mojo::URLResponsePtr response) {
+  // TODO(vtl): This is usually leaky, since |*app| (the returned
+  // |ApplicationImplBase|/|ViewProviderApp| implementation) typically doesn't
+  // own itself. Probably |LoadContent()| should take the |application_request|,
+  // and not return anything. This method doesn't really appear to add anything.
   ViewProviderApp* app = LoadContent(content_handler_url, response.Pass());
-  if (app) {
-    // TODO(vtl): This is leaky, since |ApplicationImpl| doesn't own itself.
-    // (Also, who owns |*app|?)
-    new mojo::ApplicationImpl(app, application_request.Pass());
-  }
+  if (app)
+    app->Bind(application_request.Pass());
 }
 
 }  // namespace ui

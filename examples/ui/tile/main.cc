@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "examples/ui/tile/tile_app.h"
-#include "mojo/application/application_runner_chromium.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
+#include "mojo/public/cpp/application/run_application.h"
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new examples::TileApp);
-  return runner.Run(application_request);
+  mojo::ScopedChromiumInit init;
+  examples::TileApp tile_app;
+  return mojo::RunApplication(application_request, &tile_app);
 }

@@ -17,7 +17,7 @@ void NoodlesApp::CreateView(
     const std::string& connection_url,
     mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
     mojo::InterfaceRequest<mojo::ServiceProvider> services) {
-  new NoodlesView(mojo::CreateApplicationConnector(app_impl()->shell()),
+  new NoodlesView(mojo::CreateApplicationConnector(shell()),
                   view_owner_request.Pass());
 }
 

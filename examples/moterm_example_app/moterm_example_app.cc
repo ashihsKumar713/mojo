@@ -15,12 +15,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/common/binding_set.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/bindings/array.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/public/interfaces/application/service_provider.mojom.h"
@@ -166,7 +165,7 @@ class MotermExampleApp : public mojo::ui::ViewProviderApp {
       const std::string& connection_url,
       mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
       mojo::InterfaceRequest<mojo::ServiceProvider> services) override {
-    new MotermExampleAppView(app_impl()->shell(), view_owner_request.Pass());
+    new MotermExampleAppView(shell(), view_owner_request.Pass());
   }
 
  private:
@@ -174,6 +173,7 @@ class MotermExampleApp : public mojo::ui::ViewProviderApp {
 };
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new MotermExampleApp());
-  return runner.Run(application_request);
+  mojo::ScopedChromiumInit init;
+  MotermExampleApp moterm_example_app;
+  return mojo::RunApplication(application_request, &moterm_example_app);
 }

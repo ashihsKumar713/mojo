@@ -8,9 +8,10 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "mojo/application/application_runner_chromium.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/ui/choreographer.h"
 #include "mojo/ui/ganesh_view.h"
 #include "mojo/ui/input_handler.h"
@@ -210,7 +211,7 @@ class JankApp : public mojo::ui::ViewProviderApp {
       const std::string& connection_url,
       mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
       mojo::InterfaceRequest<mojo::ServiceProvider> services) override {
-    new JankView(mojo::CreateApplicationConnector(app_impl()->shell()),
+    new JankView(mojo::CreateApplicationConnector(shell()),
                  view_owner_request.Pass());
   }
 
@@ -221,6 +222,7 @@ class JankApp : public mojo::ui::ViewProviderApp {
 }  // namespace examples
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new examples::JankApp());
-  return runner.Run(application_request);
+  mojo::ScopedChromiumInit init;
+  examples::JankApp jank_app;
+  return mojo::RunApplication(application_request, &jank_app);
 }
