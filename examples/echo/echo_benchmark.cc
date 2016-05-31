@@ -8,12 +8,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "examples/echo/echo.mojom.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/common/tracing_impl.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/utility/run_loop.h"
 
 namespace mojo {
@@ -24,24 +24,24 @@ static const base::TimeDelta kWarmupTime =
 
 static const base::TimeDelta kDelayTime = base::TimeDelta::FromMicroseconds(50);
 
-class EchoClientDelegate;
+class EchoClientApp;
 
 class EchoResponse {
  public:
-  EchoResponse(EchoClientDelegate* echo, int idx, bool traced)
-      : echoDelegate_(echo), idx_(idx), traced_(traced) {}
+  EchoResponse(EchoClientApp* echo, int idx, bool traced)
+      : echo_client_app_(echo), idx_(idx), traced_(traced) {}
 
   void Run(const String& value) const;
 
  private:
-  EchoClientDelegate* echoDelegate_;
+  EchoClientApp* echo_client_app_;
   int idx_;
   bool traced_;
 };
 
-class EchoClientDelegate : public ApplicationDelegate {
+class EchoClientApp : public ApplicationImplBase {
  public:
-  EchoClientDelegate()
+  EchoClientApp()
       : warmup_(true),
         num_clients_(1),
         num_active_clients_(1),
@@ -49,25 +49,24 @@ class EchoClientDelegate : public ApplicationDelegate {
         ending_(false),
         benchmark_duration_(base::TimeDelta::FromSeconds(10)) {}
 
-  void Initialize(ApplicationImpl* app) override {
-    tracing_.Initialize(app->shell(), &app->args());
+  void OnInitialize() override {
+    tracing_.Initialize(shell(), &args());
 
-    ParseArguments(app);
+    ParseArguments();
 
     for (int i = 0; i < num_clients_; i++) {
       EchoPtr echo;
       if (use_dart_server_) {
-        ConnectToService(app->shell(), "mojo:dart_echo_server",
-                         GetProxy(&echo));
+        ConnectToService(shell(), "mojo:dart_echo_server", GetProxy(&echo));
       } else {
-        ConnectToService(app->shell(), "mojo:echo_server", GetProxy(&echo));
+        ConnectToService(shell(), "mojo:echo_server", GetProxy(&echo));
       }
       echoClients_.push_back(echo.Pass());
     }
     BeginEcho(0);
     base::MessageLoop::current()->PostDelayedTask(
         FROM_HERE,
-        base::Bind(&EchoClientDelegate::EndWarmup, base::Unretained(this)),
+        base::Bind(&EchoClientApp::EndWarmup, base::Unretained(this)),
         kWarmupTime);
   }
 
@@ -77,12 +76,10 @@ class EchoClientDelegate : public ApplicationDelegate {
       idx = 0;
     }
     base::MessageLoop::current()->PostDelayedTask(
-        FROM_HERE,
-        base::Bind(&EchoClientDelegate::Run, base::Unretained(this), idx),
+        FROM_HERE, base::Bind(&EchoClientApp::Run, base::Unretained(this), idx),
         kDelayTime);
     base::MessageLoop::current()->PostDelayedTask(
-        FROM_HERE,
-        base::Bind(&EchoClientDelegate::EndRun, base::Unretained(this)),
+        FROM_HERE, base::Bind(&EchoClientApp::EndRun, base::Unretained(this)),
         benchmark_duration_);
   }
 
@@ -129,10 +126,10 @@ class EchoClientDelegate : public ApplicationDelegate {
     return false;
   }
 
-  void ParseArguments(ApplicationImpl* app) {
+  void ParseArguments() {
     int benchmark_duration_seconds = 0;
-    for (size_t i = 0; i < app->args().size(); i++) {
-      const std::string& argument = app->args()[i];
+    for (size_t i = 0; i < args().size(); i++) {
+      const std::string& argument = args()[i];
       if (GetBoolArgument(argument, "--dart-server", &use_dart_server_)) {
         continue;
       }
@@ -167,15 +164,15 @@ class EchoClientDelegate : public ApplicationDelegate {
 };
 
 void EchoResponse::Run(const String& value) const {
-  echoDelegate_->EndEcho(idx_, traced_);
-  echoDelegate_->BeginEcho(idx_ + 1);
+  echo_client_app_->EndEcho(idx_, traced_);
+  echo_client_app_->BeginEcho(idx_ + 1);
 }
 
 }  // namespace examples
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(
-      new mojo::examples::EchoClientDelegate);
-  return runner.Run(application_request);
+  mojo::ScopedChromiumInit init;
+  mojo::examples::EchoClientApp echo_client_app;
+  return mojo::RunApplication(application_request, &echo_client_app);
 }

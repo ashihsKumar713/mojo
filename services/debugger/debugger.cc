@@ -8,12 +8,12 @@
 #include "base/debug/profiler.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/services/http_server/cpp/http_server_util.h"
 #include "mojo/services/http_server/interfaces/http_server.mojom.h"
@@ -29,26 +29,24 @@
 
 namespace debugger {
 
-class Debugger : public mojo::ApplicationDelegate,
+class Debugger : public mojo::ApplicationImplBase,
                  public http_server::HttpHandler {
  public:
-  Debugger() : is_tracing_(false), app_(nullptr), handler_binding_(this) {}
+  Debugger() : is_tracing_(false), handler_binding_(this) {}
   ~Debugger() override {}
 
  private:
-  // mojo::ApplicationDelegate:
-  void Initialize(mojo::ApplicationImpl* app) override {
-    app_ = app;
-
+  // mojo::ApplicationImplBase:
+  void OnInitialize() override {
     // Format: --args-for="app_url command_port"
-    if (app->args().size() < 2) {
+    if (args().size() < 2) {
       LOG(ERROR) << "--args-for required to specify command_port";
-      mojo::ApplicationImpl::Terminate();
+      mojo::TerminateApplication(MOJO_RESULT_INVALID_ARGUMENT);
       return;
     }
-    base::StringToUint(app->args()[1], &command_port_);
+    base::StringToUint(args()[1], &command_port_);
     http_server::HttpServerFactoryPtr http_server_factory;
-    mojo::ConnectToService(app->shell(), "mojo:http_server",
+    mojo::ConnectToService(shell(), "mojo:http_server",
                            GetProxy(&http_server_factory));
 
     mojo::NetAddressPtr local_address(mojo::NetAddress::New());
@@ -118,8 +116,7 @@ class Debugger : public mojo::ApplicationDelegate,
     }
 
     if (!tracing_) {
-      mojo::ConnectToService(app_->shell(), "mojo:tracing",
-                             GetProxy(&tracing_));
+      mojo::ConnectToService(shell(), "mojo:tracing", GetProxy(&tracing_));
     }
     is_tracing_ = true;
     mojo::DataPipe pipe;
@@ -146,7 +143,6 @@ class Debugger : public mojo::ApplicationDelegate,
   }
 
   bool is_tracing_;
-  mojo::ApplicationImpl* app_;
   tracing::TraceCollectorPtr tracing_;
   uint32_t command_port_;
 
@@ -161,7 +157,7 @@ class Debugger : public mojo::ApplicationDelegate,
 }  // namespace debugger
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new debugger::Debugger);
-  runner.set_message_loop_type(base::MessageLoop::TYPE_IO);
-  return runner.Run(application_request);
+  mojo::ScopedChromiumInit init;
+  debugger::Debugger debugger_app;
+  return mojo::RunApplication(application_request, &debugger_app);
 }

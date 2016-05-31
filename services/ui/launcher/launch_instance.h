@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/services/gfx/composition/interfaces/compositor.mojom.h"
 #include "mojo/services/native_viewport/interfaces/native_viewport.mojom.h"
@@ -23,8 +21,7 @@ class LauncherViewTree;
 
 class LaunchInstance : public mojo::NativeViewportEventDispatcher {
  public:
-  LaunchInstance(mojo::ApplicationImpl* app_impl,
-                 mojo::NativeViewportPtr viewport,
+  LaunchInstance(mojo::NativeViewportPtr viewport,
                  mojo::ui::ViewProviderPtr view_provider,
                  mojo::gfx::composition::Compositor* compositor,
                  mojo::ui::ViewManager* view_manager,
@@ -44,12 +41,11 @@ class LaunchInstance : public mojo::NativeViewportEventDispatcher {
   void OnViewportMetricsChanged(mojo::ViewportMetricsPtr metrics);
   void RequestUpdatedViewportMetrics();
 
-  mojo::ApplicationImpl* app_impl_;
   mojo::NativeViewportPtr viewport_;
   mojo::ui::ViewProviderPtr view_provider_;
 
-  mojo::gfx::composition::Compositor* compositor_;
-  mojo::ui::ViewManager* view_manager_;
+  mojo::gfx::composition::Compositor* const compositor_;
+  mojo::ui::ViewManager* const view_manager_;
   base::Closure shutdown_callback_;
 
   mojo::Binding<NativeViewportEventDispatcher>

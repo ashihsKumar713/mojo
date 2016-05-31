@@ -8,29 +8,25 @@
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/trace_event/trace_event.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/common/tracing_impl.h"
-#include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 
 namespace launcher {
 
-LauncherApp::LauncherApp() : app_impl_(nullptr), next_id_(0u) {}
+LauncherApp::LauncherApp() : next_id_(0u) {}
 
 LauncherApp::~LauncherApp() {}
 
-void LauncherApp::Initialize(mojo::ApplicationImpl* app_impl) {
-  app_impl_ = app_impl;
-
+void LauncherApp::OnInitialize() {
   auto command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv(app_impl_->args());
+  command_line->InitFromArgv(args());
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   logging::InitLogging(settings);
 
-  tracing_.Initialize(app_impl_->shell(), &app_impl_->args());
+  tracing_.Initialize(shell(), &args());
   TRACE_EVENT0("launcher", __func__);
 
   InitCompositor();
@@ -43,14 +39,14 @@ void LauncherApp::Initialize(mojo::ApplicationImpl* app_impl) {
 }
 
 void LauncherApp::InitCompositor() {
-  mojo::ConnectToService(app_impl_->shell(), "mojo:compositor_service",
+  mojo::ConnectToService(shell(), "mojo:compositor_service",
                          GetProxy(&compositor_));
   compositor_.set_connection_error_handler(base::Bind(
       &LauncherApp::OnCompositorConnectionError, base::Unretained(this)));
 }
 
 void LauncherApp::InitViewManager() {
-  mojo::ConnectToService(app_impl_->shell(), "mojo:view_manager_service",
+  mojo::ConnectToService(shell(), "mojo:view_manager_service",
                          GetProxy(&view_manager_));
   view_manager_.set_connection_error_handler(base::Bind(
       &LauncherApp::OnViewManagerConnectionError, base::Unretained(this)));
@@ -76,7 +72,7 @@ void LauncherApp::InitViewAssociates(
     // Connect to the ViewAssociate.
     DVLOG(2) << "Connecting to ViewAssociate " << url;
     mojo::ui::ViewAssociatePtr view_associate;
-    mojo::ConnectToService(app_impl_->shell(), url, GetProxy(&view_associate));
+    mojo::ConnectToService(shell(), url, GetProxy(&view_associate));
 
     // Wire up the associate to the ViewManager.
     mojo::ui::ViewAssociateOwnerPtr view_associate_owner;
@@ -91,7 +87,7 @@ void LauncherApp::InitViewAssociates(
   view_manager_->FinishedRegisteringViewAssociates();
 }
 
-bool LauncherApp::ConfigureIncomingConnection(
+bool LauncherApp::OnAcceptConnection(
     mojo::ServiceProviderImpl* service_provider_impl) {
   // Only present the launcher interface to the shell.
   if (service_provider_impl->connection_context().remote_url.empty()) {
@@ -108,15 +104,15 @@ void LauncherApp::Launch(const mojo::String& application_url) {
   DVLOG(1) << "Launching " << application_url;
 
   mojo::NativeViewportPtr viewport;
-  mojo::ConnectToService(app_impl_->shell(), "mojo:native_viewport_service",
+  mojo::ConnectToService(shell(), "mojo:native_viewport_service",
                          GetProxy(&viewport));
 
   mojo::ui::ViewProviderPtr view_provider;
-  mojo::ConnectToService(app_impl_->shell(), application_url,
-                         GetProxy(&view_provider));
+  mojo::ConnectToService(shell(), application_url, GetProxy(&view_provider));
 
   LaunchInternal(viewport.Pass(), view_provider.Pass());
 }
+
 void LauncherApp::LaunchOnViewport(
     mojo::InterfaceHandle<mojo::NativeViewport> viewport,
     mojo::InterfaceHandle<mojo::ui::ViewProvider> view_provider) {
@@ -128,7 +124,7 @@ void LauncherApp::LaunchInternal(mojo::NativeViewportPtr viewport,
                                  mojo::ui::ViewProviderPtr view_provider) {
   uint32_t next_id = next_id_++;
   std::unique_ptr<LaunchInstance> instance(new LaunchInstance(
-      app_impl_, viewport.Pass(), view_provider.Pass(), compositor_.get(),
+      viewport.Pass(), view_provider.Pass(), compositor_.get(),
       view_manager_.get(), base::Bind(&LauncherApp::OnLaunchTermination,
                                       base::Unretained(this), next_id)));
   instance->Launch();
@@ -138,23 +134,23 @@ void LauncherApp::LaunchInternal(mojo::NativeViewportPtr viewport,
 void LauncherApp::OnLaunchTermination(uint32_t id) {
   launch_instances_.erase(id);
   if (launch_instances_.empty()) {
-    app_impl_->Terminate();
+    mojo::TerminateApplication(MOJO_RESULT_OK);
   }
 }
 
 void LauncherApp::OnCompositorConnectionError() {
   LOG(ERROR) << "Exiting due to compositor connection error.";
-  app_impl_->Terminate();
+  mojo::TerminateApplication(MOJO_RESULT_UNKNOWN);
 }
 
 void LauncherApp::OnViewManagerConnectionError() {
   LOG(ERROR) << "Exiting due to view manager connection error.";
-  app_impl_->Terminate();
+  mojo::TerminateApplication(MOJO_RESULT_UNKNOWN);
 }
 
 void LauncherApp::OnViewAssociateConnectionError() {
   LOG(ERROR) << "Exiting due to view associate connection error.";
-  app_impl_->Terminate();
+  mojo::TerminateApplication(MOJO_RESULT_UNKNOWN);
 };
 
 }  // namespace launcher

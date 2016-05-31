@@ -4,40 +4,33 @@
 
 #include "services/ui/view_manager/view_manager_app.h"
 
-#include <string>
-#include <vector>
-
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/common/tracing_impl.h"
-#include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/ui/view_manager/view_manager_impl.h"
 
 namespace view_manager {
 
-ViewManagerApp::ViewManagerApp() : app_impl_(nullptr) {}
+ViewManagerApp::ViewManagerApp() {}
 
 ViewManagerApp::~ViewManagerApp() {}
 
-void ViewManagerApp::Initialize(mojo::ApplicationImpl* app_impl) {
-  app_impl_ = app_impl;
-
+void ViewManagerApp::OnInitialize() {
   auto command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv(app_impl_->args());
+  command_line->InitFromArgv(args());
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   logging::InitLogging(settings);
 
-  tracing_.Initialize(app_impl_->shell(), &app_impl_->args());
+  tracing_.Initialize(shell(), &args());
 
   // Connect to compositor.
   mojo::gfx::composition::CompositorPtr compositor;
-  mojo::ConnectToService(app_impl_->shell(), "mojo:compositor_service",
+  mojo::ConnectToService(shell(), "mojo:compositor_service",
                          GetProxy(&compositor));
   compositor.set_connection_error_handler(base::Bind(
       &ViewManagerApp::OnCompositorConnectionError, base::Unretained(this)));
@@ -46,7 +39,7 @@ void ViewManagerApp::Initialize(mojo::ApplicationImpl* app_impl) {
   registry_.reset(new ViewRegistry(compositor.Pass()));
 }
 
-bool ViewManagerApp::ConfigureIncomingConnection(
+bool ViewManagerApp::OnAcceptConnection(
     mojo::ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<mojo::ui::ViewManager>([this](
       const mojo::ConnectionContext& connection_context,
@@ -64,7 +57,7 @@ void ViewManagerApp::OnCompositorConnectionError() {
 }
 
 void ViewManagerApp::Shutdown() {
-  app_impl_->Terminate();
+  mojo::TerminateApplication(MOJO_RESULT_OK);
 }
 
 }  // namespace view_manager

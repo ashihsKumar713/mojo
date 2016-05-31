@@ -7,27 +7,28 @@
 
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 #include "mojo/common/binding_set.h"
 #include "mojo/common/tracing_impl.h"
-#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "services/ui/launcher/launch_instance.h"
 #include "services/ui/launcher/launcher.mojom.h"
 
 namespace launcher {
 
-class LauncherApp : public mojo::ApplicationDelegate, public Launcher {
+class LauncherApp : public mojo::ApplicationImplBase, public Launcher {
  public:
   LauncherApp();
   ~LauncherApp() override;
 
  private:
-  // |ApplicationDelegate|:
-  void Initialize(mojo::ApplicationImpl* app_impl) override;
+  // |ApplicationImplBase|:
+  void OnInitialize() override;
   void InitCompositor();
   void InitViewManager();
   void InitViewAssociates(const std::string& associate_urls_command_line_param);
-  bool ConfigureIncomingConnection(
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override;
 
   // |Launcher|:
@@ -44,7 +45,6 @@ class LauncherApp : public mojo::ApplicationDelegate, public Launcher {
   void OnViewManagerConnectionError();
   void OnViewAssociateConnectionError();
 
-  mojo::ApplicationImpl* app_impl_;
   mojo::TracingImpl tracing_;
 
   mojo::BindingSet<Launcher> bindings_;

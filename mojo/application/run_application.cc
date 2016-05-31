@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/debug/stack_trace.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/message_loop/message_loop.h"
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
@@ -73,7 +74,15 @@ MojoResult RunApplication(MojoHandle application_request_handle,
 }
 
 void TerminateApplication(MojoResult result) {
-  DCHECK(base::MessageLoop::current()->is_running());
+  // TODO(vtl): Rather than asserting |...->is_running()|, just assert that we
+  // have one, since we may be called during message loop teardown. (The
+  // HandleWatcher is notified of the message loop's pending destruction, and
+  // triggers connection errors.) I should think about this some more.
+  DCHECK(base::MessageLoop::current());
+  if (!base::MessageLoop::current()->is_running()) {
+    DLOG(WARNING) << "TerminateApplication() with message loop not running";
+    return;
+  }
   base::MessageLoop::current()->Quit();
 
   ResultHolder* result_holder = g_current_result_holder.Pointer()->Get();

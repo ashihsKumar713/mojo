@@ -20,7 +20,7 @@ class HttpServerApp : public mojo::ApplicationImplBase {
   ~HttpServerApp() override {}
 
  private:
-  // ApplicationDelegate:
+  // ApplicationImplBase:
   bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<HttpServerFactory>([this](

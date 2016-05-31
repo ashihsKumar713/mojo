@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "mojo/common/strong_binding_set.h"
 #include "mojo/common/tracing_impl.h"
-#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/services/gfx/composition/interfaces/compositor.mojom.h"
 #include "mojo/services/ui/views/interfaces/view_manager.mojom.h"
 #include "services/ui/view_manager/view_registry.h"
@@ -18,22 +18,21 @@
 namespace view_manager {
 
 // View manager application entry point.
-class ViewManagerApp : public mojo::ApplicationDelegate {
+class ViewManagerApp : public mojo::ApplicationImplBase {
  public:
   ViewManagerApp();
   ~ViewManagerApp() override;
 
  private:
-  // |ApplicationDelegate|:
-  void Initialize(mojo::ApplicationImpl* app_impl) override;
-  bool ConfigureIncomingConnection(
+  // |ApplicationImplBase|:
+  void OnInitialize() override;
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override;
 
   void OnCompositorConnectionError();
 
   void Shutdown();
 
-  mojo::ApplicationImpl* app_impl_;
   mojo::TracingImpl tracing_;
 
   mojo::StrongBindingSet<mojo::ui::ViewManager> view_managers_;

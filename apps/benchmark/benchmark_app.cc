@@ -19,11 +19,11 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "mojo/application/application_runner_chromium.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/bindings/interface_handle.h"
 #include "mojo/public/interfaces/application/service_provider.mojom.h"
 #include "mojo/services/tracing/interfaces/tracing.mojom.h"
@@ -31,18 +31,18 @@
 namespace benchmark {
 namespace {
 
-class BenchmarkApp : public mojo::ApplicationDelegate,
+class BenchmarkApp : public mojo::ApplicationImplBase,
                      public TraceCollectorClient::Receiver {
  public:
   BenchmarkApp() {}
   ~BenchmarkApp() override {}
 
-  // mojo:ApplicationDelegate:
-  void Initialize(mojo::ApplicationImpl* app) override {
+  // mojo:ApplicationImplBase:
+  void OnInitialize() override {
     // Parse command-line arguments.
-    if (!GetRunArgs(app->args(), &args_)) {
+    if (!GetRunArgs(args(), &args_)) {
       LOG(ERROR) << "Failed to parse the input arguments.";
-      mojo::ApplicationImpl::Terminate();
+      mojo::TerminateApplication(MOJO_RESULT_INVALID_ARGUMENT);
       return;
     }
 
@@ -57,8 +57,7 @@ class BenchmarkApp : public mojo::ApplicationDelegate,
     // Connect to trace collector, which will fetch the trace events produced by
     // the app being benchmarked.
     tracing::TraceCollectorPtr trace_collector;
-    mojo::ConnectToService(app->shell(), "mojo:tracing",
-                           GetProxy(&trace_collector));
+    mojo::ConnectToService(shell(), "mojo:tracing", GetProxy(&trace_collector));
     trace_collector_client_.reset(
         new TraceCollectorClient(this, trace_collector.Pass()));
     trace_collector_client_->Start(categories_str);
@@ -66,7 +65,7 @@ class BenchmarkApp : public mojo::ApplicationDelegate,
     // Start tracing the application with 1 sec of delay.
     base::MessageLoop::current()->PostDelayedTask(
         FROM_HERE, base::Bind(&BenchmarkApp::StartTracedApplication,
-                              base::Unretained(this), app),
+                              base::Unretained(this)),
         base::TimeDelta::FromSeconds(1));
   }
 
@@ -85,12 +84,12 @@ class BenchmarkApp : public mojo::ApplicationDelegate,
     return base::JoinString(unique_categories, ",");
   }
 
-  void StartTracedApplication(mojo::ApplicationImpl* app) {
+  void StartTracedApplication() {
     // Record the time origin for measurements just before connecting to the app
     // being benchmarked.
     time_origin_ = base::TimeTicks::FromInternalValue(MojoGetTimeTicksNow());
-    app->shell()->ConnectToApplication(
-        args_.app, GetProxy(&traced_app_connection_), nullptr);
+    shell()->ConnectToApplication(args_.app, GetProxy(&traced_app_connection_),
+                                  nullptr);
 
     // Post task to stop tracing when the time is up.
     base::MessageLoop::current()->PostDelayedTask(
@@ -122,7 +121,7 @@ class BenchmarkApp : public mojo::ApplicationDelegate,
     std::vector<Event> events;
     if (!GetEvents(trace_data, &events)) {
       LOG(ERROR) << "Failed to parse the trace data";
-      mojo::ApplicationImpl::Terminate();
+      mojo::TerminateApplication(MOJO_RESULT_UNKNOWN);
       return;
     }
 
@@ -147,7 +146,7 @@ class BenchmarkApp : public mojo::ApplicationDelegate,
     } else {
       printf("some measurements failed\n");
     }
-    mojo::ApplicationImpl::Terminate();
+    mojo::TerminateApplication(MOJO_RESULT_OK);
   }
 
  private:
@@ -162,8 +161,9 @@ class BenchmarkApp : public mojo::ApplicationDelegate,
 }  // namespace benchmark
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new benchmark::BenchmarkApp);
-  auto ret = runner.Run(application_request);
+  mojo::ScopedChromiumInit init;
+  benchmark::BenchmarkApp benchmark_app;
+  auto ret = mojo::RunApplication(application_request, &benchmark_app);
   fflush(nullptr);
   return ret;
 }

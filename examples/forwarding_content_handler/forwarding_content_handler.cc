@@ -6,11 +6,12 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_ptr.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/application/content_handler_factory.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/utility/run_loop.h"
@@ -51,15 +52,14 @@ class ForwardingApplicationImpl : public Application {
   ShellPtr shell_;
 };
 
-class ForwardingContentHandler : public ApplicationDelegate,
+class ForwardingContentHandler : public ApplicationImplBase,
                                  public ContentHandlerFactory::ManagedDelegate {
  public:
   ForwardingContentHandler() {}
 
  private:
-  // Overridden from ApplicationDelegate:
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override {
+  // Overridden from ApplicationImplBase:
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<ContentHandler>(
         ContentHandlerFactory::GetInterfaceRequestHandler(this));
     return true;
@@ -87,7 +87,7 @@ class ForwardingContentHandler : public ApplicationDelegate,
 }  // namespace mojo
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(
-      new mojo::examples::ForwardingContentHandler());
-  return runner.Run(application_request);
+  mojo::ScopedChromiumInit init;
+  mojo::examples::ForwardingContentHandler forwarding_content_handler;
+  return mojo::RunApplication(application_request, &forwarding_content_handler);
 }

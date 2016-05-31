@@ -16,25 +16,23 @@
 
 namespace compositor {
 
-CompositorApp::CompositorApp() : app_impl_(nullptr) {}
+CompositorApp::CompositorApp() {}
 
 CompositorApp::~CompositorApp() {}
 
-void CompositorApp::Initialize(mojo::ApplicationImpl* app_impl) {
-  app_impl_ = app_impl;
-
+void CompositorApp::OnInitialize() {
   auto command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv(app_impl_->args());
+  command_line->InitFromArgv(args());
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   logging::InitLogging(settings);
 
-  tracing_.Initialize(app_impl_->shell(), &app_impl_->args());
+  tracing_.Initialize(shell(), &args());
 
   engine_.reset(new CompositorEngine());
 }
 
-bool CompositorApp::ConfigureIncomingConnection(
+bool CompositorApp::OnAcceptConnection(
     mojo::ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<mojo::gfx::composition::Compositor>(
       [this](const mojo::ConnectionContext& connection_context,

@@ -7,32 +7,27 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/common/tracing_impl.h"
-#include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/ui/input_manager/input_associate.h"
 
 namespace input_manager {
 
-InputManagerApp::InputManagerApp() : app_impl_(nullptr) {}
+InputManagerApp::InputManagerApp() {}
 
 InputManagerApp::~InputManagerApp() {}
 
-void InputManagerApp::Initialize(mojo::ApplicationImpl* app_impl) {
-  app_impl_ = app_impl;
-
+void InputManagerApp::OnInitialize() {
   auto command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv(app_impl_->args());
+  command_line->InitFromArgv(args());
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   logging::InitLogging(settings);
 
-  tracing_.Initialize(app_impl->shell(), &app_impl->args());
+  tracing_.Initialize(shell(), &args());
 }
 
-bool InputManagerApp::ConfigureIncomingConnection(
+bool InputManagerApp::OnAcceptConnection(
     mojo::ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<mojo::ui::ViewAssociate>([this](
       const mojo::ConnectionContext& connection_context,

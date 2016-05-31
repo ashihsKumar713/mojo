@@ -5,25 +5,18 @@
 #include "services/ui/launcher/launch_instance.h"
 
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
-#include "mojo/application/application_runner_chromium.h"
-#include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_impl.h"
-#include "mojo/public/cpp/application/connect.h"
 #include "services/ui/launcher/launcher_view_tree.h"
 
 namespace launcher {
 
-LaunchInstance::LaunchInstance(mojo::ApplicationImpl* app_impl,
-                               mojo::NativeViewportPtr viewport,
+LaunchInstance::LaunchInstance(mojo::NativeViewportPtr viewport,
                                mojo::ui::ViewProviderPtr view_provider,
                                mojo::gfx::composition::Compositor* compositor,
                                mojo::ui::ViewManager* view_manager,
                                const base::Closure& shutdown_callback)
-    : app_impl_(app_impl),
-      viewport_(viewport.Pass()),
+    : viewport_(viewport.Pass()),
       view_provider_(view_provider.Pass()),
       compositor_(compositor),
       view_manager_(view_manager),

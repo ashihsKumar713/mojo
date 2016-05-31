@@ -8,11 +8,11 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/common/tracing_impl.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 
 // This is an example app that uses implementation of tracing from mojo/common
@@ -44,16 +44,16 @@ void DoWork() {
                                                 kDoWorkDelay);
 }
 
-class TraceMeApp : public mojo::ApplicationDelegate {
+class TraceMeApp : public mojo::ApplicationImplBase {
  public:
   TraceMeApp() {}
   ~TraceMeApp() override {}
 
-  // mojo:ApplicationDelegate:
-  void Initialize(mojo::ApplicationImpl* app) override {
+  // mojo:ApplicationImplBase:
+  void OnInitialize() override {
     // Allow TracingImpl to connect to the central tracing service, advertising
     // its ability to provide trace events.
-    tracing_.Initialize(app->shell(), &app->args());
+    tracing_.Initialize(shell(), &args());
 
     TRACE_EVENT0("trace_me", "initialized");
 
@@ -61,8 +61,8 @@ class TraceMeApp : public mojo::ApplicationDelegate {
         FROM_HERE, base::Bind(&DoWork), kDoWorkDelay);
   }
 
-  // mojo:ApplicationDelegate:
-  bool ConfigureIncomingConnection(
+  // mojo:ApplicationImplBase:
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
     TRACE_EVENT0("trace_me", "connected");
     return true;
@@ -76,6 +76,7 @@ class TraceMeApp : public mojo::ApplicationDelegate {
 }  // namespace examples
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new examples::TraceMeApp);
-  return runner.Run(application_request);
+  mojo::ScopedChromiumInit init;
+  examples::TraceMeApp trace_me_app;
+  return mojo::RunApplication(application_request, &trace_me_app);
 }

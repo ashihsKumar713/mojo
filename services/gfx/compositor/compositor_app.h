@@ -8,28 +8,26 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/scoped_ptr.h"
 #include "mojo/common/strong_binding_set.h"
 #include "mojo/common/tracing_impl.h"
-#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/services/gfx/composition/interfaces/compositor.mojom.h"
 #include "services/gfx/compositor/compositor_engine.h"
 
 namespace compositor {
 
 // Compositor application entry point.
-class CompositorApp : public mojo::ApplicationDelegate {
+class CompositorApp : public mojo::ApplicationImplBase {
  public:
   CompositorApp();
   ~CompositorApp() override;
 
  private:
-  // |ApplicationDelegate|:
-  void Initialize(mojo::ApplicationImpl* app_impl) override;
-  bool ConfigureIncomingConnection(
+  // |ApplicationImplBase|:
+  void OnInitialize() override;
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override;
 
-  mojo::ApplicationImpl* app_impl_;
   mojo::TracingImpl tracing_;
 
   mojo::StrongBindingSet<mojo::gfx::composition::Compositor>

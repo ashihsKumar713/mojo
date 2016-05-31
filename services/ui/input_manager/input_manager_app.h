@@ -5,29 +5,26 @@
 #ifndef SERVICES_UI_INPUT_MANAGER_INPUT_MANAGER_APP_H_
 #define SERVICES_UI_INPUT_MANAGER_INPUT_MANAGER_APP_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "mojo/common/strong_binding_set.h"
 #include "mojo/common/tracing_impl.h"
-#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/services/ui/views/interfaces/view_associates.mojom.h"
 
 namespace input_manager {
 
 // Input manager application entry point.
-class InputManagerApp : public mojo::ApplicationDelegate {
+class InputManagerApp : public mojo::ApplicationImplBase {
  public:
   InputManagerApp();
   ~InputManagerApp() override;
 
  private:
-  // |ApplicationDelegate|:
-  void Initialize(mojo::ApplicationImpl* app_impl) override;
-  bool ConfigureIncomingConnection(
+  // |ApplicationImplBase|:
+  void OnInitialize() override;
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override;
 
-  mojo::ApplicationImpl* app_impl_;
   mojo::TracingImpl tracing_;
 
   mojo::StrongBindingSet<mojo::ui::ViewAssociate> input_associates_;
