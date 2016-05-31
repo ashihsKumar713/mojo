@@ -11,7 +11,7 @@ import (
 
 // This file contains an implementation of an algorithm to check the well-foundedness
 // of two-sorted directed graphs. See the paper
-// "Well-Founded Two-Sorted Directed Graphs" (https://goo.gl/ipxFKu) for background
+// "Well-Founded Two-Sorted Directed Graphs" (https://goo.gl/YrLmfY) for background
 // and detailed definitions. Here we give only a high-level overview.
 //
 // A two-sorted graph is a directed graph that contains two sorts of nodes called circle nodes and
