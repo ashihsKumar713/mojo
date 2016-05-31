@@ -17,7 +17,9 @@ AudioServerApp::AudioServerApp() {}
 
 AudioServerApp::~AudioServerApp() {}
 
-void AudioServerApp::OnInitialize() {}
+void AudioServerApp::OnInitialize() {
+  server_impl_.Initialize();
+}
 
 bool AudioServerApp::OnAcceptConnection(
     ServiceProviderImpl* service_provider_impl) {
