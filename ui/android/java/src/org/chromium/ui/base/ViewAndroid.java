@@ -6,7 +6,7 @@ package org.chromium.ui.base;
 
 import android.view.View;
 
-import org.chromium.base.JNINamespace;
+import org.chromium.base.annotations.JNINamespace;
 
 /**
  * From the Chromium architecture point of view, ViewAndroid and its native counterpart

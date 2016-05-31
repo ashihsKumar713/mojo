@@ -11,8 +11,8 @@ import android.content.Context;
 import android.os.Build;
 import android.widget.Toast;
 
-import org.chromium.base.CalledByNative;
-import org.chromium.base.JNINamespace;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.ui.R;
 
 /**

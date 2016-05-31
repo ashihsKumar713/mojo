@@ -15,8 +15,8 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
 
-import org.chromium.base.CalledByNative;
-import org.chromium.base.JNINamespace;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.ui.VSyncMonitor;
 
 import java.lang.ref.WeakReference;

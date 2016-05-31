@@ -6,9 +6,9 @@ package org.chromium.mojo.shell;
 
 import android.os.HandlerThread;
 
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.CalledByNative;
-import org.chromium.base.JNINamespace;
 import org.chromium.mojo.application.ApplicationConnection;
 import org.chromium.mojo.application.ApplicationDelegate;
 import org.chromium.mojo.application.ApplicationRunner;

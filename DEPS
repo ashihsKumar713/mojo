@@ -21,7 +21,7 @@ vars = {
   'chromium_git': 'https://chromium.googlesource.com',
   'skia_revision': '8cc209111876b7c78b5ec577c9221d8ed5e21024',
   'v8_revision': '3f036fc0ba4ca4483fe77822f8605c277d37ee24',
-  'base_revision': '163fb42027bea947916ba4d2fa03aa0ed7c3f99e',
+  'base_revision': '5e00da80f6adb7082d1c0e88d3274cf87cc43bc5',
   'angle_revision': '46ccef1992a8ede16a596c3dd73cff13c047267d',
   'buildtools_revision': '222bd42ce39d1bd8f08fe089b066f49c469e1cdf',
   'dart_revision': 'f64c907557646699fada4acb7e9a82346a369993',
@@ -31,7 +31,7 @@ vars = {
   'boringssl_revision': '642f1498d056dbba3e50ed5a232ab2f482626dec',
   'lss_revision': '6f97298fe3794e92c8c896a6bc06e0b36e4c3de3',
   'nacl_revision': 'f5bc68c59b147b66d553dc6fc17426682cf138e2',
-  'tonic_revision': 'e41f72c684e0da61304ebd6f3147d0fe23ffbb56',
+  'tonic_revision': 'f7acabb8fa6c91124486a41194eac3cd421b70d0',
   'gurl_revision': '561639dfb664ee4c14371f569213b9d41f4fe110',
 }
 
@@ -51,7 +51,7 @@ deps = {
    Var('chromium_git') + '/chromium/buildtools.git' + '@' +  Var('buildtools_revision'),
 
   'src/testing/gtest':
-   Var('chromium_git') + '/external/googletest.git' + '@' + 'be1868139ffe0ccd0e8e3b37292b84c821d9c8ad', # from svn revision 704
+   Var('chromium_git') + '/external/googletest.git' + '@' + '00a70a9667d92a4695d84e4fa36b64f611f147da', # from svn revision 725
 
   'src/testing/gmock':
    Var('chromium_git') + '/external/googlemock.git' + '@' + '29763965ab52f24565299976b936d1265cb6a271', # from svn revision 501

@@ -270,7 +270,7 @@ void TestHelper::SetupContextGroupInitExpectations(
 
   SetupFeatureInfoInitExpectationsWithGLVersion(gl, extensions, "", gl_version);
 
-  std::string l_version(base::StringToLowerASCII(std::string(gl_version)));
+  std::string l_version(base::ToLowerASCII(std::string(gl_version)));
   bool is_es3 = (l_version.substr(0, 12) == "opengl es 3.");
 
   EXPECT_CALL(*gl, GetIntegerv(GL_MAX_RENDERBUFFER_SIZE, _))
@@ -345,7 +345,7 @@ void TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
       .WillOnce(Return(reinterpret_cast<const uint8*>(gl_version)))
       .RetiresOnSaturation();
 
-  std::string l_version(base::StringToLowerASCII(std::string(gl_version)));
+  std::string l_version(base::ToLowerASCII(std::string(gl_version)));
   bool is_es3 = (l_version.substr(0, 12) == "opengl es 3.");
 
   if (strstr(extensions, "GL_ARB_texture_float") ||

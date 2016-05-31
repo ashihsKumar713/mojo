@@ -129,9 +129,9 @@ const char* kErrorMessage[] = {
 };
 
 Token ParseToken(const std::string& word) {
-  if (base::StartsWithASCII(word, "//", false))
+  if (base::StartsWith(word, "//", base::CompareCase::INSENSITIVE_ASCII))
     return kTokenComment;
-  if (base::StartsWithASCII(word, "0x", false))
+  if (base::StartsWith(word, "0x", base::CompareCase::INSENSITIVE_ASCII))
     return kConfigGPUDeviceID;
 
   for (int32 i = 0; i < kNumberOfExactMatchTokens; ++i) {
@@ -172,8 +172,8 @@ bool GPUTestExpectationsParser::LoadTestExpectations(const std::string& data) {
   entries_.clear();
   error_messages_.clear();
 
-  std::vector<std::string> lines;
-  base::SplitString(data, '\n', &lines);
+  std::vector<std::string> lines = base::SplitString(
+      data, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   bool rt = true;
   for (size_t i = 0; i < lines.size(); ++i) {
     if (!ParseLine(lines[i], i + 1))
@@ -219,8 +219,9 @@ GPUTestExpectationsParser::GetErrorMessages() const {
 bool GPUTestExpectationsParser::ParseConfig(
     const std::string& config_data, GPUTestConfig* config) {
   DCHECK(config);
-  std::vector<std::string> tokens;
-  base::SplitStringAlongWhitespace(config_data, &tokens);
+  std::vector<std::string> tokens =
+      base::SplitString(config_data, base::kWhitespaceASCII,
+                        base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   for (size_t i = 0; i < tokens.size(); ++i) {
     Token token = ParseToken(tokens[i]);
@@ -263,8 +264,9 @@ bool GPUTestExpectationsParser::ParseConfig(
 
 bool GPUTestExpectationsParser::ParseLine(
     const std::string& line_data, size_t line_number) {
-  std::vector<std::string> tokens;
-  base::SplitStringAlongWhitespace(line_data, &tokens);
+  std::vector<std::string> tokens =
+      base::SplitString(line_data, base::kWhitespaceASCII,
+                        base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   int32 stage = kLineParserBegin;
   GPUTestExpectationEntry entry;
   entry.line_number = line_number;

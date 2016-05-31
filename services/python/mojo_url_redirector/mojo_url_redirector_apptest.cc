@@ -166,8 +166,9 @@ void MojoUrlRedirectorApplicationTest::HandleRequest(
       http_server::HttpRequestPtr request,
       const mojo::Callback<void(http_server::HttpResponsePtr)>& callback) {
   // The relative url should be of the form "/<platform>/<app>_location".
-  std::vector<std::string> url_components;
-  base::SplitString(request->relative_url, '/', &url_components);
+  std::vector<std::string> url_components =
+      base::SplitString(request->relative_url.get(), "/", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_ALL);
   ASSERT_EQ(3u, url_components.size());
   std::string requested_platform = url_components[1];
   EXPECT_TRUE(requested_platform == kPlatform1 ||

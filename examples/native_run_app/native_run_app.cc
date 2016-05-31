@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_delegate.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
@@ -95,8 +96,10 @@ class TerminalConnection {
 
     std::string input(reinterpret_cast<const char*>(&bytes_read[0]),
                       bytes_read.size());
-    command_line_.clear();
-    base::SplitStringAlongWhitespace(input, &command_line_);
+    // TODO(vtl): Are these arguments really what we want? Probably not.
+    command_line_ =
+        base::SplitString(input, base::kWhitespaceASCII, base::KEEP_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
 
     if (command_line_.empty()) {
       Start();

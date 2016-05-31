@@ -75,8 +75,9 @@ class BenchmarkApp : public mojo::ApplicationDelegate,
   std::string ComputeCategoriesStr() {
     std::set<std::string> category_set;
     for (const Measurement& measurement : args_.measurements) {
-      std::vector<std::string> categories;
-      base::SplitString(measurement.target_event.categories, ',', &categories);
+      std::vector<std::string> categories =
+          base::SplitString(measurement.target_event.categories, ",",
+                            base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
       category_set.insert(categories.begin(), categories.end());
     }
     std::vector<std::string> unique_categories(category_set.begin(),

@@ -9,8 +9,8 @@ import android.util.Log;
 
 import dalvik.system.DexClassLoader;
 
-import org.chromium.base.CalledByNative;
-import org.chromium.base.JNINamespace;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.TraceEvent;
 
 import java.io.File;

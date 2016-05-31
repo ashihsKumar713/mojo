@@ -51,21 +51,11 @@ void TraceOutputter::TraceDevice(const std::string& category,
                                  int64 start_time,
                                  int64 end_time) {
   TRACE_EVENT_COPY_BEGIN_WITH_ID_TID_AND_TIMESTAMP1(
-      TRACE_DISABLED_BY_DEFAULT("gpu.device"),
-      name.c_str(),
-      local_trace_id_,
-      named_thread_.thread_id(),
-      start_time,
-      "gl_category",
-      category.c_str());
+      TRACE_DISABLED_BY_DEFAULT("gpu.device"), name.c_str(), local_trace_id_,
+      named_thread_.GetThreadId(), start_time, "gl_category", category.c_str());
   TRACE_EVENT_COPY_END_WITH_ID_TID_AND_TIMESTAMP1(
-      TRACE_DISABLED_BY_DEFAULT("gpu.device"),
-      name.c_str(),
-      local_trace_id_,
-      named_thread_.thread_id(),
-      end_time,
-      "gl_category",
-      category.c_str());
+      TRACE_DISABLED_BY_DEFAULT("gpu.device"), name.c_str(), local_trace_id_,
+      named_thread_.GetThreadId(), end_time, "gl_category", category.c_str());
   ++local_trace_id_;
 }
 

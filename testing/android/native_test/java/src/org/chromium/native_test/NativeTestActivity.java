@@ -11,8 +11,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.CommandLine;
-import org.chromium.base.JNINamespace;
 import org.chromium.base.Log;
 
 import java.io.File;

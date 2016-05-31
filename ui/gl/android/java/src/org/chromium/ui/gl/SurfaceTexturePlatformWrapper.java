@@ -8,8 +8,8 @@ import android.graphics.SurfaceTexture;
 import android.os.Build;
 import android.util.Log;
 
-import org.chromium.base.CalledByNative;
-import org.chromium.base.JNINamespace;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 
 /**
  * Wrapper class for the underlying platform's SurfaceTexture in order to

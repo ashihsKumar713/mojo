@@ -7,8 +7,8 @@ package org.chromium.ui.gl;
 import android.view.Choreographer;
 import android.view.Choreographer.FrameCallback;
 
-import org.chromium.base.CalledByNative;
-import org.chromium.base.JNINamespace;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 
 /**
  * Java implementation of ui/gfx/vsync_provider.h that uses the {@link Choreographer} to compute the

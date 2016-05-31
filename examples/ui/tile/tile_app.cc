@@ -42,7 +42,8 @@ bool TileApp::ParseParams(const std::string& connection_url,
     std::string key_str(connection_url, key.begin, key.len);
     std::string value_str(connection_url, value.begin, value.len);
     if (key_str == "views") {
-      base::SplitString(value_str, ',', &params->view_urls);
+      params->view_urls = base::SplitString(
+          value_str, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     } else if (key_str == "vm") {
       if (value_str == "any")
         params->version_mode = TileParams::VersionMode::kAny;

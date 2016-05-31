@@ -79,8 +79,8 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseHeaders() {
   // Request main main header, eg. GET /foobar.html HTTP/1.1
   {
     const std::string header_line = ShiftLine();
-    std::vector<std::string> header_line_tokens;
-    base::SplitString(header_line, ' ', &header_line_tokens);
+    std::vector<std::string> header_line_tokens = base::SplitString(
+        header_line, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     DCHECK_EQ(3u, header_line_tokens.size());
     // Method.
     http_request_->method = header_line_tokens[0];
@@ -89,8 +89,7 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseHeaders() {
     // know) anything about the server address.
     http_request_->relative_url = header_line_tokens[1];
     // Protocol.
-    const std::string protocol =
-        base::StringToLowerASCII(header_line_tokens[2]);
+    const std::string protocol = base::ToLowerASCII(header_line_tokens[2]);
     CHECK(protocol == "http/1.0" || protocol == "http/1.1") <<
         "Protocol not supported: " << protocol;
   }

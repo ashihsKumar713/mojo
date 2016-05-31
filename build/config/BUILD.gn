@@ -135,6 +135,12 @@ config("release") {
   }
 }
 
+# TODO(vtl): Chromium supports precompiled headers (on a per-target basis), but
+# we don't. Stuff from //base depends on this. Add stuff here if we ever want
+# precompiled headers.
+config("precompiled_headers") {
+}
+
 # Default libraries ------------------------------------------------------------
 
 # This config defines the default libraries applied to all targets.

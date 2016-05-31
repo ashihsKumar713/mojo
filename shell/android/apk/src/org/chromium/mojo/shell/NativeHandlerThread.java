@@ -6,7 +6,7 @@ package org.chromium.mojo.shell;
 
 import android.os.HandlerThread;
 
-import org.chromium.base.JNINamespace;
+import org.chromium.base.annotations.JNINamespace;
 
 /**
  * Handler thread associated with a native message loop.

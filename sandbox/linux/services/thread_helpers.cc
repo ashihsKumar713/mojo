@@ -121,12 +121,12 @@ bool ChangeThreadStateAndWatchProcFS(
   const char* message;
 
   if (action == ThreadAction::Start) {
-    // Should start the thread before calling thread_id().
+    // Should start the thread before calling GetThreadId().
     if (!thread->Start())
       return false;
   }
 
-  const base::PlatformThreadId thread_id = thread->thread_id();
+  const base::PlatformThreadId thread_id = thread->GetThreadId();
   const std::string thread_id_dir_str =
       "self/task/" + base::IntToString(thread_id) + "/";
 

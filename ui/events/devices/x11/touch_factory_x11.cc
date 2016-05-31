@@ -62,10 +62,10 @@ void TouchFactory::SetTouchDeviceListFromCommandLine() {
           switches::kTouchDevices);
 
   if (!touch_devices.empty()) {
-    std::vector<std::string> devs;
+    std::vector<std::string> devs = base::SplitString(
+        touch_devices, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     std::vector<int> device_ids;
     int devid;
-    base::SplitString(touch_devices, ',', &devs);
     for (std::vector<std::string>::iterator iter = devs.begin();
         iter != devs.end(); ++iter) {
       if (base::StringToInt(*iter, reinterpret_cast<int*>(&devid)))

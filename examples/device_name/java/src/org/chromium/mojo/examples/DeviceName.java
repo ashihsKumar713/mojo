@@ -7,8 +7,8 @@ package org.chromium.mojo.examples;
 import android.content.Context;
 import android.os.Build;
 
-import org.chromium.base.CalledByNative;
-import org.chromium.base.JNINamespace;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 
 /**
  * Example Java class providing functionality to the native side.

@@ -30,8 +30,8 @@ bool CheckMeasurementFormat(const std::string& type,
 bool GetMeasurement(const std::string& measurement_spec, Measurement* result) {
   // Measurements are described in the format:
   // <measurement type>/<event category>/<event name>.
-  std::vector<std::string> parts;
-  base::SplitString(measurement_spec, '/', &parts);
+  std::vector<std::string> parts = base::SplitString(
+      measurement_spec, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() < 1) {
     LOG(ERROR) << "Could not parse the measurement description: "
                << measurement_spec;

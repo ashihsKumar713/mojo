@@ -73,8 +73,8 @@ class StringSet {
 void StringToWorkarounds(
     const std::string& types, FeatureInfo::Workarounds* workarounds) {
   DCHECK(workarounds);
-  std::vector<std::string> pieces;
-  base::SplitString(types, ',', &pieces);
+  std::vector<std::string> pieces = base::SplitString(
+      types, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (size_t i = 0; i < pieces.size(); ++i) {
     int number = 0;
     bool succeed = base::StringToInt(pieces[i], &number);
