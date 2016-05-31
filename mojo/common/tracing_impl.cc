@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/trace_event/trace_event_impl.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/bindings/interface_handle.h"
 #include "mojo/public/cpp/bindings/interface_request.h"

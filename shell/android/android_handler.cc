@@ -19,8 +19,8 @@
 #include "jni/AndroidHandler_jni.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "shell/android/run_android_application_function.h"
 #include "shell/native_application_support.h"
 
@@ -122,13 +122,13 @@ void AndroidHandler::RunApplication(
       reinterpret_cast<jlong>(run_android_application_fn));
 }
 
-void AndroidHandler::Initialize(mojo::ApplicationImpl* app) {
+void AndroidHandler::OnInitialize() {
   handler_task_runner_ = base::MessageLoop::current()->task_runner();
-  mojo::ConnectToService(app->shell(), "mojo:url_response_disk_cache",
+  mojo::ConnectToService(shell(), "mojo:url_response_disk_cache",
                          GetProxy(&url_response_disk_cache_));
 }
 
-bool AndroidHandler::ConfigureIncomingConnection(
+bool AndroidHandler::OnAcceptConnection(
     mojo::ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<mojo::ContentHandler>(
       mojo::ContentHandlerFactory::GetInterfaceRequestHandler(this));

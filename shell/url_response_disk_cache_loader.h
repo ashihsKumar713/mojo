@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/task_runner.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "services/url_response_disk_cache/url_response_disk_cache_app.h"
 #include "shell/application_manager/application_loader.h"
 

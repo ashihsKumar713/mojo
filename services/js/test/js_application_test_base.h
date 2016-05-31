@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 
 namespace js {

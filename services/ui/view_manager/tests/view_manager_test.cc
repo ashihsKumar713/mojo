@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/services/ui/views/interfaces/view_manager.mojom.h"
 #include "mojo/services/ui/views/interfaces/views.mojom.h"
 #include "services/ui/view_manager/tests/mock_view_associate.h"

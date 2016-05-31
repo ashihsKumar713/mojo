@@ -18,11 +18,12 @@
 #include "jni/JavaHandler_jni.h"
 #include "mojo/android/system/base_run_loop.h"
 #include "mojo/android/system/core_impl.h"
-#include "mojo/application/application_runner_chromium.h"
 #include "mojo/application/content_handler_factory.h"
+#include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/run_application.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;
@@ -89,10 +90,10 @@ void JavaHandler::RunApplication(
       application_request.PassMessagePipe().release().value());
 }
 
-void JavaHandler::Initialize(mojo::ApplicationImpl* app) {
-  tracing_.Initialize(app->shell(), &app->args());
+void JavaHandler::OnInitialize() {
+  tracing_.Initialize(shell(), &args());
   handler_task_runner_ = base::MessageLoop::current()->task_runner();
-  mojo::ConnectToService(app->shell(), "mojo:url_response_disk_cache",
+  mojo::ConnectToService(shell(), "mojo:url_response_disk_cache",
                          GetProxy(&url_response_disk_cache_));
 }
 
@@ -118,7 +119,7 @@ void JavaHandler::GetApplication(base::FilePath* archive_path,
       });
 }
 
-bool JavaHandler::ConfigureIncomingConnection(
+bool JavaHandler::OnAcceptConnection(
     mojo::ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<mojo::ContentHandler>(
       mojo::ContentHandlerFactory::GetInterfaceRequestHandler(this));
@@ -133,8 +134,9 @@ void PreInvokeEvent(JNIEnv* env, jclass jcaller) {
 }  // namespace services
 
 MojoResult MojoMain(MojoHandle application_request) {
-  mojo::ApplicationRunnerChromium runner(new services::android::JavaHandler());
-  return runner.Run(application_request);
+  mojo::ScopedChromiumInit init;
+  services::android::JavaHandler java_handler;
+  return mojo::RunApplication(application_request, &java_handler);
 }
 
 JNI_EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {

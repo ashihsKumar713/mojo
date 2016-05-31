@@ -67,7 +67,7 @@ MediaSinkImpl::MediaSinkImpl(const String& destination_url,
   // An AudioTrackController knows how to talk to an audio track, interrogating
   // it for supported stream types and configuring it for the chosen stream
   // type.
-  controller_.reset(new AudioTrackController(destination_url, app()));
+  controller_.reset(new AudioTrackController(destination_url, owner->shell()));
 
   controller_->GetSupportedMediaTypes([this, consumer_ref, producer_ref,
                                        captured_stream_type](

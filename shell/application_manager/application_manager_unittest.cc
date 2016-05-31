@@ -11,8 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_vector.h"
 #include "base/message_loop/message_loop.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
@@ -22,11 +21,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using mojo::Application;
-using mojo::ApplicationDelegate;
-using mojo::ApplicationImpl;
+using mojo::ApplicationImplBase;
 using mojo::Callback;
 using mojo::ConnectionContext;
 using mojo::InterfaceRequest;
+using mojo::ServiceProviderImpl;
 using mojo::StrongBinding;
 
 namespace shell {
@@ -97,31 +96,30 @@ class TestClient {
 };
 
 class TestApplicationLoader : public ApplicationLoader,
-                              public ApplicationDelegate {
+                              public ApplicationImplBase {
  public:
   TestApplicationLoader() : context_(nullptr), num_loads_(0) {}
 
   ~TestApplicationLoader() override {
     if (context_)
       ++context_->num_loader_deletes;
-    test_app_.reset();
   }
 
   void set_context(TestContext* context) { context_ = context; }
   int num_loads() const { return num_loads_; }
-  const std::vector<std::string>& GetArgs() const { return test_app_->args(); }
 
  private:
   // ApplicationLoader implementation.
   void Load(const GURL& url,
             InterfaceRequest<Application> application_request) override {
     ++num_loads_;
-    test_app_.reset(new ApplicationImpl(this, application_request.Pass()));
+    if (application_binding().is_bound())
+      application_binding().Close();
+    Bind(application_request.Pass());
   }
 
-  // ApplicationDelegate implementation.
-  bool ConfigureIncomingConnection(
-      mojo::ServiceProviderImpl* service_provider_impl) override {
+  // ApplicationImplBase override.
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override {
     service_provider_impl->AddService<TestService>(
         [this](const ConnectionContext& connection_context,
                InterfaceRequest<TestService> request) {
@@ -130,7 +128,6 @@ class TestApplicationLoader : public ApplicationLoader,
     return true;
   }
 
-  scoped_ptr<ApplicationImpl> test_app_;
   TestContext* context_;
   int num_loads_;
   DISALLOW_COPY_AND_ASSIGN(TestApplicationLoader);
@@ -293,7 +290,7 @@ class TestBImpl : public TestB {
   StrongBinding<TestB> binding_;
 };
 
-class Tester : public ApplicationDelegate, public ApplicationLoader {
+class Tester : public ApplicationImplBase, public ApplicationLoader {
  public:
   Tester(TesterContext* context, const std::string& requestor_url)
       : context_(context), requestor_url_(requestor_url) {}
@@ -302,11 +299,10 @@ class Tester : public ApplicationDelegate, public ApplicationLoader {
  private:
   void Load(const GURL& url,
             InterfaceRequest<Application> application_request) override {
-    app_.reset(new ApplicationImpl(this, application_request.Pass()));
+    Bind(application_request.Pass());
   }
 
-  bool ConfigureIncomingConnection(
-      mojo::ServiceProviderImpl* service_provider_impl) override {
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override {
     const std::string& remote_url =
         service_provider_impl->connection_context().remote_url;
     if (!requestor_url_.empty() && requestor_url_ != remote_url) {
@@ -327,7 +323,7 @@ class Tester : public ApplicationDelegate, public ApplicationLoader {
           [this](const ConnectionContext& connection_context,
                  InterfaceRequest<TestA> test_a_request) {
             mojo::InterfaceHandle<mojo::ServiceProvider> incoming_sp_handle;
-            app_->shell()->ConnectToApplication(
+            shell()->ConnectToApplication(
                 kTestBURLString, GetProxy(&incoming_sp_handle), nullptr);
             a_bindings_.push_back(new TestAImpl(
                 incoming_sp_handle.Pass(), context_, test_a_request.Pass()));
@@ -337,7 +333,6 @@ class Tester : public ApplicationDelegate, public ApplicationLoader {
   }
 
   TesterContext* context_;
-  scoped_ptr<ApplicationImpl> app_;
   std::string requestor_url_;
   ScopedVector<TestAImpl> a_bindings_;
 };
@@ -368,32 +363,25 @@ class TestDelegate : public ApplicationManager::Delegate {
   std::map<GURL, GURL> mappings_;
 };
 
-class TestExternal : public ApplicationDelegate {
+class TestExternal : public ApplicationImplBase {
  public:
   TestExternal() : configure_incoming_connection_called_(false) {}
 
-  void Initialize(ApplicationImpl* app) override {
-    initialize_args_ = app->args();
-    base::MessageLoop::current()->Quit();
-  }
+  void OnInitialize() override { base::MessageLoop::current()->Quit(); }
 
-  bool ConfigureIncomingConnection(
-      mojo::ServiceProviderImpl* service_provider_impl) override {
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override {
     configure_incoming_connection_called_ = true;
     base::MessageLoop::current()->Quit();
     return true;
   }
 
-  const std::vector<std::string>& initialize_args() const {
-    return initialize_args_;
-  }
+  const std::vector<std::string>& initialize_args() const { return args(); }
 
   bool configure_incoming_connection_called() const {
     return configure_incoming_connection_called_;
   }
 
  private:
-  std::vector<std::string> initialize_args_;
   bool configure_incoming_connection_called_;
 };
 
@@ -462,7 +450,7 @@ TEST_F(ApplicationManagerTest, NoArgs) {
   TestClient test_client(test_service.Pass());
   test_client.Test("test");
   loop_.Run();
-  std::vector<std::string> app_args = loader->GetArgs();
+  std::vector<std::string> app_args = loader->args();
   EXPECT_EQ(0U, app_args.size());
 }
 
@@ -482,7 +470,7 @@ TEST_F(ApplicationManagerTest, Args) {
   TestClient test_client(test_service.Pass());
   test_client.Test("test");
   loop_.Run();
-  std::vector<std::string> app_args = loader->GetArgs();
+  std::vector<std::string> app_args = loader->args();
   ASSERT_EQ(args.size() + 1, app_args.size());
   EXPECT_EQ(args[0], app_args[1]);
   EXPECT_EQ(args[1], app_args[2]);
@@ -505,7 +493,7 @@ TEST_F(ApplicationManagerTest, ArgsWithQuery) {
   TestClient test_client(test_service.Pass());
   test_client.Test("test");
   loop_.Run();
-  std::vector<std::string> app_args = loader->GetArgs();
+  std::vector<std::string> app_args = loader->args();
   ASSERT_EQ(args.size() + 1, app_args.size());
   EXPECT_EQ(args[0], app_args[1]);
 }
@@ -529,7 +517,7 @@ TEST_F(ApplicationManagerTest, ArgsMultipleCalls) {
   TestClient test_client(test_service.Pass());
   test_client.Test("test");
   loop_.Run();
-  std::vector<std::string> app_args = loader->GetArgs();
+  std::vector<std::string> app_args = loader->args();
   ASSERT_EQ(args1.size() + args2.size() + 1, app_args.size());
   EXPECT_EQ(args1[0], app_args[1]);
   EXPECT_EQ(args2[0], app_args[2]);
@@ -559,7 +547,7 @@ TEST_F(ApplicationManagerTest, ArgsAndMapping) {
     TestClient test_client(test_service.Pass());
     test_client.Test("test");
     loop_.Run();
-    std::vector<std::string> app_args = loader->GetArgs();
+    std::vector<std::string> app_args = loader->args();
     ASSERT_EQ(args.size() + args2.size() + 1, app_args.size());
     EXPECT_EQ(args[0], app_args[1]);
     EXPECT_EQ(args[1], app_args[2]);
@@ -573,7 +561,7 @@ TEST_F(ApplicationManagerTest, ArgsAndMapping) {
     TestClient test_client(test_service.Pass());
     test_client.Test("test");
     loop_.Run();
-    std::vector<std::string> app_args = loader->GetArgs();
+    std::vector<std::string> app_args = loader->args();
     ASSERT_EQ(args.size() + args2.size() + 1, app_args.size());
     EXPECT_EQ(args[0], app_args[1]);
     EXPECT_EQ(args[1], app_args[2]);

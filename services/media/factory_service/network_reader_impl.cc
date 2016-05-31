@@ -31,7 +31,7 @@ NetworkReaderImpl::NetworkReaderImpl(const String& url,
       url_(url) {
   NetworkServicePtr network_service;
 
-  ConnectToService(app()->shell(), "mojo:network_service",
+  ConnectToService(owner->shell(), "mojo:network_service",
                    GetProxy(&network_service));
 
   network_service->CreateURLLoader(GetProxy(&url_loader_));

@@ -5,7 +5,7 @@
 #ifndef MOJO_SHELL_ANDROID_NATIVE_VIEWPORT_APPLICATION_LOADER_H_
 #define MOJO_SHELL_ANDROID_NATIVE_VIEWPORT_APPLICATION_LOADER_H_
 
-#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/services/gpu/interfaces/gpu.mojom.h"
 #include "mojo/services/native_viewport/interfaces/native_viewport.mojom.h"
 #include "services/gles2/gpu_impl.h"
@@ -15,14 +15,10 @@ namespace gles2 {
 class GpuState;
 }
 
-namespace mojo {
-class ApplicationImpl;
-}  // namespace mojo
-
 namespace shell {
 
 class NativeViewportApplicationLoader : public ApplicationLoader,
-                                        public mojo::ApplicationDelegate {
+                                        public mojo::ApplicationImplBase {
  public:
   NativeViewportApplicationLoader();
   ~NativeViewportApplicationLoader();
@@ -33,12 +29,11 @@ class NativeViewportApplicationLoader : public ApplicationLoader,
       const GURL& url,
       mojo::InterfaceRequest<mojo::Application> application_request) override;
 
-  // mojo::ApplicationDelegate implementation.
-  bool ConfigureIncomingConnection(
+  // mojo::ApplicationImplBase override.
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override;
 
   scoped_refptr<gles2::GpuState> gpu_state_;
-  scoped_ptr<mojo::ApplicationImpl> app_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeViewportApplicationLoader);
 };

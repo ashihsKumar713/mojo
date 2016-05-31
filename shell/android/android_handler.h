@@ -9,7 +9,7 @@
 
 #include "base/single_thread_task_runner.h"
 #include "mojo/application/content_handler_factory.h"
-#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/services/content_handler/interfaces/content_handler.mojom.h"
 #include "mojo/services/url_response_disk_cache/interfaces/url_response_disk_cache.mojom.h"
 
@@ -19,16 +19,16 @@ class FilePath;
 
 namespace shell {
 
-class AndroidHandler : public mojo::ApplicationDelegate,
+class AndroidHandler : public mojo::ApplicationImplBase,
                        public mojo::ContentHandlerFactory::Delegate {
  public:
   AndroidHandler();
   ~AndroidHandler();
 
  private:
-  // mojo::ApplicationDelegate:
-  void Initialize(mojo::ApplicationImpl* app) override;
-  bool ConfigureIncomingConnection(
+  // mojo::ApplicationImplBase:
+  void OnInitialize() override;
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override;
 
   // mojo::ContentHandlerFactory::Delegate:

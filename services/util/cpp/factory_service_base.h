@@ -9,13 +9,12 @@
 #include <unordered_set>
 
 #include "base/logging.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 
 namespace mojo {
 namespace util {
 
-class FactoryServiceBase : public ApplicationDelegate {
+class FactoryServiceBase : public ApplicationImplBase {
  public:
   // Provides common behavior for all objects created by the factory service.
   class ProductBase : public std::enable_shared_from_this<ProductBase> {
@@ -23,13 +22,10 @@ class FactoryServiceBase : public ApplicationDelegate {
     virtual ~ProductBase();
 
    protected:
-    ProductBase(FactoryServiceBase* owner);
+    explicit ProductBase(FactoryServiceBase* owner);
 
-    // Returns the ApplicationImpl.
-    ApplicationImpl* app() {
-      DCHECK(owner_->app());
-      return owner_->app();
-    }
+    // Returns the owner.
+    FactoryServiceBase* owner() { return owner_; }
 
     // Tells the factory service to release this product.
     void ReleaseFromOwner() {
@@ -72,11 +68,6 @@ class FactoryServiceBase : public ApplicationDelegate {
 
   ~FactoryServiceBase() override;
 
-  ApplicationImpl* app() { return app_; }
-
-  // ApplicationDelegate implementation.
-  void Initialize(ApplicationImpl* app) override;
-
  protected:
   template <typename ProductImpl>
   void AddProduct(std::shared_ptr<ProductImpl> product) {
@@ -84,7 +75,6 @@ class FactoryServiceBase : public ApplicationDelegate {
   }
 
  private:
-  ApplicationImpl* app_;
   std::unordered_set<std::shared_ptr<ProductBase>> products_;
 };
 

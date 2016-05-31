@@ -10,8 +10,8 @@
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/dart/embedder/dart_controller.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/services/tracing/interfaces/tracing.mojom.h"
@@ -130,51 +130,51 @@ bool DartContentHandlerApp::run_on_message_loop() const {
   return run_on_message_loop_;
 }
 
-void DartContentHandlerApp::Initialize(mojo::ApplicationImpl* app) {
+void DartContentHandlerApp::OnInitialize() {
   // Tracing of content handler and controller.
-  tracing_.Initialize(app->shell(), &app->args());
+  tracing_.Initialize(shell(), &args());
   // Tracing of isolates and VM.
-  dart_tracing_.Initialize(app->shell());
+  dart_tracing_.Initialize(shell());
 
   // TODO(qsr): This has no effect for now, as the tracing infrastructure
   // doesn't allow to trace anything before the tracing app connects to the
   // application.
   TRACE_EVENT0("dart_content_handler", "DartContentHandler::Initialize");
 
-  default_strict_ = app->HasArg(kEnableStrictMode);
+  default_strict_ = HasArg(kEnableStrictMode);
   content_handler_.set_handler_task_runner(
       base::MessageLoop::current()->task_runner());
   strict_content_handler_.set_handler_task_runner(
       base::MessageLoop::current()->task_runner());
-  mojo::ConnectToService(app->shell(), "mojo:url_response_disk_cache",
+  mojo::ConnectToService(shell(), "mojo:url_response_disk_cache",
                          GetProxy(&url_response_disk_cache_));
-  service_connector_ = new ContentHandlerAppServiceConnector(app);
+  service_connector_ = new ContentHandlerAppServiceConnector(shell());
 
-  if (app->HasArg(kRunOnMessageLoop)) {
+  if (HasArg(kRunOnMessageLoop)) {
     run_on_message_loop_ = true;
   }
 
   bool enable_observatory = true;
-  if (app->HasArg(kDisableObservatory)) {
+  if (HasArg(kDisableObservatory)) {
     enable_observatory = false;
   }
 
   bool enable_dart_timeline = false;
-  if (app->HasArg(kDartTimeline)) {
+  if (HasArg(kDartTimeline)) {
     enable_dart_timeline = true;
   }
 
   std::vector<const char*> extra_args;
 
-  if (app->HasArg(kPauseIsolatesOnStart)) {
+  if (HasArg(kPauseIsolatesOnStart)) {
     extra_args.push_back(kPauseIsolatesOnStart);
   }
 
-  if (app->HasArg(kPauseIsolatesOnExit)) {
+  if (HasArg(kPauseIsolatesOnExit)) {
     extra_args.push_back(kPauseIsolatesOnExit);
   }
 
-  if (app->HasArg(kCompleteTimeline)) {
+  if (HasArg(kCompleteTimeline)) {
     extra_args.push_back(kCompleteTimeline);
   }
 
@@ -182,7 +182,7 @@ void DartContentHandlerApp::Initialize(mojo::ApplicationImpl* app) {
       service_connector_, default_strict_, enable_observatory,
       enable_dart_timeline, extra_args.data(), extra_args.size());
 
-  if (app->HasArg(kTraceStartup)) {
+  if (HasArg(kTraceStartup)) {
     DartTimelineController::EnableAll();
   }
   if (!success) {
@@ -190,7 +190,7 @@ void DartContentHandlerApp::Initialize(mojo::ApplicationImpl* app) {
   }
 }
 
-bool DartContentHandlerApp::ConfigureIncomingConnection(
+bool DartContentHandlerApp::OnAcceptConnection(
     mojo::ServiceProviderImpl* service_provider_impl) {
   bool strict = HasStrictQueryParam(
       service_provider_impl->connection_context().connection_url);

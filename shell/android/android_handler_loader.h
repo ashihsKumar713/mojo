@@ -5,10 +5,7 @@
 #ifndef SHELL_ANDROID_ANDROID_HANDLER_LOADER_H_
 #define SHELL_ANDROID_ANDROID_HANDLER_LOADER_H_
 
-#include "base/containers/scoped_ptr_hash_map.h"
 #include "base/macros.h"
-#include "base/memory/scoped_ptr.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "shell/android/android_handler.h"
 #include "shell/application_manager/application_loader.h"
 
@@ -26,7 +23,6 @@ class AndroidHandlerLoader : public ApplicationLoader {
       mojo::InterfaceRequest<mojo::Application> application_request) override;
 
   AndroidHandler android_handler_;
-  scoped_ptr<mojo::ApplicationImpl> application_;
 
   DISALLOW_COPY_AND_ASSIGN(AndroidHandlerLoader);
 };

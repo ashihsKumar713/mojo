@@ -5,12 +5,14 @@
 #ifndef SERVICES_MEDIA_FACTORY_SERVICE_AUDIO_TRACK_CONTROLLER_H_
 #define SERVICES_MEDIA_FACTORY_SERVICE_AUDIO_TRACK_CONTROLLER_H_
 
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/services/media/audio/interfaces/audio_track.mojom.h"
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
 #include "services/media/framework/types/stream_type.h"
 
 namespace mojo {
+
+class Shell;
+
 namespace media {
 
 // Controls an audio track.
@@ -20,7 +22,7 @@ class AudioTrackController {
       std::unique_ptr<std::vector<std::unique_ptr<StreamTypeSet>>>)>;
   using ConfigureCallback = std::function<void(MediaConsumerPtr)>;
 
-  AudioTrackController(const String& url, ApplicationImpl* app);
+  AudioTrackController(const String& url, Shell* shell);
 
   ~AudioTrackController();
 

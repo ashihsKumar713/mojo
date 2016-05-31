@@ -8,7 +8,7 @@
 #include "base/bind.h"
 #include "mojo/application/content_handler_factory.h"
 #include "mojo/common/tracing_impl.h"
-#include "mojo/public/cpp/application/application_delegate.h"
+#include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/services/url_response_disk_cache/interfaces/url_response_disk_cache.mojom.h"
 #include "services/dart/content_handler_app_service_connector.h"
 #include "services/dart/dart_tracing.h"
@@ -38,7 +38,7 @@ class DartContentHandler : public mojo::ContentHandlerFactory::ManagedDelegate {
   DISALLOW_COPY_AND_ASSIGN(DartContentHandler);
 };
 
-class DartContentHandlerApp : public mojo::ApplicationDelegate {
+class DartContentHandlerApp : public mojo::ApplicationImplBase {
  public:
   DartContentHandlerApp();
 
@@ -51,11 +51,9 @@ class DartContentHandlerApp : public mojo::ApplicationDelegate {
   bool run_on_message_loop() const;
 
  private:
-  // Overridden from mojo::ApplicationDelegate:
-  void Initialize(mojo::ApplicationImpl* app) override;
-
-  // Overridden from ApplicationDelegate:
-  bool ConfigureIncomingConnection(
+  // Overridden from mojo::ApplicationImplBase:
+  void OnInitialize() override;
+  bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override;
 
   mojo::TracingImpl tracing_;
@@ -69,6 +67,7 @@ class DartContentHandlerApp : public mojo::ApplicationDelegate {
 
   DISALLOW_COPY_AND_ASSIGN(DartContentHandlerApp);
 };
-}
+
+}  // namespace dart
 
 #endif  // SERVICES_DART_CONTENT_HANDLER_APP_H_

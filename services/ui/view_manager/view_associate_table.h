@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "mojo/common/binding_set.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/services/ui/views/interfaces/view_associates.mojom.h"
 #include "mojo/services/ui/views/interfaces/view_manager.mojom.h"
 

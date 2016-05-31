@@ -9,7 +9,6 @@
 #include "base/message_loop/message_loop.h"
 #include "base/test/test_timeouts.h"
 #include "mojo/public/c/environment/logger.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/public/cpp/application/connection_context.h"
 #include "mojo/public/cpp/system/time.h"

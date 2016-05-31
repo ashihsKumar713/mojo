@@ -19,9 +19,5 @@ FactoryServiceBase::FactoryServiceBase() {}
 
 FactoryServiceBase::~FactoryServiceBase() {}
 
-void FactoryServiceBase::Initialize(ApplicationImpl* app) {
-  app_ = app;
-}
-
 }  // namespace util
 }  // namespace mojo

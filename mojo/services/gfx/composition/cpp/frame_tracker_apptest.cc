@@ -4,7 +4,6 @@
 
 #include "mojo/services/gfx/composition/cpp/frame_tracker.h"
 
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/public/cpp/system/macros.h"
 

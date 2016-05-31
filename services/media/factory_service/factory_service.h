@@ -6,8 +6,6 @@
 #define MOJO_SERVICES_MEDIA_FACTORY_FACTORY_SERVICE_H_
 
 #include "mojo/common/binding_set.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/services/media/control/interfaces/media_factory.mojom.h"
 #include "services/util/cpp/factory_service_base.h"
 
@@ -21,9 +19,8 @@ class MediaFactoryService : public util::FactoryServiceBase,
 
   ~MediaFactoryService() override;
 
-  // ApplicationDelegate implementation.
-  bool ConfigureIncomingConnection(
-      ServiceProviderImpl* service_provider_impl) override;
+  // ApplicationImplBase override.
+  bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override;
 
   // MediaFactory implementation.
   void CreatePlayer(InterfaceHandle<SeekingReader> reader,

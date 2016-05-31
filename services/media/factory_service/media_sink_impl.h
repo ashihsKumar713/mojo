@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/services/media/control/interfaces/media_sink.mojom.h"
 #include "mojo/services/media/core/interfaces/timeline_controller.mojom.h"

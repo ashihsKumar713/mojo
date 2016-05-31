@@ -5,13 +5,13 @@
 #ifndef SERVICES_DART_CONTENT_HANDLER_APP_SERVICE_CONNECTOR_H_
 #define SERVICES_DART_CONTENT_HANDLER_APP_SERVICE_CONNECTOR_H_
 
-#include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/scoped_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop.h"
 #include "mojo/dart/embedder/dart_controller.h"
-#include "mojo/public/cpp/application/application_impl.h"
+
+namespace mojo {
+class Shell;
+}  // namespace mojo
 
 namespace dart {
 
@@ -22,8 +22,9 @@ class ContentHandlerAppServiceConnector
  public:
   // Call this only on the same thread as the content_handler_runner. This is
   // checked in the body of the constructor.
-  explicit ContentHandlerAppServiceConnector(
-      mojo::ApplicationImpl* content_handler_app);
+  // TODO(vtl): Maybe this should take an
+  // |InterfaceHandle<ApplicationConnector>| instead of a |Shell*|.
+  explicit ContentHandlerAppServiceConnector(mojo::Shell* shell);
 
   // Must be called on the same thread that constructed |this|.
   ~ContentHandlerAppServiceConnector() override;
@@ -38,7 +39,7 @@ class ContentHandlerAppServiceConnector
                mojo::InterfaceRequest<Interface> interface_request);
 
   scoped_refptr<base::SingleThreadTaskRunner> runner_;
-  mojo::ApplicationImpl* content_handler_app_;
+  mojo::Shell* shell_;
   base::WeakPtrFactory<ContentHandlerAppServiceConnector> weak_ptr_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentHandlerAppServiceConnector);

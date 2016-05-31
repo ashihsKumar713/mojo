@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/ui/associates/mock_hit_tester.h"
 #include "mojo/ui/associates/mock_view_inspector.h"

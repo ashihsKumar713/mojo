@@ -8,7 +8,6 @@
 #include <limits>
 #include <memory>
 
-#include "mojo/public/cpp/application/application_impl.h"
 #include "services/media/framework/result.h"
 
 namespace mojo {

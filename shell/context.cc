@@ -26,8 +26,6 @@
 #include "mojo/edk/embedder/embedder.h"
 #include "mojo/edk/embedder/multiprocess_embedder.h"
 #include "mojo/edk/embedder/simple_platform_support.h"
-#include "mojo/public/cpp/application/application_delegate.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/services/tracing/interfaces/trace_provider_registry.mojom.h"
 #include "mojo/services/tracing/interfaces/tracing.mojom.h"

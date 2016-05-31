@@ -4,7 +4,7 @@
 
 #include "shell/android/native_viewport_application_loader.h"
 
-#include "mojo/public/cpp/application/application_impl.h"
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/gles2/gpu_state.h"
 #include "services/native_viewport/native_viewport_impl.h"
 
@@ -13,28 +13,26 @@ using mojo::InterfaceRequest;
 
 namespace shell {
 
-NativeViewportApplicationLoader::NativeViewportApplicationLoader() {
-}
+NativeViewportApplicationLoader::NativeViewportApplicationLoader() {}
 
-NativeViewportApplicationLoader::~NativeViewportApplicationLoader() {
-}
+NativeViewportApplicationLoader::~NativeViewportApplicationLoader() {}
 
 void NativeViewportApplicationLoader::Load(
     const GURL& url,
     InterfaceRequest<mojo::Application> application_request) {
   DCHECK(application_request.is_pending());
-  app_.reset(new mojo::ApplicationImpl(this, application_request.Pass()));
+  Bind(application_request.Pass());
 }
 
-bool NativeViewportApplicationLoader::ConfigureIncomingConnection(
+bool NativeViewportApplicationLoader::OnAcceptConnection(
     mojo::ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<mojo::NativeViewport>(
       [this](const ConnectionContext& connection_context,
              InterfaceRequest<mojo::NativeViewport> native_viewport_request) {
         if (!gpu_state_)
           gpu_state_ = new gles2::GpuState();
-        new native_viewport::NativeViewportImpl(
-            app_->shell(), false, gpu_state_, native_viewport_request.Pass());
+        new native_viewport::NativeViewportImpl(shell(), false, gpu_state_,
+                                                native_viewport_request.Pass());
       });
   service_provider_impl->AddService<mojo::Gpu>(
       [this](const ConnectionContext& connection_context,

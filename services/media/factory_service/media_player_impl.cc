@@ -38,7 +38,7 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
 
   state_ = State::kWaiting;
 
-  ConnectToService(app()->shell(), "mojo:media_factory", GetProxy(&factory_));
+  ConnectToService(owner->shell(), "mojo:media_factory", GetProxy(&factory_));
 
   factory_->CreateDemux(reader.Pass(), GetProxy(&demux_));
   HandleDemuxMetadataUpdates();

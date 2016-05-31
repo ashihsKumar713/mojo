@@ -6,18 +6,15 @@
 
 namespace shell {
 
-AndroidHandlerLoader::AndroidHandlerLoader() {
-}
+AndroidHandlerLoader::AndroidHandlerLoader() {}
 
-AndroidHandlerLoader::~AndroidHandlerLoader() {
-}
+AndroidHandlerLoader::~AndroidHandlerLoader() {}
 
 void AndroidHandlerLoader::Load(
     const GURL& url,
     mojo::InterfaceRequest<mojo::Application> application_request) {
   DCHECK(application_request.is_pending());
-  application_.reset(
-      new mojo::ApplicationImpl(&android_handler_, application_request.Pass()));
+  android_handler_.Bind(application_request.Pass());
 }
 
 }  // namespace shell

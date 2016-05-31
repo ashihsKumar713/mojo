@@ -4,6 +4,7 @@
 
 #include "services/dart/content_handler_app_service_connector.h"
 
+#include "base/bind.h"
 #include "base/location.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
@@ -18,16 +19,15 @@ template<typename Interface>
 void ContentHandlerAppServiceConnector::Connect(
     std::string application_name,
     mojo::InterfaceRequest<Interface> interface_request) {
-  mojo::ConnectToService(content_handler_app_->shell(), application_name,
-                         interface_request.Pass());
+  mojo::ConnectToService(shell_, application_name, interface_request.Pass());
 }
 
 ContentHandlerAppServiceConnector::ContentHandlerAppServiceConnector(
-    mojo::ApplicationImpl* content_handler_app)
-        : runner_(base::MessageLoop::current()->task_runner()),
-          content_handler_app_(content_handler_app),
-          weak_ptr_factory_(this) {
-  CHECK(content_handler_app != nullptr);
+    mojo::Shell* shell)
+    : runner_(base::MessageLoop::current()->task_runner()),
+      shell_(shell),
+      weak_ptr_factory_(this) {
+  CHECK(shell != nullptr);
   CHECK(runner_.get() != nullptr);
   CHECK(runner_.get()->BelongsToCurrentThread());
 }

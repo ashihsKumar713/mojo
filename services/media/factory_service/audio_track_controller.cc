@@ -15,13 +15,12 @@
 namespace mojo {
 namespace media {
 
-AudioTrackController::AudioTrackController(const String& url,
-                                           ApplicationImpl* app) {
+AudioTrackController::AudioTrackController(const String& url, Shell* shell) {
   // TODO(dalesat): Handle connection errors.
-  DCHECK(app);
+  DCHECK(shell);
 
   AudioServerPtr audio_server;
-  ConnectToService(app->shell(), url, GetProxy(&audio_server));
+  ConnectToService(shell, url, GetProxy(&audio_server));
   audio_server->CreateTrack(GetProxy(&audio_track_));
 }
 

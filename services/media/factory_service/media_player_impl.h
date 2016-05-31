@@ -8,7 +8,6 @@
 #include <limits>
 #include <vector>
 
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/services/media/common/cpp/timeline.h"
 #include "mojo/services/media/common/cpp/timeline_function.h"

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "services/media/factory_service/factory_service.h"
+
+#include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/media/factory_service/media_decoder_impl.h"
 #include "services/media/factory_service/media_demux_impl.h"
 #include "services/media/factory_service/media_player_impl.h"
@@ -18,7 +20,7 @@ MediaFactoryService::MediaFactoryService() {}
 
 MediaFactoryService::~MediaFactoryService() {}
 
-bool MediaFactoryService::ConfigureIncomingConnection(
+bool MediaFactoryService::OnAcceptConnection(
     ServiceProviderImpl* service_provider_impl) {
   service_provider_impl->AddService<MediaFactory>(
       [this](const ConnectionContext& connection_context,

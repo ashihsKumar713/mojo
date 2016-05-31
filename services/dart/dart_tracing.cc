@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "dart/runtime/include/dart_tools_api.h"
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/bindings/interface_handle.h"
 #include "mojo/public/cpp/bindings/interface_request.h"

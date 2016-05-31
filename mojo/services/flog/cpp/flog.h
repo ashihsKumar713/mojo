@@ -8,7 +8,6 @@
 #include <atomic>
 #include <memory>
 
-#include "mojo/public/cpp/application/application_impl.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/bindings/array.h"
 #include "mojo/public/cpp/bindings/message.h"

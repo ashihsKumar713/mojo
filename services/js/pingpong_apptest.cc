@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/public/cpp/bindings/binding.h"
 #include "services/js/test/js_application_test_base.h"
 #include "services/js/test/pingpong_service.mojom.h"
 
