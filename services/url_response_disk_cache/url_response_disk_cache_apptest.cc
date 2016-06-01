@@ -34,7 +34,7 @@ class URLResponseDiskCacheAppTest : public mojo::test::ApplicationTestBase {
   DISALLOW_COPY_AND_ASSIGN(URLResponseDiskCacheAppTest);
 };
 
-base::FilePath toPath(Array<uint8_t> path) {
+base::FilePath ToPath(Array<uint8_t> path) {
   if (path.is_null()) {
     return base::FilePath();
   }
@@ -88,8 +88,8 @@ TEST_F(URLResponseDiskCacheAppTest, BaseCache) {
                  URLResponsePtr response, Array<uint8_t> received_file_path,
                  Array<uint8_t> received_cache_dir_path) {
           url_response = response.Pass();
-          file = toPath(received_file_path.Pass());
-          cache_dir = toPath(received_cache_dir_path.Pass());
+          file = ToPath(received_file_path.Pass());
+          cache_dir = ToPath(received_cache_dir_path.Pass());
         });
     url_response_disk_cache_.WaitForIncomingResponse();
   }
@@ -121,8 +121,8 @@ TEST_F(URLResponseDiskCacheAppTest, UpdateAndGet) {
       url_response.Pass(),
       [&file, &cache_dir](Array<uint8_t> received_file_path,
                           Array<uint8_t> received_cache_dir_path) {
-        file = toPath(received_file_path.Pass());
-        cache_dir = toPath(received_cache_dir_path.Pass());
+        file = ToPath(received_file_path.Pass());
+        cache_dir = ToPath(received_cache_dir_path.Pass());
       });
   url_response_disk_cache_.WaitForIncomingResponse();
   ASSERT_FALSE(file.empty());
@@ -150,8 +150,8 @@ TEST_F(URLResponseDiskCacheAppTest, UpdateAndGetExtracted) {
       url_response.Pass(),
       [&extracted_dir, &cache_dir](Array<uint8_t> received_extracted_dir,
                                    Array<uint8_t> received_cache_dir_path) {
-        extracted_dir = toPath(received_extracted_dir.Pass());
-        cache_dir = toPath(received_cache_dir_path.Pass());
+        extracted_dir = ToPath(received_extracted_dir.Pass());
+        cache_dir = ToPath(received_cache_dir_path.Pass());
       });
   url_response_disk_cache_.WaitForIncomingResponse();
   ASSERT_FALSE(extracted_dir.empty());
@@ -189,8 +189,8 @@ TEST_F(URLResponseDiskCacheAppTest, CacheTest) {
       url_response.Pass(),
       [&file, &cache_dir](Array<uint8_t> received_file_path,
                           Array<uint8_t> received_cache_dir_path) {
-        file = toPath(received_file_path.Pass());
-        cache_dir = toPath(received_cache_dir_path.Pass());
+        file = ToPath(received_file_path.Pass());
+        cache_dir = ToPath(received_cache_dir_path.Pass());
       });
   url_response_disk_cache_.WaitForIncomingResponse();
   ASSERT_FALSE(file.empty());
@@ -226,8 +226,8 @@ TEST_F(URLResponseDiskCacheAppTest, CacheTest) {
       url_response.Pass(),
       [&file, &cache_dir](Array<uint8_t> received_file_path,
                           Array<uint8_t> received_cache_dir_path) {
-        file = toPath(received_file_path.Pass());
-        cache_dir = toPath(received_cache_dir_path.Pass());
+        file = ToPath(received_file_path.Pass());
+        cache_dir = ToPath(received_cache_dir_path.Pass());
       });
   url_response_disk_cache_.WaitForIncomingResponse();
   ASSERT_FALSE(file.empty());
@@ -257,8 +257,8 @@ TEST_F(URLResponseDiskCacheAppTest, CacheTest) {
       url_response.Pass(),
       [&file, &cache_dir](Array<uint8_t> received_file_path,
                           Array<uint8_t> received_cache_dir_path) {
-        file = toPath(received_file_path.Pass());
-        cache_dir = toPath(received_cache_dir_path.Pass());
+        file = ToPath(received_file_path.Pass());
+        cache_dir = ToPath(received_cache_dir_path.Pass());
       });
   url_response_disk_cache_.WaitForIncomingResponse();
   ASSERT_FALSE(file.empty());
@@ -286,8 +286,8 @@ TEST_F(URLResponseDiskCacheAppTest, CacheTest) {
       url_response.Pass(),
       [&file, &cache_dir](Array<uint8_t> received_file_path,
                           Array<uint8_t> received_cache_dir_path) {
-        file = toPath(received_file_path.Pass());
-        cache_dir = toPath(received_cache_dir_path.Pass());
+        file = ToPath(received_file_path.Pass());
+        cache_dir = ToPath(received_cache_dir_path.Pass());
       });
   url_response_disk_cache_.WaitForIncomingResponse();
   ASSERT_FALSE(file.empty());
@@ -316,8 +316,8 @@ TEST_F(URLResponseDiskCacheAppTest, CacheTest) {
       url_response.Pass(),
       [&file, &cache_dir](Array<uint8_t> received_file_path,
                           Array<uint8_t> received_cache_dir_path) {
-        file = toPath(received_file_path.Pass());
-        cache_dir = toPath(received_cache_dir_path.Pass());
+        file = ToPath(received_file_path.Pass());
+        cache_dir = ToPath(received_cache_dir_path.Pass());
       });
   url_response_disk_cache_.WaitForIncomingResponse();
   ASSERT_FALSE(file.empty());

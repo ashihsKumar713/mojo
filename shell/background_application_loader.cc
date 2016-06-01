@@ -53,7 +53,6 @@ void BackgroundApplicationLoader::Run() {
   base::MessageLoop message_loop(message_loop_type_);
   base::RunLoop loop;
   task_runner_ = message_loop.task_runner();
-  quit_closure_ = loop.QuitClosure();
   message_loop_created_.Signal();
   loop.Run();
 

@@ -50,9 +50,6 @@ class BackgroundApplicationLoader
   scoped_refptr<base::TaskRunner> task_runner_;
   base::WaitableEvent message_loop_created_;
 
-  // Lives on |thread_|.
-  base::Closure quit_closure_;
-
   scoped_ptr<base::DelegateSimpleThread> thread_;
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundApplicationLoader);

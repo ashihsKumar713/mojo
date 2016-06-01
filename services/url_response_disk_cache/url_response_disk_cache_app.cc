@@ -5,6 +5,7 @@
 #include "services/url_response_disk_cache/url_response_disk_cache_app.h"
 
 #include "base/command_line.h"
+#include "base/message_loop/message_loop.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/url_response_disk_cache/url_response_disk_cache_impl.h"
 
@@ -32,6 +33,13 @@ bool URLResponseDiskCacheApp::OnAcceptConnection(
                                  connection_context.remote_url, request.Pass());
   });
   return true;
+}
+
+void URLResponseDiskCacheApp::Terminate(MojoResult result) {
+  // TODO(vtl): This "app" is not a normal app. Instead, it is run as part of
+  // the shell, using a |base::MessageLoop| that's owned by the shell (ugh!).
+  if (base::MessageLoop::current()->is_running())
+    base::MessageLoop::current()->Quit();
 }
 
 }  // namespace mojo

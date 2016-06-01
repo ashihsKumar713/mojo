@@ -25,6 +25,7 @@ class URLResponseDiskCacheApp : public ApplicationImplBase {
   // ApplicationImplBase:
   void OnInitialize() override;
   bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override;
+  void Terminate(MojoResult result) override;
 
   scoped_refptr<base::TaskRunner> task_runner_;
   scoped_refptr<URLResponseDiskCacheDB> db_;

@@ -17,12 +17,6 @@
 
 namespace mojo {
 
-// static
-void ApplicationImplBase::Terminate() {
-  if (base::MessageLoop::current()->is_running())
-    base::MessageLoop::current()->Quit();
-}
-
 ApplicationRunnerChromium::ApplicationRunnerChromium(
     ApplicationDelegate* delegate)
     : delegate_(delegate),
