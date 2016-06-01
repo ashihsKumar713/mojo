@@ -45,28 +45,28 @@ allowed_hosts = [
 
 deps = {
   'src/base':
-   Var('chromium_git') + '/external/github.com/domokit/base' + '@' +  Var('base_revision'),
+    Var('chromium_git') + '/external/github.com/domokit/base' + '@' + Var('base_revision'),
 
   'src/buildtools':
-   Var('chromium_git') + '/chromium/buildtools.git' + '@' +  Var('buildtools_revision'),
+    Var('chromium_git') + '/chromium/buildtools.git' + '@' + Var('buildtools_revision'),
 
   'src/testing/gtest':
-   Var('chromium_git') + '/external/googletest.git' + '@' + '00a70a9667d92a4695d84e4fa36b64f611f147da', # from svn revision 725
+    Var('chromium_git') + '/external/googletest.git' + '@' + '00a70a9667d92a4695d84e4fa36b64f611f147da', # from svn revision 725
 
   'src/testing/gmock':
-   Var('chromium_git') + '/external/googlemock.git' + '@' + '29763965ab52f24565299976b936d1265cb6a271', # from svn revision 501
+    Var('chromium_git') + '/external/googlemock.git' + '@' + '29763965ab52f24565299976b936d1265cb6a271', # from svn revision 501
 
   'src/third_party/angle':
-   Var('chromium_git') + '/angle/angle.git' + '@' +  Var('angle_revision'),
+    Var('chromium_git') + '/angle/angle.git' + '@' + Var('angle_revision'),
 
   'src/third_party/icu':
-   Var('chromium_git') + '/chromium/deps/icu.git' + '@' + '94e4b770ce2f6065d4261d29c32683a6099b9d93',
+    Var('chromium_git') + '/chromium/deps/icu.git' + '@' + '94e4b770ce2f6065d4261d29c32683a6099b9d93',
 
   'src/tools/grit':
     Var('chromium_git') + '/external/grit-i18n.git' + '@' + 'c1b1591a05209c1ad467e845ba8543c22f9072af', # from svn revision 189
 
   'src/v8':
-    Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
+    Var('chromium_git') + '/v8/v8.git' + '@' + Var('v8_revision'),
 
   'src/dart':
     Var('chromium_git') + '/external/github.com/dart-lang/sdk.git' + '@' + Var('dart_revision'),
@@ -75,23 +75,19 @@ deps = {
     Var('chromium_git') + '/external/github.com/domokit/tonic' + '@' + Var('tonic_revision'),
 
   'src/dart/third_party/observatory_pub_packages':
-    Var('chromium_git') +
-    '/external/github.com/dart-lang/observatory_pub_packages' + '@' +
-    Var('dart_observatory_packages_revision'),
+    Var('chromium_git') + '/external/github.com/dart-lang/observatory_pub_packages' + '@' + Var('dart_observatory_packages_revision'),
 
   'src/dart/third_party/root_certificates':
-    Var('chromium_git') +
-    '/external/github.com/dart-lang/root_certificates' + '@' +
-    Var('dart_root_certificates_revision'),
+    Var('chromium_git') + '/external/github.com/dart-lang/root_certificates' + '@' + Var('dart_root_certificates_revision'),
 
   'src/third_party/skia':
-   Var('chromium_git') + '/skia.git' + '@' +  Var('skia_revision'),
+    Var('chromium_git') + '/skia.git' + '@' + Var('skia_revision'),
 
   'src/third_party/glm':
     Var('chromium_git') + '/external/github.com/g-truc/glm' + '@' + '93d09e0e93ca6fe3d9dc6398489a54a3f9cf76db',
 
   'src/third_party/yasm/source/patched-yasm':
-   Var('chromium_git') + '/chromium/deps/yasm/patched-yasm.git' + '@' + '7da28c6c7c6a1387217352ce02b31754deb54d2a',
+    Var('chromium_git') + '/chromium/deps/yasm/patched-yasm.git' + '@' + '7da28c6c7c6a1387217352ce02b31754deb54d2a',
 
   'src/third_party/smhasher/src':
     Var('chromium_git') + '/external/smhasher.git' + '@' + 'e87738e57558e0ec472b2fc3a643b838e5b6e88f',
@@ -100,13 +96,13 @@ deps = {
     Var('chromium_git') + '/external/pywebsocket/src.git' + '@' + 'cb349e87ddb30ff8d1fa1a89be39cec901f4a29c',
 
   'src/third_party/mesa/src':
-   Var('chromium_git') + '/chromium/deps/mesa.git' + '@' + '071d25db04c23821a12a8b260ab9d96a097402f0',
+    Var('chromium_git') + '/chromium/deps/mesa.git' + '@' + '071d25db04c23821a12a8b260ab9d96a097402f0',
 
   'src/third_party/pdfium':
-   'https://pdfium.googlesource.com/pdfium.git' + '@' +  Var('pdfium_revision'),
+    'https://pdfium.googlesource.com/pdfium.git' + '@' + Var('pdfium_revision'),
 
   'src/third_party/boringssl/src':
-   'https://boringssl.googlesource.com/boringssl.git' + '@' +  Var('boringssl_revision'),
+    'https://boringssl.googlesource.com/boringssl.git' + '@' + Var('boringssl_revision'),
 
   'src/third_party/requests/src':
     Var('chromium_git') + '/external/github.com/kennethreitz/requests.git' + '@' + 'f172b30356d821d180fa4ecfa3e71c7274a32de4',
@@ -130,25 +126,25 @@ deps = {
     Var('chromium_git') + '/external/snappy.git' + '@' + '762bb32f0c9d2f31ba4958c7c0933d22e80c20bf',
 
   'src/third_party/ffmpeg':
-     Var('chromium_git') + '/chromium/third_party/ffmpeg.git' + '@' + '6f7f37e8c16db3bad5624c7504e710c54bdb7bf5',
+    Var('chromium_git') + '/chromium/third_party/ffmpeg.git' + '@' + '6f7f37e8c16db3bad5624c7504e710c54bdb7bf5',
 
   'src/third_party/libcxx/libcxx':
-     Var('chromium_git') + '/chromium/llvm-project/libcxx.git' + '@' + '2dcc9a932e33ac4228eedcb6e026ac480daa8e45',
+    Var('chromium_git') + '/chromium/llvm-project/libcxx.git' + '@' + '2dcc9a932e33ac4228eedcb6e026ac480daa8e45',
 
   'src/third_party/libcxx/libcxxabi':
-     Var('chromium_git') + '/chromium/llvm-project/libcxxabi.git' + '@' + '3a1fd0deeabcefb42463eb0ac9a570140679e605',
+    Var('chromium_git') + '/chromium/llvm-project/libcxxabi.git' + '@' + '3a1fd0deeabcefb42463eb0ac9a570140679e605',
 
   'src/url':
-     Var('chromium_git') + '/external/github.com/domokit/gurl' + '@' +  Var('gurl_revision'),
+    Var('chromium_git') + '/external/github.com/domokit/gurl' + '@' + Var('gurl_revision'),
 }
 
 deps_os = {
   'android': {
     'src/third_party/colorama/src':
-     Var('chromium_git') + '/external/colorama.git' + '@' + '799604a1041e9b3bc5d2789ecbd7e8db2e18e6b8',
+      Var('chromium_git') + '/external/colorama.git' + '@' + '799604a1041e9b3bc5d2789ecbd7e8db2e18e6b8',
 
     'src/third_party/jsr-305/src':
-        Var('chromium_git') + '/external/jsr-305.git' + '@' + '642c508235471f7220af6d5df2d3210e3bfc0919',
+      Var('chromium_git') + '/external/jsr-305.git' + '@' + '642c508235471f7220af6d5df2d3210e3bfc0919',
 
     'src/third_party/junit/src':
       Var('chromium_git') + '/external/junit.git' + '@' + '45a44647e7306262162e1346b750c3209019f2e1',
@@ -160,16 +156,16 @@ deps_os = {
       Var('chromium_git') + '/chromium/third_party/robolectric.git' + '@' + '6b63c99a8b6967acdb42cbed0adb067c80efc810',
 
     'src/third_party/appurify-python/src':
-     Var('chromium_git') + '/external/github.com/appurify/appurify-python.git' + '@' + 'ee7abd5c5ae3106f72b2a0b9d2cb55094688e867',
+      Var('chromium_git') + '/external/github.com/appurify/appurify-python.git' + '@' + 'ee7abd5c5ae3106f72b2a0b9d2cb55094688e867',
 
     'src/third_party/freetype-android/src':
-       Var('chromium_git') + '/chromium/src/third_party/freetype.git' + '@' + 'd1028db70bea988d1022e4d463de66581c696160',
+      Var('chromium_git') + '/chromium/src/third_party/freetype.git' + '@' + 'd1028db70bea988d1022e4d463de66581c696160',
 
     'src/third_party/requests/src':
       Var('chromium_git') + '/external/github.com/kennethreitz/requests.git' + '@' + 'f172b30356d821d180fa4ecfa3e71c7274a32de4',
 
     'src/third_party/pyelftools':
-     Var('chromium_git') + '/chromiumos/third_party/pyelftools.git' + '@' + '19b3e610c86fcadb837d252c794cb5e8008826ae',
+      Var('chromium_git') + '/chromiumos/third_party/pyelftools.git' + '@' + '19b3e610c86fcadb837d252c794cb5e8008826ae',
 
   },
 }
