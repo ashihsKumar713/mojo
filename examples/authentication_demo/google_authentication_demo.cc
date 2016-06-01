@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/utility/run_loop.h"
 #include "mojo/services/authentication/interfaces/authentication.mojom.h"
+#include "mojo/services/authentication/interfaces/authentication_admin.mojom.h"
 
 namespace examples {
 namespace authentication {
@@ -21,16 +22,18 @@ class GoogleAuthApp : public mojo::ApplicationImplBase {
   ~GoogleAuthApp() override {}
 
   void OnInitialize() override {
+    DLOG(INFO) << "Connecting to authentication admin service...";
+    mojo::ConnectToService(shell(), "mojo:authentication",
+                           GetProxy(&authentication_admin_service_));
     DLOG(INFO) << "Connecting to authentication service...";
     mojo::ConnectToService(shell(), "mojo:authentication",
                            GetProxy(&authentication_service_));
-
     mojo::Array<mojo::String> scopes;
     scopes.push_back("profile");
     scopes.push_back("email");
 
     DLOG(INFO) << "Starting the device flow handshake...";
-    authentication_service_->GetOAuth2DeviceCode(
+    authentication_admin_service_->GetOAuth2DeviceCode(
         scopes.Pass(),
         base::Bind(&GoogleAuthApp::OnDeviceCode, base::Unretained(this)));
   }
@@ -59,7 +62,7 @@ class GoogleAuthApp : public mojo::ApplicationImplBase {
 
   // Exchange device code to a refresh token, and persist the grant.
   void AddAccount(const std::string device_code) {
-    authentication_service_->AddAccount(
+    authentication_admin_service_->AddAccount(
         device_code,
         base::Bind(&GoogleAuthApp::OnAddAccount, base::Unretained(this)));
   }
@@ -116,11 +119,34 @@ class GoogleAuthApp : public mojo::ApplicationImplBase {
     } else {
       DLOG(INFO) << "Access Token: " << access_token;
     }
+
+    DLOG(INFO) << "Fetching list of all registered users... ";
+    authentication_admin_service_->GetAllUsers(
+        base::Bind(&GoogleAuthApp::OnGetAllUsers, base::Unretained(this)));
+  }
+
+  // Fetches list of unique usernames for all the registered users.
+  void OnGetAllUsers(const mojo::Array<mojo::String>& usernames,
+                     const mojo::String& error) {
+    if (!error.is_null()) {
+      DLOG(INFO) << "Error: " << error;
+      mojo::RunLoop::current()->Quit();  // All done!
+      return;
+    }
+
+    if (usernames.size() == 0) {
+      DLOG(INFO) << "No users found.";
+    } else {
+      for (size_t i = 0u; i < usernames.size(); ++i)
+        DLOG(INFO) << "User [" << i + 1 << "]: " << usernames.at(i);
+    }
+
     mojo::RunLoop::current()->Quit();  // All done!
     return;
   }
 
   ::authentication::AuthenticationServicePtr authentication_service_;
+  ::authentication::AuthenticationAdminServicePtr authentication_admin_service_;
 };
 
 }  // namespace authentication

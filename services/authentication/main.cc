@@ -12,7 +12,9 @@
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "mojo/services/authentication/interfaces/authentication.mojom.h"
+#include "mojo/services/authentication/interfaces/authentication_admin.mojom.h"
 #include "mojo/services/network/interfaces/network_service.mojom.h"
+#include "services/authentication/google_authentication_admin_impl.h"
 #include "services/authentication/google_authentication_impl.h"
 
 namespace authentication {
@@ -30,6 +32,20 @@ class GoogleAccountManagerApp : public mojo::ApplicationImplBase {
 
   bool OnAcceptConnection(
       mojo::ServiceProviderImpl* service_provider_impl) override {
+    service_provider_impl->AddService<AuthenticationAdminService>(
+        [this](const mojo::ConnectionContext& connection_context,
+               mojo::InterfaceRequest<AuthenticationAdminService> request) {
+          mojo::files::Error error = mojo::files::Error::INTERNAL;
+          mojo::files::DirectoryPtr directory;
+          files_->OpenFileSystem("app_persistent_cache", GetProxy(&directory),
+                                 [&error](mojo::files::Error e) { error = e; });
+          CHECK(files_.WaitForIncomingResponse());
+          if (mojo::files::Error::OK != error) {
+            LOG(FATAL) << "Unable to initialize accounts DB";
+          }
+          new authentication::GoogleAuthenticationAdminServiceImpl(
+              request.Pass(), url(), network_service_, directory);
+        });
     service_provider_impl->AddService<AuthenticationService>(
         [this](const mojo::ConnectionContext& connection_context,
                mojo::InterfaceRequest<AuthenticationService> request) {

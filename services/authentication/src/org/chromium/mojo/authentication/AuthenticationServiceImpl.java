@@ -244,23 +244,6 @@ public class AuthenticationServiceImpl
         }
     }
 
-    /**
-     * @see AuthenticationService#getOAuth2DeviceCode()
-     */
-    @Override
-    public void getOAuth2DeviceCode(
-            final String[] scopes, final GetOAuth2DeviceCodeResponse callback) {
-        callback.call(null, null, null, "Unsupported operation.");
-    }
-
-    /**
-     * @see AuthenticationService#addAccount()
-     */
-    @Override
-    public void addAccount(final String deviceCode, final AddAccountResponse callback) {
-        callback.call(null, "Unsupported operation.");
-    }
-
     private static boolean isGooglePlayServicesAvailable(Context context) {
         switch (GooglePlayServicesUtil.isGooglePlayServicesAvailable(context)) {
             case ConnectionResult.SERVICE_MISSING:

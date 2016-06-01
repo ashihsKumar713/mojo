@@ -105,15 +105,6 @@ class MockAuthenticationService : public authentication::AuthenticationService {
     num_clear_token_calls_++;
     use_fresh_token_ = true;
   }
-  void GetOAuth2DeviceCode(
-      mojo::Array<mojo::String> scopes,
-      const GetOAuth2DeviceCodeCallback& callback) override {
-    callback.Run(nullptr, nullptr, nullptr, "Not implemented");
-  }
-  void AddAccount(const mojo::String& device_code,
-                  const AddAccountCallback& callback) override {
-    callback.Run(nullptr, "Not implemented");
-  }
 
   Binding<authentication::AuthenticationService> binding_;
   uint32_t num_select_account_calls_;

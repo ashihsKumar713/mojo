@@ -40,8 +40,12 @@ if (is_android) {
     sources = [
       "accounts_db_manager.cc",
       "accounts_db_manager.h",
+      "google_authentication_admin_impl.cc",
+      "google_authentication_admin_impl.h",
       "google_authentication_impl.cc",
       "google_authentication_impl.h",
+      "google_authentication_utils.cc",
+      "google_authentication_utils.h",
       "main.cc",
     ]
 
