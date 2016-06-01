@@ -149,7 +149,8 @@ JNI_EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   }
 
   // There cannot be two AtExit objects triggering at the same time. Remove the
-  // one from LibraryLoader as ApplicationRunnerChromium also uses one.
+  // one from LibraryLoader as ScopedChromiumInit also has one.
+  // TODO(vtl): Should we just get rid of the ScopedChromiumInit?
   base::android::LibraryLoaderExitHook();
 
   return JNI_VERSION_1_4;
