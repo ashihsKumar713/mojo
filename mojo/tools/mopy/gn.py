@@ -94,7 +94,8 @@ def GNArgsForConfig(config):
     if gn_args["mojo_use_go"]:
       gn_args["go_build_tool"] = config.values.get("go_build_tool")
 
-  gn_args["dart_boringssl_path"] = config.values.get("boringssl_path", "")
+  if "boringssl_path" in config.values:
+    gn_args["dart_boringssl_path"] = config.values.get("boringssl_path", "")
 
   extra_args = config.values.get("gn_args")
   if extra_args:
