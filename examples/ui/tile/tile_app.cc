@@ -6,7 +6,7 @@
 #include "examples/ui/tile/tile_app.h"
 #include "examples/ui/tile/tile_view.h"
 #include "mojo/public/cpp/application/connect.h"
-#include "url/url_parse.h"
+#include "url/third_party/mozilla/url_parse.h"
 
 namespace examples {
 

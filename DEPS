@@ -32,7 +32,7 @@ vars = {
   'lss_revision': '6f97298fe3794e92c8c896a6bc06e0b36e4c3de3',
   'nacl_revision': 'f5bc68c59b147b66d553dc6fc17426682cf138e2',
   'tonic_revision': 'f7acabb8fa6c91124486a41194eac3cd421b70d0',
-  'gurl_revision': '561639dfb664ee4c14371f569213b9d41f4fe110',
+  'gurl_revision': '718eee97ed6a4df41d14726eb2eddc871d9eaaa3',
 }
 
 # Only these hosts are allowed for dependencies in this DEPS file.
