@@ -55,7 +55,7 @@ these are left implicit, in which case ordinals are assigned consecutively
 starting from 0. (Obviously, with implicit declaration, the order of declaration
 of struct fields, etc. is important.) Ordinals may also be assigned explicitly,
 using the notation `@123` (for example). (This allows struct fields, etc. to be
-re-ordered in a Mojom file without breaking binary compatibility.
+re-ordered in a Mojom file without breaking binary compatibility.)
 
 Though ordinals are important for evolving Mojom files in a backwards-compatible
 way, we will not discuss them in this introduction.
@@ -80,7 +80,7 @@ matter).
 A Mojom *interface* is (typically) used to describe communication on a message
 pipe. Typically, message pipes are created with a particular interface in mind,
 with one endpoint designated the *client* (which sends *request* messages and
-receives *response* messages) and the other designed that *server* or *impl*
+receives *response* messages) and the other designated the *server* or *impl*
 (which receives request messages and sends response messages).
 
 For example, take the following Mojom interface declaration:
@@ -168,7 +168,7 @@ struct AStruct {
 interface declaration.)
 
 Together, the simple and enum types comprise the *non-reference* types. The
-remaining types the *reference* types: *pointer* types and *handle* types.
+remaining types are the *reference* types: *pointer* types and *handle* types.
 Unlike the non-reference types, the reference types all have some notion of
 "null".
 
@@ -305,10 +305,10 @@ are asynchronous and buffered, the sender can start writing `Foo` messages to
 `foo` without waiting for a response message. This is referred to as
 *pipelining*.
 
-Pipelining is typically more efficient, since it eliminates eliminating the need
-to wait for a response, and it is often more natural, since receiving the
-response often entails returning to the message loop. Thus this is generally the
-preferred pattern for "factories" as in the above example.
+Pipelining is typically more efficient, since it eliminates the need to wait for
+a response, and it is often more natural, since receiving the response often
+entails returning to the message loop. Thus this is generally the preferred
+pattern for "factories" as in the above example.
 
 The main caveat is that with pipelining, there is no flow control. The sender of
 `CreateFoo2` has no indication of when `foo` is actually "ready", though even in
@@ -372,7 +372,7 @@ interface MyInterface {
   // ...
 };
 ```
-This is indicates the standard name to use in conjunction with
+This indicates the standard name to use in conjunction with
 `mojo.ServiceProvider.ConnectToService()` (**TODO**(vtl): need a reference for
 that).
 

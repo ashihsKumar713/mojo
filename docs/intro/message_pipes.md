@@ -28,7 +28,7 @@ by the system, which is aware of and enforces the message boundaries.
 (Note on terminology: We'll use "send" and "write" interchangeably, and
 similarly for "receive" and "read". "Write" and "read" correspond more closely
 to the names usually given to the basic Mojo operations, e.g.,
-`MojoWriteMessage()` and `MojoReadMessage()`.
+`MojoWriteMessage()` and `MojoReadMessage()`.)
 
 ## Asynchronous operation and queueing
 
