@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/public/cpp/application/application_test_base.h"
 #include "services/util/cpp/incident.h"
-#include "services/util/cpp/test/test_base.h"
 
 namespace mojo {
-namespace {
 
-class IncidentTest : public TestBase {};
+class IncidentTest : public test::ApplicationTestBase {};
 
 // Tests whether Incident::Occur and Incident::Reset have the right effect on
 // Incident::occurred.
@@ -110,7 +109,7 @@ TEST_F(IncidentTest, When_After_Delete) {
   EXPECT_FALSE(consequence_ran);
 }
 
-class ThreadsafeIncidentTest : public TestBase {};
+class ThreadsafeIncidentTest : public test::ApplicationTestBase {};
 
 // Tests whether ThreadsafeIncident::Occur and ThreadsafeIncident::Reset have
 // the right effect on ThreadsafeIncident::occurred.
@@ -214,5 +213,4 @@ TEST_F(ThreadsafeIncidentTest, When_After_Delete) {
   EXPECT_FALSE(consequence_ran);
 }
 
-}  // namespace
 }  // namespace mojo

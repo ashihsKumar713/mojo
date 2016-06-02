@@ -4,14 +4,13 @@
 
 #include <limits>
 
+#include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/services/media/common/cpp/timeline_rate.h"
-#include "services/media/common/test/test_base.h"
 
 namespace mojo {
 namespace media {
-namespace {
 
-class TimelineRateTest : public TestBase {
+class TimelineRateTest : public test::ApplicationTestBase {
   static uint32_t gcd(uint32_t a, uint32_t b) {
     while (b != 0) {
       uint32_t t = a;
@@ -181,6 +180,5 @@ TEST_F(TimelineRateTest, Inverse) {
   VerifyInverse(1234, 1000000);
 }
 
-}  // namespace
 }  // namespace media
 }  // namespace mojo

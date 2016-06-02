@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/public/cpp/application/application_test_base.h"
 #include "services/media/framework/parts/sparse_byte_buffer.h"
-#include "services/media/framework/test/test_base.h"
 
 namespace mojo {
 namespace media {
-namespace {
 
-class SparseByteBufferTest : public TestBase {
+class SparseByteBufferTest : public test::ApplicationTestBase {
  public:
   static const size_t kSize = 1000u;
 
@@ -262,6 +261,5 @@ TEST_F(SparseByteBufferTest, HoleHints) {
   }
 }
 
-}  // namespace
 }  // namespace media
 }  // namespace mojo

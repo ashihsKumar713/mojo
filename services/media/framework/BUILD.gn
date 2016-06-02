@@ -98,7 +98,6 @@ mojo_native_application("apptests") {
 
   sources = [
     "test/sparse_byte_buffer_test.cc",
-    "test/test_base.h",
   ]
 
   deps = [

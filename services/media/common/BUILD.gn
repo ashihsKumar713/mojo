@@ -29,7 +29,6 @@ mojo_native_application("apptests") {
   testonly = true
 
   sources = [
-    "test/test_base.h",
     "test/timeline_function_test.cc",
     "test/timeline_rate_test.cc",
   ]

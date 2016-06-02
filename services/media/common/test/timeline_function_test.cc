@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/public/cpp/application/application_test_base.h"
 #include "mojo/services/media/common/cpp/timeline_function.h"
-#include "services/media/common/test/test_base.h"
 
 namespace mojo {
 namespace media {
-namespace {
 
-class TimelineFunctionTest : public TestBase {
+class TimelineFunctionTest : public test::ApplicationTestBase {
  public:
   // Verifies that a TimelineFunction instantiated in three different ways with
   // the given arguments has the expected properties.
@@ -222,6 +221,5 @@ TEST_F(TimelineFunctionTest, Compose) {
                 true, TimelineFunction(0, 0, 1, 1));
 }
 
-}  // namespace
 }  // namespace media
 }  // namespace mojo
