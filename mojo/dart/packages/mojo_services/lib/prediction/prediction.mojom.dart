@@ -402,10 +402,15 @@ abstract class PredictionServiceInterface
                PredictionService {
   factory PredictionServiceInterface([PredictionService impl]) =>
       new PredictionServiceStub.unbound(impl);
+
   factory PredictionServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [PredictionService impl]) =>
       new PredictionServiceStub.fromEndpoint(endpoint, impl);
+
+  factory PredictionServiceInterface.fromMock(
+      PredictionService mock) =>
+      new PredictionServiceProxy.fromMock(mock);
 }
 
 abstract class PredictionServiceInterfaceRequest
@@ -418,6 +423,8 @@ abstract class PredictionServiceInterfaceRequest
 class _PredictionServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<PredictionService> {
+  PredictionService impl;
+
   _PredictionServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -457,11 +464,6 @@ class _PredictionServiceProxyControl
     }
   }
 
-  PredictionService get impl => null;
-  set impl(PredictionService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -484,6 +486,13 @@ class PredictionServiceProxy
   PredictionServiceProxy.unbound()
       : super(new _PredictionServiceProxyControl.unbound());
 
+  factory PredictionServiceProxy.fromMock(PredictionService mock) {
+    PredictionServiceProxy newMockedProxy =
+        new PredictionServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static PredictionServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For PredictionServiceProxy"));
@@ -492,6 +501,9 @@ class PredictionServiceProxy
 
 
   dynamic getPredictionList(PredictionInfo predictionInfo,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getPredictionList(predictionInfo,_PredictionServiceStubControl._predictionServiceGetPredictionListResponseParamsFactory));
+    }
     var params = new _PredictionServiceGetPredictionListParams();
     params.predictionInfo = predictionInfo;
     return ctrl.sendMessageWithRequestId(
@@ -524,7 +536,7 @@ class _PredictionServiceStubControl
   String get serviceName => PredictionService.serviceName;
 
 
-  PredictionServiceGetPredictionListResponseParams _predictionServiceGetPredictionListResponseParamsFactory(List<String> predictionList) {
+  static PredictionServiceGetPredictionListResponseParams _predictionServiceGetPredictionListResponseParamsFactory(List<String> predictionList) {
     var result = new PredictionServiceGetPredictionListResponseParams();
     result.predictionList = predictionList;
     return result;

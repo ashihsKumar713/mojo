@@ -844,10 +844,15 @@ abstract class ProcessInterface
                Process {
   factory ProcessInterface([Process impl]) =>
       new ProcessStub.unbound(impl);
+
   factory ProcessInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [Process impl]) =>
       new ProcessStub.fromEndpoint(endpoint, impl);
+
+  factory ProcessInterface.fromMock(
+      Process mock) =>
+      new ProcessProxy.fromMock(mock);
 }
 
 abstract class ProcessInterfaceRequest
@@ -860,6 +865,8 @@ abstract class ProcessInterfaceRequest
 class _ProcessProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<Process> {
+  Process impl;
+
   _ProcessProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -919,11 +926,6 @@ class _ProcessProxyControl
     }
   }
 
-  Process get impl => null;
-  set impl(Process _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -946,6 +948,13 @@ class ProcessProxy
   ProcessProxy.unbound()
       : super(new _ProcessProxyControl.unbound());
 
+  factory ProcessProxy.fromMock(Process mock) {
+    ProcessProxy newMockedProxy =
+        new ProcessProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ProcessProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ProcessProxy"));
@@ -954,6 +963,9 @@ class ProcessProxy
 
 
   dynamic spawn(List<int> path,List<List<int>> argv,List<List<int>> envp,file_mojom.FileInterface stdinFile,file_mojom.FileInterface stdoutFile,file_mojom.FileInterface stderrFile,ProcessControllerInterfaceRequest processController,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.spawn(path,argv,envp,stdinFile,stdoutFile,stderrFile,processController,_ProcessStubControl._processSpawnResponseParamsFactory));
+    }
     var params = new _ProcessSpawnParams();
     params.path = path;
     params.argv = argv;
@@ -969,6 +981,9 @@ class ProcessProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic spawnWithTerminal(List<int> path,List<List<int>> argv,List<List<int>> envp,file_mojom.FileInterface terminalFile,ProcessControllerInterfaceRequest processController,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.spawnWithTerminal(path,argv,envp,terminalFile,processController,_ProcessStubControl._processSpawnWithTerminalResponseParamsFactory));
+    }
     var params = new _ProcessSpawnWithTerminalParams();
     params.path = path;
     params.argv = argv;
@@ -1005,12 +1020,12 @@ class _ProcessStubControl
   String get serviceName => Process.serviceName;
 
 
-  ProcessSpawnResponseParams _processSpawnResponseParamsFactory(types_mojom.Error error) {
+  static ProcessSpawnResponseParams _processSpawnResponseParamsFactory(types_mojom.Error error) {
     var result = new ProcessSpawnResponseParams();
     result.error = error;
     return result;
   }
-  ProcessSpawnWithTerminalResponseParams _processSpawnWithTerminalResponseParamsFactory(types_mojom.Error error) {
+  static ProcessSpawnWithTerminalResponseParams _processSpawnWithTerminalResponseParamsFactory(types_mojom.Error error) {
     var result = new ProcessSpawnWithTerminalResponseParams();
     result.error = error;
     return result;
@@ -1181,10 +1196,15 @@ abstract class ProcessControllerInterface
                ProcessController {
   factory ProcessControllerInterface([ProcessController impl]) =>
       new ProcessControllerStub.unbound(impl);
+
   factory ProcessControllerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ProcessController impl]) =>
       new ProcessControllerStub.fromEndpoint(endpoint, impl);
+
+  factory ProcessControllerInterface.fromMock(
+      ProcessController mock) =>
+      new ProcessControllerProxy.fromMock(mock);
 }
 
 abstract class ProcessControllerInterfaceRequest
@@ -1197,6 +1217,8 @@ abstract class ProcessControllerInterfaceRequest
 class _ProcessControllerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ProcessController> {
+  ProcessController impl;
+
   _ProcessControllerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1256,11 +1278,6 @@ class _ProcessControllerProxyControl
     }
   }
 
-  ProcessController get impl => null;
-  set impl(ProcessController _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -1283,6 +1300,13 @@ class ProcessControllerProxy
   ProcessControllerProxy.unbound()
       : super(new _ProcessControllerProxyControl.unbound());
 
+  factory ProcessControllerProxy.fromMock(ProcessController mock) {
+    ProcessControllerProxy newMockedProxy =
+        new ProcessControllerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ProcessControllerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ProcessControllerProxy"));
@@ -1291,6 +1315,9 @@ class ProcessControllerProxy
 
 
   dynamic wait([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.wait(_ProcessControllerStubControl._processControllerWaitResponseParamsFactory));
+    }
     var params = new _ProcessControllerWaitParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -1299,6 +1326,9 @@ class ProcessControllerProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic kill(int signal,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.kill(signal,_ProcessControllerStubControl._processControllerKillResponseParamsFactory));
+    }
     var params = new _ProcessControllerKillParams();
     params.signal = signal;
     return ctrl.sendMessageWithRequestId(
@@ -1331,13 +1361,13 @@ class _ProcessControllerStubControl
   String get serviceName => ProcessController.serviceName;
 
 
-  ProcessControllerWaitResponseParams _processControllerWaitResponseParamsFactory(types_mojom.Error error, int exitStatus) {
+  static ProcessControllerWaitResponseParams _processControllerWaitResponseParamsFactory(types_mojom.Error error, int exitStatus) {
     var result = new ProcessControllerWaitResponseParams();
     result.error = error;
     result.exitStatus = exitStatus;
     return result;
   }
-  ProcessControllerKillResponseParams _processControllerKillResponseParamsFactory(types_mojom.Error error) {
+  static ProcessControllerKillResponseParams _processControllerKillResponseParamsFactory(types_mojom.Error error) {
     var result = new ProcessControllerKillResponseParams();
     result.error = error;
     return result;

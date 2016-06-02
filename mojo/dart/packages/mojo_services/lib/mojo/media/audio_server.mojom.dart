@@ -124,10 +124,15 @@ abstract class AudioServerInterface
                AudioServer {
   factory AudioServerInterface([AudioServer impl]) =>
       new AudioServerStub.unbound(impl);
+
   factory AudioServerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [AudioServer impl]) =>
       new AudioServerStub.fromEndpoint(endpoint, impl);
+
+  factory AudioServerInterface.fromMock(
+      AudioServer mock) =>
+      new AudioServerProxy.fromMock(mock);
 }
 
 abstract class AudioServerInterfaceRequest
@@ -140,6 +145,8 @@ abstract class AudioServerInterfaceRequest
 class _AudioServerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<AudioServer> {
+  AudioServer impl;
+
   _AudioServerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -157,11 +164,6 @@ class _AudioServerProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  AudioServer get impl => null;
-  set impl(AudioServer _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -186,6 +188,13 @@ class AudioServerProxy
   AudioServerProxy.unbound()
       : super(new _AudioServerProxyControl.unbound());
 
+  factory AudioServerProxy.fromMock(AudioServer mock) {
+    AudioServerProxy newMockedProxy =
+        new AudioServerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static AudioServerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For AudioServerProxy"));
@@ -194,6 +203,10 @@ class AudioServerProxy
 
 
   void createTrack(audio_track_mojom.AudioTrackInterfaceRequest track) {
+    if (impl != null) {
+      impl.createTrack(track);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

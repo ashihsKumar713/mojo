@@ -527,10 +527,15 @@ abstract class NotificationClientInterface
                NotificationClient {
   factory NotificationClientInterface([NotificationClient impl]) =>
       new NotificationClientStub.unbound(impl);
+
   factory NotificationClientInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [NotificationClient impl]) =>
       new NotificationClientStub.fromEndpoint(endpoint, impl);
+
+  factory NotificationClientInterface.fromMock(
+      NotificationClient mock) =>
+      new NotificationClientProxy.fromMock(mock);
 }
 
 abstract class NotificationClientInterfaceRequest
@@ -543,6 +548,8 @@ abstract class NotificationClientInterfaceRequest
 class _NotificationClientProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<NotificationClient> {
+  NotificationClient impl;
+
   _NotificationClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -560,11 +567,6 @@ class _NotificationClientProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  NotificationClient get impl => null;
-  set impl(NotificationClient _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -589,6 +591,13 @@ class NotificationClientProxy
   NotificationClientProxy.unbound()
       : super(new _NotificationClientProxyControl.unbound());
 
+  factory NotificationClientProxy.fromMock(NotificationClient mock) {
+    NotificationClientProxy newMockedProxy =
+        new NotificationClientProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static NotificationClientProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NotificationClientProxy"));
@@ -597,6 +606,10 @@ class NotificationClientProxy
 
 
   void onSelected() {
+    if (impl != null) {
+      impl.onSelected();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -606,6 +619,10 @@ class NotificationClientProxy
         _notificationClientMethodOnSelectedName);
   }
   void onDismissed() {
+    if (impl != null) {
+      impl.onDismissed();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -766,10 +783,15 @@ abstract class NotificationInterface
                Notification {
   factory NotificationInterface([Notification impl]) =>
       new NotificationStub.unbound(impl);
+
   factory NotificationInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [Notification impl]) =>
       new NotificationStub.fromEndpoint(endpoint, impl);
+
+  factory NotificationInterface.fromMock(
+      Notification mock) =>
+      new NotificationProxy.fromMock(mock);
 }
 
 abstract class NotificationInterfaceRequest
@@ -782,6 +804,8 @@ abstract class NotificationInterfaceRequest
 class _NotificationProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<Notification> {
+  Notification impl;
+
   _NotificationProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -799,11 +823,6 @@ class _NotificationProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  Notification get impl => null;
-  set impl(Notification _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -828,6 +847,13 @@ class NotificationProxy
   NotificationProxy.unbound()
       : super(new _NotificationProxyControl.unbound());
 
+  factory NotificationProxy.fromMock(Notification mock) {
+    NotificationProxy newMockedProxy =
+        new NotificationProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static NotificationProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NotificationProxy"));
@@ -836,6 +862,10 @@ class NotificationProxy
 
 
   void update(NotificationData notificationData) {
+    if (impl != null) {
+      impl.update(notificationData);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -846,6 +876,10 @@ class NotificationProxy
         _notificationMethodUpdateName);
   }
   void cancel() {
+    if (impl != null) {
+      impl.cancel();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1006,10 +1040,15 @@ abstract class NotificationServiceInterface
                NotificationService {
   factory NotificationServiceInterface([NotificationService impl]) =>
       new NotificationServiceStub.unbound(impl);
+
   factory NotificationServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [NotificationService impl]) =>
       new NotificationServiceStub.fromEndpoint(endpoint, impl);
+
+  factory NotificationServiceInterface.fromMock(
+      NotificationService mock) =>
+      new NotificationServiceProxy.fromMock(mock);
 }
 
 abstract class NotificationServiceInterfaceRequest
@@ -1022,6 +1061,8 @@ abstract class NotificationServiceInterfaceRequest
 class _NotificationServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<NotificationService> {
+  NotificationService impl;
+
   _NotificationServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1039,11 +1080,6 @@ class _NotificationServiceProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  NotificationService get impl => null;
-  set impl(NotificationService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -1068,6 +1104,13 @@ class NotificationServiceProxy
   NotificationServiceProxy.unbound()
       : super(new _NotificationServiceProxyControl.unbound());
 
+  factory NotificationServiceProxy.fromMock(NotificationService mock) {
+    NotificationServiceProxy newMockedProxy =
+        new NotificationServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static NotificationServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NotificationServiceProxy"));
@@ -1076,6 +1119,10 @@ class NotificationServiceProxy
 
 
   void post(NotificationData notificationData, NotificationClientInterface client, NotificationInterfaceRequest notification) {
+    if (impl != null) {
+      impl.post(notificationData, client, notification);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

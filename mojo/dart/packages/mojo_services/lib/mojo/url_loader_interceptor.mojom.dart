@@ -629,10 +629,15 @@ abstract class UrlLoaderInterceptorFactoryInterface
                UrlLoaderInterceptorFactory {
   factory UrlLoaderInterceptorFactoryInterface([UrlLoaderInterceptorFactory impl]) =>
       new UrlLoaderInterceptorFactoryStub.unbound(impl);
+
   factory UrlLoaderInterceptorFactoryInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [UrlLoaderInterceptorFactory impl]) =>
       new UrlLoaderInterceptorFactoryStub.fromEndpoint(endpoint, impl);
+
+  factory UrlLoaderInterceptorFactoryInterface.fromMock(
+      UrlLoaderInterceptorFactory mock) =>
+      new UrlLoaderInterceptorFactoryProxy.fromMock(mock);
 }
 
 abstract class UrlLoaderInterceptorFactoryInterfaceRequest
@@ -645,6 +650,8 @@ abstract class UrlLoaderInterceptorFactoryInterfaceRequest
 class _UrlLoaderInterceptorFactoryProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<UrlLoaderInterceptorFactory> {
+  UrlLoaderInterceptorFactory impl;
+
   _UrlLoaderInterceptorFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -662,11 +669,6 @@ class _UrlLoaderInterceptorFactoryProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  UrlLoaderInterceptorFactory get impl => null;
-  set impl(UrlLoaderInterceptorFactory _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -691,6 +693,13 @@ class UrlLoaderInterceptorFactoryProxy
   UrlLoaderInterceptorFactoryProxy.unbound()
       : super(new _UrlLoaderInterceptorFactoryProxyControl.unbound());
 
+  factory UrlLoaderInterceptorFactoryProxy.fromMock(UrlLoaderInterceptorFactory mock) {
+    UrlLoaderInterceptorFactoryProxy newMockedProxy =
+        new UrlLoaderInterceptorFactoryProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static UrlLoaderInterceptorFactoryProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UrlLoaderInterceptorFactoryProxy"));
@@ -699,6 +708,10 @@ class UrlLoaderInterceptorFactoryProxy
 
 
   void create(UrlLoaderInterceptorInterfaceRequest interceptor) {
+    if (impl != null) {
+      impl.create(interceptor);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -858,10 +871,15 @@ abstract class UrlLoaderInterceptorInterface
                UrlLoaderInterceptor {
   factory UrlLoaderInterceptorInterface([UrlLoaderInterceptor impl]) =>
       new UrlLoaderInterceptorStub.unbound(impl);
+
   factory UrlLoaderInterceptorInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [UrlLoaderInterceptor impl]) =>
       new UrlLoaderInterceptorStub.fromEndpoint(endpoint, impl);
+
+  factory UrlLoaderInterceptorInterface.fromMock(
+      UrlLoaderInterceptor mock) =>
+      new UrlLoaderInterceptorProxy.fromMock(mock);
 }
 
 abstract class UrlLoaderInterceptorInterfaceRequest
@@ -874,6 +892,8 @@ abstract class UrlLoaderInterceptorInterfaceRequest
 class _UrlLoaderInterceptorProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<UrlLoaderInterceptor> {
+  UrlLoaderInterceptor impl;
+
   _UrlLoaderInterceptorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -953,11 +973,6 @@ class _UrlLoaderInterceptorProxyControl
     }
   }
 
-  UrlLoaderInterceptor get impl => null;
-  set impl(UrlLoaderInterceptor _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -980,6 +995,13 @@ class UrlLoaderInterceptorProxy
   UrlLoaderInterceptorProxy.unbound()
       : super(new _UrlLoaderInterceptorProxyControl.unbound());
 
+  factory UrlLoaderInterceptorProxy.fromMock(UrlLoaderInterceptor mock) {
+    UrlLoaderInterceptorProxy newMockedProxy =
+        new UrlLoaderInterceptorProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static UrlLoaderInterceptorProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UrlLoaderInterceptorProxy"));
@@ -988,6 +1010,9 @@ class UrlLoaderInterceptorProxy
 
 
   dynamic interceptRequest(url_request_mojom.UrlRequest request,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.interceptRequest(request,_UrlLoaderInterceptorStubControl._urlLoaderInterceptorInterceptRequestResponseParamsFactory));
+    }
     var params = new _UrlLoaderInterceptorInterceptRequestParams();
     params.request = request;
     return ctrl.sendMessageWithRequestId(
@@ -997,6 +1022,9 @@ class UrlLoaderInterceptorProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic interceptFollowRedirect([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.interceptFollowRedirect(_UrlLoaderInterceptorStubControl._urlLoaderInterceptorInterceptFollowRedirectResponseParamsFactory));
+    }
     var params = new _UrlLoaderInterceptorInterceptFollowRedirectParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -1005,6 +1033,9 @@ class UrlLoaderInterceptorProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic interceptResponse(url_response_mojom.UrlResponse response,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.interceptResponse(response,_UrlLoaderInterceptorStubControl._urlLoaderInterceptorInterceptResponseResponseParamsFactory));
+    }
     var params = new _UrlLoaderInterceptorInterceptResponseParams();
     params.response = response;
     return ctrl.sendMessageWithRequestId(
@@ -1037,17 +1068,17 @@ class _UrlLoaderInterceptorStubControl
   String get serviceName => UrlLoaderInterceptor.serviceName;
 
 
-  UrlLoaderInterceptorInterceptRequestResponseParams _urlLoaderInterceptorInterceptRequestResponseParamsFactory(UrlLoaderInterceptorResponse response) {
+  static UrlLoaderInterceptorInterceptRequestResponseParams _urlLoaderInterceptorInterceptRequestResponseParamsFactory(UrlLoaderInterceptorResponse response) {
     var result = new UrlLoaderInterceptorInterceptRequestResponseParams();
     result.response = response;
     return result;
   }
-  UrlLoaderInterceptorInterceptFollowRedirectResponseParams _urlLoaderInterceptorInterceptFollowRedirectResponseParamsFactory(UrlLoaderInterceptorResponse response) {
+  static UrlLoaderInterceptorInterceptFollowRedirectResponseParams _urlLoaderInterceptorInterceptFollowRedirectResponseParamsFactory(UrlLoaderInterceptorResponse response) {
     var result = new UrlLoaderInterceptorInterceptFollowRedirectResponseParams();
     result.response = response;
     return result;
   }
-  UrlLoaderInterceptorInterceptResponseResponseParams _urlLoaderInterceptorInterceptResponseResponseParamsFactory(UrlLoaderInterceptorResponse response) {
+  static UrlLoaderInterceptorInterceptResponseResponseParams _urlLoaderInterceptorInterceptResponseResponseParamsFactory(UrlLoaderInterceptorResponse response) {
     var result = new UrlLoaderInterceptorInterceptResponseResponseParams();
     result.response = response;
     return result;

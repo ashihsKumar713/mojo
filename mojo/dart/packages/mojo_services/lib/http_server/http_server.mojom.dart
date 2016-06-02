@@ -486,10 +486,15 @@ abstract class HttpServerInterface
                HttpServer {
   factory HttpServerInterface([HttpServer impl]) =>
       new HttpServerStub.unbound(impl);
+
   factory HttpServerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [HttpServer impl]) =>
       new HttpServerStub.fromEndpoint(endpoint, impl);
+
+  factory HttpServerInterface.fromMock(
+      HttpServer mock) =>
+      new HttpServerProxy.fromMock(mock);
 }
 
 abstract class HttpServerInterfaceRequest
@@ -502,6 +507,8 @@ abstract class HttpServerInterfaceRequest
 class _HttpServerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<HttpServer> {
+  HttpServer impl;
+
   _HttpServerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -561,11 +568,6 @@ class _HttpServerProxyControl
     }
   }
 
-  HttpServer get impl => null;
-  set impl(HttpServer _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -588,6 +590,13 @@ class HttpServerProxy
   HttpServerProxy.unbound()
       : super(new _HttpServerProxyControl.unbound());
 
+  factory HttpServerProxy.fromMock(HttpServer mock) {
+    HttpServerProxy newMockedProxy =
+        new HttpServerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static HttpServerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HttpServerProxy"));
@@ -596,6 +605,9 @@ class HttpServerProxy
 
 
   dynamic setHandler(String pattern,HttpHandlerInterface handler,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.setHandler(pattern,handler,_HttpServerStubControl._httpServerSetHandlerResponseParamsFactory));
+    }
     var params = new _HttpServerSetHandlerParams();
     params.pattern = pattern;
     params.handler = handler;
@@ -606,6 +618,9 @@ class HttpServerProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic getPort([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getPort(_HttpServerStubControl._httpServerGetPortResponseParamsFactory));
+    }
     var params = new _HttpServerGetPortParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -637,12 +652,12 @@ class _HttpServerStubControl
   String get serviceName => HttpServer.serviceName;
 
 
-  HttpServerSetHandlerResponseParams _httpServerSetHandlerResponseParamsFactory(bool success) {
+  static HttpServerSetHandlerResponseParams _httpServerSetHandlerResponseParamsFactory(bool success) {
     var result = new HttpServerSetHandlerResponseParams();
     result.success = success;
     return result;
   }
-  HttpServerGetPortResponseParams _httpServerGetPortResponseParamsFactory(int port) {
+  static HttpServerGetPortResponseParams _httpServerGetPortResponseParamsFactory(int port) {
     var result = new HttpServerGetPortResponseParams();
     result.port = port;
     return result;
@@ -809,10 +824,15 @@ abstract class HttpHandlerInterface
                HttpHandler {
   factory HttpHandlerInterface([HttpHandler impl]) =>
       new HttpHandlerStub.unbound(impl);
+
   factory HttpHandlerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [HttpHandler impl]) =>
       new HttpHandlerStub.fromEndpoint(endpoint, impl);
+
+  factory HttpHandlerInterface.fromMock(
+      HttpHandler mock) =>
+      new HttpHandlerProxy.fromMock(mock);
 }
 
 abstract class HttpHandlerInterfaceRequest
@@ -825,6 +845,8 @@ abstract class HttpHandlerInterfaceRequest
 class _HttpHandlerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<HttpHandler> {
+  HttpHandler impl;
+
   _HttpHandlerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -864,11 +886,6 @@ class _HttpHandlerProxyControl
     }
   }
 
-  HttpHandler get impl => null;
-  set impl(HttpHandler _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -891,6 +908,13 @@ class HttpHandlerProxy
   HttpHandlerProxy.unbound()
       : super(new _HttpHandlerProxyControl.unbound());
 
+  factory HttpHandlerProxy.fromMock(HttpHandler mock) {
+    HttpHandlerProxy newMockedProxy =
+        new HttpHandlerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static HttpHandlerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HttpHandlerProxy"));
@@ -899,6 +923,9 @@ class HttpHandlerProxy
 
 
   dynamic handleRequest(http_request_mojom.HttpRequest request,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.handleRequest(request,_HttpHandlerStubControl._httpHandlerHandleRequestResponseParamsFactory));
+    }
     var params = new _HttpHandlerHandleRequestParams();
     params.request = request;
     return ctrl.sendMessageWithRequestId(
@@ -931,7 +958,7 @@ class _HttpHandlerStubControl
   String get serviceName => HttpHandler.serviceName;
 
 
-  HttpHandlerHandleRequestResponseParams _httpHandlerHandleRequestResponseParamsFactory(http_response_mojom.HttpResponse response) {
+  static HttpHandlerHandleRequestResponseParams _httpHandlerHandleRequestResponseParamsFactory(http_response_mojom.HttpResponse response) {
     var result = new HttpHandlerHandleRequestResponseParams();
     result.response = response;
     return result;

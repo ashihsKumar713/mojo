@@ -558,10 +558,15 @@ abstract class SensorListenerInterface
                SensorListener {
   factory SensorListenerInterface([SensorListener impl]) =>
       new SensorListenerStub.unbound(impl);
+
   factory SensorListenerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [SensorListener impl]) =>
       new SensorListenerStub.fromEndpoint(endpoint, impl);
+
+  factory SensorListenerInterface.fromMock(
+      SensorListener mock) =>
+      new SensorListenerProxy.fromMock(mock);
 }
 
 abstract class SensorListenerInterfaceRequest
@@ -574,6 +579,8 @@ abstract class SensorListenerInterfaceRequest
 class _SensorListenerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<SensorListener> {
+  SensorListener impl;
+
   _SensorListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -591,11 +598,6 @@ class _SensorListenerProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  SensorListener get impl => null;
-  set impl(SensorListener _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -620,6 +622,13 @@ class SensorListenerProxy
   SensorListenerProxy.unbound()
       : super(new _SensorListenerProxyControl.unbound());
 
+  factory SensorListenerProxy.fromMock(SensorListener mock) {
+    SensorListenerProxy newMockedProxy =
+        new SensorListenerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static SensorListenerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SensorListenerProxy"));
@@ -628,6 +637,10 @@ class SensorListenerProxy
 
 
   void onAccuracyChanged(int accuracy) {
+    if (impl != null) {
+      impl.onAccuracyChanged(accuracy);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -638,6 +651,10 @@ class SensorListenerProxy
         _sensorListenerMethodOnAccuracyChangedName);
   }
   void onSensorChanged(SensorData data) {
+    if (impl != null) {
+      impl.onSensorChanged(data);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -801,10 +818,15 @@ abstract class SensorServiceInterface
                SensorService {
   factory SensorServiceInterface([SensorService impl]) =>
       new SensorServiceStub.unbound(impl);
+
   factory SensorServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [SensorService impl]) =>
       new SensorServiceStub.fromEndpoint(endpoint, impl);
+
+  factory SensorServiceInterface.fromMock(
+      SensorService mock) =>
+      new SensorServiceProxy.fromMock(mock);
 }
 
 abstract class SensorServiceInterfaceRequest
@@ -817,6 +839,8 @@ abstract class SensorServiceInterfaceRequest
 class _SensorServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<SensorService> {
+  SensorService impl;
+
   _SensorServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -834,11 +858,6 @@ class _SensorServiceProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  SensorService get impl => null;
-  set impl(SensorService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -863,6 +882,13 @@ class SensorServiceProxy
   SensorServiceProxy.unbound()
       : super(new _SensorServiceProxyControl.unbound());
 
+  factory SensorServiceProxy.fromMock(SensorService mock) {
+    SensorServiceProxy newMockedProxy =
+        new SensorServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static SensorServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SensorServiceProxy"));
@@ -871,6 +897,10 @@ class SensorServiceProxy
 
 
   void addListener(SensorType type, SensorListenerInterface listener) {
+    if (impl != null) {
+      impl.addListener(type, listener);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

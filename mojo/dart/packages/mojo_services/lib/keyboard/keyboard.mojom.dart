@@ -1490,10 +1490,15 @@ abstract class KeyboardClientInterface
                KeyboardClient {
   factory KeyboardClientInterface([KeyboardClient impl]) =>
       new KeyboardClientStub.unbound(impl);
+
   factory KeyboardClientInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [KeyboardClient impl]) =>
       new KeyboardClientStub.fromEndpoint(endpoint, impl);
+
+  factory KeyboardClientInterface.fromMock(
+      KeyboardClient mock) =>
+      new KeyboardClientProxy.fromMock(mock);
 }
 
 abstract class KeyboardClientInterfaceRequest
@@ -1506,6 +1511,8 @@ abstract class KeyboardClientInterfaceRequest
 class _KeyboardClientProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<KeyboardClient> {
+  KeyboardClient impl;
+
   _KeyboardClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1523,11 +1530,6 @@ class _KeyboardClientProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  KeyboardClient get impl => null;
-  set impl(KeyboardClient _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -1552,6 +1554,13 @@ class KeyboardClientProxy
   KeyboardClientProxy.unbound()
       : super(new _KeyboardClientProxyControl.unbound());
 
+  factory KeyboardClientProxy.fromMock(KeyboardClient mock) {
+    KeyboardClientProxy newMockedProxy =
+        new KeyboardClientProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static KeyboardClientProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For KeyboardClientProxy"));
@@ -1560,6 +1569,10 @@ class KeyboardClientProxy
 
 
   void commitCompletion(CompletionData completion) {
+    if (impl != null) {
+      impl.commitCompletion(completion);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1570,6 +1583,10 @@ class KeyboardClientProxy
         _keyboardClientMethodCommitCompletionName);
   }
   void commitCorrection(CorrectionData correction) {
+    if (impl != null) {
+      impl.commitCorrection(correction);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1580,6 +1597,10 @@ class KeyboardClientProxy
         _keyboardClientMethodCommitCorrectionName);
   }
   void commitText(String text, int newCursorPosition) {
+    if (impl != null) {
+      impl.commitText(text, newCursorPosition);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1591,6 +1612,10 @@ class KeyboardClientProxy
         _keyboardClientMethodCommitTextName);
   }
   void deleteSurroundingText(int beforeLength, int afterLength) {
+    if (impl != null) {
+      impl.deleteSurroundingText(beforeLength, afterLength);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1602,6 +1627,10 @@ class KeyboardClientProxy
         _keyboardClientMethodDeleteSurroundingTextName);
   }
   void setComposingRegion(int start, int end) {
+    if (impl != null) {
+      impl.setComposingRegion(start, end);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1613,6 +1642,10 @@ class KeyboardClientProxy
         _keyboardClientMethodSetComposingRegionName);
   }
   void setComposingText(String text, int newCursorPosition) {
+    if (impl != null) {
+      impl.setComposingText(text, newCursorPosition);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1624,6 +1657,10 @@ class KeyboardClientProxy
         _keyboardClientMethodSetComposingTextName);
   }
   void setSelection(int start, int end) {
+    if (impl != null) {
+      impl.setSelection(start, end);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1635,6 +1672,10 @@ class KeyboardClientProxy
         _keyboardClientMethodSetSelectionName);
   }
   void submit(SubmitAction action) {
+    if (impl != null) {
+      impl.submit(action);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1854,10 +1895,15 @@ abstract class KeyboardServiceInterface
                KeyboardService {
   factory KeyboardServiceInterface([KeyboardService impl]) =>
       new KeyboardServiceStub.unbound(impl);
+
   factory KeyboardServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [KeyboardService impl]) =>
       new KeyboardServiceStub.fromEndpoint(endpoint, impl);
+
+  factory KeyboardServiceInterface.fromMock(
+      KeyboardService mock) =>
+      new KeyboardServiceProxy.fromMock(mock);
 }
 
 abstract class KeyboardServiceInterfaceRequest
@@ -1870,6 +1916,8 @@ abstract class KeyboardServiceInterfaceRequest
 class _KeyboardServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<KeyboardService> {
+  KeyboardService impl;
+
   _KeyboardServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1887,11 +1935,6 @@ class _KeyboardServiceProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  KeyboardService get impl => null;
-  set impl(KeyboardService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -1916,6 +1959,13 @@ class KeyboardServiceProxy
   KeyboardServiceProxy.unbound()
       : super(new _KeyboardServiceProxyControl.unbound());
 
+  factory KeyboardServiceProxy.fromMock(KeyboardService mock) {
+    KeyboardServiceProxy newMockedProxy =
+        new KeyboardServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static KeyboardServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For KeyboardServiceProxy"));
@@ -1924,6 +1974,10 @@ class KeyboardServiceProxy
 
 
   void show(KeyboardClientInterface client, KeyboardType type) {
+    if (impl != null) {
+      impl.show(client, type);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1935,6 +1989,10 @@ class KeyboardServiceProxy
         _keyboardServiceMethodShowName);
   }
   void showByRequest() {
+    if (impl != null) {
+      impl.showByRequest();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1944,6 +2002,10 @@ class KeyboardServiceProxy
         _keyboardServiceMethodShowByRequestName);
   }
   void hide() {
+    if (impl != null) {
+      impl.hide();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1953,6 +2015,10 @@ class KeyboardServiceProxy
         _keyboardServiceMethodHideName);
   }
   void setText(String text) {
+    if (impl != null) {
+      impl.setText(text);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1963,6 +2029,10 @@ class KeyboardServiceProxy
         _keyboardServiceMethodSetTextName);
   }
   void setSelection(int start, int end) {
+    if (impl != null) {
+      impl.setSelection(start, end);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -2147,10 +2217,15 @@ abstract class KeyboardServiceFactoryInterface
                KeyboardServiceFactory {
   factory KeyboardServiceFactoryInterface([KeyboardServiceFactory impl]) =>
       new KeyboardServiceFactoryStub.unbound(impl);
+
   factory KeyboardServiceFactoryInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [KeyboardServiceFactory impl]) =>
       new KeyboardServiceFactoryStub.fromEndpoint(endpoint, impl);
+
+  factory KeyboardServiceFactoryInterface.fromMock(
+      KeyboardServiceFactory mock) =>
+      new KeyboardServiceFactoryProxy.fromMock(mock);
 }
 
 abstract class KeyboardServiceFactoryInterfaceRequest
@@ -2163,6 +2238,8 @@ abstract class KeyboardServiceFactoryInterfaceRequest
 class _KeyboardServiceFactoryProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<KeyboardServiceFactory> {
+  KeyboardServiceFactory impl;
+
   _KeyboardServiceFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -2180,11 +2257,6 @@ class _KeyboardServiceFactoryProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  KeyboardServiceFactory get impl => null;
-  set impl(KeyboardServiceFactory _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -2209,6 +2281,13 @@ class KeyboardServiceFactoryProxy
   KeyboardServiceFactoryProxy.unbound()
       : super(new _KeyboardServiceFactoryProxyControl.unbound());
 
+  factory KeyboardServiceFactoryProxy.fromMock(KeyboardServiceFactory mock) {
+    KeyboardServiceFactoryProxy newMockedProxy =
+        new KeyboardServiceFactoryProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static KeyboardServiceFactoryProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For KeyboardServiceFactoryProxy"));
@@ -2217,6 +2296,10 @@ class KeyboardServiceFactoryProxy
 
 
   void createKeyboardService(native_viewport_event_dispatcher_mojom.NativeViewportEventDispatcherInterfaceRequest keyEventDispatcher, KeyboardServiceInterfaceRequest serviceRequest) {
+    if (impl != null) {
+      impl.createKeyboardService(keyEventDispatcher, serviceRequest);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

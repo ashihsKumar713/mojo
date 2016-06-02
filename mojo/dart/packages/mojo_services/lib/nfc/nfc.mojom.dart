@@ -528,10 +528,15 @@ abstract class NfcTransmissionInterface
                NfcTransmission {
   factory NfcTransmissionInterface([NfcTransmission impl]) =>
       new NfcTransmissionStub.unbound(impl);
+
   factory NfcTransmissionInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [NfcTransmission impl]) =>
       new NfcTransmissionStub.fromEndpoint(endpoint, impl);
+
+  factory NfcTransmissionInterface.fromMock(
+      NfcTransmission mock) =>
+      new NfcTransmissionProxy.fromMock(mock);
 }
 
 abstract class NfcTransmissionInterfaceRequest
@@ -544,6 +549,8 @@ abstract class NfcTransmissionInterfaceRequest
 class _NfcTransmissionProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<NfcTransmission> {
+  NfcTransmission impl;
+
   _NfcTransmissionProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -561,11 +568,6 @@ class _NfcTransmissionProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  NfcTransmission get impl => null;
-  set impl(NfcTransmission _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -590,6 +592,13 @@ class NfcTransmissionProxy
   NfcTransmissionProxy.unbound()
       : super(new _NfcTransmissionProxyControl.unbound());
 
+  factory NfcTransmissionProxy.fromMock(NfcTransmission mock) {
+    NfcTransmissionProxy newMockedProxy =
+        new NfcTransmissionProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static NfcTransmissionProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NfcTransmissionProxy"));
@@ -598,6 +607,10 @@ class NfcTransmissionProxy
 
 
   void cancel() {
+    if (impl != null) {
+      impl.cancel();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -750,10 +763,15 @@ abstract class NfcReceiverInterface
                NfcReceiver {
   factory NfcReceiverInterface([NfcReceiver impl]) =>
       new NfcReceiverStub.unbound(impl);
+
   factory NfcReceiverInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [NfcReceiver impl]) =>
       new NfcReceiverStub.fromEndpoint(endpoint, impl);
+
+  factory NfcReceiverInterface.fromMock(
+      NfcReceiver mock) =>
+      new NfcReceiverProxy.fromMock(mock);
 }
 
 abstract class NfcReceiverInterfaceRequest
@@ -766,6 +784,8 @@ abstract class NfcReceiverInterfaceRequest
 class _NfcReceiverProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<NfcReceiver> {
+  NfcReceiver impl;
+
   _NfcReceiverProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -783,11 +803,6 @@ class _NfcReceiverProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  NfcReceiver get impl => null;
-  set impl(NfcReceiver _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -812,6 +827,13 @@ class NfcReceiverProxy
   NfcReceiverProxy.unbound()
       : super(new _NfcReceiverProxyControl.unbound());
 
+  factory NfcReceiverProxy.fromMock(NfcReceiver mock) {
+    NfcReceiverProxy newMockedProxy =
+        new NfcReceiverProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static NfcReceiverProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NfcReceiverProxy"));
@@ -820,6 +842,10 @@ class NfcReceiverProxy
 
 
   void onReceivedNfcData(NfcData nfcData) {
+    if (impl != null) {
+      impl.onReceivedNfcData(nfcData);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -979,10 +1005,15 @@ abstract class NfcInterface
                Nfc {
   factory NfcInterface([Nfc impl]) =>
       new NfcStub.unbound(impl);
+
   factory NfcInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [Nfc impl]) =>
       new NfcStub.fromEndpoint(endpoint, impl);
+
+  factory NfcInterface.fromMock(
+      Nfc mock) =>
+      new NfcProxy.fromMock(mock);
 }
 
 abstract class NfcInterfaceRequest
@@ -995,6 +1026,8 @@ abstract class NfcInterfaceRequest
 class _NfcProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<Nfc> {
+  Nfc impl;
+
   _NfcProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1034,11 +1067,6 @@ class _NfcProxyControl
     }
   }
 
-  Nfc get impl => null;
-  set impl(Nfc _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -1061,6 +1089,13 @@ class NfcProxy
   NfcProxy.unbound()
       : super(new _NfcProxyControl.unbound());
 
+  factory NfcProxy.fromMock(Nfc mock) {
+    NfcProxy newMockedProxy =
+        new NfcProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static NfcProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NfcProxy"));
@@ -1069,6 +1104,9 @@ class NfcProxy
 
 
   dynamic transmitOnNextConnection(NfcData nfcData,NfcTransmissionInterfaceRequest transmission,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.transmitOnNextConnection(nfcData,transmission,_NfcStubControl._nfcTransmitOnNextConnectionResponseParamsFactory));
+    }
     var params = new _NfcTransmitOnNextConnectionParams();
     params.nfcData = nfcData;
     params.transmission = transmission;
@@ -1079,6 +1117,10 @@ class NfcProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void register() {
+    if (impl != null) {
+      impl.register();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1088,6 +1130,10 @@ class NfcProxy
         _nfcMethodRegisterName);
   }
   void unregister() {
+    if (impl != null) {
+      impl.unregister();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1120,7 +1166,7 @@ class _NfcStubControl
   String get serviceName => Nfc.serviceName;
 
 
-  NfcTransmitOnNextConnectionResponseParams _nfcTransmitOnNextConnectionResponseParamsFactory(bool success) {
+  static NfcTransmitOnNextConnectionResponseParams _nfcTransmitOnNextConnectionResponseParamsFactory(bool success) {
     var result = new NfcTransmitOnNextConnectionResponseParams();
     result.success = success;
     return result;

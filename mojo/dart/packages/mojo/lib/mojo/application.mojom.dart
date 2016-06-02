@@ -340,10 +340,15 @@ abstract class ApplicationInterface
                Application {
   factory ApplicationInterface([Application impl]) =>
       new ApplicationStub.unbound(impl);
+
   factory ApplicationInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [Application impl]) =>
       new ApplicationStub.fromEndpoint(endpoint, impl);
+
+  factory ApplicationInterface.fromMock(
+      Application mock) =>
+      new ApplicationProxy.fromMock(mock);
 }
 
 abstract class ApplicationInterfaceRequest
@@ -356,6 +361,8 @@ abstract class ApplicationInterfaceRequest
 class _ApplicationProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<Application> {
+  Application impl;
+
   _ApplicationProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -373,11 +380,6 @@ class _ApplicationProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  Application get impl => null;
-  set impl(Application _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -402,6 +404,13 @@ class ApplicationProxy
   ApplicationProxy.unbound()
       : super(new _ApplicationProxyControl.unbound());
 
+  factory ApplicationProxy.fromMock(Application mock) {
+    ApplicationProxy newMockedProxy =
+        new ApplicationProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ApplicationProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ApplicationProxy"));
@@ -410,6 +419,10 @@ class ApplicationProxy
 
 
   void initialize(shell_mojom.ShellInterface shell, List<String> args, String url) {
+    if (impl != null) {
+      impl.initialize(shell, args, url);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -422,6 +435,10 @@ class ApplicationProxy
         _applicationMethodInitializeName);
   }
   void acceptConnection(String requestorUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices, String resolvedUrl) {
+    if (impl != null) {
+      impl.acceptConnection(requestorUrl, services, exposedServices, resolvedUrl);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -435,6 +452,10 @@ class ApplicationProxy
         _applicationMethodAcceptConnectionName);
   }
   void requestQuit() {
+    if (impl != null) {
+      impl.requestQuit();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

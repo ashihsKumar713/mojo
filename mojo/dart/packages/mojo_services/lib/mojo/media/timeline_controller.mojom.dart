@@ -514,10 +514,15 @@ abstract class MediaTimelineControllerInterface
                MediaTimelineController {
   factory MediaTimelineControllerInterface([MediaTimelineController impl]) =>
       new MediaTimelineControllerStub.unbound(impl);
+
   factory MediaTimelineControllerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [MediaTimelineController impl]) =>
       new MediaTimelineControllerStub.fromEndpoint(endpoint, impl);
+
+  factory MediaTimelineControllerInterface.fromMock(
+      MediaTimelineController mock) =>
+      new MediaTimelineControllerProxy.fromMock(mock);
 }
 
 abstract class MediaTimelineControllerInterfaceRequest
@@ -530,6 +535,8 @@ abstract class MediaTimelineControllerInterfaceRequest
 class _MediaTimelineControllerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<MediaTimelineController> {
+  MediaTimelineController impl;
+
   _MediaTimelineControllerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -547,11 +554,6 @@ class _MediaTimelineControllerProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  MediaTimelineController get impl => null;
-  set impl(MediaTimelineController _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -576,6 +578,13 @@ class MediaTimelineControllerProxy
   MediaTimelineControllerProxy.unbound()
       : super(new _MediaTimelineControllerProxyControl.unbound());
 
+  factory MediaTimelineControllerProxy.fromMock(MediaTimelineController mock) {
+    MediaTimelineControllerProxy newMockedProxy =
+        new MediaTimelineControllerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static MediaTimelineControllerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaTimelineControllerProxy"));
@@ -584,6 +593,10 @@ class MediaTimelineControllerProxy
 
 
   void addControlSite(MediaTimelineControlSiteInterface controlSite) {
+    if (impl != null) {
+      impl.addControlSite(controlSite);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -594,6 +607,10 @@ class MediaTimelineControllerProxy
         _mediaTimelineControllerMethodAddControlSiteName);
   }
   void getControlSite(MediaTimelineControlSiteInterfaceRequest controlSite) {
+    if (impl != null) {
+      impl.getControlSite(controlSite);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -760,10 +777,15 @@ abstract class MediaTimelineControlSiteInterface
                MediaTimelineControlSite {
   factory MediaTimelineControlSiteInterface([MediaTimelineControlSite impl]) =>
       new MediaTimelineControlSiteStub.unbound(impl);
+
   factory MediaTimelineControlSiteInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [MediaTimelineControlSite impl]) =>
       new MediaTimelineControlSiteStub.fromEndpoint(endpoint, impl);
+
+  factory MediaTimelineControlSiteInterface.fromMock(
+      MediaTimelineControlSite mock) =>
+      new MediaTimelineControlSiteProxy.fromMock(mock);
 }
 
 abstract class MediaTimelineControlSiteInterfaceRequest
@@ -776,6 +798,8 @@ abstract class MediaTimelineControlSiteInterfaceRequest
 class _MediaTimelineControlSiteProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<MediaTimelineControlSite> {
+  MediaTimelineControlSite impl;
+
   _MediaTimelineControlSiteProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -815,11 +839,6 @@ class _MediaTimelineControlSiteProxyControl
     }
   }
 
-  MediaTimelineControlSite get impl => null;
-  set impl(MediaTimelineControlSite _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -842,6 +861,13 @@ class MediaTimelineControlSiteProxy
   MediaTimelineControlSiteProxy.unbound()
       : super(new _MediaTimelineControlSiteProxyControl.unbound());
 
+  factory MediaTimelineControlSiteProxy.fromMock(MediaTimelineControlSite mock) {
+    MediaTimelineControlSiteProxy newMockedProxy =
+        new MediaTimelineControlSiteProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static MediaTimelineControlSiteProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaTimelineControlSiteProxy"));
@@ -850,6 +876,9 @@ class MediaTimelineControlSiteProxy
 
 
   dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getStatus(versionLastSeen,_MediaTimelineControlSiteStubControl._mediaTimelineControlSiteGetStatusResponseParamsFactory));
+    }
     var params = new _MediaTimelineControlSiteGetStatusParams();
     params.versionLastSeen = versionLastSeen;
     return ctrl.sendMessageWithRequestId(
@@ -859,6 +888,10 @@ class MediaTimelineControlSiteProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void getTimelineConsumer(timelines_mojom.TimelineConsumerInterfaceRequest timelineConsumer) {
+    if (impl != null) {
+      impl.getTimelineConsumer(timelineConsumer);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -892,7 +925,7 @@ class _MediaTimelineControlSiteStubControl
   String get serviceName => MediaTimelineControlSite.serviceName;
 
 
-  MediaTimelineControlSiteGetStatusResponseParams _mediaTimelineControlSiteGetStatusResponseParamsFactory(int version, MediaTimelineControlSiteStatus status) {
+  static MediaTimelineControlSiteGetStatusResponseParams _mediaTimelineControlSiteGetStatusResponseParamsFactory(int version, MediaTimelineControlSiteStatus status) {
     var result = new MediaTimelineControlSiteGetStatusResponseParams();
     result.version = version;
     result.status = status;

@@ -124,10 +124,15 @@ abstract class TerminalClientInterface
                TerminalClient {
   factory TerminalClientInterface([TerminalClient impl]) =>
       new TerminalClientStub.unbound(impl);
+
   factory TerminalClientInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [TerminalClient impl]) =>
       new TerminalClientStub.fromEndpoint(endpoint, impl);
+
+  factory TerminalClientInterface.fromMock(
+      TerminalClient mock) =>
+      new TerminalClientProxy.fromMock(mock);
 }
 
 abstract class TerminalClientInterfaceRequest
@@ -140,6 +145,8 @@ abstract class TerminalClientInterfaceRequest
 class _TerminalClientProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<TerminalClient> {
+  TerminalClient impl;
+
   _TerminalClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -157,11 +164,6 @@ class _TerminalClientProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  TerminalClient get impl => null;
-  set impl(TerminalClient _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -186,6 +188,13 @@ class TerminalClientProxy
   TerminalClientProxy.unbound()
       : super(new _TerminalClientProxyControl.unbound());
 
+  factory TerminalClientProxy.fromMock(TerminalClient mock) {
+    TerminalClientProxy newMockedProxy =
+        new TerminalClientProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static TerminalClientProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TerminalClientProxy"));
@@ -194,6 +203,10 @@ class TerminalClientProxy
 
 
   void connectToTerminal(file_mojom.FileInterface terminal) {
+    if (impl != null) {
+      impl.connectToTerminal(terminal);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

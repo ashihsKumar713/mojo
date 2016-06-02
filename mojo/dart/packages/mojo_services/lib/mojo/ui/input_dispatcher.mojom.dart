@@ -126,10 +126,15 @@ abstract class InputDispatcherInterface
                InputDispatcher {
   factory InputDispatcherInterface([InputDispatcher impl]) =>
       new InputDispatcherStub.unbound(impl);
+
   factory InputDispatcherInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [InputDispatcher impl]) =>
       new InputDispatcherStub.fromEndpoint(endpoint, impl);
+
+  factory InputDispatcherInterface.fromMock(
+      InputDispatcher mock) =>
+      new InputDispatcherProxy.fromMock(mock);
 }
 
 abstract class InputDispatcherInterfaceRequest
@@ -142,6 +147,8 @@ abstract class InputDispatcherInterfaceRequest
 class _InputDispatcherProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<InputDispatcher> {
+  InputDispatcher impl;
+
   _InputDispatcherProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -159,11 +166,6 @@ class _InputDispatcherProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  InputDispatcher get impl => null;
-  set impl(InputDispatcher _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -188,6 +190,13 @@ class InputDispatcherProxy
   InputDispatcherProxy.unbound()
       : super(new _InputDispatcherProxyControl.unbound());
 
+  factory InputDispatcherProxy.fromMock(InputDispatcher mock) {
+    InputDispatcherProxy newMockedProxy =
+        new InputDispatcherProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static InputDispatcherProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For InputDispatcherProxy"));
@@ -196,6 +205,10 @@ class InputDispatcherProxy
 
 
   void dispatchEvent(input_events_mojom.Event event) {
+    if (impl != null) {
+      impl.dispatchEvent(event);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

@@ -367,10 +367,15 @@ abstract class TimelineConsumerInterface
                TimelineConsumer {
   factory TimelineConsumerInterface([TimelineConsumer impl]) =>
       new TimelineConsumerStub.unbound(impl);
+
   factory TimelineConsumerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [TimelineConsumer impl]) =>
       new TimelineConsumerStub.fromEndpoint(endpoint, impl);
+
+  factory TimelineConsumerInterface.fromMock(
+      TimelineConsumer mock) =>
+      new TimelineConsumerProxy.fromMock(mock);
 }
 
 abstract class TimelineConsumerInterfaceRequest
@@ -383,6 +388,8 @@ abstract class TimelineConsumerInterfaceRequest
 class _TimelineConsumerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<TimelineConsumer> {
+  TimelineConsumer impl;
+
   _TimelineConsumerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -422,11 +429,6 @@ class _TimelineConsumerProxyControl
     }
   }
 
-  TimelineConsumer get impl => null;
-  set impl(TimelineConsumer _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -449,6 +451,13 @@ class TimelineConsumerProxy
   TimelineConsumerProxy.unbound()
       : super(new _TimelineConsumerProxyControl.unbound());
 
+  factory TimelineConsumerProxy.fromMock(TimelineConsumer mock) {
+    TimelineConsumerProxy newMockedProxy =
+        new TimelineConsumerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static TimelineConsumerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TimelineConsumerProxy"));
@@ -457,6 +466,9 @@ class TimelineConsumerProxy
 
 
   dynamic setTimelineTransform(int subjectTime,int referenceDelta,int subjectDelta,int effectiveReferenceTime,int effectiveSubjectTime,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.setTimelineTransform(subjectTime,referenceDelta,subjectDelta,effectiveReferenceTime,effectiveSubjectTime,_TimelineConsumerStubControl._timelineConsumerSetTimelineTransformResponseParamsFactory));
+    }
     var params = new _TimelineConsumerSetTimelineTransformParams();
     params.subjectTime = subjectTime;
     params.referenceDelta = referenceDelta;
@@ -493,7 +505,7 @@ class _TimelineConsumerStubControl
   String get serviceName => TimelineConsumer.serviceName;
 
 
-  TimelineConsumerSetTimelineTransformResponseParams _timelineConsumerSetTimelineTransformResponseParamsFactory(bool completed) {
+  static TimelineConsumerSetTimelineTransformResponseParams _timelineConsumerSetTimelineTransformResponseParamsFactory(bool completed) {
     var result = new TimelineConsumerSetTimelineTransformResponseParams();
     result.completed = completed;
     return result;

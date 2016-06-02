@@ -3393,10 +3393,15 @@ abstract class InterfaceAInterface
                InterfaceA {
   factory InterfaceAInterface([InterfaceA impl]) =>
       new InterfaceAStub.unbound(impl);
+
   factory InterfaceAInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [InterfaceA impl]) =>
       new InterfaceAStub.fromEndpoint(endpoint, impl);
+
+  factory InterfaceAInterface.fromMock(
+      InterfaceA mock) =>
+      new InterfaceAProxy.fromMock(mock);
 }
 
 abstract class InterfaceAInterfaceRequest
@@ -3409,6 +3414,8 @@ abstract class InterfaceAInterfaceRequest
 class _InterfaceAProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<InterfaceA> {
+  InterfaceA impl;
+
   _InterfaceAProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -3426,11 +3433,6 @@ class _InterfaceAProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  InterfaceA get impl => null;
-  set impl(InterfaceA _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -3454,6 +3456,13 @@ class InterfaceAProxy
 
   InterfaceAProxy.unbound()
       : super(new _InterfaceAProxyControl.unbound());
+
+  factory InterfaceAProxy.fromMock(InterfaceA mock) {
+    InterfaceAProxy newMockedProxy =
+        new InterfaceAProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
 
   static InterfaceAProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
@@ -3605,10 +3614,15 @@ abstract class BoundsCheckTestInterfaceInterface
                BoundsCheckTestInterface {
   factory BoundsCheckTestInterfaceInterface([BoundsCheckTestInterface impl]) =>
       new BoundsCheckTestInterfaceStub.unbound(impl);
+
   factory BoundsCheckTestInterfaceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [BoundsCheckTestInterface impl]) =>
       new BoundsCheckTestInterfaceStub.fromEndpoint(endpoint, impl);
+
+  factory BoundsCheckTestInterfaceInterface.fromMock(
+      BoundsCheckTestInterface mock) =>
+      new BoundsCheckTestInterfaceProxy.fromMock(mock);
 }
 
 abstract class BoundsCheckTestInterfaceInterfaceRequest
@@ -3621,6 +3635,8 @@ abstract class BoundsCheckTestInterfaceInterfaceRequest
 class _BoundsCheckTestInterfaceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<BoundsCheckTestInterface> {
+  BoundsCheckTestInterface impl;
+
   _BoundsCheckTestInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -3660,11 +3676,6 @@ class _BoundsCheckTestInterfaceProxyControl
     }
   }
 
-  BoundsCheckTestInterface get impl => null;
-  set impl(BoundsCheckTestInterface _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -3687,6 +3698,13 @@ class BoundsCheckTestInterfaceProxy
   BoundsCheckTestInterfaceProxy.unbound()
       : super(new _BoundsCheckTestInterfaceProxyControl.unbound());
 
+  factory BoundsCheckTestInterfaceProxy.fromMock(BoundsCheckTestInterface mock) {
+    BoundsCheckTestInterfaceProxy newMockedProxy =
+        new BoundsCheckTestInterfaceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static BoundsCheckTestInterfaceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For BoundsCheckTestInterfaceProxy"));
@@ -3695,6 +3713,9 @@ class BoundsCheckTestInterfaceProxy
 
 
   dynamic method0(int param0,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.method0(param0,_BoundsCheckTestInterfaceStubControl._boundsCheckTestInterfaceMethod0ResponseParamsFactory));
+    }
     var params = new _BoundsCheckTestInterfaceMethod0Params();
     params.param0 = param0;
     return ctrl.sendMessageWithRequestId(
@@ -3704,6 +3725,10 @@ class BoundsCheckTestInterfaceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void method1(int param0) {
+    if (impl != null) {
+      impl.method1(param0);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -3737,7 +3762,7 @@ class _BoundsCheckTestInterfaceStubControl
   String get serviceName => BoundsCheckTestInterface.serviceName;
 
 
-  BoundsCheckTestInterfaceMethod0ResponseParams _boundsCheckTestInterfaceMethod0ResponseParamsFactory(int param0) {
+  static BoundsCheckTestInterfaceMethod0ResponseParams _boundsCheckTestInterfaceMethod0ResponseParamsFactory(int param0) {
     var result = new BoundsCheckTestInterfaceMethod0ResponseParams();
     result.param0 = param0;
     return result;
@@ -3919,10 +3944,15 @@ abstract class ConformanceTestInterfaceInterface
                ConformanceTestInterface {
   factory ConformanceTestInterfaceInterface([ConformanceTestInterface impl]) =>
       new ConformanceTestInterfaceStub.unbound(impl);
+
   factory ConformanceTestInterfaceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ConformanceTestInterface impl]) =>
       new ConformanceTestInterfaceStub.fromEndpoint(endpoint, impl);
+
+  factory ConformanceTestInterfaceInterface.fromMock(
+      ConformanceTestInterface mock) =>
+      new ConformanceTestInterfaceProxy.fromMock(mock);
 }
 
 abstract class ConformanceTestInterfaceInterfaceRequest
@@ -3935,6 +3965,8 @@ abstract class ConformanceTestInterfaceInterfaceRequest
 class _ConformanceTestInterfaceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ConformanceTestInterface> {
+  ConformanceTestInterface impl;
+
   _ConformanceTestInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -3974,11 +4006,6 @@ class _ConformanceTestInterfaceProxyControl
     }
   }
 
-  ConformanceTestInterface get impl => null;
-  set impl(ConformanceTestInterface _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -4001,6 +4028,13 @@ class ConformanceTestInterfaceProxy
   ConformanceTestInterfaceProxy.unbound()
       : super(new _ConformanceTestInterfaceProxyControl.unbound());
 
+  factory ConformanceTestInterfaceProxy.fromMock(ConformanceTestInterface mock) {
+    ConformanceTestInterfaceProxy newMockedProxy =
+        new ConformanceTestInterfaceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ConformanceTestInterfaceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ConformanceTestInterfaceProxy"));
@@ -4009,6 +4043,10 @@ class ConformanceTestInterfaceProxy
 
 
   void method0(double param0) {
+    if (impl != null) {
+      impl.method0(param0);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -4019,6 +4057,10 @@ class ConformanceTestInterfaceProxy
         _conformanceTestInterfaceMethodMethod0Name);
   }
   void method1(StructA param0) {
+    if (impl != null) {
+      impl.method1(param0);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -4029,6 +4071,10 @@ class ConformanceTestInterfaceProxy
         _conformanceTestInterfaceMethodMethod1Name);
   }
   void method2(StructB param0, StructA param1) {
+    if (impl != null) {
+      impl.method2(param0, param1);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -4040,6 +4086,10 @@ class ConformanceTestInterfaceProxy
         _conformanceTestInterfaceMethodMethod2Name);
   }
   void method3(List<bool> param0) {
+    if (impl != null) {
+      impl.method3(param0);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -4050,6 +4100,10 @@ class ConformanceTestInterfaceProxy
         _conformanceTestInterfaceMethodMethod3Name);
   }
   void method4(StructC param0, List<int> param1) {
+    if (impl != null) {
+      impl.method4(param0, param1);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -4061,6 +4115,10 @@ class ConformanceTestInterfaceProxy
         _conformanceTestInterfaceMethodMethod4Name);
   }
   void method5(StructE param0, core.MojoDataPipeProducer param1) {
+    if (impl != null) {
+      impl.method5(param0, param1);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -4072,6 +4130,10 @@ class ConformanceTestInterfaceProxy
         _conformanceTestInterfaceMethodMethod5Name);
   }
   void method6(List<List<int>> param0) {
+    if (impl != null) {
+      impl.method6(param0);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -4082,6 +4144,10 @@ class ConformanceTestInterfaceProxy
         _conformanceTestInterfaceMethodMethod6Name);
   }
   void method7(StructF param0, List<List<int>> param1) {
+    if (impl != null) {
+      impl.method7(param0, param1);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -4093,6 +4159,10 @@ class ConformanceTestInterfaceProxy
         _conformanceTestInterfaceMethodMethod7Name);
   }
   void method8(List<List<String>> param0) {
+    if (impl != null) {
+      impl.method8(param0);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -4103,6 +4173,10 @@ class ConformanceTestInterfaceProxy
         _conformanceTestInterfaceMethodMethod8Name);
   }
   void method9(List<List<core.MojoHandle>> param0) {
+    if (impl != null) {
+      impl.method9(param0);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -4113,6 +4187,10 @@ class ConformanceTestInterfaceProxy
         _conformanceTestInterfaceMethodMethod9Name);
   }
   void method10(Map<String, int> param0) {
+    if (impl != null) {
+      impl.method10(param0);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -4123,6 +4201,10 @@ class ConformanceTestInterfaceProxy
         _conformanceTestInterfaceMethodMethod10Name);
   }
   void method11(StructG param0) {
+    if (impl != null) {
+      impl.method11(param0);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -4133,6 +4215,9 @@ class ConformanceTestInterfaceProxy
         _conformanceTestInterfaceMethodMethod11Name);
   }
   dynamic method12(double param0,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.method12(param0,_ConformanceTestInterfaceStubControl._conformanceTestInterfaceMethod12ResponseParamsFactory));
+    }
     var params = new _ConformanceTestInterfaceMethod12Params();
     params.param0 = param0;
     return ctrl.sendMessageWithRequestId(
@@ -4142,6 +4227,10 @@ class ConformanceTestInterfaceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void method13(InterfaceAInterface param0, int param1, InterfaceAInterface param2) {
+    if (impl != null) {
+      impl.method13(param0, param1, param2);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -4154,6 +4243,10 @@ class ConformanceTestInterfaceProxy
         _conformanceTestInterfaceMethodMethod13Name);
   }
   void method14(UnionA param0) {
+    if (impl != null) {
+      impl.method14(param0);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -4164,6 +4257,10 @@ class ConformanceTestInterfaceProxy
         _conformanceTestInterfaceMethodMethod14Name);
   }
   void method15(StructH param0) {
+    if (impl != null) {
+      impl.method15(param0);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -4197,7 +4294,7 @@ class _ConformanceTestInterfaceStubControl
   String get serviceName => ConformanceTestInterface.serviceName;
 
 
-  ConformanceTestInterfaceMethod12ResponseParams _conformanceTestInterfaceMethod12ResponseParamsFactory(double param0) {
+  static ConformanceTestInterfaceMethod12ResponseParams _conformanceTestInterfaceMethod12ResponseParamsFactory(double param0) {
     var result = new ConformanceTestInterfaceMethod12ResponseParams();
     result.param0 = param0;
     return result;
@@ -4461,10 +4558,15 @@ abstract class IntegrationTestInterfaceInterface
                IntegrationTestInterface {
   factory IntegrationTestInterfaceInterface([IntegrationTestInterface impl]) =>
       new IntegrationTestInterfaceStub.unbound(impl);
+
   factory IntegrationTestInterfaceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [IntegrationTestInterface impl]) =>
       new IntegrationTestInterfaceStub.fromEndpoint(endpoint, impl);
+
+  factory IntegrationTestInterfaceInterface.fromMock(
+      IntegrationTestInterface mock) =>
+      new IntegrationTestInterfaceProxy.fromMock(mock);
 }
 
 abstract class IntegrationTestInterfaceInterfaceRequest
@@ -4477,6 +4579,8 @@ abstract class IntegrationTestInterfaceInterfaceRequest
 class _IntegrationTestInterfaceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<IntegrationTestInterface> {
+  IntegrationTestInterface impl;
+
   _IntegrationTestInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -4516,11 +4620,6 @@ class _IntegrationTestInterfaceProxyControl
     }
   }
 
-  IntegrationTestInterface get impl => null;
-  set impl(IntegrationTestInterface _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -4543,6 +4642,13 @@ class IntegrationTestInterfaceProxy
   IntegrationTestInterfaceProxy.unbound()
       : super(new _IntegrationTestInterfaceProxyControl.unbound());
 
+  factory IntegrationTestInterfaceProxy.fromMock(IntegrationTestInterface mock) {
+    IntegrationTestInterfaceProxy newMockedProxy =
+        new IntegrationTestInterfaceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static IntegrationTestInterfaceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For IntegrationTestInterfaceProxy"));
@@ -4551,6 +4657,9 @@ class IntegrationTestInterfaceProxy
 
 
   dynamic method0(BasicStruct param0,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.method0(param0,_IntegrationTestInterfaceStubControl._integrationTestInterfaceMethod0ResponseParamsFactory));
+    }
     var params = new _IntegrationTestInterfaceMethod0Params();
     params.param0 = param0;
     return ctrl.sendMessageWithRequestId(
@@ -4583,7 +4692,7 @@ class _IntegrationTestInterfaceStubControl
   String get serviceName => IntegrationTestInterface.serviceName;
 
 
-  IntegrationTestInterfaceMethod0ResponseParams _integrationTestInterfaceMethod0ResponseParamsFactory(List<int> param0) {
+  static IntegrationTestInterfaceMethod0ResponseParams _integrationTestInterfaceMethod0ResponseParamsFactory(List<int> param0) {
     var result = new IntegrationTestInterfaceMethod0ResponseParams();
     result.param0 = param0;
     return result;
@@ -4697,7 +4806,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xdTXAbtxXe5Y9EyXJMJ7ZLu4mH/kvtOCGpP5v2TFKKlGx1UneU+E9q2lA0uRI3CUmFpFI77UHtSUdfOpNjjj7q6GOPPurYY44+6phLpsWKD9YuFuBil7sgyHAnMAIK5AIf3vvee1gAm1A6Vxzyl5CTn6+ayipKMSh/jNI8Su2q3kqh/9pVLdXSmt/pZS1VL9W01Eajmco3tuuVVqGqlb9+oLXaf6i3teZGqaxRfm8WpesoPVhbWSp+urR2u9b4qpFqo291+xV7e1+GO/kPKL2N0nP4fA/yfcgPb46uDOTrkO9A/iPk/4H8J8iVUCdLQp6DfB3yHchfQP5fyH+G/DJK7zL6WWrp5aX6ds2o9z5K57vUu99ubpfb3nHr8r1Co44Gr1aqlzVX3zMqbjZLbb1Rt3/vCkrvsb93WHEB/f0iSufo9TpdXujg6Fgvz1mvwFlvkbPeEme9O5z17nLWW+7Uu4bShW71HuvtKhYydM2h9CFP/ZTxj1HQ6wrc4yz9ew/rSAJgmBzrwTApV9WOvmI9TqhW3snGjsqGiu9OWsvV09by6pq1vLdu/b3XJWs5U7GW9zeI++vW8suvreXnDWtZaVrL8WdE+Z9W3nrxr6OyQRV7u9byq3/T+RnzWE6xXhnF+vn/4FpR6NdJlCZQspAQun6L0jsoMWjK1h7j0yhKmygVUUpXGzUt3dyuNGp6XWumjd9Jt5rlzv9sbT/5Ri+ndcwArfQTvV7R65uttHGvVvq70jd65ZBSisYHxaOaKeMHaof9NO53Fe6fBTyWgW/3wB7sR0DOoF5S6X6x8MwSeC4zvj8BQ4P1wOC+03QcUwsUHOsw7qJwdMJF9RmXPAcueQoujT7jgvXxDSA+41LgwKVAwWVLMC5Jwl9MOsg/r99Dw9ssgL8gDP3Ee5ED70UK3t8KxhvbsV8UOo+ROE36LJdLHDgtUXBq9gmnSQIf3K6YSvjvPdpNwzYew3YTO+VsnN7UIHEqozQuGCdz/JUj5AK3K6rwXSwcFROOZrllyVmJEYdWoK39widB2MI4Qw/3QL5eM+xDloi39wk5O2DgQ7YnScFp3PQ5lsv7nZj8Tygk9yVuT8I9WVU+gFiFMwy1jfOnoLuixrlXPMj2J0g/AcYtAWVcbydKl5/XuBz2V79OgHzc09rVRiVja/cf++w/4H4rIf7+GleG0d/fQJ+hvx81tW+3UUPs8RNcsvHuuCDefQulMcN/LDVLtYxClYu4hLwbtPwk4F5H8tPaatRb2kh+3MvPxQGw269dxrtmfFRu3p224XNvqHl3esS7HvXmnqS8y5onSnLOhywTclRl4IP9TNbDCLuf2fWxhQ3fFcF+Ju3+GI+4CecQxK8RiL3GQCZjECNNgl8/hdJxkCND33bhd3YU67xnFgQ6MwV+5wkYn1Od/AAatv4ufH4BnntdhjIM+N51+L00lOcgfrkNzwk/4eNVUf7sZyN/VipeDUnCq58NCK/2yx/5XBK9WR35I4f8/7MkevM5rKcQLRcKY34FyzFeFMC7bsAvfQy5wD3ErY8zNtzvS6KPr8JB6OOMNPpIzs9tqYOhl/el1ss89zodtzjHPOCs8uI8Tcf54pDzX8hUduK/sAvcw9z8N2vD/YEk/JcMxB+ZHSh/JCQR7xlycaZP+mi0Pe7wfM6rXxFxgV+EW6/mbPg9lESvngfiV8yN/Ioe9euh1H5FgXtdr1seE+1XGDj/TgIeG1f89Q+iLvCLcvPYvA2/R5Lw2E4gPDY/4rEeeeyR1Dy2xL2fgIZzRCIeewTraET6q+ZYxC/eGnOB1xg3b92w4fVYEt7KBRLX3BjFNR75ypCL8332B0KUdYZe/AU3cc+4C3zHufXuJnU/owx6txeIv3Bz5C/0qH+rUvsLd7j3Fcoe96wK9heShD/A4jnV5E8EERfFXOAb4+a5rA3fNUl4biUQ/yI78i888tsayKZs/oVq+rsZz6DmWSdc4D3BrYe3bHj/eaj18NZIDz3qoSEXF/ogF6oLPz9C0UPVZz2cdIH3ZBe849AWWOeTIfH+Ysjibev+hOk3CwIHQQ/DEunhF4Lj7QzDnpHtGg/Y/h1zge8xfr2bJvvxF2W41hMSejc9SHonU5xtyMU70sbZd7nP5elVH/E+zykXuE/x6+MMiftfleFaF0/o48wg6aMJhr7royEXJxX593ni/fExl/KTZeByFvptkp/ORk/iviM54pejS8rg7a847gKf4/z8O0vi86Uk/HsQCYR/Z2Xh3yTEGbgd+FzH3dBg+EdfwlxLP+YHFAr/vg2xuuWwRoX/XEcWb01I8jzCwPt9gXi7lb8pD3iEePGYoeNxe4jkr5udCJvu42Qn3nKB/1v8dmKOxL843HHz3Chu9mYXipI9n8btxYe+8p4L6+S38T5PPeEC9xP8+jhP4r4+3Po4P9JHb/q4LvU81jL3udGynv/BOlTcfv5H1+PHbeO2qfT3/I+Eya9Tu8zvs/hvR/D5cFVJ+G99dJ6GVPxnyMUZCfgPf846j5X3fQq9nj+XHJ0/J9U6C0M+08pg7K/isbMxTjubI+SMdX4xK642joM6ZbOvRzVInBf7bE/jxLwR65xcbGwTDnrKez42uQ8fP09gbL+3tTumyHnu86Qg/cXnPusMfCYgyf5cCsvVViBylWfKVZ6B25SEciXSb8HxfOsQpWKJxOe4YL5yF7f5f54RS16zgchrgSmvBYa8xiWUV5F+jKGvxiM51OgSDZ+TgPGg+TEsuVsJRO4WmXK3yJC7U5LKHfl+mV7ljhVnnAYurGmtVmlTK27pW1qLgtNppf/7Emnrkc3y1os8vggHIY9LTHlcYshjQrA8yrpPj7DfFRKns1Lb70Xu9wnScI5Q4rxen4uz1j+dgxjQsDuHyl8sN+qt7ZrWpMvnOXje2o99/iGFfx8eS89zgdidO0w9v8PQ8/d+5XYHz29t6E+1SrGlf68VS81m6RmJ0/k+Pu90uw+Ux878OBaE/N1lyt9dhvxdECx/V4HX3qyzADz2QR8zke7zEVFJ5iMuKmLfQ8WywzkH+6Ay9Pwpwz5sdbHDTu+dCpvuh+cT7+n1R1qzhTrGF49fAtvS7/VGvcbjtPFSu4xX3MQ1vOMV8mG8wg7jdQzqoPGi6sFl8MFE+wGqw7wl64p4wDksAGfMN08YfHOlD8/XwpT1N1kHe5cwfWb2wxIm3M38z7KP++NB2Mdlpn1cZuB+VbB9JN9jnCHm534AQUpEvcl/UHaS9b7Ga4LxY+HBep+P6jGOcsKDpccfSOI3+Hn+S4gDjzIDj+t9it9Z9t7rOka388YJDziHOXCuMHD+UBG7r8uMM563iyr0cwaCHodu+8yTHsYhwjEOrH1jHwm24xmGvI8TfBD0uHSLl6MmnEl/oKpac7frHF4R9c9AHzpW/7HernbeOJ6Ee5J+Aa5BjuPf+jA/S7PvJK5zoOvM+AR3KGX8YxT0ukLMp7PGSaF8jtuTczk+60S9fcI/trauYycudRkfoju29j0VPF7XYG7FcRxMfqbZL8Z44nWOeJ0naz0Qr19H+s2rDjy2YOKtK3z4pxYo+D+D/omcZ+qGk+ozTnkPOOUpOH0vGU4hn3EqeMCpQMHp75LhFPYZp0UPOC1ScPqHYJzI+x+4xCXHwIX0O/BzA9LdIO+fge+J6v8q2K8VgsczoEhPQVB2YSLqZdTqkC2DgV2FDbG7k3Tej/cQr/USz08LXofH6vcEJ4/7FbfPSNBvQ1R+4uRlv+LzWZgDHvT5eBqeIROeYUFx+Jwi9r2jtDjcHP/RcAmbcIkIiovnJYiL3Zy/5qSffr33BOO2wcDthszzZ3nn+YE8J55+vY8B47nJwPOmMhzrgZ34zq9z9jGeVQaeWUWu9apOfOfXudxO6wduKZ21lINy3qSTfvp1jjLG7SsGbrcF+2Gu5kNd8J2QOCnPjJPy5P0/FhwnkfNdcdXq2B6E5Ip7PvmVxj2/l6Tfk4Ljnpxk4y0qPlkQ3O//BwAA//+KSJ0tgKAAAA==";
+  var serializedRuntimeTypeInfo = "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";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

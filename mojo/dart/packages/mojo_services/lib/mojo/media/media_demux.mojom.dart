@@ -817,10 +817,15 @@ abstract class MediaDemuxInterface
                MediaDemux {
   factory MediaDemuxInterface([MediaDemux impl]) =>
       new MediaDemuxStub.unbound(impl);
+
   factory MediaDemuxInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [MediaDemux impl]) =>
       new MediaDemuxStub.fromEndpoint(endpoint, impl);
+
+  factory MediaDemuxInterface.fromMock(
+      MediaDemux mock) =>
+      new MediaDemuxProxy.fromMock(mock);
 }
 
 abstract class MediaDemuxInterfaceRequest
@@ -833,6 +838,8 @@ abstract class MediaDemuxInterfaceRequest
 class _MediaDemuxProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<MediaDemux> {
+  MediaDemux impl;
+
   _MediaDemuxProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -952,11 +959,6 @@ class _MediaDemuxProxyControl
     }
   }
 
-  MediaDemux get impl => null;
-  set impl(MediaDemux _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -979,6 +981,13 @@ class MediaDemuxProxy
   MediaDemuxProxy.unbound()
       : super(new _MediaDemuxProxyControl.unbound());
 
+  factory MediaDemuxProxy.fromMock(MediaDemux mock) {
+    MediaDemuxProxy newMockedProxy =
+        new MediaDemuxProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static MediaDemuxProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaDemuxProxy"));
@@ -987,6 +996,9 @@ class MediaDemuxProxy
 
 
   dynamic describe([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.describe(_MediaDemuxStubControl._mediaDemuxDescribeResponseParamsFactory));
+    }
     var params = new _MediaDemuxDescribeParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -995,6 +1007,10 @@ class MediaDemuxProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer) {
+    if (impl != null) {
+      impl.getProducer(streamIndex, producer);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1006,6 +1022,9 @@ class MediaDemuxProxy
         _mediaDemuxMethodGetProducerName);
   }
   dynamic getMetadata(int versionLastSeen,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getMetadata(versionLastSeen,_MediaDemuxStubControl._mediaDemuxGetMetadataResponseParamsFactory));
+    }
     var params = new _MediaDemuxGetMetadataParams();
     params.versionLastSeen = versionLastSeen;
     return ctrl.sendMessageWithRequestId(
@@ -1015,6 +1034,9 @@ class MediaDemuxProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic prime([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.prime(_MediaDemuxStubControl._mediaDemuxPrimeResponseParamsFactory));
+    }
     var params = new _MediaDemuxPrimeParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -1023,6 +1045,9 @@ class MediaDemuxProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic flush([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.flush(_MediaDemuxStubControl._mediaDemuxFlushResponseParamsFactory));
+    }
     var params = new _MediaDemuxFlushParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -1031,6 +1056,9 @@ class MediaDemuxProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic seek(int position,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.seek(position,_MediaDemuxStubControl._mediaDemuxSeekResponseParamsFactory));
+    }
     var params = new _MediaDemuxSeekParams();
     params.position = position;
     return ctrl.sendMessageWithRequestId(
@@ -1063,26 +1091,26 @@ class _MediaDemuxStubControl
   String get serviceName => MediaDemux.serviceName;
 
 
-  MediaDemuxDescribeResponseParams _mediaDemuxDescribeResponseParamsFactory(List<media_types_mojom.MediaType> streamTypes) {
+  static MediaDemuxDescribeResponseParams _mediaDemuxDescribeResponseParamsFactory(List<media_types_mojom.MediaType> streamTypes) {
     var result = new MediaDemuxDescribeResponseParams();
     result.streamTypes = streamTypes;
     return result;
   }
-  MediaDemuxGetMetadataResponseParams _mediaDemuxGetMetadataResponseParamsFactory(int version, media_metadata_mojom.MediaMetadata metadata) {
+  static MediaDemuxGetMetadataResponseParams _mediaDemuxGetMetadataResponseParamsFactory(int version, media_metadata_mojom.MediaMetadata metadata) {
     var result = new MediaDemuxGetMetadataResponseParams();
     result.version = version;
     result.metadata = metadata;
     return result;
   }
-  MediaDemuxPrimeResponseParams _mediaDemuxPrimeResponseParamsFactory() {
+  static MediaDemuxPrimeResponseParams _mediaDemuxPrimeResponseParamsFactory() {
     var result = new MediaDemuxPrimeResponseParams();
     return result;
   }
-  MediaDemuxFlushResponseParams _mediaDemuxFlushResponseParamsFactory() {
+  static MediaDemuxFlushResponseParams _mediaDemuxFlushResponseParamsFactory() {
     var result = new MediaDemuxFlushResponseParams();
     return result;
   }
-  MediaDemuxSeekResponseParams _mediaDemuxSeekResponseParamsFactory() {
+  static MediaDemuxSeekResponseParams _mediaDemuxSeekResponseParamsFactory() {
     var result = new MediaDemuxSeekResponseParams();
     return result;
   }

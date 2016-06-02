@@ -223,10 +223,15 @@ abstract class ApplicationConnectorInterface
                ApplicationConnector {
   factory ApplicationConnectorInterface([ApplicationConnector impl]) =>
       new ApplicationConnectorStub.unbound(impl);
+
   factory ApplicationConnectorInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ApplicationConnector impl]) =>
       new ApplicationConnectorStub.fromEndpoint(endpoint, impl);
+
+  factory ApplicationConnectorInterface.fromMock(
+      ApplicationConnector mock) =>
+      new ApplicationConnectorProxy.fromMock(mock);
 }
 
 abstract class ApplicationConnectorInterfaceRequest
@@ -239,6 +244,8 @@ abstract class ApplicationConnectorInterfaceRequest
 class _ApplicationConnectorProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ApplicationConnector> {
+  ApplicationConnector impl;
+
   _ApplicationConnectorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -256,11 +263,6 @@ class _ApplicationConnectorProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  ApplicationConnector get impl => null;
-  set impl(ApplicationConnector _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -285,6 +287,13 @@ class ApplicationConnectorProxy
   ApplicationConnectorProxy.unbound()
       : super(new _ApplicationConnectorProxyControl.unbound());
 
+  factory ApplicationConnectorProxy.fromMock(ApplicationConnector mock) {
+    ApplicationConnectorProxy newMockedProxy =
+        new ApplicationConnectorProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ApplicationConnectorProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ApplicationConnectorProxy"));
@@ -293,6 +302,10 @@ class ApplicationConnectorProxy
 
 
   void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices) {
+    if (impl != null) {
+      impl.connectToApplication(applicationUrl, services, exposedServices);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -305,6 +318,10 @@ class ApplicationConnectorProxy
         _applicationConnectorMethodConnectToApplicationName);
   }
   void duplicate(ApplicationConnectorInterfaceRequest applicationConnectorRequest) {
+    if (impl != null) {
+      impl.duplicate(applicationConnectorRequest);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

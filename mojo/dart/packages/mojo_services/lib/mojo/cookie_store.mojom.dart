@@ -356,10 +356,15 @@ abstract class CookieStoreInterface
                CookieStore {
   factory CookieStoreInterface([CookieStore impl]) =>
       new CookieStoreStub.unbound(impl);
+
   factory CookieStoreInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [CookieStore impl]) =>
       new CookieStoreStub.fromEndpoint(endpoint, impl);
+
+  factory CookieStoreInterface.fromMock(
+      CookieStore mock) =>
+      new CookieStoreProxy.fromMock(mock);
 }
 
 abstract class CookieStoreInterfaceRequest
@@ -372,6 +377,8 @@ abstract class CookieStoreInterfaceRequest
 class _CookieStoreProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<CookieStore> {
+  CookieStore impl;
+
   _CookieStoreProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -431,11 +438,6 @@ class _CookieStoreProxyControl
     }
   }
 
-  CookieStore get impl => null;
-  set impl(CookieStore _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -458,6 +460,13 @@ class CookieStoreProxy
   CookieStoreProxy.unbound()
       : super(new _CookieStoreProxyControl.unbound());
 
+  factory CookieStoreProxy.fromMock(CookieStore mock) {
+    CookieStoreProxy newMockedProxy =
+        new CookieStoreProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static CookieStoreProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For CookieStoreProxy"));
@@ -466,6 +475,9 @@ class CookieStoreProxy
 
 
   dynamic get(String url,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.get(url,_CookieStoreStubControl._cookieStoreGetResponseParamsFactory));
+    }
     var params = new _CookieStoreGetParams();
     params.url = url;
     return ctrl.sendMessageWithRequestId(
@@ -475,6 +487,9 @@ class CookieStoreProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic set(String url,String cookie,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.set(url,cookie,_CookieStoreStubControl._cookieStoreSetResponseParamsFactory));
+    }
     var params = new _CookieStoreSetParams();
     params.url = url;
     params.cookie = cookie;
@@ -508,12 +523,12 @@ class _CookieStoreStubControl
   String get serviceName => CookieStore.serviceName;
 
 
-  CookieStoreGetResponseParams _cookieStoreGetResponseParamsFactory(String cookies) {
+  static CookieStoreGetResponseParams _cookieStoreGetResponseParamsFactory(String cookies) {
     var result = new CookieStoreGetResponseParams();
     result.cookies = cookies;
     return result;
   }
-  CookieStoreSetResponseParams _cookieStoreSetResponseParamsFactory(bool success) {
+  static CookieStoreSetResponseParams _cookieStoreSetResponseParamsFactory(bool success) {
     var result = new CookieStoreSetResponseParams();
     result.success = success;
     return result;

@@ -691,10 +691,15 @@ abstract class UrlResponseDiskCacheInterface
                UrlResponseDiskCache {
   factory UrlResponseDiskCacheInterface([UrlResponseDiskCache impl]) =>
       new UrlResponseDiskCacheStub.unbound(impl);
+
   factory UrlResponseDiskCacheInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [UrlResponseDiskCache impl]) =>
       new UrlResponseDiskCacheStub.fromEndpoint(endpoint, impl);
+
+  factory UrlResponseDiskCacheInterface.fromMock(
+      UrlResponseDiskCache mock) =>
+      new UrlResponseDiskCacheProxy.fromMock(mock);
 }
 
 abstract class UrlResponseDiskCacheInterfaceRequest
@@ -707,6 +712,8 @@ abstract class UrlResponseDiskCacheInterfaceRequest
 class _UrlResponseDiskCacheProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<UrlResponseDiskCache> {
+  UrlResponseDiskCache impl;
+
   _UrlResponseDiskCacheProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -786,11 +793,6 @@ class _UrlResponseDiskCacheProxyControl
     }
   }
 
-  UrlResponseDiskCache get impl => null;
-  set impl(UrlResponseDiskCache _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -813,6 +815,13 @@ class UrlResponseDiskCacheProxy
   UrlResponseDiskCacheProxy.unbound()
       : super(new _UrlResponseDiskCacheProxyControl.unbound());
 
+  factory UrlResponseDiskCacheProxy.fromMock(UrlResponseDiskCache mock) {
+    UrlResponseDiskCacheProxy newMockedProxy =
+        new UrlResponseDiskCacheProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static UrlResponseDiskCacheProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UrlResponseDiskCacheProxy"));
@@ -821,6 +830,9 @@ class UrlResponseDiskCacheProxy
 
 
   dynamic get(String url,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.get(url,_UrlResponseDiskCacheStubControl._urlResponseDiskCacheGetResponseParamsFactory));
+    }
     var params = new _UrlResponseDiskCacheGetParams();
     params.url = url;
     return ctrl.sendMessageWithRequestId(
@@ -830,6 +842,10 @@ class UrlResponseDiskCacheProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void validate(String url) {
+    if (impl != null) {
+      impl.validate(url);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -840,6 +856,10 @@ class UrlResponseDiskCacheProxy
         _urlResponseDiskCacheMethodValidateName);
   }
   void update(url_response_mojom.UrlResponse response) {
+    if (impl != null) {
+      impl.update(response);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -850,6 +870,9 @@ class UrlResponseDiskCacheProxy
         _urlResponseDiskCacheMethodUpdateName);
   }
   dynamic updateAndGet(url_response_mojom.UrlResponse response,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.updateAndGet(response,_UrlResponseDiskCacheStubControl._urlResponseDiskCacheUpdateAndGetResponseParamsFactory));
+    }
     var params = new _UrlResponseDiskCacheUpdateAndGetParams();
     params.response = response;
     return ctrl.sendMessageWithRequestId(
@@ -859,6 +882,9 @@ class UrlResponseDiskCacheProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic updateAndGetExtracted(url_response_mojom.UrlResponse response,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.updateAndGetExtracted(response,_UrlResponseDiskCacheStubControl._urlResponseDiskCacheUpdateAndGetExtractedResponseParamsFactory));
+    }
     var params = new _UrlResponseDiskCacheUpdateAndGetExtractedParams();
     params.response = response;
     return ctrl.sendMessageWithRequestId(
@@ -891,20 +917,20 @@ class _UrlResponseDiskCacheStubControl
   String get serviceName => UrlResponseDiskCache.serviceName;
 
 
-  UrlResponseDiskCacheGetResponseParams _urlResponseDiskCacheGetResponseParamsFactory(url_response_mojom.UrlResponse response, List<int> filePath, List<int> cacheDirPath) {
+  static UrlResponseDiskCacheGetResponseParams _urlResponseDiskCacheGetResponseParamsFactory(url_response_mojom.UrlResponse response, List<int> filePath, List<int> cacheDirPath) {
     var result = new UrlResponseDiskCacheGetResponseParams();
     result.response = response;
     result.filePath = filePath;
     result.cacheDirPath = cacheDirPath;
     return result;
   }
-  UrlResponseDiskCacheUpdateAndGetResponseParams _urlResponseDiskCacheUpdateAndGetResponseParamsFactory(List<int> filePath, List<int> cacheDirPath) {
+  static UrlResponseDiskCacheUpdateAndGetResponseParams _urlResponseDiskCacheUpdateAndGetResponseParamsFactory(List<int> filePath, List<int> cacheDirPath) {
     var result = new UrlResponseDiskCacheUpdateAndGetResponseParams();
     result.filePath = filePath;
     result.cacheDirPath = cacheDirPath;
     return result;
   }
-  UrlResponseDiskCacheUpdateAndGetExtractedResponseParams _urlResponseDiskCacheUpdateAndGetExtractedResponseParamsFactory(List<int> extractedDirPath, List<int> cacheDirPath) {
+  static UrlResponseDiskCacheUpdateAndGetExtractedResponseParams _urlResponseDiskCacheUpdateAndGetExtractedResponseParamsFactory(List<int> extractedDirPath, List<int> cacheDirPath) {
     var result = new UrlResponseDiskCacheUpdateAndGetExtractedResponseParams();
     result.extractedDirPath = extractedDirPath;
     result.cacheDirPath = cacheDirPath;

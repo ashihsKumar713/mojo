@@ -139,10 +139,15 @@ abstract class HttpServerFactoryInterface
                HttpServerFactory {
   factory HttpServerFactoryInterface([HttpServerFactory impl]) =>
       new HttpServerFactoryStub.unbound(impl);
+
   factory HttpServerFactoryInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [HttpServerFactory impl]) =>
       new HttpServerFactoryStub.fromEndpoint(endpoint, impl);
+
+  factory HttpServerFactoryInterface.fromMock(
+      HttpServerFactory mock) =>
+      new HttpServerFactoryProxy.fromMock(mock);
 }
 
 abstract class HttpServerFactoryInterfaceRequest
@@ -155,6 +160,8 @@ abstract class HttpServerFactoryInterfaceRequest
 class _HttpServerFactoryProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<HttpServerFactory> {
+  HttpServerFactory impl;
+
   _HttpServerFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -172,11 +179,6 @@ class _HttpServerFactoryProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  HttpServerFactory get impl => null;
-  set impl(HttpServerFactory _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -201,6 +203,13 @@ class HttpServerFactoryProxy
   HttpServerFactoryProxy.unbound()
       : super(new _HttpServerFactoryProxyControl.unbound());
 
+  factory HttpServerFactoryProxy.fromMock(HttpServerFactory mock) {
+    HttpServerFactoryProxy newMockedProxy =
+        new HttpServerFactoryProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static HttpServerFactoryProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HttpServerFactoryProxy"));
@@ -209,6 +218,10 @@ class HttpServerFactoryProxy
 
 
   void createHttpServer(http_server_mojom.HttpServerInterfaceRequest serverRequest, net_address_mojom.NetAddress localAddress) {
+    if (impl != null) {
+      impl.createHttpServer(serverRequest, localAddress);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

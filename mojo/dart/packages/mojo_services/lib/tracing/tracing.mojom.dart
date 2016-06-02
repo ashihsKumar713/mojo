@@ -410,10 +410,15 @@ abstract class TraceProviderInterface
                TraceProvider {
   factory TraceProviderInterface([TraceProvider impl]) =>
       new TraceProviderStub.unbound(impl);
+
   factory TraceProviderInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [TraceProvider impl]) =>
       new TraceProviderStub.fromEndpoint(endpoint, impl);
+
+  factory TraceProviderInterface.fromMock(
+      TraceProvider mock) =>
+      new TraceProviderProxy.fromMock(mock);
 }
 
 abstract class TraceProviderInterfaceRequest
@@ -426,6 +431,8 @@ abstract class TraceProviderInterfaceRequest
 class _TraceProviderProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<TraceProvider> {
+  TraceProvider impl;
+
   _TraceProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -443,11 +450,6 @@ class _TraceProviderProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  TraceProvider get impl => null;
-  set impl(TraceProvider _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -472,6 +474,13 @@ class TraceProviderProxy
   TraceProviderProxy.unbound()
       : super(new _TraceProviderProxyControl.unbound());
 
+  factory TraceProviderProxy.fromMock(TraceProvider mock) {
+    TraceProviderProxy newMockedProxy =
+        new TraceProviderProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static TraceProviderProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TraceProviderProxy"));
@@ -480,6 +489,10 @@ class TraceProviderProxy
 
 
   void startTracing(String categories, TraceRecorderInterface recorder) {
+    if (impl != null) {
+      impl.startTracing(categories, recorder);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -491,6 +504,10 @@ class TraceProviderProxy
         _traceProviderMethodStartTracingName);
   }
   void stopTracing() {
+    if (impl != null) {
+      impl.stopTracing();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -651,10 +668,15 @@ abstract class TraceRecorderInterface
                TraceRecorder {
   factory TraceRecorderInterface([TraceRecorder impl]) =>
       new TraceRecorderStub.unbound(impl);
+
   factory TraceRecorderInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [TraceRecorder impl]) =>
       new TraceRecorderStub.fromEndpoint(endpoint, impl);
+
+  factory TraceRecorderInterface.fromMock(
+      TraceRecorder mock) =>
+      new TraceRecorderProxy.fromMock(mock);
 }
 
 abstract class TraceRecorderInterfaceRequest
@@ -667,6 +689,8 @@ abstract class TraceRecorderInterfaceRequest
 class _TraceRecorderProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<TraceRecorder> {
+  TraceRecorder impl;
+
   _TraceRecorderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -684,11 +708,6 @@ class _TraceRecorderProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  TraceRecorder get impl => null;
-  set impl(TraceRecorder _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -713,6 +732,13 @@ class TraceRecorderProxy
   TraceRecorderProxy.unbound()
       : super(new _TraceRecorderProxyControl.unbound());
 
+  factory TraceRecorderProxy.fromMock(TraceRecorder mock) {
+    TraceRecorderProxy newMockedProxy =
+        new TraceRecorderProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static TraceRecorderProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TraceRecorderProxy"));
@@ -721,6 +747,10 @@ class TraceRecorderProxy
 
 
   void record(String json) {
+    if (impl != null) {
+      impl.record(json);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -878,10 +908,15 @@ abstract class TraceCollectorInterface
                TraceCollector {
   factory TraceCollectorInterface([TraceCollector impl]) =>
       new TraceCollectorStub.unbound(impl);
+
   factory TraceCollectorInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [TraceCollector impl]) =>
       new TraceCollectorStub.fromEndpoint(endpoint, impl);
+
+  factory TraceCollectorInterface.fromMock(
+      TraceCollector mock) =>
+      new TraceCollectorProxy.fromMock(mock);
 }
 
 abstract class TraceCollectorInterfaceRequest
@@ -894,6 +929,8 @@ abstract class TraceCollectorInterfaceRequest
 class _TraceCollectorProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<TraceCollector> {
+  TraceCollector impl;
+
   _TraceCollectorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -911,11 +948,6 @@ class _TraceCollectorProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  TraceCollector get impl => null;
-  set impl(TraceCollector _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -940,6 +972,13 @@ class TraceCollectorProxy
   TraceCollectorProxy.unbound()
       : super(new _TraceCollectorProxyControl.unbound());
 
+  factory TraceCollectorProxy.fromMock(TraceCollector mock) {
+    TraceCollectorProxy newMockedProxy =
+        new TraceCollectorProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static TraceCollectorProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TraceCollectorProxy"));
@@ -948,6 +987,10 @@ class TraceCollectorProxy
 
 
   void start(core.MojoDataPipeProducer stream, String categories) {
+    if (impl != null) {
+      impl.start(stream, categories);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -959,6 +1002,10 @@ class TraceCollectorProxy
         _traceCollectorMethodStartName);
   }
   void stopAndFlush() {
+    if (impl != null) {
+      impl.stopAndFlush();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

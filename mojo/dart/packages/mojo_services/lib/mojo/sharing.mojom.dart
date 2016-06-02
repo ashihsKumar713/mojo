@@ -124,10 +124,15 @@ abstract class SharingServiceInterface
                SharingService {
   factory SharingServiceInterface([SharingService impl]) =>
       new SharingServiceStub.unbound(impl);
+
   factory SharingServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [SharingService impl]) =>
       new SharingServiceStub.fromEndpoint(endpoint, impl);
+
+  factory SharingServiceInterface.fromMock(
+      SharingService mock) =>
+      new SharingServiceProxy.fromMock(mock);
 }
 
 abstract class SharingServiceInterfaceRequest
@@ -140,6 +145,8 @@ abstract class SharingServiceInterfaceRequest
 class _SharingServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<SharingService> {
+  SharingService impl;
+
   _SharingServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -157,11 +164,6 @@ class _SharingServiceProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  SharingService get impl => null;
-  set impl(SharingService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -186,6 +188,13 @@ class SharingServiceProxy
   SharingServiceProxy.unbound()
       : super(new _SharingServiceProxyControl.unbound());
 
+  factory SharingServiceProxy.fromMock(SharingService mock) {
+    SharingServiceProxy newMockedProxy =
+        new SharingServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static SharingServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SharingServiceProxy"));
@@ -194,6 +203,10 @@ class SharingServiceProxy
 
 
   void shareText(String text) {
+    if (impl != null) {
+      impl.shareText(text);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

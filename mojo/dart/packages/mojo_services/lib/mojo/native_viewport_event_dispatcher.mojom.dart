@@ -184,10 +184,15 @@ abstract class NativeViewportEventDispatcherInterface
                NativeViewportEventDispatcher {
   factory NativeViewportEventDispatcherInterface([NativeViewportEventDispatcher impl]) =>
       new NativeViewportEventDispatcherStub.unbound(impl);
+
   factory NativeViewportEventDispatcherInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [NativeViewportEventDispatcher impl]) =>
       new NativeViewportEventDispatcherStub.fromEndpoint(endpoint, impl);
+
+  factory NativeViewportEventDispatcherInterface.fromMock(
+      NativeViewportEventDispatcher mock) =>
+      new NativeViewportEventDispatcherProxy.fromMock(mock);
 }
 
 abstract class NativeViewportEventDispatcherInterfaceRequest
@@ -200,6 +205,8 @@ abstract class NativeViewportEventDispatcherInterfaceRequest
 class _NativeViewportEventDispatcherProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<NativeViewportEventDispatcher> {
+  NativeViewportEventDispatcher impl;
+
   _NativeViewportEventDispatcherProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -239,11 +246,6 @@ class _NativeViewportEventDispatcherProxyControl
     }
   }
 
-  NativeViewportEventDispatcher get impl => null;
-  set impl(NativeViewportEventDispatcher _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -266,6 +268,13 @@ class NativeViewportEventDispatcherProxy
   NativeViewportEventDispatcherProxy.unbound()
       : super(new _NativeViewportEventDispatcherProxyControl.unbound());
 
+  factory NativeViewportEventDispatcherProxy.fromMock(NativeViewportEventDispatcher mock) {
+    NativeViewportEventDispatcherProxy newMockedProxy =
+        new NativeViewportEventDispatcherProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static NativeViewportEventDispatcherProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NativeViewportEventDispatcherProxy"));
@@ -274,6 +283,9 @@ class NativeViewportEventDispatcherProxy
 
 
   dynamic onEvent(input_events_mojom.Event event,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.onEvent(event,_NativeViewportEventDispatcherStubControl._nativeViewportEventDispatcherOnEventResponseParamsFactory));
+    }
     var params = new _NativeViewportEventDispatcherOnEventParams();
     params.event = event;
     return ctrl.sendMessageWithRequestId(
@@ -306,7 +318,7 @@ class _NativeViewportEventDispatcherStubControl
   String get serviceName => NativeViewportEventDispatcher.serviceName;
 
 
-  NativeViewportEventDispatcherOnEventResponseParams _nativeViewportEventDispatcherOnEventResponseParamsFactory() {
+  static NativeViewportEventDispatcherOnEventResponseParams _nativeViewportEventDispatcherOnEventResponseParamsFactory() {
     var result = new NativeViewportEventDispatcherOnEventResponseParams();
     return result;
   }

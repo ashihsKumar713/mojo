@@ -12,6 +12,17 @@ import 'package:mojo/bindings.dart';
 import 'package:mojo/core.dart';
 import 'package:_mojo_for_test_only/test/echo_service.mojom.dart';
 
+class EchoServiceMock implements EchoService {
+  dynamic echoString(String value, [Function responseFactory])
+      => responseFactory(value);
+
+  dynamic delayedEchoString(String value,int millis, [Function responseFactory])
+      => new Future.delayed(new Duration(milliseconds : millis),
+                            () => responseFactory(value));
+  void swap() {}
+  void quit() {}
+}
+
 echoApptests(Application application, String url) {
   group('Echo Service Apptests', () {
     test('String', () async {
@@ -292,6 +303,15 @@ echoApptests(Application application, String url) {
       expect(r.value, equals("foo"));
 
       await differentEchoProxy.close();
+    });
+
+    test('Mock', () async {
+      var echo = new EchoServiceInterface.fromMock(new EchoServiceMock());
+
+      var r = await echo.echoString("foo");
+      expect(r.value, equals("foo"));
+
+      await echo.close();
     });
   });
 }

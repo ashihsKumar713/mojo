@@ -198,10 +198,15 @@ abstract class MediaSinkInterface
                MediaSink {
   factory MediaSinkInterface([MediaSink impl]) =>
       new MediaSinkStub.unbound(impl);
+
   factory MediaSinkInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [MediaSink impl]) =>
       new MediaSinkStub.fromEndpoint(endpoint, impl);
+
+  factory MediaSinkInterface.fromMock(
+      MediaSink mock) =>
+      new MediaSinkProxy.fromMock(mock);
 }
 
 abstract class MediaSinkInterfaceRequest
@@ -214,6 +219,8 @@ abstract class MediaSinkInterfaceRequest
 class _MediaSinkProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<MediaSink> {
+  MediaSink impl;
+
   _MediaSinkProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -231,11 +238,6 @@ class _MediaSinkProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  MediaSink get impl => null;
-  set impl(MediaSink _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -260,6 +262,13 @@ class MediaSinkProxy
   MediaSinkProxy.unbound()
       : super(new _MediaSinkProxyControl.unbound());
 
+  factory MediaSinkProxy.fromMock(MediaSink mock) {
+    MediaSinkProxy newMockedProxy =
+        new MediaSinkProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static MediaSinkProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaSinkProxy"));
@@ -268,6 +277,10 @@ class MediaSinkProxy
 
 
   void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
+    if (impl != null) {
+      impl.getConsumer(consumer);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -278,6 +291,10 @@ class MediaSinkProxy
         _mediaSinkMethodGetConsumerName);
   }
   void getTimelineControlSite(timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite) {
+    if (impl != null) {
+      impl.getTimelineControlSite(timelineControlSite);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

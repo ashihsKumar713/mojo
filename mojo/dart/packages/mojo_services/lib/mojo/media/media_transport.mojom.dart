@@ -1319,10 +1319,15 @@ abstract class MediaProducerInterface
                MediaProducer {
   factory MediaProducerInterface([MediaProducer impl]) =>
       new MediaProducerStub.unbound(impl);
+
   factory MediaProducerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [MediaProducer impl]) =>
       new MediaProducerStub.fromEndpoint(endpoint, impl);
+
+  factory MediaProducerInterface.fromMock(
+      MediaProducer mock) =>
+      new MediaProducerProxy.fromMock(mock);
 }
 
 abstract class MediaProducerInterfaceRequest
@@ -1335,6 +1340,8 @@ abstract class MediaProducerInterfaceRequest
 class _MediaProducerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<MediaProducer> {
+  MediaProducer impl;
+
   _MediaProducerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1374,11 +1381,6 @@ class _MediaProducerProxyControl
     }
   }
 
-  MediaProducer get impl => null;
-  set impl(MediaProducer _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -1401,6 +1403,13 @@ class MediaProducerProxy
   MediaProducerProxy.unbound()
       : super(new _MediaProducerProxyControl.unbound());
 
+  factory MediaProducerProxy.fromMock(MediaProducer mock) {
+    MediaProducerProxy newMockedProxy =
+        new MediaProducerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static MediaProducerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaProducerProxy"));
@@ -1409,6 +1418,9 @@ class MediaProducerProxy
 
 
   dynamic connect(MediaConsumerInterface consumer,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.connect(consumer,_MediaProducerStubControl._mediaProducerConnectResponseParamsFactory));
+    }
     var params = new _MediaProducerConnectParams();
     params.consumer = consumer;
     return ctrl.sendMessageWithRequestId(
@@ -1418,6 +1430,10 @@ class MediaProducerProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void disconnect() {
+    if (impl != null) {
+      impl.disconnect();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1450,7 +1466,7 @@ class _MediaProducerStubControl
   String get serviceName => MediaProducer.serviceName;
 
 
-  MediaProducerConnectResponseParams _mediaProducerConnectResponseParamsFactory() {
+  static MediaProducerConnectResponseParams _mediaProducerConnectResponseParamsFactory() {
     var result = new MediaProducerConnectResponseParams();
     return result;
   }
@@ -1603,10 +1619,15 @@ abstract class MediaPullModeProducerInterface
                MediaPullModeProducer {
   factory MediaPullModeProducerInterface([MediaPullModeProducer impl]) =>
       new MediaPullModeProducerStub.unbound(impl);
+
   factory MediaPullModeProducerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [MediaPullModeProducer impl]) =>
       new MediaPullModeProducerStub.fromEndpoint(endpoint, impl);
+
+  factory MediaPullModeProducerInterface.fromMock(
+      MediaPullModeProducer mock) =>
+      new MediaPullModeProducerProxy.fromMock(mock);
 }
 
 abstract class MediaPullModeProducerInterfaceRequest
@@ -1619,6 +1640,8 @@ abstract class MediaPullModeProducerInterfaceRequest
 class _MediaPullModeProducerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<MediaPullModeProducer> {
+  MediaPullModeProducer impl;
+
   _MediaPullModeProducerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1678,11 +1701,6 @@ class _MediaPullModeProducerProxyControl
     }
   }
 
-  MediaPullModeProducer get impl => null;
-  set impl(MediaPullModeProducer _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -1705,6 +1723,13 @@ class MediaPullModeProducerProxy
   MediaPullModeProducerProxy.unbound()
       : super(new _MediaPullModeProducerProxyControl.unbound());
 
+  factory MediaPullModeProducerProxy.fromMock(MediaPullModeProducer mock) {
+    MediaPullModeProducerProxy newMockedProxy =
+        new MediaPullModeProducerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static MediaPullModeProducerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaPullModeProducerProxy"));
@@ -1713,6 +1738,9 @@ class MediaPullModeProducerProxy
 
 
   dynamic getBuffer([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getBuffer(_MediaPullModeProducerStubControl._mediaPullModeProducerGetBufferResponseParamsFactory));
+    }
     var params = new _MediaPullModeProducerGetBufferParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -1721,6 +1749,9 @@ class MediaPullModeProducerProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic pullPacket(MediaPacket toRelease,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.pullPacket(toRelease,_MediaPullModeProducerStubControl._mediaPullModeProducerPullPacketResponseParamsFactory));
+    }
     var params = new _MediaPullModeProducerPullPacketParams();
     params.toRelease = toRelease;
     return ctrl.sendMessageWithRequestId(
@@ -1730,6 +1761,10 @@ class MediaPullModeProducerProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void releasePacket(MediaPacket toRelease) {
+    if (impl != null) {
+      impl.releasePacket(toRelease);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1763,12 +1798,12 @@ class _MediaPullModeProducerStubControl
   String get serviceName => MediaPullModeProducer.serviceName;
 
 
-  MediaPullModeProducerGetBufferResponseParams _mediaPullModeProducerGetBufferResponseParamsFactory(core.MojoSharedBuffer buffer) {
+  static MediaPullModeProducerGetBufferResponseParams _mediaPullModeProducerGetBufferResponseParamsFactory(core.MojoSharedBuffer buffer) {
     var result = new MediaPullModeProducerGetBufferResponseParams();
     result.buffer = buffer;
     return result;
   }
-  MediaPullModeProducerPullPacketResponseParams _mediaPullModeProducerPullPacketResponseParamsFactory(MediaPacket packet) {
+  static MediaPullModeProducerPullPacketResponseParams _mediaPullModeProducerPullPacketResponseParamsFactory(MediaPacket packet) {
     var result = new MediaPullModeProducerPullPacketResponseParams();
     result.packet = packet;
     return result;
@@ -2002,10 +2037,15 @@ abstract class MediaConsumerInterface
                MediaConsumer {
   factory MediaConsumerInterface([MediaConsumer impl]) =>
       new MediaConsumerStub.unbound(impl);
+
   factory MediaConsumerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [MediaConsumer impl]) =>
       new MediaConsumerStub.fromEndpoint(endpoint, impl);
+
+  factory MediaConsumerInterface.fromMock(
+      MediaConsumer mock) =>
+      new MediaConsumerProxy.fromMock(mock);
 }
 
 abstract class MediaConsumerInterfaceRequest
@@ -2018,6 +2058,8 @@ abstract class MediaConsumerInterfaceRequest
 class _MediaConsumerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<MediaConsumer> {
+  MediaConsumer impl;
+
   _MediaConsumerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -2117,11 +2159,6 @@ class _MediaConsumerProxyControl
     }
   }
 
-  MediaConsumer get impl => null;
-  set impl(MediaConsumer _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -2144,6 +2181,13 @@ class MediaConsumerProxy
   MediaConsumerProxy.unbound()
       : super(new _MediaConsumerProxyControl.unbound());
 
+  factory MediaConsumerProxy.fromMock(MediaConsumer mock) {
+    MediaConsumerProxy newMockedProxy =
+        new MediaConsumerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static MediaConsumerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaConsumerProxy"));
@@ -2152,6 +2196,9 @@ class MediaConsumerProxy
 
 
   dynamic setBuffer(core.MojoSharedBuffer buffer,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.setBuffer(buffer,_MediaConsumerStubControl._mediaConsumerSetBufferResponseParamsFactory));
+    }
     var params = new _MediaConsumerSetBufferParams();
     params.buffer = buffer;
     return ctrl.sendMessageWithRequestId(
@@ -2161,6 +2208,9 @@ class MediaConsumerProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic sendPacket(MediaPacket packet,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.sendPacket(packet,_MediaConsumerStubControl._mediaConsumerSendPacketResponseParamsFactory));
+    }
     var params = new _MediaConsumerSendPacketParams();
     params.packet = packet;
     return ctrl.sendMessageWithRequestId(
@@ -2170,6 +2220,9 @@ class MediaConsumerProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic prime([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.prime(_MediaConsumerStubControl._mediaConsumerPrimeResponseParamsFactory));
+    }
     var params = new _MediaConsumerPrimeParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -2178,6 +2231,9 @@ class MediaConsumerProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic flush([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.flush(_MediaConsumerStubControl._mediaConsumerFlushResponseParamsFactory));
+    }
     var params = new _MediaConsumerFlushParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -2209,20 +2265,20 @@ class _MediaConsumerStubControl
   String get serviceName => MediaConsumer.serviceName;
 
 
-  MediaConsumerSetBufferResponseParams _mediaConsumerSetBufferResponseParamsFactory() {
+  static MediaConsumerSetBufferResponseParams _mediaConsumerSetBufferResponseParamsFactory() {
     var result = new MediaConsumerSetBufferResponseParams();
     return result;
   }
-  MediaConsumerSendPacketResponseParams _mediaConsumerSendPacketResponseParamsFactory(MediaConsumerSendResult result) {
+  static MediaConsumerSendPacketResponseParams _mediaConsumerSendPacketResponseParamsFactory(MediaConsumerSendResult result) {
     var result = new MediaConsumerSendPacketResponseParams();
     result.result = result;
     return result;
   }
-  MediaConsumerPrimeResponseParams _mediaConsumerPrimeResponseParamsFactory() {
+  static MediaConsumerPrimeResponseParams _mediaConsumerPrimeResponseParamsFactory() {
     var result = new MediaConsumerPrimeResponseParams();
     return result;
   }
-  MediaConsumerFlushResponseParams _mediaConsumerFlushResponseParamsFactory() {
+  static MediaConsumerFlushResponseParams _mediaConsumerFlushResponseParamsFactory() {
     var result = new MediaConsumerFlushResponseParams();
     return result;
   }

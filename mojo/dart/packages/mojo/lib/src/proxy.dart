@@ -19,10 +19,9 @@ abstract class ProxyControl<T> implements ProxyMessageHandler {
   // try to remove when/after ApplicationConnection is removed/refactored.
   String get serviceName;
 
-  // Currently we don't have impl hooked up to anything for Proxies, but we have
-  // the field here so that there is a consistent interface with Stubs. By
-  // having the field here we can also retain the option of hooking a proxy
-  // up to something other than the remote implementation in the future.
+  /// By default, a Proxy's calls are "implemented" by a remote service. Before
+  /// binding, this field can be set to an alternate implementation of the
+  /// service that may be local.
   T impl;
 }
 
@@ -33,7 +32,8 @@ class Proxy<T> implements MojoInterface<T> {
   // generation to avoid name conflicts.
 
   /// Proxies control the ProxyMessageHandler by way of this [ProxyControl]
-  /// object.
+  /// object. If a Mojo interface has a method 'ctrl', its name will be
+  /// mangled to be 'ctrl_'.
   final ProxyControl<T> ctrl;
 
   Proxy(this.ctrl);
@@ -49,7 +49,7 @@ class Proxy<T> implements MojoInterface<T> {
   Future responseOrError(Future f) => ctrl.responseOrError(f);
 
   /// This getter and setter pair is for convenience and simply forwards to
-  /// ctrl.impl. If a Mojo interface has a method 'close', its name will be
+  /// ctrl.impl. If a Mojo interface has a method 'impl', its name will be
   /// mangled to be 'impl_'.
   T get impl => ctrl.impl;
   set impl(T impl) {

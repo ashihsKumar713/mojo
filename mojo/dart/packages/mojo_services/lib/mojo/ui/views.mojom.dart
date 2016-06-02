@@ -552,10 +552,15 @@ abstract class ViewInterface
                View {
   factory ViewInterface([View impl]) =>
       new ViewStub.unbound(impl);
+
   factory ViewInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [View impl]) =>
       new ViewStub.fromEndpoint(endpoint, impl);
+
+  factory ViewInterface.fromMock(
+      View mock) =>
+      new ViewProxy.fromMock(mock);
 }
 
 abstract class ViewInterfaceRequest
@@ -568,6 +573,8 @@ abstract class ViewInterfaceRequest
 class _ViewProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<View> {
+  View impl;
+
   _ViewProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -607,11 +614,6 @@ class _ViewProxyControl
     }
   }
 
-  View get impl => null;
-  set impl(View _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -634,6 +636,13 @@ class ViewProxy
   ViewProxy.unbound()
       : super(new _ViewProxyControl.unbound());
 
+  factory ViewProxy.fromMock(View mock) {
+    ViewProxy newMockedProxy =
+        new ViewProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ViewProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewProxy"));
@@ -642,6 +651,9 @@ class ViewProxy
 
 
   dynamic getToken([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getToken(_ViewStubControl._viewGetTokenResponseParamsFactory));
+    }
     var params = new _ViewGetTokenParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -650,6 +662,10 @@ class ViewProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void getServiceProvider(service_provider_mojom.ServiceProviderInterfaceRequest serviceProvider) {
+    if (impl != null) {
+      impl.getServiceProvider(serviceProvider);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -660,6 +676,10 @@ class ViewProxy
         _viewMethodGetServiceProviderName);
   }
   void createScene(scenes_mojom.SceneInterfaceRequest scene) {
+    if (impl != null) {
+      impl.createScene(scene);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -670,6 +690,10 @@ class ViewProxy
         _viewMethodCreateSceneName);
   }
   void getContainer(view_containers_mojom.ViewContainerInterfaceRequest container) {
+    if (impl != null) {
+      impl.getContainer(container);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -703,7 +727,7 @@ class _ViewStubControl
   String get serviceName => View.serviceName;
 
 
-  ViewGetTokenResponseParams _viewGetTokenResponseParamsFactory(view_token_mojom.ViewToken token) {
+  static ViewGetTokenResponseParams _viewGetTokenResponseParamsFactory(view_token_mojom.ViewToken token) {
     var result = new ViewGetTokenResponseParams();
     result.token = token;
     return result;
@@ -869,10 +893,15 @@ abstract class ViewListenerInterface
                ViewListener {
   factory ViewListenerInterface([ViewListener impl]) =>
       new ViewListenerStub.unbound(impl);
+
   factory ViewListenerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ViewListener impl]) =>
       new ViewListenerStub.fromEndpoint(endpoint, impl);
+
+  factory ViewListenerInterface.fromMock(
+      ViewListener mock) =>
+      new ViewListenerProxy.fromMock(mock);
 }
 
 abstract class ViewListenerInterfaceRequest
@@ -885,6 +914,8 @@ abstract class ViewListenerInterfaceRequest
 class _ViewListenerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ViewListener> {
+  ViewListener impl;
+
   _ViewListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -924,11 +955,6 @@ class _ViewListenerProxyControl
     }
   }
 
-  ViewListener get impl => null;
-  set impl(ViewListener _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -951,6 +977,13 @@ class ViewListenerProxy
   ViewListenerProxy.unbound()
       : super(new _ViewListenerProxyControl.unbound());
 
+  factory ViewListenerProxy.fromMock(ViewListener mock) {
+    ViewListenerProxy newMockedProxy =
+        new ViewListenerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ViewListenerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewListenerProxy"));
@@ -959,6 +992,9 @@ class ViewListenerProxy
 
 
   dynamic onPropertiesChanged(int sceneVersion,view_properties_mojom.ViewProperties properties,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.onPropertiesChanged(sceneVersion,properties,_ViewListenerStubControl._viewListenerOnPropertiesChangedResponseParamsFactory));
+    }
     var params = new _ViewListenerOnPropertiesChangedParams();
     params.sceneVersion = sceneVersion;
     params.properties = properties;
@@ -992,7 +1028,7 @@ class _ViewListenerStubControl
   String get serviceName => ViewListener.serviceName;
 
 
-  ViewListenerOnPropertiesChangedResponseParams _viewListenerOnPropertiesChangedResponseParamsFactory() {
+  static ViewListenerOnPropertiesChangedResponseParams _viewListenerOnPropertiesChangedResponseParamsFactory() {
     var result = new ViewListenerOnPropertiesChangedResponseParams();
     return result;
   }

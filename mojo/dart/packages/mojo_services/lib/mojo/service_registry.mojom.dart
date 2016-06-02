@@ -152,10 +152,15 @@ abstract class ServiceRegistryInterface
                ServiceRegistry {
   factory ServiceRegistryInterface([ServiceRegistry impl]) =>
       new ServiceRegistryStub.unbound(impl);
+
   factory ServiceRegistryInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ServiceRegistry impl]) =>
       new ServiceRegistryStub.fromEndpoint(endpoint, impl);
+
+  factory ServiceRegistryInterface.fromMock(
+      ServiceRegistry mock) =>
+      new ServiceRegistryProxy.fromMock(mock);
 }
 
 abstract class ServiceRegistryInterfaceRequest
@@ -168,6 +173,8 @@ abstract class ServiceRegistryInterfaceRequest
 class _ServiceRegistryProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ServiceRegistry> {
+  ServiceRegistry impl;
+
   _ServiceRegistryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -185,11 +192,6 @@ class _ServiceRegistryProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  ServiceRegistry get impl => null;
-  set impl(ServiceRegistry _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -214,6 +216,13 @@ class ServiceRegistryProxy
   ServiceRegistryProxy.unbound()
       : super(new _ServiceRegistryProxyControl.unbound());
 
+  factory ServiceRegistryProxy.fromMock(ServiceRegistry mock) {
+    ServiceRegistryProxy newMockedProxy =
+        new ServiceRegistryProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ServiceRegistryProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ServiceRegistryProxy"));
@@ -222,6 +231,10 @@ class ServiceRegistryProxy
 
 
   void addServices(List<String> interfaceNames, service_provider_mojom.ServiceProviderInterface serviceProvider) {
+    if (impl != null) {
+      impl.addServices(interfaceNames, serviceProvider);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

@@ -138,10 +138,15 @@ abstract class ViewProviderInterface
                ViewProvider {
   factory ViewProviderInterface([ViewProvider impl]) =>
       new ViewProviderStub.unbound(impl);
+
   factory ViewProviderInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ViewProvider impl]) =>
       new ViewProviderStub.fromEndpoint(endpoint, impl);
+
+  factory ViewProviderInterface.fromMock(
+      ViewProvider mock) =>
+      new ViewProviderProxy.fromMock(mock);
 }
 
 abstract class ViewProviderInterfaceRequest
@@ -154,6 +159,8 @@ abstract class ViewProviderInterfaceRequest
 class _ViewProviderProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ViewProvider> {
+  ViewProvider impl;
+
   _ViewProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -171,11 +178,6 @@ class _ViewProviderProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  ViewProvider get impl => null;
-  set impl(ViewProvider _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -200,6 +202,13 @@ class ViewProviderProxy
   ViewProviderProxy.unbound()
       : super(new _ViewProviderProxyControl.unbound());
 
+  factory ViewProviderProxy.fromMock(ViewProvider mock) {
+    ViewProviderProxy newMockedProxy =
+        new ViewProviderProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ViewProviderProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewProviderProxy"));
@@ -208,6 +217,10 @@ class ViewProviderProxy
 
 
   void createView(view_token_mojom.ViewOwnerInterfaceRequest viewOwner, service_provider_mojom.ServiceProviderInterfaceRequest services) {
+    if (impl != null) {
+      impl.createView(viewOwner, services);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

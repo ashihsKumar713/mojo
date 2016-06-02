@@ -195,10 +195,15 @@ abstract class IcuDataInterface
                IcuData {
   factory IcuDataInterface([IcuData impl]) =>
       new IcuDataStub.unbound(impl);
+
   factory IcuDataInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [IcuData impl]) =>
       new IcuDataStub.fromEndpoint(endpoint, impl);
+
+  factory IcuDataInterface.fromMock(
+      IcuData mock) =>
+      new IcuDataProxy.fromMock(mock);
 }
 
 abstract class IcuDataInterfaceRequest
@@ -211,6 +216,8 @@ abstract class IcuDataInterfaceRequest
 class _IcuDataProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<IcuData> {
+  IcuData impl;
+
   _IcuDataProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -250,11 +257,6 @@ class _IcuDataProxyControl
     }
   }
 
-  IcuData get impl => null;
-  set impl(IcuData _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -277,6 +279,13 @@ class IcuDataProxy
   IcuDataProxy.unbound()
       : super(new _IcuDataProxyControl.unbound());
 
+  factory IcuDataProxy.fromMock(IcuData mock) {
+    IcuDataProxy newMockedProxy =
+        new IcuDataProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static IcuDataProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For IcuDataProxy"));
@@ -285,6 +294,9 @@ class IcuDataProxy
 
 
   dynamic map(String sha1hash,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.map(sha1hash,_IcuDataStubControl._icuDataMapResponseParamsFactory));
+    }
     var params = new _IcuDataMapParams();
     params.sha1hash = sha1hash;
     return ctrl.sendMessageWithRequestId(
@@ -317,7 +329,7 @@ class _IcuDataStubControl
   String get serviceName => IcuData.serviceName;
 
 
-  IcuDataMapResponseParams _icuDataMapResponseParamsFactory(core.MojoSharedBuffer icuData) {
+  static IcuDataMapResponseParams _icuDataMapResponseParamsFactory(core.MojoSharedBuffer icuData) {
     var result = new IcuDataMapResponseParams();
     result.icuData = icuData;
     return result;

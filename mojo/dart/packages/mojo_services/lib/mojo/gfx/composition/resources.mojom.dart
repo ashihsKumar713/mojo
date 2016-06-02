@@ -470,10 +470,15 @@ abstract class MailboxTextureCallbackInterface
                MailboxTextureCallback {
   factory MailboxTextureCallbackInterface([MailboxTextureCallback impl]) =>
       new MailboxTextureCallbackStub.unbound(impl);
+
   factory MailboxTextureCallbackInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [MailboxTextureCallback impl]) =>
       new MailboxTextureCallbackStub.fromEndpoint(endpoint, impl);
+
+  factory MailboxTextureCallbackInterface.fromMock(
+      MailboxTextureCallback mock) =>
+      new MailboxTextureCallbackProxy.fromMock(mock);
 }
 
 abstract class MailboxTextureCallbackInterfaceRequest
@@ -486,6 +491,8 @@ abstract class MailboxTextureCallbackInterfaceRequest
 class _MailboxTextureCallbackProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<MailboxTextureCallback> {
+  MailboxTextureCallback impl;
+
   _MailboxTextureCallbackProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -503,11 +510,6 @@ class _MailboxTextureCallbackProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  MailboxTextureCallback get impl => null;
-  set impl(MailboxTextureCallback _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -532,6 +534,13 @@ class MailboxTextureCallbackProxy
   MailboxTextureCallbackProxy.unbound()
       : super(new _MailboxTextureCallbackProxyControl.unbound());
 
+  factory MailboxTextureCallbackProxy.fromMock(MailboxTextureCallback mock) {
+    MailboxTextureCallbackProxy newMockedProxy =
+        new MailboxTextureCallbackProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static MailboxTextureCallbackProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MailboxTextureCallbackProxy"));
@@ -540,6 +549,10 @@ class MailboxTextureCallbackProxy
 
 
   void onMailboxTextureReleased() {
+    if (impl != null) {
+      impl.onMailboxTextureReleased();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

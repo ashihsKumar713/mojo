@@ -124,10 +124,15 @@ abstract class TraceProviderRegistryInterface
                TraceProviderRegistry {
   factory TraceProviderRegistryInterface([TraceProviderRegistry impl]) =>
       new TraceProviderRegistryStub.unbound(impl);
+
   factory TraceProviderRegistryInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [TraceProviderRegistry impl]) =>
       new TraceProviderRegistryStub.fromEndpoint(endpoint, impl);
+
+  factory TraceProviderRegistryInterface.fromMock(
+      TraceProviderRegistry mock) =>
+      new TraceProviderRegistryProxy.fromMock(mock);
 }
 
 abstract class TraceProviderRegistryInterfaceRequest
@@ -140,6 +145,8 @@ abstract class TraceProviderRegistryInterfaceRequest
 class _TraceProviderRegistryProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<TraceProviderRegistry> {
+  TraceProviderRegistry impl;
+
   _TraceProviderRegistryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -157,11 +164,6 @@ class _TraceProviderRegistryProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  TraceProviderRegistry get impl => null;
-  set impl(TraceProviderRegistry _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -186,6 +188,13 @@ class TraceProviderRegistryProxy
   TraceProviderRegistryProxy.unbound()
       : super(new _TraceProviderRegistryProxyControl.unbound());
 
+  factory TraceProviderRegistryProxy.fromMock(TraceProviderRegistry mock) {
+    TraceProviderRegistryProxy newMockedProxy =
+        new TraceProviderRegistryProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static TraceProviderRegistryProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TraceProviderRegistryProxy"));
@@ -194,6 +203,10 @@ class TraceProviderRegistryProxy
 
 
   void registerTraceProvider(tracing_mojom.TraceProviderInterface traceProvider) {
+    if (impl != null) {
+      impl.registerTraceProvider(traceProvider);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

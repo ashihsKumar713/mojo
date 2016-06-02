@@ -50,10 +50,15 @@ abstract class TcpConnectedSocketInterface
                TcpConnectedSocket {
   factory TcpConnectedSocketInterface([TcpConnectedSocket impl]) =>
       new TcpConnectedSocketStub.unbound(impl);
+
   factory TcpConnectedSocketInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [TcpConnectedSocket impl]) =>
       new TcpConnectedSocketStub.fromEndpoint(endpoint, impl);
+
+  factory TcpConnectedSocketInterface.fromMock(
+      TcpConnectedSocket mock) =>
+      new TcpConnectedSocketProxy.fromMock(mock);
 }
 
 abstract class TcpConnectedSocketInterfaceRequest
@@ -66,6 +71,8 @@ abstract class TcpConnectedSocketInterfaceRequest
 class _TcpConnectedSocketProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<TcpConnectedSocket> {
+  TcpConnectedSocket impl;
+
   _TcpConnectedSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -83,11 +90,6 @@ class _TcpConnectedSocketProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  TcpConnectedSocket get impl => null;
-  set impl(TcpConnectedSocket _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -111,6 +113,13 @@ class TcpConnectedSocketProxy
 
   TcpConnectedSocketProxy.unbound()
       : super(new _TcpConnectedSocketProxyControl.unbound());
+
+  factory TcpConnectedSocketProxy.fromMock(TcpConnectedSocket mock) {
+    TcpConnectedSocketProxy newMockedProxy =
+        new TcpConnectedSocketProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
 
   static TcpConnectedSocketProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {

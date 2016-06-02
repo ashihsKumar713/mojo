@@ -551,10 +551,15 @@ abstract class UrlLoaderInterface
                UrlLoader {
   factory UrlLoaderInterface([UrlLoader impl]) =>
       new UrlLoaderStub.unbound(impl);
+
   factory UrlLoaderInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [UrlLoader impl]) =>
       new UrlLoaderStub.fromEndpoint(endpoint, impl);
+
+  factory UrlLoaderInterface.fromMock(
+      UrlLoader mock) =>
+      new UrlLoaderProxy.fromMock(mock);
 }
 
 abstract class UrlLoaderInterfaceRequest
@@ -567,6 +572,8 @@ abstract class UrlLoaderInterfaceRequest
 class _UrlLoaderProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<UrlLoader> {
+  UrlLoader impl;
+
   _UrlLoaderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -646,11 +653,6 @@ class _UrlLoaderProxyControl
     }
   }
 
-  UrlLoader get impl => null;
-  set impl(UrlLoader _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -673,6 +675,13 @@ class UrlLoaderProxy
   UrlLoaderProxy.unbound()
       : super(new _UrlLoaderProxyControl.unbound());
 
+  factory UrlLoaderProxy.fromMock(UrlLoader mock) {
+    UrlLoaderProxy newMockedProxy =
+        new UrlLoaderProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static UrlLoaderProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UrlLoaderProxy"));
@@ -681,6 +690,9 @@ class UrlLoaderProxy
 
 
   dynamic start(url_request_mojom.UrlRequest request,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.start(request,_UrlLoaderStubControl._urlLoaderStartResponseParamsFactory));
+    }
     var params = new _UrlLoaderStartParams();
     params.request = request;
     return ctrl.sendMessageWithRequestId(
@@ -690,6 +702,9 @@ class UrlLoaderProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic followRedirect([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.followRedirect(_UrlLoaderStubControl._urlLoaderFollowRedirectResponseParamsFactory));
+    }
     var params = new _UrlLoaderFollowRedirectParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -698,6 +713,9 @@ class UrlLoaderProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic queryStatus([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.queryStatus(_UrlLoaderStubControl._urlLoaderQueryStatusResponseParamsFactory));
+    }
     var params = new _UrlLoaderQueryStatusParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -729,17 +747,17 @@ class _UrlLoaderStubControl
   String get serviceName => UrlLoader.serviceName;
 
 
-  UrlLoaderStartResponseParams _urlLoaderStartResponseParamsFactory(url_response_mojom.UrlResponse response) {
+  static UrlLoaderStartResponseParams _urlLoaderStartResponseParamsFactory(url_response_mojom.UrlResponse response) {
     var result = new UrlLoaderStartResponseParams();
     result.response = response;
     return result;
   }
-  UrlLoaderFollowRedirectResponseParams _urlLoaderFollowRedirectResponseParamsFactory(url_response_mojom.UrlResponse response) {
+  static UrlLoaderFollowRedirectResponseParams _urlLoaderFollowRedirectResponseParamsFactory(url_response_mojom.UrlResponse response) {
     var result = new UrlLoaderFollowRedirectResponseParams();
     result.response = response;
     return result;
   }
-  UrlLoaderQueryStatusResponseParams _urlLoaderQueryStatusResponseParamsFactory(UrlLoaderStatus status) {
+  static UrlLoaderQueryStatusResponseParams _urlLoaderQueryStatusResponseParamsFactory(UrlLoaderStatus status) {
     var result = new UrlLoaderQueryStatusResponseParams();
     result.status = status;
     return result;

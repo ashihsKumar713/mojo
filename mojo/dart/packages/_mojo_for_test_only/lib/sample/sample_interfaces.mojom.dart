@@ -1397,10 +1397,15 @@ abstract class ProviderInterface
                Provider {
   factory ProviderInterface([Provider impl]) =>
       new ProviderStub.unbound(impl);
+
   factory ProviderInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [Provider impl]) =>
       new ProviderStub.fromEndpoint(endpoint, impl);
+
+  factory ProviderInterface.fromMock(
+      Provider mock) =>
+      new ProviderProxy.fromMock(mock);
 }
 
 abstract class ProviderInterfaceRequest
@@ -1413,6 +1418,8 @@ abstract class ProviderInterfaceRequest
 class _ProviderProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<Provider> {
+  Provider impl;
+
   _ProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1532,11 +1539,6 @@ class _ProviderProxyControl
     }
   }
 
-  Provider get impl => null;
-  set impl(Provider _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -1559,6 +1561,13 @@ class ProviderProxy
   ProviderProxy.unbound()
       : super(new _ProviderProxyControl.unbound());
 
+  factory ProviderProxy.fromMock(Provider mock) {
+    ProviderProxy newMockedProxy =
+        new ProviderProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ProviderProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ProviderProxy"));
@@ -1567,6 +1576,9 @@ class ProviderProxy
 
 
   dynamic echoString(String a,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.echoString(a,_ProviderStubControl._providerEchoStringResponseParamsFactory));
+    }
     var params = new _ProviderEchoStringParams();
     params.a = a;
     return ctrl.sendMessageWithRequestId(
@@ -1576,6 +1588,9 @@ class ProviderProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic echoStrings(String a,String b,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.echoStrings(a,b,_ProviderStubControl._providerEchoStringsResponseParamsFactory));
+    }
     var params = new _ProviderEchoStringsParams();
     params.a = a;
     params.b = b;
@@ -1586,6 +1601,9 @@ class ProviderProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic echoMessagePipeHandle(core.MojoMessagePipeEndpoint a,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.echoMessagePipeHandle(a,_ProviderStubControl._providerEchoMessagePipeHandleResponseParamsFactory));
+    }
     var params = new _ProviderEchoMessagePipeHandleParams();
     params.a = a;
     return ctrl.sendMessageWithRequestId(
@@ -1595,6 +1613,9 @@ class ProviderProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic echoEnum(Enum a,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.echoEnum(a,_ProviderStubControl._providerEchoEnumResponseParamsFactory));
+    }
     var params = new _ProviderEchoEnumParams();
     params.a = a;
     return ctrl.sendMessageWithRequestId(
@@ -1604,6 +1625,9 @@ class ProviderProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic echoInt(int a,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.echoInt(a,_ProviderStubControl._providerEchoIntResponseParamsFactory));
+    }
     var params = new _ProviderEchoIntParams();
     params.a = a;
     return ctrl.sendMessageWithRequestId(
@@ -1636,28 +1660,28 @@ class _ProviderStubControl
   String get serviceName => Provider.serviceName;
 
 
-  ProviderEchoStringResponseParams _providerEchoStringResponseParamsFactory(String a) {
+  static ProviderEchoStringResponseParams _providerEchoStringResponseParamsFactory(String a) {
     var result = new ProviderEchoStringResponseParams();
     result.a = a;
     return result;
   }
-  ProviderEchoStringsResponseParams _providerEchoStringsResponseParamsFactory(String a, String b) {
+  static ProviderEchoStringsResponseParams _providerEchoStringsResponseParamsFactory(String a, String b) {
     var result = new ProviderEchoStringsResponseParams();
     result.a = a;
     result.b = b;
     return result;
   }
-  ProviderEchoMessagePipeHandleResponseParams _providerEchoMessagePipeHandleResponseParamsFactory(core.MojoMessagePipeEndpoint a) {
+  static ProviderEchoMessagePipeHandleResponseParams _providerEchoMessagePipeHandleResponseParamsFactory(core.MojoMessagePipeEndpoint a) {
     var result = new ProviderEchoMessagePipeHandleResponseParams();
     result.a = a;
     return result;
   }
-  ProviderEchoEnumResponseParams _providerEchoEnumResponseParamsFactory(Enum a) {
+  static ProviderEchoEnumResponseParams _providerEchoEnumResponseParamsFactory(Enum a) {
     var result = new ProviderEchoEnumResponseParams();
     result.a = a;
     return result;
   }
-  ProviderEchoIntResponseParams _providerEchoIntResponseParamsFactory(int a) {
+  static ProviderEchoIntResponseParams _providerEchoIntResponseParamsFactory(int a) {
     var result = new ProviderEchoIntResponseParams();
     result.a = a;
     return result;
@@ -1903,10 +1927,15 @@ abstract class IntegerAccessorInterface
                IntegerAccessor {
   factory IntegerAccessorInterface([IntegerAccessor impl]) =>
       new IntegerAccessorStub.unbound(impl);
+
   factory IntegerAccessorInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [IntegerAccessor impl]) =>
       new IntegerAccessorStub.fromEndpoint(endpoint, impl);
+
+  factory IntegerAccessorInterface.fromMock(
+      IntegerAccessor mock) =>
+      new IntegerAccessorProxy.fromMock(mock);
 }
 
 abstract class IntegerAccessorInterfaceRequest
@@ -1919,6 +1948,8 @@ abstract class IntegerAccessorInterfaceRequest
 class _IntegerAccessorProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<IntegerAccessor> {
+  IntegerAccessor impl;
+
   _IntegerAccessorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1958,11 +1989,6 @@ class _IntegerAccessorProxyControl
     }
   }
 
-  IntegerAccessor get impl => null;
-  set impl(IntegerAccessor _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -1985,6 +2011,13 @@ class IntegerAccessorProxy
   IntegerAccessorProxy.unbound()
       : super(new _IntegerAccessorProxyControl.unbound());
 
+  factory IntegerAccessorProxy.fromMock(IntegerAccessor mock) {
+    IntegerAccessorProxy newMockedProxy =
+        new IntegerAccessorProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static IntegerAccessorProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For IntegerAccessorProxy"));
@@ -1993,6 +2026,9 @@ class IntegerAccessorProxy
 
 
   dynamic getInteger([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getInteger(_IntegerAccessorStubControl._integerAccessorGetIntegerResponseParamsFactory));
+    }
     var params = new _IntegerAccessorGetIntegerParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -2001,6 +2037,10 @@ class IntegerAccessorProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void setInteger(int data, Enum type) {
+    if (impl != null) {
+      impl.setInteger(data, type);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -2035,7 +2075,7 @@ class _IntegerAccessorStubControl
   String get serviceName => IntegerAccessor.serviceName;
 
 
-  IntegerAccessorGetIntegerResponseParams _integerAccessorGetIntegerResponseParamsFactory(int data, Enum type) {
+  static IntegerAccessorGetIntegerResponseParams _integerAccessorGetIntegerResponseParamsFactory(int data, Enum type) {
     var result = new IntegerAccessorGetIntegerResponseParams();
     result.data = data;
     result.type = type;
@@ -2190,10 +2230,15 @@ abstract class SampleInterfaceInterface
                SampleInterface {
   factory SampleInterfaceInterface([SampleInterface impl]) =>
       new SampleInterfaceStub.unbound(impl);
+
   factory SampleInterfaceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [SampleInterface impl]) =>
       new SampleInterfaceStub.fromEndpoint(endpoint, impl);
+
+  factory SampleInterfaceInterface.fromMock(
+      SampleInterface mock) =>
+      new SampleInterfaceProxy.fromMock(mock);
 }
 
 abstract class SampleInterfaceInterfaceRequest
@@ -2206,6 +2251,8 @@ abstract class SampleInterfaceInterfaceRequest
 class _SampleInterfaceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<SampleInterface> {
+  SampleInterface impl;
+
   _SampleInterfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -2245,11 +2292,6 @@ class _SampleInterfaceProxyControl
     }
   }
 
-  SampleInterface get impl => null;
-  set impl(SampleInterface _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -2272,6 +2314,13 @@ class SampleInterfaceProxy
   SampleInterfaceProxy.unbound()
       : super(new _SampleInterfaceProxyControl.unbound());
 
+  factory SampleInterfaceProxy.fromMock(SampleInterface mock) {
+    SampleInterfaceProxy newMockedProxy =
+        new SampleInterfaceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static SampleInterfaceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SampleInterfaceProxy"));
@@ -2280,6 +2329,9 @@ class SampleInterfaceProxy
 
 
   dynamic sampleMethod1(int in1,String in2,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.sampleMethod1(in1,in2,_SampleInterfaceStubControl._sampleInterfaceSampleMethod1ResponseParamsFactory));
+    }
     var params = new _SampleInterfaceSampleMethod1Params();
     params.in1 = in1;
     params.in2 = in2;
@@ -2290,6 +2342,10 @@ class SampleInterfaceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void sampleMethod0() {
+    if (impl != null) {
+      impl.sampleMethod0();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -2299,6 +2355,10 @@ class SampleInterfaceProxy
         _sampleInterfaceMethodSampleMethod0Name);
   }
   void sampleMethod2() {
+    if (impl != null) {
+      impl.sampleMethod2();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -2331,7 +2391,7 @@ class _SampleInterfaceStubControl
   String get serviceName => SampleInterface.serviceName;
 
 
-  SampleInterfaceSampleMethod1ResponseParams _sampleInterfaceSampleMethod1ResponseParamsFactory(String out1, Enum out2) {
+  static SampleInterfaceSampleMethod1ResponseParams _sampleInterfaceSampleMethod1ResponseParamsFactory(String out1, Enum out2) {
     var result = new SampleInterfaceSampleMethod1ResponseParams();
     result.out1 = out1;
     result.out2 = out2;
@@ -2458,7 +2518,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xb3W7jRBT2xOkSdil0ty2k7F920UJu2qRFgoir9CIiFVSqVKjYG1ZpMjRGjR1sBy13PAqXPAaPwmUv9w1gvDmnGU9m/NM69qTbkUZT/2V8Pn/nOzNnplVjWtagbUIrnse2IrTiff9AW2e1zGoNjlvQ/gTtGNpHrG6w+sPLo86r7zovv/F6o/E53enYk1Fw/QtWn0quH9g+PaPufr9PPc9x3/ZTldx35Dq/WwPqqn7n+G0T/Jr7S69PjS6895rw3sGxyWq7FD6++DB8/OeOHJcLaNtGuDSFfv6DIt6H5QN4P8RnndV7rAqwzfUfPLfC6s+snrDaGDoj2nAnA2dk2dRtjJxfnYbn9qd/jCen51a/YSEsXuPUsgeWfeY1fOr5XmPa3avZDTvBc6Npf4TjRx3amhFdkuLSVTy/Cvad7H//Y4e1W6zeD+Oyg9dk+ATPl3LAR4kHmTZmDB5tAY8jBR6fsPoRq6KfPGHnPp7hIl6ewyU4vpsDLrJ+8bjEQVSFY7yvfkfOM/S3SikZzwwOV9l5LA8Aj2+pD9jJ+bSVE59qAl4XCfXGEHjUUtj7Kdg8s3fbpb9N2EvJ7cayaLsrXL9EEo8MIU6pcPrLzAanh6DFIZy8sWN7tFCcRH9ZI2F7W8J73TGSlaR+VI+JY4Oe31P5z1YO+MhwCOJIi8jfG/lUMuQ4vpbgQLjxjlhE/tYk+mdy/aH+HFr2CXU9y7HDePp/jKkKzy9z1CNDoefi+CVu/CfytybxcyLppwS1qhiHNMl8+CUpvufra35PEvM98fxxTJx5WHCcyUo/Mc4caxZnllU/MR7pqp9mzvppXlM/Azy33yH9NGP0E8ubK87j2hHfM/iWOG/HeYwwnZfmJ4qYp9S5PMYKh2cJMCxzOKxw9/8NNw9X4cQ64FmNns/UzcXMZzr9oXPsuwwCud7eLzjO4Dwuqzgzs1ePOCPqmExXicTfFhVf3of+eoaaDxs54RKl9yodWzSPML6GeKTBfG8ZefRcYx6pdLhbDqXtEuFEInQY87gzPnlSvB4UrMN1c1H+44WEWJfxfo0shx8FvNgswI/S4lK5Ai4kAS6nEbg81Uxf+HH1ov0M5wdhP5sFqls/S+9n27d+JsXla439TIzjiFvLlOdzo3Aqcd9BLI9BhwN/O6Se1zujR9aYdnv24JxKcFsvKJ6j/Wspx8OqefsLsF1qNxfZdR4XlzXSmfUCdIZcY36VNZ8+Z/VJBJ8wgt3yKTmfDjTmk6jP/+J+ITPZvggeJzMCJ8wvBrwKcqQiThsF6THa207pP6r5ZBVsQjtRgnX2lxWN/GUD/l62fP9182PdjPJjuP+K4x+XHdNbt3Xj4aMbzEOV7ldA8MspcC5H4BysIb0HfDyw/TmcNwvW/TckG93H9TKw83LkrbO/GdzaWdH+tpmT7l9Vp7PmCz9OmPJlKtO3fEnOl8ca8SVuf3EcLm2BN3H7i8X988L+YvHyHH61gtbta1x8NYV1e7xucjg34ULtbvS6UFr+Yb8q/wz4tXqJ8yH1h86gKeHhc+Nm7DfG/FnIXg3yR2n3G6v40Uq5bkgieKPix64Ep2cF86NqLo4fuxrwI+0+wbzi1z3QMcvelcavZ3CuiH2Cea5fzHDYU+LwIsf8GMlonXCYkV9h3Bb9qug8q67rhDgfdib+ropPXxXAp7T5jKz9jMNlT4XL/g3LZ0StM4rjwqTrjPj/C2ni/p4E789u8LhwbwnHhf8HAAD//+5ePoRwPQAA";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xb3W7jRBS243Qpuyx0tymk+5tdtJCb1kmRoOIqvYhIBZUiFVbdq103GRKjxA62gwpPwCPwCFzyCDwCj8Jl78BuzmnGkxn/JE4zbjvS0dR/Gc/n73xn5sy0rEzKBtQ1qNnzWK8zNXvf31BXfSv6VoHjfahPoB5B/cS3km/fv2k3337bfPO1awxHA7LbtMbD4Prnvj3nXD+0PNIjzkGnQ1zXdi7aKXPuazv2L2aXOKLfOb6ogl9zfjQ6RGnBe28w7x0ca769K4SP//wofKzU+bicQ91QwqXGtPMfFPY+LB/A+yE+m77d842Bbab94Lk130zfDN/0sevoA7tjDPSebfcGRO/bQ6L/5hj60P7J1l2nM/ljND4dmB3dRIRc/dS0uqbVc3WPuJ6rT1p+O71hN3huSLWvUnypQl1RoktSnFqC5+9Df18ffPdD06+3fXsQxmkXr/HwCp4vrAAvET4b6qTWYvBpMPi0Bfh84ltAXdaPnvnnPp7ixF6ewSk4vrsCnHjvgcfgohe8K8Mx3nd2h48z+me1kIyHCoUz7zyWh4DPN8QDLPnvv70ivlUY/M4T6pXC8Gxf0P9HgMG0/zsO+XnsvxkfByxXjcO6QK/KzHutx+D2j5YNbo9B20O4uSPbcolUuLH+VVHD/d9n3vOOkqwk9btqTJzsGp4h8rftFeDFwyWIUy2V3w/kW0Hw/BkHF5UaX7GF5XeFo58a1R7q15FpvSaOa9pWGF/v1xER4fvFCvVMEcQHdvwUN/6c4TdHF1ROOwWwsiCuN5jvrYIl/b5nC35fNeb74vnjmLj1WLK4lZX+Ytw6ljxu5VV/Mb7lRX+1K9ZfbUH9DfDducH6q8Xob+jhOeadjYjvG3xbzDvgPItJR3DzKzLMo6pUXmaNgqgAmBYpXNao+8/h5uqH8HulSd1+FD3fOtGWM99qdvr2sef4OPD7+UCyuIXzzqzi1rT/csYtVgd5uqxy/HNZ8ep9aMpQxHwprQinqPgh0sFl8wzjd4hnEs5P88izlznimUjXfy+Gw2sS3NQIXcc895RvLhe/h5Lp+om2LH9zQ8Iu63ykpubD7wLebEngd2lxWp8DJzUBTqcROD2XXJ/ocf+y/RLnL2G/nAbCW79c3C93bv0ykV9+lSO/nJmPA459jZ/vjsKtQH0XtjwFXQ/884i4rtEjbXNEWobVHRAOjpuSjB8Qj1rK8booL/EKsODiQI0k8jRuL0qkU5sS6JS6wPwwa7595tuzCL5hhLzl2/x8O8wR31i9/xfniVqyfS00bloEbph/DXgX5JBZ3EqS6Dv2/11KfxPNj8vQR+w3Snqe/GtNIv8qwd95Xz9ZNF/YzyhfiPvvKH5S2cJ8xQHZePrkBvFUFEf2IYAUU+BejMA9WLN7D/h6aHkzuG9JFkc2MoojuF4J/b6cGeTJPxVq7XLV/rm1ojgyr+5nzSd6XDLh00T2b/k0P5+eSsynuP3rcTg1GF7F7V9n/3+D2b/OXp7BsyLJvosKFc81Zt8FXteo59pw4a+70etwafmJ7Yr8OeDf/Uvcj4jXt7s1Tn9eKtdzPzvmE0P9lzB/lnY/u4g/ZynXcdUIXon4U+fg9kIy/rS05fGnLiF/0u4rvar4eA900LTqXB19Aedk2Fd6letDU1z2hLi8WmG+UM1o3faPjPwQxwmsH8qWl5Z13Rbn9/bYq4v49qUEfEubv8naLymc9kQ4HVzz/E3Uui87Tk267ov/X5NmnLHHwf/TGzRO3bsG49T/AwAA//9GparmsEAAAA==";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

@@ -599,10 +599,15 @@ abstract class ServiceDescriberInterface
                ServiceDescriber {
   factory ServiceDescriberInterface([ServiceDescriber impl]) =>
       new ServiceDescriberStub.unbound(impl);
+
   factory ServiceDescriberInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ServiceDescriber impl]) =>
       new ServiceDescriberStub.fromEndpoint(endpoint, impl);
+
+  factory ServiceDescriberInterface.fromMock(
+      ServiceDescriber mock) =>
+      new ServiceDescriberProxy.fromMock(mock);
 }
 
 abstract class ServiceDescriberInterfaceRequest
@@ -615,6 +620,8 @@ abstract class ServiceDescriberInterfaceRequest
 class _ServiceDescriberProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ServiceDescriber> {
+  ServiceDescriber impl;
+
   _ServiceDescriberProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -632,11 +639,6 @@ class _ServiceDescriberProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  ServiceDescriber get impl => null;
-  set impl(ServiceDescriber _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -661,6 +663,13 @@ class ServiceDescriberProxy
   ServiceDescriberProxy.unbound()
       : super(new _ServiceDescriberProxyControl.unbound());
 
+  factory ServiceDescriberProxy.fromMock(ServiceDescriber mock) {
+    ServiceDescriberProxy newMockedProxy =
+        new ServiceDescriberProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ServiceDescriberProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ServiceDescriberProxy"));
@@ -669,6 +678,10 @@ class ServiceDescriberProxy
 
 
   void describeService(String interfaceName, ServiceDescriptionInterfaceRequest descriptionRequest) {
+    if (impl != null) {
+      impl.describeService(interfaceName, descriptionRequest);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -829,10 +842,15 @@ abstract class ServiceDescriptionInterface
                ServiceDescription {
   factory ServiceDescriptionInterface([ServiceDescription impl]) =>
       new ServiceDescriptionStub.unbound(impl);
+
   factory ServiceDescriptionInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ServiceDescription impl]) =>
       new ServiceDescriptionStub.fromEndpoint(endpoint, impl);
+
+  factory ServiceDescriptionInterface.fromMock(
+      ServiceDescription mock) =>
+      new ServiceDescriptionProxy.fromMock(mock);
 }
 
 abstract class ServiceDescriptionInterfaceRequest
@@ -845,6 +863,8 @@ abstract class ServiceDescriptionInterfaceRequest
 class _ServiceDescriptionProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ServiceDescription> {
+  ServiceDescription impl;
+
   _ServiceDescriptionProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -924,11 +944,6 @@ class _ServiceDescriptionProxyControl
     }
   }
 
-  ServiceDescription get impl => null;
-  set impl(ServiceDescription _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -951,6 +966,13 @@ class ServiceDescriptionProxy
   ServiceDescriptionProxy.unbound()
       : super(new _ServiceDescriptionProxyControl.unbound());
 
+  factory ServiceDescriptionProxy.fromMock(ServiceDescription mock) {
+    ServiceDescriptionProxy newMockedProxy =
+        new ServiceDescriptionProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ServiceDescriptionProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ServiceDescriptionProxy"));
@@ -959,6 +981,9 @@ class ServiceDescriptionProxy
 
 
   dynamic getTopLevelInterface([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getTopLevelInterface(_ServiceDescriptionStubControl._serviceDescriptionGetTopLevelInterfaceResponseParamsFactory));
+    }
     var params = new _ServiceDescriptionGetTopLevelInterfaceParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -967,6 +992,9 @@ class ServiceDescriptionProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic getTypeDefinition(String typeKey,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getTypeDefinition(typeKey,_ServiceDescriptionStubControl._serviceDescriptionGetTypeDefinitionResponseParamsFactory));
+    }
     var params = new _ServiceDescriptionGetTypeDefinitionParams();
     params.typeKey = typeKey;
     return ctrl.sendMessageWithRequestId(
@@ -976,6 +1004,9 @@ class ServiceDescriptionProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic getAllTypeDefinitions([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getAllTypeDefinitions(_ServiceDescriptionStubControl._serviceDescriptionGetAllTypeDefinitionsResponseParamsFactory));
+    }
     var params = new _ServiceDescriptionGetAllTypeDefinitionsParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -1007,17 +1038,17 @@ class _ServiceDescriptionStubControl
   String get serviceName => ServiceDescription.serviceName;
 
 
-  ServiceDescriptionGetTopLevelInterfaceResponseParams _serviceDescriptionGetTopLevelInterfaceResponseParamsFactory(mojom_types_mojom.MojomInterface mojomInterface) {
+  static ServiceDescriptionGetTopLevelInterfaceResponseParams _serviceDescriptionGetTopLevelInterfaceResponseParamsFactory(mojom_types_mojom.MojomInterface mojomInterface) {
     var result = new ServiceDescriptionGetTopLevelInterfaceResponseParams();
     result.mojomInterface = mojomInterface;
     return result;
   }
-  ServiceDescriptionGetTypeDefinitionResponseParams _serviceDescriptionGetTypeDefinitionResponseParamsFactory(mojom_types_mojom.UserDefinedType type) {
+  static ServiceDescriptionGetTypeDefinitionResponseParams _serviceDescriptionGetTypeDefinitionResponseParamsFactory(mojom_types_mojom.UserDefinedType type) {
     var result = new ServiceDescriptionGetTypeDefinitionResponseParams();
     result.type = type;
     return result;
   }
-  ServiceDescriptionGetAllTypeDefinitionsResponseParams _serviceDescriptionGetAllTypeDefinitionsResponseParamsFactory(Map<String, mojom_types_mojom.UserDefinedType> definitions) {
+  static ServiceDescriptionGetAllTypeDefinitionsResponseParams _serviceDescriptionGetAllTypeDefinitionsResponseParamsFactory(Map<String, mojom_types_mojom.UserDefinedType> definitions) {
     var result = new ServiceDescriptionGetAllTypeDefinitionsResponseParams();
     result.definitions = definitions;
     return result;

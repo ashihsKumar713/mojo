@@ -622,10 +622,15 @@ abstract class SpeechRecognizerListenerInterface
                SpeechRecognizerListener {
   factory SpeechRecognizerListenerInterface([SpeechRecognizerListener impl]) =>
       new SpeechRecognizerListenerStub.unbound(impl);
+
   factory SpeechRecognizerListenerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [SpeechRecognizerListener impl]) =>
       new SpeechRecognizerListenerStub.fromEndpoint(endpoint, impl);
+
+  factory SpeechRecognizerListenerInterface.fromMock(
+      SpeechRecognizerListener mock) =>
+      new SpeechRecognizerListenerProxy.fromMock(mock);
 }
 
 abstract class SpeechRecognizerListenerInterfaceRequest
@@ -638,6 +643,8 @@ abstract class SpeechRecognizerListenerInterfaceRequest
 class _SpeechRecognizerListenerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<SpeechRecognizerListener> {
+  SpeechRecognizerListener impl;
+
   _SpeechRecognizerListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -655,11 +662,6 @@ class _SpeechRecognizerListenerProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  SpeechRecognizerListener get impl => null;
-  set impl(SpeechRecognizerListener _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -684,6 +686,13 @@ class SpeechRecognizerListenerProxy
   SpeechRecognizerListenerProxy.unbound()
       : super(new _SpeechRecognizerListenerProxyControl.unbound());
 
+  factory SpeechRecognizerListenerProxy.fromMock(SpeechRecognizerListener mock) {
+    SpeechRecognizerListenerProxy newMockedProxy =
+        new SpeechRecognizerListenerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static SpeechRecognizerListenerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SpeechRecognizerListenerProxy"));
@@ -692,6 +701,10 @@ class SpeechRecognizerListenerProxy
 
 
   void onRecognizerError(Error errorCode) {
+    if (impl != null) {
+      impl.onRecognizerError(errorCode);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -702,6 +715,10 @@ class SpeechRecognizerListenerProxy
         _speechRecognizerListenerMethodOnRecognizerErrorName);
   }
   void onResults(List<UtteranceCandidate> results, bool complete) {
+    if (impl != null) {
+      impl.onResults(results, complete);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -713,6 +730,10 @@ class SpeechRecognizerListenerProxy
         _speechRecognizerListenerMethodOnResultsName);
   }
   void onSoundLevelChanged(double rmsDb) {
+    if (impl != null) {
+      impl.onSoundLevelChanged(rmsDb);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -886,10 +907,15 @@ abstract class SpeechRecognizerServiceInterface
                SpeechRecognizerService {
   factory SpeechRecognizerServiceInterface([SpeechRecognizerService impl]) =>
       new SpeechRecognizerServiceStub.unbound(impl);
+
   factory SpeechRecognizerServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [SpeechRecognizerService impl]) =>
       new SpeechRecognizerServiceStub.fromEndpoint(endpoint, impl);
+
+  factory SpeechRecognizerServiceInterface.fromMock(
+      SpeechRecognizerService mock) =>
+      new SpeechRecognizerServiceProxy.fromMock(mock);
 }
 
 abstract class SpeechRecognizerServiceInterfaceRequest
@@ -902,6 +928,8 @@ abstract class SpeechRecognizerServiceInterfaceRequest
 class _SpeechRecognizerServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<SpeechRecognizerService> {
+  SpeechRecognizerService impl;
+
   _SpeechRecognizerServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -919,11 +947,6 @@ class _SpeechRecognizerServiceProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  SpeechRecognizerService get impl => null;
-  set impl(SpeechRecognizerService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -948,6 +971,13 @@ class SpeechRecognizerServiceProxy
   SpeechRecognizerServiceProxy.unbound()
       : super(new _SpeechRecognizerServiceProxyControl.unbound());
 
+  factory SpeechRecognizerServiceProxy.fromMock(SpeechRecognizerService mock) {
+    SpeechRecognizerServiceProxy newMockedProxy =
+        new SpeechRecognizerServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static SpeechRecognizerServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SpeechRecognizerServiceProxy"));
@@ -956,6 +986,10 @@ class SpeechRecognizerServiceProxy
 
 
   void listen(SpeechRecognizerListenerInterface listener) {
+    if (impl != null) {
+      impl.listen(listener);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -966,6 +1000,10 @@ class SpeechRecognizerServiceProxy
         _speechRecognizerServiceMethodListenName);
   }
   void stopListening() {
+    if (impl != null) {
+      impl.stopListening();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

@@ -611,10 +611,15 @@ abstract class AudioTrackInterface
                AudioTrack {
   factory AudioTrackInterface([AudioTrack impl]) =>
       new AudioTrackStub.unbound(impl);
+
   factory AudioTrackInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [AudioTrack impl]) =>
       new AudioTrackStub.fromEndpoint(endpoint, impl);
+
+  factory AudioTrackInterface.fromMock(
+      AudioTrack mock) =>
+      new AudioTrackProxy.fromMock(mock);
 }
 
 abstract class AudioTrackInterfaceRequest
@@ -627,6 +632,8 @@ abstract class AudioTrackInterfaceRequest
 class _AudioTrackProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<AudioTrack> {
+  AudioTrack impl;
+
   _AudioTrackProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -666,11 +673,6 @@ class _AudioTrackProxyControl
     }
   }
 
-  AudioTrack get impl => null;
-  set impl(AudioTrack _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -693,6 +695,13 @@ class AudioTrackProxy
   AudioTrackProxy.unbound()
       : super(new _AudioTrackProxyControl.unbound());
 
+  factory AudioTrackProxy.fromMock(AudioTrack mock) {
+    AudioTrackProxy newMockedProxy =
+        new AudioTrackProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static AudioTrackProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For AudioTrackProxy"));
@@ -701,6 +710,9 @@ class AudioTrackProxy
 
 
   dynamic describe([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.describe(_AudioTrackStubControl._audioTrackDescribeResponseParamsFactory));
+    }
     var params = new _AudioTrackDescribeParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -709,6 +721,10 @@ class AudioTrackProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void configure(AudioTrackConfiguration configuration, media_transport_mojom.MediaConsumerInterfaceRequest pipe) {
+    if (impl != null) {
+      impl.configure(configuration, pipe);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -720,6 +736,10 @@ class AudioTrackProxy
         _audioTrackMethodConfigureName);
   }
   void getTimelineControlSite(timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite) {
+    if (impl != null) {
+      impl.getTimelineControlSite(timelineControlSite);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -730,6 +750,10 @@ class AudioTrackProxy
         _audioTrackMethodGetTimelineControlSiteName);
   }
   void setGain(double dbGain) {
+    if (impl != null) {
+      impl.setGain(dbGain);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -763,7 +787,7 @@ class _AudioTrackStubControl
   String get serviceName => AudioTrack.serviceName;
 
 
-  AudioTrackDescribeResponseParams _audioTrackDescribeResponseParamsFactory(AudioTrackDescriptor descriptor) {
+  static AudioTrackDescribeResponseParams _audioTrackDescribeResponseParamsFactory(AudioTrackDescriptor descriptor) {
     var result = new AudioTrackDescribeResponseParams();
     result.descriptor = descriptor;
     return result;

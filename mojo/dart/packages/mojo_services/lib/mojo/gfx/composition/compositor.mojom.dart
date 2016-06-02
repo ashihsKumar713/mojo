@@ -313,10 +313,15 @@ abstract class CompositorInterface
                Compositor {
   factory CompositorInterface([Compositor impl]) =>
       new CompositorStub.unbound(impl);
+
   factory CompositorInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [Compositor impl]) =>
       new CompositorStub.fromEndpoint(endpoint, impl);
+
+  factory CompositorInterface.fromMock(
+      Compositor mock) =>
+      new CompositorProxy.fromMock(mock);
 }
 
 abstract class CompositorInterfaceRequest
@@ -329,6 +334,8 @@ abstract class CompositorInterfaceRequest
 class _CompositorProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<Compositor> {
+  Compositor impl;
+
   _CompositorProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -368,11 +375,6 @@ class _CompositorProxyControl
     }
   }
 
-  Compositor get impl => null;
-  set impl(Compositor _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -395,6 +397,13 @@ class CompositorProxy
   CompositorProxy.unbound()
       : super(new _CompositorProxyControl.unbound());
 
+  factory CompositorProxy.fromMock(Compositor mock) {
+    CompositorProxy newMockedProxy =
+        new CompositorProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static CompositorProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For CompositorProxy"));
@@ -403,6 +412,9 @@ class CompositorProxy
 
 
   dynamic createScene(scenes_mojom.SceneInterfaceRequest scene,String label,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.createScene(scene,label,_CompositorStubControl._compositorCreateSceneResponseParamsFactory));
+    }
     var params = new _CompositorCreateSceneParams();
     params.scene = scene;
     params.label = label;
@@ -413,6 +425,10 @@ class CompositorProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void createRenderer(context_provider_mojom.ContextProviderInterface contextProvider, renderers_mojom.RendererInterfaceRequest renderer, String label) {
+    if (impl != null) {
+      impl.createRenderer(contextProvider, renderer, label);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -448,7 +464,7 @@ class _CompositorStubControl
   String get serviceName => Compositor.serviceName;
 
 
-  CompositorCreateSceneResponseParams _compositorCreateSceneResponseParamsFactory(scene_token_mojom.SceneToken sceneToken) {
+  static CompositorCreateSceneResponseParams _compositorCreateSceneResponseParamsFactory(scene_token_mojom.SceneToken sceneToken) {
     var result = new CompositorCreateSceneResponseParams();
     result.sceneToken = sceneToken;
     return result;

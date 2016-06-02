@@ -137,10 +137,15 @@ abstract class HttpServerDelegateInterface
                HttpServerDelegate {
   factory HttpServerDelegateInterface([HttpServerDelegate impl]) =>
       new HttpServerDelegateStub.unbound(impl);
+
   factory HttpServerDelegateInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [HttpServerDelegate impl]) =>
       new HttpServerDelegateStub.fromEndpoint(endpoint, impl);
+
+  factory HttpServerDelegateInterface.fromMock(
+      HttpServerDelegate mock) =>
+      new HttpServerDelegateProxy.fromMock(mock);
 }
 
 abstract class HttpServerDelegateInterfaceRequest
@@ -153,6 +158,8 @@ abstract class HttpServerDelegateInterfaceRequest
 class _HttpServerDelegateProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<HttpServerDelegate> {
+  HttpServerDelegate impl;
+
   _HttpServerDelegateProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -170,11 +177,6 @@ class _HttpServerDelegateProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  HttpServerDelegate get impl => null;
-  set impl(HttpServerDelegate _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -199,6 +201,13 @@ class HttpServerDelegateProxy
   HttpServerDelegateProxy.unbound()
       : super(new _HttpServerDelegateProxyControl.unbound());
 
+  factory HttpServerDelegateProxy.fromMock(HttpServerDelegate mock) {
+    HttpServerDelegateProxy newMockedProxy =
+        new HttpServerDelegateProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static HttpServerDelegateProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HttpServerDelegateProxy"));
@@ -207,6 +216,10 @@ class HttpServerDelegateProxy
 
 
   void onConnected(http_connection_mojom.HttpConnectionInterface connection, http_connection_mojom.HttpConnectionDelegateInterfaceRequest delegate) {
+    if (impl != null) {
+      impl.onConnected(connection, delegate);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

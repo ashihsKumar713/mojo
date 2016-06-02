@@ -1215,10 +1215,15 @@ abstract class DirectoryInterface
                Directory {
   factory DirectoryInterface([Directory impl]) =>
       new DirectoryStub.unbound(impl);
+
   factory DirectoryInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [Directory impl]) =>
       new DirectoryStub.fromEndpoint(endpoint, impl);
+
+  factory DirectoryInterface.fromMock(
+      Directory mock) =>
+      new DirectoryProxy.fromMock(mock);
 }
 
 abstract class DirectoryInterfaceRequest
@@ -1231,6 +1236,8 @@ abstract class DirectoryInterfaceRequest
 class _DirectoryProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<Directory> {
+  Directory impl;
+
   _DirectoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1390,11 +1397,6 @@ class _DirectoryProxyControl
     }
   }
 
-  Directory get impl => null;
-  set impl(Directory _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -1417,6 +1419,13 @@ class DirectoryProxy
   DirectoryProxy.unbound()
       : super(new _DirectoryProxyControl.unbound());
 
+  factory DirectoryProxy.fromMock(Directory mock) {
+    DirectoryProxy newMockedProxy =
+        new DirectoryProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static DirectoryProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For DirectoryProxy"));
@@ -1425,6 +1434,9 @@ class DirectoryProxy
 
 
   dynamic read([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.read(_DirectoryStubControl._directoryReadResponseParamsFactory));
+    }
     var params = new _DirectoryReadParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -1433,6 +1445,9 @@ class DirectoryProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic stat([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.stat(_DirectoryStubControl._directoryStatResponseParamsFactory));
+    }
     var params = new _DirectoryStatParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -1441,6 +1456,9 @@ class DirectoryProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.touch(atime,mtime,_DirectoryStubControl._directoryTouchResponseParamsFactory));
+    }
     var params = new _DirectoryTouchParams();
     params.atime = atime;
     params.mtime = mtime;
@@ -1451,6 +1469,9 @@ class DirectoryProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic openFile(String path,file_mojom.FileInterfaceRequest file,int openFlags,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.openFile(path,file,openFlags,_DirectoryStubControl._directoryOpenFileResponseParamsFactory));
+    }
     var params = new _DirectoryOpenFileParams();
     params.path = path;
     params.file = file;
@@ -1462,6 +1483,9 @@ class DirectoryProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic openDirectory(String path,DirectoryInterfaceRequest directory,int openFlags,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.openDirectory(path,directory,openFlags,_DirectoryStubControl._directoryOpenDirectoryResponseParamsFactory));
+    }
     var params = new _DirectoryOpenDirectoryParams();
     params.path = path;
     params.directory = directory;
@@ -1473,6 +1497,9 @@ class DirectoryProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic rename(String path,String newPath,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.rename(path,newPath,_DirectoryStubControl._directoryRenameResponseParamsFactory));
+    }
     var params = new _DirectoryRenameParams();
     params.path = path;
     params.newPath = newPath;
@@ -1483,6 +1510,9 @@ class DirectoryProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic delete(String path,int deleteFlags,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.delete(path,deleteFlags,_DirectoryStubControl._directoryDeleteResponseParamsFactory));
+    }
     var params = new _DirectoryDeleteParams();
     params.path = path;
     params.deleteFlags = deleteFlags;
@@ -1516,39 +1546,39 @@ class _DirectoryStubControl
   String get serviceName => Directory.serviceName;
 
 
-  DirectoryReadResponseParams _directoryReadResponseParamsFactory(types_mojom.Error error, List<types_mojom.DirectoryEntry> directoryContents) {
+  static DirectoryReadResponseParams _directoryReadResponseParamsFactory(types_mojom.Error error, List<types_mojom.DirectoryEntry> directoryContents) {
     var result = new DirectoryReadResponseParams();
     result.error = error;
     result.directoryContents = directoryContents;
     return result;
   }
-  DirectoryStatResponseParams _directoryStatResponseParamsFactory(types_mojom.Error error, types_mojom.FileInformation fileInformation) {
+  static DirectoryStatResponseParams _directoryStatResponseParamsFactory(types_mojom.Error error, types_mojom.FileInformation fileInformation) {
     var result = new DirectoryStatResponseParams();
     result.error = error;
     result.fileInformation = fileInformation;
     return result;
   }
-  DirectoryTouchResponseParams _directoryTouchResponseParamsFactory(types_mojom.Error error) {
+  static DirectoryTouchResponseParams _directoryTouchResponseParamsFactory(types_mojom.Error error) {
     var result = new DirectoryTouchResponseParams();
     result.error = error;
     return result;
   }
-  DirectoryOpenFileResponseParams _directoryOpenFileResponseParamsFactory(types_mojom.Error error) {
+  static DirectoryOpenFileResponseParams _directoryOpenFileResponseParamsFactory(types_mojom.Error error) {
     var result = new DirectoryOpenFileResponseParams();
     result.error = error;
     return result;
   }
-  DirectoryOpenDirectoryResponseParams _directoryOpenDirectoryResponseParamsFactory(types_mojom.Error error) {
+  static DirectoryOpenDirectoryResponseParams _directoryOpenDirectoryResponseParamsFactory(types_mojom.Error error) {
     var result = new DirectoryOpenDirectoryResponseParams();
     result.error = error;
     return result;
   }
-  DirectoryRenameResponseParams _directoryRenameResponseParamsFactory(types_mojom.Error error) {
+  static DirectoryRenameResponseParams _directoryRenameResponseParamsFactory(types_mojom.Error error) {
     var result = new DirectoryRenameResponseParams();
     result.error = error;
     return result;
   }
-  DirectoryDeleteResponseParams _directoryDeleteResponseParamsFactory(types_mojom.Error error) {
+  static DirectoryDeleteResponseParams _directoryDeleteResponseParamsFactory(types_mojom.Error error) {
     var result = new DirectoryDeleteResponseParams();
     result.error = error;
     return result;

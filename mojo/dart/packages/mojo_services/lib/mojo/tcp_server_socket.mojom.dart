@@ -240,10 +240,15 @@ abstract class TcpServerSocketInterface
                TcpServerSocket {
   factory TcpServerSocketInterface([TcpServerSocket impl]) =>
       new TcpServerSocketStub.unbound(impl);
+
   factory TcpServerSocketInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [TcpServerSocket impl]) =>
       new TcpServerSocketStub.fromEndpoint(endpoint, impl);
+
+  factory TcpServerSocketInterface.fromMock(
+      TcpServerSocket mock) =>
+      new TcpServerSocketProxy.fromMock(mock);
 }
 
 abstract class TcpServerSocketInterfaceRequest
@@ -256,6 +261,8 @@ abstract class TcpServerSocketInterfaceRequest
 class _TcpServerSocketProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<TcpServerSocket> {
+  TcpServerSocket impl;
+
   _TcpServerSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -295,11 +302,6 @@ class _TcpServerSocketProxyControl
     }
   }
 
-  TcpServerSocket get impl => null;
-  set impl(TcpServerSocket _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -322,6 +324,13 @@ class TcpServerSocketProxy
   TcpServerSocketProxy.unbound()
       : super(new _TcpServerSocketProxyControl.unbound());
 
+  factory TcpServerSocketProxy.fromMock(TcpServerSocket mock) {
+    TcpServerSocketProxy newMockedProxy =
+        new TcpServerSocketProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static TcpServerSocketProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TcpServerSocketProxy"));
@@ -330,6 +339,9 @@ class TcpServerSocketProxy
 
 
   dynamic accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.accept(sendStream,receiveStream,clientSocket,_TcpServerSocketStubControl._tcpServerSocketAcceptResponseParamsFactory));
+    }
     var params = new _TcpServerSocketAcceptParams();
     params.sendStream = sendStream;
     params.receiveStream = receiveStream;
@@ -364,7 +376,7 @@ class _TcpServerSocketStubControl
   String get serviceName => TcpServerSocket.serviceName;
 
 
-  TcpServerSocketAcceptResponseParams _tcpServerSocketAcceptResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress remoteAddress) {
+  static TcpServerSocketAcceptResponseParams _tcpServerSocketAcceptResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress remoteAddress) {
     var result = new TcpServerSocketAcceptResponseParams();
     result.result = result;
     result.remoteAddress = remoteAddress;

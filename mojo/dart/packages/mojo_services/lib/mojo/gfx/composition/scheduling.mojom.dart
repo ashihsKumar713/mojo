@@ -297,10 +297,15 @@ abstract class FrameSchedulerInterface
                FrameScheduler {
   factory FrameSchedulerInterface([FrameScheduler impl]) =>
       new FrameSchedulerStub.unbound(impl);
+
   factory FrameSchedulerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [FrameScheduler impl]) =>
       new FrameSchedulerStub.fromEndpoint(endpoint, impl);
+
+  factory FrameSchedulerInterface.fromMock(
+      FrameScheduler mock) =>
+      new FrameSchedulerProxy.fromMock(mock);
 }
 
 abstract class FrameSchedulerInterfaceRequest
@@ -313,6 +318,8 @@ abstract class FrameSchedulerInterfaceRequest
 class _FrameSchedulerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<FrameScheduler> {
+  FrameScheduler impl;
+
   _FrameSchedulerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -352,11 +359,6 @@ class _FrameSchedulerProxyControl
     }
   }
 
-  FrameScheduler get impl => null;
-  set impl(FrameScheduler _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -379,6 +381,13 @@ class FrameSchedulerProxy
   FrameSchedulerProxy.unbound()
       : super(new _FrameSchedulerProxyControl.unbound());
 
+  factory FrameSchedulerProxy.fromMock(FrameScheduler mock) {
+    FrameSchedulerProxy newMockedProxy =
+        new FrameSchedulerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static FrameSchedulerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For FrameSchedulerProxy"));
@@ -387,6 +396,9 @@ class FrameSchedulerProxy
 
 
   dynamic scheduleFrame([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.scheduleFrame(_FrameSchedulerStubControl._frameSchedulerScheduleFrameResponseParamsFactory));
+    }
     var params = new _FrameSchedulerScheduleFrameParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -418,7 +430,7 @@ class _FrameSchedulerStubControl
   String get serviceName => FrameScheduler.serviceName;
 
 
-  FrameSchedulerScheduleFrameResponseParams _frameSchedulerScheduleFrameResponseParamsFactory(FrameInfo frameInfo) {
+  static FrameSchedulerScheduleFrameResponseParams _frameSchedulerScheduleFrameResponseParamsFactory(FrameInfo frameInfo) {
     var result = new FrameSchedulerScheduleFrameResponseParams();
     result.frameInfo = frameInfo;
     return result;

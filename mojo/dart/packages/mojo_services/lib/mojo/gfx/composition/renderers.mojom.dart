@@ -364,10 +364,15 @@ abstract class RendererInterface
                Renderer {
   factory RendererInterface([Renderer impl]) =>
       new RendererStub.unbound(impl);
+
   factory RendererInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [Renderer impl]) =>
       new RendererStub.fromEndpoint(endpoint, impl);
+
+  factory RendererInterface.fromMock(
+      Renderer mock) =>
+      new RendererProxy.fromMock(mock);
 }
 
 abstract class RendererInterfaceRequest
@@ -380,6 +385,8 @@ abstract class RendererInterfaceRequest
 class _RendererProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<Renderer> {
+  Renderer impl;
+
   _RendererProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -397,11 +404,6 @@ class _RendererProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  Renderer get impl => null;
-  set impl(Renderer _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -426,6 +428,13 @@ class RendererProxy
   RendererProxy.unbound()
       : super(new _RendererProxyControl.unbound());
 
+  factory RendererProxy.fromMock(Renderer mock) {
+    RendererProxy newMockedProxy =
+        new RendererProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static RendererProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For RendererProxy"));
@@ -434,6 +443,10 @@ class RendererProxy
 
 
   void setRootScene(scene_token_mojom.SceneToken sceneToken, int sceneVersion, geometry_mojom.Rect viewport) {
+    if (impl != null) {
+      impl.setRootScene(sceneToken, sceneVersion, viewport);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -446,6 +459,10 @@ class RendererProxy
         _rendererMethodSetRootSceneName);
   }
   void clearRootScene() {
+    if (impl != null) {
+      impl.clearRootScene();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -455,6 +472,10 @@ class RendererProxy
         _rendererMethodClearRootSceneName);
   }
   void getScheduler(scheduling_mojom.FrameSchedulerInterfaceRequest scheduler) {
+    if (impl != null) {
+      impl.getScheduler(scheduler);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -465,6 +486,10 @@ class RendererProxy
         _rendererMethodGetSchedulerName);
   }
   void getHitTester(hit_tests_mojom.HitTesterInterfaceRequest hitTester) {
+    if (impl != null) {
+      impl.getHitTester(hitTester);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

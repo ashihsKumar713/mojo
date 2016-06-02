@@ -963,10 +963,15 @@ abstract class WebSocketInterface
                WebSocket {
   factory WebSocketInterface([WebSocket impl]) =>
       new WebSocketStub.unbound(impl);
+
   factory WebSocketInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [WebSocket impl]) =>
       new WebSocketStub.fromEndpoint(endpoint, impl);
+
+  factory WebSocketInterface.fromMock(
+      WebSocket mock) =>
+      new WebSocketProxy.fromMock(mock);
 }
 
 abstract class WebSocketInterfaceRequest
@@ -979,6 +984,8 @@ abstract class WebSocketInterfaceRequest
 class _WebSocketProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<WebSocket> {
+  WebSocket impl;
+
   _WebSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -996,11 +1003,6 @@ class _WebSocketProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  WebSocket get impl => null;
-  set impl(WebSocket _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -1025,6 +1027,13 @@ class WebSocketProxy
   WebSocketProxy.unbound()
       : super(new _WebSocketProxyControl.unbound());
 
+  factory WebSocketProxy.fromMock(WebSocket mock) {
+    WebSocketProxy newMockedProxy =
+        new WebSocketProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static WebSocketProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For WebSocketProxy"));
@@ -1033,6 +1042,10 @@ class WebSocketProxy
 
 
   void connect(String url, List<String> protocols, String origin, core.MojoDataPipeConsumer sendStream, WebSocketClientInterface client) {
+    if (impl != null) {
+      impl.connect(url, protocols, origin, sendStream, client);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1047,6 +1060,10 @@ class WebSocketProxy
         _webSocketMethodConnectName);
   }
   void send(bool fin, WebSocketMessageType type, int numBytes) {
+    if (impl != null) {
+      impl.send(fin, type, numBytes);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1059,6 +1076,10 @@ class WebSocketProxy
         _webSocketMethodSendName);
   }
   void flowControl(int quota) {
+    if (impl != null) {
+      impl.flowControl(quota);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1069,6 +1090,10 @@ class WebSocketProxy
         _webSocketMethodFlowControlName);
   }
   void close_(int code, String reason) {
+    if (impl != null) {
+      impl.close_(code, reason);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1257,10 +1282,15 @@ abstract class WebSocketClientInterface
                WebSocketClient {
   factory WebSocketClientInterface([WebSocketClient impl]) =>
       new WebSocketClientStub.unbound(impl);
+
   factory WebSocketClientInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [WebSocketClient impl]) =>
       new WebSocketClientStub.fromEndpoint(endpoint, impl);
+
+  factory WebSocketClientInterface.fromMock(
+      WebSocketClient mock) =>
+      new WebSocketClientProxy.fromMock(mock);
 }
 
 abstract class WebSocketClientInterfaceRequest
@@ -1273,6 +1303,8 @@ abstract class WebSocketClientInterfaceRequest
 class _WebSocketClientProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<WebSocketClient> {
+  WebSocketClient impl;
+
   _WebSocketClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1290,11 +1322,6 @@ class _WebSocketClientProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  WebSocketClient get impl => null;
-  set impl(WebSocketClient _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -1319,6 +1346,13 @@ class WebSocketClientProxy
   WebSocketClientProxy.unbound()
       : super(new _WebSocketClientProxyControl.unbound());
 
+  factory WebSocketClientProxy.fromMock(WebSocketClient mock) {
+    WebSocketClientProxy newMockedProxy =
+        new WebSocketClientProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static WebSocketClientProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For WebSocketClientProxy"));
@@ -1327,6 +1361,10 @@ class WebSocketClientProxy
 
 
   void didConnect(String selectedSubprotocol, String extensions, core.MojoDataPipeConsumer receiveStream) {
+    if (impl != null) {
+      impl.didConnect(selectedSubprotocol, extensions, receiveStream);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1339,6 +1377,10 @@ class WebSocketClientProxy
         _webSocketClientMethodDidConnectName);
   }
   void didReceiveData(bool fin, WebSocketMessageType type, int numBytes) {
+    if (impl != null) {
+      impl.didReceiveData(fin, type, numBytes);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1351,6 +1393,10 @@ class WebSocketClientProxy
         _webSocketClientMethodDidReceiveDataName);
   }
   void didReceiveFlowControl(int quota) {
+    if (impl != null) {
+      impl.didReceiveFlowControl(quota);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1361,6 +1407,10 @@ class WebSocketClientProxy
         _webSocketClientMethodDidReceiveFlowControlName);
   }
   void didFail(String message) {
+    if (impl != null) {
+      impl.didFail(message);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1371,6 +1421,10 @@ class WebSocketClientProxy
         _webSocketClientMethodDidFailName);
   }
   void didClose(bool wasClean, int code, String reason) {
+    if (impl != null) {
+      impl.didClose(wasClean, code, reason);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

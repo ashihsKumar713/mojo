@@ -747,10 +747,15 @@ abstract class TerminalInterface
                Terminal {
   factory TerminalInterface([Terminal impl]) =>
       new TerminalStub.unbound(impl);
+
   factory TerminalInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [Terminal impl]) =>
       new TerminalStub.fromEndpoint(endpoint, impl);
+
+  factory TerminalInterface.fromMock(
+      Terminal mock) =>
+      new TerminalProxy.fromMock(mock);
 }
 
 abstract class TerminalInterfaceRequest
@@ -763,6 +768,8 @@ abstract class TerminalInterfaceRequest
 class _TerminalProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<Terminal> {
+  Terminal impl;
+
   _TerminalProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -862,11 +869,6 @@ class _TerminalProxyControl
     }
   }
 
-  Terminal get impl => null;
-  set impl(Terminal _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -889,6 +891,13 @@ class TerminalProxy
   TerminalProxy.unbound()
       : super(new _TerminalProxyControl.unbound());
 
+  factory TerminalProxy.fromMock(Terminal mock) {
+    TerminalProxy newMockedProxy =
+        new TerminalProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static TerminalProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TerminalProxy"));
@@ -897,6 +906,9 @@ class TerminalProxy
 
 
   dynamic connect(file_mojom.FileInterfaceRequest terminalFile,bool force,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.connect(terminalFile,force,_TerminalStubControl._terminalConnectResponseParamsFactory));
+    }
     var params = new _TerminalConnectParams();
     params.terminalFile = terminalFile;
     params.force = force;
@@ -907,6 +919,9 @@ class TerminalProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic connectToClient(terminal_client_mojom.TerminalClientInterface terminalClient,bool force,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.connectToClient(terminalClient,force,_TerminalStubControl._terminalConnectToClientResponseParamsFactory));
+    }
     var params = new _TerminalConnectToClientParams();
     params.terminalClient = terminalClient;
     params.force = force;
@@ -917,6 +932,9 @@ class TerminalProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic getSize([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getSize(_TerminalStubControl._terminalGetSizeResponseParamsFactory));
+    }
     var params = new _TerminalGetSizeParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -925,6 +943,9 @@ class TerminalProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic setSize(int rows,int columns,bool reset,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.setSize(rows,columns,reset,_TerminalStubControl._terminalSetSizeResponseParamsFactory));
+    }
     var params = new _TerminalSetSizeParams();
     params.rows = rows;
     params.columns = columns;
@@ -959,24 +980,24 @@ class _TerminalStubControl
   String get serviceName => Terminal.serviceName;
 
 
-  TerminalConnectResponseParams _terminalConnectResponseParamsFactory(types_mojom.Error error) {
+  static TerminalConnectResponseParams _terminalConnectResponseParamsFactory(types_mojom.Error error) {
     var result = new TerminalConnectResponseParams();
     result.error = error;
     return result;
   }
-  TerminalConnectToClientResponseParams _terminalConnectToClientResponseParamsFactory(types_mojom.Error error) {
+  static TerminalConnectToClientResponseParams _terminalConnectToClientResponseParamsFactory(types_mojom.Error error) {
     var result = new TerminalConnectToClientResponseParams();
     result.error = error;
     return result;
   }
-  TerminalGetSizeResponseParams _terminalGetSizeResponseParamsFactory(types_mojom.Error error, int rows, int columns) {
+  static TerminalGetSizeResponseParams _terminalGetSizeResponseParamsFactory(types_mojom.Error error, int rows, int columns) {
     var result = new TerminalGetSizeResponseParams();
     result.error = error;
     result.rows = rows;
     result.columns = columns;
     return result;
   }
-  TerminalSetSizeResponseParams _terminalSetSizeResponseParamsFactory(types_mojom.Error error, int rows, int columns) {
+  static TerminalSetSizeResponseParams _terminalSetSizeResponseParamsFactory(types_mojom.Error error, int rows, int columns) {
     var result = new TerminalSetSizeResponseParams();
     result.error = error;
     result.rows = rows;

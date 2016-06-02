@@ -660,10 +660,15 @@ abstract class HttpConnectionInterface
                HttpConnection {
   factory HttpConnectionInterface([HttpConnection impl]) =>
       new HttpConnectionStub.unbound(impl);
+
   factory HttpConnectionInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [HttpConnection impl]) =>
       new HttpConnectionStub.fromEndpoint(endpoint, impl);
+
+  factory HttpConnectionInterface.fromMock(
+      HttpConnection mock) =>
+      new HttpConnectionProxy.fromMock(mock);
 }
 
 abstract class HttpConnectionInterfaceRequest
@@ -676,6 +681,8 @@ abstract class HttpConnectionInterfaceRequest
 class _HttpConnectionProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<HttpConnection> {
+  HttpConnection impl;
+
   _HttpConnectionProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -735,11 +742,6 @@ class _HttpConnectionProxyControl
     }
   }
 
-  HttpConnection get impl => null;
-  set impl(HttpConnection _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -762,6 +764,13 @@ class HttpConnectionProxy
   HttpConnectionProxy.unbound()
       : super(new _HttpConnectionProxyControl.unbound());
 
+  factory HttpConnectionProxy.fromMock(HttpConnection mock) {
+    HttpConnectionProxy newMockedProxy =
+        new HttpConnectionProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static HttpConnectionProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HttpConnectionProxy"));
@@ -770,6 +779,9 @@ class HttpConnectionProxy
 
 
   dynamic setSendBufferSize(int size,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.setSendBufferSize(size,_HttpConnectionStubControl._httpConnectionSetSendBufferSizeResponseParamsFactory));
+    }
     var params = new _HttpConnectionSetSendBufferSizeParams();
     params.size = size;
     return ctrl.sendMessageWithRequestId(
@@ -779,6 +791,9 @@ class HttpConnectionProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic setReceiveBufferSize(int size,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.setReceiveBufferSize(size,_HttpConnectionStubControl._httpConnectionSetReceiveBufferSizeResponseParamsFactory));
+    }
     var params = new _HttpConnectionSetReceiveBufferSizeParams();
     params.size = size;
     return ctrl.sendMessageWithRequestId(
@@ -811,12 +826,12 @@ class _HttpConnectionStubControl
   String get serviceName => HttpConnection.serviceName;
 
 
-  HttpConnectionSetSendBufferSizeResponseParams _httpConnectionSetSendBufferSizeResponseParamsFactory(network_error_mojom.NetworkError result) {
+  static HttpConnectionSetSendBufferSizeResponseParams _httpConnectionSetSendBufferSizeResponseParamsFactory(network_error_mojom.NetworkError result) {
     var result = new HttpConnectionSetSendBufferSizeResponseParams();
     result.result = result;
     return result;
   }
-  HttpConnectionSetReceiveBufferSizeResponseParams _httpConnectionSetReceiveBufferSizeResponseParamsFactory(network_error_mojom.NetworkError result) {
+  static HttpConnectionSetReceiveBufferSizeResponseParams _httpConnectionSetReceiveBufferSizeResponseParamsFactory(network_error_mojom.NetworkError result) {
     var result = new HttpConnectionSetReceiveBufferSizeResponseParams();
     result.result = result;
     return result;
@@ -987,10 +1002,15 @@ abstract class HttpConnectionDelegateInterface
                HttpConnectionDelegate {
   factory HttpConnectionDelegateInterface([HttpConnectionDelegate impl]) =>
       new HttpConnectionDelegateStub.unbound(impl);
+
   factory HttpConnectionDelegateInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [HttpConnectionDelegate impl]) =>
       new HttpConnectionDelegateStub.fromEndpoint(endpoint, impl);
+
+  factory HttpConnectionDelegateInterface.fromMock(
+      HttpConnectionDelegate mock) =>
+      new HttpConnectionDelegateProxy.fromMock(mock);
 }
 
 abstract class HttpConnectionDelegateInterfaceRequest
@@ -1003,6 +1023,8 @@ abstract class HttpConnectionDelegateInterfaceRequest
 class _HttpConnectionDelegateProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<HttpConnectionDelegate> {
+  HttpConnectionDelegate impl;
+
   _HttpConnectionDelegateProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1062,11 +1084,6 @@ class _HttpConnectionDelegateProxyControl
     }
   }
 
-  HttpConnectionDelegate get impl => null;
-  set impl(HttpConnectionDelegate _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -1089,6 +1106,13 @@ class HttpConnectionDelegateProxy
   HttpConnectionDelegateProxy.unbound()
       : super(new _HttpConnectionDelegateProxyControl.unbound());
 
+  factory HttpConnectionDelegateProxy.fromMock(HttpConnectionDelegate mock) {
+    HttpConnectionDelegateProxy newMockedProxy =
+        new HttpConnectionDelegateProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static HttpConnectionDelegateProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HttpConnectionDelegateProxy"));
@@ -1097,6 +1121,9 @@ class HttpConnectionDelegateProxy
 
 
   dynamic onReceivedRequest(http_message_mojom.HttpRequest request,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.onReceivedRequest(request,_HttpConnectionDelegateStubControl._httpConnectionDelegateOnReceivedRequestResponseParamsFactory));
+    }
     var params = new _HttpConnectionDelegateOnReceivedRequestParams();
     params.request = request;
     return ctrl.sendMessageWithRequestId(
@@ -1106,6 +1133,9 @@ class HttpConnectionDelegateProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic onReceivedWebSocketRequest(http_message_mojom.HttpRequest request,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.onReceivedWebSocketRequest(request,_HttpConnectionDelegateStubControl._httpConnectionDelegateOnReceivedWebSocketRequestResponseParamsFactory));
+    }
     var params = new _HttpConnectionDelegateOnReceivedWebSocketRequestParams();
     params.request = request;
     return ctrl.sendMessageWithRequestId(
@@ -1138,12 +1168,12 @@ class _HttpConnectionDelegateStubControl
   String get serviceName => HttpConnectionDelegate.serviceName;
 
 
-  HttpConnectionDelegateOnReceivedRequestResponseParams _httpConnectionDelegateOnReceivedRequestResponseParamsFactory(http_message_mojom.HttpResponse response) {
+  static HttpConnectionDelegateOnReceivedRequestResponseParams _httpConnectionDelegateOnReceivedRequestResponseParamsFactory(http_message_mojom.HttpResponse response) {
     var result = new HttpConnectionDelegateOnReceivedRequestResponseParams();
     result.response = response;
     return result;
   }
-  HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams _httpConnectionDelegateOnReceivedWebSocketRequestResponseParamsFactory(web_socket_mojom.WebSocketInterfaceRequest webSocket, core.MojoDataPipeConsumer sendStream, web_socket_mojom.WebSocketClientInterface client) {
+  static HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams _httpConnectionDelegateOnReceivedWebSocketRequestResponseParamsFactory(web_socket_mojom.WebSocketInterfaceRequest webSocket, core.MojoDataPipeConsumer sendStream, web_socket_mojom.WebSocketClientInterface client) {
     var result = new HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams();
     result.webSocket = webSocket;
     result.sendStream = sendStream;

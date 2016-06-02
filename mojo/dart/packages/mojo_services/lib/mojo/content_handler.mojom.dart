@@ -139,10 +139,15 @@ abstract class ContentHandlerInterface
                ContentHandler {
   factory ContentHandlerInterface([ContentHandler impl]) =>
       new ContentHandlerStub.unbound(impl);
+
   factory ContentHandlerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ContentHandler impl]) =>
       new ContentHandlerStub.fromEndpoint(endpoint, impl);
+
+  factory ContentHandlerInterface.fromMock(
+      ContentHandler mock) =>
+      new ContentHandlerProxy.fromMock(mock);
 }
 
 abstract class ContentHandlerInterfaceRequest
@@ -155,6 +160,8 @@ abstract class ContentHandlerInterfaceRequest
 class _ContentHandlerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ContentHandler> {
+  ContentHandler impl;
+
   _ContentHandlerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -172,11 +179,6 @@ class _ContentHandlerProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  ContentHandler get impl => null;
-  set impl(ContentHandler _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -201,6 +203,13 @@ class ContentHandlerProxy
   ContentHandlerProxy.unbound()
       : super(new _ContentHandlerProxyControl.unbound());
 
+  factory ContentHandlerProxy.fromMock(ContentHandler mock) {
+    ContentHandlerProxy newMockedProxy =
+        new ContentHandlerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ContentHandlerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ContentHandlerProxy"));
@@ -209,6 +218,10 @@ class ContentHandlerProxy
 
 
   void startApplication(application_mojom.ApplicationInterfaceRequest application, url_response_mojom.UrlResponse response) {
+    if (impl != null) {
+      impl.startApplication(application, response);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

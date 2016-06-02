@@ -1311,10 +1311,15 @@ abstract class UdpSocketInterface
                UdpSocket {
   factory UdpSocketInterface([UdpSocket impl]) =>
       new UdpSocketStub.unbound(impl);
+
   factory UdpSocketInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [UdpSocket impl]) =>
       new UdpSocketStub.fromEndpoint(endpoint, impl);
+
+  factory UdpSocketInterface.fromMock(
+      UdpSocket mock) =>
+      new UdpSocketProxy.fromMock(mock);
 }
 
 abstract class UdpSocketInterfaceRequest
@@ -1327,6 +1332,8 @@ abstract class UdpSocketInterfaceRequest
 class _UdpSocketProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<UdpSocket> {
+  UdpSocket impl;
+
   _UdpSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1486,11 +1493,6 @@ class _UdpSocketProxyControl
     }
   }
 
-  UdpSocket get impl => null;
-  set impl(UdpSocket _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -1513,6 +1515,13 @@ class UdpSocketProxy
   UdpSocketProxy.unbound()
       : super(new _UdpSocketProxyControl.unbound());
 
+  factory UdpSocketProxy.fromMock(UdpSocket mock) {
+    UdpSocketProxy newMockedProxy =
+        new UdpSocketProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static UdpSocketProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UdpSocketProxy"));
@@ -1521,6 +1530,9 @@ class UdpSocketProxy
 
 
   dynamic allowAddressReuse([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.allowAddressReuse(_UdpSocketStubControl._udpSocketAllowAddressReuseResponseParamsFactory));
+    }
     var params = new _UdpSocketAllowAddressReuseParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -1529,6 +1541,9 @@ class UdpSocketProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic bind(net_address_mojom.NetAddress addr,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.bind(addr,_UdpSocketStubControl._udpSocketBindResponseParamsFactory));
+    }
     var params = new _UdpSocketBindParams();
     params.addr = addr;
     return ctrl.sendMessageWithRequestId(
@@ -1538,6 +1553,9 @@ class UdpSocketProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic connect(net_address_mojom.NetAddress remoteAddr,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.connect(remoteAddr,_UdpSocketStubControl._udpSocketConnectResponseParamsFactory));
+    }
     var params = new _UdpSocketConnectParams();
     params.remoteAddr = remoteAddr;
     return ctrl.sendMessageWithRequestId(
@@ -1547,6 +1565,9 @@ class UdpSocketProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic setSendBufferSize(int size,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.setSendBufferSize(size,_UdpSocketStubControl._udpSocketSetSendBufferSizeResponseParamsFactory));
+    }
     var params = new _UdpSocketSetSendBufferSizeParams();
     params.size = size;
     return ctrl.sendMessageWithRequestId(
@@ -1556,6 +1577,9 @@ class UdpSocketProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic setReceiveBufferSize(int size,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.setReceiveBufferSize(size,_UdpSocketStubControl._udpSocketSetReceiveBufferSizeResponseParamsFactory));
+    }
     var params = new _UdpSocketSetReceiveBufferSizeParams();
     params.size = size;
     return ctrl.sendMessageWithRequestId(
@@ -1565,6 +1589,9 @@ class UdpSocketProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic negotiateMaxPendingSendRequests(int requestedSize,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.negotiateMaxPendingSendRequests(requestedSize,_UdpSocketStubControl._udpSocketNegotiateMaxPendingSendRequestsResponseParamsFactory));
+    }
     var params = new _UdpSocketNegotiateMaxPendingSendRequestsParams();
     params.requestedSize = requestedSize;
     return ctrl.sendMessageWithRequestId(
@@ -1574,6 +1601,10 @@ class UdpSocketProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void receiveMore(int datagramNumber) {
+    if (impl != null) {
+      impl.receiveMore(datagramNumber);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1584,6 +1615,9 @@ class UdpSocketProxy
         _udpSocketMethodReceiveMoreName);
   }
   dynamic sendTo(net_address_mojom.NetAddress destAddr,List<int> data,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.sendTo(destAddr,data,_UdpSocketStubControl._udpSocketSendToResponseParamsFactory));
+    }
     var params = new _UdpSocketSendToParams();
     params.destAddr = destAddr;
     params.data = data;
@@ -1617,41 +1651,41 @@ class _UdpSocketStubControl
   String get serviceName => UdpSocket.serviceName;
 
 
-  UdpSocketAllowAddressReuseResponseParams _udpSocketAllowAddressReuseResponseParamsFactory(network_error_mojom.NetworkError result) {
+  static UdpSocketAllowAddressReuseResponseParams _udpSocketAllowAddressReuseResponseParamsFactory(network_error_mojom.NetworkError result) {
     var result = new UdpSocketAllowAddressReuseResponseParams();
     result.result = result;
     return result;
   }
-  UdpSocketBindResponseParams _udpSocketBindResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundAddr, UdpSocketReceiverInterfaceRequest receiver) {
+  static UdpSocketBindResponseParams _udpSocketBindResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundAddr, UdpSocketReceiverInterfaceRequest receiver) {
     var result = new UdpSocketBindResponseParams();
     result.result = result;
     result.boundAddr = boundAddr;
     result.receiver = receiver;
     return result;
   }
-  UdpSocketConnectResponseParams _udpSocketConnectResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddr, UdpSocketReceiverInterfaceRequest receiver) {
+  static UdpSocketConnectResponseParams _udpSocketConnectResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddr, UdpSocketReceiverInterfaceRequest receiver) {
     var result = new UdpSocketConnectResponseParams();
     result.result = result;
     result.localAddr = localAddr;
     result.receiver = receiver;
     return result;
   }
-  UdpSocketSetSendBufferSizeResponseParams _udpSocketSetSendBufferSizeResponseParamsFactory(network_error_mojom.NetworkError result) {
+  static UdpSocketSetSendBufferSizeResponseParams _udpSocketSetSendBufferSizeResponseParamsFactory(network_error_mojom.NetworkError result) {
     var result = new UdpSocketSetSendBufferSizeResponseParams();
     result.result = result;
     return result;
   }
-  UdpSocketSetReceiveBufferSizeResponseParams _udpSocketSetReceiveBufferSizeResponseParamsFactory(network_error_mojom.NetworkError result) {
+  static UdpSocketSetReceiveBufferSizeResponseParams _udpSocketSetReceiveBufferSizeResponseParamsFactory(network_error_mojom.NetworkError result) {
     var result = new UdpSocketSetReceiveBufferSizeResponseParams();
     result.result = result;
     return result;
   }
-  UdpSocketNegotiateMaxPendingSendRequestsResponseParams _udpSocketNegotiateMaxPendingSendRequestsResponseParamsFactory(int actualSize) {
+  static UdpSocketNegotiateMaxPendingSendRequestsResponseParams _udpSocketNegotiateMaxPendingSendRequestsResponseParamsFactory(int actualSize) {
     var result = new UdpSocketNegotiateMaxPendingSendRequestsResponseParams();
     result.actualSize = actualSize;
     return result;
   }
-  UdpSocketSendToResponseParams _udpSocketSendToResponseParamsFactory(network_error_mojom.NetworkError result) {
+  static UdpSocketSendToResponseParams _udpSocketSendToResponseParamsFactory(network_error_mojom.NetworkError result) {
     var result = new UdpSocketSendToResponseParams();
     result.result = result;
     return result;
@@ -1951,10 +1985,15 @@ abstract class UdpSocketReceiverInterface
                UdpSocketReceiver {
   factory UdpSocketReceiverInterface([UdpSocketReceiver impl]) =>
       new UdpSocketReceiverStub.unbound(impl);
+
   factory UdpSocketReceiverInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [UdpSocketReceiver impl]) =>
       new UdpSocketReceiverStub.fromEndpoint(endpoint, impl);
+
+  factory UdpSocketReceiverInterface.fromMock(
+      UdpSocketReceiver mock) =>
+      new UdpSocketReceiverProxy.fromMock(mock);
 }
 
 abstract class UdpSocketReceiverInterfaceRequest
@@ -1967,6 +2006,8 @@ abstract class UdpSocketReceiverInterfaceRequest
 class _UdpSocketReceiverProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<UdpSocketReceiver> {
+  UdpSocketReceiver impl;
+
   _UdpSocketReceiverProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1984,11 +2025,6 @@ class _UdpSocketReceiverProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  UdpSocketReceiver get impl => null;
-  set impl(UdpSocketReceiver _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -2013,6 +2049,13 @@ class UdpSocketReceiverProxy
   UdpSocketReceiverProxy.unbound()
       : super(new _UdpSocketReceiverProxyControl.unbound());
 
+  factory UdpSocketReceiverProxy.fromMock(UdpSocketReceiver mock) {
+    UdpSocketReceiverProxy newMockedProxy =
+        new UdpSocketReceiverProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static UdpSocketReceiverProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UdpSocketReceiverProxy"));
@@ -2021,6 +2064,10 @@ class UdpSocketReceiverProxy
 
 
   void onReceived(network_error_mojom.NetworkError result, net_address_mojom.NetAddress srcAddr, List<int> data) {
+    if (impl != null) {
+      impl.onReceived(result, srcAddr, data);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

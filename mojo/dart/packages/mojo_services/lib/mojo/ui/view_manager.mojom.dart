@@ -425,10 +425,15 @@ abstract class ViewManagerInterface
                ViewManager {
   factory ViewManagerInterface([ViewManager impl]) =>
       new ViewManagerStub.unbound(impl);
+
   factory ViewManagerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ViewManager impl]) =>
       new ViewManagerStub.fromEndpoint(endpoint, impl);
+
+  factory ViewManagerInterface.fromMock(
+      ViewManager mock) =>
+      new ViewManagerProxy.fromMock(mock);
 }
 
 abstract class ViewManagerInterfaceRequest
@@ -441,6 +446,8 @@ abstract class ViewManagerInterfaceRequest
 class _ViewManagerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ViewManager> {
+  ViewManager impl;
+
   _ViewManagerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -458,11 +465,6 @@ class _ViewManagerProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  ViewManager get impl => null;
-  set impl(ViewManager _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -487,6 +489,13 @@ class ViewManagerProxy
   ViewManagerProxy.unbound()
       : super(new _ViewManagerProxyControl.unbound());
 
+  factory ViewManagerProxy.fromMock(ViewManager mock) {
+    ViewManagerProxy newMockedProxy =
+        new ViewManagerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ViewManagerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewManagerProxy"));
@@ -495,6 +504,10 @@ class ViewManagerProxy
 
 
   void createView(views_mojom.ViewInterfaceRequest view, view_token_mojom.ViewOwnerInterfaceRequest viewOwner, views_mojom.ViewListenerInterface viewListener, String label) {
+    if (impl != null) {
+      impl.createView(view, viewOwner, viewListener, label);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -508,6 +521,10 @@ class ViewManagerProxy
         _viewManagerMethodCreateViewName);
   }
   void createViewTree(view_trees_mojom.ViewTreeInterfaceRequest viewTree, view_trees_mojom.ViewTreeListenerInterface viewTreeListener, String label) {
+    if (impl != null) {
+      impl.createViewTree(viewTree, viewTreeListener, label);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -520,6 +537,10 @@ class ViewManagerProxy
         _viewManagerMethodCreateViewTreeName);
   }
   void registerViewAssociate(view_associates_mojom.ViewAssociateInterface viewAssociate, view_associates_mojom.ViewAssociateOwnerInterfaceRequest viewAssociateOwner, String label) {
+    if (impl != null) {
+      impl.registerViewAssociate(viewAssociate, viewAssociateOwner, label);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -532,6 +553,10 @@ class ViewManagerProxy
         _viewManagerMethodRegisterViewAssociateName);
   }
   void finishedRegisteringViewAssociates() {
+    if (impl != null) {
+      impl.finishedRegisteringViewAssociates();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

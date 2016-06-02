@@ -736,10 +736,15 @@ abstract class ClipboardInterface
                Clipboard {
   factory ClipboardInterface([Clipboard impl]) =>
       new ClipboardStub.unbound(impl);
+
   factory ClipboardInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [Clipboard impl]) =>
       new ClipboardStub.fromEndpoint(endpoint, impl);
+
+  factory ClipboardInterface.fromMock(
+      Clipboard mock) =>
+      new ClipboardProxy.fromMock(mock);
 }
 
 abstract class ClipboardInterfaceRequest
@@ -752,6 +757,8 @@ abstract class ClipboardInterfaceRequest
 class _ClipboardProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<Clipboard> {
+  Clipboard impl;
+
   _ClipboardProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -831,11 +838,6 @@ class _ClipboardProxyControl
     }
   }
 
-  Clipboard get impl => null;
-  set impl(Clipboard _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -858,6 +860,13 @@ class ClipboardProxy
   ClipboardProxy.unbound()
       : super(new _ClipboardProxyControl.unbound());
 
+  factory ClipboardProxy.fromMock(Clipboard mock) {
+    ClipboardProxy newMockedProxy =
+        new ClipboardProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ClipboardProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ClipboardProxy"));
@@ -866,6 +875,9 @@ class ClipboardProxy
 
 
   dynamic getSequenceNumber(ClipboardType clipboardType,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getSequenceNumber(clipboardType,_ClipboardStubControl._clipboardGetSequenceNumberResponseParamsFactory));
+    }
     var params = new _ClipboardGetSequenceNumberParams();
     params.clipboardType = clipboardType;
     return ctrl.sendMessageWithRequestId(
@@ -875,6 +887,9 @@ class ClipboardProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic getAvailableMimeTypes(ClipboardType clipboardTypes,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getAvailableMimeTypes(clipboardTypes,_ClipboardStubControl._clipboardGetAvailableMimeTypesResponseParamsFactory));
+    }
     var params = new _ClipboardGetAvailableMimeTypesParams();
     params.clipboardTypes = clipboardTypes;
     return ctrl.sendMessageWithRequestId(
@@ -884,6 +899,9 @@ class ClipboardProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic readMimeType(ClipboardType clipboardType,String mimeType,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.readMimeType(clipboardType,mimeType,_ClipboardStubControl._clipboardReadMimeTypeResponseParamsFactory));
+    }
     var params = new _ClipboardReadMimeTypeParams();
     params.clipboardType = clipboardType;
     params.mimeType = mimeType;
@@ -894,6 +912,10 @@ class ClipboardProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void writeClipboardData(ClipboardType clipboardType, Map<String, List<int>> data) {
+    if (impl != null) {
+      impl.writeClipboardData(clipboardType, data);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -928,17 +950,17 @@ class _ClipboardStubControl
   String get serviceName => Clipboard.serviceName;
 
 
-  ClipboardGetSequenceNumberResponseParams _clipboardGetSequenceNumberResponseParamsFactory(int sequence) {
+  static ClipboardGetSequenceNumberResponseParams _clipboardGetSequenceNumberResponseParamsFactory(int sequence) {
     var result = new ClipboardGetSequenceNumberResponseParams();
     result.sequence = sequence;
     return result;
   }
-  ClipboardGetAvailableMimeTypesResponseParams _clipboardGetAvailableMimeTypesResponseParamsFactory(List<String> types) {
+  static ClipboardGetAvailableMimeTypesResponseParams _clipboardGetAvailableMimeTypesResponseParamsFactory(List<String> types) {
     var result = new ClipboardGetAvailableMimeTypesResponseParams();
     result.types = types;
     return result;
   }
-  ClipboardReadMimeTypeResponseParams _clipboardReadMimeTypeResponseParamsFactory(List<int> data) {
+  static ClipboardReadMimeTypeResponseParams _clipboardReadMimeTypeResponseParamsFactory(List<int> data) {
     var result = new ClipboardReadMimeTypeResponseParams();
     result.data = data;
     return result;

@@ -279,10 +279,15 @@ abstract class AssetBundleInterface
                AssetBundle {
   factory AssetBundleInterface([AssetBundle impl]) =>
       new AssetBundleStub.unbound(impl);
+
   factory AssetBundleInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [AssetBundle impl]) =>
       new AssetBundleStub.fromEndpoint(endpoint, impl);
+
+  factory AssetBundleInterface.fromMock(
+      AssetBundle mock) =>
+      new AssetBundleProxy.fromMock(mock);
 }
 
 abstract class AssetBundleInterfaceRequest
@@ -295,6 +300,8 @@ abstract class AssetBundleInterfaceRequest
 class _AssetBundleProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<AssetBundle> {
+  AssetBundle impl;
+
   _AssetBundleProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -334,11 +341,6 @@ class _AssetBundleProxyControl
     }
   }
 
-  AssetBundle get impl => null;
-  set impl(AssetBundle _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -361,6 +363,13 @@ class AssetBundleProxy
   AssetBundleProxy.unbound()
       : super(new _AssetBundleProxyControl.unbound());
 
+  factory AssetBundleProxy.fromMock(AssetBundle mock) {
+    AssetBundleProxy newMockedProxy =
+        new AssetBundleProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static AssetBundleProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For AssetBundleProxy"));
@@ -369,6 +378,9 @@ class AssetBundleProxy
 
 
   dynamic getAsStream(String assetName,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getAsStream(assetName,_AssetBundleStubControl._assetBundleGetAsStreamResponseParamsFactory));
+    }
     var params = new _AssetBundleGetAsStreamParams();
     params.assetName = assetName;
     return ctrl.sendMessageWithRequestId(
@@ -401,7 +413,7 @@ class _AssetBundleStubControl
   String get serviceName => AssetBundle.serviceName;
 
 
-  AssetBundleGetAsStreamResponseParams _assetBundleGetAsStreamResponseParamsFactory(core.MojoDataPipeConsumer assetData) {
+  static AssetBundleGetAsStreamResponseParams _assetBundleGetAsStreamResponseParamsFactory(core.MojoDataPipeConsumer assetData) {
     var result = new AssetBundleGetAsStreamResponseParams();
     result.assetData = assetData;
     return result;
@@ -545,10 +557,15 @@ abstract class AssetUnpackerInterface
                AssetUnpacker {
   factory AssetUnpackerInterface([AssetUnpacker impl]) =>
       new AssetUnpackerStub.unbound(impl);
+
   factory AssetUnpackerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [AssetUnpacker impl]) =>
       new AssetUnpackerStub.fromEndpoint(endpoint, impl);
+
+  factory AssetUnpackerInterface.fromMock(
+      AssetUnpacker mock) =>
+      new AssetUnpackerProxy.fromMock(mock);
 }
 
 abstract class AssetUnpackerInterfaceRequest
@@ -561,6 +578,8 @@ abstract class AssetUnpackerInterfaceRequest
 class _AssetUnpackerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<AssetUnpacker> {
+  AssetUnpacker impl;
+
   _AssetUnpackerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -578,11 +597,6 @@ class _AssetUnpackerProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  AssetUnpacker get impl => null;
-  set impl(AssetUnpacker _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -607,6 +621,13 @@ class AssetUnpackerProxy
   AssetUnpackerProxy.unbound()
       : super(new _AssetUnpackerProxyControl.unbound());
 
+  factory AssetUnpackerProxy.fromMock(AssetUnpacker mock) {
+    AssetUnpackerProxy newMockedProxy =
+        new AssetUnpackerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static AssetUnpackerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For AssetUnpackerProxy"));
@@ -615,6 +636,10 @@ class AssetUnpackerProxy
 
 
   void unpackZipStream(core.MojoDataPipeConsumer zippedAssets, AssetBundleInterfaceRequest assetBundle) {
+    if (impl != null) {
+      impl.unpackZipStream(zippedAssets, assetBundle);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

@@ -574,10 +574,15 @@ abstract class AuthenticationAdminServiceInterface
                AuthenticationAdminService {
   factory AuthenticationAdminServiceInterface([AuthenticationAdminService impl]) =>
       new AuthenticationAdminServiceStub.unbound(impl);
+
   factory AuthenticationAdminServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [AuthenticationAdminService impl]) =>
       new AuthenticationAdminServiceStub.fromEndpoint(endpoint, impl);
+
+  factory AuthenticationAdminServiceInterface.fromMock(
+      AuthenticationAdminService mock) =>
+      new AuthenticationAdminServiceProxy.fromMock(mock);
 }
 
 abstract class AuthenticationAdminServiceInterfaceRequest
@@ -590,6 +595,8 @@ abstract class AuthenticationAdminServiceInterfaceRequest
 class _AuthenticationAdminServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<AuthenticationAdminService> {
+  AuthenticationAdminService impl;
+
   _AuthenticationAdminServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -669,11 +676,6 @@ class _AuthenticationAdminServiceProxyControl
     }
   }
 
-  AuthenticationAdminService get impl => null;
-  set impl(AuthenticationAdminService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -696,6 +698,13 @@ class AuthenticationAdminServiceProxy
   AuthenticationAdminServiceProxy.unbound()
       : super(new _AuthenticationAdminServiceProxyControl.unbound());
 
+  factory AuthenticationAdminServiceProxy.fromMock(AuthenticationAdminService mock) {
+    AuthenticationAdminServiceProxy newMockedProxy =
+        new AuthenticationAdminServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static AuthenticationAdminServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For AuthenticationAdminServiceProxy"));
@@ -704,6 +713,9 @@ class AuthenticationAdminServiceProxy
 
 
   dynamic getOAuth2DeviceCode(List<String> scopes,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getOAuth2DeviceCode(scopes,_AuthenticationAdminServiceStubControl._authenticationAdminServiceGetOAuth2DeviceCodeResponseParamsFactory));
+    }
     var params = new _AuthenticationAdminServiceGetOAuth2DeviceCodeParams();
     params.scopes = scopes;
     return ctrl.sendMessageWithRequestId(
@@ -713,6 +725,9 @@ class AuthenticationAdminServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic addAccount(String deviceCode,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.addAccount(deviceCode,_AuthenticationAdminServiceStubControl._authenticationAdminServiceAddAccountResponseParamsFactory));
+    }
     var params = new _AuthenticationAdminServiceAddAccountParams();
     params.deviceCode = deviceCode;
     return ctrl.sendMessageWithRequestId(
@@ -722,6 +737,9 @@ class AuthenticationAdminServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic getAllUsers([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getAllUsers(_AuthenticationAdminServiceStubControl._authenticationAdminServiceGetAllUsersResponseParamsFactory));
+    }
     var params = new _AuthenticationAdminServiceGetAllUsersParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -753,7 +771,7 @@ class _AuthenticationAdminServiceStubControl
   String get serviceName => AuthenticationAdminService.serviceName;
 
 
-  AuthenticationAdminServiceGetOAuth2DeviceCodeResponseParams _authenticationAdminServiceGetOAuth2DeviceCodeResponseParamsFactory(String verificationUrl, String deviceCode, String userCode, String error) {
+  static AuthenticationAdminServiceGetOAuth2DeviceCodeResponseParams _authenticationAdminServiceGetOAuth2DeviceCodeResponseParamsFactory(String verificationUrl, String deviceCode, String userCode, String error) {
     var result = new AuthenticationAdminServiceGetOAuth2DeviceCodeResponseParams();
     result.verificationUrl = verificationUrl;
     result.deviceCode = deviceCode;
@@ -761,13 +779,13 @@ class _AuthenticationAdminServiceStubControl
     result.error = error;
     return result;
   }
-  AuthenticationAdminServiceAddAccountResponseParams _authenticationAdminServiceAddAccountResponseParamsFactory(String username, String error) {
+  static AuthenticationAdminServiceAddAccountResponseParams _authenticationAdminServiceAddAccountResponseParamsFactory(String username, String error) {
     var result = new AuthenticationAdminServiceAddAccountResponseParams();
     result.username = username;
     result.error = error;
     return result;
   }
-  AuthenticationAdminServiceGetAllUsersResponseParams _authenticationAdminServiceGetAllUsersResponseParamsFactory(List<String> usernames, String error) {
+  static AuthenticationAdminServiceGetAllUsersResponseParams _authenticationAdminServiceGetAllUsersResponseParamsFactory(List<String> usernames, String error) {
     var result = new AuthenticationAdminServiceGetAllUsersResponseParams();
     result.usernames = usernames;
     result.error = error;

@@ -239,10 +239,15 @@ abstract class InputClientInterface
                InputClient {
   factory InputClientInterface([InputClient impl]) =>
       new InputClientStub.unbound(impl);
+
   factory InputClientInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [InputClient impl]) =>
       new InputClientStub.fromEndpoint(endpoint, impl);
+
+  factory InputClientInterface.fromMock(
+      InputClient mock) =>
+      new InputClientProxy.fromMock(mock);
 }
 
 abstract class InputClientInterfaceRequest
@@ -255,6 +260,8 @@ abstract class InputClientInterfaceRequest
 class _InputClientProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<InputClient> {
+  InputClient impl;
+
   _InputClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -294,11 +301,6 @@ class _InputClientProxyControl
     }
   }
 
-  InputClient get impl => null;
-  set impl(InputClient _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -321,6 +323,13 @@ class InputClientProxy
   InputClientProxy.unbound()
       : super(new _InputClientProxyControl.unbound());
 
+  factory InputClientProxy.fromMock(InputClient mock) {
+    InputClientProxy newMockedProxy =
+        new InputClientProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static InputClientProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For InputClientProxy"));
@@ -329,6 +338,9 @@ class InputClientProxy
 
 
   dynamic onBackButton([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.onBackButton(_InputClientStubControl._inputClientOnBackButtonResponseParamsFactory));
+    }
     var params = new _InputClientOnBackButtonParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -360,7 +372,7 @@ class _InputClientStubControl
   String get serviceName => InputClient.serviceName;
 
 
-  InputClientOnBackButtonResponseParams _inputClientOnBackButtonResponseParamsFactory() {
+  static InputClientOnBackButtonResponseParams _inputClientOnBackButtonResponseParamsFactory() {
     var result = new InputClientOnBackButtonResponseParams();
     return result;
   }
@@ -501,10 +513,15 @@ abstract class InputServiceInterface
                InputService {
   factory InputServiceInterface([InputService impl]) =>
       new InputServiceStub.unbound(impl);
+
   factory InputServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [InputService impl]) =>
       new InputServiceStub.fromEndpoint(endpoint, impl);
+
+  factory InputServiceInterface.fromMock(
+      InputService mock) =>
+      new InputServiceProxy.fromMock(mock);
 }
 
 abstract class InputServiceInterfaceRequest
@@ -517,6 +534,8 @@ abstract class InputServiceInterfaceRequest
 class _InputServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<InputService> {
+  InputService impl;
+
   _InputServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -534,11 +553,6 @@ class _InputServiceProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  InputService get impl => null;
-  set impl(InputService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -563,6 +577,13 @@ class InputServiceProxy
   InputServiceProxy.unbound()
       : super(new _InputServiceProxyControl.unbound());
 
+  factory InputServiceProxy.fromMock(InputService mock) {
+    InputServiceProxy newMockedProxy =
+        new InputServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static InputServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For InputServiceProxy"));
@@ -571,6 +592,10 @@ class InputServiceProxy
 
 
   void setClient(InputClientInterface client) {
+    if (impl != null) {
+      impl.setClient(client);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

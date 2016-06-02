@@ -749,10 +749,15 @@ abstract class HitTesterInterface
                HitTester {
   factory HitTesterInterface([HitTester impl]) =>
       new HitTesterStub.unbound(impl);
+
   factory HitTesterInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [HitTester impl]) =>
       new HitTesterStub.fromEndpoint(endpoint, impl);
+
+  factory HitTesterInterface.fromMock(
+      HitTester mock) =>
+      new HitTesterProxy.fromMock(mock);
 }
 
 abstract class HitTesterInterfaceRequest
@@ -765,6 +770,8 @@ abstract class HitTesterInterfaceRequest
 class _HitTesterProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<HitTester> {
+  HitTester impl;
+
   _HitTesterProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -804,11 +811,6 @@ class _HitTesterProxyControl
     }
   }
 
-  HitTester get impl => null;
-  set impl(HitTester _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -831,6 +833,13 @@ class HitTesterProxy
   HitTesterProxy.unbound()
       : super(new _HitTesterProxyControl.unbound());
 
+  factory HitTesterProxy.fromMock(HitTester mock) {
+    HitTesterProxy newMockedProxy =
+        new HitTesterProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static HitTesterProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HitTesterProxy"));
@@ -839,6 +848,9 @@ class HitTesterProxy
 
 
   dynamic hitTest(geometry_mojom.PointF point,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.hitTest(point,_HitTesterStubControl._hitTesterHitTestResponseParamsFactory));
+    }
     var params = new _HitTesterHitTestParams();
     params.point = point;
     return ctrl.sendMessageWithRequestId(
@@ -871,7 +883,7 @@ class _HitTesterStubControl
   String get serviceName => HitTester.serviceName;
 
 
-  HitTesterHitTestResponseParams _hitTesterHitTestResponseParamsFactory(HitTestResult result) {
+  static HitTesterHitTestResponseParams _hitTesterHitTestResponseParamsFactory(HitTestResult result) {
     var result = new HitTesterHitTestResponseParams();
     result.result = result;
     return result;

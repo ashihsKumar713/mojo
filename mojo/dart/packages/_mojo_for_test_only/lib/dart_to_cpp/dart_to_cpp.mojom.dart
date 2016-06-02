@@ -918,10 +918,15 @@ abstract class CppSideInterface
                CppSide {
   factory CppSideInterface([CppSide impl]) =>
       new CppSideStub.unbound(impl);
+
   factory CppSideInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [CppSide impl]) =>
       new CppSideStub.fromEndpoint(endpoint, impl);
+
+  factory CppSideInterface.fromMock(
+      CppSide mock) =>
+      new CppSideProxy.fromMock(mock);
 }
 
 abstract class CppSideInterfaceRequest
@@ -934,6 +939,8 @@ abstract class CppSideInterfaceRequest
 class _CppSideProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<CppSide> {
+  CppSide impl;
+
   _CppSideProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -951,11 +958,6 @@ class _CppSideProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  CppSide get impl => null;
-  set impl(CppSide _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -980,6 +982,13 @@ class CppSideProxy
   CppSideProxy.unbound()
       : super(new _CppSideProxyControl.unbound());
 
+  factory CppSideProxy.fromMock(CppSide mock) {
+    CppSideProxy newMockedProxy =
+        new CppSideProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static CppSideProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For CppSideProxy"));
@@ -988,6 +997,10 @@ class CppSideProxy
 
 
   void startTest() {
+    if (impl != null) {
+      impl.startTest();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -997,6 +1010,10 @@ class CppSideProxy
         _cppSideMethodStartTestName);
   }
   void testFinished() {
+    if (impl != null) {
+      impl.testFinished();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1006,6 +1023,10 @@ class CppSideProxy
         _cppSideMethodTestFinishedName);
   }
   void pingResponse() {
+    if (impl != null) {
+      impl.pingResponse();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1015,6 +1036,10 @@ class CppSideProxy
         _cppSideMethodPingResponseName);
   }
   void echoResponse(EchoArgsList list) {
+    if (impl != null) {
+      impl.echoResponse(list);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1192,10 +1217,15 @@ abstract class DartSideInterface
                DartSide {
   factory DartSideInterface([DartSide impl]) =>
       new DartSideStub.unbound(impl);
+
   factory DartSideInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [DartSide impl]) =>
       new DartSideStub.fromEndpoint(endpoint, impl);
+
+  factory DartSideInterface.fromMock(
+      DartSide mock) =>
+      new DartSideProxy.fromMock(mock);
 }
 
 abstract class DartSideInterfaceRequest
@@ -1208,6 +1238,8 @@ abstract class DartSideInterfaceRequest
 class _DartSideProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<DartSide> {
+  DartSide impl;
+
   _DartSideProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1225,11 +1257,6 @@ class _DartSideProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  DartSide get impl => null;
-  set impl(DartSide _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -1254,6 +1281,13 @@ class DartSideProxy
   DartSideProxy.unbound()
       : super(new _DartSideProxyControl.unbound());
 
+  factory DartSideProxy.fromMock(DartSide mock) {
+    DartSideProxy newMockedProxy =
+        new DartSideProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static DartSideProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For DartSideProxy"));
@@ -1262,6 +1296,10 @@ class DartSideProxy
 
 
   void setClient(CppSideInterface cppSide) {
+    if (impl != null) {
+      impl.setClient(cppSide);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1272,6 +1310,10 @@ class DartSideProxy
         _dartSideMethodSetClientName);
   }
   void ping() {
+    if (impl != null) {
+      impl.ping();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1281,6 +1323,10 @@ class DartSideProxy
         _dartSideMethodPingName);
   }
   void echo(int numIterations, EchoArgs arg) {
+    if (impl != null) {
+      impl.echo(numIterations, arg);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1421,7 +1467,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/9yaz2/bNhTHJdlObMdOnMTNvK3rPKDFsmKN0x8ojJ08dBkyrBiMtSjak6vGrK3Blj1JHrJbjjvu2D9lf8L+hByz2467FNitJdtHh6VJmRIs0YmAB1oxY/H74ePT45NqxvujAu0+tPzfaZvnWr7fKbS72LLY6nDegvY5tCfQXsd2FdvjZ+2Dzo8Hz77p2l7QCUado/F478F4/MjpItLvBrbPZP2+w5+hY2i/g6P+6Fuv5+Pvv8L2xbx+Dx0/gHEegh6iM4Otyeh+d752fm4SnTsfnv9185yLwXChx3/ceYs7p/NCr/sGjkNDfGxgW8VGEX6KP29jk+CdmUfCsYjtCbafsDX6oyFqeJPuaOi4yGsMR7+MGr539P4D+dXGxHWCAPmB30DDF6jbRV6HnOLO7EVJ/+Hs9eqMPxHOzScPc2/OXueMf17nTGy8P+1awCULXFbEfM84LuR3w/jy/fYlfDexFbA9CrC2x2jqJ7yuL7FZCXKsc9c949p5OqkfNSU6PwatU523PPTrRK6XHknpzRsfris+DhlcfJrnD+98TIUT7meG+EMVW4nEEzzy7x3X8fuoK+Jz84L7w1XQyupkXeKi+wOJN6qcLAV/aDtu72fkj0euj0R8bl0Sf2B1XiZ/MCP4Q0bBH0hqEeYPe5r8oW0t1h9YnTr9gfeDFpdHke/JBP9rqB0qfFi/4o8S5DEDR8xjDxgmPf+GJP9i/ZRNgaPmy2Hrz2Sum1Y+XIGx0K0C9VPJNmJmXm5ryoersL+g3Czm+wwzzhPodJxTvM9F9Oe5eTAKHgwc5Mrywjua4lrLWnAeTHVqzoOXLa7R/eYR7ClF81/VENdqkv2wat0hbhw75fOICJxNhfsHybdEfnc35XV2yrWq60wlb77IeSQ//1YEPpbC/JNbrojLPU3zf5hZ7PwTfTrnvwYcp/VPUx5nDYi1i4yzMj5XsJWxuZPhD3joduDgDFviB+UE+US93+RjcAiLg2uQ/9hez5Ctgxsa7zc036SpsWpdOizeWMw5vw5pvrxbXWy+TIcmypeZYc/wL8D9Nin+r/BvbmH7E673B6zPEwi0xxCPxlAf7sMCfQ514qersO8F0O0CtEVooZ7fLkFbhnYd/n8DrguCX22Gx4eVlPeXvnP/nmheijCvacaFsPi46Lhwrv/uHZH+NU36syHjjarfUtJ/+75If0mT/oxkvOsx9GcU7gu+0xTeF8oJxyWZ/mJInI2qP6sw/xPJ+l+H2Jy2/oJkvLUY+nNK+sXrf0OT/nxIvTSq/hUl/eL1X9GkfzWkbhBV/6rC+p9I1v+mpvhnScZbj6E/r1CPezkY2UHnN3sgqU9tLRmH6zE4FJQ5OO5LCYftJeOwG4NDUZmDa7sSDlVNHEzJuPdjcFgL4bAF9+DuaPJigM4XBs/hiqb4KOPQjMGhpM5hujB4DjtLxqEVg0NZncN0YfAcPtLAwQypoxzG4LCukC+49lD43KuW8HOviqQ+zvKwBM8D6dGOwWND4Tm9H3iO2+vYnmf/LuJCnwclXV8yYcx8XUi2b2C5ZUO4fR2DWyWE2w7sLYbI9+0e6vRttztAs9w+AZZp+JMZg8vTGFw2Q7hsQ07atQN7CkXgT+T9zGspcbHm1BlJbOxL6oz/Q/v3nHp/i6szthXq/ewrBHW4puw1A57ftYT39fzzgLG5XO+TuOhY+Jzkc/icRpxK8n0S3c8bKGcnQEMR5zr0SZtzWs8b3gYAAP//ZmL1wygwAAA=";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/9yaPWzbRhTHSUqyJVmy5a9EbdNUBRLULWrT+UAgdFKRunDRDEYTFPGkMNJFYiGRKkkVaaeMHTtmzNgxY8eOGTtmTLeMWQJkc++qR/l8vjudCIU6iMDD6cxLeO/H/717d8eqMboqUO5Dyf49LvNMybZ7CeUOtiy2GtQbUD6A8gmUV7Bdwnbv+Oig+f3B8VdtJ4iakd9sDQZ7tweDu24bkXZXsX0savcN/g0Npe0OWl3/66AT4vufY/t0Urs7bhhBPw/BH+JnBlud8pvUX66c1k1szy6ere/snnIxKC7jyzxbbTC34/cSP/cErkODf61hW8YWI/wI/97EJsB77j0SjkVsDrZjbPYwDOye33J6dsf3Oz1kd/0+sn8LHLvv/+TbYdAa/SAPsIeeG0UojEIb9R+idhsFTVJFgU0/n7TvC3RUo/5OuNd/vJM7efU2Z/z7NmdiY/V1aI3KQXZUPl3i837DcCL/r4w3225fwHsdWwHb3Qg7eA+NdcP69Rk2K0WuNaYfb5hykt+xzuoCvz8A38d+7wbo56HY//hKy/+8cXYcsnHLYNpN0sv/GlThhtuZEr1sYSuR+IO7/63ruWEXtXm8vlgwvVwC32m/acksml5IvFLlZino5cj1Oj+gcOB7IeLx2l1QvdB+L7JezCn0klHQC0llZHrZ00QvA2u2eqH91kkvrE4aTF5H7hMBvDPULhVetO7YqwR5VM/l89kDpmnrwxDkg7Su6RR92nxeNl5N6rlp5esV6Eu8lIl1LFjmnHtP1zTJ17dgPRQjsqj7GerfPYdGL3KK8+iUep+Yp6Pods9FnihPva5JXHxgzThPj/3WLE/XLS7G6+cWrJF5+tjSIC5WBet91X2VpHHwtSAcqnA3FeYjku/xdHljzuPyNVOqjkuVvH6R8lpWH9YUvCwFfZApncfppib6eJyZrT6Ivzrpowqcx/O/KY7bBsTuWcZtEa9tbGVs3rD/He6/E7l4BSDQSTlFXtPOZ/kEXGRxdQXyLyfoGKJxc1Wj+SzOh+PUXXVfXxavLKrOjtt4Aru/Pdt8Pu4aL5+nun3ufRRgPk/rfTzFtoHtj7gOPJ5B4P4T4tlz2F//Cwb037DP/mJ5VP4D4F8VII8tUoGb+FcG/qvAdQ3278Hx39fheRvyeLKU8vo4dG/d5L2nIrznecYRWXyddRw55XHjOo/HiiY8spL+T8vDUuJx7RaPR0kTHhlB/1cT8MgozDOhW+fOM+WU45qIR1ESt6flkVXQx1AQP1Yh1s+bR0HQ/2oCHjklHvz4saYJj7xkf3laHktKPPjxo6IJj2XJPsm0PJYV4sdQED/WNYmnlqD/tQQ88gr7lY96vhM1f3F6gv26Dc25XEnApaDMxfUeCbhsas5lJwGXojIXz/EEXLY04WIK/NhPwGVFwmUD5vy2P3zYQ6cDieWyrUm8FXGpJ+BSUucyHkgslwuac2kk4FJW5zIeSCyXixpwMSX7SIcJuKwq5Cue0+eeQ1ZTPoesCM4faD6WRDhHCfisKXx3EUaB63WaThA4v/I4xedxae+3meADu08mWvfQHLMSjl8m4FiRcLwAa6M+CkOng5pdx2v30HmOHwLbeejNTMDpfgJO6xJOm5Azt53IGUPi6I18/3t5TpysCfuyJNZ2BfuyeeD4bsJ5SoPZlz1SOE+hPwmpwTNFn42wPC+nvI/Bnrc8MfX6fshDj7nnUp/A73nEuff5/dC8z3Ni7m6E+qLvcUoacE/rPOe/AAAA//9qGb5tyDIAAA==";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

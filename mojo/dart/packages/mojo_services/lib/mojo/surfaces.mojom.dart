@@ -1286,10 +1286,15 @@ abstract class ResourceReturnerInterface
                ResourceReturner {
   factory ResourceReturnerInterface([ResourceReturner impl]) =>
       new ResourceReturnerStub.unbound(impl);
+
   factory ResourceReturnerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ResourceReturner impl]) =>
       new ResourceReturnerStub.fromEndpoint(endpoint, impl);
+
+  factory ResourceReturnerInterface.fromMock(
+      ResourceReturner mock) =>
+      new ResourceReturnerProxy.fromMock(mock);
 }
 
 abstract class ResourceReturnerInterfaceRequest
@@ -1302,6 +1307,8 @@ abstract class ResourceReturnerInterfaceRequest
 class _ResourceReturnerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ResourceReturner> {
+  ResourceReturner impl;
+
   _ResourceReturnerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1319,11 +1326,6 @@ class _ResourceReturnerProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  ResourceReturner get impl => null;
-  set impl(ResourceReturner _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -1348,6 +1350,13 @@ class ResourceReturnerProxy
   ResourceReturnerProxy.unbound()
       : super(new _ResourceReturnerProxyControl.unbound());
 
+  factory ResourceReturnerProxy.fromMock(ResourceReturner mock) {
+    ResourceReturnerProxy newMockedProxy =
+        new ResourceReturnerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ResourceReturnerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ResourceReturnerProxy"));
@@ -1356,6 +1365,10 @@ class ResourceReturnerProxy
 
 
   void returnResources(List<ReturnedResource> resources) {
+    if (impl != null) {
+      impl.returnResources(resources);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1519,10 +1532,15 @@ abstract class SurfaceInterface
                Surface {
   factory SurfaceInterface([Surface impl]) =>
       new SurfaceStub.unbound(impl);
+
   factory SurfaceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [Surface impl]) =>
       new SurfaceStub.fromEndpoint(endpoint, impl);
+
+  factory SurfaceInterface.fromMock(
+      Surface mock) =>
+      new SurfaceProxy.fromMock(mock);
 }
 
 abstract class SurfaceInterfaceRequest
@@ -1535,6 +1553,8 @@ abstract class SurfaceInterfaceRequest
 class _SurfaceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<Surface> {
+  Surface impl;
+
   _SurfaceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1594,11 +1614,6 @@ class _SurfaceProxyControl
     }
   }
 
-  Surface get impl => null;
-  set impl(Surface _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -1621,6 +1636,13 @@ class SurfaceProxy
   SurfaceProxy.unbound()
       : super(new _SurfaceProxyControl.unbound());
 
+  factory SurfaceProxy.fromMock(Surface mock) {
+    SurfaceProxy newMockedProxy =
+        new SurfaceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static SurfaceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SurfaceProxy"));
@@ -1629,6 +1651,9 @@ class SurfaceProxy
 
 
   dynamic getIdNamespace([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getIdNamespace(_SurfaceStubControl._surfaceGetIdNamespaceResponseParamsFactory));
+    }
     var params = new _SurfaceGetIdNamespaceParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -1637,6 +1662,10 @@ class SurfaceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void setResourceReturner(ResourceReturnerInterface returner) {
+    if (impl != null) {
+      impl.setResourceReturner(returner);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1647,6 +1676,10 @@ class SurfaceProxy
         _surfaceMethodSetResourceReturnerName);
   }
   void createSurface(int idLocal) {
+    if (impl != null) {
+      impl.createSurface(idLocal);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1657,6 +1690,9 @@ class SurfaceProxy
         _surfaceMethodCreateSurfaceName);
   }
   dynamic submitFrame(int idLocal,Frame frame,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.submitFrame(idLocal,frame,_SurfaceStubControl._surfaceSubmitFrameResponseParamsFactory));
+    }
     var params = new _SurfaceSubmitFrameParams();
     params.idLocal = idLocal;
     params.frame = frame;
@@ -1667,6 +1703,10 @@ class SurfaceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void destroySurface(int idLocal) {
+    if (impl != null) {
+      impl.destroySurface(idLocal);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1700,12 +1740,12 @@ class _SurfaceStubControl
   String get serviceName => Surface.serviceName;
 
 
-  SurfaceGetIdNamespaceResponseParams _surfaceGetIdNamespaceResponseParamsFactory(int idNamespace) {
+  static SurfaceGetIdNamespaceResponseParams _surfaceGetIdNamespaceResponseParamsFactory(int idNamespace) {
     var result = new SurfaceGetIdNamespaceResponseParams();
     result.idNamespace = idNamespace;
     return result;
   }
-  SurfaceSubmitFrameResponseParams _surfaceSubmitFrameResponseParamsFactory() {
+  static SurfaceSubmitFrameResponseParams _surfaceSubmitFrameResponseParamsFactory() {
     var result = new SurfaceSubmitFrameResponseParams();
     return result;
   }

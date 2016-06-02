@@ -182,10 +182,15 @@ abstract class VSyncProviderInterface
                VSyncProvider {
   factory VSyncProviderInterface([VSyncProvider impl]) =>
       new VSyncProviderStub.unbound(impl);
+
   factory VSyncProviderInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [VSyncProvider impl]) =>
       new VSyncProviderStub.fromEndpoint(endpoint, impl);
+
+  factory VSyncProviderInterface.fromMock(
+      VSyncProvider mock) =>
+      new VSyncProviderProxy.fromMock(mock);
 }
 
 abstract class VSyncProviderInterfaceRequest
@@ -198,6 +203,8 @@ abstract class VSyncProviderInterfaceRequest
 class _VSyncProviderProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<VSyncProvider> {
+  VSyncProvider impl;
+
   _VSyncProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -237,11 +244,6 @@ class _VSyncProviderProxyControl
     }
   }
 
-  VSyncProvider get impl => null;
-  set impl(VSyncProvider _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -264,6 +266,13 @@ class VSyncProviderProxy
   VSyncProviderProxy.unbound()
       : super(new _VSyncProviderProxyControl.unbound());
 
+  factory VSyncProviderProxy.fromMock(VSyncProvider mock) {
+    VSyncProviderProxy newMockedProxy =
+        new VSyncProviderProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static VSyncProviderProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For VSyncProviderProxy"));
@@ -272,6 +281,9 @@ class VSyncProviderProxy
 
 
   dynamic awaitVSync([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.awaitVSync(_VSyncProviderStubControl._vSyncProviderAwaitVSyncResponseParamsFactory));
+    }
     var params = new _VSyncProviderAwaitVSyncParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -303,7 +315,7 @@ class _VSyncProviderStubControl
   String get serviceName => VSyncProvider.serviceName;
 
 
-  VSyncProviderAwaitVSyncResponseParams _vSyncProviderAwaitVSyncResponseParamsFactory(int timeStamp) {
+  static VSyncProviderAwaitVSyncResponseParams _vSyncProviderAwaitVSyncResponseParamsFactory(int timeStamp) {
     var result = new VSyncProviderAwaitVSyncResponseParams();
     result.timeStamp = timeStamp;
     return result;

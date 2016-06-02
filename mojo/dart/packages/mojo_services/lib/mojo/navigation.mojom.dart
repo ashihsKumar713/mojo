@@ -349,10 +349,15 @@ abstract class NavigatorHostInterface
                NavigatorHost {
   factory NavigatorHostInterface([NavigatorHost impl]) =>
       new NavigatorHostStub.unbound(impl);
+
   factory NavigatorHostInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [NavigatorHost impl]) =>
       new NavigatorHostStub.fromEndpoint(endpoint, impl);
+
+  factory NavigatorHostInterface.fromMock(
+      NavigatorHost mock) =>
+      new NavigatorHostProxy.fromMock(mock);
 }
 
 abstract class NavigatorHostInterfaceRequest
@@ -365,6 +370,8 @@ abstract class NavigatorHostInterfaceRequest
 class _NavigatorHostProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<NavigatorHost> {
+  NavigatorHost impl;
+
   _NavigatorHostProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -382,11 +389,6 @@ class _NavigatorHostProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  NavigatorHost get impl => null;
-  set impl(NavigatorHost _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -411,6 +413,13 @@ class NavigatorHostProxy
   NavigatorHostProxy.unbound()
       : super(new _NavigatorHostProxyControl.unbound());
 
+  factory NavigatorHostProxy.fromMock(NavigatorHost mock) {
+    NavigatorHostProxy newMockedProxy =
+        new NavigatorHostProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static NavigatorHostProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NavigatorHostProxy"));
@@ -419,6 +428,10 @@ class NavigatorHostProxy
 
 
   void requestNavigate(Target target, url_request_mojom.UrlRequest request) {
+    if (impl != null) {
+      impl.requestNavigate(target, request);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -430,6 +443,10 @@ class NavigatorHostProxy
         _navigatorHostMethodRequestNavigateName);
   }
   void requestNavigateHistory(int delta) {
+    if (impl != null) {
+      impl.requestNavigateHistory(delta);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -440,6 +457,10 @@ class NavigatorHostProxy
         _navigatorHostMethodRequestNavigateHistoryName);
   }
   void didNavigateLocally(String url) {
+    if (impl != null) {
+      impl.didNavigateLocally(url);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

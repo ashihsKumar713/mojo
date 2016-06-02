@@ -1714,10 +1714,15 @@ abstract class ActivityInterface
                Activity {
   factory ActivityInterface([Activity impl]) =>
       new ActivityStub.unbound(impl);
+
   factory ActivityInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [Activity impl]) =>
       new ActivityStub.fromEndpoint(endpoint, impl);
+
+  factory ActivityInterface.fromMock(
+      Activity mock) =>
+      new ActivityProxy.fromMock(mock);
 }
 
 abstract class ActivityInterfaceRequest
@@ -1730,6 +1735,8 @@ abstract class ActivityInterfaceRequest
 class _ActivityProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<Activity> {
+  Activity impl;
+
   _ActivityProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1747,11 +1754,6 @@ class _ActivityProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  Activity get impl => null;
-  set impl(Activity _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -1776,6 +1778,13 @@ class ActivityProxy
   ActivityProxy.unbound()
       : super(new _ActivityProxyControl.unbound());
 
+  factory ActivityProxy.fromMock(Activity mock) {
+    ActivityProxy newMockedProxy =
+        new ActivityProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ActivityProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ActivityProxy"));
@@ -1784,6 +1793,10 @@ class ActivityProxy
 
 
   void getUserFeedback(UserFeedbackInterfaceRequest userFeedback) {
+    if (impl != null) {
+      impl.getUserFeedback(userFeedback);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1794,6 +1807,10 @@ class ActivityProxy
         _activityMethodGetUserFeedbackName);
   }
   void startActivity(Intent intent) {
+    if (impl != null) {
+      impl.startActivity(intent);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1804,6 +1821,10 @@ class ActivityProxy
         _activityMethodStartActivityName);
   }
   void finishCurrentActivity() {
+    if (impl != null) {
+      impl.finishCurrentActivity();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1813,6 +1834,10 @@ class ActivityProxy
         _activityMethodFinishCurrentActivityName);
   }
   void setTaskDescription(TaskDescription description) {
+    if (impl != null) {
+      impl.setTaskDescription(description);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1823,6 +1848,10 @@ class ActivityProxy
         _activityMethodSetTaskDescriptionName);
   }
   void setSystemUiVisibility(SystemUiVisibility visibility) {
+    if (impl != null) {
+      impl.setSystemUiVisibility(visibility);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1833,6 +1862,10 @@ class ActivityProxy
         _activityMethodSetSystemUiVisibilityName);
   }
   void setRequestedOrientation(ScreenOrientation orientation) {
+    if (impl != null) {
+      impl.setRequestedOrientation(orientation);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -2030,10 +2063,15 @@ abstract class PathServiceInterface
                PathService {
   factory PathServiceInterface([PathService impl]) =>
       new PathServiceStub.unbound(impl);
+
   factory PathServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [PathService impl]) =>
       new PathServiceStub.fromEndpoint(endpoint, impl);
+
+  factory PathServiceInterface.fromMock(
+      PathService mock) =>
+      new PathServiceProxy.fromMock(mock);
 }
 
 abstract class PathServiceInterfaceRequest
@@ -2046,6 +2084,8 @@ abstract class PathServiceInterfaceRequest
 class _PathServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<PathService> {
+  PathService impl;
+
   _PathServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -2125,11 +2165,6 @@ class _PathServiceProxyControl
     }
   }
 
-  PathService get impl => null;
-  set impl(PathService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -2152,6 +2187,13 @@ class PathServiceProxy
   PathServiceProxy.unbound()
       : super(new _PathServiceProxyControl.unbound());
 
+  factory PathServiceProxy.fromMock(PathService mock) {
+    PathServiceProxy newMockedProxy =
+        new PathServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static PathServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For PathServiceProxy"));
@@ -2160,6 +2202,9 @@ class PathServiceProxy
 
 
   dynamic getAppDataDir([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getAppDataDir(_PathServiceStubControl._pathServiceGetAppDataDirResponseParamsFactory));
+    }
     var params = new _PathServiceGetAppDataDirParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -2168,6 +2213,9 @@ class PathServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic getFilesDir([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getFilesDir(_PathServiceStubControl._pathServiceGetFilesDirResponseParamsFactory));
+    }
     var params = new _PathServiceGetFilesDirParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -2176,6 +2224,9 @@ class PathServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic getCacheDir([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getCacheDir(_PathServiceStubControl._pathServiceGetCacheDirResponseParamsFactory));
+    }
     var params = new _PathServiceGetCacheDirParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -2207,17 +2258,17 @@ class _PathServiceStubControl
   String get serviceName => PathService.serviceName;
 
 
-  PathServiceGetAppDataDirResponseParams _pathServiceGetAppDataDirResponseParamsFactory(String path) {
+  static PathServiceGetAppDataDirResponseParams _pathServiceGetAppDataDirResponseParamsFactory(String path) {
     var result = new PathServiceGetAppDataDirResponseParams();
     result.path = path;
     return result;
   }
-  PathServiceGetFilesDirResponseParams _pathServiceGetFilesDirResponseParamsFactory(String path) {
+  static PathServiceGetFilesDirResponseParams _pathServiceGetFilesDirResponseParamsFactory(String path) {
     var result = new PathServiceGetFilesDirResponseParams();
     result.path = path;
     return result;
   }
-  PathServiceGetCacheDirResponseParams _pathServiceGetCacheDirResponseParamsFactory(String path) {
+  static PathServiceGetCacheDirResponseParams _pathServiceGetCacheDirResponseParamsFactory(String path) {
     var result = new PathServiceGetCacheDirResponseParams();
     result.path = path;
     return result;
@@ -2407,10 +2458,15 @@ abstract class UserFeedbackInterface
                UserFeedback {
   factory UserFeedbackInterface([UserFeedback impl]) =>
       new UserFeedbackStub.unbound(impl);
+
   factory UserFeedbackInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [UserFeedback impl]) =>
       new UserFeedbackStub.fromEndpoint(endpoint, impl);
+
+  factory UserFeedbackInterface.fromMock(
+      UserFeedback mock) =>
+      new UserFeedbackProxy.fromMock(mock);
 }
 
 abstract class UserFeedbackInterfaceRequest
@@ -2423,6 +2479,8 @@ abstract class UserFeedbackInterfaceRequest
 class _UserFeedbackProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<UserFeedback> {
+  UserFeedback impl;
+
   _UserFeedbackProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -2440,11 +2498,6 @@ class _UserFeedbackProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  UserFeedback get impl => null;
-  set impl(UserFeedback _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -2469,6 +2522,13 @@ class UserFeedbackProxy
   UserFeedbackProxy.unbound()
       : super(new _UserFeedbackProxyControl.unbound());
 
+  factory UserFeedbackProxy.fromMock(UserFeedback mock) {
+    UserFeedbackProxy newMockedProxy =
+        new UserFeedbackProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static UserFeedbackProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For UserFeedbackProxy"));
@@ -2477,6 +2537,10 @@ class UserFeedbackProxy
 
 
   void performHapticFeedback(HapticFeedbackType type) {
+    if (impl != null) {
+      impl.performHapticFeedback(type);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -2487,6 +2551,10 @@ class UserFeedbackProxy
         _userFeedbackMethodPerformHapticFeedbackName);
   }
   void performAuralFeedback(AuralFeedbackType type) {
+    if (impl != null) {
+      impl.performAuralFeedback(type);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

@@ -269,10 +269,15 @@ abstract class InputConnectionInterface
                InputConnection {
   factory InputConnectionInterface([InputConnection impl]) =>
       new InputConnectionStub.unbound(impl);
+
   factory InputConnectionInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [InputConnection impl]) =>
       new InputConnectionStub.fromEndpoint(endpoint, impl);
+
+  factory InputConnectionInterface.fromMock(
+      InputConnection mock) =>
+      new InputConnectionProxy.fromMock(mock);
 }
 
 abstract class InputConnectionInterfaceRequest
@@ -285,6 +290,8 @@ abstract class InputConnectionInterfaceRequest
 class _InputConnectionProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<InputConnection> {
+  InputConnection impl;
+
   _InputConnectionProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -302,11 +309,6 @@ class _InputConnectionProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  InputConnection get impl => null;
-  set impl(InputConnection _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -331,6 +333,13 @@ class InputConnectionProxy
   InputConnectionProxy.unbound()
       : super(new _InputConnectionProxyControl.unbound());
 
+  factory InputConnectionProxy.fromMock(InputConnection mock) {
+    InputConnectionProxy newMockedProxy =
+        new InputConnectionProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static InputConnectionProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For InputConnectionProxy"));
@@ -339,6 +348,10 @@ class InputConnectionProxy
 
 
   void setListener(InputListenerInterface listener) {
+    if (impl != null) {
+      impl.setListener(listener);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -494,10 +507,15 @@ abstract class InputListenerInterface
                InputListener {
   factory InputListenerInterface([InputListener impl]) =>
       new InputListenerStub.unbound(impl);
+
   factory InputListenerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [InputListener impl]) =>
       new InputListenerStub.fromEndpoint(endpoint, impl);
+
+  factory InputListenerInterface.fromMock(
+      InputListener mock) =>
+      new InputListenerProxy.fromMock(mock);
 }
 
 abstract class InputListenerInterfaceRequest
@@ -510,6 +528,8 @@ abstract class InputListenerInterfaceRequest
 class _InputListenerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<InputListener> {
+  InputListener impl;
+
   _InputListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -549,11 +569,6 @@ class _InputListenerProxyControl
     }
   }
 
-  InputListener get impl => null;
-  set impl(InputListener _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -576,6 +591,13 @@ class InputListenerProxy
   InputListenerProxy.unbound()
       : super(new _InputListenerProxyControl.unbound());
 
+  factory InputListenerProxy.fromMock(InputListener mock) {
+    InputListenerProxy newMockedProxy =
+        new InputListenerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static InputListenerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For InputListenerProxy"));
@@ -584,6 +606,9 @@ class InputListenerProxy
 
 
   dynamic onEvent(input_events_mojom.Event event,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.onEvent(event,_InputListenerStubControl._inputListenerOnEventResponseParamsFactory));
+    }
     var params = new _InputListenerOnEventParams();
     params.event = event;
     return ctrl.sendMessageWithRequestId(
@@ -616,7 +641,7 @@ class _InputListenerStubControl
   String get serviceName => InputListener.serviceName;
 
 
-  InputListenerOnEventResponseParams _inputListenerOnEventResponseParamsFactory(bool consumed) {
+  static InputListenerOnEventResponseParams _inputListenerOnEventResponseParamsFactory(bool consumed) {
     var result = new InputListenerOnEventResponseParams();
     result.consumed = consumed;
     return result;

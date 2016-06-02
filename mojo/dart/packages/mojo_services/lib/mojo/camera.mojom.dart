@@ -601,10 +601,15 @@ abstract class CameraRollServiceInterface
                CameraRollService {
   factory CameraRollServiceInterface([CameraRollService impl]) =>
       new CameraRollServiceStub.unbound(impl);
+
   factory CameraRollServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [CameraRollService impl]) =>
       new CameraRollServiceStub.fromEndpoint(endpoint, impl);
+
+  factory CameraRollServiceInterface.fromMock(
+      CameraRollService mock) =>
+      new CameraRollServiceProxy.fromMock(mock);
 }
 
 abstract class CameraRollServiceInterfaceRequest
@@ -617,6 +622,8 @@ abstract class CameraRollServiceInterfaceRequest
 class _CameraRollServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<CameraRollService> {
+  CameraRollService impl;
+
   _CameraRollServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -676,11 +683,6 @@ class _CameraRollServiceProxyControl
     }
   }
 
-  CameraRollService get impl => null;
-  set impl(CameraRollService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -703,6 +705,13 @@ class CameraRollServiceProxy
   CameraRollServiceProxy.unbound()
       : super(new _CameraRollServiceProxyControl.unbound());
 
+  factory CameraRollServiceProxy.fromMock(CameraRollService mock) {
+    CameraRollServiceProxy newMockedProxy =
+        new CameraRollServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static CameraRollServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For CameraRollServiceProxy"));
@@ -711,6 +720,10 @@ class CameraRollServiceProxy
 
 
   void update() {
+    if (impl != null) {
+      impl.update();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -720,6 +733,9 @@ class CameraRollServiceProxy
         _cameraRollServiceMethodUpdateName);
   }
   dynamic getCount([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getCount(_CameraRollServiceStubControl._cameraRollServiceGetCountResponseParamsFactory));
+    }
     var params = new _CameraRollServiceGetCountParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -728,6 +744,9 @@ class CameraRollServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic getPhoto(int index,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getPhoto(index,_CameraRollServiceStubControl._cameraRollServiceGetPhotoResponseParamsFactory));
+    }
     var params = new _CameraRollServiceGetPhotoParams();
     params.index = index;
     return ctrl.sendMessageWithRequestId(
@@ -760,12 +779,12 @@ class _CameraRollServiceStubControl
   String get serviceName => CameraRollService.serviceName;
 
 
-  CameraRollServiceGetCountResponseParams _cameraRollServiceGetCountResponseParamsFactory(int numPhotos) {
+  static CameraRollServiceGetCountResponseParams _cameraRollServiceGetCountResponseParamsFactory(int numPhotos) {
     var result = new CameraRollServiceGetCountResponseParams();
     result.numPhotos = numPhotos;
     return result;
   }
-  CameraRollServiceGetPhotoResponseParams _cameraRollServiceGetPhotoResponseParamsFactory(Photo photo) {
+  static CameraRollServiceGetPhotoResponseParams _cameraRollServiceGetPhotoResponseParamsFactory(Photo photo) {
     var result = new CameraRollServiceGetPhotoResponseParams();
     result.photo = photo;
     return result;
@@ -938,10 +957,15 @@ abstract class CameraServiceInterface
                CameraService {
   factory CameraServiceInterface([CameraService impl]) =>
       new CameraServiceStub.unbound(impl);
+
   factory CameraServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [CameraService impl]) =>
       new CameraServiceStub.fromEndpoint(endpoint, impl);
+
+  factory CameraServiceInterface.fromMock(
+      CameraService mock) =>
+      new CameraServiceProxy.fromMock(mock);
 }
 
 abstract class CameraServiceInterfaceRequest
@@ -954,6 +978,8 @@ abstract class CameraServiceInterfaceRequest
 class _CameraServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<CameraService> {
+  CameraService impl;
+
   _CameraServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -993,11 +1019,6 @@ class _CameraServiceProxyControl
     }
   }
 
-  CameraService get impl => null;
-  set impl(CameraService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -1020,6 +1041,13 @@ class CameraServiceProxy
   CameraServiceProxy.unbound()
       : super(new _CameraServiceProxyControl.unbound());
 
+  factory CameraServiceProxy.fromMock(CameraService mock) {
+    CameraServiceProxy newMockedProxy =
+        new CameraServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static CameraServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For CameraServiceProxy"));
@@ -1028,6 +1056,9 @@ class CameraServiceProxy
 
 
   dynamic getLatestFrame([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getLatestFrame(_CameraServiceStubControl._cameraServiceGetLatestFrameResponseParamsFactory));
+    }
     var params = new _CameraServiceGetLatestFrameParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -1059,7 +1090,7 @@ class _CameraServiceStubControl
   String get serviceName => CameraService.serviceName;
 
 
-  CameraServiceGetLatestFrameResponseParams _cameraServiceGetLatestFrameResponseParamsFactory(core.MojoDataPipeConsumer content) {
+  static CameraServiceGetLatestFrameResponseParams _cameraServiceGetLatestFrameResponseParamsFactory(core.MojoDataPipeConsumer content) {
     var result = new CameraServiceGetLatestFrameResponseParams();
     result.content = content;
     return result;

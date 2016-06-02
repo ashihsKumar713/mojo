@@ -801,10 +801,15 @@ abstract class PingPongServiceInterface
                PingPongService {
   factory PingPongServiceInterface([PingPongService impl]) =>
       new PingPongServiceStub.unbound(impl);
+
   factory PingPongServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [PingPongService impl]) =>
       new PingPongServiceStub.fromEndpoint(endpoint, impl);
+
+  factory PingPongServiceInterface.fromMock(
+      PingPongService mock) =>
+      new PingPongServiceProxy.fromMock(mock);
 }
 
 abstract class PingPongServiceInterfaceRequest
@@ -817,6 +822,8 @@ abstract class PingPongServiceInterfaceRequest
 class _PingPongServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<PingPongService> {
+  PingPongService impl;
+
   _PingPongServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -876,11 +883,6 @@ class _PingPongServiceProxyControl
     }
   }
 
-  PingPongService get impl => null;
-  set impl(PingPongService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -903,6 +905,13 @@ class PingPongServiceProxy
   PingPongServiceProxy.unbound()
       : super(new _PingPongServiceProxyControl.unbound());
 
+  factory PingPongServiceProxy.fromMock(PingPongService mock) {
+    PingPongServiceProxy newMockedProxy =
+        new PingPongServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static PingPongServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For PingPongServiceProxy"));
@@ -911,6 +920,10 @@ class PingPongServiceProxy
 
 
   void setClient(PingPongClientInterface client) {
+    if (impl != null) {
+      impl.setClient(client);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -921,6 +934,10 @@ class PingPongServiceProxy
         _pingPongServiceMethodSetClientName);
   }
   void ping(int pingValue) {
+    if (impl != null) {
+      impl.ping(pingValue);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -931,6 +948,9 @@ class PingPongServiceProxy
         _pingPongServiceMethodPingName);
   }
   dynamic pingTargetUrl(String url,int count,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.pingTargetUrl(url,count,_PingPongServiceStubControl._pingPongServicePingTargetUrlResponseParamsFactory));
+    }
     var params = new _PingPongServicePingTargetUrlParams();
     params.url = url;
     params.count = count;
@@ -941,6 +961,9 @@ class PingPongServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic pingTargetService(PingPongServiceInterface service,int count,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.pingTargetService(service,count,_PingPongServiceStubControl._pingPongServicePingTargetServiceResponseParamsFactory));
+    }
     var params = new _PingPongServicePingTargetServiceParams();
     params.service = service;
     params.count = count;
@@ -951,6 +974,10 @@ class PingPongServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void getPingPongService(PingPongServiceInterfaceRequest service) {
+    if (impl != null) {
+      impl.getPingPongService(service);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -961,6 +988,10 @@ class PingPongServiceProxy
         _pingPongServiceMethodGetPingPongServiceName);
   }
   void getPingPongServiceDelayed(PingPongServiceInterfaceRequest service) {
+    if (impl != null) {
+      impl.getPingPongServiceDelayed(service);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -971,6 +1002,10 @@ class PingPongServiceProxy
         _pingPongServiceMethodGetPingPongServiceDelayedName);
   }
   void quit() {
+    if (impl != null) {
+      impl.quit();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1003,12 +1038,12 @@ class _PingPongServiceStubControl
   String get serviceName => PingPongService.serviceName;
 
 
-  PingPongServicePingTargetUrlResponseParams _pingPongServicePingTargetUrlResponseParamsFactory(bool ok) {
+  static PingPongServicePingTargetUrlResponseParams _pingPongServicePingTargetUrlResponseParamsFactory(bool ok) {
     var result = new PingPongServicePingTargetUrlResponseParams();
     result.ok = ok;
     return result;
   }
-  PingPongServicePingTargetServiceResponseParams _pingPongServicePingTargetServiceResponseParamsFactory(bool ok) {
+  static PingPongServicePingTargetServiceResponseParams _pingPongServicePingTargetServiceResponseParamsFactory(bool ok) {
     var result = new PingPongServicePingTargetServiceResponseParams();
     result.ok = ok;
     return result;
@@ -1215,10 +1250,15 @@ abstract class PingPongClientInterface
                PingPongClient {
   factory PingPongClientInterface([PingPongClient impl]) =>
       new PingPongClientStub.unbound(impl);
+
   factory PingPongClientInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [PingPongClient impl]) =>
       new PingPongClientStub.fromEndpoint(endpoint, impl);
+
+  factory PingPongClientInterface.fromMock(
+      PingPongClient mock) =>
+      new PingPongClientProxy.fromMock(mock);
 }
 
 abstract class PingPongClientInterfaceRequest
@@ -1231,6 +1271,8 @@ abstract class PingPongClientInterfaceRequest
 class _PingPongClientProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<PingPongClient> {
+  PingPongClient impl;
+
   _PingPongClientProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1248,11 +1290,6 @@ class _PingPongClientProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  PingPongClient get impl => null;
-  set impl(PingPongClient _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -1277,6 +1314,13 @@ class PingPongClientProxy
   PingPongClientProxy.unbound()
       : super(new _PingPongClientProxyControl.unbound());
 
+  factory PingPongClientProxy.fromMock(PingPongClient mock) {
+    PingPongClientProxy newMockedProxy =
+        new PingPongClientProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static PingPongClientProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For PingPongClientProxy"));
@@ -1285,6 +1329,10 @@ class PingPongClientProxy
 
 
   void pong(int pongValue) {
+    if (impl != null) {
+      impl.pong(pongValue);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1410,7 +1458,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xZTU/bTBB2HD7ywhs+3hdKSigKlFb0AEZqD4gTUkFFalWlLVXLKVhhC26T2LUdpN565CfwE/oTeuxP4dgjR27tLpltl/VOYkeJbVpWGsyuP3bn2Zl5ZicFrdUm4HoCV3l8XehnqOSgf4fKNBWfeP7GRtlqHJbtxuEr4h5bVaJ4/h68s7tX3q483d7bYC+uBt+T53eEdenC+Bpcl6jMod99XLNIw48y/7IwT1ZaD+t/Hmj1l2G8pEktc7W7Kd1ek8Z/QCtr6naLyhgVWaMiHfsf8FeoG8BxgcoIlQqVN1SMI7tODLd5YNetBnGNuv3eNjy32vrnwHR9w3Qc9nXPYH8rtOcZVsMn7juzSjzDoXM6dM6K18Julb1YD8zL+/9K0Mj2IeN5huCB4akJeIrfkxtbB9tCBpcKp0XY/37jVJLw4fpeZMLrydoaoucU6Mr0XHHJxyZdm0pf3vqtr7zfm4r4ogn3O7WwdoDh8x/4w+VSj81ak6jj3yL4X9z4FKSQMoH4iQP2coLEHY7vKVy/SPbzFcFHXk9JwQ/DwjiLRaNUIJI+N+skFE/MUBkX4hu/Mwc2jITpwD7lYopvnfSR1yXy1LCwnzrwCYtFg1SGhH0bFvbtWxbiAzywn29dd6ZgfAb2v6i2j+998p9JKv9c7rcvsE5Q/5GE4inX+60eLZ6uI/reBp1/6SsG1ZTHVWZf5z2Oqxi/joEtV8EoVPZQjNEeNGn+Uoe8Kmw+2W28PkPSxTC4Z8LkNZY6r8n/aXmNdZPXtM1rrPZ5TT7leQ2P3+tw3tIj4KO3wWcadGf2s2u6h8R//fKZAp/JhHmrkO0Nb/F85Yq+guMk5Tfyeb6Uwf0nEyN/jUJe1nRrSr+ZhJw1Dr9pl893iiu5LnBpxy95yCOqdrPhI7jcTTie6EIf86uoPIT51TzkELJfeXTNHkk/H2kx+RPP/+0PGupPD1PMQzzunAIPZSPgkhVwx84Tv+1HONwqcJpOiI+4/k5EPtpE9F4A3QN6p+Q8JfOSk0nHuWoc6gKwWqV9LKXgXIXVc8LW39POcwznRynmuXPxoR74K6t/ziL+yrnuOpy/0sJ3zH62rgHf8TYQAZeBNnw3C2fTJ8RXVHM15e9GSfLdfo/9J6j3VcK7qR+G4znWvx+jXeh94rlu/fNCwmswAu6DiufkvCxop1ukZn4iB0heVkzITzkORxH9dAfR/wFggOp/U+/vyl+Zfaz8xf4q1/uHIuA+FKLe/6JpKevf8wnX+8+03tb7mZ5pqPfnkN/HC8i55GcAAAD//zW0L99oJQAA";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xZz1PTThRPUgr9wpdfarX8nILo4AHCjB4YTswIIzM6TlU8cGJiWUswbWqSMuqJI38CR4/+CR79M/wzOHrTXfoWt5vdNumEduN0Zx5ht033vc++9z5vdwtas03B8xye/Pgm09ex5KC/gCWPJUB+sLVVsmuVklurvEHeqV1Ggu8/gHf2D0q7h893D7bIi+vh9/j564xeBjO+Ac8VLPPS333q2KgWxJl/lZknw+lD+j+Gmv1VGC9qrW1Kb+1vc59vcOO/oZU0cbuLZQILb9EcHrsN+AvMDeG4hGUUywmWd1jMhu+Zjlu2HLPiuhUHmcduFZlfPMusuieu6Xvl5j9HlheYVr1OJvJN8vcQ93zTrgXIe2+VkW/W8fR1PP2h34RxnbxYFfsT7f8P/qFJ/IvH91KCjwxfjcGX/T2+ET3IkhL4RPougz/0Grcihxe1v2BEt5u0DYndd8B2Yveahz42sIIi+2nrtf28P2wL8pHGfN6pRfUTGV63IH6u9D21nAYS+/cyxGu/8SowuuuMfnxcnUEQXkjyFsX7Ap7fOP/6LsGL16co4JcRZpzksjEskIlfWlUUiWfuYZlk8iP9ZB58XJLmQ+uW61N+7GQfryfLeyPM+hrATySXZbEMM+s4wqzjZQbG4eXiRPN5nIffnwE8FsT+8uuG4msay39X6x8wLBa2f1SRfExx+BQzH29K7J8BDK7tZ5NyyvJyVuPIPYG8LOPvCfD1MjiNyF/m+ugvGqdPsUNdF7We7Tbf83WUHmMd9Ch1lC2uo8b/9TrKHtRRseoou30dNZ6yOuqaD2B/aMTAy2iDVx6wIP61b3kVFLx9/UKA17RivLiXSYYXaX3UYj8TaKrEWeh8QpfHm95DfhyDurDhOcI4m4Yauh9x1m6/0Skv5brAqR1/jUPdUnYbtUCC033F8pHB9GVxWEioPl2EmoWPQx8r7qP08Z2m9Sb+6H7F/aBJ4+9xiniO5q2fwHOZGDhlmHWQ7X/++hezWRfglleE7ygeX2Py3bYEhyXAIoSDovtBnvfOdDX2hZNw7gEqC/1nRcF9oew8K+r9heo8SnB/kiIepf5aNJKJb3I+PCuJb8qladw/qsKnxL92UsintA3FwGmoDZ/Owl77GQoEp9/iezmV+PQs4XgL49BKqIPz1e54lPQf9tFvjBvi0W7jOcetSzbGOmQF3+PrwrAf7yDH+oyOJHXhnCJxTXE5jxnXexI8HgEmUjwG9yeJxDfxn7VBfEvvT4ZjrMNwhPuTVw1beH+wqNj9yaWW7P0JsVvF+5Oc1rm+Y7/3JwAA///Y0/jDWCcAAA==";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

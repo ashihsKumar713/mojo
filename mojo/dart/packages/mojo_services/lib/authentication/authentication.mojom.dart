@@ -473,10 +473,15 @@ abstract class AuthenticationServiceInterface
                AuthenticationService {
   factory AuthenticationServiceInterface([AuthenticationService impl]) =>
       new AuthenticationServiceStub.unbound(impl);
+
   factory AuthenticationServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [AuthenticationService impl]) =>
       new AuthenticationServiceStub.fromEndpoint(endpoint, impl);
+
+  factory AuthenticationServiceInterface.fromMock(
+      AuthenticationService mock) =>
+      new AuthenticationServiceProxy.fromMock(mock);
 }
 
 abstract class AuthenticationServiceInterfaceRequest
@@ -489,6 +494,8 @@ abstract class AuthenticationServiceInterfaceRequest
 class _AuthenticationServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<AuthenticationService> {
+  AuthenticationService impl;
+
   _AuthenticationServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -548,11 +555,6 @@ class _AuthenticationServiceProxyControl
     }
   }
 
-  AuthenticationService get impl => null;
-  set impl(AuthenticationService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -575,6 +577,13 @@ class AuthenticationServiceProxy
   AuthenticationServiceProxy.unbound()
       : super(new _AuthenticationServiceProxyControl.unbound());
 
+  factory AuthenticationServiceProxy.fromMock(AuthenticationService mock) {
+    AuthenticationServiceProxy newMockedProxy =
+        new AuthenticationServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static AuthenticationServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For AuthenticationServiceProxy"));
@@ -583,6 +592,9 @@ class AuthenticationServiceProxy
 
 
   dynamic selectAccount(bool returnLastSelected,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.selectAccount(returnLastSelected,_AuthenticationServiceStubControl._authenticationServiceSelectAccountResponseParamsFactory));
+    }
     var params = new _AuthenticationServiceSelectAccountParams();
     params.returnLastSelected = returnLastSelected;
     return ctrl.sendMessageWithRequestId(
@@ -592,6 +604,9 @@ class AuthenticationServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic getOAuth2Token(String username,List<String> scopes,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getOAuth2Token(username,scopes,_AuthenticationServiceStubControl._authenticationServiceGetOAuth2TokenResponseParamsFactory));
+    }
     var params = new _AuthenticationServiceGetOAuth2TokenParams();
     params.username = username;
     params.scopes = scopes;
@@ -602,6 +617,10 @@ class AuthenticationServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void clearOAuth2Token(String token) {
+    if (impl != null) {
+      impl.clearOAuth2Token(token);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -635,13 +654,13 @@ class _AuthenticationServiceStubControl
   String get serviceName => AuthenticationService.serviceName;
 
 
-  AuthenticationServiceSelectAccountResponseParams _authenticationServiceSelectAccountResponseParamsFactory(String username, String error) {
+  static AuthenticationServiceSelectAccountResponseParams _authenticationServiceSelectAccountResponseParamsFactory(String username, String error) {
     var result = new AuthenticationServiceSelectAccountResponseParams();
     result.username = username;
     result.error = error;
     return result;
   }
-  AuthenticationServiceGetOAuth2TokenResponseParams _authenticationServiceGetOAuth2TokenResponseParamsFactory(String token, String error) {
+  static AuthenticationServiceGetOAuth2TokenResponseParams _authenticationServiceGetOAuth2TokenResponseParamsFactory(String token, String error) {
     var result = new AuthenticationServiceGetOAuth2TokenResponseParams();
     result.token = token;
     result.error = error;

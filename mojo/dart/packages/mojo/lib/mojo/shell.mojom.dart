@@ -224,10 +224,15 @@ abstract class ShellInterface
                Shell {
   factory ShellInterface([Shell impl]) =>
       new ShellStub.unbound(impl);
+
   factory ShellInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [Shell impl]) =>
       new ShellStub.fromEndpoint(endpoint, impl);
+
+  factory ShellInterface.fromMock(
+      Shell mock) =>
+      new ShellProxy.fromMock(mock);
 }
 
 abstract class ShellInterfaceRequest
@@ -240,6 +245,8 @@ abstract class ShellInterfaceRequest
 class _ShellProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<Shell> {
+  Shell impl;
+
   _ShellProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -257,11 +264,6 @@ class _ShellProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  Shell get impl => null;
-  set impl(Shell _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -286,6 +288,13 @@ class ShellProxy
   ShellProxy.unbound()
       : super(new _ShellProxyControl.unbound());
 
+  factory ShellProxy.fromMock(Shell mock) {
+    ShellProxy newMockedProxy =
+        new ShellProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ShellProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ShellProxy"));
@@ -294,6 +303,10 @@ class ShellProxy
 
 
   void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices) {
+    if (impl != null) {
+      impl.connectToApplication(applicationUrl, services, exposedServices);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -306,6 +319,10 @@ class ShellProxy
         _shellMethodConnectToApplicationName);
   }
   void createApplicationConnector(application_connector_mojom.ApplicationConnectorInterfaceRequest applicationConnectorRequest) {
+    if (impl != null) {
+      impl.createApplicationConnector(applicationConnectorRequest);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

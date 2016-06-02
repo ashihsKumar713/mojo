@@ -1050,10 +1050,15 @@ abstract class NetworkServiceInterface
                NetworkService {
   factory NetworkServiceInterface([NetworkService impl]) =>
       new NetworkServiceStub.unbound(impl);
+
   factory NetworkServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [NetworkService impl]) =>
       new NetworkServiceStub.fromEndpoint(endpoint, impl);
+
+  factory NetworkServiceInterface.fromMock(
+      NetworkService mock) =>
+      new NetworkServiceProxy.fromMock(mock);
 }
 
 abstract class NetworkServiceInterfaceRequest
@@ -1066,6 +1071,8 @@ abstract class NetworkServiceInterfaceRequest
 class _NetworkServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<NetworkService> {
+  NetworkService impl;
+
   _NetworkServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1145,11 +1152,6 @@ class _NetworkServiceProxyControl
     }
   }
 
-  NetworkService get impl => null;
-  set impl(NetworkService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -1172,6 +1174,13 @@ class NetworkServiceProxy
   NetworkServiceProxy.unbound()
       : super(new _NetworkServiceProxyControl.unbound());
 
+  factory NetworkServiceProxy.fromMock(NetworkService mock) {
+    NetworkServiceProxy newMockedProxy =
+        new NetworkServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static NetworkServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For NetworkServiceProxy"));
@@ -1180,6 +1189,10 @@ class NetworkServiceProxy
 
 
   void createUrlLoader(url_loader_mojom.UrlLoaderInterfaceRequest loader) {
+    if (impl != null) {
+      impl.createUrlLoader(loader);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1190,6 +1203,10 @@ class NetworkServiceProxy
         _networkServiceMethodCreateUrlLoaderName);
   }
   void getCookieStore(cookie_store_mojom.CookieStoreInterfaceRequest cookieStore) {
+    if (impl != null) {
+      impl.getCookieStore(cookieStore);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1200,6 +1217,10 @@ class NetworkServiceProxy
         _networkServiceMethodGetCookieStoreName);
   }
   void createWebSocket(web_socket_mojom.WebSocketInterfaceRequest socket) {
+    if (impl != null) {
+      impl.createWebSocket(socket);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1210,6 +1231,9 @@ class NetworkServiceProxy
         _networkServiceMethodCreateWebSocketName);
   }
   dynamic createTcpBoundSocket(net_address_mojom.NetAddress localAddress,tcp_bound_socket_mojom.TcpBoundSocketInterfaceRequest boundSocket,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.createTcpBoundSocket(localAddress,boundSocket,_NetworkServiceStubControl._networkServiceCreateTcpBoundSocketResponseParamsFactory));
+    }
     var params = new _NetworkServiceCreateTcpBoundSocketParams();
     params.localAddress = localAddress;
     params.boundSocket = boundSocket;
@@ -1220,6 +1244,9 @@ class NetworkServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.createTcpConnectedSocket(remoteAddress,sendStream,receiveStream,clientSocket,_NetworkServiceStubControl._networkServiceCreateTcpConnectedSocketResponseParamsFactory));
+    }
     var params = new _NetworkServiceCreateTcpConnectedSocketParams();
     params.remoteAddress = remoteAddress;
     params.sendStream = sendStream;
@@ -1232,6 +1259,10 @@ class NetworkServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void createUdpSocket(udp_socket_mojom.UdpSocketInterfaceRequest socket) {
+    if (impl != null) {
+      impl.createUdpSocket(socket);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1242,6 +1273,9 @@ class NetworkServiceProxy
         _networkServiceMethodCreateUdpSocketName);
   }
   dynamic createHttpServer(net_address_mojom.NetAddress localAddress,http_server_mojom.HttpServerDelegateInterface delegate,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.createHttpServer(localAddress,delegate,_NetworkServiceStubControl._networkServiceCreateHttpServerResponseParamsFactory));
+    }
     var params = new _NetworkServiceCreateHttpServerParams();
     params.localAddress = localAddress;
     params.delegate = delegate;
@@ -1252,6 +1286,10 @@ class NetworkServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void registerUrlLoaderInterceptor(url_loader_interceptor_mojom.UrlLoaderInterceptorFactoryInterface factory) {
+    if (impl != null) {
+      impl.registerUrlLoaderInterceptor(factory);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1262,6 +1300,10 @@ class NetworkServiceProxy
         _networkServiceMethodRegisterUrlLoaderInterceptorName);
   }
   void createHostResolver(host_resolver_mojom.HostResolverInterfaceRequest hostResolver) {
+    if (impl != null) {
+      impl.createHostResolver(hostResolver);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1295,19 +1337,19 @@ class _NetworkServiceStubControl
   String get serviceName => NetworkService.serviceName;
 
 
-  NetworkServiceCreateTcpBoundSocketResponseParams _networkServiceCreateTcpBoundSocketResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo) {
+  static NetworkServiceCreateTcpBoundSocketResponseParams _networkServiceCreateTcpBoundSocketResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo) {
     var result = new NetworkServiceCreateTcpBoundSocketResponseParams();
     result.result = result;
     result.boundTo = boundTo;
     return result;
   }
-  NetworkServiceCreateTcpConnectedSocketResponseParams _networkServiceCreateTcpConnectedSocketResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddress) {
+  static NetworkServiceCreateTcpConnectedSocketResponseParams _networkServiceCreateTcpConnectedSocketResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddress) {
     var result = new NetworkServiceCreateTcpConnectedSocketResponseParams();
     result.result = result;
     result.localAddress = localAddress;
     return result;
   }
-  NetworkServiceCreateHttpServerResponseParams _networkServiceCreateHttpServerResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo) {
+  static NetworkServiceCreateHttpServerResponseParams _networkServiceCreateHttpServerResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo) {
     var result = new NetworkServiceCreateHttpServerResponseParams();
     result.result = result;
     result.boundTo = boundTo;

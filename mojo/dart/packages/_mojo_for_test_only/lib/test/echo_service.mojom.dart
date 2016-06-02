@@ -484,10 +484,15 @@ abstract class EchoServiceInterface
                EchoService {
   factory EchoServiceInterface([EchoService impl]) =>
       new EchoServiceStub.unbound(impl);
+
   factory EchoServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [EchoService impl]) =>
       new EchoServiceStub.fromEndpoint(endpoint, impl);
+
+  factory EchoServiceInterface.fromMock(
+      EchoService mock) =>
+      new EchoServiceProxy.fromMock(mock);
 }
 
 abstract class EchoServiceInterfaceRequest
@@ -500,6 +505,8 @@ abstract class EchoServiceInterfaceRequest
 class _EchoServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<EchoService> {
+  EchoService impl;
+
   _EchoServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -559,11 +566,6 @@ class _EchoServiceProxyControl
     }
   }
 
-  EchoService get impl => null;
-  set impl(EchoService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -586,6 +588,13 @@ class EchoServiceProxy
   EchoServiceProxy.unbound()
       : super(new _EchoServiceProxyControl.unbound());
 
+  factory EchoServiceProxy.fromMock(EchoService mock) {
+    EchoServiceProxy newMockedProxy =
+        new EchoServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static EchoServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For EchoServiceProxy"));
@@ -594,6 +603,9 @@ class EchoServiceProxy
 
 
   dynamic echoString(String value,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.echoString(value,_EchoServiceStubControl._echoServiceEchoStringResponseParamsFactory));
+    }
     var params = new _EchoServiceEchoStringParams();
     params.value = value;
     return ctrl.sendMessageWithRequestId(
@@ -603,6 +615,9 @@ class EchoServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic delayedEchoString(String value,int millis,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.delayedEchoString(value,millis,_EchoServiceStubControl._echoServiceDelayedEchoStringResponseParamsFactory));
+    }
     var params = new _EchoServiceDelayedEchoStringParams();
     params.value = value;
     params.millis = millis;
@@ -613,6 +628,10 @@ class EchoServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void swap() {
+    if (impl != null) {
+      impl.swap();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -622,6 +641,10 @@ class EchoServiceProxy
         _echoServiceMethodSwapName);
   }
   void quit() {
+    if (impl != null) {
+      impl.quit();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -654,12 +677,12 @@ class _EchoServiceStubControl
   String get serviceName => EchoService.serviceName;
 
 
-  EchoServiceEchoStringResponseParams _echoServiceEchoStringResponseParamsFactory(String value) {
+  static EchoServiceEchoStringResponseParams _echoServiceEchoStringResponseParamsFactory(String value) {
     var result = new EchoServiceEchoStringResponseParams();
     result.value = value;
     return result;
   }
-  EchoServiceDelayedEchoStringResponseParams _echoServiceDelayedEchoStringResponseParamsFactory(String value) {
+  static EchoServiceDelayedEchoStringResponseParams _echoServiceDelayedEchoStringResponseParamsFactory(String value) {
     var result = new EchoServiceDelayedEchoStringResponseParams();
     result.value = value;
     return result;
@@ -810,7 +833,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xYS28TMRDeR4HQBlReUngcAqdwoOZYRULKgUiVkFBRuVQcolViyKLsA3u3iBtHfgJHjhz5ST1y5B+AzY7BmdiRFzUsQRlpOvE2s/b3+ZvxbjpeZbsQP0DE1/e1sS+8BeObwq8ILygv+v3heJodUXYSj6nl+3ch5/nx4XD0ZHjcl4l7i3l4/sEZ3M+H/FDL70HsQpz6VXwP0UPzKx4+QvwM8TvYF89seN1dA84L2vVrwneEA4qnUUKd+FZ5+D8dmAPTg3mW69sW/kLOLZxMs4QSVk6yJE4pI0n2OiOcjasPk4gVJMpzeVdO5N+RGHESpwVlL6Mx5YSKuUa8mmxPJiVOOPC6dL624LPkM4D97MF19b1P56p40K7i4WXzfn9VOgjN+63sIRrLvTZdV3YVePyJrGBx+sqM6yJgWDXfWG8Kdytwxytt34L3FmD+jfcBo29KsUIzbmWrxo3rbmDpZ988N3PVRc+Sf0m4lOZJNCupRQ83/hIvqoZMPHW0NfuWOlyFjm5DD5vTEc+zlNONjmrqqPcP6wj3YcXbwdb8/Vx48rV9wKbOmcd0Fr2jE9yOF3jbbqgfK/zdsF4dDSy41XPRAu75ttxYPXWA5199xV+PupL6uNNAXZl48WCtJmv9AS/+El7k49N54Uk8m8XczMv9Bvqw3l8CbWyrr93gbOrrHjzzmOpLO64251WNunq0RufVKcIX1OApWMJTG95jjt5GuUk/Ow2dT6coutaP7f3oOmCVOPUjqal6aTnowVvyuwHWQ1iDp9BBD8/K2MhP+z/Tg8S5jnr4EQAA//+qos9XSBMAAA==";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xYvY4TMRDenwPCXUD8SstPEahCwZkyioSUglRICHQ01xBZe75k0W52WW8OwRPwCJSUlJQ8Ao9yJSUd2OwYnIkdNtGR1Z5upLmJfZnY3+dvxpsETmlXIH6AiOd72tgV3oLxLeFXhReMF/3+MJykeyw/ikJmef89yHm5/3w4ejrc78vE3cU8vP7gBD7PhXxfy+9C7EDMXOABooPWVzx8hPgZ4k+wL47Z8L47BpwXtPnrwneEA4pnNGGV+FZ5+D8BrIHpwTzL/W0LPxT+SjiZ8ZzEaUhjMk7TcczIJE0YeZ9TkqSvU8LzsHxxQPOC0CyTC3Ai/47EiJNoWrD8kIaMEyaWHfFy3V2ZlPwbD96fztsWvJa8enCuXZhX7/t2royf2mX8etl87t/VOfvmc1f2CI3lmZvmlV0DPn8jK/JoOjbjuggYNsU71p/CH3jVcUvrWXDfBux/cT/M2ZuZ2J4Zv7JN4cf1OLD0uR9ONauqk64l/5JwKdUjGs+YRR83N8yPqi1T/wq0vbuW+vwfuroDPW5OVzxLp5yd6WpNXXUboCvcrxV/k635z6vCl6udBzZ1Hz1hMX3HDnDbXuBvu+a+rXjo+avV18CCXz1PLeCfb9+111kAvP/Rh9uMepN6uVtjvZn4cWDPJmutwY+7hB/5+HVeeBLFccTN/DyosV/r/cfTxra663gnU3f34ZnJVHfa9XZ2v61Rb48beL8dI5zeCnx5S/hqw/ejvbc0M+lpp+b77BjFqnVl+/51AzBLvPoVVncdtSrow1nyOwXWh78CX34FfbyYRUae2qdUHxJvk/XxKwAA///0GO/NyBMAAA==";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

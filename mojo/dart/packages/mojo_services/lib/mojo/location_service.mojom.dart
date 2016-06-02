@@ -268,10 +268,15 @@ abstract class LocationServiceInterface
                LocationService {
   factory LocationServiceInterface([LocationService impl]) =>
       new LocationServiceStub.unbound(impl);
+
   factory LocationServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [LocationService impl]) =>
       new LocationServiceStub.fromEndpoint(endpoint, impl);
+
+  factory LocationServiceInterface.fromMock(
+      LocationService mock) =>
+      new LocationServiceProxy.fromMock(mock);
 }
 
 abstract class LocationServiceInterfaceRequest
@@ -284,6 +289,8 @@ abstract class LocationServiceInterfaceRequest
 class _LocationServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<LocationService> {
+  LocationService impl;
+
   _LocationServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -323,11 +330,6 @@ class _LocationServiceProxyControl
     }
   }
 
-  LocationService get impl => null;
-  set impl(LocationService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -350,6 +352,13 @@ class LocationServiceProxy
   LocationServiceProxy.unbound()
       : super(new _LocationServiceProxyControl.unbound());
 
+  factory LocationServiceProxy.fromMock(LocationService mock) {
+    LocationServiceProxy newMockedProxy =
+        new LocationServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static LocationServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For LocationServiceProxy"));
@@ -358,6 +367,9 @@ class LocationServiceProxy
 
 
   dynamic getNextLocation(LocationServiceUpdatePriority priority,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getNextLocation(priority,_LocationServiceStubControl._locationServiceGetNextLocationResponseParamsFactory));
+    }
     var params = new _LocationServiceGetNextLocationParams();
     params.priority = priority;
     return ctrl.sendMessageWithRequestId(
@@ -390,7 +402,7 @@ class _LocationServiceStubControl
   String get serviceName => LocationService.serviceName;
 
 
-  LocationServiceGetNextLocationResponseParams _locationServiceGetNextLocationResponseParamsFactory(location_mojom.Location location) {
+  static LocationServiceGetNextLocationResponseParams _locationServiceGetNextLocationResponseParamsFactory(location_mojom.Location location) {
     var result = new LocationServiceGetNextLocationResponseParams();
     result.location = location;
     return result;

@@ -793,10 +793,15 @@ abstract class ContactsServiceInterface
                ContactsService {
   factory ContactsServiceInterface([ContactsService impl]) =>
       new ContactsServiceStub.unbound(impl);
+
   factory ContactsServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ContactsService impl]) =>
       new ContactsServiceStub.fromEndpoint(endpoint, impl);
+
+  factory ContactsServiceInterface.fromMock(
+      ContactsService mock) =>
+      new ContactsServiceProxy.fromMock(mock);
 }
 
 abstract class ContactsServiceInterfaceRequest
@@ -809,6 +814,8 @@ abstract class ContactsServiceInterfaceRequest
 class _ContactsServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ContactsService> {
+  ContactsService impl;
+
   _ContactsServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -908,11 +915,6 @@ class _ContactsServiceProxyControl
     }
   }
 
-  ContactsService get impl => null;
-  set impl(ContactsService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -935,6 +937,13 @@ class ContactsServiceProxy
   ContactsServiceProxy.unbound()
       : super(new _ContactsServiceProxyControl.unbound());
 
+  factory ContactsServiceProxy.fromMock(ContactsService mock) {
+    ContactsServiceProxy newMockedProxy =
+        new ContactsServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ContactsServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ContactsServiceProxy"));
@@ -943,6 +952,9 @@ class ContactsServiceProxy
 
 
   dynamic getCount(String filter,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getCount(filter,_ContactsServiceStubControl._contactsServiceGetCountResponseParamsFactory));
+    }
     var params = new _ContactsServiceGetCountParams();
     params.filter = filter;
     return ctrl.sendMessageWithRequestId(
@@ -952,6 +964,9 @@ class ContactsServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic get(String filter,int offset,int limit,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.get(filter,offset,limit,_ContactsServiceStubControl._contactsServiceGetResponseParamsFactory));
+    }
     var params = new _ContactsServiceGetParams();
     params.filter = filter;
     params.offset = offset;
@@ -963,6 +978,9 @@ class ContactsServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic getEmails(int id,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getEmails(id,_ContactsServiceStubControl._contactsServiceGetEmailsResponseParamsFactory));
+    }
     var params = new _ContactsServiceGetEmailsParams();
     params.id = id;
     return ctrl.sendMessageWithRequestId(
@@ -972,6 +990,9 @@ class ContactsServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic getPhoto(int id,bool highResolution,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getPhoto(id,highResolution,_ContactsServiceStubControl._contactsServiceGetPhotoResponseParamsFactory));
+    }
     var params = new _ContactsServiceGetPhotoParams();
     params.id = id;
     params.highResolution = highResolution;
@@ -1005,22 +1026,22 @@ class _ContactsServiceStubControl
   String get serviceName => ContactsService.serviceName;
 
 
-  ContactsServiceGetCountResponseParams _contactsServiceGetCountResponseParamsFactory(int count) {
+  static ContactsServiceGetCountResponseParams _contactsServiceGetCountResponseParamsFactory(int count) {
     var result = new ContactsServiceGetCountResponseParams();
     result.count = count;
     return result;
   }
-  ContactsServiceGetResponseParams _contactsServiceGetResponseParamsFactory(List<Contact> contacts) {
+  static ContactsServiceGetResponseParams _contactsServiceGetResponseParamsFactory(List<Contact> contacts) {
     var result = new ContactsServiceGetResponseParams();
     result.contacts = contacts;
     return result;
   }
-  ContactsServiceGetEmailsResponseParams _contactsServiceGetEmailsResponseParamsFactory(List<String> emails) {
+  static ContactsServiceGetEmailsResponseParams _contactsServiceGetEmailsResponseParamsFactory(List<String> emails) {
     var result = new ContactsServiceGetEmailsResponseParams();
     result.emails = emails;
     return result;
   }
-  ContactsServiceGetPhotoResponseParams _contactsServiceGetPhotoResponseParamsFactory(String photoUrl) {
+  static ContactsServiceGetPhotoResponseParams _contactsServiceGetPhotoResponseParamsFactory(String photoUrl) {
     var result = new ContactsServiceGetPhotoResponseParams();
     result.photoUrl = photoUrl;
     return result;

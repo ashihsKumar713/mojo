@@ -755,10 +755,15 @@ abstract class SceneInterface
                Scene {
   factory SceneInterface([Scene impl]) =>
       new SceneStub.unbound(impl);
+
   factory SceneInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [Scene impl]) =>
       new SceneStub.fromEndpoint(endpoint, impl);
+
+  factory SceneInterface.fromMock(
+      Scene mock) =>
+      new SceneProxy.fromMock(mock);
 }
 
 abstract class SceneInterfaceRequest
@@ -771,6 +776,8 @@ abstract class SceneInterfaceRequest
 class _SceneProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<Scene> {
+  Scene impl;
+
   _SceneProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -788,11 +795,6 @@ class _SceneProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  Scene get impl => null;
-  set impl(Scene _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -817,6 +819,13 @@ class SceneProxy
   SceneProxy.unbound()
       : super(new _SceneProxyControl.unbound());
 
+  factory SceneProxy.fromMock(Scene mock) {
+    SceneProxy newMockedProxy =
+        new SceneProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static SceneProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SceneProxy"));
@@ -825,6 +834,10 @@ class SceneProxy
 
 
   void setListener(SceneListenerInterface listener) {
+    if (impl != null) {
+      impl.setListener(listener);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -835,6 +848,10 @@ class SceneProxy
         _sceneMethodSetListenerName);
   }
   void update(SceneUpdate update) {
+    if (impl != null) {
+      impl.update(update);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -845,6 +862,10 @@ class SceneProxy
         _sceneMethodUpdateName);
   }
   void publish(SceneMetadata metadata) {
+    if (impl != null) {
+      impl.publish(metadata);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -855,6 +876,10 @@ class SceneProxy
         _sceneMethodPublishName);
   }
   void getScheduler(scheduling_mojom.FrameSchedulerInterfaceRequest scheduler) {
+    if (impl != null) {
+      impl.getScheduler(scheduler);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1034,10 +1059,15 @@ abstract class SceneListenerInterface
                SceneListener {
   factory SceneListenerInterface([SceneListener impl]) =>
       new SceneListenerStub.unbound(impl);
+
   factory SceneListenerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [SceneListener impl]) =>
       new SceneListenerStub.fromEndpoint(endpoint, impl);
+
+  factory SceneListenerInterface.fromMock(
+      SceneListener mock) =>
+      new SceneListenerProxy.fromMock(mock);
 }
 
 abstract class SceneListenerInterfaceRequest
@@ -1050,6 +1080,8 @@ abstract class SceneListenerInterfaceRequest
 class _SceneListenerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<SceneListener> {
+  SceneListener impl;
+
   _SceneListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1089,11 +1121,6 @@ class _SceneListenerProxyControl
     }
   }
 
-  SceneListener get impl => null;
-  set impl(SceneListener _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -1116,6 +1143,13 @@ class SceneListenerProxy
   SceneListenerProxy.unbound()
       : super(new _SceneListenerProxyControl.unbound());
 
+  factory SceneListenerProxy.fromMock(SceneListener mock) {
+    SceneListenerProxy newMockedProxy =
+        new SceneListenerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static SceneListenerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SceneListenerProxy"));
@@ -1124,6 +1158,9 @@ class SceneListenerProxy
 
 
   dynamic onResourceUnavailable(int resourceId,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.onResourceUnavailable(resourceId,_SceneListenerStubControl._sceneListenerOnResourceUnavailableResponseParamsFactory));
+    }
     var params = new _SceneListenerOnResourceUnavailableParams();
     params.resourceId = resourceId;
     return ctrl.sendMessageWithRequestId(
@@ -1156,7 +1193,7 @@ class _SceneListenerStubControl
   String get serviceName => SceneListener.serviceName;
 
 
-  SceneListenerOnResourceUnavailableResponseParams _sceneListenerOnResourceUnavailableResponseParamsFactory() {
+  static SceneListenerOnResourceUnavailableResponseParams _sceneListenerOnResourceUnavailableResponseParamsFactory() {
     var result = new SceneListenerOnResourceUnavailableResponseParams();
     return result;
   }

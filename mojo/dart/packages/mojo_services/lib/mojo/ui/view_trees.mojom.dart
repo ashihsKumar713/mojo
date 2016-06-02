@@ -522,10 +522,15 @@ abstract class ViewTreeInterface
                ViewTree {
   factory ViewTreeInterface([ViewTree impl]) =>
       new ViewTreeStub.unbound(impl);
+
   factory ViewTreeInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ViewTree impl]) =>
       new ViewTreeStub.fromEndpoint(endpoint, impl);
+
+  factory ViewTreeInterface.fromMock(
+      ViewTree mock) =>
+      new ViewTreeProxy.fromMock(mock);
 }
 
 abstract class ViewTreeInterfaceRequest
@@ -538,6 +543,8 @@ abstract class ViewTreeInterfaceRequest
 class _ViewTreeProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ViewTree> {
+  ViewTree impl;
+
   _ViewTreeProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -577,11 +584,6 @@ class _ViewTreeProxyControl
     }
   }
 
-  ViewTree get impl => null;
-  set impl(ViewTree _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -604,6 +606,13 @@ class ViewTreeProxy
   ViewTreeProxy.unbound()
       : super(new _ViewTreeProxyControl.unbound());
 
+  factory ViewTreeProxy.fromMock(ViewTree mock) {
+    ViewTreeProxy newMockedProxy =
+        new ViewTreeProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ViewTreeProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewTreeProxy"));
@@ -612,6 +621,9 @@ class ViewTreeProxy
 
 
   dynamic getToken([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getToken(_ViewTreeStubControl._viewTreeGetTokenResponseParamsFactory));
+    }
     var params = new _ViewTreeGetTokenParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -620,6 +632,10 @@ class ViewTreeProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void getServiceProvider(service_provider_mojom.ServiceProviderInterfaceRequest serviceProvider) {
+    if (impl != null) {
+      impl.getServiceProvider(serviceProvider);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -630,6 +646,10 @@ class ViewTreeProxy
         _viewTreeMethodGetServiceProviderName);
   }
   void setRenderer(renderers_mojom.RendererInterface renderer) {
+    if (impl != null) {
+      impl.setRenderer(renderer);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -640,6 +660,10 @@ class ViewTreeProxy
         _viewTreeMethodSetRendererName);
   }
   void getContainer(view_containers_mojom.ViewContainerInterfaceRequest container) {
+    if (impl != null) {
+      impl.getContainer(container);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -673,7 +697,7 @@ class _ViewTreeStubControl
   String get serviceName => ViewTree.serviceName;
 
 
-  ViewTreeGetTokenResponseParams _viewTreeGetTokenResponseParamsFactory(view_tree_token_mojom.ViewTreeToken token) {
+  static ViewTreeGetTokenResponseParams _viewTreeGetTokenResponseParamsFactory(view_tree_token_mojom.ViewTreeToken token) {
     var result = new ViewTreeGetTokenResponseParams();
     result.token = token;
     return result;
@@ -839,10 +863,15 @@ abstract class ViewTreeListenerInterface
                ViewTreeListener {
   factory ViewTreeListenerInterface([ViewTreeListener impl]) =>
       new ViewTreeListenerStub.unbound(impl);
+
   factory ViewTreeListenerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ViewTreeListener impl]) =>
       new ViewTreeListenerStub.fromEndpoint(endpoint, impl);
+
+  factory ViewTreeListenerInterface.fromMock(
+      ViewTreeListener mock) =>
+      new ViewTreeListenerProxy.fromMock(mock);
 }
 
 abstract class ViewTreeListenerInterfaceRequest
@@ -855,6 +884,8 @@ abstract class ViewTreeListenerInterfaceRequest
 class _ViewTreeListenerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ViewTreeListener> {
+  ViewTreeListener impl;
+
   _ViewTreeListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -894,11 +925,6 @@ class _ViewTreeListenerProxyControl
     }
   }
 
-  ViewTreeListener get impl => null;
-  set impl(ViewTreeListener _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -921,6 +947,13 @@ class ViewTreeListenerProxy
   ViewTreeListenerProxy.unbound()
       : super(new _ViewTreeListenerProxyControl.unbound());
 
+  factory ViewTreeListenerProxy.fromMock(ViewTreeListener mock) {
+    ViewTreeListenerProxy newMockedProxy =
+        new ViewTreeListenerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ViewTreeListenerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewTreeListenerProxy"));
@@ -929,6 +962,9 @@ class ViewTreeListenerProxy
 
 
   dynamic onRendererDied([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.onRendererDied(_ViewTreeListenerStubControl._viewTreeListenerOnRendererDiedResponseParamsFactory));
+    }
     var params = new _ViewTreeListenerOnRendererDiedParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -960,7 +996,7 @@ class _ViewTreeListenerStubControl
   String get serviceName => ViewTreeListener.serviceName;
 
 
-  ViewTreeListenerOnRendererDiedResponseParams _viewTreeListenerOnRendererDiedResponseParamsFactory() {
+  static ViewTreeListenerOnRendererDiedResponseParams _viewTreeListenerOnRendererDiedResponseParamsFactory() {
     var result = new ViewTreeListenerOnRendererDiedResponseParams();
     return result;
   }

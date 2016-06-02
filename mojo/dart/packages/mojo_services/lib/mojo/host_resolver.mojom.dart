@@ -249,10 +249,15 @@ abstract class HostResolverInterface
                HostResolver {
   factory HostResolverInterface([HostResolver impl]) =>
       new HostResolverStub.unbound(impl);
+
   factory HostResolverInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [HostResolver impl]) =>
       new HostResolverStub.fromEndpoint(endpoint, impl);
+
+  factory HostResolverInterface.fromMock(
+      HostResolver mock) =>
+      new HostResolverProxy.fromMock(mock);
 }
 
 abstract class HostResolverInterfaceRequest
@@ -265,6 +270,8 @@ abstract class HostResolverInterfaceRequest
 class _HostResolverProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<HostResolver> {
+  HostResolver impl;
+
   _HostResolverProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -304,11 +311,6 @@ class _HostResolverProxyControl
     }
   }
 
-  HostResolver get impl => null;
-  set impl(HostResolver _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -331,6 +333,13 @@ class HostResolverProxy
   HostResolverProxy.unbound()
       : super(new _HostResolverProxyControl.unbound());
 
+  factory HostResolverProxy.fromMock(HostResolver mock) {
+    HostResolverProxy newMockedProxy =
+        new HostResolverProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static HostResolverProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For HostResolverProxy"));
@@ -339,6 +348,9 @@ class HostResolverProxy
 
 
   dynamic getHostAddresses(String host,net_address_mojom.NetAddressFamily family,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getHostAddresses(host,family,_HostResolverStubControl._hostResolverGetHostAddressesResponseParamsFactory));
+    }
     var params = new _HostResolverGetHostAddressesParams();
     params.host = host;
     params.family = family;
@@ -372,7 +384,7 @@ class _HostResolverStubControl
   String get serviceName => HostResolver.serviceName;
 
 
-  HostResolverGetHostAddressesResponseParams _hostResolverGetHostAddressesResponseParamsFactory(network_error_mojom.NetworkError result, List<net_address_mojom.NetAddress> addresses) {
+  static HostResolverGetHostAddressesResponseParams _hostResolverGetHostAddressesResponseParamsFactory(network_error_mojom.NetworkError result, List<net_address_mojom.NetAddress> addresses) {
     var result = new HostResolverGetHostAddressesResponseParams();
     result.result = result;
     result.addresses = addresses;

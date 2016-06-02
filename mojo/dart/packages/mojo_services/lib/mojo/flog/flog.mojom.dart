@@ -1363,10 +1363,15 @@ abstract class FlogServiceInterface
                FlogService {
   factory FlogServiceInterface([FlogService impl]) =>
       new FlogServiceStub.unbound(impl);
+
   factory FlogServiceInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [FlogService impl]) =>
       new FlogServiceStub.fromEndpoint(endpoint, impl);
+
+  factory FlogServiceInterface.fromMock(
+      FlogService mock) =>
+      new FlogServiceProxy.fromMock(mock);
 }
 
 abstract class FlogServiceInterfaceRequest
@@ -1379,6 +1384,8 @@ abstract class FlogServiceInterfaceRequest
 class _FlogServiceProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<FlogService> {
+  FlogService impl;
+
   _FlogServiceProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1418,11 +1425,6 @@ class _FlogServiceProxyControl
     }
   }
 
-  FlogService get impl => null;
-  set impl(FlogService _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -1445,6 +1447,13 @@ class FlogServiceProxy
   FlogServiceProxy.unbound()
       : super(new _FlogServiceProxyControl.unbound());
 
+  factory FlogServiceProxy.fromMock(FlogService mock) {
+    FlogServiceProxy newMockedProxy =
+        new FlogServiceProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static FlogServiceProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For FlogServiceProxy"));
@@ -1453,6 +1462,10 @@ class FlogServiceProxy
 
 
   void createLogger(FlogLoggerInterfaceRequest logger, String label) {
+    if (impl != null) {
+      impl.createLogger(logger, label);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1464,6 +1477,9 @@ class FlogServiceProxy
         _flogServiceMethodCreateLoggerName);
   }
   dynamic getLogDescriptions([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getLogDescriptions(_FlogServiceStubControl._flogServiceGetLogDescriptionsResponseParamsFactory));
+    }
     var params = new _FlogServiceGetLogDescriptionsParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -1472,6 +1488,10 @@ class FlogServiceProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void createReader(FlogReaderInterfaceRequest reader, int logId) {
+    if (impl != null) {
+      impl.createReader(reader, logId);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1506,7 +1526,7 @@ class _FlogServiceStubControl
   String get serviceName => FlogService.serviceName;
 
 
-  FlogServiceGetLogDescriptionsResponseParams _flogServiceGetLogDescriptionsResponseParamsFactory(List<FlogDescription> descriptions) {
+  static FlogServiceGetLogDescriptionsResponseParams _flogServiceGetLogDescriptionsResponseParamsFactory(List<FlogDescription> descriptions) {
     var result = new FlogServiceGetLogDescriptionsResponseParams();
     result.descriptions = descriptions;
     return result;
@@ -1668,10 +1688,15 @@ abstract class FlogLoggerInterface
                FlogLogger {
   factory FlogLoggerInterface([FlogLogger impl]) =>
       new FlogLoggerStub.unbound(impl);
+
   factory FlogLoggerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [FlogLogger impl]) =>
       new FlogLoggerStub.fromEndpoint(endpoint, impl);
+
+  factory FlogLoggerInterface.fromMock(
+      FlogLogger mock) =>
+      new FlogLoggerProxy.fromMock(mock);
 }
 
 abstract class FlogLoggerInterfaceRequest
@@ -1684,6 +1709,8 @@ abstract class FlogLoggerInterfaceRequest
 class _FlogLoggerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<FlogLogger> {
+  FlogLogger impl;
+
   _FlogLoggerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1701,11 +1728,6 @@ class _FlogLoggerProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  FlogLogger get impl => null;
-  set impl(FlogLogger _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -1730,6 +1752,13 @@ class FlogLoggerProxy
   FlogLoggerProxy.unbound()
       : super(new _FlogLoggerProxyControl.unbound());
 
+  factory FlogLoggerProxy.fromMock(FlogLogger mock) {
+    FlogLoggerProxy newMockedProxy =
+        new FlogLoggerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static FlogLoggerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For FlogLoggerProxy"));
@@ -1738,6 +1767,10 @@ class FlogLoggerProxy
 
 
   void logChannelCreation(int timeUs, int channelId, String typeName) {
+    if (impl != null) {
+      impl.logChannelCreation(timeUs, channelId, typeName);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1750,6 +1783,10 @@ class FlogLoggerProxy
         _flogLoggerMethodLogChannelCreationName);
   }
   void logChannelMessage(int timeUs, int channelId, List<int> data) {
+    if (impl != null) {
+      impl.logChannelMessage(timeUs, channelId, data);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1762,6 +1799,10 @@ class FlogLoggerProxy
         _flogLoggerMethodLogChannelMessageName);
   }
   void logChannelDeletion(int timeUs, int channelId) {
+    if (impl != null) {
+      impl.logChannelDeletion(timeUs, channelId);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1934,10 +1975,15 @@ abstract class FlogReaderInterface
                FlogReader {
   factory FlogReaderInterface([FlogReader impl]) =>
       new FlogReaderStub.unbound(impl);
+
   factory FlogReaderInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [FlogReader impl]) =>
       new FlogReaderStub.fromEndpoint(endpoint, impl);
+
+  factory FlogReaderInterface.fromMock(
+      FlogReader mock) =>
+      new FlogReaderProxy.fromMock(mock);
 }
 
 abstract class FlogReaderInterfaceRequest
@@ -1950,6 +1996,8 @@ abstract class FlogReaderInterfaceRequest
 class _FlogReaderProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<FlogReader> {
+  FlogReader impl;
+
   _FlogReaderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1989,11 +2037,6 @@ class _FlogReaderProxyControl
     }
   }
 
-  FlogReader get impl => null;
-  set impl(FlogReader _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -2016,6 +2059,13 @@ class FlogReaderProxy
   FlogReaderProxy.unbound()
       : super(new _FlogReaderProxyControl.unbound());
 
+  factory FlogReaderProxy.fromMock(FlogReader mock) {
+    FlogReaderProxy newMockedProxy =
+        new FlogReaderProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static FlogReaderProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For FlogReaderProxy"));
@@ -2024,6 +2074,9 @@ class FlogReaderProxy
 
 
   dynamic getEntries(int startIndex,int maxCount,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getEntries(startIndex,maxCount,_FlogReaderStubControl._flogReaderGetEntriesResponseParamsFactory));
+    }
     var params = new _FlogReaderGetEntriesParams();
     params.startIndex = startIndex;
     params.maxCount = maxCount;
@@ -2057,7 +2110,7 @@ class _FlogReaderStubControl
   String get serviceName => FlogReader.serviceName;
 
 
-  FlogReaderGetEntriesResponseParams _flogReaderGetEntriesResponseParamsFactory(List<FlogEntry> entries, int entryCount, bool open) {
+  static FlogReaderGetEntriesResponseParams _flogReaderGetEntriesResponseParamsFactory(List<FlogEntry> entries, int entryCount, bool open) {
     var result = new FlogReaderGetEntriesResponseParams();
     result.entries = entries;
     result.entryCount = entryCount;

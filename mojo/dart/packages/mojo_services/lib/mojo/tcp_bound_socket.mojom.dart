@@ -386,10 +386,15 @@ abstract class TcpBoundSocketInterface
                TcpBoundSocket {
   factory TcpBoundSocketInterface([TcpBoundSocket impl]) =>
       new TcpBoundSocketStub.unbound(impl);
+
   factory TcpBoundSocketInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [TcpBoundSocket impl]) =>
       new TcpBoundSocketStub.fromEndpoint(endpoint, impl);
+
+  factory TcpBoundSocketInterface.fromMock(
+      TcpBoundSocket mock) =>
+      new TcpBoundSocketProxy.fromMock(mock);
 }
 
 abstract class TcpBoundSocketInterfaceRequest
@@ -402,6 +407,8 @@ abstract class TcpBoundSocketInterfaceRequest
 class _TcpBoundSocketProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<TcpBoundSocket> {
+  TcpBoundSocket impl;
+
   _TcpBoundSocketProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -461,11 +468,6 @@ class _TcpBoundSocketProxyControl
     }
   }
 
-  TcpBoundSocket get impl => null;
-  set impl(TcpBoundSocket _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -488,6 +490,13 @@ class TcpBoundSocketProxy
   TcpBoundSocketProxy.unbound()
       : super(new _TcpBoundSocketProxyControl.unbound());
 
+  factory TcpBoundSocketProxy.fromMock(TcpBoundSocket mock) {
+    TcpBoundSocketProxy newMockedProxy =
+        new TcpBoundSocketProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static TcpBoundSocketProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For TcpBoundSocketProxy"));
@@ -496,6 +505,9 @@ class TcpBoundSocketProxy
 
 
   dynamic startListening(tcp_server_socket_mojom.TcpServerSocketInterfaceRequest server,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.startListening(server,_TcpBoundSocketStubControl._tcpBoundSocketStartListeningResponseParamsFactory));
+    }
     var params = new _TcpBoundSocketStartListeningParams();
     params.server = server;
     return ctrl.sendMessageWithRequestId(
@@ -505,6 +517,9 @@ class TcpBoundSocketProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.connect(remoteAddress,sendStream,receiveStream,clientSocket,_TcpBoundSocketStubControl._tcpBoundSocketConnectResponseParamsFactory));
+    }
     var params = new _TcpBoundSocketConnectParams();
     params.remoteAddress = remoteAddress;
     params.sendStream = sendStream;
@@ -540,12 +555,12 @@ class _TcpBoundSocketStubControl
   String get serviceName => TcpBoundSocket.serviceName;
 
 
-  TcpBoundSocketStartListeningResponseParams _tcpBoundSocketStartListeningResponseParamsFactory(network_error_mojom.NetworkError result) {
+  static TcpBoundSocketStartListeningResponseParams _tcpBoundSocketStartListeningResponseParamsFactory(network_error_mojom.NetworkError result) {
     var result = new TcpBoundSocketStartListeningResponseParams();
     result.result = result;
     return result;
   }
-  TcpBoundSocketConnectResponseParams _tcpBoundSocketConnectResponseParamsFactory(network_error_mojom.NetworkError result) {
+  static TcpBoundSocketConnectResponseParams _tcpBoundSocketConnectResponseParamsFactory(network_error_mojom.NetworkError result) {
     var result = new TcpBoundSocketConnectResponseParams();
     result.result = result;
     return result;

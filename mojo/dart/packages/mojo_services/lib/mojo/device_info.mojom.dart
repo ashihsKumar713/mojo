@@ -273,10 +273,15 @@ abstract class DeviceInfoInterface
                DeviceInfo {
   factory DeviceInfoInterface([DeviceInfo impl]) =>
       new DeviceInfoStub.unbound(impl);
+
   factory DeviceInfoInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [DeviceInfo impl]) =>
       new DeviceInfoStub.fromEndpoint(endpoint, impl);
+
+  factory DeviceInfoInterface.fromMock(
+      DeviceInfo mock) =>
+      new DeviceInfoProxy.fromMock(mock);
 }
 
 abstract class DeviceInfoInterfaceRequest
@@ -289,6 +294,8 @@ abstract class DeviceInfoInterfaceRequest
 class _DeviceInfoProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<DeviceInfo> {
+  DeviceInfo impl;
+
   _DeviceInfoProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -328,11 +335,6 @@ class _DeviceInfoProxyControl
     }
   }
 
-  DeviceInfo get impl => null;
-  set impl(DeviceInfo _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -355,6 +357,13 @@ class DeviceInfoProxy
   DeviceInfoProxy.unbound()
       : super(new _DeviceInfoProxyControl.unbound());
 
+  factory DeviceInfoProxy.fromMock(DeviceInfo mock) {
+    DeviceInfoProxy newMockedProxy =
+        new DeviceInfoProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static DeviceInfoProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For DeviceInfoProxy"));
@@ -363,6 +372,9 @@ class DeviceInfoProxy
 
 
   dynamic getDeviceType([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getDeviceType(_DeviceInfoStubControl._deviceInfoGetDeviceTypeResponseParamsFactory));
+    }
     var params = new _DeviceInfoGetDeviceTypeParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -394,7 +406,7 @@ class _DeviceInfoStubControl
   String get serviceName => DeviceInfo.serviceName;
 
 
-  DeviceInfoGetDeviceTypeResponseParams _deviceInfoGetDeviceTypeResponseParamsFactory(DeviceInfoDeviceType deviceType) {
+  static DeviceInfoGetDeviceTypeResponseParams _deviceInfoGetDeviceTypeResponseParamsFactory(DeviceInfoDeviceType deviceType) {
     var result = new DeviceInfoGetDeviceTypeResponseParams();
     result.deviceType = deviceType;
     return result;

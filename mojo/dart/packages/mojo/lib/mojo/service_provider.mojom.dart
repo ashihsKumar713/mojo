@@ -136,10 +136,15 @@ abstract class ServiceProviderInterface
                ServiceProvider {
   factory ServiceProviderInterface([ServiceProvider impl]) =>
       new ServiceProviderStub.unbound(impl);
+
   factory ServiceProviderInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ServiceProvider impl]) =>
       new ServiceProviderStub.fromEndpoint(endpoint, impl);
+
+  factory ServiceProviderInterface.fromMock(
+      ServiceProvider mock) =>
+      new ServiceProviderProxy.fromMock(mock);
 }
 
 abstract class ServiceProviderInterfaceRequest
@@ -152,6 +157,8 @@ abstract class ServiceProviderInterfaceRequest
 class _ServiceProviderProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ServiceProvider> {
+  ServiceProvider impl;
+
   _ServiceProviderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -169,11 +176,6 @@ class _ServiceProviderProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  ServiceProvider get impl => null;
-  set impl(ServiceProvider _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -198,6 +200,13 @@ class ServiceProviderProxy
   ServiceProviderProxy.unbound()
       : super(new _ServiceProviderProxyControl.unbound());
 
+  factory ServiceProviderProxy.fromMock(ServiceProvider mock) {
+    ServiceProviderProxy newMockedProxy =
+        new ServiceProviderProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ServiceProviderProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ServiceProviderProxy"));
@@ -206,6 +215,10 @@ class ServiceProviderProxy
 
 
   void connectToService_(String interfaceName, core.MojoMessagePipeEndpoint pipe) {
+    if (impl != null) {
+      impl.connectToService_(interfaceName, pipe);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

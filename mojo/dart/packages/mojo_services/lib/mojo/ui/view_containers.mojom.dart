@@ -749,10 +749,15 @@ abstract class ViewContainerInterface
                ViewContainer {
   factory ViewContainerInterface([ViewContainer impl]) =>
       new ViewContainerStub.unbound(impl);
+
   factory ViewContainerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ViewContainer impl]) =>
       new ViewContainerStub.fromEndpoint(endpoint, impl);
+
+  factory ViewContainerInterface.fromMock(
+      ViewContainer mock) =>
+      new ViewContainerProxy.fromMock(mock);
 }
 
 abstract class ViewContainerInterfaceRequest
@@ -765,6 +770,8 @@ abstract class ViewContainerInterfaceRequest
 class _ViewContainerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ViewContainer> {
+  ViewContainer impl;
+
   _ViewContainerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -782,11 +789,6 @@ class _ViewContainerProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  ViewContainer get impl => null;
-  set impl(ViewContainer _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -811,6 +813,13 @@ class ViewContainerProxy
   ViewContainerProxy.unbound()
       : super(new _ViewContainerProxyControl.unbound());
 
+  factory ViewContainerProxy.fromMock(ViewContainer mock) {
+    ViewContainerProxy newMockedProxy =
+        new ViewContainerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ViewContainerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewContainerProxy"));
@@ -819,6 +828,10 @@ class ViewContainerProxy
 
 
   void setListener(ViewContainerListenerInterface listener) {
+    if (impl != null) {
+      impl.setListener(listener);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -829,6 +842,10 @@ class ViewContainerProxy
         _viewContainerMethodSetListenerName);
   }
   void addChild(int childKey, view_token_mojom.ViewOwnerInterface childViewOwner) {
+    if (impl != null) {
+      impl.addChild(childKey, childViewOwner);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -840,6 +857,10 @@ class ViewContainerProxy
         _viewContainerMethodAddChildName);
   }
   void removeChild(int childKey, view_token_mojom.ViewOwnerInterfaceRequest transferredViewOwner) {
+    if (impl != null) {
+      impl.removeChild(childKey, transferredViewOwner);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -851,6 +872,10 @@ class ViewContainerProxy
         _viewContainerMethodRemoveChildName);
   }
   void setChildProperties(int childKey, int childSceneVersion, view_properties_mojom.ViewProperties childViewProperties) {
+    if (impl != null) {
+      impl.setChildProperties(childKey, childSceneVersion, childViewProperties);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -1034,10 +1059,15 @@ abstract class ViewContainerListenerInterface
                ViewContainerListener {
   factory ViewContainerListenerInterface([ViewContainerListener impl]) =>
       new ViewContainerListenerStub.unbound(impl);
+
   factory ViewContainerListenerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ViewContainerListener impl]) =>
       new ViewContainerListenerStub.fromEndpoint(endpoint, impl);
+
+  factory ViewContainerListenerInterface.fromMock(
+      ViewContainerListener mock) =>
+      new ViewContainerListenerProxy.fromMock(mock);
 }
 
 abstract class ViewContainerListenerInterfaceRequest
@@ -1050,6 +1080,8 @@ abstract class ViewContainerListenerInterfaceRequest
 class _ViewContainerListenerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ViewContainerListener> {
+  ViewContainerListener impl;
+
   _ViewContainerListenerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -1109,11 +1141,6 @@ class _ViewContainerListenerProxyControl
     }
   }
 
-  ViewContainerListener get impl => null;
-  set impl(ViewContainerListener _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -1136,6 +1163,13 @@ class ViewContainerListenerProxy
   ViewContainerListenerProxy.unbound()
       : super(new _ViewContainerListenerProxyControl.unbound());
 
+  factory ViewContainerListenerProxy.fromMock(ViewContainerListener mock) {
+    ViewContainerListenerProxy newMockedProxy =
+        new ViewContainerListenerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ViewContainerListenerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewContainerListenerProxy"));
@@ -1144,6 +1178,9 @@ class ViewContainerListenerProxy
 
 
   dynamic onChildAttached(int childKey,ViewInfo childViewInfo,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.onChildAttached(childKey,childViewInfo,_ViewContainerListenerStubControl._viewContainerListenerOnChildAttachedResponseParamsFactory));
+    }
     var params = new _ViewContainerListenerOnChildAttachedParams();
     params.childKey = childKey;
     params.childViewInfo = childViewInfo;
@@ -1154,6 +1191,9 @@ class ViewContainerListenerProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic onChildUnavailable(int childKey,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.onChildUnavailable(childKey,_ViewContainerListenerStubControl._viewContainerListenerOnChildUnavailableResponseParamsFactory));
+    }
     var params = new _ViewContainerListenerOnChildUnavailableParams();
     params.childKey = childKey;
     return ctrl.sendMessageWithRequestId(
@@ -1186,11 +1226,11 @@ class _ViewContainerListenerStubControl
   String get serviceName => ViewContainerListener.serviceName;
 
 
-  ViewContainerListenerOnChildAttachedResponseParams _viewContainerListenerOnChildAttachedResponseParamsFactory() {
+  static ViewContainerListenerOnChildAttachedResponseParams _viewContainerListenerOnChildAttachedResponseParamsFactory() {
     var result = new ViewContainerListenerOnChildAttachedResponseParams();
     return result;
   }
-  ViewContainerListenerOnChildUnavailableResponseParams _viewContainerListenerOnChildUnavailableResponseParamsFactory() {
+  static ViewContainerListenerOnChildUnavailableResponseParams _viewContainerListenerOnChildUnavailableResponseParamsFactory() {
     var result = new ViewContainerListenerOnChildUnavailableResponseParams();
     return result;
   }

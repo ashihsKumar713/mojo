@@ -255,10 +255,15 @@ abstract class ViewOwnerInterface
                ViewOwner {
   factory ViewOwnerInterface([ViewOwner impl]) =>
       new ViewOwnerStub.unbound(impl);
+
   factory ViewOwnerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [ViewOwner impl]) =>
       new ViewOwnerStub.fromEndpoint(endpoint, impl);
+
+  factory ViewOwnerInterface.fromMock(
+      ViewOwner mock) =>
+      new ViewOwnerProxy.fromMock(mock);
 }
 
 abstract class ViewOwnerInterfaceRequest
@@ -271,6 +276,8 @@ abstract class ViewOwnerInterfaceRequest
 class _ViewOwnerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<ViewOwner> {
+  ViewOwner impl;
+
   _ViewOwnerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -310,11 +317,6 @@ class _ViewOwnerProxyControl
     }
   }
 
-  ViewOwner get impl => null;
-  set impl(ViewOwner _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -337,6 +339,13 @@ class ViewOwnerProxy
   ViewOwnerProxy.unbound()
       : super(new _ViewOwnerProxyControl.unbound());
 
+  factory ViewOwnerProxy.fromMock(ViewOwner mock) {
+    ViewOwnerProxy newMockedProxy =
+        new ViewOwnerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static ViewOwnerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For ViewOwnerProxy"));
@@ -345,6 +354,9 @@ class ViewOwnerProxy
 
 
   dynamic getToken([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getToken(_ViewOwnerStubControl._viewOwnerGetTokenResponseParamsFactory));
+    }
     var params = new _ViewOwnerGetTokenParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -376,7 +388,7 @@ class _ViewOwnerStubControl
   String get serviceName => ViewOwner.serviceName;
 
 
-  ViewOwnerGetTokenResponseParams _viewOwnerGetTokenResponseParamsFactory(ViewToken token) {
+  static ViewOwnerGetTokenResponseParams _viewOwnerGetTokenResponseParamsFactory(ViewToken token) {
     var result = new ViewOwnerGetTokenResponseParams();
     result.token = token;
     return result;

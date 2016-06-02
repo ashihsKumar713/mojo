@@ -693,10 +693,15 @@ abstract class MediaFactoryInterface
                MediaFactory {
   factory MediaFactoryInterface([MediaFactory impl]) =>
       new MediaFactoryStub.unbound(impl);
+
   factory MediaFactoryInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [MediaFactory impl]) =>
       new MediaFactoryStub.fromEndpoint(endpoint, impl);
+
+  factory MediaFactoryInterface.fromMock(
+      MediaFactory mock) =>
+      new MediaFactoryProxy.fromMock(mock);
 }
 
 abstract class MediaFactoryInterfaceRequest
@@ -709,6 +714,8 @@ abstract class MediaFactoryInterfaceRequest
 class _MediaFactoryProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<MediaFactory> {
+  MediaFactory impl;
+
   _MediaFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -726,11 +733,6 @@ class _MediaFactoryProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  MediaFactory get impl => null;
-  set impl(MediaFactory _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -755,6 +757,13 @@ class MediaFactoryProxy
   MediaFactoryProxy.unbound()
       : super(new _MediaFactoryProxyControl.unbound());
 
+  factory MediaFactoryProxy.fromMock(MediaFactory mock) {
+    MediaFactoryProxy newMockedProxy =
+        new MediaFactoryProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static MediaFactoryProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaFactoryProxy"));
@@ -763,6 +772,10 @@ class MediaFactoryProxy
 
 
   void createPlayer(seeking_reader_mojom.SeekingReaderInterface reader, media_player_mojom.MediaPlayerInterfaceRequest player) {
+    if (impl != null) {
+      impl.createPlayer(reader, player);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -774,6 +787,10 @@ class MediaFactoryProxy
         _mediaFactoryMethodCreatePlayerName);
   }
   void createSource(seeking_reader_mojom.SeekingReaderInterface reader, List<media_types_mojom.MediaTypeSet> allowedMediaTypes, media_source_mojom.MediaSourceInterfaceRequest source) {
+    if (impl != null) {
+      impl.createSource(reader, allowedMediaTypes, source);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -786,6 +803,10 @@ class MediaFactoryProxy
         _mediaFactoryMethodCreateSourceName);
   }
   void createSink(String destinationUrl, media_types_mojom.MediaType mediaType, media_sink_mojom.MediaSinkInterfaceRequest sink) {
+    if (impl != null) {
+      impl.createSink(destinationUrl, mediaType, sink);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -798,6 +819,10 @@ class MediaFactoryProxy
         _mediaFactoryMethodCreateSinkName);
   }
   void createDemux(seeking_reader_mojom.SeekingReaderInterface reader, media_demux_mojom.MediaDemuxInterfaceRequest demux) {
+    if (impl != null) {
+      impl.createDemux(reader, demux);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -809,6 +834,10 @@ class MediaFactoryProxy
         _mediaFactoryMethodCreateDemuxName);
   }
   void createDecoder(media_types_mojom.MediaType inputMediaType, media_type_converter_mojom.MediaTypeConverterInterfaceRequest decoder) {
+    if (impl != null) {
+      impl.createDecoder(inputMediaType, decoder);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -820,6 +849,10 @@ class MediaFactoryProxy
         _mediaFactoryMethodCreateDecoderName);
   }
   void createNetworkReader(String url, seeking_reader_mojom.SeekingReaderInterfaceRequest reader) {
+    if (impl != null) {
+      impl.createNetworkReader(url, reader);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -831,6 +864,10 @@ class MediaFactoryProxy
         _mediaFactoryMethodCreateNetworkReaderName);
   }
   void createTimelineController(timeline_controller_mojom.MediaTimelineControllerInterfaceRequest timelineController) {
+    if (impl != null) {
+      impl.createTimelineController(timelineController);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;

@@ -214,10 +214,15 @@ abstract class FilesInterface
                Files {
   factory FilesInterface([Files impl]) =>
       new FilesStub.unbound(impl);
+
   factory FilesInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [Files impl]) =>
       new FilesStub.fromEndpoint(endpoint, impl);
+
+  factory FilesInterface.fromMock(
+      Files mock) =>
+      new FilesProxy.fromMock(mock);
 }
 
 abstract class FilesInterfaceRequest
@@ -230,6 +235,8 @@ abstract class FilesInterfaceRequest
 class _FilesProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<Files> {
+  Files impl;
+
   _FilesProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -269,11 +276,6 @@ class _FilesProxyControl
     }
   }
 
-  Files get impl => null;
-  set impl(Files _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -296,6 +298,13 @@ class FilesProxy
   FilesProxy.unbound()
       : super(new _FilesProxyControl.unbound());
 
+  factory FilesProxy.fromMock(Files mock) {
+    FilesProxy newMockedProxy =
+        new FilesProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static FilesProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For FilesProxy"));
@@ -304,6 +313,9 @@ class FilesProxy
 
 
   dynamic openFileSystem(String fileSystem,directory_mojom.DirectoryInterfaceRequest directory,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.openFileSystem(fileSystem,directory,_FilesStubControl._filesOpenFileSystemResponseParamsFactory));
+    }
     var params = new _FilesOpenFileSystemParams();
     params.fileSystem = fileSystem;
     params.directory = directory;
@@ -337,7 +349,7 @@ class _FilesStubControl
   String get serviceName => Files.serviceName;
 
 
-  FilesOpenFileSystemResponseParams _filesOpenFileSystemResponseParamsFactory(types_mojom.Error error) {
+  static FilesOpenFileSystemResponseParams _filesOpenFileSystemResponseParamsFactory(types_mojom.Error error) {
     var result = new FilesOpenFileSystemResponseParams();
     result.error = error;
     return result;

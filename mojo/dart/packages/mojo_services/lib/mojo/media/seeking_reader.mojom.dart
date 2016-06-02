@@ -378,10 +378,15 @@ abstract class SeekingReaderInterface
                SeekingReader {
   factory SeekingReaderInterface([SeekingReader impl]) =>
       new SeekingReaderStub.unbound(impl);
+
   factory SeekingReaderInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [SeekingReader impl]) =>
       new SeekingReaderStub.fromEndpoint(endpoint, impl);
+
+  factory SeekingReaderInterface.fromMock(
+      SeekingReader mock) =>
+      new SeekingReaderProxy.fromMock(mock);
 }
 
 abstract class SeekingReaderInterfaceRequest
@@ -394,6 +399,8 @@ abstract class SeekingReaderInterfaceRequest
 class _SeekingReaderProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<SeekingReader> {
+  SeekingReader impl;
+
   _SeekingReaderProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -453,11 +460,6 @@ class _SeekingReaderProxyControl
     }
   }
 
-  SeekingReader get impl => null;
-  set impl(SeekingReader _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -480,6 +482,13 @@ class SeekingReaderProxy
   SeekingReaderProxy.unbound()
       : super(new _SeekingReaderProxyControl.unbound());
 
+  factory SeekingReaderProxy.fromMock(SeekingReader mock) {
+    SeekingReaderProxy newMockedProxy =
+        new SeekingReaderProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static SeekingReaderProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For SeekingReaderProxy"));
@@ -488,6 +497,9 @@ class SeekingReaderProxy
 
 
   dynamic describe([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.describe(_SeekingReaderStubControl._seekingReaderDescribeResponseParamsFactory));
+    }
     var params = new _SeekingReaderDescribeParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -496,6 +508,9 @@ class SeekingReaderProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   dynamic readAt(int position,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.readAt(position,_SeekingReaderStubControl._seekingReaderReadAtResponseParamsFactory));
+    }
     var params = new _SeekingReaderReadAtParams();
     params.position = position;
     return ctrl.sendMessageWithRequestId(
@@ -528,14 +543,14 @@ class _SeekingReaderStubControl
   String get serviceName => SeekingReader.serviceName;
 
 
-  SeekingReaderDescribeResponseParams _seekingReaderDescribeResponseParamsFactory(media_common_mojom.MediaResult result, int size, bool canSeek) {
+  static SeekingReaderDescribeResponseParams _seekingReaderDescribeResponseParamsFactory(media_common_mojom.MediaResult result, int size, bool canSeek) {
     var result = new SeekingReaderDescribeResponseParams();
     result.result = result;
     result.size = size;
     result.canSeek = canSeek;
     return result;
   }
-  SeekingReaderReadAtResponseParams _seekingReaderReadAtResponseParamsFactory(media_common_mojom.MediaResult result, core.MojoDataPipeConsumer dataPipe) {
+  static SeekingReaderReadAtResponseParams _seekingReaderReadAtResponseParamsFactory(media_common_mojom.MediaResult result, core.MojoDataPipeConsumer dataPipe) {
     var result = new SeekingReaderReadAtResponseParams();
     result.result = result;
     result.dataPipe = dataPipe;

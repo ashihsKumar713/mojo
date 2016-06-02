@@ -510,10 +510,15 @@ abstract class MediaPlayerInterface
                MediaPlayer {
   factory MediaPlayerInterface([MediaPlayer impl]) =>
       new MediaPlayerStub.unbound(impl);
+
   factory MediaPlayerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [MediaPlayer impl]) =>
       new MediaPlayerStub.fromEndpoint(endpoint, impl);
+
+  factory MediaPlayerInterface.fromMock(
+      MediaPlayer mock) =>
+      new MediaPlayerProxy.fromMock(mock);
 }
 
 abstract class MediaPlayerInterfaceRequest
@@ -526,6 +531,8 @@ abstract class MediaPlayerInterfaceRequest
 class _MediaPlayerProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<MediaPlayer> {
+  MediaPlayer impl;
+
   _MediaPlayerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -565,11 +572,6 @@ class _MediaPlayerProxyControl
     }
   }
 
-  MediaPlayer get impl => null;
-  set impl(MediaPlayer _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -592,6 +594,13 @@ class MediaPlayerProxy
   MediaPlayerProxy.unbound()
       : super(new _MediaPlayerProxyControl.unbound());
 
+  factory MediaPlayerProxy.fromMock(MediaPlayer mock) {
+    MediaPlayerProxy newMockedProxy =
+        new MediaPlayerProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static MediaPlayerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaPlayerProxy"));
@@ -600,6 +609,10 @@ class MediaPlayerProxy
 
 
   void play() {
+    if (impl != null) {
+      impl.play();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -609,6 +622,10 @@ class MediaPlayerProxy
         _mediaPlayerMethodPlayName);
   }
   void pause() {
+    if (impl != null) {
+      impl.pause();
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -618,6 +635,10 @@ class MediaPlayerProxy
         _mediaPlayerMethodPauseName);
   }
   void seek(int position) {
+    if (impl != null) {
+      impl.seek(position);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -628,6 +649,9 @@ class MediaPlayerProxy
         _mediaPlayerMethodSeekName);
   }
   dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getStatus(versionLastSeen,_MediaPlayerStubControl._mediaPlayerGetStatusResponseParamsFactory));
+    }
     var params = new _MediaPlayerGetStatusParams();
     params.versionLastSeen = versionLastSeen;
     return ctrl.sendMessageWithRequestId(
@@ -660,7 +684,7 @@ class _MediaPlayerStubControl
   String get serviceName => MediaPlayer.serviceName;
 
 
-  MediaPlayerGetStatusResponseParams _mediaPlayerGetStatusResponseParamsFactory(int version, MediaPlayerStatus status) {
+  static MediaPlayerGetStatusResponseParams _mediaPlayerGetStatusResponseParamsFactory(int version, MediaPlayerStatus status) {
     var result = new MediaPlayerGetStatusResponseParams();
     result.version = version;
     result.status = status;

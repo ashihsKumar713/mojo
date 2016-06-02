@@ -331,10 +331,15 @@ abstract class MediaTypeConverterInterface
                MediaTypeConverter {
   factory MediaTypeConverterInterface([MediaTypeConverter impl]) =>
       new MediaTypeConverterStub.unbound(impl);
+
   factory MediaTypeConverterInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [MediaTypeConverter impl]) =>
       new MediaTypeConverterStub.fromEndpoint(endpoint, impl);
+
+  factory MediaTypeConverterInterface.fromMock(
+      MediaTypeConverter mock) =>
+      new MediaTypeConverterProxy.fromMock(mock);
 }
 
 abstract class MediaTypeConverterInterfaceRequest
@@ -347,6 +352,8 @@ abstract class MediaTypeConverterInterfaceRequest
 class _MediaTypeConverterProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<MediaTypeConverter> {
+  MediaTypeConverter impl;
+
   _MediaTypeConverterProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -386,11 +393,6 @@ class _MediaTypeConverterProxyControl
     }
   }
 
-  MediaTypeConverter get impl => null;
-  set impl(MediaTypeConverter _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
-  }
-
   @override
   String toString() {
     var superString = super.toString();
@@ -413,6 +415,13 @@ class MediaTypeConverterProxy
   MediaTypeConverterProxy.unbound()
       : super(new _MediaTypeConverterProxyControl.unbound());
 
+  factory MediaTypeConverterProxy.fromMock(MediaTypeConverter mock) {
+    MediaTypeConverterProxy newMockedProxy =
+        new MediaTypeConverterProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static MediaTypeConverterProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For MediaTypeConverterProxy"));
@@ -421,6 +430,9 @@ class MediaTypeConverterProxy
 
 
   dynamic getOutputType([Function responseFactory = null]) {
+    if (impl != null) {
+      return new Future(() => impl.getOutputType(_MediaTypeConverterStubControl._mediaTypeConverterGetOutputTypeResponseParamsFactory));
+    }
     var params = new _MediaTypeConverterGetOutputTypeParams();
     return ctrl.sendMessageWithRequestId(
         params,
@@ -429,6 +441,10 @@ class MediaTypeConverterProxy
         bindings.MessageHeader.kMessageExpectsResponse);
   }
   void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
+    if (impl != null) {
+      impl.getConsumer(consumer);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -439,6 +455,10 @@ class MediaTypeConverterProxy
         _mediaTypeConverterMethodGetConsumerName);
   }
   void getProducer(media_transport_mojom.MediaProducerInterfaceRequest producer) {
+    if (impl != null) {
+      impl.getProducer(producer);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
@@ -472,7 +492,7 @@ class _MediaTypeConverterStubControl
   String get serviceName => MediaTypeConverter.serviceName;
 
 
-  MediaTypeConverterGetOutputTypeResponseParams _mediaTypeConverterGetOutputTypeResponseParamsFactory(media_types_mojom.MediaType outputType) {
+  static MediaTypeConverterGetOutputTypeResponseParams _mediaTypeConverterGetOutputTypeResponseParamsFactory(media_types_mojom.MediaType outputType) {
     var result = new MediaTypeConverterGetOutputTypeResponseParams();
     result.outputType = outputType;
     return result;

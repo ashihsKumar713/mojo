@@ -138,10 +138,15 @@ abstract class AuthenticatingUrlLoaderInterceptorMetaFactoryInterface
                AuthenticatingUrlLoaderInterceptorMetaFactory {
   factory AuthenticatingUrlLoaderInterceptorMetaFactoryInterface([AuthenticatingUrlLoaderInterceptorMetaFactory impl]) =>
       new AuthenticatingUrlLoaderInterceptorMetaFactoryStub.unbound(impl);
+
   factory AuthenticatingUrlLoaderInterceptorMetaFactoryInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
       [AuthenticatingUrlLoaderInterceptorMetaFactory impl]) =>
       new AuthenticatingUrlLoaderInterceptorMetaFactoryStub.fromEndpoint(endpoint, impl);
+
+  factory AuthenticatingUrlLoaderInterceptorMetaFactoryInterface.fromMock(
+      AuthenticatingUrlLoaderInterceptorMetaFactory mock) =>
+      new AuthenticatingUrlLoaderInterceptorMetaFactoryProxy.fromMock(mock);
 }
 
 abstract class AuthenticatingUrlLoaderInterceptorMetaFactoryInterfaceRequest
@@ -154,6 +159,8 @@ abstract class AuthenticatingUrlLoaderInterceptorMetaFactoryInterfaceRequest
 class _AuthenticatingUrlLoaderInterceptorMetaFactoryProxyControl
     extends bindings.ProxyMessageHandler
     implements bindings.ProxyControl<AuthenticatingUrlLoaderInterceptorMetaFactory> {
+  AuthenticatingUrlLoaderInterceptorMetaFactory impl;
+
   _AuthenticatingUrlLoaderInterceptorMetaFactoryProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
@@ -171,11 +178,6 @@ class _AuthenticatingUrlLoaderInterceptorMetaFactoryProxyControl
         close(immediate: true);
         break;
     }
-  }
-
-  AuthenticatingUrlLoaderInterceptorMetaFactory get impl => null;
-  set impl(AuthenticatingUrlLoaderInterceptorMetaFactory _) {
-    throw new core.MojoApiError("The impl of a Proxy cannot be set.");
   }
 
   @override
@@ -200,6 +202,13 @@ class AuthenticatingUrlLoaderInterceptorMetaFactoryProxy
   AuthenticatingUrlLoaderInterceptorMetaFactoryProxy.unbound()
       : super(new _AuthenticatingUrlLoaderInterceptorMetaFactoryProxyControl.unbound());
 
+  factory AuthenticatingUrlLoaderInterceptorMetaFactoryProxy.fromMock(AuthenticatingUrlLoaderInterceptorMetaFactory mock) {
+    AuthenticatingUrlLoaderInterceptorMetaFactoryProxy newMockedProxy =
+        new AuthenticatingUrlLoaderInterceptorMetaFactoryProxy.unbound();
+    newMockedProxy.impl = mock;
+    return newMockedProxy;
+  }
+
   static AuthenticatingUrlLoaderInterceptorMetaFactoryProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
     assert(endpoint.setDescription("For AuthenticatingUrlLoaderInterceptorMetaFactoryProxy"));
@@ -208,6 +217,10 @@ class AuthenticatingUrlLoaderInterceptorMetaFactoryProxy
 
 
   void createUrlLoaderInterceptorFactory(url_loader_interceptor_mojom.UrlLoaderInterceptorFactoryInterfaceRequest factoryRequest, authentication_mojom.AuthenticationServiceInterface authenticationService) {
+    if (impl != null) {
+      impl.createUrlLoaderInterceptorFactory(factoryRequest, authenticationService);
+      return;
+    }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
