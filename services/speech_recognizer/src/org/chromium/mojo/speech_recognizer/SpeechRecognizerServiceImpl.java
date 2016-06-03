@@ -53,9 +53,7 @@ final class SpeechRecognizerServiceImpl implements SpeechRecognizerService {
     /**
      * Returns a list of utterances from the user's speech input.
      *
-     * @see
-     *org.chromium.mojo.speech_recognizer.SpeechRecognizerService#listen(
-     *        SpeechRecognizerService.ListenResponse)
+     * @see SpeechRecognizerService#listen(SpeechRecognizerListener)
      */
     @Override
     public void listen(SpeechRecognizerListener listener) {
@@ -82,7 +80,7 @@ final class SpeechRecognizerServiceImpl implements SpeechRecognizerService {
     }
 
     /**
-     * @see org.chromium.mojo.speech_recognizer.SpeechRecognizerService#stopListening()
+     * @see SpeechRecognizerService#stopListening()
      */
     @Override
     public void stopListening() {
@@ -126,18 +124,23 @@ final class SpeechRecognizerServiceImpl implements SpeechRecognizerService {
             Log.d(TAG, "onReadyForSpeech");
             mReadyForSpeech = true;
         }
+
         @Override
         public void onBeginningOfSpeech() {}
+
         @Override
         public void onRmsChanged(float rmsdB) {
             if (mListener != null) {
                 mListener.onSoundLevelChanged(rmsdB);
             }
         }
+
         @Override
         public void onBufferReceived(byte[] buffer) {}
+
         @Override
         public void onEndOfSpeech() {}
+
         @Override
         public void onError(int error) {
             Log.d(TAG, "onError " + error);
@@ -159,16 +162,19 @@ final class SpeechRecognizerServiceImpl implements SpeechRecognizerService {
                 mListener = null;
             }
         }
+
         @Override
         public void onResults(Bundle results) {
             mAudioManager.abandonAudioFocus(null);
             processResults(results, true);
             mListener = null;
         }
+
         @Override
         public void onPartialResults(Bundle partialResults) {
             processResults(partialResults, false);
         }
+
         @Override
         public void onEvent(int eventType, Bundle params) {}
 
