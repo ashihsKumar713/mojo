@@ -22,7 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,10 +38,10 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
 
     private static final String TAG = "cr.native_test";
 
-    private static final int ACCEPT_TIMEOUT_MS = 5000;
     private static final String DEFAULT_NATIVE_TEST_ACTIVITY =
             "org.chromium.native_test.NativeUnitTestActivity";
-    private static final Pattern RE_TEST_OUTPUT = Pattern.compile("\\[ *([^ ]*) *\\] ?([^ ]+) .*");
+    private static final Pattern RE_TEST_OUTPUT =
+            Pattern.compile("\\[ *([^ ]*) *\\] ?([^ \\.]+)\\.([^ \\.]+)($| .*)");
 
     private ResultsBundleGenerator mBundleGenerator = new RobotiumBundleGenerator();
     private String mCommandLineFile;
@@ -49,6 +49,59 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
     private String mNativeTestActivity;
     private Bundle mLogBundle = new Bundle();
     private File mStdoutFile;
+
+    private class NativeTestResult implements ResultsBundleGenerator.TestResult {
+        private String mTestClass;
+        private String mTestName;
+        private int mTestIndex;
+        private StringBuilder mLogBuilder = new StringBuilder();
+        private ResultsBundleGenerator.TestStatus mStatus;
+
+        private NativeTestResult(String testClass, String testName, int index) {
+            mTestClass = testClass;
+            mTestName = testName;
+            mTestIndex = index;
+        }
+
+        @Override
+        public String getTestClass() {
+            return mTestClass;
+        }
+
+        @Override
+        public String getTestName() {
+            return mTestName;
+        }
+
+        @Override
+        public int getTestIndex() {
+            return mTestIndex;
+        }
+
+        @Override
+        public String getMessage() {
+            return mStatus.toString();
+        }
+
+        @Override
+        public String getLog() {
+            return mLogBuilder.toString();
+        }
+
+        public void appendToLog(String logLine) {
+            mLogBuilder.append(logLine);
+            mLogBuilder.append("\n");
+        }
+
+        @Override
+        public ResultsBundleGenerator.TestStatus getStatus() {
+            return mStatus;
+        }
+
+        public void setStatus(ResultsBundleGenerator.TestStatus status) {
+            mStatus = status;
+        }
+    }
 
     @Override
     public void onCreate(Bundle arguments) {
@@ -82,7 +135,6 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
         Log.i(TAG, "Creating activity.");
         Activity activityUnderTest = startNativeTestActivity();
 
-        Log.i(TAG, "Waiting for tests to finish.");
         try {
             while (!activityUnderTest.isFinishing()) {
                 Thread.sleep(100);
@@ -95,7 +147,7 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
         Map<String, ResultsBundleGenerator.TestResult> results = parseResults(activityUnderTest);
 
         Log.i(TAG, "Parsing results and generating output.");
-        return mBundleGenerator.generate(results);
+        return mBundleGenerator.sendResults(this, results);
     }
 
     /** Starts the NativeTestActivty.
@@ -123,7 +175,7 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
     private Map<String, ResultsBundleGenerator.TestResult> parseResults(
             Activity activityUnderTest) {
         Map<String, ResultsBundleGenerator.TestResult> results =
-                new HashMap<String, ResultsBundleGenerator.TestResult>();
+                new LinkedHashMap<String, ResultsBundleGenerator.TestResult>();
 
         BufferedReader r = null;
 
@@ -136,22 +188,31 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
             r = new BufferedReader(new InputStreamReader(
                     new BufferedInputStream(new FileInputStream(mStdoutFile))));
 
+            NativeTestResult testResult = null;
+            int testNum = 0;
             for (String l = r.readLine(); l != null && !l.equals("<<ScopedMainEntryLogger");
                     l = r.readLine()) {
                 Matcher m = RE_TEST_OUTPUT.matcher(l);
                 if (m.matches()) {
                     if (m.group(1).equals("RUN")) {
-                        results.put(m.group(2), ResultsBundleGenerator.TestResult.UNKNOWN);
-                    } else if (m.group(1).equals("FAILED")) {
-                        results.put(m.group(2), ResultsBundleGenerator.TestResult.FAILED);
-                    } else if (m.group(1).equals("OK")) {
-                        results.put(m.group(2), ResultsBundleGenerator.TestResult.PASSED);
+                        String testClass = m.group(2);
+                        String testName = m.group(3);
+                        testResult = new NativeTestResult(testClass, testName, ++testNum);
+                        results.put(String.format("%s.%s", m.group(2), m.group(3)), testResult);
+                    } else if (testResult != null && m.group(1).equals("FAILED")) {
+                        testResult.setStatus(ResultsBundleGenerator.TestStatus.FAILED);
+                        testResult = null;
+                    } else if (testResult != null && m.group(1).equals("OK")) {
+                        testResult.setStatus(ResultsBundleGenerator.TestStatus.PASSED);
+                        testResult = null;
                     }
+                } else if (testResult != null) {
+                    // We are inside a test. Let's collect log data in case there is a failure.
+                    testResult.appendToLog(l);
                 }
-                mLogBundle.putString(Instrumentation.REPORT_KEY_STREAMRESULT, l + "\n");
-                sendStatus(0, mLogBundle);
                 Log.i(TAG, l);
             }
+
         } catch (FileNotFoundException e) {
             Log.e(TAG, "Couldn't find stdout file file: ", e);
         } catch (IOException e) {

@@ -4,6 +4,7 @@
 
 package org.chromium.test.support;
 
+import android.app.Instrumentation;
 import android.os.Bundle;
 
 import java.util.Map;
@@ -12,19 +13,53 @@ import java.util.Map;
  * Creates a results Bundle.
  */
 public interface ResultsBundleGenerator {
+    /**
+     * Holds the results of a test.
+     */
+    public static interface TestResult {
+        /**
+         * Returns the test class name.
+         */
+        public String getTestClass();
+
+        /**
+         * Returns the test case name.
+         */
+        public String getTestName();
+
+        /**
+         * Retunrs the index of the test within the suite.
+         */
+        public int getTestIndex();
+
+        /**
+         * Returns a message for the test.
+         */
+        public String getMessage();
+
+        /**
+         * Returns the test case log.
+         */
+        public String getLog();
+
+        /**
+         * Returns the status of the test.
+         */
+        public TestStatus getStatus();
+    }
 
     /** Indicates the state of a test.
      */
-    static enum TestResult {
-        PASSED, FAILED, ERROR, UNKNOWN
-    }
+    public static enum TestStatus { PASSED, FAILED, ERROR, UNKNOWN }
 
-    /** Creates a bundle of test results from the provided raw results.
+    /** Sends results to the instrumentation framework.
+
+        @returns a summary Bundle that should be used to terminate the instrumentation.
 
         Note: actual bundle content and format may vary.
 
+        @param instrumentation The application instrumentation used for testing.
         @param rawResults A map between test names and test results.
      */
-    Bundle generate(Map<String, TestResult> rawResults);
+    Bundle sendResults(Instrumentation instrumentation, Map<String, TestResult> rawResults);
 }
-
