@@ -79,7 +79,7 @@ func (delegate *EchoDelegate) Initialize(ctx application.Context) {
 	}
 	go func() {
 		echoRequest, echoPointer := echo.CreateMessagePipeForEcho()
-		conn := ctx.ConnectToApplication(pairedURL(delegate.localURL), &echo.Echo_ServiceFactory{delegate})
+		conn := ctx.ConnectToApplication(pairedURL(delegate.localURL))
 		if conn.RequestorURL() != delegate.localURL {
 			panic(fmt.Sprintf("invalid requestor URL: want %v, got %v", delegate.localURL, conn.RequestorURL()))
 		}
@@ -100,9 +100,7 @@ func (delegate *EchoDelegate) AcceptConnection(conn *application.Connection) {
 	if conn.ConnectionURL() != delegate.localURL {
 		panic(fmt.Sprintf("invalid connection URL: want %v, got %v", delegate.localURL, conn.ConnectionURL()))
 	}
-	echoRequest, echoPointer := echo.CreateMessagePipeForEcho()
-	conn.ProvideServices(&echo.Echo_ServiceFactory{delegate}).ConnectToService(&echoRequest)
-	checkEcho(echoPointer)
+	conn.ProvideServices(&echo.Echo_ServiceFactory{delegate})
 }
 
 func (delegate *EchoDelegate) Quit() {}
@@ -133,9 +131,7 @@ func TestApplication(t *testing.T) {
 	for i := 0; i < 2; i++ {
 		request, pointer := mojoApp.CreateMessagePipeForApplication()
 		apps = append(apps, mojoApp.NewApplicationProxy(pointer, bindings.GetAsyncWaiter()))
-		// Each app instance provides echo service once when it creates
-		// a connection and once other instance creates a connection.
-		responsesSent.Add(2)
+		responsesSent.Add(1)
 		appsTerminated.Add(1)
 		delegate := &EchoDelegate{&responsesSent, urls[i]}
 		go func() {
