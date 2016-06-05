@@ -17,8 +17,7 @@ class ExampleApp(application_delegate.ApplicationDelegate):
   def OnAcceptConnection(self,
                          requestor_url,
                          resolved_url,
-                         service_provider,
-                         exposed_services):
+                         service_provider):
     service_provider.AddService(ExampleServiceImpl)
     return True
 

@@ -40,8 +40,7 @@ class ForwardingApplicationImpl : public Application {
                         InterfaceRequest<ServiceProvider> services,
                         InterfaceHandle<ServiceProvider> exposed_services,
                         const String& requested_url) override {
-    shell_->ConnectToApplication(target_url_, services.Pass(),
-                                  exposed_services.Pass());
+    shell_->ConnectToApplication(target_url_, services.Pass(), nullptr);
   }
   void RequestQuit() override {
     RunLoop::current()->Quit();
