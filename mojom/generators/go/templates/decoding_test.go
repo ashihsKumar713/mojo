@@ -142,3 +142,50 @@ if pointer == 0 {
 
 	check(t, expected, "FieldDecodingTmpl", encodingInfo)
 }
+
+func TestDecodingStructFieldDecoding(t *testing.T) {
+	expected := `pointer, err := decoder.ReadPointer()
+if err != nil {
+	return err
+}
+if pointer == 0 {
+	return &bindings.ValidationError{bindings.UnexpectedNullPointer, "unexpected null pointer"}
+} else {
+	if err := s.FStruct.Decode(decoder); err != nil {
+		return err
+	}
+}`
+
+	encodingInfo := mockEncodingInfo{
+		IsPointer:  true,
+		IsStruct:   true,
+		Identifier: "s.FStruct",
+	}
+
+	check(t, expected, "FieldDecodingTmpl", encodingInfo)
+}
+
+func TestDecodingNullableStructFieldDecoding(t *testing.T) {
+	expected := `pointer, err := decoder.ReadPointer()
+if err != nil {
+	return err
+}
+if pointer == 0 {
+	s.FStruct = nil
+} else {
+	s.FStruct = new(SomeStruct)
+	if err := s.FStruct.Decode(decoder); err != nil {
+		return err
+	}
+}`
+
+	encodingInfo := mockEncodingInfo{
+		IsNullable: true,
+		IsPointer:  true,
+		IsStruct:   true,
+		Identifier: "s.FStruct",
+		GoType:     "SomeStruct",
+	}
+
+	check(t, expected, "FieldDecodingTmpl", encodingInfo)
+}

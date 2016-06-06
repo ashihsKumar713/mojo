@@ -60,6 +60,10 @@ if err := encoder.WriteHandle({{$info.Identifier}}); err != nil {
 {{- end -}}
 	return err
 }
+{{- else if $info.IsStruct -}}
+if err := {{$info.Identifier}}.Encode(encoder); err != nil {
+	return err
+}
 {{- else if $info.IsArray -}}
 {{ $elInfo := $info.ElementEncodingInfo -}}
 encoder.StartArray(uint32(len({{$info.Identifier}})), {{$elInfo.BitSize}})

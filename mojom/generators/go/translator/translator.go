@@ -111,6 +111,8 @@ func (t *translator) encodingInfoNested(mojomType mojom_types.Type, level int) (
 		info = t.arrayTypeEncodingInfo(m.Value, level)
 	case *mojom_types.TypeMapType:
 		info = t.mapTypeEncodingInfo(m.Value, level)
+	case *mojom_types.TypeTypeReference:
+		info = t.typeRefEncodingInfo(m.Value)
 	}
 	info.setGoType(t.translateType(mojomType))
 	return info
@@ -213,6 +215,21 @@ func (t *translator) mapTypeEncodingInfo(mojomType mojom_types.MapType, level in
 	valueEncodingInfo.setGoType(fmt.Sprintf("[]%v", valueEncodingInfo.elementEncodingInfo.GoType()))
 	valueEncodingInfo.elementEncodingInfo.setIdentifier(fmt.Sprintf("value%v", level))
 
+	return info
+}
+
+func (t *translator) typeRefEncodingInfo(typeRef mojom_types.TypeReference) (info EncodingInfo) {
+	mojomType := t.GetUserDefinedType(*typeRef.TypeKey)
+	switch m := mojomType.(type) {
+	case *mojom_types.UserDefinedTypeStructType:
+		info = t.structTypeEncodingInfo(m.Value)
+	}
+	info.setNullable(typeRef.Nullable)
+	return info
+}
+
+func (t *translator) structTypeEncodingInfo(mojomType mojom_types.MojomStruct) (info *structTypeEncodingInfo) {
+	info = new(structTypeEncodingInfo)
 	return info
 }
 

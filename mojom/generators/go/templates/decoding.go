@@ -96,6 +96,13 @@ if handle.IsValid() {
 	return &bindings.ValidationError{bindings.UnexpectedInvalidHandle, "unexpected invalid handle"}
 {{- end -}}
 }
+{{- else if $info.IsStruct -}}
+{{- if $info.IsNullable -}}
+{{$info.Identifier}} = new({{$info.GoType}})
+{{end -}}
+if err := {{$info.Identifier}}.Decode(decoder); err != nil {
+	return err
+}
 {{- else if $info.IsArray -}}
 {{ $elInfo := $info.ElementEncodingInfo -}}
 len0, err := decoder.StartArray({{$elInfo.BitSize}})

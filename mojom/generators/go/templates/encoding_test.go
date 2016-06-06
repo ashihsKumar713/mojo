@@ -15,6 +15,7 @@ type mockEncodingInfo struct {
 	IsArray             bool
 	IsMap               bool
 	IsNullable          bool
+	IsStruct            bool
 	ElementEncodingInfo *mockEncodingInfo
 	KeyEncodingInfo     *mockEncodingInfo
 	ValueEncodingInfo   *mockEncodingInfo
@@ -231,6 +232,45 @@ if err := encoder.Finish(); err != nil {
 				Identifier:    "value0",
 			},
 		},
+	}
+
+	check(t, expected, "FieldEncodingTmpl", encodingInfo)
+}
+
+func TestEncodingStructFieldEncoding(t *testing.T) {
+	expected := `if err := encoder.WritePointer(); err != nil {
+	return err
+}
+if err := s.FStruct.Encode(encoder); err != nil {
+	return err
+}`
+
+	encodingInfo := mockEncodingInfo{
+		IsPointer:  true,
+		IsStruct:   true,
+		Identifier: "s.FStruct",
+	}
+
+	check(t, expected, "FieldEncodingTmpl", encodingInfo)
+}
+
+func TestEncodingNullableStructFieldEncoding(t *testing.T) {
+	expected := `if s.FNullableStruct == nil {
+	encoder.WriteNullPointer()
+} else {
+	if err := encoder.WritePointer(); err != nil {
+		return err
+	}
+	if err := s.FNullableStruct.Encode(encoder); err != nil {
+		return err
+	}
+}`
+
+	encodingInfo := mockEncodingInfo{
+		IsPointer:  true,
+		IsStruct:   true,
+		IsNullable: true,
+		Identifier: "s.FNullableStruct",
 	}
 
 	check(t, expected, "FieldEncodingTmpl", encodingInfo)

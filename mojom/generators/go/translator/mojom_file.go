@@ -82,6 +82,9 @@ type EncodingInfo interface {
 	// IsPointer returns true if the field is a pointer: struct, array, map or string.
 	IsPointer() bool
 
+	// IsStruct returns true if the field is a struct.
+	IsStruct() bool
+
 	// IsArray returns true if the field is an array.
 	IsArray() bool
 
@@ -90,6 +93,7 @@ type EncodingInfo interface {
 
 	// IsNullable returns true if the field is nullable.
 	IsNullable() bool
+	setNullable(nullable bool)
 
 	// ElementEncodingInfo returns the EncodingInfo of the elements on an array.
 	ElementEncodingInfo() EncodingInfo
@@ -149,6 +153,10 @@ func (b *baseEncodingInfo) IsPointer() bool {
 	return false
 }
 
+func (b *baseEncodingInfo) IsStruct() bool {
+	return false
+}
+
 func (b *baseEncodingInfo) IsArray() bool {
 	return false
 }
@@ -173,6 +181,11 @@ func (b *baseEncodingInfo) IsNullable() bool {
 	return false
 }
 
+func (b *baseEncodingInfo) setNullable(nullable bool) {
+	_ = nullable
+	panic("setNullable not implemented for non-pointers.")
+}
+
 func (b *baseEncodingInfo) GoType() string {
 	return b.goType
 }
@@ -191,6 +204,10 @@ type basePointerEncodingInfo struct {
 
 func (b *basePointerEncodingInfo) IsNullable() bool {
 	return b.nullable
+}
+
+func (b *basePointerEncodingInfo) setNullable(nullable bool) {
+	b.nullable = nullable
 }
 
 func (b *basePointerEncodingInfo) IsPointer() bool {
@@ -325,4 +342,23 @@ func (t *mapTypeEncodingInfo) WriteFunction() string {
 
 func (t *mapTypeEncodingInfo) ReadFunction() string {
 	panic("Maps don't have a read function.")
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// structTypeEncodingInfo is the EncodingInfo for a struct.
+type structTypeEncodingInfo struct {
+	basePointerEncodingInfo
+}
+
+func (t *structTypeEncodingInfo) IsStruct() bool {
+	return true
+}
+
+func (t *structTypeEncodingInfo) WriteFunction() string {
+	panic("Structs don't have a write function.")
+}
+
+func (t *structTypeEncodingInfo) ReadFunction() string {
+	panic("Structs don't have a read function.")
 }

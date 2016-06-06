@@ -71,15 +71,15 @@ func TestFieldSerializationSorter(t *testing.T) {
 	sorter := structFieldSerializationSorter(fields)
 	sort.Sort(sorter)
 
-	checkEq(t, int32(0), fields[0].Offset)
-	checkEq(t, int32(1), fields[1].Offset)
+	checkEq(t, uint32(0), fields[0].Offset)
+	checkEq(t, uint32(1), fields[1].Offset)
 	checkEq(t, int8(0), fields[1].Bit)
-	checkEq(t, int32(1), fields[2].Offset)
+	checkEq(t, uint32(1), fields[2].Offset)
 	checkEq(t, int8(1), fields[2].Bit)
-	checkEq(t, int32(1), fields[3].Offset)
+	checkEq(t, uint32(1), fields[3].Offset)
 	checkEq(t, int8(2), fields[3].Bit)
-	checkEq(t, int32(2), fields[4].Offset)
-	checkEq(t, int32(3), fields[5].Offset)
+	checkEq(t, uint32(2), fields[4].Offset)
+	checkEq(t, uint32(3), fields[5].Offset)
 }
 
 func TestSimpleTypeEncodingInfo(t *testing.T) {
@@ -192,4 +192,23 @@ func TestMapTypeEncodingInfo(t *testing.T) {
 	checkEq(t, "[]int16", info.ValueEncodingInfo().GoType())
 	checkEq(t, "values0", info.ValueEncodingInfo().Identifier())
 	checkEq(t, "value0", info.ValueEncodingInfo().ElementEncodingInfo().Identifier())
+}
+
+func TestStructTypeEncodingInfo(t *testing.T) {
+	fileGraph := mojom_files.MojomFileGraph{}
+	shortName := "SomeStruct"
+	typeKey := "typeKey"
+
+	mojomStruct := mojom_types.MojomStruct{
+		DeclData: &mojom_types.DeclarationData{ShortName: &shortName}}
+	fileGraph.ResolvedTypes = map[string]mojom_types.UserDefinedType{}
+	fileGraph.ResolvedTypes[typeKey] = &mojom_types.UserDefinedTypeStructType{mojomStruct}
+	translator := NewTranslator(&fileGraph)
+
+	typeRef := &mojom_types.TypeTypeReference{mojom_types.TypeReference{TypeKey: &typeKey}}
+
+	info := translator.encodingInfo(typeRef)
+
+	checkEq(t, true, info.IsPointer())
+	checkEq(t, "SomeStruct", info.GoType())
 }
