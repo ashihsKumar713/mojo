@@ -57,7 +57,7 @@ target_os = [u'android',u'linux']
 
 Bring in Android-specific build dependencies:
 ```
-$ build/install-build-deps-android.sh 
+$ build/install-build-deps-android.sh
 ```
 
 Pull down all of the packages with this command:
