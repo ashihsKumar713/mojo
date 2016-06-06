@@ -42,11 +42,9 @@ class _ApplicationImpl implements application_mojom.Application {
   }
 
   @override
-  void acceptConnection(
-          String requestorUrl,
-          ServiceProviderInterfaceRequest services,
-          ServiceProviderInterface exposedServices,
-          String resolvedUrl) =>
+  void acceptConnection(String requestorUrl,
+                        String resolvedUrl,
+                        ServiceProviderInterfaceRequest services) =>
       _application._acceptConnection(requestorUrl, services, resolvedUrl);
 
   @override
@@ -99,7 +97,7 @@ abstract class Application implements bindings.ServiceConnector {
   // Returns a connection to the app at |url|.
   ApplicationConnection connectToApplication(String url) {
     var proxy = new ServiceProviderProxy.unbound();
-    _applicationImpl.shell.connectToApplication(url, proxy, null);
+    _applicationImpl.shell.connectToApplication(url, proxy);
     var connection = new ApplicationConnection(null, proxy);
     _applicationConnections.add(connection);
     return connection;

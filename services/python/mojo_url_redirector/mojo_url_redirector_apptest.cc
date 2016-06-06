@@ -126,7 +126,7 @@ class MojoUrlRedirectorApplicationTest :
     // Connect to the redirector and wait until it registers itself as a
     // handler with the server on |redirector_port_|.
     shell()->ConnectToApplication("mojo:mojo_url_redirector",
-                                  GetProxy(&url_redirector_sp_), nullptr);
+                                  GetProxy(&url_redirector_sp_));
     mojo::ConnectToService(shell(), "mojo:network_service",
                            GetProxy(&network_service_));
     WaitForRedirectorRegistration();

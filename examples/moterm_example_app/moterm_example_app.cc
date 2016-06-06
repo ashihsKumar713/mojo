@@ -52,7 +52,7 @@ class MotermExampleAppView {
     // Connect to the moterm app.
     LOG(INFO) << "Connecting to moterm";
     mojo::ServiceProviderPtr moterm_app;
-    shell->ConnectToApplication("mojo:moterm", GetProxy(&moterm_app), nullptr);
+    shell->ConnectToApplication("mojo:moterm", GetProxy(&moterm_app));
 
     // Create the moterm view and pass it back to the client directly.
     mojo::ConnectToService(moterm_app.get(), GetProxy(&moterm_view_provider_));
@@ -128,7 +128,7 @@ class MotermExampleAppView {
     moterm_file_.reset();
 
     mojo::ServiceProviderPtr dest_sp;
-    shell_->ConnectToApplication(dest_url, GetProxy(&dest_sp), nullptr);
+    shell_->ConnectToApplication(dest_url, GetProxy(&dest_sp));
     mojo::terminal::TerminalClientPtr dest_terminal_client;
     mojo::ConnectToService(dest_sp.get(), GetProxy(&dest_terminal_client));
     moterm_terminal_->ConnectToClient(

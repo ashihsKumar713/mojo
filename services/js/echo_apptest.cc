@@ -41,8 +41,7 @@ class JSServiceProviderEchoTest : public test::JSApplicationTestBase {
   void SetUp() override {
     ApplicationTestBase::SetUp();
     const std::string& url = JSAppURL("echo.js");
-    shell()->ConnectToApplication(url, GetProxy(&echo_service_provider_),
-                                  nullptr);
+    shell()->ConnectToApplication(url, GetProxy(&echo_service_provider_));
   }
 
   mojo::ServiceProviderPtr echo_service_provider_;

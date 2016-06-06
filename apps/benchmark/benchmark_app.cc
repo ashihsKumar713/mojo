@@ -88,8 +88,7 @@ class BenchmarkApp : public mojo::ApplicationImplBase,
     // Record the time origin for measurements just before connecting to the app
     // being benchmarked.
     time_origin_ = base::TimeTicks::FromInternalValue(MojoGetTimeTicksNow());
-    shell()->ConnectToApplication(args_.app, GetProxy(&traced_app_connection_),
-                                  nullptr);
+    shell()->ConnectToApplication(args_.app, GetProxy(&traced_app_connection_));
 
     // Post task to stop tracing when the time is up.
     base::MessageLoop::current()->PostDelayedTask(

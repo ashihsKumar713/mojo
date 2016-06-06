@@ -31,9 +31,8 @@ class PrintBodyApplication : public Application {
   void RequestQuit() override {}
 
   void AcceptConnection(const String& requestor_url,
-                        InterfaceRequest<ServiceProvider> services,
-                        InterfaceHandle<ServiceProvider> exported_services,
-                        const String& url) override {
+                        const String& url,
+                        InterfaceRequest<ServiceProvider> services) override {
     printf(
         "ContentHandler::OnConnect - url:%s - requestor_url:%s - body "
         "follows\n\n",

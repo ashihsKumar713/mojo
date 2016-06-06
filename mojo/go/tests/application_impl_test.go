@@ -111,11 +111,11 @@ type shellImpl struct {
 	localURL  string
 }
 
-func (s *shellImpl) ConnectToApplication(URL string, services *sp.ServiceProvider_Request, exposedServices *sp.ServiceProvider_Pointer) error {
+func (s *shellImpl) ConnectToApplication(URL string, services sp.ServiceProvider_Request) error {
 	if URL != pairedURL(s.localURL) {
 		return fmt.Errorf("invalid URL: want %v, got %v", pairedURL(s.localURL), URL)
 	}
-	s.remoteApp.AcceptConnection(s.localURL, services, exposedServices, pairedURL(s.localURL))
+	s.remoteApp.AcceptConnection(s.localURL, pairedURL(s.localURL), services)
 	return nil
 }
 

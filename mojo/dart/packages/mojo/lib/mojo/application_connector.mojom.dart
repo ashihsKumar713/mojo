@@ -13,11 +13,10 @@ import 'package:mojo/mojo/service_provider.mojom.dart' as service_provider_mojom
 
 class _ApplicationConnectorConnectToApplicationParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(32, 0)
+    const bindings.StructDataHeader(24, 0)
   ];
   String applicationUrl = null;
   service_provider_mojom.ServiceProviderInterfaceRequest services = null;
-  service_provider_mojom.ServiceProviderInterface exposedServices = null;
 
   _ApplicationConnectorConnectToApplicationParams() : super(kVersions.last.size);
 
@@ -60,11 +59,7 @@ class _ApplicationConnectorConnectToApplicationParams extends bindings.Struct {
     }
     if (mainDataHeader.version >= 0) {
       
-      result.services = decoder0.decodeInterfaceRequest(16, true, service_provider_mojom.ServiceProviderStub.newFromEndpoint);
-    }
-    if (mainDataHeader.version >= 0) {
-      
-      result.exposedServices = decoder0.decodeServiceInterface(20, true, service_provider_mojom.ServiceProviderProxy.newFromEndpoint);
+      result.services = decoder0.decodeInterfaceRequest(16, false, service_provider_mojom.ServiceProviderStub.newFromEndpoint);
     }
     return result;
   }
@@ -79,17 +74,10 @@ class _ApplicationConnectorConnectToApplicationParams extends bindings.Struct {
       rethrow;
     }
     try {
-      encoder0.encodeInterfaceRequest(services, 16, true);
+      encoder0.encodeInterfaceRequest(services, 16, false);
     } on bindings.MojoCodecError catch(e) {
       e.message = "Error encountered while encoding field "
           "services of struct _ApplicationConnectorConnectToApplicationParams: $e";
-      rethrow;
-    }
-    try {
-      encoder0.encodeInterface(exposedServices, 20, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "exposedServices of struct _ApplicationConnectorConnectToApplicationParams: $e";
       rethrow;
     }
   }
@@ -97,8 +85,7 @@ class _ApplicationConnectorConnectToApplicationParams extends bindings.Struct {
   String toString() {
     return "_ApplicationConnectorConnectToApplicationParams("
            "applicationUrl: $applicationUrl" ", "
-           "services: $services" ", "
-           "exposedServices: $exposedServices" ")";
+           "services: $services" ")";
   }
 
   Map toJson() {
@@ -214,7 +201,7 @@ abstract class ApplicationConnector {
     s.connectToService(url, p, name);
     return p;
   }
-  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices);
+  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services);
   void duplicate(ApplicationConnectorInterfaceRequest applicationConnectorRequest);
 }
 
@@ -301,9 +288,9 @@ class ApplicationConnectorProxy
   }
 
 
-  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices) {
+  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services) {
     if (impl != null) {
-      impl.connectToApplication(applicationUrl, services, exposedServices);
+      impl.connectToApplication(applicationUrl, services);
       return;
     }
     if (!ctrl.isBound) {
@@ -313,7 +300,6 @@ class ApplicationConnectorProxy
     var params = new _ApplicationConnectorConnectToApplicationParams();
     params.applicationUrl = applicationUrl;
     params.services = services;
-    params.exposedServices = exposedServices;
     ctrl.sendMessage(params,
         _applicationConnectorMethodConnectToApplicationName);
   }
@@ -369,7 +355,7 @@ class _ApplicationConnectorStubControl
       case _applicationConnectorMethodConnectToApplicationName:
         var params = _ApplicationConnectorConnectToApplicationParams.deserialize(
             message.payload);
-        _impl.connectToApplication(params.applicationUrl, params.services, params.exposedServices);
+        _impl.connectToApplication(params.applicationUrl, params.services);
         break;
       case _applicationConnectorMethodDuplicateName:
         var params = _ApplicationConnectorDuplicateParams.deserialize(
@@ -434,8 +420,8 @@ class ApplicationConnectorStub
   }
 
 
-  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices) {
-    return impl.connectToApplication(applicationUrl, services, exposedServices);
+  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services) {
+    return impl.connectToApplication(applicationUrl, services);
   }
   void duplicate(ApplicationConnectorInterfaceRequest applicationConnectorRequest) {
     return impl.duplicate(applicationConnectorRequest);

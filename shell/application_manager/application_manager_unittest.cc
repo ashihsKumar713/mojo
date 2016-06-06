@@ -323,8 +323,8 @@ class Tester : public ApplicationImplBase, public ApplicationLoader {
           [this](const ConnectionContext& connection_context,
                  InterfaceRequest<TestA> test_a_request) {
             mojo::InterfaceHandle<mojo::ServiceProvider> incoming_sp_handle;
-            shell()->ConnectToApplication(
-                kTestBURLString, GetProxy(&incoming_sp_handle), nullptr);
+            shell()->ConnectToApplication(kTestBURLString,
+                                          GetProxy(&incoming_sp_handle));
             a_bindings_.push_back(new TestAImpl(
                 incoming_sp_handle.Pass(), context_, test_a_request.Pass()));
           });

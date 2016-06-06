@@ -32,10 +32,8 @@ ShellImpl::ApplicationConnectorImpl::~ApplicationConnectorImpl() {}
 
 void ShellImpl::ApplicationConnectorImpl::ConnectToApplication(
     const String& app_url,
-    InterfaceRequest<ServiceProvider> services,
-    InterfaceHandle<mojo::ServiceProvider> exposed_services) {
-  shell_->ConnectToApplication(app_url, std::move(services),
-                               std::move(exposed_services));
+    InterfaceRequest<ServiceProvider> services) {
+  shell_->ConnectToApplication(app_url, std::move(services));
 }
 
 void ShellImpl::ApplicationConnectorImpl::Duplicate(
@@ -73,20 +71,17 @@ void ShellImpl::ConnectToClient(const GURL& requested_url,
                                 const GURL& requestor_url,
                                 InterfaceRequest<ServiceProvider> services) {
   application_->AcceptConnection(String::From(requestor_url),
-                                 std::move(services), nullptr,
-                                 requested_url.spec());
+                                 requested_url.spec(), std::move(services));
 }
 
 void ShellImpl::ConnectToApplication(
     const String& app_url,
-    InterfaceRequest<ServiceProvider> services,
-    InterfaceHandle<mojo::ServiceProvider> exposed_services) {
+    InterfaceRequest<ServiceProvider> services) {
   GURL app_gurl(app_url);
   if (!app_gurl.is_valid()) {
     LOG(ERROR) << "Error: invalid URL: " << app_url;
     return;
   }
-  LOG_IF(ERROR, exposed_services) << "exposed_services no longer supported!";
   manager_->ConnectToApplication(app_gurl, identity_.url, std::move(services),
                                  base::Closure());
 }

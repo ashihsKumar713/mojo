@@ -14,11 +14,10 @@ import 'package:mojo/mojo/service_provider.mojom.dart' as service_provider_mojom
 
 class _ShellConnectToApplicationParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(32, 0)
+    const bindings.StructDataHeader(24, 0)
   ];
   String applicationUrl = null;
   service_provider_mojom.ServiceProviderInterfaceRequest services = null;
-  service_provider_mojom.ServiceProviderInterface exposedServices = null;
 
   _ShellConnectToApplicationParams() : super(kVersions.last.size);
 
@@ -61,11 +60,7 @@ class _ShellConnectToApplicationParams extends bindings.Struct {
     }
     if (mainDataHeader.version >= 0) {
       
-      result.services = decoder0.decodeInterfaceRequest(16, true, service_provider_mojom.ServiceProviderStub.newFromEndpoint);
-    }
-    if (mainDataHeader.version >= 0) {
-      
-      result.exposedServices = decoder0.decodeServiceInterface(20, true, service_provider_mojom.ServiceProviderProxy.newFromEndpoint);
+      result.services = decoder0.decodeInterfaceRequest(16, false, service_provider_mojom.ServiceProviderStub.newFromEndpoint);
     }
     return result;
   }
@@ -80,17 +75,10 @@ class _ShellConnectToApplicationParams extends bindings.Struct {
       rethrow;
     }
     try {
-      encoder0.encodeInterfaceRequest(services, 16, true);
+      encoder0.encodeInterfaceRequest(services, 16, false);
     } on bindings.MojoCodecError catch(e) {
       e.message = "Error encountered while encoding field "
           "services of struct _ShellConnectToApplicationParams: $e";
-      rethrow;
-    }
-    try {
-      encoder0.encodeInterface(exposedServices, 20, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "exposedServices of struct _ShellConnectToApplicationParams: $e";
       rethrow;
     }
   }
@@ -98,8 +86,7 @@ class _ShellConnectToApplicationParams extends bindings.Struct {
   String toString() {
     return "_ShellConnectToApplicationParams("
            "applicationUrl: $applicationUrl" ", "
-           "services: $services" ", "
-           "exposedServices: $exposedServices" ")";
+           "services: $services" ")";
   }
 
   Map toJson() {
@@ -215,7 +202,7 @@ abstract class Shell {
     s.connectToService(url, p, name);
     return p;
   }
-  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices);
+  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services);
   void createApplicationConnector(application_connector_mojom.ApplicationConnectorInterfaceRequest applicationConnectorRequest);
 }
 
@@ -302,9 +289,9 @@ class ShellProxy
   }
 
 
-  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices) {
+  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services) {
     if (impl != null) {
-      impl.connectToApplication(applicationUrl, services, exposedServices);
+      impl.connectToApplication(applicationUrl, services);
       return;
     }
     if (!ctrl.isBound) {
@@ -314,7 +301,6 @@ class ShellProxy
     var params = new _ShellConnectToApplicationParams();
     params.applicationUrl = applicationUrl;
     params.services = services;
-    params.exposedServices = exposedServices;
     ctrl.sendMessage(params,
         _shellMethodConnectToApplicationName);
   }
@@ -370,7 +356,7 @@ class _ShellStubControl
       case _shellMethodConnectToApplicationName:
         var params = _ShellConnectToApplicationParams.deserialize(
             message.payload);
-        _impl.connectToApplication(params.applicationUrl, params.services, params.exposedServices);
+        _impl.connectToApplication(params.applicationUrl, params.services);
         break;
       case _shellMethodCreateApplicationConnectorName:
         var params = _ShellCreateApplicationConnectorParams.deserialize(
@@ -435,8 +421,8 @@ class ShellStub
   }
 
 
-  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices) {
-    return impl.connectToApplication(applicationUrl, services, exposedServices);
+  void connectToApplication(String applicationUrl, service_provider_mojom.ServiceProviderInterfaceRequest services) {
+    return impl.connectToApplication(applicationUrl, services);
   }
   void createApplicationConnector(application_connector_mojom.ApplicationConnectorInterfaceRequest applicationConnectorRequest) {
     return impl.createApplicationConnector(applicationConnectorRequest);

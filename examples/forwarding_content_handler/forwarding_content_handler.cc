@@ -37,10 +37,9 @@ class ForwardingApplicationImpl : public Application {
     shell_ = ShellPtr::Create(std::move(shell));
   }
   void AcceptConnection(const String& requestor_url,
-                        InterfaceRequest<ServiceProvider> services,
-                        InterfaceHandle<ServiceProvider> exposed_services,
-                        const String& requested_url) override {
-    shell_->ConnectToApplication(target_url_, services.Pass(), nullptr);
+                        const String& requested_url,
+                        InterfaceRequest<ServiceProvider> services) override {
+    shell_->ConnectToApplication(target_url_, services.Pass());
   }
   void RequestQuit() override {
     RunLoop::current()->Quit();

@@ -128,12 +128,11 @@ class _ApplicationInitializeParams extends bindings.Struct {
 
 class _ApplicationAcceptConnectionParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(40, 0)
+    const bindings.StructDataHeader(32, 0)
   ];
   String requestorUrl = null;
-  service_provider_mojom.ServiceProviderInterfaceRequest services = null;
-  service_provider_mojom.ServiceProviderInterface exposedServices = null;
   String resolvedUrl = null;
+  service_provider_mojom.ServiceProviderInterfaceRequest services = null;
 
   _ApplicationAcceptConnectionParams() : super(kVersions.last.size);
 
@@ -176,15 +175,11 @@ class _ApplicationAcceptConnectionParams extends bindings.Struct {
     }
     if (mainDataHeader.version >= 0) {
       
-      result.services = decoder0.decodeInterfaceRequest(16, true, service_provider_mojom.ServiceProviderStub.newFromEndpoint);
+      result.resolvedUrl = decoder0.decodeString(16, false);
     }
     if (mainDataHeader.version >= 0) {
       
-      result.exposedServices = decoder0.decodeServiceInterface(20, true, service_provider_mojom.ServiceProviderProxy.newFromEndpoint);
-    }
-    if (mainDataHeader.version >= 0) {
-      
-      result.resolvedUrl = decoder0.decodeString(32, false);
+      result.services = decoder0.decodeInterfaceRequest(24, false, service_provider_mojom.ServiceProviderStub.newFromEndpoint);
     }
     return result;
   }
@@ -199,24 +194,17 @@ class _ApplicationAcceptConnectionParams extends bindings.Struct {
       rethrow;
     }
     try {
-      encoder0.encodeInterfaceRequest(services, 16, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "services of struct _ApplicationAcceptConnectionParams: $e";
-      rethrow;
-    }
-    try {
-      encoder0.encodeInterface(exposedServices, 20, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "exposedServices of struct _ApplicationAcceptConnectionParams: $e";
-      rethrow;
-    }
-    try {
-      encoder0.encodeString(resolvedUrl, 32, false);
+      encoder0.encodeString(resolvedUrl, 16, false);
     } on bindings.MojoCodecError catch(e) {
       e.message = "Error encountered while encoding field "
           "resolvedUrl of struct _ApplicationAcceptConnectionParams: $e";
+      rethrow;
+    }
+    try {
+      encoder0.encodeInterfaceRequest(services, 24, false);
+    } on bindings.MojoCodecError catch(e) {
+      e.message = "Error encountered while encoding field "
+          "services of struct _ApplicationAcceptConnectionParams: $e";
       rethrow;
     }
   }
@@ -224,9 +212,8 @@ class _ApplicationAcceptConnectionParams extends bindings.Struct {
   String toString() {
     return "_ApplicationAcceptConnectionParams("
            "requestorUrl: $requestorUrl" ", "
-           "services: $services" ", "
-           "exposedServices: $exposedServices" ", "
-           "resolvedUrl: $resolvedUrl" ")";
+           "resolvedUrl: $resolvedUrl" ", "
+           "services: $services" ")";
   }
 
   Map toJson() {
@@ -331,7 +318,7 @@ abstract class Application {
     return p;
   }
   void initialize(shell_mojom.ShellInterface shell, List<String> args, String url);
-  void acceptConnection(String requestorUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices, String resolvedUrl);
+  void acceptConnection(String requestorUrl, String resolvedUrl, service_provider_mojom.ServiceProviderInterfaceRequest services);
   void requestQuit();
 }
 
@@ -434,9 +421,9 @@ class ApplicationProxy
     ctrl.sendMessage(params,
         _applicationMethodInitializeName);
   }
-  void acceptConnection(String requestorUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices, String resolvedUrl) {
+  void acceptConnection(String requestorUrl, String resolvedUrl, service_provider_mojom.ServiceProviderInterfaceRequest services) {
     if (impl != null) {
-      impl.acceptConnection(requestorUrl, services, exposedServices, resolvedUrl);
+      impl.acceptConnection(requestorUrl, resolvedUrl, services);
       return;
     }
     if (!ctrl.isBound) {
@@ -445,9 +432,8 @@ class ApplicationProxy
     }
     var params = new _ApplicationAcceptConnectionParams();
     params.requestorUrl = requestorUrl;
-    params.services = services;
-    params.exposedServices = exposedServices;
     params.resolvedUrl = resolvedUrl;
+    params.services = services;
     ctrl.sendMessage(params,
         _applicationMethodAcceptConnectionName);
   }
@@ -507,7 +493,7 @@ class _ApplicationStubControl
       case _applicationMethodAcceptConnectionName:
         var params = _ApplicationAcceptConnectionParams.deserialize(
             message.payload);
-        _impl.acceptConnection(params.requestorUrl, params.services, params.exposedServices, params.resolvedUrl);
+        _impl.acceptConnection(params.requestorUrl, params.resolvedUrl, params.services);
         break;
       case _applicationMethodRequestQuitName:
         _impl.requestQuit();
@@ -573,8 +559,8 @@ class ApplicationStub
   void initialize(shell_mojom.ShellInterface shell, List<String> args, String url) {
     return impl.initialize(shell, args, url);
   }
-  void acceptConnection(String requestorUrl, service_provider_mojom.ServiceProviderInterfaceRequest services, service_provider_mojom.ServiceProviderInterface exposedServices, String resolvedUrl) {
-    return impl.acceptConnection(requestorUrl, services, exposedServices, resolvedUrl);
+  void acceptConnection(String requestorUrl, String resolvedUrl, service_provider_mojom.ServiceProviderInterfaceRequest services) {
+    return impl.acceptConnection(requestorUrl, resolvedUrl, services);
   }
   void requestQuit() {
     return impl.requestQuit();
