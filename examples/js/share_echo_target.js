@@ -17,19 +17,10 @@ define("main", [
   const Echo = echo.Echo;
 
   var shareEchoTargetApp;
-  var everythingDone = {providedService: false, requestedService: false};
-
-  // This application will quit after the EchoImpl has been used once
-  // and the target Echo application has responded once.
-  function quitIfEverythingIsDone(doneNow) {
-    everythingDone[doneNow] = true;
-    if (everythingDone.providedService && everythingDone.requestedService)
-      shareEchoTargetApp.quit();
-  }
 
   class EchoImpl {
     echoString(s) {
-      quitIfEverythingIsDone("providedService");
+      shareEchoTargetApp.quit();
       return Promise.resolve({value: "ShareEchoTarget: " + s});
     }
   }
@@ -40,15 +31,6 @@ define("main", [
     }
 
     acceptConnection(initiatorURL, shareEchoServiceExchange) {
-      // The shareEchoServiceExchange parameter is-a JS ServiceExchange
-      // that's connected to the share_echo.js application. We can
-      // request the share_echo.js implementation of Echo and provide
-      // the share_echo.js application with our own Echo implementation.
-      var echoService = shareEchoServiceExchange.requestService(Echo);
-      echoService.echoString("ShareEchoTarget").then(function(response) {
-        console.log(response.value);
-        quitIfEverythingIsDone("requestedService");
-      });
       shareEchoServiceExchange.provideService(Echo, EchoImpl);
     }
   }

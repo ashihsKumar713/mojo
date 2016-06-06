@@ -19,22 +19,6 @@ define("main", [
   const Echo = echo.Echo;
 
   var shareEchoApp;
-  var everythingDone = {providedService: false, requestedService: false};
-
-  // This application will quit after the EchoImpl has been used once
-  // and the target Echo application has responded once.
-  function quitIfEverythingIsDone(doneNow) {
-    everythingDone[doneNow] = true;
-    if (everythingDone.providedService && everythingDone.requestedService)
-      shareEchoApp.quit();
-  }
-
-  class EchoImpl {
-    echoString(s) {
-      quitIfEverythingIsDone("providedService");
-      return Promise.resolve({value: "ShareEcho: " + s});
-    }
-  }
 
   class ShareEcho extends Application {
     initialize(args) {
@@ -50,16 +34,12 @@ define("main", [
       // Echo implementation.
       var targetSP = this.shell.connectToApplication(shareEchoTargetURL);
 
-      // Make our implementation of Echo available to the other end.
-      // Note that we pass the class, not an instance.
-      targetSP.provideService(Echo, EchoImpl);
-
       // Get the implementation at the other end, call it, and prepare for
       // the async callback.
       var echoService = targetSP.requestService(Echo);
       echoService.echoString("ShareEcho").then(function(response) {
         console.log(response.value);
-        quitIfEverythingIsDone("requestedService");
+        shareEchoApp.quit();
       });
     }
   }
