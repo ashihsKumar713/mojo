@@ -34,21 +34,20 @@ class _ApplicationImpl implements application_mojom.Application {
     _stub.ctrl.onError = f;
   }
 
-  void initialize(shell_mojom.ShellInterface shellInterface,
-                  List<String> args,
-                  String url) {
+  void initialize(shell_mojom.ShellInterface shellInterface, List<String> args,
+      String url) {
     assert(shell == null);
     shell = shellInterface;
     _application.initialize(args, url);
   }
 
   @override
-  void acceptConnection(String requestorUrl,
-                        ServiceProviderInterfaceRequest services,
-                        ServiceProviderInterface exposedServices,
-                        String resolvedUrl) =>
-      _application._acceptConnection(
-          requestorUrl, services, exposedServices, resolvedUrl);
+  void acceptConnection(
+          String requestorUrl,
+          ServiceProviderInterfaceRequest services,
+          ServiceProviderInterface exposedServices,
+          String resolvedUrl) =>
+      _application._acceptConnection(requestorUrl, services, resolvedUrl);
 
   @override
   void requestQuit() => _application._requestQuitAndClose();
@@ -139,9 +138,9 @@ abstract class Application implements bindings.ServiceConnector {
     _applicationConnections.clear();
   }
 
-  void _acceptConnection(String requestorUrl, ServiceProviderStub services,
-      ServiceProviderProxy exposedServices, String resolvedUrl) {
-    var connection = new ApplicationConnection(services, exposedServices);
+  void _acceptConnection(
+      String requestorUrl, ServiceProviderStub services, String resolvedUrl) {
+    var connection = new ApplicationConnection(services, null);
     _applicationConnections.add(connection);
     acceptConnection(requestorUrl, resolvedUrl, connection);
   }
