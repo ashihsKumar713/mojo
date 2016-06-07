@@ -28,7 +28,7 @@ vars = {
   'dart_root_certificates_revision': 'aed07942ce98507d2be28cbd29e879525410c7fc',
   'dart_observatory_packages_revision': 'cf90eb9077177d3d6b3fd5e8289477c2385c026a',
   'pdfium_revision': 'ae4256f45df69bbfdf722a6ec17e1e851911ae4e',
-  'boringssl_revision': '642f1498d056dbba3e50ed5a232ab2f482626dec',
+  'boringssl_revision': '2deb984187ce8f6c739c780e7fe95e859e93b3da',
   'lss_revision': '6f97298fe3794e92c8c896a6bc06e0b36e4c3de3',
   'nacl_revision': 'f5bc68c59b147b66d553dc6fc17426682cf138e2',
   'tonic_revision': 'f7acabb8fa6c91124486a41194eac3cd421b70d0',
