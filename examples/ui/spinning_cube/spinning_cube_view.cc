@@ -57,7 +57,6 @@ SpinningCubeView::SpinningCubeView(
     mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
     mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request)
     : GLView(app_connector.Pass(), view_owner_request.Pass(), "SpinningCube"),
-      choreographer_(scene(), this),
       input_handler_(GetViewServiceProvider(), this),
       weak_ptr_factory_(this) {
   mojo::GLContext::Scope gl_scope(gl_context());
@@ -65,12 +64,6 @@ SpinningCubeView::SpinningCubeView(
 }
 
 SpinningCubeView::~SpinningCubeView() {}
-
-void SpinningCubeView::OnPropertiesChanged(
-    uint32_t old_scene_version,
-    mojo::ui::ViewPropertiesPtr old_properties) {
-  choreographer_.ScheduleDraw();
-}
 
 void SpinningCubeView::OnEvent(mojo::EventPtr event,
                                const OnEventCallback& callback) {
@@ -134,14 +127,11 @@ void SpinningCubeView::OnEvent(mojo::EventPtr event,
   callback.Run(true);
 }
 
-void SpinningCubeView::OnDraw(
-    const mojo::gfx::composition::FrameInfo& frame_info,
-    const base::TimeDelta& time_delta) {
-  if (!properties())
-    return;
+void SpinningCubeView::OnDraw() {
+  DCHECK(properties());
 
   // Update the state of the cube.
-  cube_.UpdateForTimeDelta(time_delta.InSecondsF());
+  cube_.UpdateForTimeDelta(frame_tracker().frame_time_delta() * 0.000001f);
 
   // Update the contents of the scene.
   auto update = mojo::gfx::composition::SceneUpdate::New();
@@ -159,8 +149,6 @@ void SpinningCubeView::OnDraw(
     update->resources.insert(kCubeImageResourceId, cube_resource.Pass());
 
     auto root_node = mojo::gfx::composition::Node::New();
-    root_node->content_transform = mojo::Transform::New();
-    mojo::SetIdentityTransform(root_node->content_transform.get());
     root_node->hit_test_behavior =
         mojo::gfx::composition::HitTestBehavior::New();
     root_node->op = mojo::gfx::composition::NodeOp::New();
@@ -176,13 +164,10 @@ void SpinningCubeView::OnDraw(
   scene()->Update(update.Pass());
 
   // Publish the scene.
-  auto metadata = mojo::gfx::composition::SceneMetadata::New();
-  metadata->version = scene_version();
-  metadata->presentation_time = frame_info.presentation_time;
-  scene()->Publish(metadata.Pass());
+  scene()->Publish(CreateSceneMetadata());
 
   // Loop!
-  choreographer_.ScheduleDraw();
+  Invalidate();
 }
 
 void SpinningCubeView::DrawCubeWithGL(const mojo::GLContext::Scope& gl_scope,

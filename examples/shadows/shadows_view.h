@@ -8,13 +8,11 @@
 #include <memory>
 
 #include "examples/shadows/shadows_renderer.h"
-#include "mojo/ui/choreographer.h"
 #include "mojo/ui/gl_view.h"
 
 namespace examples {
 
-class ShadowsView : public mojo::ui::GLView,
-                    public mojo::ui::ChoreographerDelegate {
+class ShadowsView : public mojo::ui::GLView {
  public:
   ShadowsView(mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
               mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request);
@@ -23,16 +21,9 @@ class ShadowsView : public mojo::ui::GLView,
 
  private:
   // |GLView|:
-  void OnPropertiesChanged(uint32_t old_scene_version,
-                           mojo::ui::ViewPropertiesPtr old_properties) override;
-
-  // |ChoreographerDelegate|:
-  void OnDraw(const mojo::gfx::composition::FrameInfo& frame_info,
-              const base::TimeDelta& time_delta) override;
+  void OnDraw() override;
 
   void Render(const mojo::GLContext::Scope& gl_scope, const mojo::Size& size);
-
-  mojo::ui::Choreographer choreographer_;
 
   mojo::Size size_;
   std::unique_ptr<ShadowsRenderer> renderer_;

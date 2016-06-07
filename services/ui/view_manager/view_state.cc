@@ -45,7 +45,6 @@ void ViewState::IssueProperties(mojo::ui::ViewPropertiesPtr properties) {
   issued_scene_version_++;
   CHECK(issued_scene_version_);
   issued_properties_ = properties.Pass();
-  issued_properties_valid_ = !!issued_properties_;
 }
 
 void ViewState::BindOwner(

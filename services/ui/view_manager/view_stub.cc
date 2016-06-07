@@ -50,6 +50,7 @@ void ViewStub::AttachView(ViewState* state,
   state_ = state;
   state_->set_view_stub(this);
   stub_scene_ = stub_scene.Pass();
+  SetTreeForChildrenOfView(state_, tree_);
 }
 
 void ViewStub::SetProperties(uint32_t scene_version,
@@ -81,6 +82,7 @@ ViewState* ViewStub::ReleaseView() {
     state_ = nullptr;
     stub_scene_.reset();
     stub_scene_token_.reset();
+    SetTreeForChildrenOfView(state, nullptr);
   }
   scene_version_ = mojo::gfx::composition::kSceneVersionNone;
   properties_.reset();
@@ -114,10 +116,13 @@ void ViewStub::SetTreeRecursively(ViewTreeState* tree) {
   if (tree_ == tree)
     return;
   tree_ = tree;
-  if (state_) {
-    for (const auto& pair : state_->children()) {
-      pair.second->SetTreeRecursively(tree);
-    }
+  if (state_)
+    SetTreeForChildrenOfView(state_, tree);
+}
+
+void ViewStub::SetTreeForChildrenOfView(ViewState* view, ViewTreeState* tree) {
+  for (const auto& pair : view->children()) {
+    pair.second->SetTreeRecursively(tree);
   }
 }
 

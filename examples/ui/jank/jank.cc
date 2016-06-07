@@ -12,7 +12,6 @@
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/application/run_application.h"
-#include "mojo/ui/choreographer.h"
 #include "mojo/ui/ganesh_view.h"
 #include "mojo/ui/input_handler.h"
 #include "mojo/ui/view_provider_app.h"
@@ -51,14 +50,11 @@ constexpr SkScalar kButtonHeight = 30;
 constexpr SkScalar kMargin = 15;
 }  // namespace
 
-class JankView : public mojo::ui::GaneshView,
-                 public mojo::ui::ChoreographerDelegate,
-                 public mojo::ui::InputListener {
+class JankView : public mojo::ui::GaneshView, public mojo::ui::InputListener {
  public:
   JankView(mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
            mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request)
       : GaneshView(app_connector.Pass(), view_owner_request.Pass(), "Jank"),
-        choreographer_(scene(), this),
         input_handler_(GetViewServiceProvider(), this),
         typeface_(SkTypeface::MakeFromStream(
             new SkMemoryStream(font_data::kDejaVuSansMonoRegular.data,
@@ -67,13 +63,6 @@ class JankView : public mojo::ui::GaneshView,
   ~JankView() override {}
 
  private:
-  // |GaneshView|:
-  void OnPropertiesChanged(
-      uint32_t old_scene_version,
-      mojo::ui::ViewPropertiesPtr old_properties) override {
-    choreographer_.ScheduleDraw();
-  }
-
   // |InputListener|:
   void OnEvent(mojo::EventPtr event, const OnEventCallback& callback) override {
     if (event->pointer_data && event->action == mojo::EventType::POINTER_DOWN) {
@@ -90,11 +79,9 @@ class JankView : public mojo::ui::GaneshView,
     callback.Run(false);
   }
 
-  // |ChoreographerDelegate|:
-  void OnDraw(const mojo::gfx::composition::FrameInfo& frame_info,
-              const base::TimeDelta& time_delta) override {
-    if (!properties())
-      return;
+  // |GaneshView|:
+  void OnDraw() override {
+    DCHECK(properties());
 
     auto update = mojo::gfx::composition::SceneUpdate::New();
 
@@ -125,12 +112,9 @@ class JankView : public mojo::ui::GaneshView,
     }
 
     scene()->Update(update.Pass());
+    scene()->Publish(CreateSceneMetadata());
 
-    auto metadata = mojo::gfx::composition::SceneMetadata::New();
-    metadata->version = scene_version();
-    scene()->Publish(metadata.Pass());
-
-    choreographer_.ScheduleDraw();
+    Invalidate();
 
     if (MojoGetTimeTicksNow() < stutter_end_time_)
       sleep(2);
@@ -139,8 +123,7 @@ class JankView : public mojo::ui::GaneshView,
   void DrawContent(const mojo::skia::GaneshContext::Scope& ganesh_scope,
                    const mojo::Size& size,
                    SkCanvas* canvas) {
-    SkScalar hsv[3] = {fmod(MojoGetTimeTicksNow() * 0.000001f * 60, 360.f), 1,
-                       1};
+    SkScalar hsv[3] = {fmod(MojoGetTimeTicksNow() * 0.000001 * 60, 360.), 1, 1};
     canvas->clear(SkHSVToColor(hsv));
 
     SkScalar x = kMargin;
@@ -194,7 +177,6 @@ class JankView : public mojo::ui::GaneshView,
     }
   }
 
-  mojo::ui::Choreographer choreographer_;
   mojo::ui::InputHandler input_handler_;
   sk_sp<SkTypeface> typeface_;
   int64_t stutter_end_time_ = 0u;

@@ -28,6 +28,14 @@ class ViewTreeImpl;
 // This object is owned by the ViewRegistry that created it.
 class ViewTreeState : public ViewContainerState {
  public:
+  enum {
+    // Some of the tree's views have been invalidated.
+    INVALIDATION_VIEWS_INVALIDATED = 1u << 0,
+
+    // The renderer changed.
+    INVALIDATION_RENDERER_CHANGED = 1u << 1,
+  };
+
   ViewTreeState(ViewRegistry* registry,
                 mojo::ui::ViewTreeTokenPtr view_tree_token,
                 mojo::InterfaceRequest<mojo::ui::ViewTree> view_tree_request,
@@ -57,6 +65,12 @@ class ViewTreeState : public ViewContainerState {
   }
   void SetRenderer(mojo::gfx::composition::RendererPtr renderer);
 
+  // The view tree's frame scheduler.
+  // This is updated whenever the renderer is changed.
+  const mojo::gfx::composition::FrameSchedulerPtr& frame_scheduler() const {
+    return frame_scheduler_;
+  }
+
   // Gets the view tree's root view.
   ViewStub* GetRoot() const;
 
@@ -67,6 +81,15 @@ class ViewTreeState : public ViewContainerState {
       mojo::InterfaceRequest<mojo::gfx::composition::HitTester>
           hit_tester_request,
       const mojo::ui::ViewInspector::GetHitTesterCallback& callback);
+
+  // Gets or sets flags describing the invalidation state of the view tree.
+  uint32_t invalidation_flags() const { return invalidation_flags_; }
+  void set_invalidation_flags(uint32_t value) { invalidation_flags_ = value; }
+
+  // Gets or sets whether a frame has been scheduled with the renderer
+  // to handle invalidations.
+  bool frame_scheduled() const { return frame_scheduled_; }
+  void set_frame_scheduled(bool value) { frame_scheduled_ = value; }
 
   ViewTreeState* AsViewTreeState() override;
 
@@ -86,9 +109,13 @@ class ViewTreeState : public ViewContainerState {
   mojo::Binding<mojo::ui::ViewTree> view_tree_binding_;
 
   mojo::gfx::composition::RendererPtr renderer_;
+  mojo::gfx::composition::FrameSchedulerPtr frame_scheduler_;
 
   std::vector<mojo::ui::ViewInspector::GetHitTesterCallback>
       pending_hit_tester_callbacks_;
+
+  uint32_t invalidation_flags_ = 0u;
+  bool frame_scheduled_ = false;
 
   base::WeakPtrFactory<ViewTreeState> weak_factory_;  // must be last
 

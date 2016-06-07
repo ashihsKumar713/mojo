@@ -20,10 +20,8 @@ class ShapesView : public mojo::ui::GaneshView {
 
  private:
   // |GaneshView|:
-  void OnPropertiesChanged(uint32_t old_scene_version,
-                           mojo::ui::ViewPropertiesPtr old_properties) override;
+  void OnDraw() override;
 
-  void UpdateScene();
   void DrawContent(const mojo::skia::GaneshContext::Scope& ganesh_scope,
                    const mojo::Size& size,
                    SkCanvas* canvas);

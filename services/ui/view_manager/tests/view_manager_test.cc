@@ -17,10 +17,10 @@ class MockViewListener : public mojo::ui::ViewListener {
   MockViewListener() {}
   ~MockViewListener() override {}
 
-  void OnPropertiesChanged(
-      uint32_t scene_version,
-      mojo::ui::ViewPropertiesPtr properties,
-      const OnPropertiesChangedCallback& callback) override {}
+  void OnInvalidation(mojo::ui::ViewInvalidationPtr invalidation,
+                      const OnInvalidationCallback& callback) override {
+    callback.Run();
+  }
 };
 
 class ViewManagerTest : public ViewManagerTestBase {

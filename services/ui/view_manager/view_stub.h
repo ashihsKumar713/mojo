@@ -117,6 +117,8 @@ class ViewStub {
 
  private:
   void SetTreeRecursively(ViewTreeState* tree);
+  static void SetTreeForChildrenOfView(ViewState* view, ViewTreeState* tree);
+
   void OnViewResolved(mojo::ui::ViewTokenPtr view_token);
 
   ViewRegistry* registry_;

@@ -65,6 +65,10 @@ class ViewRegistry : public mojo::ui::ViewInspector {
   void CreateScene(ViewState* view_state,
                    mojo::InterfaceRequest<mojo::gfx::composition::Scene> scene);
 
+  // Invalidates a view.
+  // Destroys |view_state| if an error occurs.
+  void Invalidate(ViewState* view_state);
+
   // Called when one of the view pipes is closed remotely.
   void OnViewDied(ViewState* view_state, const std::string& reason);
 
@@ -99,6 +103,10 @@ class ViewRegistry : public mojo::ui::ViewInspector {
                           uint32_t child_key,
                           uint32_t child_scene_version,
                           mojo::ui::ViewPropertiesPtr child_properties);
+
+  // Flushes changes to children.
+  // Destroys |container_state| if an error occurs.
+  void FlushChildren(ViewContainerState* container_state, uint32_t flush_token);
 
   // SERVICE PROVIDER REQUESTS
 
@@ -143,10 +151,15 @@ class ViewRegistry : public mojo::ui::ViewInspector {
                                     mojo::InterfaceRequest<mojo::ui::ViewOwner>
                                         transferred_view_owner_request);
 
-  // VIEW PROPERTIES
+  // INVALIDATION
 
-  void UpdateViewProperties(ViewState* view_state);
-  void InvalidateViewProperties(ViewState* view_state);
+  void ScheduleViewInvalidation(ViewState* view_state, uint32_t flags);
+  void ScheduleViewTreeInvalidation(ViewTreeState* tree_state, uint32_t flags);
+  void TraverseViewTree(ViewTreeState* tree_state,
+                        mojo::gfx::composition::FrameInfoPtr frame_info);
+  void TraverseView(ViewState* view_state,
+                    const mojo::gfx::composition::FrameInfo* frame_info,
+                    bool parent_properties_changed);
   mojo::ui::ViewPropertiesPtr ResolveViewProperties(ViewState* view_state);
 
   // SCENE MANAGEMENT
@@ -166,9 +179,8 @@ class ViewRegistry : public mojo::ui::ViewInspector {
 
   // SIGNALING
 
-  void SendPropertiesChanged(ViewState* view_state,
-                             uint32_t scene_version,
-                             mojo::ui::ViewPropertiesPtr properties);
+  void SendInvalidation(ViewState* view_state,
+                        mojo::ui::ViewInvalidationPtr invalidation);
 
   void SendRendererDied(ViewTreeState* tree_state);
 

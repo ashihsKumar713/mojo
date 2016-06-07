@@ -426,6 +426,78 @@ class _ViewContainerSetChildPropertiesParams extends bindings.Struct {
 }
 
 
+class _ViewContainerFlushChildrenParams extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(16, 0)
+  ];
+  int flushToken = 0;
+
+  _ViewContainerFlushChildrenParams() : super(kVersions.last.size);
+
+  static _ViewContainerFlushChildrenParams deserialize(bindings.Message message) {
+    var decoder = new bindings.Decoder(message);
+    var result = decode(decoder);
+    if (decoder.excessHandles != null) {
+      decoder.excessHandles.forEach((h) => h.close());
+    }
+    return result;
+  }
+
+  static _ViewContainerFlushChildrenParams decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    _ViewContainerFlushChildrenParams result = new _ViewContainerFlushChildrenParams();
+
+    var mainDataHeader = decoder0.decodeStructDataHeader();
+    if (mainDataHeader.version <= kVersions.last.version) {
+      // Scan in reverse order to optimize for more recent versions.
+      for (int i = kVersions.length - 1; i >= 0; --i) {
+        if (mainDataHeader.version >= kVersions[i].version) {
+          if (mainDataHeader.size == kVersions[i].size) {
+            // Found a match.
+            break;
+          }
+          throw new bindings.MojoCodecError(
+              'Header size doesn\'t correspond to known version size.');
+        }
+      }
+    } else if (mainDataHeader.size < kVersions.last.size) {
+      throw new bindings.MojoCodecError(
+        'Message newer than the last known version cannot be shorter than '
+        'required by the last known version.');
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.flushToken = decoder0.decodeUint32(8);
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    try {
+      encoder0.encodeUint32(flushToken, 8);
+    } on bindings.MojoCodecError catch(e) {
+      e.message = "Error encountered while encoding field "
+          "flushToken of struct _ViewContainerFlushChildrenParams: $e";
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "_ViewContainerFlushChildrenParams("
+           "flushToken: $flushToken" ")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    map["flushToken"] = flushToken;
+    return map;
+  }
+}
+
+
 class _ViewContainerListenerOnChildAttachedParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(24, 0)
@@ -704,6 +776,7 @@ const int _viewContainerMethodSetListenerName = 0;
 const int _viewContainerMethodAddChildName = 1;
 const int _viewContainerMethodRemoveChildName = 2;
 const int _viewContainerMethodSetChildPropertiesName = 3;
+const int _viewContainerMethodFlushChildrenName = 4;
 
 class _ViewContainerServiceDescription implements service_describer.ServiceDescription {
   dynamic getTopLevelInterface([Function responseFactory]) =>
@@ -742,6 +815,7 @@ abstract class ViewContainer {
   void addChild(int childKey, view_token_mojom.ViewOwnerInterface childViewOwner);
   void removeChild(int childKey, view_token_mojom.ViewOwnerInterfaceRequest transferredViewOwner);
   void setChildProperties(int childKey, int childSceneVersion, view_properties_mojom.ViewProperties childViewProperties);
+  void flushChildren(int flushToken);
 }
 
 abstract class ViewContainerInterface
@@ -887,6 +961,20 @@ class ViewContainerProxy
     ctrl.sendMessage(params,
         _viewContainerMethodSetChildPropertiesName);
   }
+  void flushChildren(int flushToken) {
+    if (impl != null) {
+      impl.flushChildren(flushToken);
+      return;
+    }
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewContainerFlushChildrenParams();
+    params.flushToken = flushToken;
+    ctrl.sendMessage(params,
+        _viewContainerMethodFlushChildrenName);
+  }
 }
 
 class _ViewContainerStubControl
@@ -941,6 +1029,11 @@ class _ViewContainerStubControl
         var params = _ViewContainerSetChildPropertiesParams.deserialize(
             message.payload);
         _impl.setChildProperties(params.childKey, params.childSceneVersion, params.childViewProperties);
+        break;
+      case _viewContainerMethodFlushChildrenName:
+        var params = _ViewContainerFlushChildrenParams.deserialize(
+            message.payload);
+        _impl.flushChildren(params.flushToken);
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
@@ -1011,6 +1104,9 @@ class ViewContainerStub
   }
   void setChildProperties(int childKey, int childSceneVersion, view_properties_mojom.ViewProperties childViewProperties) {
     return impl.setChildProperties(childKey, childSceneVersion, childViewProperties);
+  }
+  void flushChildren(int flushToken) {
+    return impl.flushChildren(flushToken);
   }
 }
 

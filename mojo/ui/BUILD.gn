@@ -8,8 +8,6 @@ source_set("ui") {
   sources = [
     "base_view.cc",
     "base_view.h",
-    "choreographer.cc",
-    "choreographer.h",
     "input_handler.cc",
     "input_handler.h",
     "view_provider_app.cc",
@@ -20,6 +18,7 @@ source_set("ui") {
     "//base",
     "//mojo/application",
     "//mojo/common",
+    "//mojo/common:tracing_impl",
     "//mojo/public/cpp/bindings",
     "//mojo/public/interfaces/application",
     "//mojo/services/gfx/composition/cpp",

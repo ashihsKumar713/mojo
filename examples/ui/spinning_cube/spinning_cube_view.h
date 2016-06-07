@@ -8,14 +8,12 @@
 #include <memory>
 
 #include "examples/spinning_cube/spinning_cube.h"
-#include "mojo/ui/choreographer.h"
 #include "mojo/ui/gl_view.h"
 #include "mojo/ui/input_handler.h"
 
 namespace examples {
 
 class SpinningCubeView : public mojo::ui::GLView,
-                         public mojo::ui::ChoreographerDelegate,
                          public mojo::ui::InputListener {
  public:
   SpinningCubeView(
@@ -26,12 +24,7 @@ class SpinningCubeView : public mojo::ui::GLView,
 
  private:
   // |GLView|:
-  void OnPropertiesChanged(uint32_t old_scene_version,
-                           mojo::ui::ViewPropertiesPtr old_properties) override;
-
-  // |ChoreographerDelegate|:
-  void OnDraw(const mojo::gfx::composition::FrameInfo& frame_info,
-              const base::TimeDelta& time_delta) override;
+  void OnDraw() override;
 
   // |InputListener|:
   void OnEvent(mojo::EventPtr event, const OnEventCallback& callback) override;
@@ -39,7 +32,6 @@ class SpinningCubeView : public mojo::ui::GLView,
   void DrawCubeWithGL(const mojo::GLContext::Scope& gl_scope,
                       const mojo::Size& size);
 
-  mojo::ui::Choreographer choreographer_;
   mojo::ui::InputHandler input_handler_;
 
   SpinningCube cube_;

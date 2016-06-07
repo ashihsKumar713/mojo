@@ -34,6 +34,10 @@ void ViewImpl::GetContainer(
   container_bindings_.AddBinding(this, view_container_request.Pass());
 }
 
+void ViewImpl::Invalidate() {
+  registry_->Invalidate(state_);
+}
+
 void ViewImpl::SetListener(
     mojo::InterfaceHandle<mojo::ui::ViewContainerListener> listener) {
   state_->set_view_container_listener(
@@ -59,6 +63,10 @@ void ViewImpl::SetChildProperties(
     mojo::ui::ViewPropertiesPtr child_view_properties) {
   registry_->SetChildProperties(state_, child_key, child_scene_version,
                                 child_view_properties.Pass());
+}
+
+void ViewImpl::FlushChildren(uint32_t flush_token) {
+  registry_->FlushChildren(state_, flush_token);
 }
 
 void ViewImpl::ConnectToService(const mojo::String& service_name,

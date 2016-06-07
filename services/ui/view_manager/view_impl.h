@@ -33,6 +33,7 @@ class ViewImpl : public mojo::ui::View,
       mojo::InterfaceRequest<mojo::gfx::composition::Scene> scene) override;
   void GetContainer(mojo::InterfaceRequest<mojo::ui::ViewContainer>
                         view_container_request) override;
+  void Invalidate() override;
 
   // |ViewContainer|:
   void SetListener(
@@ -47,6 +48,7 @@ class ViewImpl : public mojo::ui::View,
       uint32_t child_key,
       uint32_t child_scene_version,
       mojo::ui::ViewPropertiesPtr child_view_properties) override;
+  void FlushChildren(uint32_t flush_token) override;
 
   // |ServiceProvider|:
   void ConnectToService(const mojo::String& service_name,

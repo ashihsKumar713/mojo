@@ -62,6 +62,10 @@ void ViewTreeImpl::SetChildProperties(
                                 child_view_properties.Pass());
 }
 
+void ViewTreeImpl::FlushChildren(uint32_t flush_token) {
+  registry_->FlushChildren(state_, flush_token);
+}
+
 void ViewTreeImpl::ConnectToService(
     const mojo::String& service_name,
     mojo::ScopedMessagePipeHandle client_handle) {

@@ -14,7 +14,6 @@
 #include "base/message_loop/message_loop.h"
 #include "base/threading/thread.h"
 #include "mojo/ui/base_view.h"
-#include "mojo/ui/choreographer.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkPicture;
@@ -24,8 +23,7 @@ namespace examples {
 class Frame;
 class Rasterizer;
 
-class NoodlesView : public mojo::ui::BaseView,
-                    public mojo::ui::ChoreographerDelegate {
+class NoodlesView : public mojo::ui::BaseView {
  public:
   NoodlesView(mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
               mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request);
@@ -74,17 +72,10 @@ class NoodlesView : public mojo::ui::BaseView,
   };
 
   // |BaseView|:
-  void OnPropertiesChanged(uint32_t old_scene_version,
-                           mojo::ui::ViewPropertiesPtr old_properties) override;
-
-  // |ChoreographerDelegate|:
-  void OnDraw(const mojo::gfx::composition::FrameInfo& frame_info,
-              const base::TimeDelta& time_delta) override;
+  void OnDraw() override;
 
   void UpdateFrame();
   sk_sp<SkPicture> CreatePicture();
-
-  mojo::ui::Choreographer choreographer_;
 
   std::shared_ptr<FrameQueue> frame_queue_;
 

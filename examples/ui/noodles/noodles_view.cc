@@ -53,7 +53,6 @@ NoodlesView::NoodlesView(
     mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
     mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request)
     : BaseView(app_connector.Pass(), view_owner_request.Pass(), "Noodles"),
-      choreographer_(scene(), this),
       frame_queue_(std::make_shared<FrameQueue>()),
       rasterizer_delegate_(
           make_scoped_ptr(new RasterizerDelegate(frame_queue_))) {
@@ -79,34 +78,25 @@ NoodlesView::~NoodlesView() {
                             base::Passed(&rasterizer_delegate_)));
 }
 
-void NoodlesView::OnPropertiesChanged(
-    uint32_t old_scene_version,
-    mojo::ui::ViewPropertiesPtr old_properties) {
-  choreographer_.ScheduleDraw();
-}
-
-void NoodlesView::OnDraw(const mojo::gfx::composition::FrameInfo& frame_info,
-                         const base::TimeDelta& time_delta) {
-  if (!properties())
-    return;
+void NoodlesView::OnDraw() {
+  DCHECK(properties());
 
   const mojo::Size& size = *properties()->view_layout->size;
-  choreographer_.ScheduleDraw();
 
   // Update the animation.
-  alpha_ += time_delta.InSecondsF();
+  alpha_ += frame_tracker().frame_time_delta() * 0.000001f;
 
   // Create and post a new frame to the renderer.
-  auto metadata = mojo::gfx::composition::SceneMetadata::New();
-  metadata->version = scene_version();
-  metadata->presentation_time = frame_info.presentation_time;
   std::unique_ptr<Frame> frame(
-      new Frame(size, CreatePicture(), metadata.Pass()));
+      new Frame(size, CreatePicture(), CreateSceneMetadata()));
   if (frame_queue_->PutFrame(std::move(frame))) {
     rasterizer_task_runner_->PostTask(
         FROM_HERE, base::Bind(&RasterizerDelegate::PublishNextFrame,
                               base::Unretained(rasterizer_delegate_.get())));
   }
+
+  // Animate!
+  Invalidate();
 }
 
 sk_sp<SkPicture> NoodlesView::CreatePicture() {

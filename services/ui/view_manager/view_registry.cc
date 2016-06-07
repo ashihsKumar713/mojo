@@ -330,14 +330,19 @@ void ViewRegistry::SetRenderer(ViewTreeState* tree_state,
   }
 
   tree_state->SetRenderer(renderer.Pass());
+  ScheduleViewTreeInvalidation(tree_state,
+                               ViewTreeState::INVALIDATION_RENDERER_CHANGED);
   SetRendererRootScene(tree_state);
 }
 
 void ViewRegistry::OnRendererDied(ViewTreeState* tree_state) {
   DCHECK(IsViewTreeStateRegisteredDebug(tree_state));
   DVLOG(1) << "OnRendererDied: tree=" << tree_state;
+  DCHECK(tree_state->renderer());
 
   tree_state->SetRenderer(nullptr);
+  ScheduleViewTreeInvalidation(tree_state,
+                               ViewTreeState::INVALIDATION_RENDERER_CHANGED);
   SendRendererDied(tree_state);
 }
 
@@ -483,8 +488,17 @@ void ViewRegistry::SetChildProperties(
 
   // Apply the change.
   child_stub->SetProperties(child_scene_version, child_properties.Pass());
-  if (child_stub->state())
-    UpdateViewProperties(child_stub->state());
+  if (child_stub->state()) {
+    ScheduleViewInvalidation(child_stub->state(),
+                             ViewState::INVALIDATION_PROPERTIES_CHANGED);
+  }
+}
+
+void ViewRegistry::FlushChildren(ViewContainerState* container_state,
+                                 uint32_t flush_token) {
+  DCHECK(IsViewContainerStateRegisteredDebug(container_state));
+  DVLOG(1) << "FlushChildren: container=" << container_state
+           << ", flush_token=" << flush_token;
 }
 
 void ViewRegistry::OnViewResolved(ViewStub* view_stub,
@@ -520,9 +534,7 @@ void ViewRegistry::AttachResolvedViewAndNotify(ViewStub* view_stub,
   // Attach the view.
   view_state->ReleaseOwner();  // don't need the ViewOwner pipe anymore
   view_stub->AttachView(view_state, stub_scene.Pass());
-
-  // Update view properties which may inherit context from the container.
-  UpdateViewProperties(view_state);
+  ScheduleViewInvalidation(view_state, ViewState::INVALIDATION_PARENT_CHANGED);
 }
 
 void ViewRegistry::ReleaseUnavailableViewAndNotify(ViewStub* view_stub) {
@@ -552,7 +564,8 @@ void ViewRegistry::TransferOrUnregisterViewStub(
 
   if (transferred_view_owner_request.is_pending()) {
     if (view_stub->state()) {
-      InvalidateViewProperties(view_stub->state());
+      ScheduleViewInvalidation(view_stub->state(),
+                               ViewState::INVALIDATION_PARENT_CHANGED);
       view_stub->ReleaseView()->BindOwner(
           transferred_view_owner_request.Pass());
       return;
@@ -566,52 +579,128 @@ void ViewRegistry::TransferOrUnregisterViewStub(
   UnregisterViewStub(std::move(view_stub));
 }
 
-// VIEW PROPERTIES
+// INVALIDATION
 
-void ViewRegistry::UpdateViewProperties(ViewState* view_state) {
+void ViewRegistry::Invalidate(ViewState* view_state) {
   DCHECK(IsViewStateRegisteredDebug(view_state));
-  DVLOG(2) << "UpdateViewProperties: view=" << view_state;
+  DVLOG(1) << "Invalidate: view=" << view_state;
 
-  // TODO(jeffbrown): If view property changes are frequent, it might be a
-  // good idea to coalesce processing of them into a scheduled invalidation
-  // cycle.
+  ScheduleViewInvalidation(view_state, ViewState::INVALIDATION_EXPLICIT);
+}
 
-  mojo::ui::ViewPropertiesPtr properties = ResolveViewProperties(view_state);
-  if (!properties) {
-    InvalidateViewProperties(view_state);
-    return;
-  }
+void ViewRegistry::ScheduleViewInvalidation(ViewState* view_state,
+                                            uint32_t flags) {
+  DCHECK(IsViewStateRegisteredDebug(view_state));
+  DVLOG(2) << "ScheduleViewInvalidation: view=" << view_state
+           << ", flags=" << flags;
 
-  DCHECK(IsComplete(*properties));
-  view_state->set_issued_properties_valid(true);
-  if (view_state->issued_properties() &&
-      properties->Equals(*view_state->issued_properties()))
-    return;
-
-  view_state->IssueProperties(properties.Pass());
-  SendPropertiesChanged(view_state, view_state->issued_scene_version(),
-                        view_state->issued_properties()->Clone());
-
-  PublishStubScene(view_state);
-
-  for (const auto& pair : view_state->children()) {
-    if (pair.second->state())
-      UpdateViewProperties(pair.second->state());
+  view_state->set_invalidation_flags(view_state->invalidation_flags() | flags);
+  if (view_state->view_stub() && view_state->view_stub()->tree()) {
+    ScheduleViewTreeInvalidation(view_state->view_stub()->tree(),
+                                 ViewTreeState::INVALIDATION_VIEWS_INVALIDATED);
   }
 }
 
-void ViewRegistry::InvalidateViewProperties(ViewState* view_state) {
+void ViewRegistry::ScheduleViewTreeInvalidation(ViewTreeState* tree_state,
+                                                uint32_t flags) {
+  DCHECK(IsViewTreeStateRegisteredDebug(tree_state));
+  DVLOG(2) << "ScheduleViewTreeInvalidation: tree=" << tree_state
+           << ", flags=" << flags;
+
+  tree_state->set_invalidation_flags(tree_state->invalidation_flags() | flags);
+  if (flags & ViewTreeState::INVALIDATION_RENDERER_CHANGED)
+    tree_state->set_frame_scheduled(false);
+  if (!tree_state->frame_scheduled() && tree_state->frame_scheduler()) {
+    // It's safe to pass Unretained(tree_state) because the scheduler's
+    // lifetime is bound to that of the view tree and its renderer so we can
+    // only receive a callback if the tree still exists and has the same
+    // renderer.
+    tree_state->set_frame_scheduled(true);
+    tree_state->frame_scheduler()->ScheduleFrame(
+        base::Bind(&ViewRegistry::TraverseViewTree, base::Unretained(this),
+                   base::Unretained(tree_state)));
+  }
+}
+
+void ViewRegistry::TraverseViewTree(
+    ViewTreeState* tree_state,
+    mojo::gfx::composition::FrameInfoPtr frame_info) {
+  DCHECK(IsViewTreeStateRegisteredDebug(tree_state));
+  DVLOG(2) << "TraverseViewTree: tree=" << tree_state
+           << ", frame_info=" << frame_info
+           << ", invalidation_flags=" << tree_state->invalidation_flags();
+  DCHECK(tree_state->frame_scheduled());
+  DCHECK(tree_state->invalidation_flags());
+
+  tree_state->set_frame_scheduled(false);
+  tree_state->set_invalidation_flags(0u);
+
+  ViewStub* root_stub = tree_state->GetRoot();
+  if (root_stub && root_stub->state())
+    TraverseView(root_stub->state(), frame_info.get(), false);
+}
+
+void ViewRegistry::TraverseView(
+    ViewState* view_state,
+    const mojo::gfx::composition::FrameInfo* frame_info,
+    bool parent_properties_changed) {
   DCHECK(IsViewStateRegisteredDebug(view_state));
-  DVLOG(2) << "InvalidateViewProperties: view=" << view_state;
+  DVLOG(2) << "TraverseView: view=" << view_state
+           << ", frame_info=" << frame_info
+           << ", parent_properties_changed=" << parent_properties_changed
+           << ", invalidation_flags=" << view_state->invalidation_flags();
 
-  if (!view_state->issued_properties_valid())
+  uint32_t flags = view_state->invalidation_flags();
+
+  // Update view properties.
+  bool view_properties_changed = false;
+  if (parent_properties_changed ||
+      (flags & (ViewState::INVALIDATION_PROPERTIES_CHANGED |
+                ViewState::INVALIDATION_PARENT_CHANGED))) {
+    mojo::ui::ViewPropertiesPtr properties = ResolveViewProperties(view_state);
+    if (properties) {
+      if (!view_state->issued_properties() ||
+          !properties->Equals(*view_state->issued_properties())) {
+        view_state->IssueProperties(properties.Pass());
+        PublishStubScene(view_state);
+        view_properties_changed = true;
+      }
+    }
+  }
+
+  // If we don't have view properties yet then we cannot pursue traversals.
+  // Remember the application-specified invalidation bits for later.
+  if (!view_state->issued_properties()) {
+    DVLOG(2) << "View has no valid properties: view=" << view_state;
+    view_state->set_invalidation_flags(flags &
+                                       ViewState::INVALIDATION_EXPLICIT);
     return;
+  }
 
-  view_state->set_issued_properties_valid(false);
+  view_state->set_invalidation_flags(0u);
 
+  // Deliver invalidation event if needed.
+  if (view_properties_changed || (flags & ViewState::INVALIDATION_EXPLICIT)) {
+    auto invalidation = mojo::ui::ViewInvalidation::New();
+    if (view_properties_changed)
+      invalidation->properties = view_state->issued_properties().Clone();
+    invalidation->scene_version = view_state->issued_scene_version();
+    invalidation->frame_info = frame_info->Clone();
+    SendInvalidation(view_state, invalidation.Pass());
+  }
+
+  // TODO(jeffbrown): Optimize propagation.
+  // This should defer traversal of the rest of the subtree until the view
+  // flushes its container or a timeout expires.  We will need to be careful
+  // to ensure that we completely process one traversal before starting the
+  // next one and we'll have to retain some state.  The same behavior should
+  // be applied when the parent's own properties change (assuming that it is
+  // likely to want to resize its children, unless it says otherwise somehow).
+
+  // Traverse all children.
   for (const auto& pair : view_state->children()) {
     if (pair.second->state())
-      InvalidateViewProperties(pair.second->state());
+      TraverseView(pair.second->state(), frame_info, view_properties_changed);
   }
 }
 
@@ -624,9 +713,8 @@ mojo::ui::ViewPropertiesPtr ViewRegistry::ResolveViewProperties(
     return nullptr;
 
   if (view_stub->parent()) {
-    if (!view_stub->parent()->issued_properties_valid())
+    if (!view_stub->parent()->issued_properties())
       return nullptr;
-    DCHECK(view_stub->parent()->issued_properties());
     mojo::ui::ViewPropertiesPtr properties =
         view_stub->parent()->issued_properties().Clone();
     ApplyOverrides(properties.get(), view_stub->properties().get());
@@ -710,21 +798,18 @@ void ViewRegistry::ResolveScenes(
 
 // EXTERNAL SIGNALING
 
-void ViewRegistry::SendPropertiesChanged(
+void ViewRegistry::SendInvalidation(
     ViewState* view_state,
-    uint32_t scene_version,
-    mojo::ui::ViewPropertiesPtr properties) {
+    mojo::ui::ViewInvalidationPtr invalidation) {
   DCHECK(view_state);
-  DCHECK(properties);
+  DCHECK(invalidation);
   DCHECK(view_state->view_listener());
 
   // TODO: Detect ANRs
-  DVLOG(1) << "SendPropertiesChanged: view_state=" << view_state
-           << ", scene_version=" << scene_version
-           << ", properties=" << properties;
-  view_state->view_listener()->OnPropertiesChanged(
-      view_state->issued_scene_version(),
-      view_state->issued_properties()->Clone(), base::Bind(&base::DoNothing));
+  DVLOG(1) << "SendInvalidation: view_state=" << view_state
+           << ", invalidation=" << invalidation;
+  view_state->view_listener()->OnInvalidation(invalidation.Pass(),
+                                              base::Bind(&base::DoNothing));
 }
 
 void ViewRegistry::SendRendererDied(ViewTreeState* tree_state) {

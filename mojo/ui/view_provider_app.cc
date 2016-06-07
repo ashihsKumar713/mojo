@@ -44,6 +44,8 @@ void ViewProviderApp::OnInitialize() {
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   logging::InitLogging(settings);
+
+  tracing_.Initialize(shell(), &args());
 }
 
 bool ViewProviderApp::OnAcceptConnection(

@@ -5,6 +5,7 @@
 #include "mojo/ui/base_view.h"
 
 #include "base/logging.h"
+#include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/application/connect.h"
 
 namespace mojo {
@@ -45,29 +46,70 @@ ViewContainer* BaseView::GetViewContainer() {
   return view_container_.get();
 }
 
-void BaseView::OnPropertiesChanged(uint32_t old_scene_version,
-                                   ViewPropertiesPtr old_properties) {}
+mojo::gfx::composition::SceneMetadataPtr BaseView::CreateSceneMetadata() const {
+  auto metadata = mojo::gfx::composition::SceneMetadata::New();
+  metadata->version = scene_version_;
+  metadata->presentation_time = frame_tracker_.frame_info().presentation_time;
+  return metadata;
+}
+
+void BaseView::Invalidate() {
+  if (!invalidated_) {
+    invalidated_ = true;
+    view_->Invalidate();
+  }
+}
+
+void BaseView::OnPropertiesChanged(ViewPropertiesPtr old_properties) {}
+
+void BaseView::OnLayout() {}
+
+void BaseView::OnDraw() {}
 
 void BaseView::OnChildAttached(uint32_t child_key,
                                ViewInfoPtr child_view_info) {}
 
 void BaseView::OnChildUnavailable(uint32_t child_key) {}
 
-void BaseView::OnPropertiesChanged(
-    uint32_t scene_version,
-    ViewPropertiesPtr properties,
-    const OnPropertiesChangedCallback& callback) {
-  DCHECK(properties);
-  DCHECK(properties->display_metrics);
-  DCHECK(properties->view_layout);
-  DCHECK(properties->view_layout->size);
+void BaseView::OnInvalidation(ViewInvalidationPtr invalidation,
+                              const OnInvalidationCallback& callback) {
+  DCHECK(invalidation);
+  DCHECK(invalidation->frame_info);
+  TRACE_EVENT0("ui", "OnInvalidation");
 
-  uint32_t old_scene_version = scene_version_;
-  ViewPropertiesPtr old_properties = properties_.Pass();
-  scene_version_ = scene_version;
-  properties_ = properties.Pass();
+  invalidated_ = false;
+  frame_tracker_.Update(*invalidation->frame_info, MojoGetTimeTicksNow());
+  scene_version_ = invalidation->scene_version;
 
-  OnPropertiesChanged(old_scene_version, old_properties.Pass());
+  if (invalidation->properties) {
+    DCHECK(invalidation->properties->display_metrics);
+    DCHECK(invalidation->properties->view_layout);
+    DCHECK(invalidation->properties->view_layout->size);
+    TRACE_EVENT0("ui", "OnPropertiesChanged");
+
+    ViewPropertiesPtr old_properties = std::move(properties_);
+    properties_ = std::move(invalidation->properties);
+    OnPropertiesChanged(std::move(old_properties));
+  }
+
+  if (!properties_)
+    return;
+
+  {
+    TRACE_EVENT0("ui", "OnLayout");
+    OnLayout();
+  }
+
+  if (invalidation->container_flush_token) {
+    DCHECK(view_container_);  // we must have added children
+    view_container_->FlushChildren(invalidation->container_flush_token);
+  }
+
+  {
+    TRACE_EVENT0("ui", "OnDraw");
+    OnDraw();
+  }
+
   callback.Run();
 }
 
@@ -76,12 +118,14 @@ void BaseView::OnChildAttached(uint32_t child_key,
                                const OnChildUnavailableCallback& callback) {
   DCHECK(child_view_info);
 
+  TRACE_EVENT1("ui", "OnChildAttached", "child_key", child_key);
   OnChildAttached(child_key, child_view_info.Pass());
   callback.Run();
 }
 
 void BaseView::OnChildUnavailable(uint32_t child_key,
                                   const OnChildUnavailableCallback& callback) {
+  TRACE_EVENT1("ui", "OnChildUnavailable", "child_key", child_key);
   OnChildUnavailable(child_key);
   callback.Run();
 }

@@ -9,10 +9,127 @@ import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
 import 'package:mojo/mojo/service_provider.mojom.dart' as service_provider_mojom;
 import 'package:mojo_services/mojo/gfx/composition/scenes.mojom.dart' as scenes_mojom;
+import 'package:mojo_services/mojo/gfx/composition/scheduling.mojom.dart' as scheduling_mojom;
 import 'package:mojo_services/mojo/ui/view_containers.mojom.dart' as view_containers_mojom;
 import 'package:mojo_services/mojo/ui/view_properties.mojom.dart' as view_properties_mojom;
 import 'package:mojo_services/mojo/ui/view_token.mojom.dart' as view_token_mojom;
 
+
+
+class ViewInvalidation extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(32, 0)
+  ];
+  view_properties_mojom.ViewProperties properties = null;
+  int containerFlushToken = 0;
+  int sceneVersion = 0;
+  scheduling_mojom.FrameInfo frameInfo = null;
+
+  ViewInvalidation() : super(kVersions.last.size);
+
+  static ViewInvalidation deserialize(bindings.Message message) {
+    var decoder = new bindings.Decoder(message);
+    var result = decode(decoder);
+    if (decoder.excessHandles != null) {
+      decoder.excessHandles.forEach((h) => h.close());
+    }
+    return result;
+  }
+
+  static ViewInvalidation decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    ViewInvalidation result = new ViewInvalidation();
+
+    var mainDataHeader = decoder0.decodeStructDataHeader();
+    if (mainDataHeader.version <= kVersions.last.version) {
+      // Scan in reverse order to optimize for more recent versions.
+      for (int i = kVersions.length - 1; i >= 0; --i) {
+        if (mainDataHeader.version >= kVersions[i].version) {
+          if (mainDataHeader.size == kVersions[i].size) {
+            // Found a match.
+            break;
+          }
+          throw new bindings.MojoCodecError(
+              'Header size doesn\'t correspond to known version size.');
+        }
+      }
+    } else if (mainDataHeader.size < kVersions.last.size) {
+      throw new bindings.MojoCodecError(
+        'Message newer than the last known version cannot be shorter than '
+        'required by the last known version.');
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      var decoder1 = decoder0.decodePointer(8, true);
+      result.properties = view_properties_mojom.ViewProperties.decode(decoder1);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.containerFlushToken = decoder0.decodeUint32(16);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.sceneVersion = decoder0.decodeUint32(20);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      var decoder1 = decoder0.decodePointer(24, false);
+      result.frameInfo = scheduling_mojom.FrameInfo.decode(decoder1);
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    try {
+      encoder0.encodeStruct(properties, 8, true);
+    } on bindings.MojoCodecError catch(e) {
+      e.message = "Error encountered while encoding field "
+          "properties of struct ViewInvalidation: $e";
+      rethrow;
+    }
+    try {
+      encoder0.encodeUint32(containerFlushToken, 16);
+    } on bindings.MojoCodecError catch(e) {
+      e.message = "Error encountered while encoding field "
+          "containerFlushToken of struct ViewInvalidation: $e";
+      rethrow;
+    }
+    try {
+      encoder0.encodeUint32(sceneVersion, 20);
+    } on bindings.MojoCodecError catch(e) {
+      e.message = "Error encountered while encoding field "
+          "sceneVersion of struct ViewInvalidation: $e";
+      rethrow;
+    }
+    try {
+      encoder0.encodeStruct(frameInfo, 24, false);
+    } on bindings.MojoCodecError catch(e) {
+      e.message = "Error encountered while encoding field "
+          "frameInfo of struct ViewInvalidation: $e";
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "ViewInvalidation("
+           "properties: $properties" ", "
+           "containerFlushToken: $containerFlushToken" ", "
+           "sceneVersion: $sceneVersion" ", "
+           "frameInfo: $frameInfo" ")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    map["properties"] = properties;
+    map["containerFlushToken"] = containerFlushToken;
+    map["sceneVersion"] = sceneVersion;
+    map["frameInfo"] = frameInfo;
+    return map;
+  }
+}
 
 
 class _ViewGetTokenParams extends bindings.Struct {
@@ -359,101 +476,14 @@ class _ViewGetContainerParams extends bindings.Struct {
 }
 
 
-class _ViewListenerOnPropertiesChangedParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(24, 0)
-  ];
-  int sceneVersion = 0;
-  view_properties_mojom.ViewProperties properties = null;
-
-  _ViewListenerOnPropertiesChangedParams() : super(kVersions.last.size);
-
-  static _ViewListenerOnPropertiesChangedParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
-
-  static _ViewListenerOnPropertiesChangedParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    _ViewListenerOnPropertiesChangedParams result = new _ViewListenerOnPropertiesChangedParams();
-
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
-    if (mainDataHeader.version >= 0) {
-      
-      result.sceneVersion = decoder0.decodeUint32(8);
-    }
-    if (mainDataHeader.version >= 0) {
-      
-      var decoder1 = decoder0.decodePointer(16, false);
-      result.properties = view_properties_mojom.ViewProperties.decode(decoder1);
-    }
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    try {
-      encoder0.encodeUint32(sceneVersion, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "sceneVersion of struct _ViewListenerOnPropertiesChangedParams: $e";
-      rethrow;
-    }
-    try {
-      encoder0.encodeStruct(properties, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "properties of struct _ViewListenerOnPropertiesChangedParams: $e";
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "_ViewListenerOnPropertiesChangedParams("
-           "sceneVersion: $sceneVersion" ", "
-           "properties: $properties" ")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    map["sceneVersion"] = sceneVersion;
-    map["properties"] = properties;
-    return map;
-  }
-}
-
-
-class ViewListenerOnPropertiesChangedResponseParams extends bindings.Struct {
+class _ViewInvalidateParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(8, 0)
   ];
 
-  ViewListenerOnPropertiesChangedResponseParams() : super(kVersions.last.size);
+  _ViewInvalidateParams() : super(kVersions.last.size);
 
-  static ViewListenerOnPropertiesChangedResponseParams deserialize(bindings.Message message) {
+  static _ViewInvalidateParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
     if (decoder.excessHandles != null) {
@@ -462,11 +492,11 @@ class ViewListenerOnPropertiesChangedResponseParams extends bindings.Struct {
     return result;
   }
 
-  static ViewListenerOnPropertiesChangedResponseParams decode(bindings.Decoder decoder0) {
+  static _ViewInvalidateParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    ViewListenerOnPropertiesChangedResponseParams result = new ViewListenerOnPropertiesChangedResponseParams();
+    _ViewInvalidateParams result = new _ViewInvalidateParams();
 
     var mainDataHeader = decoder0.decodeStructDataHeader();
     if (mainDataHeader.version <= kVersions.last.version) {
@@ -494,7 +524,138 @@ class ViewListenerOnPropertiesChangedResponseParams extends bindings.Struct {
   }
 
   String toString() {
-    return "ViewListenerOnPropertiesChangedResponseParams("")";
+    return "_ViewInvalidateParams("")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    return map;
+  }
+}
+
+
+class _ViewListenerOnInvalidationParams extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(16, 0)
+  ];
+  ViewInvalidation invalidation = null;
+
+  _ViewListenerOnInvalidationParams() : super(kVersions.last.size);
+
+  static _ViewListenerOnInvalidationParams deserialize(bindings.Message message) {
+    var decoder = new bindings.Decoder(message);
+    var result = decode(decoder);
+    if (decoder.excessHandles != null) {
+      decoder.excessHandles.forEach((h) => h.close());
+    }
+    return result;
+  }
+
+  static _ViewListenerOnInvalidationParams decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    _ViewListenerOnInvalidationParams result = new _ViewListenerOnInvalidationParams();
+
+    var mainDataHeader = decoder0.decodeStructDataHeader();
+    if (mainDataHeader.version <= kVersions.last.version) {
+      // Scan in reverse order to optimize for more recent versions.
+      for (int i = kVersions.length - 1; i >= 0; --i) {
+        if (mainDataHeader.version >= kVersions[i].version) {
+          if (mainDataHeader.size == kVersions[i].size) {
+            // Found a match.
+            break;
+          }
+          throw new bindings.MojoCodecError(
+              'Header size doesn\'t correspond to known version size.');
+        }
+      }
+    } else if (mainDataHeader.size < kVersions.last.size) {
+      throw new bindings.MojoCodecError(
+        'Message newer than the last known version cannot be shorter than '
+        'required by the last known version.');
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      var decoder1 = decoder0.decodePointer(8, false);
+      result.invalidation = ViewInvalidation.decode(decoder1);
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    try {
+      encoder0.encodeStruct(invalidation, 8, false);
+    } on bindings.MojoCodecError catch(e) {
+      e.message = "Error encountered while encoding field "
+          "invalidation of struct _ViewListenerOnInvalidationParams: $e";
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "_ViewListenerOnInvalidationParams("
+           "invalidation: $invalidation" ")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    map["invalidation"] = invalidation;
+    return map;
+  }
+}
+
+
+class ViewListenerOnInvalidationResponseParams extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(8, 0)
+  ];
+
+  ViewListenerOnInvalidationResponseParams() : super(kVersions.last.size);
+
+  static ViewListenerOnInvalidationResponseParams deserialize(bindings.Message message) {
+    var decoder = new bindings.Decoder(message);
+    var result = decode(decoder);
+    if (decoder.excessHandles != null) {
+      decoder.excessHandles.forEach((h) => h.close());
+    }
+    return result;
+  }
+
+  static ViewListenerOnInvalidationResponseParams decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    ViewListenerOnInvalidationResponseParams result = new ViewListenerOnInvalidationResponseParams();
+
+    var mainDataHeader = decoder0.decodeStructDataHeader();
+    if (mainDataHeader.version <= kVersions.last.version) {
+      // Scan in reverse order to optimize for more recent versions.
+      for (int i = kVersions.length - 1; i >= 0; --i) {
+        if (mainDataHeader.version >= kVersions[i].version) {
+          if (mainDataHeader.size == kVersions[i].size) {
+            // Found a match.
+            break;
+          }
+          throw new bindings.MojoCodecError(
+              'Header size doesn\'t correspond to known version size.');
+        }
+      }
+    } else if (mainDataHeader.size < kVersions.last.size) {
+      throw new bindings.MojoCodecError(
+        'Message newer than the last known version cannot be shorter than '
+        'required by the last known version.');
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    encoder.getStructEncoderAtOffset(kVersions.last);
+  }
+
+  String toString() {
+    return "ViewListenerOnInvalidationResponseParams("")";
   }
 
   Map toJson() {
@@ -507,6 +668,7 @@ const int _viewMethodGetTokenName = 0;
 const int _viewMethodGetServiceProviderName = 1;
 const int _viewMethodCreateSceneName = 2;
 const int _viewMethodGetContainerName = 3;
+const int _viewMethodInvalidateName = 4;
 
 class _ViewServiceDescription implements service_describer.ServiceDescription {
   dynamic getTopLevelInterface([Function responseFactory]) =>
@@ -545,6 +707,7 @@ abstract class View {
   void getServiceProvider(service_provider_mojom.ServiceProviderInterfaceRequest serviceProvider);
   void createScene(scenes_mojom.SceneInterfaceRequest scene);
   void getContainer(view_containers_mojom.ViewContainerInterfaceRequest container);
+  void invalidate();
 }
 
 abstract class ViewInterface
@@ -703,6 +866,19 @@ class ViewProxy
     ctrl.sendMessage(params,
         _viewMethodGetContainerName);
   }
+  void invalidate() {
+    if (impl != null) {
+      impl.invalidate();
+      return;
+    }
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _ViewInvalidateParams();
+    ctrl.sendMessage(params,
+        _viewMethodInvalidateName);
+  }
 }
 
 class _ViewStubControl
@@ -778,6 +954,9 @@ class _ViewStubControl
             message.payload);
         _impl.getContainer(params.container);
         break;
+      case _viewMethodInvalidateName:
+        _impl.invalidate();
+        break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
@@ -848,9 +1027,12 @@ class ViewStub
   void getContainer(view_containers_mojom.ViewContainerInterfaceRequest container) {
     return impl.getContainer(container);
   }
+  void invalidate() {
+    return impl.invalidate();
+  }
 }
 
-const int _viewListenerMethodOnPropertiesChangedName = 0;
+const int _viewListenerMethodOnInvalidationName = 0;
 
 class _ViewListenerServiceDescription implements service_describer.ServiceDescription {
   dynamic getTopLevelInterface([Function responseFactory]) =>
@@ -885,7 +1067,7 @@ abstract class ViewListener {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic onPropertiesChanged(int sceneVersion,view_properties_mojom.ViewProperties properties,[Function responseFactory = null]);
+  dynamic onInvalidation(ViewInvalidation invalidation,[Function responseFactory = null]);
 }
 
 abstract class ViewListenerInterface
@@ -928,8 +1110,8 @@ class _ViewListenerProxyControl
 
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
-      case _viewListenerMethodOnPropertiesChangedName:
-        var r = ViewListenerOnPropertiesChangedResponseParams.deserialize(
+      case _viewListenerMethodOnInvalidationName:
+        var r = ViewListenerOnInvalidationResponseParams.deserialize(
             message.payload);
         if (!message.header.hasRequestId) {
           proxyError("Expected a message with a valid request Id.");
@@ -991,16 +1173,15 @@ class ViewListenerProxy
   }
 
 
-  dynamic onPropertiesChanged(int sceneVersion,view_properties_mojom.ViewProperties properties,[Function responseFactory = null]) {
+  dynamic onInvalidation(ViewInvalidation invalidation,[Function responseFactory = null]) {
     if (impl != null) {
-      return new Future(() => impl.onPropertiesChanged(sceneVersion,properties,_ViewListenerStubControl._viewListenerOnPropertiesChangedResponseParamsFactory));
+      return new Future(() => impl.onInvalidation(invalidation,_ViewListenerStubControl._viewListenerOnInvalidationResponseParamsFactory));
     }
-    var params = new _ViewListenerOnPropertiesChangedParams();
-    params.sceneVersion = sceneVersion;
-    params.properties = properties;
+    var params = new _ViewListenerOnInvalidationParams();
+    params.invalidation = invalidation;
     return ctrl.sendMessageWithRequestId(
         params,
-        _viewListenerMethodOnPropertiesChangedName,
+        _viewListenerMethodOnInvalidationName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse);
   }
@@ -1028,8 +1209,8 @@ class _ViewListenerStubControl
   String get serviceName => ViewListener.serviceName;
 
 
-  static ViewListenerOnPropertiesChangedResponseParams _viewListenerOnPropertiesChangedResponseParamsFactory() {
-    var result = new ViewListenerOnPropertiesChangedResponseParams();
+  static ViewListenerOnInvalidationResponseParams _viewListenerOnInvalidationResponseParamsFactory() {
+    var result = new ViewListenerOnInvalidationResponseParams();
     return result;
   }
 
@@ -1043,16 +1224,16 @@ class _ViewListenerStubControl
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
-      case _viewListenerMethodOnPropertiesChangedName:
-        var params = _ViewListenerOnPropertiesChangedParams.deserialize(
+      case _viewListenerMethodOnInvalidationName:
+        var params = _ViewListenerOnInvalidationParams.deserialize(
             message.payload);
-        var response = _impl.onPropertiesChanged(params.sceneVersion,params.properties,_viewListenerOnPropertiesChangedResponseParamsFactory);
+        var response = _impl.onInvalidation(params.invalidation,_viewListenerOnInvalidationResponseParamsFactory);
         if (response is Future) {
           return response.then((response) {
             if (response != null) {
               return buildResponseWithId(
                   response,
-                  _viewListenerMethodOnPropertiesChangedName,
+                  _viewListenerMethodOnInvalidationName,
                   message.header.requestId,
                   bindings.MessageHeader.kMessageIsResponse);
             }
@@ -1060,7 +1241,7 @@ class _ViewListenerStubControl
         } else if (response != null) {
           return buildResponseWithId(
               response,
-              _viewListenerMethodOnPropertiesChangedName,
+              _viewListenerMethodOnInvalidationName,
               message.header.requestId,
               bindings.MessageHeader.kMessageIsResponse);
         }
@@ -1123,8 +1304,8 @@ class ViewListenerStub
   }
 
 
-  dynamic onPropertiesChanged(int sceneVersion,view_properties_mojom.ViewProperties properties,[Function responseFactory = null]) {
-    return impl.onPropertiesChanged(sceneVersion,properties,responseFactory);
+  dynamic onInvalidation(ViewInvalidation invalidation,[Function responseFactory = null]) {
+    return impl.onInvalidation(invalidation,responseFactory);
   }
 }
 

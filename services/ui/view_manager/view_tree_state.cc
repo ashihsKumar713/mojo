@@ -43,6 +43,10 @@ ViewTreeState::~ViewTreeState() {
 
 void ViewTreeState::SetRenderer(mojo::gfx::composition::RendererPtr renderer) {
   renderer_ = renderer.Pass();
+  frame_scheduler_.reset();
+  if (renderer_)
+    renderer_->GetScheduler(GetProxy(&frame_scheduler_));
+
   ClearHitTesterCallbacks(true /*renderer_changed*/);
 }
 

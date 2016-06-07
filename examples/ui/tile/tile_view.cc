@@ -64,8 +64,7 @@ void TileView::OnChildAttached(uint32_t child_key,
 
   ViewData* view_data = it->second.get();
   view_data->view_info = child_view_info.Pass();
-
-  UpdateScene();
+  Invalidate();
 }
 
 void TileView::OnChildUnavailable(uint32_t child_key) {
@@ -78,12 +77,11 @@ void TileView::OnChildUnavailable(uint32_t child_key) {
   views_.erase(it);
 
   GetViewContainer()->RemoveChild(child_key, nullptr);
+  Invalidate();
 }
 
-void TileView::OnPropertiesChanged(uint32_t old_scene_version,
-                                   mojo::ui::ViewPropertiesPtr old_properties) {
-  if (!properties())
-    return;
+void TileView::OnLayout() {
+  DCHECK(properties());
 
   // Layout all children in a row.
   if (!views_.empty()) {
@@ -136,11 +134,11 @@ void TileView::OnPropertiesChanged(uint32_t old_scene_version,
           it->first, view_data->scene_version, view_properties.Pass());
     }
   }
-
-  UpdateScene();
 }
 
-void TileView::UpdateScene() {
+void TileView::OnDraw() {
+  DCHECK(properties());
+
   // Update the scene.
   // TODO: only send the resources once, be more incremental
   auto update = mojo::gfx::composition::SceneUpdate::New();
@@ -250,9 +248,7 @@ void TileView::UpdateScene() {
   scene()->Update(update.Pass());
 
   // Publish the scene.
-  auto metadata = mojo::gfx::composition::SceneMetadata::New();
-  metadata->version = scene_version();
-  scene()->Publish(metadata.Pass());
+  scene()->Publish(CreateSceneMetadata());
 }
 
 TileView::ViewData::ViewData(const std::string& url, uint32_t key)

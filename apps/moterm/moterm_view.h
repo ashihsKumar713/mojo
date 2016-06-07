@@ -18,14 +18,12 @@
 #include "mojo/services/input_events/interfaces/input_event_constants.mojom.h"
 #include "mojo/services/input_events/interfaces/input_events.mojom.h"
 #include "mojo/services/terminal/interfaces/terminal.mojom.h"
-#include "mojo/ui/choreographer.h"
 #include "mojo/ui/ganesh_view.h"
 #include "mojo/ui/input_handler.h"
 #include "third_party/skia/include/core/SkBitmapDevice.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
 class MotermView : public mojo::ui::GaneshView,
-                   public mojo::ui::ChoreographerDelegate,
                    public mojo::ui::InputListener,
                    public MotermModel::Delegate,
                    public MotermDriver::Client,
@@ -39,12 +37,7 @@ class MotermView : public mojo::ui::GaneshView,
 
  private:
   // |mojo::ui::GaneshView|:
-  void OnPropertiesChanged(uint32_t old_scene_version,
-                           mojo::ui::ViewPropertiesPtr old_properties) override;
-
-  // |mojo::ui::ChoreographerDelegate|:
-  void OnDraw(const mojo::gfx::composition::FrameInfo& frame_info,
-              const base::TimeDelta& time_delta) override;
+  void OnDraw() override;
 
   // |mojo::ui::InputListener|:
   void OnEvent(mojo::EventPtr event, const OnEventCallback& callback) override;
@@ -81,7 +74,6 @@ class MotermView : public mojo::ui::GaneshView,
 
   void OnKeyPressed(mojo::EventPtr key_event);
 
-  mojo::ui::Choreographer choreographer_;
   mojo::ui::InputHandler input_handler_;
 
   // TODO(vtl): Consider the structure of this app. Do we really want the "view"

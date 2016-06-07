@@ -24,6 +24,17 @@ class ViewImpl;
 // This object is owned by the ViewRegistry that created it.
 class ViewState : public ViewContainerState {
  public:
+  enum {
+    // View invalidated itself explicitly (wants to draw).
+    INVALIDATION_EXPLICIT = 1u << 0,
+
+    // Properties may have changed and must be resolved.
+    INVALIDATION_PROPERTIES_CHANGED = 1u << 1,
+
+    // View's parent changed, may require resolving properties.
+    INVALIDATION_PARENT_CHANGED = 1u << 2,
+  };
+
   ViewState(ViewRegistry* registry,
             mojo::ui::ViewTokenPtr view_token,
             mojo::InterfaceRequest<mojo::ui::View> view_request,
@@ -68,18 +79,13 @@ class ViewState : public ViewContainerState {
     return issued_properties_;
   }
 
-  // Gets or sets whether the view's issued properties are valid for
-  // inheritance by descendants.  Cleared when preconditions change that
-  // will require reevaluation (but which might not cause reissuance if
-  // no changes are detected).
-  bool issued_properties_valid() const { return issued_properties_valid_; }
-  void set_issued_properties_valid(bool valid) {
-    issued_properties_valid_ = valid;
-  }
-
   // Sets the requested properties and increments the scene version.
   // Sets |issued_properties_valid()| to true if |properties| is not null.
   void IssueProperties(mojo::ui::ViewPropertiesPtr properties);
+
+  // Gets or sets flags describing the invalidation state of the view.
+  uint32_t invalidation_flags() const { return invalidation_flags_; }
+  void set_invalidation_flags(uint32_t value) { invalidation_flags_ = value; }
 
   // Binds the |ViewOwner| interface to the view which has the effect of
   // tying the view's lifetime to that of the owner's pipe.
@@ -111,7 +117,8 @@ class ViewState : public ViewContainerState {
 
   uint32_t issued_scene_version_ = 0u;
   mojo::ui::ViewPropertiesPtr issued_properties_;
-  bool issued_properties_valid_ = false;
+
+  uint32_t invalidation_flags_ = 0u;
 
   base::WeakPtrFactory<ViewState> weak_factory_;  // must be last
 

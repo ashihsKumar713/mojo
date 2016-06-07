@@ -46,6 +46,7 @@ class ViewTreeImpl : public mojo::ui::ViewTree,
       uint32_t child_key,
       uint32_t child_scene_version,
       mojo::ui::ViewPropertiesPtr child_view_properties) override;
+  void FlushChildren(uint32_t flush_token) override;
 
   // |ServiceProvider|:
   void ConnectToService(const mojo::String& service_name,

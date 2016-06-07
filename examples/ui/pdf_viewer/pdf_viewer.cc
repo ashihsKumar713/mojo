@@ -13,7 +13,6 @@
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/application/run_application.h"
-#include "mojo/ui/choreographer.h"
 #include "mojo/ui/content_viewer_app.h"
 #include "mojo/ui/ganesh_view.h"
 #include "mojo/ui/input_handler.h"
@@ -114,7 +113,6 @@ class PDFLibrary : public std::enable_shared_from_this<PDFLibrary> {
 };
 
 class PDFDocumentView : public mojo::ui::GaneshView,
-                        public mojo::ui::ChoreographerDelegate,
                         public mojo::ui::InputListener {
  public:
   PDFDocumentView(
@@ -125,7 +123,6 @@ class PDFDocumentView : public mojo::ui::GaneshView,
                    view_owner_request.Pass(),
                    "PDFDocumentViewer"),
         pdf_document_(pdf_document),
-        choreographer_(scene(), this),
         input_handler_(GetViewServiceProvider(), this) {
     DCHECK(pdf_document_);
   }
@@ -133,13 +130,6 @@ class PDFDocumentView : public mojo::ui::GaneshView,
   ~PDFDocumentView() override {}
 
  private:
-  // |GaneshView|:
-  void OnPropertiesChanged(
-      uint32_t old_scene_version,
-      mojo::ui::ViewPropertiesPtr old_properties) override {
-    Redraw();
-  }
-
   // |InputListener|:
   void OnEvent(mojo::EventPtr event, const OnEventCallback& callback) override {
     if (event->key_data && (event->action != mojo::EventType::KEY_PRESSED ||
@@ -167,11 +157,9 @@ class PDFDocumentView : public mojo::ui::GaneshView,
     callback.Run(false);
   }
 
-  // |ChoreographerDelegate|:
-  void OnDraw(const mojo::gfx::composition::FrameInfo& frame_info,
-              const base::TimeDelta& time_delta) override {
-    if (!properties())
-      return;
+  // |GaneshView|:
+  void OnDraw() override {
+    DCHECK(properties());
 
     auto update = mojo::gfx::composition::SceneUpdate::New();
 
@@ -203,17 +191,15 @@ class PDFDocumentView : public mojo::ui::GaneshView,
     }
 
     scene()->Update(update.Pass());
-
-    auto metadata = mojo::gfx::composition::SceneMetadata::New();
-    metadata->version = scene_version();
-    scene()->Publish(metadata.Pass());
+    scene()->Publish(CreateSceneMetadata());
   }
 
   void DrawContent(const mojo::skia::GaneshContext::Scope& ganesh_scope,
                    const mojo::Size& size,
                    SkCanvas* canvas) {
-    if (!cached_image_) {
+    if (!cached_image_ || !cached_size_.Equals(size)) {
       cached_image_ = pdf_document_->DrawPage(page_, size);
+      cached_size_ = size;
     }
 
     if (cached_image_) {
@@ -246,14 +232,14 @@ class PDFDocumentView : public mojo::ui::GaneshView,
 
   void Redraw() {
     cached_image_.reset();
-    choreographer_.ScheduleDraw();
+    Invalidate();
   }
 
   std::shared_ptr<PDFDocument> pdf_document_;
   uint32_t page_ = 0u;
   sk_sp<SkImage> cached_image_;
+  mojo::Size cached_size_;
 
-  mojo::ui::Choreographer choreographer_;
   mojo::ui::InputHandler input_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(PDFDocumentView);

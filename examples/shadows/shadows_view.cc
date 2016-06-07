@@ -21,24 +21,15 @@ constexpr uint32_t kRootNodeId = mojo::gfx::composition::kSceneRootNodeId;
 ShadowsView::ShadowsView(
     mojo::InterfaceHandle<mojo::ApplicationConnector> app_connector,
     mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request)
-    : GLView(app_connector.Pass(), view_owner_request.Pass(), "Shadows"),
-      choreographer_(scene(), this) {
+    : GLView(app_connector.Pass(), view_owner_request.Pass(), "Shadows") {
   mojo::GLContext::Scope gl_scope(gl_context());
   renderer_.reset(new ShadowsRenderer());
 }
 
 ShadowsView::~ShadowsView() {}
 
-void ShadowsView::OnPropertiesChanged(
-    uint32_t old_scene_version,
-    mojo::ui::ViewPropertiesPtr old_properties) {
-  choreographer_.ScheduleDraw();
-}
-
-void ShadowsView::OnDraw(const mojo::gfx::composition::FrameInfo& frame_info,
-                         const base::TimeDelta& time_delta) {
-  if (!properties())
-    return;
+void ShadowsView::OnDraw() {
+  DCHECK(properties());
 
   // Update the contents of the scene.
   auto update = mojo::gfx::composition::SceneUpdate::New();
@@ -56,8 +47,6 @@ void ShadowsView::OnDraw(const mojo::gfx::composition::FrameInfo& frame_info,
     update->resources.insert(kContentImageResourceId, content_resource.Pass());
 
     auto root_node = mojo::gfx::composition::Node::New();
-    root_node->content_transform = mojo::Transform::New();
-    mojo::SetIdentityTransform(root_node->content_transform.get());
     root_node->hit_test_behavior =
         mojo::gfx::composition::HitTestBehavior::New();
     root_node->op = mojo::gfx::composition::NodeOp::New();
@@ -73,10 +62,7 @@ void ShadowsView::OnDraw(const mojo::gfx::composition::FrameInfo& frame_info,
   scene()->Update(update.Pass());
 
   // Publish the scene.
-  auto metadata = mojo::gfx::composition::SceneMetadata::New();
-  metadata->version = scene_version();
-  metadata->presentation_time = frame_info.presentation_time;
-  scene()->Publish(metadata.Pass());
+  scene()->Publish(CreateSceneMetadata());
 }
 
 void ShadowsView::Render(const mojo::GLContext::Scope& gl_scope,

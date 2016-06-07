@@ -24,15 +24,8 @@ ShapesView::ShapesView(
 
 ShapesView::~ShapesView() {}
 
-void ShapesView::OnPropertiesChanged(
-    uint32_t old_scene_version,
-    mojo::ui::ViewPropertiesPtr old_properties) {
-  UpdateScene();
-}
-
-void ShapesView::UpdateScene() {
-  if (!properties())
-    return;
+void ShapesView::OnDraw() {
+  DCHECK(properties());
 
   auto update = mojo::gfx::composition::SceneUpdate::New();
 
@@ -67,9 +60,7 @@ void ShapesView::UpdateScene() {
   scene()->Update(update.Pass());
 
   // Publish the scene update, taking care to supply the expected scene version.
-  auto metadata = mojo::gfx::composition::SceneMetadata::New();
-  metadata->version = scene_version();
-  scene()->Publish(metadata.Pass());
+  scene()->Publish(CreateSceneMetadata());
 }
 
 void ShapesView::DrawContent(

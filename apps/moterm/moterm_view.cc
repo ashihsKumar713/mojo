@@ -42,7 +42,6 @@ MotermView::MotermView(
     mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
     mojo::InterfaceRequest<mojo::ServiceProvider> service_provider_request)
     : GaneshView(app_connector.Pass(), view_owner_request.Pass(), "Moterm"),
-      choreographer_(scene(), this),
       input_handler_(GetViewServiceProvider(), this),
       model_(MotermModel::Size(240, 160), MotermModel::Size(24, 80), this),
       force_next_draw_(false),
@@ -88,12 +87,6 @@ MotermView::MotermView(
 MotermView::~MotermView() {
   if (driver_)
     driver_->Detach();
-}
-
-void MotermView::OnPropertiesChanged(
-    uint32_t old_scene_version,
-    mojo::ui::ViewPropertiesPtr old_properties) {
-  ScheduleDraw(true);
 }
 
 void MotermView::OnEvent(mojo::EventPtr event,
@@ -219,13 +212,11 @@ void MotermView::ScheduleDraw(bool force) {
     return;
   }
   force_next_draw_ = false;
-  choreographer_.ScheduleDraw();
+  Invalidate();
 }
 
-void MotermView::OnDraw(const mojo::gfx::composition::FrameInfo& frame_info,
-                        const base::TimeDelta& time_delta) {
-  if (!properties())
-    return;
+void MotermView::OnDraw() {
+  DCHECK(properties());
 
   // TODO(vtl): Draw only the dirty region(s)?
   model_state_changes_.Reset();
@@ -258,11 +249,7 @@ void MotermView::OnDraw(const mojo::gfx::composition::FrameInfo& frame_info,
   }
 
   scene()->Update(update.Pass());
-
-  auto metadata = mojo::gfx::composition::SceneMetadata::New();
-  metadata->version = scene_version();
-  metadata->presentation_time = frame_info.presentation_time;
-  scene()->Publish(metadata.Pass());
+  scene()->Publish(CreateSceneMetadata());
 }
 
 void MotermView::DrawContent(

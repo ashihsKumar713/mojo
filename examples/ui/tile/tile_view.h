@@ -63,16 +63,14 @@ class TileView : public mojo::ui::BaseView {
   };
 
   // |BaseView|:
-  void OnPropertiesChanged(uint32_t old_scene_version,
-                           mojo::ui::ViewPropertiesPtr old_properties) override;
+  void OnLayout() override;
+  void OnDraw() override;
   void OnChildAttached(uint32_t child_key,
                        mojo::ui::ViewInfoPtr child_view_info) override;
   void OnChildUnavailable(uint32_t child_key) override;
 
   void ConnectViews();
   void UpdateScene();
-
-  void OnFrameSubmitted();
 
   TileParams params_;
   std::map<uint32_t, std::unique_ptr<ViewData>> views_;

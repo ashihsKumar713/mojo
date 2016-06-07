@@ -44,15 +44,8 @@ class PNGView : public mojo::ui::GaneshView {
 
  private:
   // |GaneshView|:
-  void OnPropertiesChanged(
-      uint32_t old_scene_version,
-      mojo::ui::ViewPropertiesPtr old_properties) override {
-    UpdateScene();
-  }
-
-  void UpdateScene() {
-    if (!properties())
-      return;
+  void OnDraw() override {
+    DCHECK(properties());
 
     auto update = mojo::gfx::composition::SceneUpdate::New();
 
@@ -81,10 +74,7 @@ class PNGView : public mojo::ui::GaneshView {
     }
 
     scene()->Update(update.Pass());
-
-    auto metadata = mojo::gfx::composition::SceneMetadata::New();
-    metadata->version = scene_version();
-    scene()->Publish(metadata.Pass());
+    scene()->Publish(CreateSceneMetadata());
   }
 
   void DrawContent(const mojo::skia::GaneshContext::Scope& ganesh_scope,
