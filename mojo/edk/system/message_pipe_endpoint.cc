@@ -9,7 +9,7 @@
 namespace mojo {
 namespace system {
 
-void MessagePipeEndpoint::CancelAllAwakables() {
+void MessagePipeEndpoint::CancelAllState() {
   NOTREACHED();
 }
 

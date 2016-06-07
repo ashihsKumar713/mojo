@@ -263,9 +263,10 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
   virtual ~Dispatcher();
 
   // These are to be overridden by subclasses (if necessary). They are called
-  // exactly once (first |CancelAllAwakablesNoLock()|, then |CloseImplNoLock()|)
-  // when the dispatcher is being closed.
-  virtual void CancelAllAwakablesNoLock() MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
+  // exactly once (first |CancelAllStateNoLock()|, then |CloseImplNoLock()|)
+  // when the dispatcher is being closed. |CancelAllStateNoLock()| should cancel
+  // (or reset) all stateful "operations", including cancelling all awakables.
+  virtual void CancelAllStateNoLock() MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
   virtual void CloseImplNoLock() MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
   //  All dispatcher types whose handles may ever have the
@@ -277,7 +278,7 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
   // This is called by |CreateEquivalentDispatcherAndCloseNoLock()|. It should
   // "close" this dispatcher and return a new one equivalent to it. Note:
   // Probably the first thing an implementation should do is call
-  // |CancelAllAwakablesNoLock()| (or equivalent); unlike |CloseNoLock()|,
+  // |CancelAllStateNoLock()| (or equivalent); unlike |CloseNoLock()|,
   // |CreateEquivalentDispatcherAndCloseNoLock()| does not do this
   // automatically.
   virtual util::RefPtr<Dispatcher> CreateEquivalentDispatcherAndCloseImplNoLock(

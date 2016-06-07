@@ -125,9 +125,9 @@ unsigned MessagePipeDispatcher::GetPortNoLock() const {
   return port_;
 }
 
-void MessagePipeDispatcher::CancelAllAwakablesNoLock() {
+void MessagePipeDispatcher::CancelAllStateNoLock() {
   mutex().AssertHeld();
-  message_pipe_->CancelAllAwakables(port_);
+  message_pipe_->CancelAllState(port_);
 }
 
 void MessagePipeDispatcher::CloseImplNoLock() {
@@ -149,9 +149,9 @@ MessagePipeDispatcher::CreateEquivalentDispatcherAndCloseImplNoLock(
     // disallowed by |Core|). Note that |port| is the destination port.
     DCHECK_EQ(port, port_);
     // In this case, |message_pipe_|'s mutex should already be held!
-    message_pipe_->CancelAllAwakablesNoLock(port_);
+    message_pipe_->CancelAllStateNoLock(port_);
   } else {
-    CancelAllAwakablesNoLock();
+    CancelAllStateNoLock();
   }
 
   // TODO(vtl): Currently, there are no options, so we just use

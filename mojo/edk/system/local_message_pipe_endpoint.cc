@@ -61,7 +61,7 @@ void LocalMessagePipeEndpoint::Close() {
   message_queue_.Clear();
 }
 
-void LocalMessagePipeEndpoint::CancelAllAwakables() {
+void LocalMessagePipeEndpoint::CancelAllState() {
   DCHECK(is_open_);
   awakable_list_.CancelAll();
 }

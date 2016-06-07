@@ -30,7 +30,7 @@ class LocalMessagePipeEndpoint final : public MessagePipeEndpoint {
   // There's a dispatcher for |LocalMessagePipeEndpoint|s, so we have to
   // implement/override these:
   void Close() override;
-  void CancelAllAwakables() override;
+  void CancelAllState() override;
   MojoResult ReadMessage(UserPointer<void> bytes,
                          UserPointer<uint32_t> num_bytes,
                          HandleVector* handles,

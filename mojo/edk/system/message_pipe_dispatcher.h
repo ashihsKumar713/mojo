@@ -81,7 +81,7 @@ class MessagePipeDispatcher final : public Dispatcher {
   unsigned GetPortNoLock() const;
 
   // |Dispatcher| protected methods:
-  void CancelAllAwakablesNoLock() override;
+  void CancelAllStateNoLock() override;
   void CloseImplNoLock() override;
   util::RefPtr<Dispatcher> CreateEquivalentDispatcherAndCloseImplNoLock(
       MessagePipe* message_pipe,

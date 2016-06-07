@@ -20,7 +20,7 @@ void SimpleDispatcher::HandleSignalsStateChangedNoLock() {
   awakable_list_.AwakeForStateChange(GetHandleSignalsStateImplNoLock());
 }
 
-void SimpleDispatcher::CancelAllAwakablesNoLock() {
+void SimpleDispatcher::CancelAllStateNoLock() {
   mutex().AssertHeld();
   awakable_list_.CancelAll();
 }

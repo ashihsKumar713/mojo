@@ -63,9 +63,9 @@ DataPipeProducerDispatcher::~DataPipeProducerDispatcher() {
   DCHECK(!data_pipe_);
 }
 
-void DataPipeProducerDispatcher::CancelAllAwakablesNoLock() {
+void DataPipeProducerDispatcher::CancelAllStateNoLock() {
   mutex().AssertHeld();
-  data_pipe_->ProducerCancelAllAwakables();
+  data_pipe_->ProducerCancelAllState();
 }
 
 void DataPipeProducerDispatcher::CloseImplNoLock() {
@@ -80,7 +80,7 @@ DataPipeProducerDispatcher::CreateEquivalentDispatcherAndCloseImplNoLock(
     unsigned /*port*/) {
   mutex().AssertHeld();
 
-  CancelAllAwakablesNoLock();
+  CancelAllStateNoLock();
 
   auto dispatcher = DataPipeProducerDispatcher::Create();
   dispatcher->Init(std::move(data_pipe_));

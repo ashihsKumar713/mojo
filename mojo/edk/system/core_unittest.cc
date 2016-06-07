@@ -78,11 +78,11 @@ TEST_F(CoreTest, Basic) {
 
   EXPECT_EQ(0u, info.GetDtorCallCount());
   EXPECT_EQ(0u, info.GetCloseCallCount());
-  EXPECT_EQ(0u, info.GetCancelAllAwakablesCallCount());
+  EXPECT_EQ(0u, info.GetCancelAllStateCallCount());
   EXPECT_EQ(MOJO_RESULT_OK, core()->Close(h_dup));
   EXPECT_EQ(1u, info.GetDtorCallCount());
   EXPECT_EQ(1u, info.GetCloseCallCount());
-  EXPECT_EQ(1u, info.GetCancelAllAwakablesCallCount());
+  EXPECT_EQ(1u, info.GetCancelAllStateCallCount());
 
   EXPECT_EQ(0u, info.GetWriteMessageCallCount());
   EXPECT_EQ(MOJO_RESULT_OK,
@@ -219,11 +219,11 @@ TEST_F(CoreTest, Basic) {
   // |h| shares |info| with |h_dup|, which was closed above.
   EXPECT_EQ(1u, info.GetDtorCallCount());
   EXPECT_EQ(1u, info.GetCloseCallCount());
-  EXPECT_EQ(1u, info.GetCancelAllAwakablesCallCount());
+  EXPECT_EQ(1u, info.GetCancelAllStateCallCount());
   EXPECT_EQ(MOJO_RESULT_OK, core()->Close(h));
   EXPECT_EQ(2u, info.GetDtorCallCount());
   EXPECT_EQ(2u, info.GetCloseCallCount());
-  EXPECT_EQ(2u, info.GetCancelAllAwakablesCallCount());
+  EXPECT_EQ(2u, info.GetCancelAllStateCallCount());
 
   // No awakables should ever have ever been added.
   EXPECT_EQ(0u, info.GetRemoveAwakableCallCount());

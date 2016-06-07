@@ -504,7 +504,7 @@ TEST(MessagePipeTest, ThreadedWaiting) {
     thread.Start();
 
     // Close port 1 first -- this should result in the waiter being cancelled.
-    mp->CancelAllAwakables(1);
+    mp->CancelAllState(1);
     mp->Close(1);
 
     // Port 1 is closed, so |Dispatcher::RemoveAwakable()| wouldn't call into
@@ -527,7 +527,7 @@ TEST(MessagePipeTest, ThreadedWaiting) {
     thread.Start();
 
     // Close port 1 first -- this should result in the waiter being cancelled.
-    mp->CancelAllAwakables(1);
+    mp->CancelAllState(1);
     mp->Close(1);
 
     // Port 1 is closed, so |Dispatcher::RemoveAwakable()| wouldn't call into
@@ -551,7 +551,7 @@ TEST(MessagePipeTest, ThreadedWaiting) {
 
     // Close port 0 first -- this should wake the waiter up, since port 1 will
     // never be readable.
-    mp->CancelAllAwakables(0);
+    mp->CancelAllState(0);
     mp->Close(0);
 
     HandleSignalsState hss;
@@ -559,7 +559,7 @@ TEST(MessagePipeTest, ThreadedWaiting) {
     EXPECT_EQ(MOJO_HANDLE_SIGNAL_PEER_CLOSED, hss.satisfied_signals);
     EXPECT_EQ(MOJO_HANDLE_SIGNAL_PEER_CLOSED, hss.satisfiable_signals);
 
-    mp->CancelAllAwakables(1);
+    mp->CancelAllState(1);
     mp->Close(1);
   }  // Joins |thread|.
   EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION, result);

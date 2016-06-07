@@ -194,15 +194,15 @@ class MockDispatcher : public Dispatcher {
       *signals_state = HandleSignalsState();
   }
 
-  void CancelAllAwakablesNoLock() override {
-    info_->IncrementCancelAllAwakablesCallCount();
+  void CancelAllStateNoLock() override {
+    info_->IncrementCancelAllStateCallCount();
     mutex().AssertHeld();
   }
 
   RefPtr<Dispatcher> CreateEquivalentDispatcherAndCloseImplNoLock(
       MessagePipe* /*message_pipe*/,
       unsigned /*port*/) override {
-    CancelAllAwakablesNoLock();
+    CancelAllStateNoLock();
     return Create(info_);
   }
 
@@ -339,7 +339,7 @@ unsigned CoreTestBase_MockHandleInfo::GetRemoveAwakableCallCount() const {
   return remove_awakable_call_count_;
 }
 
-unsigned CoreTestBase_MockHandleInfo::GetCancelAllAwakablesCallCount() const {
+unsigned CoreTestBase_MockHandleInfo::GetCancelAllStateCallCount() const {
   MutexLocker locker(&mutex_);
   return cancel_all_awakables_call_count_;
 }
@@ -439,7 +439,7 @@ void CoreTestBase_MockHandleInfo::IncrementRemoveAwakableCallCount() {
   remove_awakable_call_count_++;
 }
 
-void CoreTestBase_MockHandleInfo::IncrementCancelAllAwakablesCallCount() {
+void CoreTestBase_MockHandleInfo::IncrementCancelAllStateCallCount() {
   MutexLocker locker(&mutex_);
   cancel_all_awakables_call_count_++;
 }

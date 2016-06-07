@@ -313,7 +313,7 @@ Dispatcher::~Dispatcher() {
   DCHECK(is_closed_);
 }
 
-void Dispatcher::CancelAllAwakablesNoLock() {
+void Dispatcher::CancelAllStateNoLock() {
   mutex_.AssertHeld();
   DCHECK(is_closed_);
   // By default, waiting isn't supported. Only dispatchers that can be waited on
@@ -538,7 +538,7 @@ void Dispatcher::CloseNoLock() {
   DCHECK(!is_closed_);
 
   is_closed_ = true;
-  CancelAllAwakablesNoLock();
+  CancelAllStateNoLock();
   CloseImplNoLock();
 }
 

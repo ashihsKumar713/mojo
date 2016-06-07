@@ -103,7 +103,7 @@ class DataPipe final : public ChannelEndpointClient {
 
   // These are called by the producer dispatcher to implement its methods of
   // corresponding names.
-  void ProducerCancelAllAwakables();
+  void ProducerCancelAllState();
   void ProducerClose();
   MojoResult ProducerSetOptions(uint32_t write_threshold_num_bytes);
   void ProducerGetOptions(uint32_t* write_threshold_num_bytes);
@@ -132,7 +132,7 @@ class DataPipe final : public ChannelEndpointClient {
 
   // These are called by the consumer dispatcher to implement its methods of
   // corresponding names.
-  void ConsumerCancelAllAwakables();
+  void ConsumerCancelAllState();
   void ConsumerClose();
   MojoResult ConsumerSetOptions(uint32_t read_threshold_num_bytes);
   void ConsumerGetOptions(uint32_t* read_threshold_num_bytes);

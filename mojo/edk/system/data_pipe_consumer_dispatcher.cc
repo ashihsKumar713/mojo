@@ -64,9 +64,9 @@ DataPipeConsumerDispatcher::~DataPipeConsumerDispatcher() {
   DCHECK(!data_pipe_);
 }
 
-void DataPipeConsumerDispatcher::CancelAllAwakablesNoLock() {
+void DataPipeConsumerDispatcher::CancelAllStateNoLock() {
   mutex().AssertHeld();
-  data_pipe_->ConsumerCancelAllAwakables();
+  data_pipe_->ConsumerCancelAllState();
 }
 
 void DataPipeConsumerDispatcher::CloseImplNoLock() {
@@ -81,7 +81,7 @@ DataPipeConsumerDispatcher::CreateEquivalentDispatcherAndCloseImplNoLock(
     unsigned /*port*/) {
   mutex().AssertHeld();
 
-  CancelAllAwakablesNoLock();
+  CancelAllStateNoLock();
 
   auto dispatcher = DataPipeConsumerDispatcher::Create();
   dispatcher->Init(std::move(data_pipe_));

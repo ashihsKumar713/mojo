@@ -270,7 +270,7 @@ bool DataPipe::ConsumerDeserialize(Channel* channel,
   return true;
 }
 
-void DataPipe::ProducerCancelAllAwakables() {
+void DataPipe::ProducerCancelAllState() {
   MutexLocker locker(&mutex_);
   DCHECK(has_local_producer_no_lock());
   producer_awakable_list_->CancelAll();
@@ -470,7 +470,7 @@ bool DataPipe::ProducerIsBusy() const {
   return producer_in_two_phase_write_no_lock();
 }
 
-void DataPipe::ConsumerCancelAllAwakables() {
+void DataPipe::ConsumerCancelAllState() {
   MutexLocker locker(&mutex_);
   DCHECK(has_local_consumer_no_lock());
   consumer_awakable_list_->CancelAll();

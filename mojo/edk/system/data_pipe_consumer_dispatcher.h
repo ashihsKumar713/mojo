@@ -49,7 +49,7 @@ class DataPipeConsumerDispatcher final : public Dispatcher {
   ~DataPipeConsumerDispatcher() override;
 
   // |Dispatcher| protected methods:
-  void CancelAllAwakablesNoLock() override;
+  void CancelAllStateNoLock() override;
   void CloseImplNoLock() override;
   util::RefPtr<Dispatcher> CreateEquivalentDispatcherAndCloseImplNoLock(
       MessagePipe* message_pipe,

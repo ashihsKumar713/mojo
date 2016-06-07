@@ -29,7 +29,7 @@ class SimpleDispatcher : public Dispatcher {
   void HandleSignalsStateChangedNoLock() MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex());
 
   // |Dispatcher| protected methods:
-  void CancelAllAwakablesNoLock() override;
+  void CancelAllStateNoLock() override;
   MojoResult AddAwakableImplNoLock(Awakable* awakable,
                                    MojoHandleSignals signals,
                                    uint32_t context,
