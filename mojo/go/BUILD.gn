@@ -9,10 +9,13 @@ go_library("application") {
   sources = [
     "//mojo/public/go/application/application_impl.go",
     "//mojo/public/go/application/connection.go",
+    "//mojo/public/go/application/describer.go",
   ]
   deps = [
     ":bindings",
     ":system",
+    "//mojo/public/interfaces/application",
+    "//mojo/public/interfaces/bindings",
   ]
 }
 
