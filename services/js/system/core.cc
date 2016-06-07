@@ -317,6 +317,9 @@ v8::Local<v8::Value> Core::GetModule(v8::Isolate* isolate) {
             .SetMethod("drainData", DoDrainData)
             .SetMethod("isHandle", IsHandle)
 
+            // TODO(vtl): Find a way of supporting the new, more
+            // flexible/extensible MojoResult (see
+            // mojo/public/c/syste/result.h).
             .SetValue("RESULT_OK", MOJO_RESULT_OK)
             .SetValue("RESULT_CANCELLED", MOJO_RESULT_CANCELLED)
             .SetValue("RESULT_UNKNOWN", MOJO_RESULT_UNKNOWN)
