@@ -174,6 +174,10 @@ class DataPipe final : public ChannelEndpointClient {
   std::unique_ptr<DataPipeImpl> ReplaceImplNoLock(
       std::unique_ptr<DataPipeImpl> new_impl)
       MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
+
+  void ProducerCancelAllStateNoLock() MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
+  void ConsumerCancelAllStateNoLock() MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
+
   void SetProducerClosedNoLock() MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
   void SetConsumerClosedNoLock() MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
