@@ -157,11 +157,11 @@ void AndroidHandler::ExtractApplication(base::FilePath* extracted_dir,
       });
 }
 
-jstring CreateTemporaryFile(JNIEnv* env,
-                            jclass jcaller,
-                            jstring j_directory,
-                            jstring j_basename,
-                            jstring j_extension) {
+ScopedJavaLocalRef<jstring> CreateTemporaryFile(JNIEnv* env,
+                                                jclass jcaller,
+                                                jstring j_directory,
+                                                jstring j_basename,
+                                                jstring j_extension) {
   std::string basename(ConvertJavaStringToUTF8(env, j_basename));
   std::string extension(ConvertJavaStringToUTF8(env, j_extension));
   base::FilePath directory(ConvertJavaStringToUTF8(env, j_directory));
@@ -174,7 +174,7 @@ jstring CreateTemporaryFile(JNIEnv* env,
     int fd = open(temporary_file.value().c_str(), O_CREAT | O_EXCL, 0600);
     if (fd != -1) {
       close(fd);
-      return ConvertUTF8ToJavaString(env, temporary_file.value()).Release();
+      return ConvertUTF8ToJavaString(env, temporary_file.value());
     }
   }
 }
