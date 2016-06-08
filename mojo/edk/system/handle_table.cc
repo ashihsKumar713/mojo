@@ -169,17 +169,6 @@ MojoResult HandleTable::MarkBusyAndStartTransport(
       break;
     }
 
-    // Check if the dispatcher is busy (e.g., in a two-phase read/write).
-    // (Note that this must be done after the dispatcher's lock is acquired.)
-    if (transport.IsBusy()) {
-      // Unset the busy flag and end the transport (since it won't be done
-      // below).
-      entries[i]->busy = false;
-      transport.End();
-      error_result = MOJO_RESULT_BUSY;
-      break;
-    }
-
     // Hang on to the transport (which we'll need to end the transport).
     (*transports)[i] = transport;
   }
