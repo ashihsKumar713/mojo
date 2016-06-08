@@ -205,10 +205,5 @@ bool DataPipeProducerDispatcher::EndSerializeAndCloseImplNoLock(
   return rv;
 }
 
-bool DataPipeProducerDispatcher::IsBusyNoLock() const {
-  mutex().AssertHeld();
-  return data_pipe_->ProducerIsBusy();
-}
-
 }  // namespace system
 }  // namespace mojo

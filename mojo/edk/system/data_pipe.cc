@@ -457,11 +457,6 @@ bool DataPipe::ProducerEndSerialize(
   return rv;
 }
 
-bool DataPipe::ProducerIsBusy() const {
-  MutexLocker locker(&mutex_);
-  return producer_in_two_phase_write_no_lock();
-}
-
 void DataPipe::ConsumerCancelAllState() {
   MutexLocker locker(&mutex_);
   ConsumerCancelAllStateNoLock();
@@ -679,11 +674,6 @@ bool DataPipe::ConsumerEndSerialize(
     consumer_open_ = false;
 
   return rv;
-}
-
-bool DataPipe::ConsumerIsBusy() const {
-  MutexLocker locker(&mutex_);
-  return consumer_in_two_phase_read_no_lock();
 }
 
 DataPipe::DataPipe(bool has_local_producer,

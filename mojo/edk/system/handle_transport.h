@@ -31,9 +31,6 @@ class HandleTransport final {
   void End() MOJO_NOT_THREAD_SAFE;
 
   Dispatcher::Type GetType() const { return dispatcher_->GetType(); }
-  bool IsBusy() const MOJO_NOT_THREAD_SAFE {
-    return dispatcher_->IsBusyNoLock();
-  }
   void Close() MOJO_NOT_THREAD_SAFE { dispatcher_->CloseNoLock(); }
   Handle CreateEquivalentHandleAndClose(MessagePipe* message_pipe,
                                         unsigned port) MOJO_NOT_THREAD_SAFE {

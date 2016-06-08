@@ -380,11 +380,6 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
       std::vector<platform::ScopedPlatformHandle>* platform_handles)
       MOJO_NOT_THREAD_SAFE;
 
-  // This should be overridden to return true if/when there's an ongoing
-  // operation (e.g., two-phase read/writes on data pipes) that should prevent a
-  // handle from being sent over a message pipe (with status "busy").
-  virtual bool IsBusyNoLock() const MOJO_SHARED_LOCKS_REQUIRED(mutex_);
-
   util::Mutex& mutex() const MOJO_LOCK_RETURNED(mutex_) { return mutex_; }
 
  private:

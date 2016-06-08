@@ -525,14 +525,6 @@ bool Dispatcher::EndSerializeAndCloseImplNoLock(
   return false;
 }
 
-bool Dispatcher::IsBusyNoLock() const {
-  mutex_.AssertHeld();
-  DCHECK(!is_closed_);
-  // Most dispatchers support only "atomic" operations, so they are never busy
-  // (in this sense).
-  return false;
-}
-
 void Dispatcher::CloseNoLock() {
   mutex_.AssertHeld();
   DCHECK(!is_closed_);

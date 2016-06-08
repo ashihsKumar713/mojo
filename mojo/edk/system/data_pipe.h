@@ -128,7 +128,6 @@ class DataPipe final : public ChannelEndpointClient {
       void* destination,
       size_t* actual_size,
       std::vector<platform::ScopedPlatformHandle>* platform_handles);
-  bool ProducerIsBusy() const;
 
   // These are called by the consumer dispatcher to implement its methods of
   // corresponding names.
@@ -163,7 +162,6 @@ class DataPipe final : public ChannelEndpointClient {
       void* destination,
       size_t* actual_size,
       std::vector<platform::ScopedPlatformHandle>* platform_handles);
-  bool ConsumerIsBusy() const;
 
   // The following are only to be used by |DataPipeImpl| (and its subclasses):
 

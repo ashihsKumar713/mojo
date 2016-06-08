@@ -83,7 +83,6 @@ class DataPipeConsumerDispatcher final : public Dispatcher {
       size_t* actual_size,
       std::vector<platform::ScopedPlatformHandle>* platform_handles) override
       MOJO_NOT_THREAD_SAFE;
-  bool IsBusyNoLock() const override;
 
   // This will be null if closed.
   util::RefPtr<DataPipe> data_pipe_ MOJO_GUARDED_BY(mutex());
