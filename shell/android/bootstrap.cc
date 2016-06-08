@@ -11,10 +11,10 @@
 namespace shell {
 
 void Bootstrap(JNIEnv* env,
-               jobject,
-               jobject j_context,
+               const JavaParamRef<jobject>&,
+               const JavaParamRef<jobject>& j_context,
                jlong j_id,
-               jstring j_native_library_path,
+               const JavaParamRef<jstring>& j_native_library_path,
                jint j_handle,
                jlong j_run_application_ptr) {
   base::FilePath app_path(

@@ -126,7 +126,7 @@ bool JavaHandler::OnAcceptConnection(
   return true;
 }
 
-void PreInvokeEvent(JNIEnv* env, jclass jcaller) {
+void PreInvokeEvent(JNIEnv* env, const JavaParamRef<jclass>& jcaller) {
   TRACE_EVENT_END0("java_handler", "JavaHandler::RunApplication");
 }
 

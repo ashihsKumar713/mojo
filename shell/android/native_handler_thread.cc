@@ -9,13 +9,15 @@
 
 namespace shell {
 
-jlong CreateMessageLoop(JNIEnv* env, jobject jcaller) {
+jlong CreateMessageLoop(JNIEnv* env, const JavaParamRef<jobject>& jcaller) {
   scoped_ptr<base::MessageLoop> loop(new base::MessageLoopForUI);
   base::MessageLoopForUI::current()->Start();
   return reinterpret_cast<intptr_t>(loop.release());
 }
 
-void DeleteMessageLoop(JNIEnv* env, jobject jcaller, jlong message_loop) {
+void DeleteMessageLoop(JNIEnv* env,
+                       const JavaParamRef<jobject>& jcaller,
+                       jlong message_loop) {
   scoped_ptr<base::MessageLoop> loop(
       reinterpret_cast<base::MessageLoop*>(message_loop));
   loop->QuitNow();

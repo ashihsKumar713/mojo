@@ -238,14 +238,14 @@ void UploadCrashes(const base::FilePath& dumps_path) {
 }  // namespace
 
 static void Start(JNIEnv* env,
-                  jclass clazz,
-                  jobject application_context,
-                  jobject j_asset_manager,
-                  jstring mojo_shell_child_path,
-                  jobjectArray jparameters,
-                  jstring j_local_apps_directory,
-                  jstring j_tmp_dir,
-                  jstring j_home_dir) {
+                  const JavaParamRef<jclass>& clazz,
+                  const JavaParamRef<jobject>& application_context,
+                  const JavaParamRef<jobject>& j_asset_manager,
+                  const JavaParamRef<jstring>& mojo_shell_child_path,
+                  const JavaParamRef<jobjectArray>& jparameters,
+                  const JavaParamRef<jstring>& j_local_apps_directory,
+                  const JavaParamRef<jstring>& j_tmp_dir,
+                  const JavaParamRef<jstring>& j_home_dir) {
   // Initially, the shell runner is not ready.
   g_internal_data.Get().shell_runner_ready.reset(
       new base::WaitableEvent(true, false));
@@ -332,25 +332,31 @@ static void Start(JNIEnv* env,
   gpu::ApplyGpuDriverBugWorkarounds(command_line);
 }
 
-static void AddApplicationURL(JNIEnv* env, jclass clazz, jstring jurl) {
+static void AddApplicationURL(JNIEnv* env,
+                              const JavaParamRef<jclass>& clazz,
+                              const JavaParamRef<jstring>& jurl) {
   base::CommandLine::ForCurrentProcess()->AppendArg(
       base::android::ConvertJavaStringToUTF8(env, jurl));
 }
 
-static void StartApplicationURL(JNIEnv* env, jclass clazz, jstring jurl) {
+static void StartApplicationURL(JNIEnv* env,
+                                const JavaParamRef<jclass>& clazz,
+                                const JavaParamRef<jstring>& jurl) {
   std::string url = base::android::ConvertJavaStringToUTF8(env, jurl);
   g_internal_data.Get().shell_task_runner->PostTask(
       FROM_HERE, base::Bind(&EmbedApplicationByURL, url));
 }
 
-static void BindShell(JNIEnv* env, jclass clazz, jint shell_handle) {
+static void BindShell(JNIEnv* env,
+                      const JavaParamRef<jclass>& clazz,
+                      jint shell_handle) {
   g_internal_data.Get().shell_task_runner->PostTask(
       FROM_HERE,
       base::Bind(&BindShellImpl, base::Passed(mojo::ScopedMessagePipeHandle(
                                      mojo::MessagePipeHandle(shell_handle)))));
 }
 
-static void QuitShell(JNIEnv* env, jclass jcaller) {
+static void QuitShell(JNIEnv* env, const JavaParamRef<jclass>& clazz) {
   g_internal_data.Get().shell_task_runner->PostTask(
       FROM_HERE, base::MessageLoop::QuitWhenIdleClosure());
 }
