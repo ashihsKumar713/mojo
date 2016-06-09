@@ -216,14 +216,33 @@ TEST_F(CoreTest, Basic) {
   EXPECT_EQ(0u, hss.satisfied_signals);
   EXPECT_EQ(0u, hss.satisfiable_signals);
 
-  // |h| shares |info| with |h_dup|, which was closed above.
-  EXPECT_EQ(1u, info.GetDtorCallCount());
-  EXPECT_EQ(1u, info.GetCloseCallCount());
-  EXPECT_EQ(1u, info.GetCancelAllStateCallCount());
-  EXPECT_EQ(MOJO_RESULT_OK, core()->Close(h));
+  constexpr MojoHandleRights kRightsToRemove = MOJO_HANDLE_RIGHT_MAP_EXECUTABLE;
+  static_assert(kDefaultMockHandleRights & kRightsToRemove,
+                "Oops, reducing rights will be a no-op");
+  MojoHandle h_replacement = MOJO_HANDLE_INVALID;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            core()->ReplaceHandleWithReducedRights(
+                h, kRightsToRemove, MakeUserPointer(&h_replacement)));
+  EXPECT_NE(h_replacement, MOJO_HANDLE_INVALID);
+  // This isn't guaranteed per se, but we count on handle values not being
+  // reused eagerly.
+  EXPECT_NE(h_replacement, h);
+  // |h| should be dead.
+  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, core()->Close(h));
+  rights = MOJO_HANDLE_RIGHT_NONE;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            core()->GetRights(h_replacement, MakeUserPointer(&rights)));
+  EXPECT_EQ(kDefaultMockHandleRights & ~kRightsToRemove, rights);
+
+  // |info| is shared between |h| (which was replaced, but not explicitly closed
+  // per se), |h_dup| (which was closed), and |h_replacement|.
   EXPECT_EQ(2u, info.GetDtorCallCount());
-  EXPECT_EQ(2u, info.GetCloseCallCount());
+  EXPECT_EQ(1u, info.GetCloseCallCount());
   EXPECT_EQ(2u, info.GetCancelAllStateCallCount());
+  EXPECT_EQ(MOJO_RESULT_OK, core()->Close(h_replacement));
+  EXPECT_EQ(3u, info.GetDtorCallCount());
+  EXPECT_EQ(2u, info.GetCloseCallCount());
+  EXPECT_EQ(3u, info.GetCancelAllStateCallCount());
 
   // No awakables should ever have ever been added.
   EXPECT_EQ(0u, info.GetRemoveAwakableCallCount());
@@ -254,6 +273,20 @@ TEST_F(CoreTest, InvalidArguments) {
     EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
               core()->GetRights(10, MakeUserPointer(&rights)));
     EXPECT_EQ(0u, rights);
+  }
+
+  // |ReplaceHandleWithReducedRights()|:
+  {
+    MojoHandle h = MOJO_HANDLE_INVALID;
+    EXPECT_EQ(
+        MOJO_RESULT_INVALID_ARGUMENT,
+        core()->ReplaceHandleWithReducedRights(
+            MOJO_HANDLE_INVALID, MOJO_HANDLE_RIGHT_NONE, MakeUserPointer(&h)));
+    EXPECT_EQ(MOJO_HANDLE_INVALID, h);
+    EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
+              core()->ReplaceHandleWithReducedRights(10, MOJO_HANDLE_RIGHT_NONE,
+                                                     MakeUserPointer(&h)));
+    EXPECT_EQ(MOJO_HANDLE_INVALID, h);
   }
 
   // |DuplicateHandleWithReducedRights()|:
@@ -627,6 +660,17 @@ TEST_F(CoreTest, InvalidArgumentsDeath) {
     MockHandleInfo info;
     MojoHandle h = CreateMockHandle(&info);
     EXPECT_DEATH_IF_SUPPORTED(core()->GetRights(h, NullUserPointer()),
+                              kMemoryCheckFailedRegex);
+
+    EXPECT_EQ(MOJO_RESULT_OK, core()->Close(h));
+  }
+
+  // |ReplaceHandleWithReducedRights()|:
+  {
+    MockHandleInfo info;
+    MojoHandle h = CreateMockHandle(&info);
+    EXPECT_DEATH_IF_SUPPORTED(core()->ReplaceHandleWithReducedRights(
+                                  h, MOJO_HANDLE_RIGHT_NONE, NullUserPointer()),
                               kMemoryCheckFailedRegex);
 
     EXPECT_EQ(MOJO_RESULT_OK, core()->Close(h));

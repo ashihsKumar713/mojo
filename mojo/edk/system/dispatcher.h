@@ -281,6 +281,11 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
   // |CancelAllStateNoLock()| (or equivalent); unlike |CloseNoLock()|,
   // |CreateEquivalentDispatcherAndCloseNoLock()| does not do this
   // automatically.
+  //
+  // If the new dispatcher will be enqueued on a message pipe, then
+  // |message_pipe|/|port| will be provided (since there may be some
+  // special-casing necessary due to locking considerations); otherwise,
+  // |message_pipe| will be null (and |port| will be meaningless).
   virtual util::RefPtr<Dispatcher> CreateEquivalentDispatcherAndCloseImplNoLock(
       MessagePipe* message_pipe,
       unsigned port) MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_) = 0;

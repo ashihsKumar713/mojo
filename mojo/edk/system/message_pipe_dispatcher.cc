@@ -144,6 +144,8 @@ MessagePipeDispatcher::CreateEquivalentDispatcherAndCloseImplNoLock(
   mutex().AssertHeld();
 
   // "We" are being sent over our peer.
+  // If |message_pipe| is null, the |if| condition below should be false.
+  DCHECK(message_pipe_.get());
   if (message_pipe == message_pipe_.get()) {
     // A message pipe dispatcher can't be sent over itself (this should be
     // disallowed by |Core|). Note that |port| is the destination port.

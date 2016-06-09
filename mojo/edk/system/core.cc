@@ -186,6 +186,27 @@ MojoResult Core::GetRights(MojoHandle handle,
   return MOJO_RESULT_OK;
 }
 
+MojoResult Core::ReplaceHandleWithReducedRights(
+    MojoHandle handle,
+    MojoHandleRights rights_to_remove,
+    UserPointer<MojoHandle> replacement_handle) {
+  if (handle == MOJO_HANDLE_INVALID)
+    return MOJO_RESULT_INVALID_ARGUMENT;
+
+  MojoHandle replacement_handle_value = MOJO_HANDLE_INVALID;
+  {
+    MutexLocker locker(&handle_table_mutex_);
+    MojoResult result = handle_table_.ReplaceHandleWithReducedRights(
+        handle, rights_to_remove, &replacement_handle_value);
+    if (result != MOJO_RESULT_OK)
+      return result;
+  }
+  DCHECK_NE(replacement_handle_value, MOJO_HANDLE_INVALID);
+
+  replacement_handle.Put(replacement_handle_value);
+  return MOJO_RESULT_OK;
+}
+
 MojoResult Core::DuplicateHandleWithReducedRights(
     MojoHandle handle,
     MojoHandleRights rights_to_remove,

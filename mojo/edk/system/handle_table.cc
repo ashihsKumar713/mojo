@@ -108,12 +108,53 @@ bool HandleTable::AddHandleVector(HandleVector* handles,
   return true;
 }
 
+MojoResult HandleTable::ReplaceHandleWithReducedRights(
+    MojoHandle handle_value,
+    MojoHandleRights rights_to_remove,
+    MojoHandle* replacement_handle_value) {
+  DCHECK_NE(handle_value, MOJO_HANDLE_INVALID);
+  DCHECK(replacement_handle_value);
+
+  HandleToEntryMap::iterator it = handle_to_entry_map_.find(handle_value);
+  if (it == handle_to_entry_map_.end())
+    return MOJO_RESULT_INVALID_ARGUMENT;
+
+  Entry entry = it->second;
+  if (entry.busy)
+    return MOJO_RESULT_BUSY;
+  // We don't need to mark the entry as busy, since we do everything under the
+  // handle table lock (unlike sending messages).
+
+  // Try to start the transport. (This just tries to take the dispatcher's
+  // lock.)
+  HandleTransport transport =
+      Dispatcher::HandleTableAccess::TryStartTransport(entry.handle);
+  if (!transport.is_valid())
+    return MOJO_RESULT_BUSY;
+
+  // We don't need to check the capacity of the handle table, since we're just
+  // going to replace the old handle. (Nothing below can fail, so we won't need
+  // to unwind.)
+
+  Handle replacement_handle =
+      transport.CreateEquivalentHandleAndClose(nullptr, 0);
+  replacement_handle.rights &= ~rights_to_remove;
+  transport.End();
+
+  // |it| is still valid here.
+  handle_to_entry_map_.erase(it);
+
+  *replacement_handle_value =
+      AddHandleNoSizeCheck(std::move(replacement_handle));
+  return MOJO_RESULT_OK;
+}
+
 MojoResult HandleTable::MarkBusyAndStartTransport(
-    MojoHandle disallowed_handle,
+    MojoHandle disallowed_handle_value,
     const MojoHandle* handle_values,
     uint32_t num_handles,
     std::vector<HandleTransport>* transports) {
-  DCHECK_NE(disallowed_handle, MOJO_HANDLE_INVALID);
+  DCHECK_NE(disallowed_handle_value, MOJO_HANDLE_INVALID);
   DCHECK(handle_values);
   DCHECK_LE(num_handles, GetConfiguration().max_message_num_handles);
   DCHECK(transports);
@@ -127,7 +168,7 @@ MojoResult HandleTable::MarkBusyAndStartTransport(
   for (i = 0; i < num_handles; i++) {
     // Sending your own handle is not allowed (and, for consistency, returns
     // "busy").
-    if (handle_values[i] == disallowed_handle) {
+    if (handle_values[i] == disallowed_handle_value) {
       error_result = MOJO_RESULT_BUSY;
       break;
     }
