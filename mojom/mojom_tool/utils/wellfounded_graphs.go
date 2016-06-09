@@ -71,6 +71,42 @@ type OutEdge struct {
 }
 
 ///////////////////////////////////////////////////
+// LeafNode type
+//
+// A |LeafNode| is an implementation of the Node interface
+// that represents a leaf node. It is a convenience type
+// that may be used by clients of this library in order to
+// easily add a leaf node to a graph.
+///////////////////////////////////////////////////
+
+type LeafNode struct {
+	name string
+}
+
+func NewLeafNode(name string) *LeafNode {
+	return &LeafNode{name}
+}
+
+func (*LeafNode) OutEdges() []OutEdge {
+	return nil
+}
+
+func (*LeafNode) IsSquare() bool {
+	return false
+}
+
+func (*LeafNode) SetKnownWellFounded() {
+}
+
+func (*LeafNode) KnownWellFounded() bool {
+	return true
+}
+
+func (ln *LeafNode) Name() string {
+	return ln.name
+}
+
+///////////////////////////////////////////////////
 // CheckWellFounded function
 //
 // This is the main public function.

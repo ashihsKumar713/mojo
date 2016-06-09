@@ -243,11 +243,27 @@ func (b *UserDefinedTypeBase) OutEdges() []utils.OutEdge {
 			}
 		}
 	case *MojomUnion:
+		// Unlike with structs, when modelling a union as a node in the type graph, it is important
+		// that we do not discard the information that there is at least one child that is a known leaf node.
+		nameOfLeafChild := ""
+		leafEdgeNameToken := lexer.Token{}
 		for _, field := range udt.FieldsInLexicalOrder {
 			childType := field.FieldType.NonAvoidableUserType()
 			if childType != nil {
 				outEdges = append(outEdges, utils.OutEdge{field.nameToken, getTypeBase(childType)})
+			} else if len(nameOfLeafChild) == 0 {
+				nameOfLeafChild = field.FieldType.TypeName()
+				leafEdgeNameToken = field.nameToken
 			}
+		}
+		if len(outEdges) > 0 && len(nameOfLeafChild) > 0 {
+			// We have added at least one out-edge to a node that may or may not be a leaf node.
+			// We know that there is at least one child which is known to be a leaf but for which
+			// we have supressed adding an out-edge. We now add an
+			// out edge to a synthetic leaf node so that the information that there was at least
+			// one is not lost. This is important because unions are modelled as square nodes
+			// and so the existence of at least one out edge to a leaf node is critical.
+			outEdges = append(outEdges, utils.OutEdge{leafEdgeNameToken, utils.NewLeafNode(nameOfLeafChild)})
 		}
 	default:
 		panic(fmt.Sprintf("unexpected kind %T", udt))

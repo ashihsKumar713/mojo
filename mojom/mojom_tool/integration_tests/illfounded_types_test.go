@@ -349,6 +349,42 @@ func TestLegalPatterns(t *testing.T) {
 	}
 
 	////////////////////////////////////////////////////////////
+	// Test Case: Self-loop is avoidable because of simple type field.
+	////////////////////////////////////////////////////////////
+	{
+		contents := `
+    union Foo {
+      uint32 field1;
+      Foo field2;
+     };`
+
+		testFunc := func(descriptor *mojom.MojomDescriptor) error {
+			return nil
+		}
+		test.addTestCase("", contents, testFunc)
+	}
+
+	////////////////////////////////////////////////////////////
+	// Test Case: Back loop is avoidable because of simple type field.
+	////////////////////////////////////////////////////////////
+	{
+		contents := `
+	struct Bar {
+	  Foo x;
+	};
+
+    union Foo {
+      uint32 field1;
+      Bar field2;
+     };`
+
+		testFunc := func(descriptor *mojom.MojomDescriptor) error {
+			return nil
+		}
+		test.addTestCase("", contents, testFunc)
+	}
+
+	////////////////////////////////////////////////////////////
 	// Test Case: union field is non-nullable, variable-length array of non-nullable pointer to union itself
 	////////////////////////////////////////////////////////////
 
