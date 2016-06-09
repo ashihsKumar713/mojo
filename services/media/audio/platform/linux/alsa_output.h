@@ -62,7 +62,7 @@ class AlsaOutput : public StandardOutputBase {
 
   LinearTransform::Ratio frames_per_tick_;
 
-  std::unique_ptr<uint8_t> mix_buf_;
+  std::unique_ptr<uint8_t[]> mix_buf_;
   uint32_t mix_buf_frames_ = 0;
 
   bool primed_ = false;

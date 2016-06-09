@@ -115,7 +115,7 @@ class StandardOutputBase : public AudioOutput {
   //    will drop to only 255 simultanious tracks.  It is unclear if this is a
   //    reasonable system-wide limitation or not.
   // 2) We support floating point audio.
-  std::unique_ptr<int32_t> mix_buf_;
+  std::unique_ptr<int32_t[]> mix_buf_;
   uint32_t mix_buf_frames_ = 0;
 
   // State used by the mix task.

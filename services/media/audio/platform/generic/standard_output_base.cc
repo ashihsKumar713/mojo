@@ -86,7 +86,7 @@ void StandardOutputBase::Process() {
       DCHECK_LE(cur_mix_job_.buf_frames, mix_buf_frames_);
 
       // Fill the intermediate buffer with silence.
-      size_t bytes_to_zero = sizeof(*mix_buf_)
+      size_t bytes_to_zero = sizeof(int32_t)
                            * cur_mix_job_.buf_frames
                            * output_formatter_->channels();
       ::memset(mix_buf_.get(), 0, bytes_to_zero);
