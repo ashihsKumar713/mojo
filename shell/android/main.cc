@@ -261,9 +261,7 @@ static void Start(JNIEnv* env,
       1);
   DCHECK_EQ(return_value, 0);
 
-  base::android::ScopedJavaLocalRef<jobject> scoped_application_context(
-      env, application_context);
-  base::android::InitApplicationContext(env, scoped_application_context);
+  base::android::InitApplicationContext(env, application_context);
 
   std::vector<std::string> parameters;
   parameters.push_back("mojo_shell");

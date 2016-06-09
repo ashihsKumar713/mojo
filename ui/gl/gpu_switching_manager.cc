@@ -12,7 +12,7 @@ namespace ui {
 
 // static
 GpuSwitchingManager* GpuSwitchingManager::GetInstance() {
-  return Singleton<GpuSwitchingManager>::get();
+  return base::Singleton<GpuSwitchingManager>::get();
 }
 
 GpuSwitchingManager::GpuSwitchingManager()

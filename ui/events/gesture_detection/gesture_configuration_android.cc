@@ -26,7 +26,7 @@ class GestureConfigurationAndroid : public GestureConfiguration {
   }
 
   static GestureConfigurationAndroid* GetInstance() {
-    return Singleton<GestureConfigurationAndroid>::get();
+    return base::Singleton<GestureConfigurationAndroid>::get();
   }
 
  private:
@@ -62,7 +62,7 @@ class GestureConfigurationAndroid : public GestureConfiguration {
                   raw_pixel_to_dip_ratio);
   }
 
-  friend struct DefaultSingletonTraits<GestureConfigurationAndroid>;
+  friend struct base::DefaultSingletonTraits<GestureConfigurationAndroid>;
   DISALLOW_COPY_AND_ASSIGN(GestureConfigurationAndroid);
 };
 
