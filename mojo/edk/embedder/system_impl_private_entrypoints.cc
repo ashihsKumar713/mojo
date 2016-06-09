@@ -100,6 +100,17 @@ MojoResult MojoSystemImplGetRights(MojoSystemImpl system,
   return core->GetRights(handle, MakeUserPointer(rights));
 }
 
+MojoResult MojoSystemImplReplaceHandleWithReducedRights(
+    MojoSystemImpl system,
+    MojoHandle handle,
+    MojoHandleRights rights_to_remove,
+    MojoHandle* replacement_handle) {
+  mojo::system::Core* core = static_cast<mojo::system::Core*>(system);
+  DCHECK(core);
+  return core->ReplaceHandleWithReducedRights(
+      handle, rights_to_remove, MakeUserPointer(replacement_handle));
+}
+
 MojoResult MojoSystemImplDuplicateHandleWithReducedRights(
     MojoSystemImpl system,
     MojoHandle handle,

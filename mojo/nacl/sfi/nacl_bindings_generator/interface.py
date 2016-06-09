@@ -24,6 +24,11 @@ def MakeInterface():
   f.Param('handle').In('MojoHandle')
   f.Param('rights').Out('MojoHandleRights')
 
+  f = mojo.Func('MojoReplaceHandleWithReducedRights', 'MojoResult')
+  f.Param('handle').In('MojoHandle')
+  f.Param('rights_to_remove').In('MojoHandleRights')
+  f.Param('replacement_handle').Out('MojoHandle')
+
   f = mojo.Func('MojoDuplicateHandleWithReducedRights', 'MojoResult')
   f.Param('handle').In('MojoHandle')
   f.Param('rights_to_remove').In('MojoHandleRights')

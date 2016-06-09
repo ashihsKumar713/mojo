@@ -169,6 +169,46 @@ ssize_t MojoDescSendMsg(void* handle,
       }
       MojoHandle handle_value;
       MojoHandleRights rights_to_remove_value;
+      MojoHandle volatile* replacement_handle_ptr;
+      MojoHandle replacement_handle_value;
+      MojoResult volatile* result_ptr;
+      MojoResult result_value;
+      {
+        ScopedCopyLock copy_lock(nap);
+        if (!ConvertScalarInput(nap, params[1], &handle_value)) {
+          return -1;
+        }
+        if (!ConvertScalarInput(nap, params[2], &rights_to_remove_value)) {
+          return -1;
+        }
+        if (!ConvertScalarInOut(nap, params[3], false,
+                                &replacement_handle_value,
+                                &replacement_handle_ptr)) {
+          return -1;
+        }
+        if (!ConvertScalarOutput(nap, params[4], false, &result_ptr)) {
+          return -1;
+        }
+      }
+
+      result_value = MojoSystemImplReplaceHandleWithReducedRights(
+          g_mojo_system, handle_value, rights_to_remove_value,
+          &replacement_handle_value);
+
+      {
+        ScopedCopyLock copy_lock(nap);
+        *replacement_handle_ptr = replacement_handle_value;
+        *result_ptr = result_value;
+      }
+
+      return 0;
+    }
+    case 5: {
+      if (num_params != 5) {
+        return -1;
+      }
+      MojoHandle handle_value;
+      MojoHandleRights rights_to_remove_value;
       MojoHandle volatile* new_handle_ptr;
       MojoHandle new_handle_value;
       MojoResult volatile* result_ptr;
@@ -202,7 +242,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 5: {
+    case 6: {
       if (num_params != 4) {
         return -1;
       }
@@ -236,7 +276,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 6: {
+    case 7: {
       if (num_params != 6) {
         return -1;
       }
@@ -281,7 +321,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 7: {
+    case 8: {
       if (num_params != 8) {
         return -1;
       }
@@ -337,7 +377,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 8: {
+    case 9: {
       if (num_params != 5) {
         return -1;
       }
@@ -381,7 +421,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 9: {
+    case 10: {
       if (num_params != 8) {
         return -1;
       }
@@ -430,7 +470,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 10: {
+    case 11: {
       if (num_params != 8) {
         return -1;
       }
@@ -490,7 +530,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 11: {
+    case 12: {
       if (num_params != 5) {
         return -1;
       }
@@ -534,7 +574,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 12: {
+    case 13: {
       if (num_params != 4) {
         return -1;
       }
@@ -566,7 +606,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 13: {
+    case 14: {
       if (num_params != 5) {
         return -1;
       }
@@ -604,7 +644,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 14: {
+    case 15: {
       if (num_params != 6) {
         return -1;
       }
@@ -649,10 +689,10 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 15:
+    case 16:
       fprintf(stderr, "MojoBeginWriteData not implemented\n");
       return -1;
-    case 16: {
+    case 17: {
       if (num_params != 4) {
         return -1;
       }
@@ -685,7 +725,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 17: {
+    case 18: {
       if (num_params != 4) {
         return -1;
       }
@@ -717,7 +757,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 18: {
+    case 19: {
       if (num_params != 5) {
         return -1;
       }
@@ -755,7 +795,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 19: {
+    case 20: {
       if (num_params != 6) {
         return -1;
       }
@@ -800,10 +840,10 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 20:
+    case 21:
       fprintf(stderr, "MojoBeginReadData not implemented\n");
       return -1;
-    case 21: {
+    case 22: {
       if (num_params != 4) {
         return -1;
       }
@@ -835,7 +875,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 22: {
+    case 23: {
       if (num_params != 5) {
         return -1;
       }
@@ -874,7 +914,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 23: {
+    case 24: {
       if (num_params != 5) {
         return -1;
       }
@@ -913,7 +953,7 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 24: {
+    case 25: {
       if (num_params != 5) {
         return -1;
       }
@@ -949,10 +989,10 @@ ssize_t MojoDescSendMsg(void* handle,
 
       return 0;
     }
-    case 25:
+    case 26:
       fprintf(stderr, "MojoMapBuffer not implemented\n");
       return -1;
-    case 26:
+    case 27:
       fprintf(stderr, "MojoUnmapBuffer not implemented\n");
       return -1;
   }
