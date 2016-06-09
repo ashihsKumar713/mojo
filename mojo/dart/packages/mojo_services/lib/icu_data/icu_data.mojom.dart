@@ -17,6 +17,10 @@ class _IcuDataMapParams extends bindings.Struct {
 
   _IcuDataMapParams() : super(kVersions.last.size);
 
+  _IcuDataMapParams.init(
+    String this.sha1hash
+  ) : super(kVersions.last.size);
+
   static _IcuDataMapParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -89,6 +93,10 @@ class IcuDataMapResponseParams extends bindings.Struct {
 
   IcuDataMapResponseParams() : super(kVersions.last.size);
 
+  IcuDataMapResponseParams.init(
+    core.MojoSharedBuffer this.icuData
+  ) : super(kVersions.last.size);
+
   static IcuDataMapResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -154,14 +162,17 @@ class IcuDataMapResponseParams extends bindings.Struct {
 const int _icuDataMethodMapName = 0;
 
 class _IcuDataServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class IcuData {
@@ -186,7 +197,7 @@ abstract class IcuData {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic map(String sha1hash,[Function responseFactory = null]);
+  void map(String sha1hash,void callback(core.MojoSharedBuffer icuData));
 }
 
 abstract class IcuDataInterface
@@ -236,18 +247,14 @@ class _IcuDataProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.icuData );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -292,17 +299,19 @@ class IcuDataProxy
   }
 
 
-  dynamic map(String sha1hash,[Function responseFactory = null]) {
+  void map(String sha1hash,void callback(core.MojoSharedBuffer icuData)) {
     if (impl != null) {
-      return new Future(() => impl.map(sha1hash,_IcuDataStubControl._icuDataMapResponseParamsFactory));
+      impl.map(sha1hash,callback);
+      return;
     }
     var params = new _IcuDataMapParams();
     params.sha1hash = sha1hash;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _icuDataMethodMapName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -328,17 +337,24 @@ class _IcuDataStubControl
   String get serviceName => IcuData.serviceName;
 
 
-  static IcuDataMapResponseParams _icuDataMapResponseParamsFactory(core.MojoSharedBuffer icuData) {
-    var result = new IcuDataMapResponseParams();
-    result.icuData = icuData;
-    return result;
+  Function _icuDataMapResponseParamsResponder(
+      int requestId) {
+  return (core.MojoSharedBuffer icuData) {
+      var result = new IcuDataMapResponseParams();
+      result.icuData = icuData;
+      sendResponse(buildResponseWithId(
+          result,
+          _icuDataMethodMapName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -347,30 +363,12 @@ class _IcuDataStubControl
       case _icuDataMethodMapName:
         var params = _IcuDataMapParams.deserialize(
             message.payload);
-        var response = _impl.map(params.sha1hash,_icuDataMapResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _icuDataMethodMapName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _icuDataMethodMapName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.map(params.sha1hash, _icuDataMapResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   IcuData get impl => _impl;
@@ -424,8 +422,8 @@ class IcuDataStub
   }
 
 
-  dynamic map(String sha1hash,[Function responseFactory = null]) {
-    return impl.map(sha1hash,responseFactory);
+  void map(String sha1hash,void callback(core.MojoSharedBuffer icuData)) {
+    return impl.map(sha1hash,callback);
   }
 }
 

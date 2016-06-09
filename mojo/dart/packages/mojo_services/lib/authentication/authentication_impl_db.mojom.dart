@@ -16,6 +16,11 @@ class Db extends bindings.Struct {
 
   Db() : super(kVersions.last.size);
 
+  Db.init(
+    int this.version, 
+    Map<String, String> this.lastSelectedAccounts
+  ) : super(kVersions.last.size);
+
   static Db deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);

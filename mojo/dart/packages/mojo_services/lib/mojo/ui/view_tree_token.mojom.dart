@@ -15,6 +15,10 @@ class ViewTreeToken extends bindings.Struct {
 
   ViewTreeToken() : super(kVersions.last.size);
 
+  ViewTreeToken.init(
+    int this.value
+  ) : super(kVersions.last.size);
+
   static ViewTreeToken deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);

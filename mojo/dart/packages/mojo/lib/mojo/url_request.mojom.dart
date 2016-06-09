@@ -82,6 +82,16 @@ class UrlRequest extends bindings.Struct {
 
   UrlRequest() : super(kVersions.last.size);
 
+  UrlRequest.init(
+    String this.url, 
+    String this.method, 
+    List<http_header_mojom.HttpHeader> this.headers, 
+    List<core.MojoDataPipeConsumer> this.body, 
+    int this.responseBodyBufferSize, 
+    bool this.autoFollowRedirects, 
+    UrlRequestCacheMode this.cacheMode
+  ) : super(kVersions.last.size);
+
   static UrlRequest deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);

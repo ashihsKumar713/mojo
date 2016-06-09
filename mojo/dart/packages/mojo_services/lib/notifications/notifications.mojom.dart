@@ -21,6 +21,14 @@ class NotificationData extends bindings.Struct {
 
   NotificationData() : super(kVersions.last.size);
 
+  NotificationData.init(
+    String this.title, 
+    String this.text, 
+    bool this.playSound, 
+    bool this.vibrate, 
+    bool this.setLights
+  ) : super(kVersions.last.size);
+
   static NotificationData deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -144,6 +152,9 @@ class _NotificationClientOnSelectedParams extends bindings.Struct {
 
   _NotificationClientOnSelectedParams() : super(kVersions.last.size);
 
+  _NotificationClientOnSelectedParams.init(
+  ) : super(kVersions.last.size);
+
   static _NotificationClientOnSelectedParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -201,6 +212,9 @@ class _NotificationClientOnDismissedParams extends bindings.Struct {
   ];
 
   _NotificationClientOnDismissedParams() : super(kVersions.last.size);
+
+  _NotificationClientOnDismissedParams.init(
+  ) : super(kVersions.last.size);
 
   static _NotificationClientOnDismissedParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -260,6 +274,10 @@ class _NotificationUpdateParams extends bindings.Struct {
   NotificationData notificationData = null;
 
   _NotificationUpdateParams() : super(kVersions.last.size);
+
+  _NotificationUpdateParams.init(
+    NotificationData this.notificationData
+  ) : super(kVersions.last.size);
 
   static _NotificationUpdateParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -333,6 +351,9 @@ class _NotificationCancelParams extends bindings.Struct {
 
   _NotificationCancelParams() : super(kVersions.last.size);
 
+  _NotificationCancelParams.init(
+  ) : super(kVersions.last.size);
+
   static _NotificationCancelParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -393,6 +414,12 @@ class _NotificationServicePostParams extends bindings.Struct {
   NotificationInterfaceRequest notification = null;
 
   _NotificationServicePostParams() : super(kVersions.last.size);
+
+  _NotificationServicePostParams.init(
+    NotificationData this.notificationData, 
+    NotificationClientInterface this.client, 
+    NotificationInterfaceRequest this.notification
+  ) : super(kVersions.last.size);
 
   static _NotificationServicePostParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -485,14 +512,17 @@ const int _notificationClientMethodOnSelectedName = 0;
 const int _notificationClientMethodOnDismissedName = 1;
 
 class _NotificationClientServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class NotificationClient {
@@ -655,11 +685,11 @@ class _NotificationClientStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -675,7 +705,6 @@ class _NotificationClientStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   NotificationClient get impl => _impl;
@@ -741,14 +770,17 @@ const int _notificationMethodUpdateName = 0;
 const int _notificationMethodCancelName = 1;
 
 class _NotificationServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Notification {
@@ -912,11 +944,11 @@ class _NotificationStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -934,7 +966,6 @@ class _NotificationStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Notification get impl => _impl;
@@ -999,14 +1030,17 @@ class NotificationStub
 const int _notificationServiceMethodPostName = 0;
 
 class _NotificationServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class NotificationService {
@@ -1158,11 +1192,11 @@ class _NotificationServiceStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1177,7 +1211,6 @@ class _NotificationServiceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   NotificationService get impl => _impl;

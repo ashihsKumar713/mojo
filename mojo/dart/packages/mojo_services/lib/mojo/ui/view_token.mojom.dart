@@ -17,6 +17,10 @@ class ViewToken extends bindings.Struct {
 
   ViewToken() : super(kVersions.last.size);
 
+  ViewToken.init(
+    int this.value
+  ) : super(kVersions.last.size);
+
   static ViewToken deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -88,6 +92,9 @@ class _ViewOwnerGetTokenParams extends bindings.Struct {
 
   _ViewOwnerGetTokenParams() : super(kVersions.last.size);
 
+  _ViewOwnerGetTokenParams.init(
+  ) : super(kVersions.last.size);
+
   static _ViewOwnerGetTokenParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -146,6 +153,10 @@ class ViewOwnerGetTokenResponseParams extends bindings.Struct {
   ViewToken token = null;
 
   ViewOwnerGetTokenResponseParams() : super(kVersions.last.size);
+
+  ViewOwnerGetTokenResponseParams.init(
+    ViewToken this.token
+  ) : super(kVersions.last.size);
 
   static ViewOwnerGetTokenResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -214,14 +225,17 @@ class ViewOwnerGetTokenResponseParams extends bindings.Struct {
 const int _viewOwnerMethodGetTokenName = 0;
 
 class _ViewOwnerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ViewOwner {
@@ -246,7 +260,7 @@ abstract class ViewOwner {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getToken([Function responseFactory = null]);
+  void getToken(void callback(ViewToken token));
 }
 
 abstract class ViewOwnerInterface
@@ -296,18 +310,14 @@ class _ViewOwnerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.token );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -352,16 +362,18 @@ class ViewOwnerProxy
   }
 
 
-  dynamic getToken([Function responseFactory = null]) {
+  void getToken(void callback(ViewToken token)) {
     if (impl != null) {
-      return new Future(() => impl.getToken(_ViewOwnerStubControl._viewOwnerGetTokenResponseParamsFactory));
+      impl.getToken(callback);
+      return;
     }
     var params = new _ViewOwnerGetTokenParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _viewOwnerMethodGetTokenName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -387,47 +399,36 @@ class _ViewOwnerStubControl
   String get serviceName => ViewOwner.serviceName;
 
 
-  static ViewOwnerGetTokenResponseParams _viewOwnerGetTokenResponseParamsFactory(ViewToken token) {
-    var result = new ViewOwnerGetTokenResponseParams();
-    result.token = token;
-    return result;
+  Function _viewOwnerGetTokenResponseParamsResponder(
+      int requestId) {
+  return (ViewToken token) {
+      var result = new ViewOwnerGetTokenResponseParams();
+      result.token = token;
+      sendResponse(buildResponseWithId(
+          result,
+          _viewOwnerMethodGetTokenName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _viewOwnerMethodGetTokenName:
-        var response = _impl.getToken(_viewOwnerGetTokenResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _viewOwnerMethodGetTokenName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _viewOwnerMethodGetTokenName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getToken(_viewOwnerGetTokenResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ViewOwner get impl => _impl;
@@ -481,8 +482,8 @@ class ViewOwnerStub
   }
 
 
-  dynamic getToken([Function responseFactory = null]) {
-    return impl.getToken(responseFactory);
+  void getToken(void callback(ViewToken token)) {
+    return impl.getToken(callback);
   }
 }
 

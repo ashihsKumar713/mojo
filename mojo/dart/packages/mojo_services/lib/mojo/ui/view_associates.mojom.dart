@@ -22,6 +22,11 @@ class ViewAssociateInfo extends bindings.Struct {
 
   ViewAssociateInfo() : super(kVersions.last.size);
 
+  ViewAssociateInfo.init(
+    List<String> this.viewServiceNames, 
+    List<String> this.viewTreeServiceNames
+  ) : super(kVersions.last.size);
+
   static ViewAssociateInfo deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -141,6 +146,10 @@ class _ViewAssociateConnectParams extends bindings.Struct {
 
   _ViewAssociateConnectParams() : super(kVersions.last.size);
 
+  _ViewAssociateConnectParams.init(
+    ViewInspectorInterface this.inspector
+  ) : super(kVersions.last.size);
+
   static _ViewAssociateConnectParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -211,6 +220,10 @@ class ViewAssociateConnectResponseParams extends bindings.Struct {
   ViewAssociateInfo info = null;
 
   ViewAssociateConnectResponseParams() : super(kVersions.last.size);
+
+  ViewAssociateConnectResponseParams.init(
+    ViewAssociateInfo this.info
+  ) : super(kVersions.last.size);
 
   static ViewAssociateConnectResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -286,6 +299,12 @@ class _ViewAssociateConnectToViewServiceParams extends bindings.Struct {
   core.MojoMessagePipeEndpoint pipe = null;
 
   _ViewAssociateConnectToViewServiceParams() : super(kVersions.last.size);
+
+  _ViewAssociateConnectToViewServiceParams.init(
+    view_token_mojom.ViewToken this.viewToken, 
+    String this.serviceName_, 
+    core.MojoMessagePipeEndpoint this.pipe
+  ) : super(kVersions.last.size);
 
   static _ViewAssociateConnectToViewServiceParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -385,6 +404,12 @@ class _ViewAssociateConnectToViewTreeServiceParams extends bindings.Struct {
 
   _ViewAssociateConnectToViewTreeServiceParams() : super(kVersions.last.size);
 
+  _ViewAssociateConnectToViewTreeServiceParams.init(
+    view_tree_token_mojom.ViewTreeToken this.viewTreeToken, 
+    String this.serviceName_, 
+    core.MojoMessagePipeEndpoint this.pipe
+  ) : super(kVersions.last.size);
+
   static _ViewAssociateConnectToViewTreeServiceParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -482,6 +507,11 @@ class _ViewInspectorGetHitTesterParams extends bindings.Struct {
 
   _ViewInspectorGetHitTesterParams() : super(kVersions.last.size);
 
+  _ViewInspectorGetHitTesterParams.init(
+    view_tree_token_mojom.ViewTreeToken this.viewTreeToken, 
+    hit_tests_mojom.HitTesterInterfaceRequest this.hitTester
+  ) : super(kVersions.last.size);
+
   static _ViewInspectorGetHitTesterParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -566,6 +596,10 @@ class ViewInspectorGetHitTesterResponseParams extends bindings.Struct {
 
   ViewInspectorGetHitTesterResponseParams() : super(kVersions.last.size);
 
+  ViewInspectorGetHitTesterResponseParams.init(
+    bool this.rendererChanged
+  ) : super(kVersions.last.size);
+
   static ViewInspectorGetHitTesterResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -637,6 +671,10 @@ class _ViewInspectorResolveScenesParams extends bindings.Struct {
   List<scene_token_mojom.SceneToken> sceneTokens = null;
 
   _ViewInspectorResolveScenesParams() : super(kVersions.last.size);
+
+  _ViewInspectorResolveScenesParams.init(
+    List<scene_token_mojom.SceneToken> this.sceneTokens
+  ) : super(kVersions.last.size);
 
   static _ViewInspectorResolveScenesParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -726,6 +764,10 @@ class ViewInspectorResolveScenesResponseParams extends bindings.Struct {
 
   ViewInspectorResolveScenesResponseParams() : super(kVersions.last.size);
 
+  ViewInspectorResolveScenesResponseParams.init(
+    List<view_token_mojom.ViewToken> this.viewTokens
+  ) : super(kVersions.last.size);
+
   static ViewInspectorResolveScenesResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -810,14 +852,17 @@ const int _viewAssociateMethodConnectToViewServiceName = 1;
 const int _viewAssociateMethodConnectToViewTreeServiceName = 2;
 
 class _ViewAssociateServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ViewAssociate {
@@ -842,7 +887,7 @@ abstract class ViewAssociate {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic connect(ViewInspectorInterface inspector,[Function responseFactory = null]);
+  void connect(ViewInspectorInterface inspector,void callback(ViewAssociateInfo info));
   void connectToViewService(view_token_mojom.ViewToken viewToken, String serviceName_, core.MojoMessagePipeEndpoint pipe);
   void connectToViewTreeService(view_tree_token_mojom.ViewTreeToken viewTreeToken, String serviceName_, core.MojoMessagePipeEndpoint pipe);
 }
@@ -894,18 +939,14 @@ class _ViewAssociateProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.info );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -950,17 +991,19 @@ class ViewAssociateProxy
   }
 
 
-  dynamic connect(ViewInspectorInterface inspector,[Function responseFactory = null]) {
+  void connect(ViewInspectorInterface inspector,void callback(ViewAssociateInfo info)) {
     if (impl != null) {
-      return new Future(() => impl.connect(inspector,_ViewAssociateStubControl._viewAssociateConnectResponseParamsFactory));
+      impl.connect(inspector,callback);
+      return;
     }
     var params = new _ViewAssociateConnectParams();
     params.inspector = inspector;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _viewAssociateMethodConnectName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void connectToViewService(view_token_mojom.ViewToken viewToken, String serviceName_, core.MojoMessagePipeEndpoint pipe) {
     if (impl != null) {
@@ -1018,17 +1061,24 @@ class _ViewAssociateStubControl
   String get serviceName => ViewAssociate.serviceName;
 
 
-  static ViewAssociateConnectResponseParams _viewAssociateConnectResponseParamsFactory(ViewAssociateInfo info) {
-    var result = new ViewAssociateConnectResponseParams();
-    result.info = info;
-    return result;
+  Function _viewAssociateConnectResponseParamsResponder(
+      int requestId) {
+  return (ViewAssociateInfo info) {
+      var result = new ViewAssociateConnectResponseParams();
+      result.info = info;
+      sendResponse(buildResponseWithId(
+          result,
+          _viewAssociateMethodConnectName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1037,24 +1087,7 @@ class _ViewAssociateStubControl
       case _viewAssociateMethodConnectName:
         var params = _ViewAssociateConnectParams.deserialize(
             message.payload);
-        var response = _impl.connect(params.inspector,_viewAssociateConnectResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _viewAssociateMethodConnectName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _viewAssociateMethodConnectName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.connect(params.inspector, _viewAssociateConnectResponseParamsResponder(message.header.requestId));
         break;
       case _viewAssociateMethodConnectToViewServiceName:
         var params = _ViewAssociateConnectToViewServiceParams.deserialize(
@@ -1070,7 +1103,6 @@ class _ViewAssociateStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ViewAssociate get impl => _impl;
@@ -1124,8 +1156,8 @@ class ViewAssociateStub
   }
 
 
-  dynamic connect(ViewInspectorInterface inspector,[Function responseFactory = null]) {
-    return impl.connect(inspector,responseFactory);
+  void connect(ViewInspectorInterface inspector,void callback(ViewAssociateInfo info)) {
+    return impl.connect(inspector,callback);
   }
   void connectToViewService(view_token_mojom.ViewToken viewToken, String serviceName_, core.MojoMessagePipeEndpoint pipe) {
     return impl.connectToViewService(viewToken, serviceName_, pipe);
@@ -1137,14 +1169,17 @@ class ViewAssociateStub
 
 
 class _ViewAssociateOwnerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ViewAssociateOwner {
@@ -1279,11 +1314,11 @@ class _ViewAssociateOwnerStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1293,7 +1328,6 @@ class _ViewAssociateOwnerStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ViewAssociateOwner get impl => _impl;
@@ -1353,14 +1387,17 @@ const int _viewInspectorMethodGetHitTesterName = 0;
 const int _viewInspectorMethodResolveScenesName = 1;
 
 class _ViewInspectorServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ViewInspector {
@@ -1385,8 +1422,8 @@ abstract class ViewInspector {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getHitTester(view_tree_token_mojom.ViewTreeToken viewTreeToken,hit_tests_mojom.HitTesterInterfaceRequest hitTester,[Function responseFactory = null]);
-  dynamic resolveScenes(List<scene_token_mojom.SceneToken> sceneTokens,[Function responseFactory = null]);
+  void getHitTester(view_tree_token_mojom.ViewTreeToken viewTreeToken,hit_tests_mojom.HitTesterInterfaceRequest hitTester,void callback(bool rendererChanged));
+  void resolveScenes(List<scene_token_mojom.SceneToken> sceneTokens,void callback(List<view_token_mojom.ViewToken> viewTokens));
 }
 
 abstract class ViewInspectorInterface
@@ -1436,18 +1473,14 @@ class _ViewInspectorProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.rendererChanged );
         break;
       case _viewInspectorMethodResolveScenesName:
         var r = ViewInspectorResolveScenesResponseParams.deserialize(
@@ -1456,18 +1489,14 @@ class _ViewInspectorProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.viewTokens );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1512,30 +1541,34 @@ class ViewInspectorProxy
   }
 
 
-  dynamic getHitTester(view_tree_token_mojom.ViewTreeToken viewTreeToken,hit_tests_mojom.HitTesterInterfaceRequest hitTester,[Function responseFactory = null]) {
+  void getHitTester(view_tree_token_mojom.ViewTreeToken viewTreeToken,hit_tests_mojom.HitTesterInterfaceRequest hitTester,void callback(bool rendererChanged)) {
     if (impl != null) {
-      return new Future(() => impl.getHitTester(viewTreeToken,hitTester,_ViewInspectorStubControl._viewInspectorGetHitTesterResponseParamsFactory));
+      impl.getHitTester(viewTreeToken,hitTester,callback);
+      return;
     }
     var params = new _ViewInspectorGetHitTesterParams();
     params.viewTreeToken = viewTreeToken;
     params.hitTester = hitTester;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _viewInspectorMethodGetHitTesterName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic resolveScenes(List<scene_token_mojom.SceneToken> sceneTokens,[Function responseFactory = null]) {
+  void resolveScenes(List<scene_token_mojom.SceneToken> sceneTokens,void callback(List<view_token_mojom.ViewToken> viewTokens)) {
     if (impl != null) {
-      return new Future(() => impl.resolveScenes(sceneTokens,_ViewInspectorStubControl._viewInspectorResolveScenesResponseParamsFactory));
+      impl.resolveScenes(sceneTokens,callback);
+      return;
     }
     var params = new _ViewInspectorResolveScenesParams();
     params.sceneTokens = sceneTokens;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _viewInspectorMethodResolveScenesName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -1561,22 +1594,36 @@ class _ViewInspectorStubControl
   String get serviceName => ViewInspector.serviceName;
 
 
-  static ViewInspectorGetHitTesterResponseParams _viewInspectorGetHitTesterResponseParamsFactory(bool rendererChanged) {
-    var result = new ViewInspectorGetHitTesterResponseParams();
-    result.rendererChanged = rendererChanged;
-    return result;
+  Function _viewInspectorGetHitTesterResponseParamsResponder(
+      int requestId) {
+  return (bool rendererChanged) {
+      var result = new ViewInspectorGetHitTesterResponseParams();
+      result.rendererChanged = rendererChanged;
+      sendResponse(buildResponseWithId(
+          result,
+          _viewInspectorMethodGetHitTesterName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static ViewInspectorResolveScenesResponseParams _viewInspectorResolveScenesResponseParamsFactory(List<view_token_mojom.ViewToken> viewTokens) {
-    var result = new ViewInspectorResolveScenesResponseParams();
-    result.viewTokens = viewTokens;
-    return result;
+  Function _viewInspectorResolveScenesResponseParamsResponder(
+      int requestId) {
+  return (List<view_token_mojom.ViewToken> viewTokens) {
+      var result = new ViewInspectorResolveScenesResponseParams();
+      result.viewTokens = viewTokens;
+      sendResponse(buildResponseWithId(
+          result,
+          _viewInspectorMethodResolveScenesName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1585,52 +1632,17 @@ class _ViewInspectorStubControl
       case _viewInspectorMethodGetHitTesterName:
         var params = _ViewInspectorGetHitTesterParams.deserialize(
             message.payload);
-        var response = _impl.getHitTester(params.viewTreeToken,params.hitTester,_viewInspectorGetHitTesterResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _viewInspectorMethodGetHitTesterName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _viewInspectorMethodGetHitTesterName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getHitTester(params.viewTreeToken, params.hitTester, _viewInspectorGetHitTesterResponseParamsResponder(message.header.requestId));
         break;
       case _viewInspectorMethodResolveScenesName:
         var params = _ViewInspectorResolveScenesParams.deserialize(
             message.payload);
-        var response = _impl.resolveScenes(params.sceneTokens,_viewInspectorResolveScenesResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _viewInspectorMethodResolveScenesName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _viewInspectorMethodResolveScenesName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.resolveScenes(params.sceneTokens, _viewInspectorResolveScenesResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ViewInspector get impl => _impl;
@@ -1684,11 +1696,11 @@ class ViewInspectorStub
   }
 
 
-  dynamic getHitTester(view_tree_token_mojom.ViewTreeToken viewTreeToken,hit_tests_mojom.HitTesterInterfaceRequest hitTester,[Function responseFactory = null]) {
-    return impl.getHitTester(viewTreeToken,hitTester,responseFactory);
+  void getHitTester(view_tree_token_mojom.ViewTreeToken viewTreeToken,hit_tests_mojom.HitTesterInterfaceRequest hitTester,void callback(bool rendererChanged)) {
+    return impl.getHitTester(viewTreeToken,hitTester,callback);
   }
-  dynamic resolveScenes(List<scene_token_mojom.SceneToken> sceneTokens,[Function responseFactory = null]) {
-    return impl.resolveScenes(sceneTokens,responseFactory);
+  void resolveScenes(List<scene_token_mojom.SceneToken> sceneTokens,void callback(List<view_token_mojom.ViewToken> viewTokens)) {
+    return impl.resolveScenes(sceneTokens,callback);
   }
 }
 

@@ -20,6 +20,9 @@ class _ViewTreeGetTokenParams extends bindings.Struct {
 
   _ViewTreeGetTokenParams() : super(kVersions.last.size);
 
+  _ViewTreeGetTokenParams.init(
+  ) : super(kVersions.last.size);
+
   static _ViewTreeGetTokenParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -78,6 +81,10 @@ class ViewTreeGetTokenResponseParams extends bindings.Struct {
   view_tree_token_mojom.ViewTreeToken token = null;
 
   ViewTreeGetTokenResponseParams() : super(kVersions.last.size);
+
+  ViewTreeGetTokenResponseParams.init(
+    view_tree_token_mojom.ViewTreeToken this.token
+  ) : super(kVersions.last.size);
 
   static ViewTreeGetTokenResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -152,6 +159,10 @@ class _ViewTreeGetServiceProviderParams extends bindings.Struct {
 
   _ViewTreeGetServiceProviderParams() : super(kVersions.last.size);
 
+  _ViewTreeGetServiceProviderParams.init(
+    service_provider_mojom.ServiceProviderInterfaceRequest this.serviceProvider
+  ) : super(kVersions.last.size);
+
   static _ViewTreeGetServiceProviderParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -222,6 +233,10 @@ class _ViewTreeSetRendererParams extends bindings.Struct {
   renderers_mojom.RendererInterface renderer = null;
 
   _ViewTreeSetRendererParams() : super(kVersions.last.size);
+
+  _ViewTreeSetRendererParams.init(
+    renderers_mojom.RendererInterface this.renderer
+  ) : super(kVersions.last.size);
 
   static _ViewTreeSetRendererParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -294,6 +309,10 @@ class _ViewTreeGetContainerParams extends bindings.Struct {
 
   _ViewTreeGetContainerParams() : super(kVersions.last.size);
 
+  _ViewTreeGetContainerParams.init(
+    view_containers_mojom.ViewContainerInterfaceRequest this.container
+  ) : super(kVersions.last.size);
+
   static _ViewTreeGetContainerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -364,6 +383,9 @@ class _ViewTreeListenerOnRendererDiedParams extends bindings.Struct {
 
   _ViewTreeListenerOnRendererDiedParams() : super(kVersions.last.size);
 
+  _ViewTreeListenerOnRendererDiedParams.init(
+  ) : super(kVersions.last.size);
+
   static _ViewTreeListenerOnRendererDiedParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -422,6 +444,9 @@ class ViewTreeListenerOnRendererDiedResponseParams extends bindings.Struct {
 
   ViewTreeListenerOnRendererDiedResponseParams() : super(kVersions.last.size);
 
+  ViewTreeListenerOnRendererDiedResponseParams.init(
+  ) : super(kVersions.last.size);
+
   static ViewTreeListenerOnRendererDiedResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -478,14 +503,17 @@ const int _viewTreeMethodSetRendererName = 2;
 const int _viewTreeMethodGetContainerName = 3;
 
 class _ViewTreeServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ViewTree {
@@ -510,7 +538,7 @@ abstract class ViewTree {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getToken([Function responseFactory = null]);
+  void getToken(void callback(view_tree_token_mojom.ViewTreeToken token));
   void getServiceProvider(service_provider_mojom.ServiceProviderInterfaceRequest serviceProvider);
   void setRenderer(renderers_mojom.RendererInterface renderer);
   void getContainer(view_containers_mojom.ViewContainerInterfaceRequest container);
@@ -563,18 +591,14 @@ class _ViewTreeProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.token );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -619,16 +643,18 @@ class ViewTreeProxy
   }
 
 
-  dynamic getToken([Function responseFactory = null]) {
+  void getToken(void callback(view_tree_token_mojom.ViewTreeToken token)) {
     if (impl != null) {
-      return new Future(() => impl.getToken(_ViewTreeStubControl._viewTreeGetTokenResponseParamsFactory));
+      impl.getToken(callback);
+      return;
     }
     var params = new _ViewTreeGetTokenParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _viewTreeMethodGetTokenName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void getServiceProvider(service_provider_mojom.ServiceProviderInterfaceRequest serviceProvider) {
     if (impl != null) {
@@ -696,41 +722,31 @@ class _ViewTreeStubControl
   String get serviceName => ViewTree.serviceName;
 
 
-  static ViewTreeGetTokenResponseParams _viewTreeGetTokenResponseParamsFactory(view_tree_token_mojom.ViewTreeToken token) {
-    var result = new ViewTreeGetTokenResponseParams();
-    result.token = token;
-    return result;
+  Function _viewTreeGetTokenResponseParamsResponder(
+      int requestId) {
+  return (view_tree_token_mojom.ViewTreeToken token) {
+      var result = new ViewTreeGetTokenResponseParams();
+      result.token = token;
+      sendResponse(buildResponseWithId(
+          result,
+          _viewTreeMethodGetTokenName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _viewTreeMethodGetTokenName:
-        var response = _impl.getToken(_viewTreeGetTokenResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _viewTreeMethodGetTokenName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _viewTreeMethodGetTokenName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getToken(_viewTreeGetTokenResponseParamsResponder(message.header.requestId));
         break;
       case _viewTreeMethodGetServiceProviderName:
         var params = _ViewTreeGetServiceProviderParams.deserialize(
@@ -751,7 +767,6 @@ class _ViewTreeStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ViewTree get impl => _impl;
@@ -805,8 +820,8 @@ class ViewTreeStub
   }
 
 
-  dynamic getToken([Function responseFactory = null]) {
-    return impl.getToken(responseFactory);
+  void getToken(void callback(view_tree_token_mojom.ViewTreeToken token)) {
+    return impl.getToken(callback);
   }
   void getServiceProvider(service_provider_mojom.ServiceProviderInterfaceRequest serviceProvider) {
     return impl.getServiceProvider(serviceProvider);
@@ -822,14 +837,17 @@ class ViewTreeStub
 const int _viewTreeListenerMethodOnRendererDiedName = 0;
 
 class _ViewTreeListenerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ViewTreeListener {
@@ -854,7 +872,7 @@ abstract class ViewTreeListener {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic onRendererDied([Function responseFactory = null]);
+  void onRendererDied(void callback());
 }
 
 abstract class ViewTreeListenerInterface
@@ -904,18 +922,14 @@ class _ViewTreeListenerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -960,16 +974,18 @@ class ViewTreeListenerProxy
   }
 
 
-  dynamic onRendererDied([Function responseFactory = null]) {
+  void onRendererDied(void callback()) {
     if (impl != null) {
-      return new Future(() => impl.onRendererDied(_ViewTreeListenerStubControl._viewTreeListenerOnRendererDiedResponseParamsFactory));
+      impl.onRendererDied(callback);
+      return;
     }
     var params = new _ViewTreeListenerOnRendererDiedParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _viewTreeListenerMethodOnRendererDiedName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -995,46 +1011,35 @@ class _ViewTreeListenerStubControl
   String get serviceName => ViewTreeListener.serviceName;
 
 
-  static ViewTreeListenerOnRendererDiedResponseParams _viewTreeListenerOnRendererDiedResponseParamsFactory() {
-    var result = new ViewTreeListenerOnRendererDiedResponseParams();
-    return result;
+  Function _viewTreeListenerOnRendererDiedResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new ViewTreeListenerOnRendererDiedResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _viewTreeListenerMethodOnRendererDiedName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _viewTreeListenerMethodOnRendererDiedName:
-        var response = _impl.onRendererDied(_viewTreeListenerOnRendererDiedResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _viewTreeListenerMethodOnRendererDiedName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _viewTreeListenerMethodOnRendererDiedName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.onRendererDied(_viewTreeListenerOnRendererDiedResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ViewTreeListener get impl => _impl;
@@ -1088,8 +1093,8 @@ class ViewTreeListenerStub
   }
 
 
-  dynamic onRendererDied([Function responseFactory = null]) {
-    return impl.onRendererDied(responseFactory);
+  void onRendererDied(void callback()) {
+    return impl.onRendererDied(callback);
   }
 }
 

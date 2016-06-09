@@ -21,6 +21,12 @@ class MediaPlayerStatus extends bindings.Struct {
 
   MediaPlayerStatus() : super(kVersions.last.size);
 
+  MediaPlayerStatus.init(
+    timelines_mojom.TimelineTransform this.timelineTransform, 
+    bool this.endOfStream, 
+    media_metadata_mojom.MediaMetadata this.metadata
+  ) : super(kVersions.last.size);
+
   static MediaPlayerStatus deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -120,6 +126,9 @@ class _MediaPlayerPlayParams extends bindings.Struct {
 
   _MediaPlayerPlayParams() : super(kVersions.last.size);
 
+  _MediaPlayerPlayParams.init(
+  ) : super(kVersions.last.size);
+
   static _MediaPlayerPlayParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -177,6 +186,9 @@ class _MediaPlayerPauseParams extends bindings.Struct {
   ];
 
   _MediaPlayerPauseParams() : super(kVersions.last.size);
+
+  _MediaPlayerPauseParams.init(
+  ) : super(kVersions.last.size);
 
   static _MediaPlayerPauseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -236,6 +248,10 @@ class _MediaPlayerSeekParams extends bindings.Struct {
   int position = 0;
 
   _MediaPlayerSeekParams() : super(kVersions.last.size);
+
+  _MediaPlayerSeekParams.init(
+    int this.position
+  ) : super(kVersions.last.size);
 
   static _MediaPlayerSeekParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -309,6 +325,10 @@ class _MediaPlayerGetStatusParams extends bindings.Struct {
 
   _MediaPlayerGetStatusParams() : super(kVersions.last.size);
 
+  _MediaPlayerGetStatusParams.init(
+    int this.versionLastSeen
+  ) : super(kVersions.last.size);
+
   static _MediaPlayerGetStatusParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -381,6 +401,11 @@ class MediaPlayerGetStatusResponseParams extends bindings.Struct {
   MediaPlayerStatus status = null;
 
   MediaPlayerGetStatusResponseParams() : super(kVersions.last.size);
+
+  MediaPlayerGetStatusResponseParams.init(
+    int this.version, 
+    MediaPlayerStatus this.status
+  ) : super(kVersions.last.size);
 
   static MediaPlayerGetStatusResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -465,14 +490,17 @@ const int _mediaPlayerMethodSeekName = 2;
 const int _mediaPlayerMethodGetStatusName = 3;
 
 class _MediaPlayerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class MediaPlayer {
@@ -500,7 +528,7 @@ abstract class MediaPlayer {
   void play();
   void pause();
   void seek(int position);
-  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]);
+  void getStatus(int versionLastSeen,void callback(int version, MediaPlayerStatus status));
   static const int kInitialStatus = 0;
 }
 
@@ -551,18 +579,14 @@ class _MediaPlayerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.version , r.status );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -647,17 +671,19 @@ class MediaPlayerProxy
     ctrl.sendMessage(params,
         _mediaPlayerMethodSeekName);
   }
-  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
+  void getStatus(int versionLastSeen,void callback(int version, MediaPlayerStatus status)) {
     if (impl != null) {
-      return new Future(() => impl.getStatus(versionLastSeen,_MediaPlayerStubControl._mediaPlayerGetStatusResponseParamsFactory));
+      impl.getStatus(versionLastSeen,callback);
+      return;
     }
     var params = new _MediaPlayerGetStatusParams();
     params.versionLastSeen = versionLastSeen;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaPlayerMethodGetStatusName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -683,18 +709,25 @@ class _MediaPlayerStubControl
   String get serviceName => MediaPlayer.serviceName;
 
 
-  static MediaPlayerGetStatusResponseParams _mediaPlayerGetStatusResponseParamsFactory(int version, MediaPlayerStatus status) {
-    var result = new MediaPlayerGetStatusResponseParams();
-    result.version = version;
-    result.status = status;
-    return result;
+  Function _mediaPlayerGetStatusResponseParamsResponder(
+      int requestId) {
+  return (int version, MediaPlayerStatus status) {
+      var result = new MediaPlayerGetStatusResponseParams();
+      result.version = version;
+      result.status = status;
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaPlayerMethodGetStatusName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -714,30 +747,12 @@ class _MediaPlayerStubControl
       case _mediaPlayerMethodGetStatusName:
         var params = _MediaPlayerGetStatusParams.deserialize(
             message.payload);
-        var response = _impl.getStatus(params.versionLastSeen,_mediaPlayerGetStatusResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaPlayerMethodGetStatusName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaPlayerMethodGetStatusName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getStatus(params.versionLastSeen, _mediaPlayerGetStatusResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   MediaPlayer get impl => _impl;
@@ -800,8 +815,8 @@ class MediaPlayerStub
   void seek(int position) {
     return impl.seek(position);
   }
-  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
-    return impl.getStatus(versionLastSeen,responseFactory);
+  void getStatus(int versionLastSeen,void callback(int version, MediaPlayerStatus status)) {
+    return impl.getStatus(versionLastSeen,callback);
   }
 }
 

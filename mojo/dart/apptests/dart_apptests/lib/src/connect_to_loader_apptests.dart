@@ -15,12 +15,17 @@ import 'package:mojo/core.dart';
 
 connectToLoaderApptests(Application application, String url) {
   test('Connection', () async {
-    var diskCacheProxy = new UrlResponseDiskCacheProxy.unbound();
-    application.connectToService(
-        "mojo:url_response_disk_cache", diskCacheProxy);
+    var diskCache = UrlResponseDiskCache.connectToService(
+      application, "mojo:url_response_disk_cache");
     var response = new UrlResponse();
     response.url = 'http://www.example.com';
-    await diskCacheProxy.updateAndGet(response);
-    await diskCacheProxy.close();
+    var completer = new Completer();
+    diskCache.updateAndGet(response,
+        (List<int> filePath, List<int> cacheDirPath) {
+          diskCache.close().then((_) {
+            completer.complete(null);
+          });
+        });
+    await completer.future;
   });
 }

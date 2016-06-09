@@ -16,6 +16,9 @@ class _InputClientOnBackButtonParams extends bindings.Struct {
 
   _InputClientOnBackButtonParams() : super(kVersions.last.size);
 
+  _InputClientOnBackButtonParams.init(
+  ) : super(kVersions.last.size);
+
   static _InputClientOnBackButtonParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -73,6 +76,9 @@ class InputClientOnBackButtonResponseParams extends bindings.Struct {
   ];
 
   InputClientOnBackButtonResponseParams() : super(kVersions.last.size);
+
+  InputClientOnBackButtonResponseParams.init(
+  ) : super(kVersions.last.size);
 
   static InputClientOnBackButtonResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -132,6 +138,10 @@ class _InputServiceSetClientParams extends bindings.Struct {
   InputClientInterface client = null;
 
   _InputServiceSetClientParams() : super(kVersions.last.size);
+
+  _InputServiceSetClientParams.init(
+    InputClientInterface this.client
+  ) : super(kVersions.last.size);
 
   static _InputServiceSetClientParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -198,14 +208,17 @@ class _InputServiceSetClientParams extends bindings.Struct {
 const int _inputClientMethodOnBackButtonName = 0;
 
 class _InputClientServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class InputClient {
@@ -230,7 +243,7 @@ abstract class InputClient {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic onBackButton([Function responseFactory = null]);
+  void onBackButton(void callback());
 }
 
 abstract class InputClientInterface
@@ -280,18 +293,14 @@ class _InputClientProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -336,16 +345,18 @@ class InputClientProxy
   }
 
 
-  dynamic onBackButton([Function responseFactory = null]) {
+  void onBackButton(void callback()) {
     if (impl != null) {
-      return new Future(() => impl.onBackButton(_InputClientStubControl._inputClientOnBackButtonResponseParamsFactory));
+      impl.onBackButton(callback);
+      return;
     }
     var params = new _InputClientOnBackButtonParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _inputClientMethodOnBackButtonName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -371,46 +382,35 @@ class _InputClientStubControl
   String get serviceName => InputClient.serviceName;
 
 
-  static InputClientOnBackButtonResponseParams _inputClientOnBackButtonResponseParamsFactory() {
-    var result = new InputClientOnBackButtonResponseParams();
-    return result;
+  Function _inputClientOnBackButtonResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new InputClientOnBackButtonResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _inputClientMethodOnBackButtonName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _inputClientMethodOnBackButtonName:
-        var response = _impl.onBackButton(_inputClientOnBackButtonResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _inputClientMethodOnBackButtonName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _inputClientMethodOnBackButtonName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.onBackButton(_inputClientOnBackButtonResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   InputClient get impl => _impl;
@@ -464,22 +464,25 @@ class InputClientStub
   }
 
 
-  dynamic onBackButton([Function responseFactory = null]) {
-    return impl.onBackButton(responseFactory);
+  void onBackButton(void callback()) {
+    return impl.onBackButton(callback);
   }
 }
 
 const int _inputServiceMethodSetClientName = 0;
 
 class _InputServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class InputService {
@@ -629,11 +632,11 @@ class _InputServiceStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -648,7 +651,6 @@ class _InputServiceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   InputService get impl => _impl;

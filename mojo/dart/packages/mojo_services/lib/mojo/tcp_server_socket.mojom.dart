@@ -22,6 +22,12 @@ class _TcpServerSocketAcceptParams extends bindings.Struct {
 
   _TcpServerSocketAcceptParams() : super(kVersions.last.size);
 
+  _TcpServerSocketAcceptParams.init(
+    core.MojoDataPipeConsumer this.sendStream, 
+    core.MojoDataPipeProducer this.receiveStream, 
+    tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest this.clientSocket
+  ) : super(kVersions.last.size);
+
   static _TcpServerSocketAcceptParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -118,6 +124,11 @@ class TcpServerSocketAcceptResponseParams extends bindings.Struct {
 
   TcpServerSocketAcceptResponseParams() : super(kVersions.last.size);
 
+  TcpServerSocketAcceptResponseParams.init(
+    network_error_mojom.NetworkError this.result, 
+    net_address_mojom.NetAddress this.remoteAddress
+  ) : super(kVersions.last.size);
+
   static TcpServerSocketAcceptResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -199,14 +210,17 @@ class TcpServerSocketAcceptResponseParams extends bindings.Struct {
 const int _tcpServerSocketMethodAcceptName = 0;
 
 class _TcpServerSocketServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class TcpServerSocket {
@@ -231,7 +245,7 @@ abstract class TcpServerSocket {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]);
+  void accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress remoteAddress));
 }
 
 abstract class TcpServerSocketInterface
@@ -281,18 +295,14 @@ class _TcpServerSocketProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.result , r.remoteAddress );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -337,19 +347,21 @@ class TcpServerSocketProxy
   }
 
 
-  dynamic accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]) {
+  void accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress remoteAddress)) {
     if (impl != null) {
-      return new Future(() => impl.accept(sendStream,receiveStream,clientSocket,_TcpServerSocketStubControl._tcpServerSocketAcceptResponseParamsFactory));
+      impl.accept(sendStream,receiveStream,clientSocket,callback);
+      return;
     }
     var params = new _TcpServerSocketAcceptParams();
     params.sendStream = sendStream;
     params.receiveStream = receiveStream;
     params.clientSocket = clientSocket;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _tcpServerSocketMethodAcceptName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -375,18 +387,25 @@ class _TcpServerSocketStubControl
   String get serviceName => TcpServerSocket.serviceName;
 
 
-  static TcpServerSocketAcceptResponseParams _tcpServerSocketAcceptResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress remoteAddress) {
-    var result = new TcpServerSocketAcceptResponseParams();
-    result.result = result;
-    result.remoteAddress = remoteAddress;
-    return result;
+  Function _tcpServerSocketAcceptResponseParamsResponder(
+      int requestId) {
+  return (network_error_mojom.NetworkError result, net_address_mojom.NetAddress remoteAddress) {
+      var result = new TcpServerSocketAcceptResponseParams();
+      result.result = result;
+      result.remoteAddress = remoteAddress;
+      sendResponse(buildResponseWithId(
+          result,
+          _tcpServerSocketMethodAcceptName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -395,30 +414,12 @@ class _TcpServerSocketStubControl
       case _tcpServerSocketMethodAcceptName:
         var params = _TcpServerSocketAcceptParams.deserialize(
             message.payload);
-        var response = _impl.accept(params.sendStream,params.receiveStream,params.clientSocket,_tcpServerSocketAcceptResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _tcpServerSocketMethodAcceptName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _tcpServerSocketMethodAcceptName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.accept(params.sendStream, params.receiveStream, params.clientSocket, _tcpServerSocketAcceptResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   TcpServerSocket get impl => _impl;
@@ -472,8 +473,8 @@ class TcpServerSocketStub
   }
 
 
-  dynamic accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]) {
-    return impl.accept(sendStream,receiveStream,clientSocket,responseFactory);
+  void accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress remoteAddress)) {
+    return impl.accept(sendStream,receiveStream,clientSocket,callback);
   }
 }
 

@@ -17,6 +17,9 @@ class _FileCloseParams extends bindings.Struct {
 
   _FileCloseParams() : super(kVersions.last.size);
 
+  _FileCloseParams.init(
+  ) : super(kVersions.last.size);
+
   static _FileCloseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -75,6 +78,10 @@ class FileCloseResponseParams extends bindings.Struct {
   types_mojom.Error err = null;
 
   FileCloseResponseParams() : super(kVersions.last.size);
+
+  FileCloseResponseParams.init(
+    types_mojom.Error this.err
+  ) : super(kVersions.last.size);
 
   static FileCloseResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -153,6 +160,12 @@ class _FileReadParams extends bindings.Struct {
   int offset = 0;
 
   _FileReadParams() : super(kVersions.last.size);
+
+  _FileReadParams.init(
+    int this.numBytesToRead, 
+    types_mojom.Whence this.whence, 
+    int this.offset
+  ) : super(kVersions.last.size);
 
   static _FileReadParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -257,6 +270,11 @@ class FileReadResponseParams extends bindings.Struct {
 
   FileReadResponseParams() : super(kVersions.last.size);
 
+  FileReadResponseParams.init(
+    types_mojom.Error this.error, 
+    List<int> this.bytesRead
+  ) : super(kVersions.last.size);
+
   static FileReadResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -347,6 +365,12 @@ class _FileWriteParams extends bindings.Struct {
   types_mojom.Whence whence = null;
 
   _FileWriteParams() : super(kVersions.last.size);
+
+  _FileWriteParams.init(
+    List<int> this.bytesToWrite, 
+    int this.offset, 
+    types_mojom.Whence this.whence
+  ) : super(kVersions.last.size);
 
   static _FileWriteParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -451,6 +475,11 @@ class FileWriteResponseParams extends bindings.Struct {
 
   FileWriteResponseParams() : super(kVersions.last.size);
 
+  FileWriteResponseParams.init(
+    types_mojom.Error this.error, 
+    int this.numBytesWritten
+  ) : super(kVersions.last.size);
+
   static FileWriteResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -542,6 +571,13 @@ class _FileReadToStreamParams extends bindings.Struct {
   int numBytesToRead = 0;
 
   _FileReadToStreamParams() : super(kVersions.last.size);
+
+  _FileReadToStreamParams.init(
+    core.MojoDataPipeProducer this.source, 
+    types_mojom.Whence this.whence, 
+    int this.offset, 
+    int this.numBytesToRead
+  ) : super(kVersions.last.size);
 
   static _FileReadToStreamParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -654,6 +690,10 @@ class FileReadToStreamResponseParams extends bindings.Struct {
 
   FileReadToStreamResponseParams() : super(kVersions.last.size);
 
+  FileReadToStreamResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
+
   static FileReadToStreamResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -731,6 +771,12 @@ class _FileWriteFromStreamParams extends bindings.Struct {
   int offset = 0;
 
   _FileWriteFromStreamParams() : super(kVersions.last.size);
+
+  _FileWriteFromStreamParams.init(
+    core.MojoDataPipeConsumer this.sink, 
+    types_mojom.Whence this.whence, 
+    int this.offset
+  ) : super(kVersions.last.size);
 
   static _FileWriteFromStreamParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -831,6 +877,10 @@ class FileWriteFromStreamResponseParams extends bindings.Struct {
 
   FileWriteFromStreamResponseParams() : super(kVersions.last.size);
 
+  FileWriteFromStreamResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
+
   static FileWriteFromStreamResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -906,6 +956,9 @@ class _FileTellParams extends bindings.Struct {
 
   _FileTellParams() : super(kVersions.last.size);
 
+  _FileTellParams.init(
+  ) : super(kVersions.last.size);
+
   static _FileTellParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -965,6 +1018,11 @@ class FileTellResponseParams extends bindings.Struct {
   int position = 0;
 
   FileTellResponseParams() : super(kVersions.last.size);
+
+  FileTellResponseParams.init(
+    types_mojom.Error this.error, 
+    int this.position
+  ) : super(kVersions.last.size);
 
   static FileTellResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1056,6 +1114,11 @@ class _FileSeekParams extends bindings.Struct {
 
   _FileSeekParams() : super(kVersions.last.size);
 
+  _FileSeekParams.init(
+    int this.offset, 
+    types_mojom.Whence this.whence
+  ) : super(kVersions.last.size);
+
   static _FileSeekParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1146,6 +1209,11 @@ class FileSeekResponseParams extends bindings.Struct {
 
   FileSeekResponseParams() : super(kVersions.last.size);
 
+  FileSeekResponseParams.init(
+    types_mojom.Error this.error, 
+    int this.position
+  ) : super(kVersions.last.size);
+
   static FileSeekResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1234,6 +1302,9 @@ class _FileStatParams extends bindings.Struct {
 
   _FileStatParams() : super(kVersions.last.size);
 
+  _FileStatParams.init(
+  ) : super(kVersions.last.size);
+
   static _FileStatParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1293,6 +1364,11 @@ class FileStatResponseParams extends bindings.Struct {
   types_mojom.FileInformation fileInformation = null;
 
   FileStatResponseParams() : super(kVersions.last.size);
+
+  FileStatResponseParams.init(
+    types_mojom.Error this.error, 
+    types_mojom.FileInformation this.fileInformation
+  ) : super(kVersions.last.size);
 
   static FileStatResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1384,6 +1460,10 @@ class _FileTruncateParams extends bindings.Struct {
 
   _FileTruncateParams() : super(kVersions.last.size);
 
+  _FileTruncateParams.init(
+    int this.size
+  ) : super(kVersions.last.size);
+
   static _FileTruncateParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1455,6 +1535,10 @@ class FileTruncateResponseParams extends bindings.Struct {
   types_mojom.Error error = null;
 
   FileTruncateResponseParams() : super(kVersions.last.size);
+
+  FileTruncateResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
 
   static FileTruncateResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1532,6 +1616,11 @@ class _FileTouchParams extends bindings.Struct {
   types_mojom.TimespecOrNow mtime = null;
 
   _FileTouchParams() : super(kVersions.last.size);
+
+  _FileTouchParams.init(
+    types_mojom.TimespecOrNow this.atime, 
+    types_mojom.TimespecOrNow this.mtime
+  ) : super(kVersions.last.size);
 
   static _FileTouchParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1620,6 +1709,10 @@ class FileTouchResponseParams extends bindings.Struct {
 
   FileTouchResponseParams() : super(kVersions.last.size);
 
+  FileTouchResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
+
   static FileTouchResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1696,6 +1789,10 @@ class _FileDupParams extends bindings.Struct {
 
   _FileDupParams() : super(kVersions.last.size);
 
+  _FileDupParams.init(
+    FileInterfaceRequest this.file
+  ) : super(kVersions.last.size);
+
   static _FileDupParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1766,6 +1863,10 @@ class FileDupResponseParams extends bindings.Struct {
   types_mojom.Error error = null;
 
   FileDupResponseParams() : super(kVersions.last.size);
+
+  FileDupResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
 
   static FileDupResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1843,6 +1944,11 @@ class _FileReopenParams extends bindings.Struct {
   int openFlags = 0;
 
   _FileReopenParams() : super(kVersions.last.size);
+
+  _FileReopenParams.init(
+    FileInterfaceRequest this.file, 
+    int this.openFlags
+  ) : super(kVersions.last.size);
 
   static _FileReopenParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1927,6 +2033,10 @@ class FileReopenResponseParams extends bindings.Struct {
 
   FileReopenResponseParams() : super(kVersions.last.size);
 
+  FileReopenResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
+
   static FileReopenResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -2002,6 +2112,9 @@ class _FileAsBufferParams extends bindings.Struct {
 
   _FileAsBufferParams() : super(kVersions.last.size);
 
+  _FileAsBufferParams.init(
+  ) : super(kVersions.last.size);
+
   static _FileAsBufferParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -2061,6 +2174,11 @@ class FileAsBufferResponseParams extends bindings.Struct {
   core.MojoSharedBuffer buffer = null;
 
   FileAsBufferResponseParams() : super(kVersions.last.size);
+
+  FileAsBufferResponseParams.init(
+    types_mojom.Error this.error, 
+    core.MojoSharedBuffer this.buffer
+  ) : super(kVersions.last.size);
 
   static FileAsBufferResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -2150,6 +2268,11 @@ class _FileIoctlParams extends bindings.Struct {
 
   _FileIoctlParams() : super(kVersions.last.size);
 
+  _FileIoctlParams.init(
+    int this.request, 
+    List<int> this.inValues
+  ) : super(kVersions.last.size);
+
   static _FileIoctlParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -2235,6 +2358,11 @@ class FileIoctlResponseParams extends bindings.Struct {
   List<int> outValues = null;
 
   FileIoctlResponseParams() : super(kVersions.last.size);
+
+  FileIoctlResponseParams.init(
+    types_mojom.Error this.error, 
+    List<int> this.outValues
+  ) : super(kVersions.last.size);
 
   static FileIoctlResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -2332,14 +2460,17 @@ const int _fileMethodAsBufferName = 12;
 const int _fileMethodIoctlName = 13;
 
 class _FileServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class File {
@@ -2364,20 +2495,20 @@ abstract class File {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic close_([Function responseFactory = null]);
-  dynamic read(int numBytesToRead,int offset,types_mojom.Whence whence,[Function responseFactory = null]);
-  dynamic write(List<int> bytesToWrite,int offset,types_mojom.Whence whence,[Function responseFactory = null]);
-  dynamic readToStream(core.MojoDataPipeProducer source,int offset,types_mojom.Whence whence,int numBytesToRead,[Function responseFactory = null]);
-  dynamic writeFromStream(core.MojoDataPipeConsumer sink,int offset,types_mojom.Whence whence,[Function responseFactory = null]);
-  dynamic tell([Function responseFactory = null]);
-  dynamic seek(int offset,types_mojom.Whence whence,[Function responseFactory = null]);
-  dynamic stat([Function responseFactory = null]);
-  dynamic truncate(int size,[Function responseFactory = null]);
-  dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]);
-  dynamic dup(FileInterfaceRequest file,[Function responseFactory = null]);
-  dynamic reopen(FileInterfaceRequest file,int openFlags,[Function responseFactory = null]);
-  dynamic asBuffer([Function responseFactory = null]);
-  dynamic ioctl(int request,List<int> inValues,[Function responseFactory = null]);
+  void close_(void callback(types_mojom.Error err));
+  void read(int numBytesToRead,int offset,types_mojom.Whence whence,void callback(types_mojom.Error error, List<int> bytesRead));
+  void write(List<int> bytesToWrite,int offset,types_mojom.Whence whence,void callback(types_mojom.Error error, int numBytesWritten));
+  void readToStream(core.MojoDataPipeProducer source,int offset,types_mojom.Whence whence,int numBytesToRead,void callback(types_mojom.Error error));
+  void writeFromStream(core.MojoDataPipeConsumer sink,int offset,types_mojom.Whence whence,void callback(types_mojom.Error error));
+  void tell(void callback(types_mojom.Error error, int position));
+  void seek(int offset,types_mojom.Whence whence,void callback(types_mojom.Error error, int position));
+  void stat(void callback(types_mojom.Error error, types_mojom.FileInformation fileInformation));
+  void truncate(int size,void callback(types_mojom.Error error));
+  void touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,void callback(types_mojom.Error error));
+  void dup(FileInterfaceRequest file,void callback(types_mojom.Error error));
+  void reopen(FileInterfaceRequest file,int openFlags,void callback(types_mojom.Error error));
+  void asBuffer(void callback(types_mojom.Error error, core.MojoSharedBuffer buffer));
+  void ioctl(int request,List<int> inValues,void callback(types_mojom.Error error, List<int> outValues));
 }
 
 abstract class FileInterface
@@ -2427,18 +2558,14 @@ class _FileProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.err );
         break;
       case _fileMethodReadName:
         var r = FileReadResponseParams.deserialize(
@@ -2447,18 +2574,14 @@ class _FileProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error , r.bytesRead );
         break;
       case _fileMethodWriteName:
         var r = FileWriteResponseParams.deserialize(
@@ -2467,18 +2590,14 @@ class _FileProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error , r.numBytesWritten );
         break;
       case _fileMethodReadToStreamName:
         var r = FileReadToStreamResponseParams.deserialize(
@@ -2487,18 +2606,14 @@ class _FileProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       case _fileMethodWriteFromStreamName:
         var r = FileWriteFromStreamResponseParams.deserialize(
@@ -2507,18 +2622,14 @@ class _FileProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       case _fileMethodTellName:
         var r = FileTellResponseParams.deserialize(
@@ -2527,18 +2638,14 @@ class _FileProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error , r.position );
         break;
       case _fileMethodSeekName:
         var r = FileSeekResponseParams.deserialize(
@@ -2547,18 +2654,14 @@ class _FileProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error , r.position );
         break;
       case _fileMethodStatName:
         var r = FileStatResponseParams.deserialize(
@@ -2567,18 +2670,14 @@ class _FileProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error , r.fileInformation );
         break;
       case _fileMethodTruncateName:
         var r = FileTruncateResponseParams.deserialize(
@@ -2587,18 +2686,14 @@ class _FileProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       case _fileMethodTouchName:
         var r = FileTouchResponseParams.deserialize(
@@ -2607,18 +2702,14 @@ class _FileProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       case _fileMethodDupName:
         var r = FileDupResponseParams.deserialize(
@@ -2627,18 +2718,14 @@ class _FileProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       case _fileMethodReopenName:
         var r = FileReopenResponseParams.deserialize(
@@ -2647,18 +2734,14 @@ class _FileProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       case _fileMethodAsBufferName:
         var r = FileAsBufferResponseParams.deserialize(
@@ -2667,18 +2750,14 @@ class _FileProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error , r.buffer );
         break;
       case _fileMethodIoctlName:
         var r = FileIoctlResponseParams.deserialize(
@@ -2687,18 +2766,14 @@ class _FileProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error , r.outValues );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -2743,182 +2818,210 @@ class FileProxy
   }
 
 
-  dynamic close_([Function responseFactory = null]) {
+  void close_(void callback(types_mojom.Error err)) {
     if (impl != null) {
-      return new Future(() => impl.close_(_FileStubControl._fileCloseResponseParamsFactory));
+      impl.close_(callback);
+      return;
     }
     var params = new _FileCloseParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _fileMethodCloseName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic read(int numBytesToRead,int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
+  void read(int numBytesToRead,int offset,types_mojom.Whence whence,void callback(types_mojom.Error error, List<int> bytesRead)) {
     if (impl != null) {
-      return new Future(() => impl.read(numBytesToRead,offset,whence,_FileStubControl._fileReadResponseParamsFactory));
+      impl.read(numBytesToRead,offset,whence,callback);
+      return;
     }
     var params = new _FileReadParams();
     params.numBytesToRead = numBytesToRead;
     params.offset = offset;
     params.whence = whence;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _fileMethodReadName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic write(List<int> bytesToWrite,int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
+  void write(List<int> bytesToWrite,int offset,types_mojom.Whence whence,void callback(types_mojom.Error error, int numBytesWritten)) {
     if (impl != null) {
-      return new Future(() => impl.write(bytesToWrite,offset,whence,_FileStubControl._fileWriteResponseParamsFactory));
+      impl.write(bytesToWrite,offset,whence,callback);
+      return;
     }
     var params = new _FileWriteParams();
     params.bytesToWrite = bytesToWrite;
     params.offset = offset;
     params.whence = whence;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _fileMethodWriteName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic readToStream(core.MojoDataPipeProducer source,int offset,types_mojom.Whence whence,int numBytesToRead,[Function responseFactory = null]) {
+  void readToStream(core.MojoDataPipeProducer source,int offset,types_mojom.Whence whence,int numBytesToRead,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.readToStream(source,offset,whence,numBytesToRead,_FileStubControl._fileReadToStreamResponseParamsFactory));
+      impl.readToStream(source,offset,whence,numBytesToRead,callback);
+      return;
     }
     var params = new _FileReadToStreamParams();
     params.source = source;
     params.offset = offset;
     params.whence = whence;
     params.numBytesToRead = numBytesToRead;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _fileMethodReadToStreamName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic writeFromStream(core.MojoDataPipeConsumer sink,int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
+  void writeFromStream(core.MojoDataPipeConsumer sink,int offset,types_mojom.Whence whence,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.writeFromStream(sink,offset,whence,_FileStubControl._fileWriteFromStreamResponseParamsFactory));
+      impl.writeFromStream(sink,offset,whence,callback);
+      return;
     }
     var params = new _FileWriteFromStreamParams();
     params.sink = sink;
     params.offset = offset;
     params.whence = whence;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _fileMethodWriteFromStreamName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic tell([Function responseFactory = null]) {
+  void tell(void callback(types_mojom.Error error, int position)) {
     if (impl != null) {
-      return new Future(() => impl.tell(_FileStubControl._fileTellResponseParamsFactory));
+      impl.tell(callback);
+      return;
     }
     var params = new _FileTellParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _fileMethodTellName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic seek(int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
+  void seek(int offset,types_mojom.Whence whence,void callback(types_mojom.Error error, int position)) {
     if (impl != null) {
-      return new Future(() => impl.seek(offset,whence,_FileStubControl._fileSeekResponseParamsFactory));
+      impl.seek(offset,whence,callback);
+      return;
     }
     var params = new _FileSeekParams();
     params.offset = offset;
     params.whence = whence;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _fileMethodSeekName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic stat([Function responseFactory = null]) {
+  void stat(void callback(types_mojom.Error error, types_mojom.FileInformation fileInformation)) {
     if (impl != null) {
-      return new Future(() => impl.stat(_FileStubControl._fileStatResponseParamsFactory));
+      impl.stat(callback);
+      return;
     }
     var params = new _FileStatParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _fileMethodStatName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic truncate(int size,[Function responseFactory = null]) {
+  void truncate(int size,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.truncate(size,_FileStubControl._fileTruncateResponseParamsFactory));
+      impl.truncate(size,callback);
+      return;
     }
     var params = new _FileTruncateParams();
     params.size = size;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _fileMethodTruncateName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]) {
+  void touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.touch(atime,mtime,_FileStubControl._fileTouchResponseParamsFactory));
+      impl.touch(atime,mtime,callback);
+      return;
     }
     var params = new _FileTouchParams();
     params.atime = atime;
     params.mtime = mtime;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _fileMethodTouchName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic dup(FileInterfaceRequest file,[Function responseFactory = null]) {
+  void dup(FileInterfaceRequest file,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.dup(file,_FileStubControl._fileDupResponseParamsFactory));
+      impl.dup(file,callback);
+      return;
     }
     var params = new _FileDupParams();
     params.file = file;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _fileMethodDupName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic reopen(FileInterfaceRequest file,int openFlags,[Function responseFactory = null]) {
+  void reopen(FileInterfaceRequest file,int openFlags,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.reopen(file,openFlags,_FileStubControl._fileReopenResponseParamsFactory));
+      impl.reopen(file,openFlags,callback);
+      return;
     }
     var params = new _FileReopenParams();
     params.file = file;
     params.openFlags = openFlags;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _fileMethodReopenName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic asBuffer([Function responseFactory = null]) {
+  void asBuffer(void callback(types_mojom.Error error, core.MojoSharedBuffer buffer)) {
     if (impl != null) {
-      return new Future(() => impl.asBuffer(_FileStubControl._fileAsBufferResponseParamsFactory));
+      impl.asBuffer(callback);
+      return;
     }
     var params = new _FileAsBufferParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _fileMethodAsBufferName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic ioctl(int request,List<int> inValues,[Function responseFactory = null]) {
+  void ioctl(int request,List<int> inValues,void callback(types_mojom.Error error, List<int> outValues)) {
     if (impl != null) {
-      return new Future(() => impl.ioctl(request,inValues,_FileStubControl._fileIoctlResponseParamsFactory));
+      impl.ioctl(request,inValues,callback);
+      return;
     }
     var params = new _FileIoctlParams();
     params.request = request;
     params.inValues = inValues;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _fileMethodIoctlName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -2944,399 +3047,258 @@ class _FileStubControl
   String get serviceName => File.serviceName;
 
 
-  static FileCloseResponseParams _fileCloseResponseParamsFactory(types_mojom.Error err) {
-    var result = new FileCloseResponseParams();
-    result.err = err;
-    return result;
+  Function _fileCloseResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error err) {
+      var result = new FileCloseResponseParams();
+      result.err = err;
+      sendResponse(buildResponseWithId(
+          result,
+          _fileMethodCloseName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FileReadResponseParams _fileReadResponseParamsFactory(types_mojom.Error error, List<int> bytesRead) {
-    var result = new FileReadResponseParams();
-    result.error = error;
-    result.bytesRead = bytesRead;
-    return result;
+  Function _fileReadResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error, List<int> bytesRead) {
+      var result = new FileReadResponseParams();
+      result.error = error;
+      result.bytesRead = bytesRead;
+      sendResponse(buildResponseWithId(
+          result,
+          _fileMethodReadName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FileWriteResponseParams _fileWriteResponseParamsFactory(types_mojom.Error error, int numBytesWritten) {
-    var result = new FileWriteResponseParams();
-    result.error = error;
-    result.numBytesWritten = numBytesWritten;
-    return result;
+  Function _fileWriteResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error, int numBytesWritten) {
+      var result = new FileWriteResponseParams();
+      result.error = error;
+      result.numBytesWritten = numBytesWritten;
+      sendResponse(buildResponseWithId(
+          result,
+          _fileMethodWriteName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FileReadToStreamResponseParams _fileReadToStreamResponseParamsFactory(types_mojom.Error error) {
-    var result = new FileReadToStreamResponseParams();
-    result.error = error;
-    return result;
+  Function _fileReadToStreamResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new FileReadToStreamResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _fileMethodReadToStreamName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FileWriteFromStreamResponseParams _fileWriteFromStreamResponseParamsFactory(types_mojom.Error error) {
-    var result = new FileWriteFromStreamResponseParams();
-    result.error = error;
-    return result;
+  Function _fileWriteFromStreamResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new FileWriteFromStreamResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _fileMethodWriteFromStreamName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FileTellResponseParams _fileTellResponseParamsFactory(types_mojom.Error error, int position) {
-    var result = new FileTellResponseParams();
-    result.error = error;
-    result.position = position;
-    return result;
+  Function _fileTellResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error, int position) {
+      var result = new FileTellResponseParams();
+      result.error = error;
+      result.position = position;
+      sendResponse(buildResponseWithId(
+          result,
+          _fileMethodTellName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FileSeekResponseParams _fileSeekResponseParamsFactory(types_mojom.Error error, int position) {
-    var result = new FileSeekResponseParams();
-    result.error = error;
-    result.position = position;
-    return result;
+  Function _fileSeekResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error, int position) {
+      var result = new FileSeekResponseParams();
+      result.error = error;
+      result.position = position;
+      sendResponse(buildResponseWithId(
+          result,
+          _fileMethodSeekName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FileStatResponseParams _fileStatResponseParamsFactory(types_mojom.Error error, types_mojom.FileInformation fileInformation) {
-    var result = new FileStatResponseParams();
-    result.error = error;
-    result.fileInformation = fileInformation;
-    return result;
+  Function _fileStatResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error, types_mojom.FileInformation fileInformation) {
+      var result = new FileStatResponseParams();
+      result.error = error;
+      result.fileInformation = fileInformation;
+      sendResponse(buildResponseWithId(
+          result,
+          _fileMethodStatName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FileTruncateResponseParams _fileTruncateResponseParamsFactory(types_mojom.Error error) {
-    var result = new FileTruncateResponseParams();
-    result.error = error;
-    return result;
+  Function _fileTruncateResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new FileTruncateResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _fileMethodTruncateName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FileTouchResponseParams _fileTouchResponseParamsFactory(types_mojom.Error error) {
-    var result = new FileTouchResponseParams();
-    result.error = error;
-    return result;
+  Function _fileTouchResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new FileTouchResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _fileMethodTouchName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FileDupResponseParams _fileDupResponseParamsFactory(types_mojom.Error error) {
-    var result = new FileDupResponseParams();
-    result.error = error;
-    return result;
+  Function _fileDupResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new FileDupResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _fileMethodDupName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FileReopenResponseParams _fileReopenResponseParamsFactory(types_mojom.Error error) {
-    var result = new FileReopenResponseParams();
-    result.error = error;
-    return result;
+  Function _fileReopenResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new FileReopenResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _fileMethodReopenName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FileAsBufferResponseParams _fileAsBufferResponseParamsFactory(types_mojom.Error error, core.MojoSharedBuffer buffer) {
-    var result = new FileAsBufferResponseParams();
-    result.error = error;
-    result.buffer = buffer;
-    return result;
+  Function _fileAsBufferResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error, core.MojoSharedBuffer buffer) {
+      var result = new FileAsBufferResponseParams();
+      result.error = error;
+      result.buffer = buffer;
+      sendResponse(buildResponseWithId(
+          result,
+          _fileMethodAsBufferName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FileIoctlResponseParams _fileIoctlResponseParamsFactory(types_mojom.Error error, List<int> outValues) {
-    var result = new FileIoctlResponseParams();
-    result.error = error;
-    result.outValues = outValues;
-    return result;
+  Function _fileIoctlResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error, List<int> outValues) {
+      var result = new FileIoctlResponseParams();
+      result.error = error;
+      result.outValues = outValues;
+      sendResponse(buildResponseWithId(
+          result,
+          _fileMethodIoctlName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _fileMethodCloseName:
-        var response = _impl.close_(_fileCloseResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _fileMethodCloseName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _fileMethodCloseName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.close_(_fileCloseResponseParamsResponder(message.header.requestId));
         break;
       case _fileMethodReadName:
         var params = _FileReadParams.deserialize(
             message.payload);
-        var response = _impl.read(params.numBytesToRead,params.offset,params.whence,_fileReadResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _fileMethodReadName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _fileMethodReadName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.read(params.numBytesToRead, params.offset, params.whence, _fileReadResponseParamsResponder(message.header.requestId));
         break;
       case _fileMethodWriteName:
         var params = _FileWriteParams.deserialize(
             message.payload);
-        var response = _impl.write(params.bytesToWrite,params.offset,params.whence,_fileWriteResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _fileMethodWriteName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _fileMethodWriteName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.write(params.bytesToWrite, params.offset, params.whence, _fileWriteResponseParamsResponder(message.header.requestId));
         break;
       case _fileMethodReadToStreamName:
         var params = _FileReadToStreamParams.deserialize(
             message.payload);
-        var response = _impl.readToStream(params.source,params.offset,params.whence,params.numBytesToRead,_fileReadToStreamResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _fileMethodReadToStreamName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _fileMethodReadToStreamName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.readToStream(params.source, params.offset, params.whence, params.numBytesToRead, _fileReadToStreamResponseParamsResponder(message.header.requestId));
         break;
       case _fileMethodWriteFromStreamName:
         var params = _FileWriteFromStreamParams.deserialize(
             message.payload);
-        var response = _impl.writeFromStream(params.sink,params.offset,params.whence,_fileWriteFromStreamResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _fileMethodWriteFromStreamName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _fileMethodWriteFromStreamName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.writeFromStream(params.sink, params.offset, params.whence, _fileWriteFromStreamResponseParamsResponder(message.header.requestId));
         break;
       case _fileMethodTellName:
-        var response = _impl.tell(_fileTellResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _fileMethodTellName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _fileMethodTellName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.tell(_fileTellResponseParamsResponder(message.header.requestId));
         break;
       case _fileMethodSeekName:
         var params = _FileSeekParams.deserialize(
             message.payload);
-        var response = _impl.seek(params.offset,params.whence,_fileSeekResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _fileMethodSeekName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _fileMethodSeekName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.seek(params.offset, params.whence, _fileSeekResponseParamsResponder(message.header.requestId));
         break;
       case _fileMethodStatName:
-        var response = _impl.stat(_fileStatResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _fileMethodStatName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _fileMethodStatName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.stat(_fileStatResponseParamsResponder(message.header.requestId));
         break;
       case _fileMethodTruncateName:
         var params = _FileTruncateParams.deserialize(
             message.payload);
-        var response = _impl.truncate(params.size,_fileTruncateResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _fileMethodTruncateName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _fileMethodTruncateName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.truncate(params.size, _fileTruncateResponseParamsResponder(message.header.requestId));
         break;
       case _fileMethodTouchName:
         var params = _FileTouchParams.deserialize(
             message.payload);
-        var response = _impl.touch(params.atime,params.mtime,_fileTouchResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _fileMethodTouchName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _fileMethodTouchName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.touch(params.atime, params.mtime, _fileTouchResponseParamsResponder(message.header.requestId));
         break;
       case _fileMethodDupName:
         var params = _FileDupParams.deserialize(
             message.payload);
-        var response = _impl.dup(params.file,_fileDupResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _fileMethodDupName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _fileMethodDupName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.dup(params.file, _fileDupResponseParamsResponder(message.header.requestId));
         break;
       case _fileMethodReopenName:
         var params = _FileReopenParams.deserialize(
             message.payload);
-        var response = _impl.reopen(params.file,params.openFlags,_fileReopenResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _fileMethodReopenName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _fileMethodReopenName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.reopen(params.file, params.openFlags, _fileReopenResponseParamsResponder(message.header.requestId));
         break;
       case _fileMethodAsBufferName:
-        var response = _impl.asBuffer(_fileAsBufferResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _fileMethodAsBufferName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _fileMethodAsBufferName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.asBuffer(_fileAsBufferResponseParamsResponder(message.header.requestId));
         break;
       case _fileMethodIoctlName:
         var params = _FileIoctlParams.deserialize(
             message.payload);
-        var response = _impl.ioctl(params.request,params.inValues,_fileIoctlResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _fileMethodIoctlName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _fileMethodIoctlName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.ioctl(params.request, params.inValues, _fileIoctlResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   File get impl => _impl;
@@ -3390,47 +3352,47 @@ class FileStub
   }
 
 
-  dynamic close_([Function responseFactory = null]) {
-    return impl.close_(responseFactory);
+  void close_(void callback(types_mojom.Error err)) {
+    return impl.close_(callback);
   }
-  dynamic read(int numBytesToRead,int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
-    return impl.read(numBytesToRead,offset,whence,responseFactory);
+  void read(int numBytesToRead,int offset,types_mojom.Whence whence,void callback(types_mojom.Error error, List<int> bytesRead)) {
+    return impl.read(numBytesToRead,offset,whence,callback);
   }
-  dynamic write(List<int> bytesToWrite,int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
-    return impl.write(bytesToWrite,offset,whence,responseFactory);
+  void write(List<int> bytesToWrite,int offset,types_mojom.Whence whence,void callback(types_mojom.Error error, int numBytesWritten)) {
+    return impl.write(bytesToWrite,offset,whence,callback);
   }
-  dynamic readToStream(core.MojoDataPipeProducer source,int offset,types_mojom.Whence whence,int numBytesToRead,[Function responseFactory = null]) {
-    return impl.readToStream(source,offset,whence,numBytesToRead,responseFactory);
+  void readToStream(core.MojoDataPipeProducer source,int offset,types_mojom.Whence whence,int numBytesToRead,void callback(types_mojom.Error error)) {
+    return impl.readToStream(source,offset,whence,numBytesToRead,callback);
   }
-  dynamic writeFromStream(core.MojoDataPipeConsumer sink,int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
-    return impl.writeFromStream(sink,offset,whence,responseFactory);
+  void writeFromStream(core.MojoDataPipeConsumer sink,int offset,types_mojom.Whence whence,void callback(types_mojom.Error error)) {
+    return impl.writeFromStream(sink,offset,whence,callback);
   }
-  dynamic tell([Function responseFactory = null]) {
-    return impl.tell(responseFactory);
+  void tell(void callback(types_mojom.Error error, int position)) {
+    return impl.tell(callback);
   }
-  dynamic seek(int offset,types_mojom.Whence whence,[Function responseFactory = null]) {
-    return impl.seek(offset,whence,responseFactory);
+  void seek(int offset,types_mojom.Whence whence,void callback(types_mojom.Error error, int position)) {
+    return impl.seek(offset,whence,callback);
   }
-  dynamic stat([Function responseFactory = null]) {
-    return impl.stat(responseFactory);
+  void stat(void callback(types_mojom.Error error, types_mojom.FileInformation fileInformation)) {
+    return impl.stat(callback);
   }
-  dynamic truncate(int size,[Function responseFactory = null]) {
-    return impl.truncate(size,responseFactory);
+  void truncate(int size,void callback(types_mojom.Error error)) {
+    return impl.truncate(size,callback);
   }
-  dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]) {
-    return impl.touch(atime,mtime,responseFactory);
+  void touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,void callback(types_mojom.Error error)) {
+    return impl.touch(atime,mtime,callback);
   }
-  dynamic dup(FileInterfaceRequest file,[Function responseFactory = null]) {
-    return impl.dup(file,responseFactory);
+  void dup(FileInterfaceRequest file,void callback(types_mojom.Error error)) {
+    return impl.dup(file,callback);
   }
-  dynamic reopen(FileInterfaceRequest file,int openFlags,[Function responseFactory = null]) {
-    return impl.reopen(file,openFlags,responseFactory);
+  void reopen(FileInterfaceRequest file,int openFlags,void callback(types_mojom.Error error)) {
+    return impl.reopen(file,openFlags,callback);
   }
-  dynamic asBuffer([Function responseFactory = null]) {
-    return impl.asBuffer(responseFactory);
+  void asBuffer(void callback(types_mojom.Error error, core.MojoSharedBuffer buffer)) {
+    return impl.asBuffer(callback);
   }
-  dynamic ioctl(int request,List<int> inValues,[Function responseFactory = null]) {
-    return impl.ioctl(request,inValues,responseFactory);
+  void ioctl(int request,List<int> inValues,void callback(types_mojom.Error error, List<int> outValues)) {
+    return impl.ioctl(request,inValues,callback);
   }
 }
 

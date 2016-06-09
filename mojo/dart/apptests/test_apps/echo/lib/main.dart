@@ -17,20 +17,20 @@ class EchoServiceImpl implements EchoService {
     _service = new EchoServiceInterface.fromEndpoint(endpoint, this);
   }
 
-  dynamic echoString(String value, [Function responseFactory]) {
+  void echoString(String value, void callback(String value)) {
     if (value == "quit") {
       _service.close();
     }
-    return responseFactory(value);
+    callback(value);
   }
 
-  dynamic delayedEchoString(String value, int millis,
-      [Function responseFactory]) {
+  void delayedEchoString(
+      String value, int millis, void callback(String value)) {
     if (value == "quit") {
       _service.close();
     }
-    return new Future.delayed(
-        new Duration(milliseconds: millis), () => responseFactory(value));
+    new Future.delayed(
+        new Duration(milliseconds: millis), () => callback(value));
   }
 
   void swap() {

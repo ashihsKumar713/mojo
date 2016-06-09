@@ -20,6 +20,11 @@ class _ContentHandlerStartApplicationParams extends bindings.Struct {
 
   _ContentHandlerStartApplicationParams() : super(kVersions.last.size);
 
+  _ContentHandlerStartApplicationParams.init(
+    application_mojom.ApplicationInterfaceRequest this.application, 
+    url_response_mojom.UrlResponse this.response
+  ) : super(kVersions.last.size);
+
   static _ContentHandlerStartApplicationParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -98,14 +103,17 @@ class _ContentHandlerStartApplicationParams extends bindings.Struct {
 const int _contentHandlerMethodStartApplicationName = 0;
 
 class _ContentHandlerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ContentHandler {
@@ -256,11 +264,11 @@ class _ContentHandlerStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -275,7 +283,6 @@ class _ContentHandlerStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ContentHandler get impl => _impl;

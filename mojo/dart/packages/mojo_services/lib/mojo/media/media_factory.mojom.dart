@@ -26,6 +26,11 @@ class _MediaFactoryCreatePlayerParams extends bindings.Struct {
 
   _MediaFactoryCreatePlayerParams() : super(kVersions.last.size);
 
+  _MediaFactoryCreatePlayerParams.init(
+    seeking_reader_mojom.SeekingReaderInterface this.reader, 
+    media_player_mojom.MediaPlayerInterfaceRequest this.player
+  ) : super(kVersions.last.size);
+
   static _MediaFactoryCreatePlayerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -110,6 +115,12 @@ class _MediaFactoryCreateSourceParams extends bindings.Struct {
   media_source_mojom.MediaSourceInterfaceRequest source = null;
 
   _MediaFactoryCreateSourceParams() : super(kVersions.last.size);
+
+  _MediaFactoryCreateSourceParams.init(
+    seeking_reader_mojom.SeekingReaderInterface this.reader, 
+    List<media_types_mojom.MediaTypeSet> this.allowedMediaTypes, 
+    media_source_mojom.MediaSourceInterfaceRequest this.source
+  ) : super(kVersions.last.size);
 
   static _MediaFactoryCreateSourceParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -226,6 +237,12 @@ class _MediaFactoryCreateSinkParams extends bindings.Struct {
 
   _MediaFactoryCreateSinkParams() : super(kVersions.last.size);
 
+  _MediaFactoryCreateSinkParams.init(
+    String this.destinationUrl, 
+    media_types_mojom.MediaType this.mediaType, 
+    media_sink_mojom.MediaSinkInterfaceRequest this.sink
+  ) : super(kVersions.last.size);
+
   static _MediaFactoryCreateSinkParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -323,6 +340,11 @@ class _MediaFactoryCreateDemuxParams extends bindings.Struct {
 
   _MediaFactoryCreateDemuxParams() : super(kVersions.last.size);
 
+  _MediaFactoryCreateDemuxParams.init(
+    seeking_reader_mojom.SeekingReaderInterface this.reader, 
+    media_demux_mojom.MediaDemuxInterfaceRequest this.demux
+  ) : super(kVersions.last.size);
+
   static _MediaFactoryCreateDemuxParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -406,6 +428,11 @@ class _MediaFactoryCreateDecoderParams extends bindings.Struct {
   media_type_converter_mojom.MediaTypeConverterInterfaceRequest decoder = null;
 
   _MediaFactoryCreateDecoderParams() : super(kVersions.last.size);
+
+  _MediaFactoryCreateDecoderParams.init(
+    media_types_mojom.MediaType this.inputMediaType, 
+    media_type_converter_mojom.MediaTypeConverterInterfaceRequest this.decoder
+  ) : super(kVersions.last.size);
 
   static _MediaFactoryCreateDecoderParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -492,6 +519,11 @@ class _MediaFactoryCreateNetworkReaderParams extends bindings.Struct {
 
   _MediaFactoryCreateNetworkReaderParams() : super(kVersions.last.size);
 
+  _MediaFactoryCreateNetworkReaderParams.init(
+    String this.url, 
+    seeking_reader_mojom.SeekingReaderInterfaceRequest this.reader
+  ) : super(kVersions.last.size);
+
   static _MediaFactoryCreateNetworkReaderParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -575,6 +607,10 @@ class _MediaFactoryCreateTimelineControllerParams extends bindings.Struct {
 
   _MediaFactoryCreateTimelineControllerParams() : super(kVersions.last.size);
 
+  _MediaFactoryCreateTimelineControllerParams.init(
+    timeline_controller_mojom.MediaTimelineControllerInterfaceRequest this.timelineController
+  ) : super(kVersions.last.size);
+
   static _MediaFactoryCreateTimelineControllerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -646,14 +682,17 @@ const int _mediaFactoryMethodCreateNetworkReaderName = 5;
 const int _mediaFactoryMethodCreateTimelineControllerName = 6;
 
 class _MediaFactoryServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class MediaFactory {
@@ -901,11 +940,11 @@ class _MediaFactoryStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -950,7 +989,6 @@ class _MediaFactoryStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   MediaFactory get impl => _impl;

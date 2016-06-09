@@ -18,6 +18,11 @@ class _TraceProviderStartTracingParams extends bindings.Struct {
 
   _TraceProviderStartTracingParams() : super(kVersions.last.size);
 
+  _TraceProviderStartTracingParams.init(
+    String this.categories, 
+    TraceRecorderInterface this.recorder
+  ) : super(kVersions.last.size);
+
   static _TraceProviderStartTracingParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -100,6 +105,9 @@ class _TraceProviderStopTracingParams extends bindings.Struct {
 
   _TraceProviderStopTracingParams() : super(kVersions.last.size);
 
+  _TraceProviderStopTracingParams.init(
+  ) : super(kVersions.last.size);
+
   static _TraceProviderStopTracingParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -158,6 +166,10 @@ class _TraceRecorderRecordParams extends bindings.Struct {
   String json = null;
 
   _TraceRecorderRecordParams() : super(kVersions.last.size);
+
+  _TraceRecorderRecordParams.init(
+    String this.json
+  ) : super(kVersions.last.size);
 
   static _TraceRecorderRecordParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -231,6 +243,11 @@ class _TraceCollectorStartParams extends bindings.Struct {
   String categories = null;
 
   _TraceCollectorStartParams() : super(kVersions.last.size);
+
+  _TraceCollectorStartParams.init(
+    core.MojoDataPipeProducer this.stream, 
+    String this.categories
+  ) : super(kVersions.last.size);
 
   static _TraceCollectorStartParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -314,6 +331,9 @@ class _TraceCollectorStopAndFlushParams extends bindings.Struct {
 
   _TraceCollectorStopAndFlushParams() : super(kVersions.last.size);
 
+  _TraceCollectorStopAndFlushParams.init(
+  ) : super(kVersions.last.size);
+
   static _TraceCollectorStopAndFlushParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -368,14 +388,17 @@ const int _traceProviderMethodStartTracingName = 0;
 const int _traceProviderMethodStopTracingName = 1;
 
 class _TraceProviderServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class TraceProvider {
@@ -540,11 +563,11 @@ class _TraceProviderStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -562,7 +585,6 @@ class _TraceProviderStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   TraceProvider get impl => _impl;
@@ -627,14 +649,17 @@ class TraceProviderStub
 const int _traceRecorderMethodRecordName = 0;
 
 class _TraceRecorderServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class TraceRecorder {
@@ -784,11 +809,11 @@ class _TraceRecorderStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -803,7 +828,6 @@ class _TraceRecorderStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   TraceRecorder get impl => _impl;
@@ -866,14 +890,17 @@ const int _traceCollectorMethodStartName = 0;
 const int _traceCollectorMethodStopAndFlushName = 1;
 
 class _TraceCollectorServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class TraceCollector {
@@ -1038,11 +1065,11 @@ class _TraceCollectorStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1060,7 +1087,6 @@ class _TraceCollectorStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   TraceCollector get impl => _impl;

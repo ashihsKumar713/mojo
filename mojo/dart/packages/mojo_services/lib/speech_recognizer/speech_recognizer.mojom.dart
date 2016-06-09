@@ -119,6 +119,11 @@ class UtteranceCandidate extends bindings.Struct {
 
   UtteranceCandidate() : super(kVersions.last.size);
 
+  UtteranceCandidate.init(
+    String this.text, 
+    double this.confidenceScore
+  ) : super(kVersions.last.size);
+
   static UtteranceCandidate deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -204,6 +209,10 @@ class _SpeechRecognizerListenerOnRecognizerErrorParams extends bindings.Struct {
 
   _SpeechRecognizerListenerOnRecognizerErrorParams() : super(kVersions.last.size);
 
+  _SpeechRecognizerListenerOnRecognizerErrorParams.init(
+    Error this.errorCode
+  ) : super(kVersions.last.size);
+
   static _SpeechRecognizerListenerOnRecognizerErrorParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -280,6 +289,11 @@ class _SpeechRecognizerListenerOnResultsParams extends bindings.Struct {
   bool complete = false;
 
   _SpeechRecognizerListenerOnResultsParams() : super(kVersions.last.size);
+
+  _SpeechRecognizerListenerOnResultsParams.init(
+    List<UtteranceCandidate> this.results, 
+    bool this.complete
+  ) : super(kVersions.last.size);
 
   static _SpeechRecognizerListenerOnResultsParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -382,6 +396,10 @@ class _SpeechRecognizerListenerOnSoundLevelChangedParams extends bindings.Struct
 
   _SpeechRecognizerListenerOnSoundLevelChangedParams() : super(kVersions.last.size);
 
+  _SpeechRecognizerListenerOnSoundLevelChangedParams.init(
+    double this.rmsDb
+  ) : super(kVersions.last.size);
+
   static _SpeechRecognizerListenerOnSoundLevelChangedParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -454,6 +472,10 @@ class _SpeechRecognizerServiceListenParams extends bindings.Struct {
 
   _SpeechRecognizerServiceListenParams() : super(kVersions.last.size);
 
+  _SpeechRecognizerServiceListenParams.init(
+    SpeechRecognizerListenerInterface this.listener
+  ) : super(kVersions.last.size);
+
   static _SpeechRecognizerServiceListenParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -524,6 +546,9 @@ class _SpeechRecognizerServiceStopListeningParams extends bindings.Struct {
 
   _SpeechRecognizerServiceStopListeningParams() : super(kVersions.last.size);
 
+  _SpeechRecognizerServiceStopListeningParams.init(
+  ) : super(kVersions.last.size);
+
   static _SpeechRecognizerServiceStopListeningParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -579,14 +604,17 @@ const int _speechRecognizerListenerMethodOnResultsName = 1;
 const int _speechRecognizerListenerMethodOnSoundLevelChangedName = 2;
 
 class _SpeechRecognizerListenerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class SpeechRecognizerListener {
@@ -767,11 +795,11 @@ class _SpeechRecognizerListenerStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -796,7 +824,6 @@ class _SpeechRecognizerListenerStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   SpeechRecognizerListener get impl => _impl;
@@ -865,14 +892,17 @@ const int _speechRecognizerServiceMethodListenName = 0;
 const int _speechRecognizerServiceMethodStopListeningName = 1;
 
 class _SpeechRecognizerServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class SpeechRecognizerService {
@@ -1036,11 +1066,11 @@ class _SpeechRecognizerServiceStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1058,7 +1088,6 @@ class _SpeechRecognizerServiceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   SpeechRecognizerService get impl => _impl;

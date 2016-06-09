@@ -207,6 +207,11 @@ class Point extends bindings.Struct {
 
   Point() : super(kVersions.last.size);
 
+  Point.init(
+    int this.x, 
+    int this.y
+  ) : super(kVersions.last.size);
+
   static Point deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -291,6 +296,9 @@ class _ImportedInterfaceDoSomethingParams extends bindings.Struct {
 
   _ImportedInterfaceDoSomethingParams() : super(kVersions.last.size);
 
+  _ImportedInterfaceDoSomethingParams.init(
+  ) : super(kVersions.last.size);
+
   static _ImportedInterfaceDoSomethingParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -344,14 +352,17 @@ class _ImportedInterfaceDoSomethingParams extends bindings.Struct {
 const int _importedInterfaceMethodDoSomethingName = 0;
 
 class _ImportedInterfaceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ImportedInterface {
@@ -500,11 +511,11 @@ class _ImportedInterfaceStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -517,7 +528,6 @@ class _ImportedInterfaceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ImportedInterface get impl => _impl;
@@ -589,7 +599,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/8yYzW7TQBCA10kLKU2LEf1vARcKBBBxjxWnViUiERWK2hxSLv2LIUb1D7YjwRvwGDwKj9Mjx95gHc9ie7yb2ChxutJoY+84u/PtzHi8KyRoMvTb0OP7rC+hHusRKfyfaSoVuF2H3ob+B/Q/oX9G5SGV1nGzdvK+dvxGN2zL8bROdc+0vK7mHHXPbI2QV1TnCVevAT8apqc5n84utP7/PqKyzNVvWrrpDRgPJnxBxza548eaF19av7XBbhnZ7V8XqfyaCq99VNulOD97Nn5ducfnfA39Lom3bXT/D7Qm4bcFKmUq2JQHVBapCLYhsZ77YPdHKodU1K5laKrT61iGbmqOalhfLNV1LoIfdu/8Ur9QdbZVrnqumx3d/OyqnuZ6ruqeGfaldhLMXvWfMYJ5FODI5t8Ff2sWgBcJ9WJ+C3p3MnJrC7j52zLj21rbb+19eHdQg/vPwee43KqhNubn70MhB37MDxkHzAu32SG8dlL62TyVW1T2G4f7Pqwt+ntDyIlpJf1sMSdOw7iUR8RFhlzaOmz0HYPlQT4XppXksjRhLrIUvxZxqSMupwIuqxBj/KxOyGMqa1FOAkXMaQt8f9yc8LwrEb+R0P5Lkfcp5nsl4CPiSyJ8efdJJF/7sf3WOqIAvC61ibvupzn5lYI4XaE+jb1+2xHYuw42R+x97Whfe3RV/DoG2rjtLgn8YAWto0T4nH6z54vZ8tGugNMcvMeD6ijIK/PROIMBzMt/593OKa4K0bpUitu9g9Y1TdK1tPFUETw/A/v3TVAXK7CH4+aTlcPUf3CQUnD4LuCwmROHQfFU4ORlOWW+yRpHrF5OxBEM4Plnc6qjK7D3Cqqj61BHN4uD62n2EpNG9B0iqqcV2KM4t7CQxvzKOdfRUso6upDRr+op6+jEdxoqoDGfuRtSPxdHxAPXz+x7HvH4VzhjHvMT4iHDvNcj5lGGuD7YO2pF6x7Egw0neNydUL2noDgR7avonGZc5yPLwASf9iTyElLA61md0PlIHRJUe8j5CKujFjJyO82Yz1/Ct5uIWxU9gDmu5ZzfF1Lm98UxnZMkzpMwL1DEnNZvSJ5fysilnTLPs3NZIZfwqITrRxs58fkbAAD//3QI2/tgFwAA";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/8yYzW7TQBCA10kLKU1LEP1JfwAXChQQWcSp4tSqRCSiQlGbQ3qhTVO3NkriYDsS8AQ8Rh+FR+EReuQG63iW2OPdxIbUyUqjjb3jeOfbmdnx5onXctC/gh7f530G9ViPKP3/mWayBbdL0Heg/w79JfRPmNxnUj2qFI/fF4/eGK2OaTnaWWG3bTq6Zh3q9Y5GyAum80ioV4Yf5bajWef1htb73wdMloX6FdNoOwPGvRc+Y2MbwvEjzQlOrddqYHcO2e1ep5n8nOpfu6j0TJDfj9ng9eWdwZx3SLDx9eP3f0OrEHFbYJJlgk25x2SRiWQZQvO5C3afM/nIhHZtizbNRr1JL0zzoqlR3Wxp9JtVpy3zk/ma2laj94t2uqdNo0ENvmw2PTXaZ0b7wqaOZjs2teutTlM79mZScJ9pEaICTz6PEvA4SXk99zsV+zHo3SLx+NUk/NzlmWFyUNyr7n54t1+E+0/B94T8Cn1tzNFdj1SCHLlfch6YG26zQ7htR/S7eSY3mOyVD/ZcaJvs97qUF9cK+91iwryG8cmOiE8Ocmz1oNxzFJ4fxXy4VpjP0oTwySvBaxmfEuJzIuGzArEnzvqEPGSy6uclUcS8NiEWkuKF35/3+ZGC/EHx7buY85WEk4wz8XEW3Se+vO7G/FvzkNnt6MweIbfHCfuZinhdoT6K3W7blti9Brb77H5paZ+7bEbi/RhaUvZnJH6RR/PJID/h47+4H6Xj5asdCa852P+9qsrLO/P++IMBzM3dI28mHG8pf7yhOmobzW+aRGtR42xL8vwMrOMXSV2twlomxSkuj6l/4KFE4PFVwmMjYR6D4iwlyN+5iPkobnzx+jsUXzCA3z+bcF2+Bb6gorq8BnW5nh5cn2eUwOfNf3/fyOpzFdYqyK9fmGOO2THV5UrEujwV089KEevy0HcgKsgxp7kJq8fTI+KC63F+boC4/C3EMZf5MXPJcR9RRsslC/G+v3tY9ddNiAsfDnG5Pea6UUXxI1tn2fnQdZ3LLAMbfMoUyltIAc9nZcznMhXgoQ85l+F12ELMvH8SM+8/h29DGb8CegDzXB3TPrAQcR9YvKbzmdB5FuYGipjX2oTtB0sx+dQi7gf8nFjKp39EI/Sr9YQ5/QkAAP//SWnGfvgXAAA=";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

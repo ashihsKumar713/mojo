@@ -18,6 +18,10 @@ class _NativeViewportEventDispatcherOnEventParams extends bindings.Struct {
 
   _NativeViewportEventDispatcherOnEventParams() : super(kVersions.last.size);
 
+  _NativeViewportEventDispatcherOnEventParams.init(
+    input_events_mojom.Event this.event
+  ) : super(kVersions.last.size);
+
   static _NativeViewportEventDispatcherOnEventParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -90,6 +94,9 @@ class NativeViewportEventDispatcherOnEventResponseParams extends bindings.Struct
 
   NativeViewportEventDispatcherOnEventResponseParams() : super(kVersions.last.size);
 
+  NativeViewportEventDispatcherOnEventResponseParams.init(
+  ) : super(kVersions.last.size);
+
   static NativeViewportEventDispatcherOnEventResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -143,14 +150,17 @@ class NativeViewportEventDispatcherOnEventResponseParams extends bindings.Struct
 const int _nativeViewportEventDispatcherMethodOnEventName = 0;
 
 class _NativeViewportEventDispatcherServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class NativeViewportEventDispatcher {
@@ -175,7 +185,7 @@ abstract class NativeViewportEventDispatcher {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic onEvent(input_events_mojom.Event event,[Function responseFactory = null]);
+  void onEvent(input_events_mojom.Event event,void callback());
 }
 
 abstract class NativeViewportEventDispatcherInterface
@@ -225,18 +235,14 @@ class _NativeViewportEventDispatcherProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -281,17 +287,19 @@ class NativeViewportEventDispatcherProxy
   }
 
 
-  dynamic onEvent(input_events_mojom.Event event,[Function responseFactory = null]) {
+  void onEvent(input_events_mojom.Event event,void callback()) {
     if (impl != null) {
-      return new Future(() => impl.onEvent(event,_NativeViewportEventDispatcherStubControl._nativeViewportEventDispatcherOnEventResponseParamsFactory));
+      impl.onEvent(event,callback);
+      return;
     }
     var params = new _NativeViewportEventDispatcherOnEventParams();
     params.event = event;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _nativeViewportEventDispatcherMethodOnEventName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -317,16 +325,23 @@ class _NativeViewportEventDispatcherStubControl
   String get serviceName => NativeViewportEventDispatcher.serviceName;
 
 
-  static NativeViewportEventDispatcherOnEventResponseParams _nativeViewportEventDispatcherOnEventResponseParamsFactory() {
-    var result = new NativeViewportEventDispatcherOnEventResponseParams();
-    return result;
+  Function _nativeViewportEventDispatcherOnEventResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new NativeViewportEventDispatcherOnEventResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _nativeViewportEventDispatcherMethodOnEventName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -335,30 +350,12 @@ class _NativeViewportEventDispatcherStubControl
       case _nativeViewportEventDispatcherMethodOnEventName:
         var params = _NativeViewportEventDispatcherOnEventParams.deserialize(
             message.payload);
-        var response = _impl.onEvent(params.event,_nativeViewportEventDispatcherOnEventResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _nativeViewportEventDispatcherMethodOnEventName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _nativeViewportEventDispatcherMethodOnEventName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.onEvent(params.event, _nativeViewportEventDispatcherOnEventResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   NativeViewportEventDispatcher get impl => _impl;
@@ -412,8 +409,8 @@ class NativeViewportEventDispatcherStub
   }
 
 
-  dynamic onEvent(input_events_mojom.Event event,[Function responseFactory = null]) {
-    return impl.onEvent(event,responseFactory);
+  void onEvent(input_events_mojom.Event event,void callback()) {
+    return impl.onEvent(event,callback);
   }
 }
 

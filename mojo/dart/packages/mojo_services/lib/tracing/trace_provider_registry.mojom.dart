@@ -18,6 +18,10 @@ class _TraceProviderRegistryRegisterTraceProviderParams extends bindings.Struct 
 
   _TraceProviderRegistryRegisterTraceProviderParams() : super(kVersions.last.size);
 
+  _TraceProviderRegistryRegisterTraceProviderParams.init(
+    tracing_mojom.TraceProviderInterface this.traceProvider
+  ) : super(kVersions.last.size);
+
   static _TraceProviderRegistryRegisterTraceProviderParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -83,14 +87,17 @@ class _TraceProviderRegistryRegisterTraceProviderParams extends bindings.Struct 
 const int _traceProviderRegistryMethodRegisterTraceProviderName = 0;
 
 class _TraceProviderRegistryServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class TraceProviderRegistry {
@@ -240,11 +247,11 @@ class _TraceProviderRegistryStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -259,7 +266,6 @@ class _TraceProviderRegistryStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   TraceProviderRegistry get impl => _impl;

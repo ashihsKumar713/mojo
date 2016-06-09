@@ -25,6 +25,16 @@ class _ProcessSpawnParams extends bindings.Struct {
 
   _ProcessSpawnParams() : super(kVersions.last.size);
 
+  _ProcessSpawnParams.init(
+    List<int> this.path, 
+    List<List<int>> this.argv, 
+    List<List<int>> this.envp, 
+    file_mojom.FileInterface this.stdinFile, 
+    file_mojom.FileInterface this.stdoutFile, 
+    file_mojom.FileInterface this.stderrFile, 
+    ProcessControllerInterfaceRequest this.processController
+  ) : super(kVersions.last.size);
+
   static _ProcessSpawnParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -202,6 +212,10 @@ class ProcessSpawnResponseParams extends bindings.Struct {
 
   ProcessSpawnResponseParams() : super(kVersions.last.size);
 
+  ProcessSpawnResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
+
   static ProcessSpawnResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -281,6 +295,14 @@ class _ProcessSpawnWithTerminalParams extends bindings.Struct {
   ProcessControllerInterfaceRequest processController = null;
 
   _ProcessSpawnWithTerminalParams() : super(kVersions.last.size);
+
+  _ProcessSpawnWithTerminalParams.init(
+    List<int> this.path, 
+    List<List<int>> this.argv, 
+    List<List<int>> this.envp, 
+    file_mojom.FileInterface this.terminalFile, 
+    ProcessControllerInterfaceRequest this.processController
+  ) : super(kVersions.last.size);
 
   static _ProcessSpawnWithTerminalParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -435,6 +457,10 @@ class ProcessSpawnWithTerminalResponseParams extends bindings.Struct {
 
   ProcessSpawnWithTerminalResponseParams() : super(kVersions.last.size);
 
+  ProcessSpawnWithTerminalResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
+
   static ProcessSpawnWithTerminalResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -510,6 +536,9 @@ class _ProcessControllerWaitParams extends bindings.Struct {
 
   _ProcessControllerWaitParams() : super(kVersions.last.size);
 
+  _ProcessControllerWaitParams.init(
+  ) : super(kVersions.last.size);
+
   static _ProcessControllerWaitParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -569,6 +598,11 @@ class ProcessControllerWaitResponseParams extends bindings.Struct {
   int exitStatus = 0;
 
   ProcessControllerWaitResponseParams() : super(kVersions.last.size);
+
+  ProcessControllerWaitResponseParams.init(
+    types_mojom.Error this.error, 
+    int this.exitStatus
+  ) : super(kVersions.last.size);
 
   static ProcessControllerWaitResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -659,6 +693,10 @@ class _ProcessControllerKillParams extends bindings.Struct {
 
   _ProcessControllerKillParams() : super(kVersions.last.size);
 
+  _ProcessControllerKillParams.init(
+    int this.signal
+  ) : super(kVersions.last.size);
+
   static _ProcessControllerKillParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -731,6 +769,10 @@ class ProcessControllerKillResponseParams extends bindings.Struct {
 
   ProcessControllerKillResponseParams() : super(kVersions.last.size);
 
+  ProcessControllerKillResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
+
   static ProcessControllerKillResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -802,14 +844,17 @@ const int _processMethodSpawnName = 0;
 const int _processMethodSpawnWithTerminalName = 1;
 
 class _ProcessServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Process {
@@ -834,8 +879,8 @@ abstract class Process {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic spawn(List<int> path,List<List<int>> argv,List<List<int>> envp,file_mojom.FileInterface stdinFile,file_mojom.FileInterface stdoutFile,file_mojom.FileInterface stderrFile,ProcessControllerInterfaceRequest processController,[Function responseFactory = null]);
-  dynamic spawnWithTerminal(List<int> path,List<List<int>> argv,List<List<int>> envp,file_mojom.FileInterface terminalFile,ProcessControllerInterfaceRequest processController,[Function responseFactory = null]);
+  void spawn(List<int> path,List<List<int>> argv,List<List<int>> envp,file_mojom.FileInterface stdinFile,file_mojom.FileInterface stdoutFile,file_mojom.FileInterface stderrFile,ProcessControllerInterfaceRequest processController,void callback(types_mojom.Error error));
+  void spawnWithTerminal(List<int> path,List<List<int>> argv,List<List<int>> envp,file_mojom.FileInterface terminalFile,ProcessControllerInterfaceRequest processController,void callback(types_mojom.Error error));
 }
 
 abstract class ProcessInterface
@@ -885,18 +930,14 @@ class _ProcessProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       case _processMethodSpawnWithTerminalName:
         var r = ProcessSpawnWithTerminalResponseParams.deserialize(
@@ -905,18 +946,14 @@ class _ProcessProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -961,9 +998,10 @@ class ProcessProxy
   }
 
 
-  dynamic spawn(List<int> path,List<List<int>> argv,List<List<int>> envp,file_mojom.FileInterface stdinFile,file_mojom.FileInterface stdoutFile,file_mojom.FileInterface stderrFile,ProcessControllerInterfaceRequest processController,[Function responseFactory = null]) {
+  void spawn(List<int> path,List<List<int>> argv,List<List<int>> envp,file_mojom.FileInterface stdinFile,file_mojom.FileInterface stdoutFile,file_mojom.FileInterface stderrFile,ProcessControllerInterfaceRequest processController,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.spawn(path,argv,envp,stdinFile,stdoutFile,stderrFile,processController,_ProcessStubControl._processSpawnResponseParamsFactory));
+      impl.spawn(path,argv,envp,stdinFile,stdoutFile,stderrFile,processController,callback);
+      return;
     }
     var params = new _ProcessSpawnParams();
     params.path = path;
@@ -973,15 +1011,17 @@ class ProcessProxy
     params.stdoutFile = stdoutFile;
     params.stderrFile = stderrFile;
     params.processController = processController;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _processMethodSpawnName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic spawnWithTerminal(List<int> path,List<List<int>> argv,List<List<int>> envp,file_mojom.FileInterface terminalFile,ProcessControllerInterfaceRequest processController,[Function responseFactory = null]) {
+  void spawnWithTerminal(List<int> path,List<List<int>> argv,List<List<int>> envp,file_mojom.FileInterface terminalFile,ProcessControllerInterfaceRequest processController,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.spawnWithTerminal(path,argv,envp,terminalFile,processController,_ProcessStubControl._processSpawnWithTerminalResponseParamsFactory));
+      impl.spawnWithTerminal(path,argv,envp,terminalFile,processController,callback);
+      return;
     }
     var params = new _ProcessSpawnWithTerminalParams();
     params.path = path;
@@ -989,11 +1029,12 @@ class ProcessProxy
     params.envp = envp;
     params.terminalFile = terminalFile;
     params.processController = processController;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _processMethodSpawnWithTerminalName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -1019,22 +1060,36 @@ class _ProcessStubControl
   String get serviceName => Process.serviceName;
 
 
-  static ProcessSpawnResponseParams _processSpawnResponseParamsFactory(types_mojom.Error error) {
-    var result = new ProcessSpawnResponseParams();
-    result.error = error;
-    return result;
+  Function _processSpawnResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new ProcessSpawnResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _processMethodSpawnName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static ProcessSpawnWithTerminalResponseParams _processSpawnWithTerminalResponseParamsFactory(types_mojom.Error error) {
-    var result = new ProcessSpawnWithTerminalResponseParams();
-    result.error = error;
-    return result;
+  Function _processSpawnWithTerminalResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new ProcessSpawnWithTerminalResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _processMethodSpawnWithTerminalName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1043,52 +1098,17 @@ class _ProcessStubControl
       case _processMethodSpawnName:
         var params = _ProcessSpawnParams.deserialize(
             message.payload);
-        var response = _impl.spawn(params.path,params.argv,params.envp,params.stdinFile,params.stdoutFile,params.stderrFile,params.processController,_processSpawnResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _processMethodSpawnName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _processMethodSpawnName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.spawn(params.path, params.argv, params.envp, params.stdinFile, params.stdoutFile, params.stderrFile, params.processController, _processSpawnResponseParamsResponder(message.header.requestId));
         break;
       case _processMethodSpawnWithTerminalName:
         var params = _ProcessSpawnWithTerminalParams.deserialize(
             message.payload);
-        var response = _impl.spawnWithTerminal(params.path,params.argv,params.envp,params.terminalFile,params.processController,_processSpawnWithTerminalResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _processMethodSpawnWithTerminalName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _processMethodSpawnWithTerminalName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.spawnWithTerminal(params.path, params.argv, params.envp, params.terminalFile, params.processController, _processSpawnWithTerminalResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Process get impl => _impl;
@@ -1142,11 +1162,11 @@ class ProcessStub
   }
 
 
-  dynamic spawn(List<int> path,List<List<int>> argv,List<List<int>> envp,file_mojom.FileInterface stdinFile,file_mojom.FileInterface stdoutFile,file_mojom.FileInterface stderrFile,ProcessControllerInterfaceRequest processController,[Function responseFactory = null]) {
-    return impl.spawn(path,argv,envp,stdinFile,stdoutFile,stderrFile,processController,responseFactory);
+  void spawn(List<int> path,List<List<int>> argv,List<List<int>> envp,file_mojom.FileInterface stdinFile,file_mojom.FileInterface stdoutFile,file_mojom.FileInterface stderrFile,ProcessControllerInterfaceRequest processController,void callback(types_mojom.Error error)) {
+    return impl.spawn(path,argv,envp,stdinFile,stdoutFile,stderrFile,processController,callback);
   }
-  dynamic spawnWithTerminal(List<int> path,List<List<int>> argv,List<List<int>> envp,file_mojom.FileInterface terminalFile,ProcessControllerInterfaceRequest processController,[Function responseFactory = null]) {
-    return impl.spawnWithTerminal(path,argv,envp,terminalFile,processController,responseFactory);
+  void spawnWithTerminal(List<int> path,List<List<int>> argv,List<List<int>> envp,file_mojom.FileInterface terminalFile,ProcessControllerInterfaceRequest processController,void callback(types_mojom.Error error)) {
+    return impl.spawnWithTerminal(path,argv,envp,terminalFile,processController,callback);
   }
 }
 
@@ -1154,14 +1174,17 @@ const int _processControllerMethodWaitName = 0;
 const int _processControllerMethodKillName = 1;
 
 class _ProcessControllerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ProcessController {
@@ -1186,8 +1209,8 @@ abstract class ProcessController {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic wait([Function responseFactory = null]);
-  dynamic kill(int signal,[Function responseFactory = null]);
+  void wait(void callback(types_mojom.Error error, int exitStatus));
+  void kill(int signal,void callback(types_mojom.Error error));
 }
 
 abstract class ProcessControllerInterface
@@ -1237,18 +1260,14 @@ class _ProcessControllerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error , r.exitStatus );
         break;
       case _processControllerMethodKillName:
         var r = ProcessControllerKillResponseParams.deserialize(
@@ -1257,18 +1276,14 @@ class _ProcessControllerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1313,28 +1328,32 @@ class ProcessControllerProxy
   }
 
 
-  dynamic wait([Function responseFactory = null]) {
+  void wait(void callback(types_mojom.Error error, int exitStatus)) {
     if (impl != null) {
-      return new Future(() => impl.wait(_ProcessControllerStubControl._processControllerWaitResponseParamsFactory));
+      impl.wait(callback);
+      return;
     }
     var params = new _ProcessControllerWaitParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _processControllerMethodWaitName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic kill(int signal,[Function responseFactory = null]) {
+  void kill(int signal,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.kill(signal,_ProcessControllerStubControl._processControllerKillResponseParamsFactory));
+      impl.kill(signal,callback);
+      return;
     }
     var params = new _ProcessControllerKillParams();
     params.signal = signal;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _processControllerMethodKillName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -1360,75 +1379,54 @@ class _ProcessControllerStubControl
   String get serviceName => ProcessController.serviceName;
 
 
-  static ProcessControllerWaitResponseParams _processControllerWaitResponseParamsFactory(types_mojom.Error error, int exitStatus) {
-    var result = new ProcessControllerWaitResponseParams();
-    result.error = error;
-    result.exitStatus = exitStatus;
-    return result;
+  Function _processControllerWaitResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error, int exitStatus) {
+      var result = new ProcessControllerWaitResponseParams();
+      result.error = error;
+      result.exitStatus = exitStatus;
+      sendResponse(buildResponseWithId(
+          result,
+          _processControllerMethodWaitName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static ProcessControllerKillResponseParams _processControllerKillResponseParamsFactory(types_mojom.Error error) {
-    var result = new ProcessControllerKillResponseParams();
-    result.error = error;
-    return result;
+  Function _processControllerKillResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new ProcessControllerKillResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _processControllerMethodKillName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _processControllerMethodWaitName:
-        var response = _impl.wait(_processControllerWaitResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _processControllerMethodWaitName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _processControllerMethodWaitName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.wait(_processControllerWaitResponseParamsResponder(message.header.requestId));
         break;
       case _processControllerMethodKillName:
         var params = _ProcessControllerKillParams.deserialize(
             message.payload);
-        var response = _impl.kill(params.signal,_processControllerKillResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _processControllerMethodKillName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _processControllerMethodKillName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.kill(params.signal, _processControllerKillResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ProcessController get impl => _impl;
@@ -1482,11 +1480,11 @@ class ProcessControllerStub
   }
 
 
-  dynamic wait([Function responseFactory = null]) {
-    return impl.wait(responseFactory);
+  void wait(void callback(types_mojom.Error error, int exitStatus)) {
+    return impl.wait(callback);
   }
-  dynamic kill(int signal,[Function responseFactory = null]) {
-    return impl.kill(signal,responseFactory);
+  void kill(int signal,void callback(types_mojom.Error error)) {
+    return impl.kill(signal,callback);
   }
 }
 

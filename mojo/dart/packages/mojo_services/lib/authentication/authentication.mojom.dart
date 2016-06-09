@@ -17,6 +17,10 @@ class _AuthenticationServiceSelectAccountParams extends bindings.Struct {
 
   _AuthenticationServiceSelectAccountParams() : super(kVersions.last.size);
 
+  _AuthenticationServiceSelectAccountParams.init(
+    bool this.returnLastSelected
+  ) : super(kVersions.last.size);
+
   static _AuthenticationServiceSelectAccountParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -89,6 +93,11 @@ class AuthenticationServiceSelectAccountResponseParams extends bindings.Struct {
   String error = null;
 
   AuthenticationServiceSelectAccountResponseParams() : super(kVersions.last.size);
+
+  AuthenticationServiceSelectAccountResponseParams.init(
+    String this.username, 
+    String this.error
+  ) : super(kVersions.last.size);
 
   static AuthenticationServiceSelectAccountResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -175,6 +184,11 @@ class _AuthenticationServiceGetOAuth2TokenParams extends bindings.Struct {
   List<String> scopes = null;
 
   _AuthenticationServiceGetOAuth2TokenParams() : super(kVersions.last.size);
+
+  _AuthenticationServiceGetOAuth2TokenParams.init(
+    String this.username, 
+    List<String> this.scopes
+  ) : super(kVersions.last.size);
 
   static _AuthenticationServiceGetOAuth2TokenParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -277,6 +291,11 @@ class AuthenticationServiceGetOAuth2TokenResponseParams extends bindings.Struct 
 
   AuthenticationServiceGetOAuth2TokenResponseParams() : super(kVersions.last.size);
 
+  AuthenticationServiceGetOAuth2TokenResponseParams.init(
+    String this.token, 
+    String this.error
+  ) : super(kVersions.last.size);
+
   static AuthenticationServiceGetOAuth2TokenResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -362,6 +381,10 @@ class _AuthenticationServiceClearOAuth2TokenParams extends bindings.Struct {
 
   _AuthenticationServiceClearOAuth2TokenParams() : super(kVersions.last.size);
 
+  _AuthenticationServiceClearOAuth2TokenParams.init(
+    String this.token
+  ) : super(kVersions.last.size);
+
   static _AuthenticationServiceClearOAuth2TokenParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -430,14 +453,17 @@ const int _authenticationServiceMethodGetOAuth2TokenName = 1;
 const int _authenticationServiceMethodClearOAuth2TokenName = 2;
 
 class _AuthenticationServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class AuthenticationService {
@@ -462,8 +488,8 @@ abstract class AuthenticationService {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic selectAccount(bool returnLastSelected,[Function responseFactory = null]);
-  dynamic getOAuth2Token(String username,List<String> scopes,[Function responseFactory = null]);
+  void selectAccount(bool returnLastSelected,void callback(String username, String error));
+  void getOAuth2Token(String username,List<String> scopes,void callback(String token, String error));
   void clearOAuth2Token(String token);
 }
 
@@ -514,18 +540,14 @@ class _AuthenticationServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.username , r.error );
         break;
       case _authenticationServiceMethodGetOAuth2TokenName:
         var r = AuthenticationServiceGetOAuth2TokenResponseParams.deserialize(
@@ -534,18 +556,14 @@ class _AuthenticationServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.token , r.error );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -590,30 +608,34 @@ class AuthenticationServiceProxy
   }
 
 
-  dynamic selectAccount(bool returnLastSelected,[Function responseFactory = null]) {
+  void selectAccount(bool returnLastSelected,void callback(String username, String error)) {
     if (impl != null) {
-      return new Future(() => impl.selectAccount(returnLastSelected,_AuthenticationServiceStubControl._authenticationServiceSelectAccountResponseParamsFactory));
+      impl.selectAccount(returnLastSelected,callback);
+      return;
     }
     var params = new _AuthenticationServiceSelectAccountParams();
     params.returnLastSelected = returnLastSelected;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _authenticationServiceMethodSelectAccountName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic getOAuth2Token(String username,List<String> scopes,[Function responseFactory = null]) {
+  void getOAuth2Token(String username,List<String> scopes,void callback(String token, String error)) {
     if (impl != null) {
-      return new Future(() => impl.getOAuth2Token(username,scopes,_AuthenticationServiceStubControl._authenticationServiceGetOAuth2TokenResponseParamsFactory));
+      impl.getOAuth2Token(username,scopes,callback);
+      return;
     }
     var params = new _AuthenticationServiceGetOAuth2TokenParams();
     params.username = username;
     params.scopes = scopes;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _authenticationServiceMethodGetOAuth2TokenName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void clearOAuth2Token(String token) {
     if (impl != null) {
@@ -653,24 +675,38 @@ class _AuthenticationServiceStubControl
   String get serviceName => AuthenticationService.serviceName;
 
 
-  static AuthenticationServiceSelectAccountResponseParams _authenticationServiceSelectAccountResponseParamsFactory(String username, String error) {
-    var result = new AuthenticationServiceSelectAccountResponseParams();
-    result.username = username;
-    result.error = error;
-    return result;
+  Function _authenticationServiceSelectAccountResponseParamsResponder(
+      int requestId) {
+  return (String username, String error) {
+      var result = new AuthenticationServiceSelectAccountResponseParams();
+      result.username = username;
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _authenticationServiceMethodSelectAccountName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static AuthenticationServiceGetOAuth2TokenResponseParams _authenticationServiceGetOAuth2TokenResponseParamsFactory(String token, String error) {
-    var result = new AuthenticationServiceGetOAuth2TokenResponseParams();
-    result.token = token;
-    result.error = error;
-    return result;
+  Function _authenticationServiceGetOAuth2TokenResponseParamsResponder(
+      int requestId) {
+  return (String token, String error) {
+      var result = new AuthenticationServiceGetOAuth2TokenResponseParams();
+      result.token = token;
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _authenticationServiceMethodGetOAuth2TokenName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -679,46 +715,12 @@ class _AuthenticationServiceStubControl
       case _authenticationServiceMethodSelectAccountName:
         var params = _AuthenticationServiceSelectAccountParams.deserialize(
             message.payload);
-        var response = _impl.selectAccount(params.returnLastSelected,_authenticationServiceSelectAccountResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _authenticationServiceMethodSelectAccountName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _authenticationServiceMethodSelectAccountName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.selectAccount(params.returnLastSelected, _authenticationServiceSelectAccountResponseParamsResponder(message.header.requestId));
         break;
       case _authenticationServiceMethodGetOAuth2TokenName:
         var params = _AuthenticationServiceGetOAuth2TokenParams.deserialize(
             message.payload);
-        var response = _impl.getOAuth2Token(params.username,params.scopes,_authenticationServiceGetOAuth2TokenResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _authenticationServiceMethodGetOAuth2TokenName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _authenticationServiceMethodGetOAuth2TokenName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getOAuth2Token(params.username, params.scopes, _authenticationServiceGetOAuth2TokenResponseParamsResponder(message.header.requestId));
         break;
       case _authenticationServiceMethodClearOAuth2TokenName:
         var params = _AuthenticationServiceClearOAuth2TokenParams.deserialize(
@@ -729,7 +731,6 @@ class _AuthenticationServiceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   AuthenticationService get impl => _impl;
@@ -783,11 +784,11 @@ class AuthenticationServiceStub
   }
 
 
-  dynamic selectAccount(bool returnLastSelected,[Function responseFactory = null]) {
-    return impl.selectAccount(returnLastSelected,responseFactory);
+  void selectAccount(bool returnLastSelected,void callback(String username, String error)) {
+    return impl.selectAccount(returnLastSelected,callback);
   }
-  dynamic getOAuth2Token(String username,List<String> scopes,[Function responseFactory = null]) {
-    return impl.getOAuth2Token(username,scopes,responseFactory);
+  void getOAuth2Token(String username,List<String> scopes,void callback(String token, String error)) {
+    return impl.getOAuth2Token(username,scopes,callback);
   }
   void clearOAuth2Token(String token) {
     return impl.clearOAuth2Token(token);

@@ -18,6 +18,10 @@ class _LocationServiceGetNextLocationParams extends bindings.Struct {
 
   _LocationServiceGetNextLocationParams() : super(kVersions.last.size);
 
+  _LocationServiceGetNextLocationParams.init(
+    LocationServiceUpdatePriority this.priority
+  ) : super(kVersions.last.size);
+
   static _LocationServiceGetNextLocationParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -93,6 +97,10 @@ class LocationServiceGetNextLocationResponseParams extends bindings.Struct {
   location_mojom.Location location = null;
 
   LocationServiceGetNextLocationResponseParams() : super(kVersions.last.size);
+
+  LocationServiceGetNextLocationResponseParams.init(
+    location_mojom.Location this.location
+  ) : super(kVersions.last.size);
 
   static LocationServiceGetNextLocationResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -227,14 +235,17 @@ class LocationServiceUpdatePriority extends bindings.MojoEnum {
 }
 
 class _LocationServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class LocationService {
@@ -259,7 +270,7 @@ abstract class LocationService {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getNextLocation(LocationServiceUpdatePriority priority,[Function responseFactory = null]);
+  void getNextLocation(LocationServiceUpdatePriority priority,void callback(location_mojom.Location location));
 }
 
 abstract class LocationServiceInterface
@@ -309,18 +320,14 @@ class _LocationServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.location );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -365,17 +372,19 @@ class LocationServiceProxy
   }
 
 
-  dynamic getNextLocation(LocationServiceUpdatePriority priority,[Function responseFactory = null]) {
+  void getNextLocation(LocationServiceUpdatePriority priority,void callback(location_mojom.Location location)) {
     if (impl != null) {
-      return new Future(() => impl.getNextLocation(priority,_LocationServiceStubControl._locationServiceGetNextLocationResponseParamsFactory));
+      impl.getNextLocation(priority,callback);
+      return;
     }
     var params = new _LocationServiceGetNextLocationParams();
     params.priority = priority;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _locationServiceMethodGetNextLocationName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -401,17 +410,24 @@ class _LocationServiceStubControl
   String get serviceName => LocationService.serviceName;
 
 
-  static LocationServiceGetNextLocationResponseParams _locationServiceGetNextLocationResponseParamsFactory(location_mojom.Location location) {
-    var result = new LocationServiceGetNextLocationResponseParams();
-    result.location = location;
-    return result;
+  Function _locationServiceGetNextLocationResponseParamsResponder(
+      int requestId) {
+  return (location_mojom.Location location) {
+      var result = new LocationServiceGetNextLocationResponseParams();
+      result.location = location;
+      sendResponse(buildResponseWithId(
+          result,
+          _locationServiceMethodGetNextLocationName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -420,30 +436,12 @@ class _LocationServiceStubControl
       case _locationServiceMethodGetNextLocationName:
         var params = _LocationServiceGetNextLocationParams.deserialize(
             message.payload);
-        var response = _impl.getNextLocation(params.priority,_locationServiceGetNextLocationResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _locationServiceMethodGetNextLocationName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _locationServiceMethodGetNextLocationName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getNextLocation(params.priority, _locationServiceGetNextLocationResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   LocationService get impl => _impl;
@@ -497,8 +495,8 @@ class LocationServiceStub
   }
 
 
-  dynamic getNextLocation(LocationServiceUpdatePriority priority,[Function responseFactory = null]) {
-    return impl.getNextLocation(priority,responseFactory);
+  void getNextLocation(LocationServiceUpdatePriority priority,void callback(location_mojom.Location location)) {
+    return impl.getNextLocation(priority,callback);
   }
 }
 

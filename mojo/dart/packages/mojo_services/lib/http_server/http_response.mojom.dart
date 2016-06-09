@@ -20,6 +20,14 @@ class HttpResponse extends bindings.Struct {
 
   HttpResponse() : super(kVersions.last.size);
 
+  HttpResponse.init(
+    int this.statusCode, 
+    core.MojoDataPipeConsumer this.body, 
+    int this.contentLength, 
+    String this.contentType, 
+    Map<String, String> this.customHeaders
+  ) : super(kVersions.last.size);
+
   static HttpResponse deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);

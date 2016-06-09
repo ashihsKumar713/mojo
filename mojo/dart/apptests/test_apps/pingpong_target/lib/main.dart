@@ -33,13 +33,12 @@ class PingPongServiceImpl implements PingPongService {
   void ping(int pingValue) => _pingPongClient.pong(pingValue + 1);
 
   // These methods are unimplemented; they merely throw on invocation.
-  dynamic pingTargetUrl(String url, int count, [Function responseFactory]) =>
+  void pingTargetUrl(String url, int count, void callback(bool ok)) =>
       throw "Unimplemented";
-  dynamic pingTargetService(PingPongServiceInterface service, int count,
-      [Function responseFactory]) =>
+  void pingTargetService(PingPongServiceInterface service, int count,
+      void callback(bool ok)) =>
       throw "Unimplemented";
-  dynamic getPingPongServiceDelayed(PingPongServiceInterfaceRequest service,
-      [Function responseFactory]) =>
+  void getPingPongServiceDelayed(PingPongServiceInterfaceRequest service) =>
       throw "Unimplemented";
 
   void getPingPongService(PingPongServiceInterfaceRequest service) {

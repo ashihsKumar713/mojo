@@ -190,6 +190,12 @@ class SensorData extends bindings.Struct {
 
   SensorData() : super(kVersions.last.size);
 
+  SensorData.init(
+    int this.accuracy, 
+    int this.timeStamp, 
+    List<double> this.values
+  ) : super(kVersions.last.size);
+
   static SensorData deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -288,6 +294,10 @@ class _SensorListenerOnAccuracyChangedParams extends bindings.Struct {
 
   _SensorListenerOnAccuracyChangedParams() : super(kVersions.last.size);
 
+  _SensorListenerOnAccuracyChangedParams.init(
+    int this.accuracy
+  ) : super(kVersions.last.size);
+
   static _SensorListenerOnAccuracyChangedParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -359,6 +369,10 @@ class _SensorListenerOnSensorChangedParams extends bindings.Struct {
   SensorData data = null;
 
   _SensorListenerOnSensorChangedParams() : super(kVersions.last.size);
+
+  _SensorListenerOnSensorChangedParams.init(
+    SensorData this.data
+  ) : super(kVersions.last.size);
 
   static _SensorListenerOnSensorChangedParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -433,6 +447,11 @@ class _SensorServiceAddListenerParams extends bindings.Struct {
   SensorListenerInterface listener = null;
 
   _SensorServiceAddListenerParams() : super(kVersions.last.size);
+
+  _SensorServiceAddListenerParams.init(
+    SensorType this.type, 
+    SensorListenerInterface this.listener
+  ) : super(kVersions.last.size);
 
   static _SensorServiceAddListenerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -516,14 +535,17 @@ const int _sensorListenerMethodOnAccuracyChangedName = 0;
 const int _sensorListenerMethodOnSensorChangedName = 1;
 
 class _SensorListenerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class SensorListener {
@@ -688,11 +710,11 @@ class _SensorListenerStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -712,7 +734,6 @@ class _SensorListenerStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   SensorListener get impl => _impl;
@@ -777,14 +798,17 @@ class SensorListenerStub
 const int _sensorServiceMethodAddListenerName = 0;
 
 class _SensorServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class SensorService {
@@ -935,11 +959,11 @@ class _SensorServiceStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -954,7 +978,6 @@ class _SensorServiceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   SensorService get impl => _impl;

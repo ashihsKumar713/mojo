@@ -18,6 +18,10 @@ class _InputConnectionSetListenerParams extends bindings.Struct {
 
   _InputConnectionSetListenerParams() : super(kVersions.last.size);
 
+  _InputConnectionSetListenerParams.init(
+    InputListenerInterface this.listener
+  ) : super(kVersions.last.size);
+
   static _InputConnectionSetListenerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -88,6 +92,10 @@ class _InputListenerOnEventParams extends bindings.Struct {
   input_events_mojom.Event event = null;
 
   _InputListenerOnEventParams() : super(kVersions.last.size);
+
+  _InputListenerOnEventParams.init(
+    input_events_mojom.Event this.event
+  ) : super(kVersions.last.size);
 
   static _InputListenerOnEventParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -162,6 +170,10 @@ class InputListenerOnEventResponseParams extends bindings.Struct {
 
   InputListenerOnEventResponseParams() : super(kVersions.last.size);
 
+  InputListenerOnEventResponseParams.init(
+    bool this.consumed
+  ) : super(kVersions.last.size);
+
   static InputListenerOnEventResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -228,14 +240,17 @@ class InputListenerOnEventResponseParams extends bindings.Struct {
 const int _inputConnectionMethodSetListenerName = 0;
 
 class _InputConnectionServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class InputConnection {
@@ -385,11 +400,11 @@ class _InputConnectionStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -404,7 +419,6 @@ class _InputConnectionStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   InputConnection get impl => _impl;
@@ -466,14 +480,17 @@ class InputConnectionStub
 const int _inputListenerMethodOnEventName = 0;
 
 class _InputListenerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class InputListener {
@@ -498,7 +515,7 @@ abstract class InputListener {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic onEvent(input_events_mojom.Event event,[Function responseFactory = null]);
+  void onEvent(input_events_mojom.Event event,void callback(bool consumed));
 }
 
 abstract class InputListenerInterface
@@ -548,18 +565,14 @@ class _InputListenerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.consumed );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -604,17 +617,19 @@ class InputListenerProxy
   }
 
 
-  dynamic onEvent(input_events_mojom.Event event,[Function responseFactory = null]) {
+  void onEvent(input_events_mojom.Event event,void callback(bool consumed)) {
     if (impl != null) {
-      return new Future(() => impl.onEvent(event,_InputListenerStubControl._inputListenerOnEventResponseParamsFactory));
+      impl.onEvent(event,callback);
+      return;
     }
     var params = new _InputListenerOnEventParams();
     params.event = event;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _inputListenerMethodOnEventName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -640,17 +655,24 @@ class _InputListenerStubControl
   String get serviceName => InputListener.serviceName;
 
 
-  static InputListenerOnEventResponseParams _inputListenerOnEventResponseParamsFactory(bool consumed) {
-    var result = new InputListenerOnEventResponseParams();
-    result.consumed = consumed;
-    return result;
+  Function _inputListenerOnEventResponseParamsResponder(
+      int requestId) {
+  return (bool consumed) {
+      var result = new InputListenerOnEventResponseParams();
+      result.consumed = consumed;
+      sendResponse(buildResponseWithId(
+          result,
+          _inputListenerMethodOnEventName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -659,30 +681,12 @@ class _InputListenerStubControl
       case _inputListenerMethodOnEventName:
         var params = _InputListenerOnEventParams.deserialize(
             message.payload);
-        var response = _impl.onEvent(params.event,_inputListenerOnEventResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _inputListenerMethodOnEventName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _inputListenerMethodOnEventName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.onEvent(params.event, _inputListenerOnEventResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   InputListener get impl => _impl;
@@ -736,8 +740,8 @@ class InputListenerStub
   }
 
 
-  dynamic onEvent(input_events_mojom.Event event,[Function responseFactory = null]) {
-    return impl.onEvent(event,responseFactory);
+  void onEvent(input_events_mojom.Event event,void callback(bool consumed)) {
+    return impl.onEvent(event,callback);
   }
 }
 

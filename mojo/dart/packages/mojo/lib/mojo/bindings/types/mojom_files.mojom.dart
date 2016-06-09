@@ -22,6 +22,16 @@ class MojomFile extends bindings.Struct {
 
   MojomFile() : super(kVersions.last.size);
 
+  MojomFile.init(
+    String this.fileName, 
+    String this.specifiedFileName, 
+    String this.moduleNamespace, 
+    List<mojom_types_mojom.Attribute> this.attributes, 
+    List<String> this.imports, 
+    KeysByType this.declaredMojomObjects, 
+    String this.serializedRuntimeTypeInfo
+  ) : super(kVersions.last.size);
+
   static MojomFile deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -209,6 +219,12 @@ class MojomFileGraph extends bindings.Struct {
   Map<String, mojom_types_mojom.DeclaredConstant> resolvedConstants = null;
 
   MojomFileGraph() : super(kVersions.last.size);
+
+  MojomFileGraph.init(
+    Map<String, MojomFile> this.files, 
+    Map<String, mojom_types_mojom.UserDefinedType> this.resolvedTypes, 
+    Map<String, mojom_types_mojom.DeclaredConstant> this.resolvedConstants
+  ) : super(kVersions.last.size);
 
   static MojomFileGraph deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -472,6 +488,16 @@ class KeysByType extends bindings.Struct {
   List<String> embeddedConstants = null;
 
   KeysByType() : super(kVersions.last.size);
+
+  KeysByType.init(
+    List<String> this.interfaces, 
+    List<String> this.structs, 
+    List<String> this.unions, 
+    List<String> this.topLevelEnums, 
+    List<String> this.embeddedEnums, 
+    List<String> this.topLevelConstants, 
+    List<String> this.embeddedConstants
+  ) : super(kVersions.last.size);
 
   static KeysByType deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);

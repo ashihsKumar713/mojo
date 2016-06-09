@@ -20,6 +20,11 @@ class _ViewProviderCreateViewParams extends bindings.Struct {
 
   _ViewProviderCreateViewParams() : super(kVersions.last.size);
 
+  _ViewProviderCreateViewParams.init(
+    view_token_mojom.ViewOwnerInterfaceRequest this.viewOwner, 
+    service_provider_mojom.ServiceProviderInterfaceRequest this.services
+  ) : super(kVersions.last.size);
+
   static _ViewProviderCreateViewParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -97,14 +102,17 @@ class _ViewProviderCreateViewParams extends bindings.Struct {
 const int _viewProviderMethodCreateViewName = 0;
 
 class _ViewProviderServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ViewProvider {
@@ -255,11 +263,11 @@ class _ViewProviderStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -274,7 +282,6 @@ class _ViewProviderStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ViewProvider get impl => _impl;

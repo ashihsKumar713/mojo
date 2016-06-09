@@ -18,6 +18,10 @@ class _UrlResponseDiskCacheGetParams extends bindings.Struct {
 
   _UrlResponseDiskCacheGetParams() : super(kVersions.last.size);
 
+  _UrlResponseDiskCacheGetParams.init(
+    String this.url
+  ) : super(kVersions.last.size);
+
   static _UrlResponseDiskCacheGetParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -91,6 +95,12 @@ class UrlResponseDiskCacheGetResponseParams extends bindings.Struct {
   List<int> cacheDirPath = null;
 
   UrlResponseDiskCacheGetResponseParams() : super(kVersions.last.size);
+
+  UrlResponseDiskCacheGetResponseParams.init(
+    url_response_mojom.UrlResponse this.response, 
+    List<int> this.filePath, 
+    List<int> this.cacheDirPath
+  ) : super(kVersions.last.size);
 
   static UrlResponseDiskCacheGetResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -188,6 +198,10 @@ class _UrlResponseDiskCacheValidateParams extends bindings.Struct {
 
   _UrlResponseDiskCacheValidateParams() : super(kVersions.last.size);
 
+  _UrlResponseDiskCacheValidateParams.init(
+    String this.url
+  ) : super(kVersions.last.size);
+
   static _UrlResponseDiskCacheValidateParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -259,6 +273,10 @@ class _UrlResponseDiskCacheUpdateParams extends bindings.Struct {
   url_response_mojom.UrlResponse response = null;
 
   _UrlResponseDiskCacheUpdateParams() : super(kVersions.last.size);
+
+  _UrlResponseDiskCacheUpdateParams.init(
+    url_response_mojom.UrlResponse this.response
+  ) : super(kVersions.last.size);
 
   static _UrlResponseDiskCacheUpdateParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -332,6 +350,10 @@ class _UrlResponseDiskCacheUpdateAndGetParams extends bindings.Struct {
 
   _UrlResponseDiskCacheUpdateAndGetParams() : super(kVersions.last.size);
 
+  _UrlResponseDiskCacheUpdateAndGetParams.init(
+    url_response_mojom.UrlResponse this.response
+  ) : super(kVersions.last.size);
+
   static _UrlResponseDiskCacheUpdateAndGetParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -404,6 +426,11 @@ class UrlResponseDiskCacheUpdateAndGetResponseParams extends bindings.Struct {
   List<int> cacheDirPath = null;
 
   UrlResponseDiskCacheUpdateAndGetResponseParams() : super(kVersions.last.size);
+
+  UrlResponseDiskCacheUpdateAndGetResponseParams.init(
+    List<int> this.filePath, 
+    List<int> this.cacheDirPath
+  ) : super(kVersions.last.size);
 
   static UrlResponseDiskCacheUpdateAndGetResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -490,6 +517,10 @@ class _UrlResponseDiskCacheUpdateAndGetExtractedParams extends bindings.Struct {
 
   _UrlResponseDiskCacheUpdateAndGetExtractedParams() : super(kVersions.last.size);
 
+  _UrlResponseDiskCacheUpdateAndGetExtractedParams.init(
+    url_response_mojom.UrlResponse this.response
+  ) : super(kVersions.last.size);
+
   static _UrlResponseDiskCacheUpdateAndGetExtractedParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -562,6 +593,11 @@ class UrlResponseDiskCacheUpdateAndGetExtractedResponseParams extends bindings.S
   List<int> cacheDirPath = null;
 
   UrlResponseDiskCacheUpdateAndGetExtractedResponseParams() : super(kVersions.last.size);
+
+  UrlResponseDiskCacheUpdateAndGetExtractedResponseParams.init(
+    List<int> this.extractedDirPath, 
+    List<int> this.cacheDirPath
+  ) : super(kVersions.last.size);
 
   static UrlResponseDiskCacheUpdateAndGetExtractedResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -646,14 +682,17 @@ const int _urlResponseDiskCacheMethodUpdateAndGetName = 3;
 const int _urlResponseDiskCacheMethodUpdateAndGetExtractedName = 4;
 
 class _UrlResponseDiskCacheServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class UrlResponseDiskCache {
@@ -678,11 +717,11 @@ abstract class UrlResponseDiskCache {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic get(String url,[Function responseFactory = null]);
+  void get(String url,void callback(url_response_mojom.UrlResponse response, List<int> filePath, List<int> cacheDirPath));
   void validate(String url);
   void update(url_response_mojom.UrlResponse response);
-  dynamic updateAndGet(url_response_mojom.UrlResponse response,[Function responseFactory = null]);
-  dynamic updateAndGetExtracted(url_response_mojom.UrlResponse response,[Function responseFactory = null]);
+  void updateAndGet(url_response_mojom.UrlResponse response,void callback(List<int> filePath, List<int> cacheDirPath));
+  void updateAndGetExtracted(url_response_mojom.UrlResponse response,void callback(List<int> extractedDirPath, List<int> cacheDirPath));
 }
 
 abstract class UrlResponseDiskCacheInterface
@@ -732,18 +771,14 @@ class _UrlResponseDiskCacheProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.response , r.filePath , r.cacheDirPath );
         break;
       case _urlResponseDiskCacheMethodUpdateAndGetName:
         var r = UrlResponseDiskCacheUpdateAndGetResponseParams.deserialize(
@@ -752,18 +787,14 @@ class _UrlResponseDiskCacheProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.filePath , r.cacheDirPath );
         break;
       case _urlResponseDiskCacheMethodUpdateAndGetExtractedName:
         var r = UrlResponseDiskCacheUpdateAndGetExtractedResponseParams.deserialize(
@@ -772,18 +803,14 @@ class _UrlResponseDiskCacheProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.extractedDirPath , r.cacheDirPath );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -828,17 +855,19 @@ class UrlResponseDiskCacheProxy
   }
 
 
-  dynamic get(String url,[Function responseFactory = null]) {
+  void get(String url,void callback(url_response_mojom.UrlResponse response, List<int> filePath, List<int> cacheDirPath)) {
     if (impl != null) {
-      return new Future(() => impl.get(url,_UrlResponseDiskCacheStubControl._urlResponseDiskCacheGetResponseParamsFactory));
+      impl.get(url,callback);
+      return;
     }
     var params = new _UrlResponseDiskCacheGetParams();
     params.url = url;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _urlResponseDiskCacheMethodGetName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void validate(String url) {
     if (impl != null) {
@@ -868,29 +897,33 @@ class UrlResponseDiskCacheProxy
     ctrl.sendMessage(params,
         _urlResponseDiskCacheMethodUpdateName);
   }
-  dynamic updateAndGet(url_response_mojom.UrlResponse response,[Function responseFactory = null]) {
+  void updateAndGet(url_response_mojom.UrlResponse response,void callback(List<int> filePath, List<int> cacheDirPath)) {
     if (impl != null) {
-      return new Future(() => impl.updateAndGet(response,_UrlResponseDiskCacheStubControl._urlResponseDiskCacheUpdateAndGetResponseParamsFactory));
+      impl.updateAndGet(response,callback);
+      return;
     }
     var params = new _UrlResponseDiskCacheUpdateAndGetParams();
     params.response = response;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _urlResponseDiskCacheMethodUpdateAndGetName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic updateAndGetExtracted(url_response_mojom.UrlResponse response,[Function responseFactory = null]) {
+  void updateAndGetExtracted(url_response_mojom.UrlResponse response,void callback(List<int> extractedDirPath, List<int> cacheDirPath)) {
     if (impl != null) {
-      return new Future(() => impl.updateAndGetExtracted(response,_UrlResponseDiskCacheStubControl._urlResponseDiskCacheUpdateAndGetExtractedResponseParamsFactory));
+      impl.updateAndGetExtracted(response,callback);
+      return;
     }
     var params = new _UrlResponseDiskCacheUpdateAndGetExtractedParams();
     params.response = response;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _urlResponseDiskCacheMethodUpdateAndGetExtractedName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -916,31 +949,52 @@ class _UrlResponseDiskCacheStubControl
   String get serviceName => UrlResponseDiskCache.serviceName;
 
 
-  static UrlResponseDiskCacheGetResponseParams _urlResponseDiskCacheGetResponseParamsFactory(url_response_mojom.UrlResponse response, List<int> filePath, List<int> cacheDirPath) {
-    var result = new UrlResponseDiskCacheGetResponseParams();
-    result.response = response;
-    result.filePath = filePath;
-    result.cacheDirPath = cacheDirPath;
-    return result;
+  Function _urlResponseDiskCacheGetResponseParamsResponder(
+      int requestId) {
+  return (url_response_mojom.UrlResponse response, List<int> filePath, List<int> cacheDirPath) {
+      var result = new UrlResponseDiskCacheGetResponseParams();
+      result.response = response;
+      result.filePath = filePath;
+      result.cacheDirPath = cacheDirPath;
+      sendResponse(buildResponseWithId(
+          result,
+          _urlResponseDiskCacheMethodGetName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static UrlResponseDiskCacheUpdateAndGetResponseParams _urlResponseDiskCacheUpdateAndGetResponseParamsFactory(List<int> filePath, List<int> cacheDirPath) {
-    var result = new UrlResponseDiskCacheUpdateAndGetResponseParams();
-    result.filePath = filePath;
-    result.cacheDirPath = cacheDirPath;
-    return result;
+  Function _urlResponseDiskCacheUpdateAndGetResponseParamsResponder(
+      int requestId) {
+  return (List<int> filePath, List<int> cacheDirPath) {
+      var result = new UrlResponseDiskCacheUpdateAndGetResponseParams();
+      result.filePath = filePath;
+      result.cacheDirPath = cacheDirPath;
+      sendResponse(buildResponseWithId(
+          result,
+          _urlResponseDiskCacheMethodUpdateAndGetName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static UrlResponseDiskCacheUpdateAndGetExtractedResponseParams _urlResponseDiskCacheUpdateAndGetExtractedResponseParamsFactory(List<int> extractedDirPath, List<int> cacheDirPath) {
-    var result = new UrlResponseDiskCacheUpdateAndGetExtractedResponseParams();
-    result.extractedDirPath = extractedDirPath;
-    result.cacheDirPath = cacheDirPath;
-    return result;
+  Function _urlResponseDiskCacheUpdateAndGetExtractedResponseParamsResponder(
+      int requestId) {
+  return (List<int> extractedDirPath, List<int> cacheDirPath) {
+      var result = new UrlResponseDiskCacheUpdateAndGetExtractedResponseParams();
+      result.extractedDirPath = extractedDirPath;
+      result.cacheDirPath = cacheDirPath;
+      sendResponse(buildResponseWithId(
+          result,
+          _urlResponseDiskCacheMethodUpdateAndGetExtractedName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -949,24 +1003,7 @@ class _UrlResponseDiskCacheStubControl
       case _urlResponseDiskCacheMethodGetName:
         var params = _UrlResponseDiskCacheGetParams.deserialize(
             message.payload);
-        var response = _impl.get(params.url,_urlResponseDiskCacheGetResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _urlResponseDiskCacheMethodGetName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _urlResponseDiskCacheMethodGetName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.get(params.url, _urlResponseDiskCacheGetResponseParamsResponder(message.header.requestId));
         break;
       case _urlResponseDiskCacheMethodValidateName:
         var params = _UrlResponseDiskCacheValidateParams.deserialize(
@@ -981,52 +1018,17 @@ class _UrlResponseDiskCacheStubControl
       case _urlResponseDiskCacheMethodUpdateAndGetName:
         var params = _UrlResponseDiskCacheUpdateAndGetParams.deserialize(
             message.payload);
-        var response = _impl.updateAndGet(params.response,_urlResponseDiskCacheUpdateAndGetResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _urlResponseDiskCacheMethodUpdateAndGetName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _urlResponseDiskCacheMethodUpdateAndGetName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.updateAndGet(params.response, _urlResponseDiskCacheUpdateAndGetResponseParamsResponder(message.header.requestId));
         break;
       case _urlResponseDiskCacheMethodUpdateAndGetExtractedName:
         var params = _UrlResponseDiskCacheUpdateAndGetExtractedParams.deserialize(
             message.payload);
-        var response = _impl.updateAndGetExtracted(params.response,_urlResponseDiskCacheUpdateAndGetExtractedResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _urlResponseDiskCacheMethodUpdateAndGetExtractedName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _urlResponseDiskCacheMethodUpdateAndGetExtractedName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.updateAndGetExtracted(params.response, _urlResponseDiskCacheUpdateAndGetExtractedResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   UrlResponseDiskCache get impl => _impl;
@@ -1080,8 +1082,8 @@ class UrlResponseDiskCacheStub
   }
 
 
-  dynamic get(String url,[Function responseFactory = null]) {
-    return impl.get(url,responseFactory);
+  void get(String url,void callback(url_response_mojom.UrlResponse response, List<int> filePath, List<int> cacheDirPath)) {
+    return impl.get(url,callback);
   }
   void validate(String url) {
     return impl.validate(url);
@@ -1089,11 +1091,11 @@ class UrlResponseDiskCacheStub
   void update(url_response_mojom.UrlResponse response) {
     return impl.update(response);
   }
-  dynamic updateAndGet(url_response_mojom.UrlResponse response,[Function responseFactory = null]) {
-    return impl.updateAndGet(response,responseFactory);
+  void updateAndGet(url_response_mojom.UrlResponse response,void callback(List<int> filePath, List<int> cacheDirPath)) {
+    return impl.updateAndGet(response,callback);
   }
-  dynamic updateAndGetExtracted(url_response_mojom.UrlResponse response,[Function responseFactory = null]) {
-    return impl.updateAndGetExtracted(response,responseFactory);
+  void updateAndGetExtracted(url_response_mojom.UrlResponse response,void callback(List<int> extractedDirPath, List<int> cacheDirPath)) {
+    return impl.updateAndGetExtracted(response,callback);
   }
 }
 

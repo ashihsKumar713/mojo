@@ -17,6 +17,10 @@ class NfcData extends bindings.Struct {
 
   NfcData() : super(kVersions.last.size);
 
+  NfcData.init(
+    List<int> this.data
+  ) : super(kVersions.last.size);
+
   static NfcData deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -88,6 +92,9 @@ class _NfcTransmissionCancelParams extends bindings.Struct {
 
   _NfcTransmissionCancelParams() : super(kVersions.last.size);
 
+  _NfcTransmissionCancelParams.init(
+  ) : super(kVersions.last.size);
+
   static _NfcTransmissionCancelParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -146,6 +153,10 @@ class _NfcReceiverOnReceivedNfcDataParams extends bindings.Struct {
   NfcData nfcData = null;
 
   _NfcReceiverOnReceivedNfcDataParams() : super(kVersions.last.size);
+
+  _NfcReceiverOnReceivedNfcDataParams.init(
+    NfcData this.nfcData
+  ) : super(kVersions.last.size);
 
   static _NfcReceiverOnReceivedNfcDataParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -220,6 +231,11 @@ class _NfcTransmitOnNextConnectionParams extends bindings.Struct {
   NfcTransmissionInterfaceRequest transmission = null;
 
   _NfcTransmitOnNextConnectionParams() : super(kVersions.last.size);
+
+  _NfcTransmitOnNextConnectionParams.init(
+    NfcData this.nfcData, 
+    NfcTransmissionInterfaceRequest this.transmission
+  ) : super(kVersions.last.size);
 
   static _NfcTransmitOnNextConnectionParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -305,6 +321,10 @@ class NfcTransmitOnNextConnectionResponseParams extends bindings.Struct {
 
   NfcTransmitOnNextConnectionResponseParams() : super(kVersions.last.size);
 
+  NfcTransmitOnNextConnectionResponseParams.init(
+    bool this.success
+  ) : super(kVersions.last.size);
+
   static NfcTransmitOnNextConnectionResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -376,6 +396,9 @@ class _NfcRegisterParams extends bindings.Struct {
 
   _NfcRegisterParams() : super(kVersions.last.size);
 
+  _NfcRegisterParams.init(
+  ) : super(kVersions.last.size);
+
   static _NfcRegisterParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -434,6 +457,9 @@ class _NfcUnregisterParams extends bindings.Struct {
 
   _NfcUnregisterParams() : super(kVersions.last.size);
 
+  _NfcUnregisterParams.init(
+  ) : super(kVersions.last.size);
+
   static _NfcUnregisterParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -487,14 +513,17 @@ class _NfcUnregisterParams extends bindings.Struct {
 const int _nfcTransmissionMethodCancelName = 0;
 
 class _NfcTransmissionServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class NfcTransmission {
@@ -643,11 +672,11 @@ class _NfcTransmissionStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -660,7 +689,6 @@ class _NfcTransmissionStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   NfcTransmission get impl => _impl;
@@ -722,14 +750,17 @@ class NfcTransmissionStub
 const int _nfcReceiverMethodOnReceivedNfcDataName = 0;
 
 class _NfcReceiverServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class NfcReceiver {
@@ -879,11 +910,11 @@ class _NfcReceiverStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -898,7 +929,6 @@ class _NfcReceiverStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   NfcReceiver get impl => _impl;
@@ -962,14 +992,17 @@ const int _nfcMethodRegisterName = 1;
 const int _nfcMethodUnregisterName = 2;
 
 class _NfcServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Nfc {
@@ -994,7 +1027,7 @@ abstract class Nfc {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic transmitOnNextConnection(NfcData nfcData,NfcTransmissionInterfaceRequest transmission,[Function responseFactory = null]);
+  void transmitOnNextConnection(NfcData nfcData,NfcTransmissionInterfaceRequest transmission,void callback(bool success));
   void register();
   void unregister();
 }
@@ -1046,18 +1079,14 @@ class _NfcProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.success );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1102,18 +1131,20 @@ class NfcProxy
   }
 
 
-  dynamic transmitOnNextConnection(NfcData nfcData,NfcTransmissionInterfaceRequest transmission,[Function responseFactory = null]) {
+  void transmitOnNextConnection(NfcData nfcData,NfcTransmissionInterfaceRequest transmission,void callback(bool success)) {
     if (impl != null) {
-      return new Future(() => impl.transmitOnNextConnection(nfcData,transmission,_NfcStubControl._nfcTransmitOnNextConnectionResponseParamsFactory));
+      impl.transmitOnNextConnection(nfcData,transmission,callback);
+      return;
     }
     var params = new _NfcTransmitOnNextConnectionParams();
     params.nfcData = nfcData;
     params.transmission = transmission;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _nfcMethodTransmitOnNextConnectionName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void register() {
     if (impl != null) {
@@ -1165,17 +1196,24 @@ class _NfcStubControl
   String get serviceName => Nfc.serviceName;
 
 
-  static NfcTransmitOnNextConnectionResponseParams _nfcTransmitOnNextConnectionResponseParamsFactory(bool success) {
-    var result = new NfcTransmitOnNextConnectionResponseParams();
-    result.success = success;
-    return result;
+  Function _nfcTransmitOnNextConnectionResponseParamsResponder(
+      int requestId) {
+  return (bool success) {
+      var result = new NfcTransmitOnNextConnectionResponseParams();
+      result.success = success;
+      sendResponse(buildResponseWithId(
+          result,
+          _nfcMethodTransmitOnNextConnectionName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1184,24 +1222,7 @@ class _NfcStubControl
       case _nfcMethodTransmitOnNextConnectionName:
         var params = _NfcTransmitOnNextConnectionParams.deserialize(
             message.payload);
-        var response = _impl.transmitOnNextConnection(params.nfcData,params.transmission,_nfcTransmitOnNextConnectionResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _nfcMethodTransmitOnNextConnectionName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _nfcMethodTransmitOnNextConnectionName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.transmitOnNextConnection(params.nfcData, params.transmission, _nfcTransmitOnNextConnectionResponseParamsResponder(message.header.requestId));
         break;
       case _nfcMethodRegisterName:
         _impl.register();
@@ -1213,7 +1234,6 @@ class _NfcStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Nfc get impl => _impl;
@@ -1267,8 +1287,8 @@ class NfcStub
   }
 
 
-  dynamic transmitOnNextConnection(NfcData nfcData,NfcTransmissionInterfaceRequest transmission,[Function responseFactory = null]) {
-    return impl.transmitOnNextConnection(nfcData,transmission,responseFactory);
+  void transmitOnNextConnection(NfcData nfcData,NfcTransmissionInterfaceRequest transmission,void callback(bool success)) {
+    return impl.transmitOnNextConnection(nfcData,transmission,callback);
   }
   void register() {
     return impl.register();

@@ -16,6 +16,11 @@ class HttpHeader extends bindings.Struct {
 
   HttpHeader() : super(kVersions.last.size);
 
+  HttpHeader.init(
+    String this.name, 
+    String this.value
+  ) : super(kVersions.last.size);
+
   static HttpHeader deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);

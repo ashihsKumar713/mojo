@@ -20,6 +20,11 @@ class _AuthenticatingUrlLoaderInterceptorMetaFactoryCreateUrlLoaderInterceptorFa
 
   _AuthenticatingUrlLoaderInterceptorMetaFactoryCreateUrlLoaderInterceptorFactoryParams() : super(kVersions.last.size);
 
+  _AuthenticatingUrlLoaderInterceptorMetaFactoryCreateUrlLoaderInterceptorFactoryParams.init(
+    url_loader_interceptor_mojom.UrlLoaderInterceptorFactoryInterfaceRequest this.factoryRequest, 
+    authentication_mojom.AuthenticationServiceInterface this.authenticationService
+  ) : super(kVersions.last.size);
+
   static _AuthenticatingUrlLoaderInterceptorMetaFactoryCreateUrlLoaderInterceptorFactoryParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -97,14 +102,17 @@ class _AuthenticatingUrlLoaderInterceptorMetaFactoryCreateUrlLoaderInterceptorFa
 const int _authenticatingUrlLoaderInterceptorMetaFactoryMethodCreateUrlLoaderInterceptorFactoryName = 0;
 
 class _AuthenticatingUrlLoaderInterceptorMetaFactoryServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class AuthenticatingUrlLoaderInterceptorMetaFactory {
@@ -255,11 +263,11 @@ class _AuthenticatingUrlLoaderInterceptorMetaFactoryStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -274,7 +282,6 @@ class _AuthenticatingUrlLoaderInterceptorMetaFactoryStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   AuthenticatingUrlLoaderInterceptorMetaFactory get impl => _impl;

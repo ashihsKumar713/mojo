@@ -18,6 +18,11 @@ class Contact extends bindings.Struct {
 
   Contact() : super(kVersions.last.size);
 
+  Contact.init(
+    int this.id, 
+    String this.name
+  ) : super(kVersions.last.size);
+
   static Contact deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -103,6 +108,10 @@ class _ContactsServiceGetCountParams extends bindings.Struct {
 
   _ContactsServiceGetCountParams() : super(kVersions.last.size);
 
+  _ContactsServiceGetCountParams.init(
+    String this.filter
+  ) : super(kVersions.last.size);
+
   static _ContactsServiceGetCountParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -174,6 +183,10 @@ class ContactsServiceGetCountResponseParams extends bindings.Struct {
   int count = 0;
 
   ContactsServiceGetCountResponseParams() : super(kVersions.last.size);
+
+  ContactsServiceGetCountResponseParams.init(
+    int this.count
+  ) : super(kVersions.last.size);
 
   static ContactsServiceGetCountResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -248,6 +261,12 @@ class _ContactsServiceGetParams extends bindings.Struct {
   int limit = 0;
 
   _ContactsServiceGetParams() : super(kVersions.last.size);
+
+  _ContactsServiceGetParams.init(
+    String this.filter, 
+    int this.offset, 
+    int this.limit
+  ) : super(kVersions.last.size);
 
   static _ContactsServiceGetParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -347,6 +366,10 @@ class ContactsServiceGetResponseParams extends bindings.Struct {
 
   ContactsServiceGetResponseParams() : super(kVersions.last.size);
 
+  ContactsServiceGetResponseParams.init(
+    List<Contact> this.contacts
+  ) : super(kVersions.last.size);
+
   static ContactsServiceGetResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -435,6 +458,10 @@ class _ContactsServiceGetEmailsParams extends bindings.Struct {
 
   _ContactsServiceGetEmailsParams() : super(kVersions.last.size);
 
+  _ContactsServiceGetEmailsParams.init(
+    int this.id
+  ) : super(kVersions.last.size);
+
   static _ContactsServiceGetEmailsParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -506,6 +533,10 @@ class ContactsServiceGetEmailsResponseParams extends bindings.Struct {
   List<String> emails = null;
 
   ContactsServiceGetEmailsResponseParams() : super(kVersions.last.size);
+
+  ContactsServiceGetEmailsResponseParams.init(
+    List<String> this.emails
+  ) : super(kVersions.last.size);
 
   static ContactsServiceGetEmailsResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -595,6 +626,11 @@ class _ContactsServiceGetPhotoParams extends bindings.Struct {
 
   _ContactsServiceGetPhotoParams() : super(kVersions.last.size);
 
+  _ContactsServiceGetPhotoParams.init(
+    int this.id, 
+    bool this.highResolution
+  ) : super(kVersions.last.size);
+
   static _ContactsServiceGetPhotoParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -680,6 +716,10 @@ class ContactsServiceGetPhotoResponseParams extends bindings.Struct {
 
   ContactsServiceGetPhotoResponseParams() : super(kVersions.last.size);
 
+  ContactsServiceGetPhotoResponseParams.init(
+    String this.photoUrl
+  ) : super(kVersions.last.size);
+
   static ContactsServiceGetPhotoResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -749,14 +789,17 @@ const int _contactsServiceMethodGetEmailsName = 2;
 const int _contactsServiceMethodGetPhotoName = 3;
 
 class _ContactsServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ContactsService {
@@ -781,10 +824,10 @@ abstract class ContactsService {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getCount(String filter,[Function responseFactory = null]);
-  dynamic get(String filter,int offset,int limit,[Function responseFactory = null]);
-  dynamic getEmails(int id,[Function responseFactory = null]);
-  dynamic getPhoto(int id,bool highResolution,[Function responseFactory = null]);
+  void getCount(String filter,void callback(int count));
+  void get(String filter,int offset,int limit,void callback(List<Contact> contacts));
+  void getEmails(int id,void callback(List<String> emails));
+  void getPhoto(int id,bool highResolution,void callback(String photoUrl));
 }
 
 abstract class ContactsServiceInterface
@@ -834,18 +877,14 @@ class _ContactsServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.count );
         break;
       case _contactsServiceMethodGetName:
         var r = ContactsServiceGetResponseParams.deserialize(
@@ -854,18 +893,14 @@ class _ContactsServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.contacts );
         break;
       case _contactsServiceMethodGetEmailsName:
         var r = ContactsServiceGetEmailsResponseParams.deserialize(
@@ -874,18 +909,14 @@ class _ContactsServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.emails );
         break;
       case _contactsServiceMethodGetPhotoName:
         var r = ContactsServiceGetPhotoResponseParams.deserialize(
@@ -894,18 +925,14 @@ class _ContactsServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.photoUrl );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -950,56 +977,64 @@ class ContactsServiceProxy
   }
 
 
-  dynamic getCount(String filter,[Function responseFactory = null]) {
+  void getCount(String filter,void callback(int count)) {
     if (impl != null) {
-      return new Future(() => impl.getCount(filter,_ContactsServiceStubControl._contactsServiceGetCountResponseParamsFactory));
+      impl.getCount(filter,callback);
+      return;
     }
     var params = new _ContactsServiceGetCountParams();
     params.filter = filter;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _contactsServiceMethodGetCountName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic get(String filter,int offset,int limit,[Function responseFactory = null]) {
+  void get(String filter,int offset,int limit,void callback(List<Contact> contacts)) {
     if (impl != null) {
-      return new Future(() => impl.get(filter,offset,limit,_ContactsServiceStubControl._contactsServiceGetResponseParamsFactory));
+      impl.get(filter,offset,limit,callback);
+      return;
     }
     var params = new _ContactsServiceGetParams();
     params.filter = filter;
     params.offset = offset;
     params.limit = limit;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _contactsServiceMethodGetName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic getEmails(int id,[Function responseFactory = null]) {
+  void getEmails(int id,void callback(List<String> emails)) {
     if (impl != null) {
-      return new Future(() => impl.getEmails(id,_ContactsServiceStubControl._contactsServiceGetEmailsResponseParamsFactory));
+      impl.getEmails(id,callback);
+      return;
     }
     var params = new _ContactsServiceGetEmailsParams();
     params.id = id;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _contactsServiceMethodGetEmailsName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic getPhoto(int id,bool highResolution,[Function responseFactory = null]) {
+  void getPhoto(int id,bool highResolution,void callback(String photoUrl)) {
     if (impl != null) {
-      return new Future(() => impl.getPhoto(id,highResolution,_ContactsServiceStubControl._contactsServiceGetPhotoResponseParamsFactory));
+      impl.getPhoto(id,highResolution,callback);
+      return;
     }
     var params = new _ContactsServiceGetPhotoParams();
     params.id = id;
     params.highResolution = highResolution;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _contactsServiceMethodGetPhotoName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -1025,32 +1060,60 @@ class _ContactsServiceStubControl
   String get serviceName => ContactsService.serviceName;
 
 
-  static ContactsServiceGetCountResponseParams _contactsServiceGetCountResponseParamsFactory(int count) {
-    var result = new ContactsServiceGetCountResponseParams();
-    result.count = count;
-    return result;
+  Function _contactsServiceGetCountResponseParamsResponder(
+      int requestId) {
+  return (int count) {
+      var result = new ContactsServiceGetCountResponseParams();
+      result.count = count;
+      sendResponse(buildResponseWithId(
+          result,
+          _contactsServiceMethodGetCountName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static ContactsServiceGetResponseParams _contactsServiceGetResponseParamsFactory(List<Contact> contacts) {
-    var result = new ContactsServiceGetResponseParams();
-    result.contacts = contacts;
-    return result;
+  Function _contactsServiceGetResponseParamsResponder(
+      int requestId) {
+  return (List<Contact> contacts) {
+      var result = new ContactsServiceGetResponseParams();
+      result.contacts = contacts;
+      sendResponse(buildResponseWithId(
+          result,
+          _contactsServiceMethodGetName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static ContactsServiceGetEmailsResponseParams _contactsServiceGetEmailsResponseParamsFactory(List<String> emails) {
-    var result = new ContactsServiceGetEmailsResponseParams();
-    result.emails = emails;
-    return result;
+  Function _contactsServiceGetEmailsResponseParamsResponder(
+      int requestId) {
+  return (List<String> emails) {
+      var result = new ContactsServiceGetEmailsResponseParams();
+      result.emails = emails;
+      sendResponse(buildResponseWithId(
+          result,
+          _contactsServiceMethodGetEmailsName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static ContactsServiceGetPhotoResponseParams _contactsServiceGetPhotoResponseParamsFactory(String photoUrl) {
-    var result = new ContactsServiceGetPhotoResponseParams();
-    result.photoUrl = photoUrl;
-    return result;
+  Function _contactsServiceGetPhotoResponseParamsResponder(
+      int requestId) {
+  return (String photoUrl) {
+      var result = new ContactsServiceGetPhotoResponseParams();
+      result.photoUrl = photoUrl;
+      sendResponse(buildResponseWithId(
+          result,
+          _contactsServiceMethodGetPhotoName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1059,96 +1122,27 @@ class _ContactsServiceStubControl
       case _contactsServiceMethodGetCountName:
         var params = _ContactsServiceGetCountParams.deserialize(
             message.payload);
-        var response = _impl.getCount(params.filter,_contactsServiceGetCountResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _contactsServiceMethodGetCountName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _contactsServiceMethodGetCountName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getCount(params.filter, _contactsServiceGetCountResponseParamsResponder(message.header.requestId));
         break;
       case _contactsServiceMethodGetName:
         var params = _ContactsServiceGetParams.deserialize(
             message.payload);
-        var response = _impl.get(params.filter,params.offset,params.limit,_contactsServiceGetResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _contactsServiceMethodGetName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _contactsServiceMethodGetName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.get(params.filter, params.offset, params.limit, _contactsServiceGetResponseParamsResponder(message.header.requestId));
         break;
       case _contactsServiceMethodGetEmailsName:
         var params = _ContactsServiceGetEmailsParams.deserialize(
             message.payload);
-        var response = _impl.getEmails(params.id,_contactsServiceGetEmailsResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _contactsServiceMethodGetEmailsName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _contactsServiceMethodGetEmailsName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getEmails(params.id, _contactsServiceGetEmailsResponseParamsResponder(message.header.requestId));
         break;
       case _contactsServiceMethodGetPhotoName:
         var params = _ContactsServiceGetPhotoParams.deserialize(
             message.payload);
-        var response = _impl.getPhoto(params.id,params.highResolution,_contactsServiceGetPhotoResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _contactsServiceMethodGetPhotoName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _contactsServiceMethodGetPhotoName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getPhoto(params.id, params.highResolution, _contactsServiceGetPhotoResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ContactsService get impl => _impl;
@@ -1202,17 +1196,17 @@ class ContactsServiceStub
   }
 
 
-  dynamic getCount(String filter,[Function responseFactory = null]) {
-    return impl.getCount(filter,responseFactory);
+  void getCount(String filter,void callback(int count)) {
+    return impl.getCount(filter,callback);
   }
-  dynamic get(String filter,int offset,int limit,[Function responseFactory = null]) {
-    return impl.get(filter,offset,limit,responseFactory);
+  void get(String filter,int offset,int limit,void callback(List<Contact> contacts)) {
+    return impl.get(filter,offset,limit,callback);
   }
-  dynamic getEmails(int id,[Function responseFactory = null]) {
-    return impl.getEmails(id,responseFactory);
+  void getEmails(int id,void callback(List<String> emails)) {
+    return impl.getEmails(id,callback);
   }
-  dynamic getPhoto(int id,bool highResolution,[Function responseFactory = null]) {
-    return impl.getPhoto(id,highResolution,responseFactory);
+  void getPhoto(int id,bool highResolution,void callback(String photoUrl)) {
+    return impl.getPhoto(id,highResolution,callback);
   }
 }
 

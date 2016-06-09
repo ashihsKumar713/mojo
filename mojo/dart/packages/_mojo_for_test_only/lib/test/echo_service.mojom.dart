@@ -22,6 +22,10 @@ class _EchoServiceEchoStringParams extends bindings.Struct {
 
   _EchoServiceEchoStringParams() : super(kVersions.last.size);
 
+  _EchoServiceEchoStringParams.init(
+    String this.value
+  ) : super(kVersions.last.size);
+
   static _EchoServiceEchoStringParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -93,6 +97,10 @@ class EchoServiceEchoStringResponseParams extends bindings.Struct {
   String value = null;
 
   EchoServiceEchoStringResponseParams() : super(kVersions.last.size);
+
+  EchoServiceEchoStringResponseParams.init(
+    String this.value
+  ) : super(kVersions.last.size);
 
   static EchoServiceEchoStringResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -166,6 +174,11 @@ class _EchoServiceDelayedEchoStringParams extends bindings.Struct {
   int millis = 0;
 
   _EchoServiceDelayedEchoStringParams() : super(kVersions.last.size);
+
+  _EchoServiceDelayedEchoStringParams.init(
+    String this.value, 
+    int this.millis
+  ) : super(kVersions.last.size);
 
   static _EchoServiceDelayedEchoStringParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -252,6 +265,10 @@ class EchoServiceDelayedEchoStringResponseParams extends bindings.Struct {
 
   EchoServiceDelayedEchoStringResponseParams() : super(kVersions.last.size);
 
+  EchoServiceDelayedEchoStringResponseParams.init(
+    String this.value
+  ) : super(kVersions.last.size);
+
   static EchoServiceDelayedEchoStringResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -323,6 +340,9 @@ class _EchoServiceSwapParams extends bindings.Struct {
 
   _EchoServiceSwapParams() : super(kVersions.last.size);
 
+  _EchoServiceSwapParams.init(
+  ) : super(kVersions.last.size);
+
   static _EchoServiceSwapParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -381,6 +401,9 @@ class _EchoServiceQuitParams extends bindings.Struct {
 
   _EchoServiceQuitParams() : super(kVersions.last.size);
 
+  _EchoServiceQuitParams.init(
+  ) : super(kVersions.last.size);
+
   static _EchoServiceQuitParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -437,17 +460,19 @@ const int _echoServiceMethodSwapName = 2;
 const int _echoServiceMethodQuitName = 3;
 
 class _EchoServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]){
+  void getTopLevelInterface(Function responder){
     var interfaceTypeKey = getRuntimeTypeInfo().services["test::EchoService"];
     var userDefinedType = getAllMojomTypeDefinitions()[interfaceTypeKey];
-    return responseFactory(userDefinedType.interfaceType);
+    responder(userDefinedType.interfaceType);
   }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-    responseFactory(getAllMojomTypeDefinitions()[typeKey]);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(getAllMojomTypeDefinitions()[typeKey]);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-    responseFactory(getAllMojomTypeDefinitions());
+  void getAllTypeDefinitions(Function responder) {
+    responder(getAllMojomTypeDefinitions());
+  }
 }
 
 abstract class EchoService {
@@ -472,8 +497,8 @@ abstract class EchoService {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic echoString(String value,[Function responseFactory = null]);
-  dynamic delayedEchoString(String value,int millis,[Function responseFactory = null]);
+  void echoString(String value,void callback(String value));
+  void delayedEchoString(String value,int millis,void callback(String value));
   void swap();
   void quit();
 }
@@ -525,18 +550,14 @@ class _EchoServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.value );
         break;
       case _echoServiceMethodDelayedEchoStringName:
         var r = EchoServiceDelayedEchoStringResponseParams.deserialize(
@@ -545,18 +566,14 @@ class _EchoServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.value );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -601,30 +618,34 @@ class EchoServiceProxy
   }
 
 
-  dynamic echoString(String value,[Function responseFactory = null]) {
+  void echoString(String value,void callback(String value)) {
     if (impl != null) {
-      return new Future(() => impl.echoString(value,_EchoServiceStubControl._echoServiceEchoStringResponseParamsFactory));
+      impl.echoString(value,callback);
+      return;
     }
     var params = new _EchoServiceEchoStringParams();
     params.value = value;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _echoServiceMethodEchoStringName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic delayedEchoString(String value,int millis,[Function responseFactory = null]) {
+  void delayedEchoString(String value,int millis,void callback(String value)) {
     if (impl != null) {
-      return new Future(() => impl.delayedEchoString(value,millis,_EchoServiceStubControl._echoServiceDelayedEchoStringResponseParamsFactory));
+      impl.delayedEchoString(value,millis,callback);
+      return;
     }
     var params = new _EchoServiceDelayedEchoStringParams();
     params.value = value;
     params.millis = millis;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _echoServiceMethodDelayedEchoStringName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void swap() {
     if (impl != null) {
@@ -676,22 +697,36 @@ class _EchoServiceStubControl
   String get serviceName => EchoService.serviceName;
 
 
-  static EchoServiceEchoStringResponseParams _echoServiceEchoStringResponseParamsFactory(String value) {
-    var result = new EchoServiceEchoStringResponseParams();
-    result.value = value;
-    return result;
+  Function _echoServiceEchoStringResponseParamsResponder(
+      int requestId) {
+  return (String value) {
+      var result = new EchoServiceEchoStringResponseParams();
+      result.value = value;
+      sendResponse(buildResponseWithId(
+          result,
+          _echoServiceMethodEchoStringName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static EchoServiceDelayedEchoStringResponseParams _echoServiceDelayedEchoStringResponseParamsFactory(String value) {
-    var result = new EchoServiceDelayedEchoStringResponseParams();
-    result.value = value;
-    return result;
+  Function _echoServiceDelayedEchoStringResponseParamsResponder(
+      int requestId) {
+  return (String value) {
+      var result = new EchoServiceDelayedEchoStringResponseParams();
+      result.value = value;
+      sendResponse(buildResponseWithId(
+          result,
+          _echoServiceMethodDelayedEchoStringName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -700,46 +735,12 @@ class _EchoServiceStubControl
       case _echoServiceMethodEchoStringName:
         var params = _EchoServiceEchoStringParams.deserialize(
             message.payload);
-        var response = _impl.echoString(params.value,_echoServiceEchoStringResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _echoServiceMethodEchoStringName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _echoServiceMethodEchoStringName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.echoString(params.value, _echoServiceEchoStringResponseParamsResponder(message.header.requestId));
         break;
       case _echoServiceMethodDelayedEchoStringName:
         var params = _EchoServiceDelayedEchoStringParams.deserialize(
             message.payload);
-        var response = _impl.delayedEchoString(params.value,params.millis,_echoServiceDelayedEchoStringResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _echoServiceMethodDelayedEchoStringName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _echoServiceMethodDelayedEchoStringName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.delayedEchoString(params.value, params.millis, _echoServiceDelayedEchoStringResponseParamsResponder(message.header.requestId));
         break;
       case _echoServiceMethodSwapName:
         _impl.swap();
@@ -751,7 +752,6 @@ class _EchoServiceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   EchoService get impl => _impl;
@@ -805,11 +805,11 @@ class EchoServiceStub
   }
 
 
-  dynamic echoString(String value,[Function responseFactory = null]) {
-    return impl.echoString(value,responseFactory);
+  void echoString(String value,void callback(String value)) {
+    return impl.echoString(value,callback);
   }
-  dynamic delayedEchoString(String value,int millis,[Function responseFactory = null]) {
-    return impl.delayedEchoString(value,millis,responseFactory);
+  void delayedEchoString(String value,int millis,void callback(String value)) {
+    return impl.delayedEchoString(value,millis,callback);
   }
   void swap() {
     return impl.swap();
@@ -832,7 +832,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xYS28TMRDeR4HQBlReUngcAqdwoOZYRULKgUiVkFBRuVQcolViyKLsA3u3iBtHfgJHjhz5ST1y5B+AzY7BmdiRFzUsQRlpOvE2s/b3+ZvxbjpeZbsQP0DE1/e1sS+8BeObwq8ILygv+v3heJodUXYSj6nl+3ch5/nx4XD0ZHjcl4l7i3l4/sEZ3M+H/FDL70HsQpz6VXwP0UPzKx4+QvwM8TvYF89seN1dA84L2vVrwneEA4qnUUKd+FZ5+D8dmAPTg3mW69sW/kLOLZxMs4QSVk6yJE4pI0n2OiOcjasPk4gVJMpzeVdO5N+RGHESpwVlL6Mx5YSKuUa8mmxPJiVOOPC6dL624LPkM4D97MF19b1P56p40K7i4WXzfn9VOgjN+63sIRrLvTZdV3YVePyJrGBx+sqM6yJgWDXfWG8Kdytwxytt34L3FmD+jfcBo29KsUIzbmWrxo3rbmDpZ988N3PVRc+Sf0m4lOZJNCupRQ83/hIvqoZMPHW0NfuWOlyFjm5DD5vTEc+zlNONjmrqqPcP6wj3YcXbwdb8/Vx48rV9wKbOmcd0Fr2jE9yOF3jbbqgfK/zdsF4dDSy41XPRAu75ttxYPXWA5199xV+PupL6uNNAXZl48WCtJmv9AS/+El7k49N54Uk8m8XczMv9Bvqw3l8CbWyrr93gbOrrHjzzmOpLO64251WNunq0RufVKcIX1OApWMJTG95jjt5GuUk/Ow2dT6coutaP7f3oOmCVOPUjqal6aTnowVvyuwHWQ1iDp9BBD8/K2MhP+z/Tg8S5jnr4EQAA//+qos9XSBMAAA==";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xYvY4TMRDenwPCXUD8SstPEahCwRlRRZGQUpAKCYGO5qrI2jPJot3sst4cgifgESgpKSl5BB7lSko6sC9jcCZ2cKIjq5xupLmJfZnY3+dvxptE3tSuQPwIEc93tLEvvAHjW8KvCq8Yr7rdfjzK91h5mMTM8v57kPNq/0V/8Ky/35WJu/N5eP3eCXyeD/mhlt+G2IJY+MADRA+tr3j4BPELxF9gXz2z4X23DDgvaPPXhe8IBxTPacac+FZ5+D8RrIHpwTzL/W0LHwofCCcTXpI0j2lKhnk+TBkZ5RkjH0pKsvxN/pjwMj5+RQ5oWRFaFHIFTuTfgRhxkowrVr6mMeOEiXUHfLrwrkzK/okH70/nbQteS14DONc2zKv3fT83jZ+b0/jtsvncf6hzDs3nruwRGsszN80ruwZ8HiOrymQ8NOO6CBjWxTvWn8IfBe64pXUsuG8D9r+4H5bs7UTszoxf2brw43rsWfrcT8/NXHXStuRfEi6lekjTCbPo4+aa+VG1ZepfkbZ331Kf/0NXd6DHzeiKF/mYszNdrair9gboCvdrxd9oa/bzXPjytfPApu6jpyyl79kBbttz/G3X3LcVD51wufrqWfCr56k5/LPtu/Y6i4D3P/rwN6PepF7u1lhvJn482LPJGivw4y/gRz5+nReeJWmacDM/D2rs13r/CbSxre5awcnU3X14ZjLVnXa9nd1vK9Tbkw28344QzmAJvoIFfDXh+9HeO1qY9LRT8312hKJrXdm+f90AzBKvfoXVXUcNB314C36nwPoIl+ArdNDHy0li5Kl5SvUh8W6yPn4HAAD//6kk0hzIEwAA";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

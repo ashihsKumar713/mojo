@@ -81,6 +81,15 @@ class Node extends bindings.Struct {
 
   Node() : super(kVersions.last.size);
 
+  Node.init(
+    geometry_mojom.Transform this.contentTransform, 
+    geometry_mojom.RectF this.contentClip, 
+    NodeCombinator this.combinator, 
+    hit_tests_mojom.HitTestBehavior this.hitTestBehavior, 
+    List<int> this.childNodeIds, 
+    NodeOp this.op
+  ) : super(kVersions.last.size);
+
   static Node deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -226,6 +235,11 @@ class RectNodeOp extends bindings.Struct {
 
   RectNodeOp() : super(kVersions.last.size);
 
+  RectNodeOp.init(
+    geometry_mojom.RectF this.contentRect, 
+    Color this.color
+  ) : super(kVersions.last.size);
+
   static RectNodeOp deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -315,6 +329,13 @@ class ImageNodeOp extends bindings.Struct {
   Blend blend = null;
 
   ImageNodeOp() : super(kVersions.last.size);
+
+  ImageNodeOp.init(
+    geometry_mojom.RectF this.contentRect, 
+    geometry_mojom.RectF this.imageRect, 
+    int this.imageResourceId, 
+    Blend this.blend
+  ) : super(kVersions.last.size);
 
   static ImageNodeOp deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -431,6 +452,11 @@ class SceneNodeOp extends bindings.Struct {
 
   SceneNodeOp() : super(kVersions.last.size);
 
+  SceneNodeOp.init(
+    int this.sceneResourceId, 
+    int this.sceneVersion
+  ) : super(kVersions.last.size);
+
   static SceneNodeOp deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -516,6 +542,11 @@ class LayerNodeOp extends bindings.Struct {
   Blend blend = null;
 
   LayerNodeOp() : super(kVersions.last.size);
+
+  LayerNodeOp.init(
+    geometry_mojom.RectF this.layerRect, 
+    Blend this.blend
+  ) : super(kVersions.last.size);
 
   static LayerNodeOp deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -606,6 +637,13 @@ class Color extends bindings.Struct {
   int alpha = 0;
 
   Color() : super(kVersions.last.size);
+
+  Color.init(
+    int this.red, 
+    int this.green, 
+    int this.blue, 
+    int this.alpha
+  ) : super(kVersions.last.size);
 
   static Color deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -717,6 +755,10 @@ class Blend extends bindings.Struct {
   int alpha = 255;
 
   Blend() : super(kVersions.last.size);
+
+  Blend.init(
+    int this.alpha
+  ) : super(kVersions.last.size);
 
   static Blend deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);

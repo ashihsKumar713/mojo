@@ -21,6 +21,11 @@ class _TerminalConnectParams extends bindings.Struct {
 
   _TerminalConnectParams() : super(kVersions.last.size);
 
+  _TerminalConnectParams.init(
+    file_mojom.FileInterfaceRequest this.terminalFile, 
+    bool this.force
+  ) : super(kVersions.last.size);
+
   static _TerminalConnectParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -104,6 +109,10 @@ class TerminalConnectResponseParams extends bindings.Struct {
 
   TerminalConnectResponseParams() : super(kVersions.last.size);
 
+  TerminalConnectResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
+
   static TerminalConnectResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -180,6 +189,11 @@ class _TerminalConnectToClientParams extends bindings.Struct {
   bool force = false;
 
   _TerminalConnectToClientParams() : super(kVersions.last.size);
+
+  _TerminalConnectToClientParams.init(
+    terminal_client_mojom.TerminalClientInterface this.terminalClient, 
+    bool this.force
+  ) : super(kVersions.last.size);
 
   static _TerminalConnectToClientParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -264,6 +278,10 @@ class TerminalConnectToClientResponseParams extends bindings.Struct {
 
   TerminalConnectToClientResponseParams() : super(kVersions.last.size);
 
+  TerminalConnectToClientResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
+
   static TerminalConnectToClientResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -339,6 +357,9 @@ class _TerminalGetSizeParams extends bindings.Struct {
 
   _TerminalGetSizeParams() : super(kVersions.last.size);
 
+  _TerminalGetSizeParams.init(
+  ) : super(kVersions.last.size);
+
   static _TerminalGetSizeParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -399,6 +420,12 @@ class TerminalGetSizeResponseParams extends bindings.Struct {
   int columns = 0;
 
   TerminalGetSizeResponseParams() : super(kVersions.last.size);
+
+  TerminalGetSizeResponseParams.init(
+    types_mojom.Error this.error, 
+    int this.rows, 
+    int this.columns
+  ) : super(kVersions.last.size);
 
   static TerminalGetSizeResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -504,6 +531,12 @@ class _TerminalSetSizeParams extends bindings.Struct {
 
   _TerminalSetSizeParams() : super(kVersions.last.size);
 
+  _TerminalSetSizeParams.init(
+    int this.rows, 
+    int this.columns, 
+    bool this.reset
+  ) : super(kVersions.last.size);
+
   static _TerminalSetSizeParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -604,6 +637,12 @@ class TerminalSetSizeResponseParams extends bindings.Struct {
 
   TerminalSetSizeResponseParams() : super(kVersions.last.size);
 
+  TerminalSetSizeResponseParams.init(
+    types_mojom.Error this.error, 
+    int this.rows, 
+    int this.columns
+  ) : super(kVersions.last.size);
+
   static TerminalSetSizeResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -703,14 +742,17 @@ const int _terminalMethodGetSizeName = 2;
 const int _terminalMethodSetSizeName = 3;
 
 class _TerminalServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Terminal {
@@ -735,10 +777,10 @@ abstract class Terminal {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic connect(file_mojom.FileInterfaceRequest terminalFile,bool force,[Function responseFactory = null]);
-  dynamic connectToClient(terminal_client_mojom.TerminalClientInterface terminalClient,bool force,[Function responseFactory = null]);
-  dynamic getSize([Function responseFactory = null]);
-  dynamic setSize(int rows,int columns,bool reset,[Function responseFactory = null]);
+  void connect(file_mojom.FileInterfaceRequest terminalFile,bool force,void callback(types_mojom.Error error));
+  void connectToClient(terminal_client_mojom.TerminalClientInterface terminalClient,bool force,void callback(types_mojom.Error error));
+  void getSize(void callback(types_mojom.Error error, int rows, int columns));
+  void setSize(int rows,int columns,bool reset,void callback(types_mojom.Error error, int rows, int columns));
 }
 
 abstract class TerminalInterface
@@ -788,18 +830,14 @@ class _TerminalProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       case _terminalMethodConnectToClientName:
         var r = TerminalConnectToClientResponseParams.deserialize(
@@ -808,18 +846,14 @@ class _TerminalProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       case _terminalMethodGetSizeName:
         var r = TerminalGetSizeResponseParams.deserialize(
@@ -828,18 +862,14 @@ class _TerminalProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error , r.rows , r.columns );
         break;
       case _terminalMethodSetSizeName:
         var r = TerminalSetSizeResponseParams.deserialize(
@@ -848,18 +878,14 @@ class _TerminalProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error , r.rows , r.columns );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -904,56 +930,64 @@ class TerminalProxy
   }
 
 
-  dynamic connect(file_mojom.FileInterfaceRequest terminalFile,bool force,[Function responseFactory = null]) {
+  void connect(file_mojom.FileInterfaceRequest terminalFile,bool force,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.connect(terminalFile,force,_TerminalStubControl._terminalConnectResponseParamsFactory));
+      impl.connect(terminalFile,force,callback);
+      return;
     }
     var params = new _TerminalConnectParams();
     params.terminalFile = terminalFile;
     params.force = force;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _terminalMethodConnectName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic connectToClient(terminal_client_mojom.TerminalClientInterface terminalClient,bool force,[Function responseFactory = null]) {
+  void connectToClient(terminal_client_mojom.TerminalClientInterface terminalClient,bool force,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.connectToClient(terminalClient,force,_TerminalStubControl._terminalConnectToClientResponseParamsFactory));
+      impl.connectToClient(terminalClient,force,callback);
+      return;
     }
     var params = new _TerminalConnectToClientParams();
     params.terminalClient = terminalClient;
     params.force = force;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _terminalMethodConnectToClientName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic getSize([Function responseFactory = null]) {
+  void getSize(void callback(types_mojom.Error error, int rows, int columns)) {
     if (impl != null) {
-      return new Future(() => impl.getSize(_TerminalStubControl._terminalGetSizeResponseParamsFactory));
+      impl.getSize(callback);
+      return;
     }
     var params = new _TerminalGetSizeParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _terminalMethodGetSizeName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic setSize(int rows,int columns,bool reset,[Function responseFactory = null]) {
+  void setSize(int rows,int columns,bool reset,void callback(types_mojom.Error error, int rows, int columns)) {
     if (impl != null) {
-      return new Future(() => impl.setSize(rows,columns,reset,_TerminalStubControl._terminalSetSizeResponseParamsFactory));
+      impl.setSize(rows,columns,reset,callback);
+      return;
     }
     var params = new _TerminalSetSizeParams();
     params.rows = rows;
     params.columns = columns;
     params.reset = reset;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _terminalMethodSetSizeName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -979,36 +1013,64 @@ class _TerminalStubControl
   String get serviceName => Terminal.serviceName;
 
 
-  static TerminalConnectResponseParams _terminalConnectResponseParamsFactory(types_mojom.Error error) {
-    var result = new TerminalConnectResponseParams();
-    result.error = error;
-    return result;
+  Function _terminalConnectResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new TerminalConnectResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _terminalMethodConnectName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static TerminalConnectToClientResponseParams _terminalConnectToClientResponseParamsFactory(types_mojom.Error error) {
-    var result = new TerminalConnectToClientResponseParams();
-    result.error = error;
-    return result;
+  Function _terminalConnectToClientResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new TerminalConnectToClientResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _terminalMethodConnectToClientName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static TerminalGetSizeResponseParams _terminalGetSizeResponseParamsFactory(types_mojom.Error error, int rows, int columns) {
-    var result = new TerminalGetSizeResponseParams();
-    result.error = error;
-    result.rows = rows;
-    result.columns = columns;
-    return result;
+  Function _terminalGetSizeResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error, int rows, int columns) {
+      var result = new TerminalGetSizeResponseParams();
+      result.error = error;
+      result.rows = rows;
+      result.columns = columns;
+      sendResponse(buildResponseWithId(
+          result,
+          _terminalMethodGetSizeName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static TerminalSetSizeResponseParams _terminalSetSizeResponseParamsFactory(types_mojom.Error error, int rows, int columns) {
-    var result = new TerminalSetSizeResponseParams();
-    result.error = error;
-    result.rows = rows;
-    result.columns = columns;
-    return result;
+  Function _terminalSetSizeResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error, int rows, int columns) {
+      var result = new TerminalSetSizeResponseParams();
+      result.error = error;
+      result.rows = rows;
+      result.columns = columns;
+      sendResponse(buildResponseWithId(
+          result,
+          _terminalMethodSetSizeName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1017,94 +1079,25 @@ class _TerminalStubControl
       case _terminalMethodConnectName:
         var params = _TerminalConnectParams.deserialize(
             message.payload);
-        var response = _impl.connect(params.terminalFile,params.force,_terminalConnectResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _terminalMethodConnectName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _terminalMethodConnectName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.connect(params.terminalFile, params.force, _terminalConnectResponseParamsResponder(message.header.requestId));
         break;
       case _terminalMethodConnectToClientName:
         var params = _TerminalConnectToClientParams.deserialize(
             message.payload);
-        var response = _impl.connectToClient(params.terminalClient,params.force,_terminalConnectToClientResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _terminalMethodConnectToClientName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _terminalMethodConnectToClientName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.connectToClient(params.terminalClient, params.force, _terminalConnectToClientResponseParamsResponder(message.header.requestId));
         break;
       case _terminalMethodGetSizeName:
-        var response = _impl.getSize(_terminalGetSizeResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _terminalMethodGetSizeName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _terminalMethodGetSizeName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getSize(_terminalGetSizeResponseParamsResponder(message.header.requestId));
         break;
       case _terminalMethodSetSizeName:
         var params = _TerminalSetSizeParams.deserialize(
             message.payload);
-        var response = _impl.setSize(params.rows,params.columns,params.reset,_terminalSetSizeResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _terminalMethodSetSizeName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _terminalMethodSetSizeName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.setSize(params.rows, params.columns, params.reset, _terminalSetSizeResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Terminal get impl => _impl;
@@ -1158,17 +1151,17 @@ class TerminalStub
   }
 
 
-  dynamic connect(file_mojom.FileInterfaceRequest terminalFile,bool force,[Function responseFactory = null]) {
-    return impl.connect(terminalFile,force,responseFactory);
+  void connect(file_mojom.FileInterfaceRequest terminalFile,bool force,void callback(types_mojom.Error error)) {
+    return impl.connect(terminalFile,force,callback);
   }
-  dynamic connectToClient(terminal_client_mojom.TerminalClientInterface terminalClient,bool force,[Function responseFactory = null]) {
-    return impl.connectToClient(terminalClient,force,responseFactory);
+  void connectToClient(terminal_client_mojom.TerminalClientInterface terminalClient,bool force,void callback(types_mojom.Error error)) {
+    return impl.connectToClient(terminalClient,force,callback);
   }
-  dynamic getSize([Function responseFactory = null]) {
-    return impl.getSize(responseFactory);
+  void getSize(void callback(types_mojom.Error error, int rows, int columns)) {
+    return impl.getSize(callback);
   }
-  dynamic setSize(int rows,int columns,bool reset,[Function responseFactory = null]) {
-    return impl.setSize(rows,columns,reset,responseFactory);
+  void setSize(int rows,int columns,bool reset,void callback(types_mojom.Error error, int rows, int columns)) {
+    return impl.setSize(rows,columns,reset,callback);
   }
 }
 

@@ -19,6 +19,9 @@ class _MediaDemuxDescribeParams extends bindings.Struct {
 
   _MediaDemuxDescribeParams() : super(kVersions.last.size);
 
+  _MediaDemuxDescribeParams.init(
+  ) : super(kVersions.last.size);
+
   static _MediaDemuxDescribeParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -77,6 +80,10 @@ class MediaDemuxDescribeResponseParams extends bindings.Struct {
   List<media_types_mojom.MediaType> streamTypes = null;
 
   MediaDemuxDescribeResponseParams() : super(kVersions.last.size);
+
+  MediaDemuxDescribeResponseParams.init(
+    List<media_types_mojom.MediaType> this.streamTypes
+  ) : super(kVersions.last.size);
 
   static MediaDemuxDescribeResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -167,6 +174,11 @@ class _MediaDemuxGetProducerParams extends bindings.Struct {
 
   _MediaDemuxGetProducerParams() : super(kVersions.last.size);
 
+  _MediaDemuxGetProducerParams.init(
+    int this.streamIndex, 
+    media_transport_mojom.MediaProducerInterfaceRequest this.producer
+  ) : super(kVersions.last.size);
+
   static _MediaDemuxGetProducerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -250,6 +262,10 @@ class _MediaDemuxGetMetadataParams extends bindings.Struct {
 
   _MediaDemuxGetMetadataParams() : super(kVersions.last.size);
 
+  _MediaDemuxGetMetadataParams.init(
+    int this.versionLastSeen
+  ) : super(kVersions.last.size);
+
   static _MediaDemuxGetMetadataParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -322,6 +338,11 @@ class MediaDemuxGetMetadataResponseParams extends bindings.Struct {
   media_metadata_mojom.MediaMetadata metadata = null;
 
   MediaDemuxGetMetadataResponseParams() : super(kVersions.last.size);
+
+  MediaDemuxGetMetadataResponseParams.init(
+    int this.version, 
+    media_metadata_mojom.MediaMetadata this.metadata
+  ) : super(kVersions.last.size);
 
   static MediaDemuxGetMetadataResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -408,6 +429,9 @@ class _MediaDemuxPrimeParams extends bindings.Struct {
 
   _MediaDemuxPrimeParams() : super(kVersions.last.size);
 
+  _MediaDemuxPrimeParams.init(
+  ) : super(kVersions.last.size);
+
   static _MediaDemuxPrimeParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -465,6 +489,9 @@ class MediaDemuxPrimeResponseParams extends bindings.Struct {
   ];
 
   MediaDemuxPrimeResponseParams() : super(kVersions.last.size);
+
+  MediaDemuxPrimeResponseParams.init(
+  ) : super(kVersions.last.size);
 
   static MediaDemuxPrimeResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -524,6 +551,9 @@ class _MediaDemuxFlushParams extends bindings.Struct {
 
   _MediaDemuxFlushParams() : super(kVersions.last.size);
 
+  _MediaDemuxFlushParams.init(
+  ) : super(kVersions.last.size);
+
   static _MediaDemuxFlushParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -581,6 +611,9 @@ class MediaDemuxFlushResponseParams extends bindings.Struct {
   ];
 
   MediaDemuxFlushResponseParams() : super(kVersions.last.size);
+
+  MediaDemuxFlushResponseParams.init(
+  ) : super(kVersions.last.size);
 
   static MediaDemuxFlushResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -640,6 +673,10 @@ class _MediaDemuxSeekParams extends bindings.Struct {
   int position = 0;
 
   _MediaDemuxSeekParams() : super(kVersions.last.size);
+
+  _MediaDemuxSeekParams.init(
+    int this.position
+  ) : super(kVersions.last.size);
 
   static _MediaDemuxSeekParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -712,6 +749,9 @@ class MediaDemuxSeekResponseParams extends bindings.Struct {
 
   MediaDemuxSeekResponseParams() : super(kVersions.last.size);
 
+  MediaDemuxSeekResponseParams.init(
+  ) : super(kVersions.last.size);
+
   static MediaDemuxSeekResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -770,14 +810,17 @@ const int _mediaDemuxMethodFlushName = 4;
 const int _mediaDemuxMethodSeekName = 5;
 
 class _MediaDemuxServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class MediaDemux {
@@ -802,12 +845,12 @@ abstract class MediaDemux {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic describe([Function responseFactory = null]);
+  void describe(void callback(List<media_types_mojom.MediaType> streamTypes));
   void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer);
-  dynamic getMetadata(int versionLastSeen,[Function responseFactory = null]);
-  dynamic prime([Function responseFactory = null]);
-  dynamic flush([Function responseFactory = null]);
-  dynamic seek(int position,[Function responseFactory = null]);
+  void getMetadata(int versionLastSeen,void callback(int version, media_metadata_mojom.MediaMetadata metadata));
+  void prime(void callback());
+  void flush(void callback());
+  void seek(int position,void callback());
   static const int kInitialMetadata = 0;
 }
 
@@ -858,18 +901,14 @@ class _MediaDemuxProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.streamTypes );
         break;
       case _mediaDemuxMethodGetMetadataName:
         var r = MediaDemuxGetMetadataResponseParams.deserialize(
@@ -878,18 +917,14 @@ class _MediaDemuxProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.version , r.metadata );
         break;
       case _mediaDemuxMethodPrimeName:
         var r = MediaDemuxPrimeResponseParams.deserialize(
@@ -898,18 +933,14 @@ class _MediaDemuxProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       case _mediaDemuxMethodFlushName:
         var r = MediaDemuxFlushResponseParams.deserialize(
@@ -918,18 +949,14 @@ class _MediaDemuxProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       case _mediaDemuxMethodSeekName:
         var r = MediaDemuxSeekResponseParams.deserialize(
@@ -938,18 +965,14 @@ class _MediaDemuxProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -994,16 +1017,18 @@ class MediaDemuxProxy
   }
 
 
-  dynamic describe([Function responseFactory = null]) {
+  void describe(void callback(List<media_types_mojom.MediaType> streamTypes)) {
     if (impl != null) {
-      return new Future(() => impl.describe(_MediaDemuxStubControl._mediaDemuxDescribeResponseParamsFactory));
+      impl.describe(callback);
+      return;
     }
     var params = new _MediaDemuxDescribeParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaDemuxMethodDescribeName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer) {
     if (impl != null) {
@@ -1020,51 +1045,59 @@ class MediaDemuxProxy
     ctrl.sendMessage(params,
         _mediaDemuxMethodGetProducerName);
   }
-  dynamic getMetadata(int versionLastSeen,[Function responseFactory = null]) {
+  void getMetadata(int versionLastSeen,void callback(int version, media_metadata_mojom.MediaMetadata metadata)) {
     if (impl != null) {
-      return new Future(() => impl.getMetadata(versionLastSeen,_MediaDemuxStubControl._mediaDemuxGetMetadataResponseParamsFactory));
+      impl.getMetadata(versionLastSeen,callback);
+      return;
     }
     var params = new _MediaDemuxGetMetadataParams();
     params.versionLastSeen = versionLastSeen;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaDemuxMethodGetMetadataName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic prime([Function responseFactory = null]) {
+  void prime(void callback()) {
     if (impl != null) {
-      return new Future(() => impl.prime(_MediaDemuxStubControl._mediaDemuxPrimeResponseParamsFactory));
+      impl.prime(callback);
+      return;
     }
     var params = new _MediaDemuxPrimeParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaDemuxMethodPrimeName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic flush([Function responseFactory = null]) {
+  void flush(void callback()) {
     if (impl != null) {
-      return new Future(() => impl.flush(_MediaDemuxStubControl._mediaDemuxFlushResponseParamsFactory));
+      impl.flush(callback);
+      return;
     }
     var params = new _MediaDemuxFlushParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaDemuxMethodFlushName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic seek(int position,[Function responseFactory = null]) {
+  void seek(int position,void callback()) {
     if (impl != null) {
-      return new Future(() => impl.seek(position,_MediaDemuxStubControl._mediaDemuxSeekResponseParamsFactory));
+      impl.seek(position,callback);
+      return;
     }
     var params = new _MediaDemuxSeekParams();
     params.position = position;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaDemuxMethodSeekName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -1090,59 +1123,77 @@ class _MediaDemuxStubControl
   String get serviceName => MediaDemux.serviceName;
 
 
-  static MediaDemuxDescribeResponseParams _mediaDemuxDescribeResponseParamsFactory(List<media_types_mojom.MediaType> streamTypes) {
-    var result = new MediaDemuxDescribeResponseParams();
-    result.streamTypes = streamTypes;
-    return result;
+  Function _mediaDemuxDescribeResponseParamsResponder(
+      int requestId) {
+  return (List<media_types_mojom.MediaType> streamTypes) {
+      var result = new MediaDemuxDescribeResponseParams();
+      result.streamTypes = streamTypes;
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaDemuxMethodDescribeName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static MediaDemuxGetMetadataResponseParams _mediaDemuxGetMetadataResponseParamsFactory(int version, media_metadata_mojom.MediaMetadata metadata) {
-    var result = new MediaDemuxGetMetadataResponseParams();
-    result.version = version;
-    result.metadata = metadata;
-    return result;
+  Function _mediaDemuxGetMetadataResponseParamsResponder(
+      int requestId) {
+  return (int version, media_metadata_mojom.MediaMetadata metadata) {
+      var result = new MediaDemuxGetMetadataResponseParams();
+      result.version = version;
+      result.metadata = metadata;
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaDemuxMethodGetMetadataName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static MediaDemuxPrimeResponseParams _mediaDemuxPrimeResponseParamsFactory() {
-    var result = new MediaDemuxPrimeResponseParams();
-    return result;
+  Function _mediaDemuxPrimeResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new MediaDemuxPrimeResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaDemuxMethodPrimeName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static MediaDemuxFlushResponseParams _mediaDemuxFlushResponseParamsFactory() {
-    var result = new MediaDemuxFlushResponseParams();
-    return result;
+  Function _mediaDemuxFlushResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new MediaDemuxFlushResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaDemuxMethodFlushName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static MediaDemuxSeekResponseParams _mediaDemuxSeekResponseParamsFactory() {
-    var result = new MediaDemuxSeekResponseParams();
-    return result;
+  Function _mediaDemuxSeekResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new MediaDemuxSeekResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaDemuxMethodSeekName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _mediaDemuxMethodDescribeName:
-        var response = _impl.describe(_mediaDemuxDescribeResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaDemuxMethodDescribeName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaDemuxMethodDescribeName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.describe(_mediaDemuxDescribeResponseParamsResponder(message.header.requestId));
         break;
       case _mediaDemuxMethodGetProducerName:
         var params = _MediaDemuxGetProducerParams.deserialize(
@@ -1152,92 +1203,23 @@ class _MediaDemuxStubControl
       case _mediaDemuxMethodGetMetadataName:
         var params = _MediaDemuxGetMetadataParams.deserialize(
             message.payload);
-        var response = _impl.getMetadata(params.versionLastSeen,_mediaDemuxGetMetadataResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaDemuxMethodGetMetadataName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaDemuxMethodGetMetadataName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getMetadata(params.versionLastSeen, _mediaDemuxGetMetadataResponseParamsResponder(message.header.requestId));
         break;
       case _mediaDemuxMethodPrimeName:
-        var response = _impl.prime(_mediaDemuxPrimeResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaDemuxMethodPrimeName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaDemuxMethodPrimeName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.prime(_mediaDemuxPrimeResponseParamsResponder(message.header.requestId));
         break;
       case _mediaDemuxMethodFlushName:
-        var response = _impl.flush(_mediaDemuxFlushResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaDemuxMethodFlushName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaDemuxMethodFlushName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.flush(_mediaDemuxFlushResponseParamsResponder(message.header.requestId));
         break;
       case _mediaDemuxMethodSeekName:
         var params = _MediaDemuxSeekParams.deserialize(
             message.payload);
-        var response = _impl.seek(params.position,_mediaDemuxSeekResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaDemuxMethodSeekName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaDemuxMethodSeekName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.seek(params.position, _mediaDemuxSeekResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   MediaDemux get impl => _impl;
@@ -1291,23 +1273,23 @@ class MediaDemuxStub
   }
 
 
-  dynamic describe([Function responseFactory = null]) {
-    return impl.describe(responseFactory);
+  void describe(void callback(List<media_types_mojom.MediaType> streamTypes)) {
+    return impl.describe(callback);
   }
   void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer) {
     return impl.getProducer(streamIndex, producer);
   }
-  dynamic getMetadata(int versionLastSeen,[Function responseFactory = null]) {
-    return impl.getMetadata(versionLastSeen,responseFactory);
+  void getMetadata(int versionLastSeen,void callback(int version, media_metadata_mojom.MediaMetadata metadata)) {
+    return impl.getMetadata(versionLastSeen,callback);
   }
-  dynamic prime([Function responseFactory = null]) {
-    return impl.prime(responseFactory);
+  void prime(void callback()) {
+    return impl.prime(callback);
   }
-  dynamic flush([Function responseFactory = null]) {
-    return impl.flush(responseFactory);
+  void flush(void callback()) {
+    return impl.flush(callback);
   }
-  dynamic seek(int position,[Function responseFactory = null]) {
-    return impl.seek(position,responseFactory);
+  void seek(int position,void callback()) {
+    return impl.seek(position,callback);
   }
 }
 

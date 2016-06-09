@@ -80,6 +80,12 @@ class HitTestBehavior extends bindings.Struct {
 
   HitTestBehavior() : super(kVersions.last.size);
 
+  HitTestBehavior.init(
+    HitTestBehaviorVisibility this.visibility, 
+    bool this.prune, 
+    geometry_mojom.RectF this.hitRect
+  ) : super(kVersions.last.size);
+
   static HitTestBehavior deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -183,6 +189,10 @@ class HitTestResult extends bindings.Struct {
 
   HitTestResult() : super(kVersions.last.size);
 
+  HitTestResult.init(
+    SceneHit this.root
+  ) : super(kVersions.last.size);
+
   static HitTestResult deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -257,6 +267,12 @@ class SceneHit extends bindings.Struct {
   List<Hit> hits = null;
 
   SceneHit() : super(kVersions.last.size);
+
+  SceneHit.init(
+    scene_token_mojom.SceneToken this.sceneToken, 
+    int this.sceneVersion, 
+    List<Hit> this.hits
+  ) : super(kVersions.last.size);
 
   static SceneHit deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -377,6 +393,11 @@ class NodeHit extends bindings.Struct {
 
   NodeHit() : super(kVersions.last.size);
 
+  NodeHit.init(
+    int this.nodeId, 
+    geometry_mojom.Transform this.transform
+  ) : super(kVersions.last.size);
+
   static NodeHit deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -463,6 +484,10 @@ class _HitTesterHitTestParams extends bindings.Struct {
 
   _HitTesterHitTestParams() : super(kVersions.last.size);
 
+  _HitTesterHitTestParams.init(
+    geometry_mojom.PointF this.point
+  ) : super(kVersions.last.size);
+
   static _HitTesterHitTestParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -535,6 +560,10 @@ class HitTesterHitTestResponseParams extends bindings.Struct {
   HitTestResult result = null;
 
   HitTesterHitTestResponseParams() : super(kVersions.last.size);
+
+  HitTesterHitTestResponseParams.init(
+    HitTestResult this.result
+  ) : super(kVersions.last.size);
 
   static HitTesterHitTestResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -708,14 +737,17 @@ class Hit extends bindings.Union {
 const int _hitTesterMethodHitTestName = 0;
 
 class _HitTesterServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class HitTester {
@@ -740,7 +772,7 @@ abstract class HitTester {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic hitTest(geometry_mojom.PointF point,[Function responseFactory = null]);
+  void hitTest(geometry_mojom.PointF point,void callback(HitTestResult result));
 }
 
 abstract class HitTesterInterface
@@ -790,18 +822,14 @@ class _HitTesterProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.result );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -846,17 +874,19 @@ class HitTesterProxy
   }
 
 
-  dynamic hitTest(geometry_mojom.PointF point,[Function responseFactory = null]) {
+  void hitTest(geometry_mojom.PointF point,void callback(HitTestResult result)) {
     if (impl != null) {
-      return new Future(() => impl.hitTest(point,_HitTesterStubControl._hitTesterHitTestResponseParamsFactory));
+      impl.hitTest(point,callback);
+      return;
     }
     var params = new _HitTesterHitTestParams();
     params.point = point;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _hitTesterMethodHitTestName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -882,17 +912,24 @@ class _HitTesterStubControl
   String get serviceName => HitTester.serviceName;
 
 
-  static HitTesterHitTestResponseParams _hitTesterHitTestResponseParamsFactory(HitTestResult result) {
-    var result = new HitTesterHitTestResponseParams();
-    result.result = result;
-    return result;
+  Function _hitTesterHitTestResponseParamsResponder(
+      int requestId) {
+  return (HitTestResult result) {
+      var result = new HitTesterHitTestResponseParams();
+      result.result = result;
+      sendResponse(buildResponseWithId(
+          result,
+          _hitTesterMethodHitTestName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -901,30 +938,12 @@ class _HitTesterStubControl
       case _hitTesterMethodHitTestName:
         var params = _HitTesterHitTestParams.deserialize(
             message.payload);
-        var response = _impl.hitTest(params.point,_hitTesterHitTestResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _hitTesterMethodHitTestName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _hitTesterMethodHitTestName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.hitTest(params.point, _hitTesterHitTestResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   HitTester get impl => _impl;
@@ -978,8 +997,8 @@ class HitTesterStub
   }
 
 
-  dynamic hitTest(geometry_mojom.PointF point,[Function responseFactory = null]) {
-    return impl.hitTest(point,responseFactory);
+  void hitTest(geometry_mojom.PointF point,void callback(HitTestResult result)) {
+    return impl.hitTest(point,callback);
   }
 }
 

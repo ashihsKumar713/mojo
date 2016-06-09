@@ -21,6 +21,9 @@ class _CalculatorClearParams extends bindings.Struct {
 
   _CalculatorClearParams() : super(kVersions.last.size);
 
+  _CalculatorClearParams.init(
+  ) : super(kVersions.last.size);
+
   static _CalculatorClearParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -79,6 +82,10 @@ class CalculatorClearResponseParams extends bindings.Struct {
   double value = 0.0;
 
   CalculatorClearResponseParams() : super(kVersions.last.size);
+
+  CalculatorClearResponseParams.init(
+    double this.value
+  ) : super(kVersions.last.size);
 
   static CalculatorClearResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -152,6 +159,10 @@ class _CalculatorAddParams extends bindings.Struct {
 
   _CalculatorAddParams() : super(kVersions.last.size);
 
+  _CalculatorAddParams.init(
+    double this.value
+  ) : super(kVersions.last.size);
+
   static _CalculatorAddParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -223,6 +234,10 @@ class CalculatorAddResponseParams extends bindings.Struct {
   double value = 0.0;
 
   CalculatorAddResponseParams() : super(kVersions.last.size);
+
+  CalculatorAddResponseParams.init(
+    double this.value
+  ) : super(kVersions.last.size);
 
   static CalculatorAddResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -296,6 +311,10 @@ class _CalculatorMultiplyParams extends bindings.Struct {
 
   _CalculatorMultiplyParams() : super(kVersions.last.size);
 
+  _CalculatorMultiplyParams.init(
+    double this.value
+  ) : super(kVersions.last.size);
+
   static _CalculatorMultiplyParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -368,6 +387,10 @@ class CalculatorMultiplyResponseParams extends bindings.Struct {
 
   CalculatorMultiplyResponseParams() : super(kVersions.last.size);
 
+  CalculatorMultiplyResponseParams.init(
+    double this.value
+  ) : super(kVersions.last.size);
+
   static CalculatorMultiplyResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -436,14 +459,17 @@ const int _calculatorMethodAddName = 1;
 const int _calculatorMethodMultiplyName = 2;
 
 class _CalculatorServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Calculator {
@@ -468,9 +494,9 @@ abstract class Calculator {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic clear([Function responseFactory = null]);
-  dynamic add(double value,[Function responseFactory = null]);
-  dynamic multiply(double value,[Function responseFactory = null]);
+  void clear(void callback(double value));
+  void add(double value,void callback(double value));
+  void multiply(double value,void callback(double value));
 }
 
 abstract class CalculatorInterface
@@ -520,18 +546,14 @@ class _CalculatorProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.value );
         break;
       case _calculatorMethodAddName:
         var r = CalculatorAddResponseParams.deserialize(
@@ -540,18 +562,14 @@ class _CalculatorProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.value );
         break;
       case _calculatorMethodMultiplyName:
         var r = CalculatorMultiplyResponseParams.deserialize(
@@ -560,18 +578,14 @@ class _CalculatorProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.value );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -616,40 +630,46 @@ class CalculatorProxy
   }
 
 
-  dynamic clear([Function responseFactory = null]) {
+  void clear(void callback(double value)) {
     if (impl != null) {
-      return new Future(() => impl.clear(_CalculatorStubControl._calculatorClearResponseParamsFactory));
+      impl.clear(callback);
+      return;
     }
     var params = new _CalculatorClearParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _calculatorMethodClearName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic add(double value,[Function responseFactory = null]) {
+  void add(double value,void callback(double value)) {
     if (impl != null) {
-      return new Future(() => impl.add(value,_CalculatorStubControl._calculatorAddResponseParamsFactory));
+      impl.add(value,callback);
+      return;
     }
     var params = new _CalculatorAddParams();
     params.value = value;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _calculatorMethodAddName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic multiply(double value,[Function responseFactory = null]) {
+  void multiply(double value,void callback(double value)) {
     if (impl != null) {
-      return new Future(() => impl.multiply(value,_CalculatorStubControl._calculatorMultiplyResponseParamsFactory));
+      impl.multiply(value,callback);
+      return;
     }
     var params = new _CalculatorMultiplyParams();
     params.value = value;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _calculatorMethodMultiplyName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -675,101 +695,70 @@ class _CalculatorStubControl
   String get serviceName => Calculator.serviceName;
 
 
-  static CalculatorClearResponseParams _calculatorClearResponseParamsFactory(double value) {
-    var result = new CalculatorClearResponseParams();
-    result.value = value;
-    return result;
+  Function _calculatorClearResponseParamsResponder(
+      int requestId) {
+  return (double value) {
+      var result = new CalculatorClearResponseParams();
+      result.value = value;
+      sendResponse(buildResponseWithId(
+          result,
+          _calculatorMethodClearName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static CalculatorAddResponseParams _calculatorAddResponseParamsFactory(double value) {
-    var result = new CalculatorAddResponseParams();
-    result.value = value;
-    return result;
+  Function _calculatorAddResponseParamsResponder(
+      int requestId) {
+  return (double value) {
+      var result = new CalculatorAddResponseParams();
+      result.value = value;
+      sendResponse(buildResponseWithId(
+          result,
+          _calculatorMethodAddName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static CalculatorMultiplyResponseParams _calculatorMultiplyResponseParamsFactory(double value) {
-    var result = new CalculatorMultiplyResponseParams();
-    result.value = value;
-    return result;
+  Function _calculatorMultiplyResponseParamsResponder(
+      int requestId) {
+  return (double value) {
+      var result = new CalculatorMultiplyResponseParams();
+      result.value = value;
+      sendResponse(buildResponseWithId(
+          result,
+          _calculatorMethodMultiplyName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _calculatorMethodClearName:
-        var response = _impl.clear(_calculatorClearResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _calculatorMethodClearName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _calculatorMethodClearName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.clear(_calculatorClearResponseParamsResponder(message.header.requestId));
         break;
       case _calculatorMethodAddName:
         var params = _CalculatorAddParams.deserialize(
             message.payload);
-        var response = _impl.add(params.value,_calculatorAddResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _calculatorMethodAddName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _calculatorMethodAddName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.add(params.value, _calculatorAddResponseParamsResponder(message.header.requestId));
         break;
       case _calculatorMethodMultiplyName:
         var params = _CalculatorMultiplyParams.deserialize(
             message.payload);
-        var response = _impl.multiply(params.value,_calculatorMultiplyResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _calculatorMethodMultiplyName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _calculatorMethodMultiplyName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.multiply(params.value, _calculatorMultiplyResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Calculator get impl => _impl;
@@ -823,14 +812,14 @@ class CalculatorStub
   }
 
 
-  dynamic clear([Function responseFactory = null]) {
-    return impl.clear(responseFactory);
+  void clear(void callback(double value)) {
+    return impl.clear(callback);
   }
-  dynamic add(double value,[Function responseFactory = null]) {
-    return impl.add(value,responseFactory);
+  void add(double value,void callback(double value)) {
+    return impl.add(value,callback);
   }
-  dynamic multiply(double value,[Function responseFactory = null]) {
-    return impl.multiply(value,responseFactory);
+  void multiply(double value,void callback(double value)) {
+    return impl.multiply(value,callback);
   }
 }
 
@@ -847,7 +836,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xXTWvyQBA2+r4Q9f3w/WhNb0IvXup6lJ4sRSiUgodehILEZFtT8mHzUeg/6c/z2GOPvbWbZlbXaRYjKNqSgWGa7Q6Z5+GZJ6gVkqhBbUPF57yqqOJ7HeFZEe414O7loN8bnvcGx44ejlunum1Eth56vgb3476S0NcU+sV4Qc9d9NxG568QZ4X0+MuywnI+UXJeZ/mbJRr3A24V+q9ijCzJ2HMo8SPTcyyX+sTxbj0S+EbyxyQa2ZZBLDek/rVu0ICMLNe03JuAhDQIAxK/bmjMXteKu5w0vjkv/4G3AvBYFP5fEvr635L6WE7nd8r5VbLxi6MpOf/J8nvMr011PwVHGWbeNH8NpNspqstwch3J8O8B1necRz69i9g8KXh5bBqvKtlHDc2hIh1gfp6V9fCzz/KXwE8w8dyAbo8fzEs3xcf4TmWJde3JvW5HVLIn9S3wIupFEeaR+YdaWuRtGS8KpIyXKvjYiWmmfncqW/aPde3HP8DKcAruke9H1v2owPd6V/Zj03qJv/s/ZnrhbprrZRW9HH4iPy1m5KUIKeOlBrNcRHZoTewHzEv1i/ipBpg4Tm6q+X5k248qeMyu+ukT+r2SVS8dCR8HLP8s6mVuqrmvrqSb5g7p5i0AAP//5ns7IOgQAAA=";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xXTY/TMBBtU5CyLR/lc8OtEpdeWK84rTgtQishISQOXHoqbmraICcOcYIEv5Zjj/wDcNpx6wwx/aC0YZWRRtM4tjLv9c1L6zUW0YV6DhWv6+qiivddGNdNY18P9r4fvLsavrkavAhpOj17RbmfcZqKxIP9+bmWca5vnC9Es3h5iW6fo/WfEK8b5XFfZVvlqqPF+qnKuypRu7/hduH8VOUHlSSTCeHCp5xMhJhwRqYiZORbQkkoPonnRCb+/BOJsxEPfBJEKUs+Up9JMgqicRBNJEmZTCXJHz30l48+y0+F+Pman4fAn6bIMe63jO8rvrGo30/KeZ5pXM5mPOPoW9Zvq7yZ88wZTUr0cwI9H4rHHtLxDNV1eLWubDw8AsxzvM8S9jlTvZTg1nEo3K5lTj3Uj4t0gXnSAvtbnh6rvGPwJGMRSXZ8njA/lyU+V2JH1tjX/HyhPGOW+Tk9Ij8esuhu48/+0msV+VvHTxPSxk8HfO7leFz6fmpXxF/2NTcPALPCa7hLPTfbzk0b3vNVm5t/rZ/898KtpX6069b62UU/T/9D33U25MeBtPHThV7eZjwNYv4V89O5Zr7rATaNV5tvPTfbzU0HPKjqvvsD/R/aVD8XFl6eqLxX1M/KfGv/3UlH/Qrq6FcAAAD//4oDU5NgEQAA";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

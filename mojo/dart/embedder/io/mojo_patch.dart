@@ -20,6 +20,187 @@ import 'dart:_mojo_services/mojo/files/directory.mojom.dart';
 import 'dart:_mojo_services/mojo/files/ioctl.mojom.dart';
 import 'dart:_mojo_services/mojo/files/types.mojom.dart' as types;
 
+// TODO(zra): Investigate the runtime cost of using these wrapper classes.
+// Port to use the callback API where necessary to recover performance.
+class _NetworkServiceProxy extends FuturizedProxy<NetworkServiceProxy> {
+  Map<Symbol, Function> _mojoMethods;
+  NetworkServiceProxy _nsProxy;
+
+  _NetworkServiceProxy(NetworkServiceProxy p) : super(p) {
+    _mojoMethods = <Symbol, Function>{
+      #createTcpBoundSocket: p.createTcpBoundSocket,
+      #createTcpConnectedSocket: p.createTcpConnectedSocket,
+      #createHttpServer: p.createHttpServer,
+    };
+    _nsProxy = p;
+  }
+  Map<Symbol, Function> get mojoMethods => _mojoMethods;
+
+  Function get createUrlLoader => _nsProxy.createUrlLoader;
+  Function get getCookieStore => _nsProxy.getCookieStore;
+  Function get createWebSocket => _nsProxy.createWebSocket;
+  Function get createUdpSocket => _nsProxy.createUdpSocket;
+  Function get registerUrlLoaderInterceptor =>
+      _nsProxy.registerUrlLoaderInterceptor;
+  Function get createHostResolver => _nsProxy.createHostResolver;
+
+  static final Map<Symbol, Function> _mojoResponses = {
+    #createTcpBoundSocket:
+        new NetworkServiceCreateTcpBoundSocketResponseParams#init,
+    #createTcpConnectedSocket:
+        new NetworkServiceCreateTcpConnectedSocketResponseParams#init,
+    #createHttpServer:
+        new NetworkServiceCreateHttpServerResponseParams#init,
+  };
+  Map<Symbol, Function> get mojoResponses => _mojoResponses;
+}
+
+class _HostResolverProxy extends FuturizedProxy<HostResolverProxy> {
+  Map<Symbol, Function> _mojoMethods;
+
+  _HostResolverProxy(HostResolverProxy proxy) : super(proxy) {
+    _mojoMethods = <Symbol, Function>{
+      #getHostAddresses: proxy.getHostAddresses,
+    };
+  }
+  Map<Symbol, Function> get mojoMethods => _mojoMethods;
+
+  _HostResolverProxy.unbound() : this(new HostResolverProxy.unbound());
+
+  static final Map<Symbol, Function> _mojoResponses = {
+    #getHostAddresses: new HostResolverGetHostAddressesResponseParams#init,
+  };
+  Map<Symbol, Function> get mojoResponses => _mojoResponses;
+}
+
+class _TcpBoundSocketProxy extends FuturizedProxy<TcpBoundSocketProxy> {
+  Map<Symbol, Function> _mojoMethods;
+
+  _TcpBoundSocketProxy(TcpBoundSocketProxy proxy) : super(proxy) {
+    _mojoMethods = <Symbol, Function>{
+      #startListening: proxy.startListening,
+      #connect: proxy.connect,
+    };
+  }
+  Map<Symbol, Function> get mojoMethods => _mojoMethods;
+
+  _TcpBoundSocketProxy.unbound() : this(new TcpBoundSocketProxy.unbound());
+
+  static final Map<Symbol, Function> _mojoResponses = {
+    #startListening: new TcpBoundSocketStartListeningResponseParams#init,
+    #connect: new TcpBoundSocketConnectResponseParams#init,
+  };
+  Map<Symbol, Function> get mojoResponses => _mojoResponses;
+}
+
+class _TcpServerSocketProxy extends FuturizedProxy<TcpServerSocketProxy> {
+  Map<Symbol, Function> _mojoMethods;
+
+  _TcpServerSocketProxy(TcpServerSocketProxy proxy) : super(proxy) {
+    _mojoMethods = <Symbol, Function>{
+      #accept: proxy.accept,
+    };
+  }
+  Map<Symbol, Function> get mojoMethods => _mojoMethods;
+
+  _TcpServerSocketProxy.unbound() : this(new TcpServerSocketProxy.unbound());
+
+  static final Map<Symbol, Function> _mojoResponses = {
+    #accept: new TcpServerSocketAcceptResponseParams#init,
+  };
+  Map<Symbol, Function> get mojoResponses => _mojoResponses;
+}
+
+class _FilesProxy extends FuturizedProxy<FilesProxy> {
+  Map<Symbol, Function> _mojoMethods;
+
+  _FilesProxy(FilesProxy proxy) : super(proxy) {
+    _mojoMethods = <Symbol, Function>{
+      #openFileSystem: proxy.openFileSystem,
+    };
+  }
+  Map<Symbol, Function> get mojoMethods => _mojoMethods;
+
+  static final Map<Symbol, Function> _mojoResponses = {
+    #openFileSystem: new FilesOpenFileSystemResponseParams#init,
+  };
+  Map<Symbol, Function> get mojoResponses => _mojoResponses;
+}
+
+class _FileProxy extends FuturizedProxy<FileProxy> {
+  Map<Symbol, Function> _mojoMethods;
+
+  _FileProxy(FileProxy proxy) : super(proxy) {
+    _mojoMethods = <Symbol, Function>{
+      #close_: proxy.close_,
+      #read: proxy.read,
+      #write: proxy.write,
+      #readToStream: proxy.readToStream,
+      #writeFromStream: proxy.writeFromStream,
+      #tell: proxy.tell,
+      #seek: proxy.seek,
+      #stat: proxy.stat,
+      #truncate: proxy.truncate,
+      #touch: proxy.touch,
+      #dup: proxy.dup,
+      #repoen: proxy.reopen,
+      #asBuffer: proxy.asBuffer,
+      #ioctl: proxy.ioctl,
+    };
+  }
+  Map<Symbol, Function> get mojoMethods => _mojoMethods;
+
+  _FileProxy.unbound() : this(new FileProxy.unbound());
+
+  static final Map<Symbol, Function> _mojoResponses = {
+    #close_: new FileCloseResponseParams#init,
+    #read: new FileReadResponseParams#init,
+    #write: new FileWriteResponseParams#init,
+    #readToStream: new FileReadToStreamResponseParams#init,
+    #writeFromStream: new FileWriteFromStreamResponseParams#init,
+    #tell: new FileTellResponseParams#init,
+    #seek: new FileSeekResponseParams#init,
+    #stat: new FileStatResponseParams#init,
+    #truncate: new FileTruncateResponseParams#init,
+    #touch: new FileTouchResponseParams#init,
+    #dup: new FileDupResponseParams#init,
+    #repoen: new FileReopenResponseParams#init,
+    #asBuffer: new FileAsBufferResponseParams#init,
+    #ioctl: new FileIoctlResponseParams#init,
+  };
+  Map<Symbol, Function> get mojoResponses => _mojoResponses;
+}
+
+class _DirectoryProxy extends FuturizedProxy<DirectoryProxy> {
+  Map<Symbol, Function> _mojoMethods;
+
+  _DirectoryProxy(DirectoryProxy proxy) : super(proxy) {
+    _mojoMethods = <Symbol, Function>{
+      #read: proxy.read,
+      #stat: proxy.stat,
+      #touch: proxy.touch,
+      #openFile: proxy.openFile,
+      #openDirectory: proxy.openDirectory,
+      #rename: proxy.rename,
+      #delete: proxy.delete,
+    };
+  }
+  Map<Symbol, Function> get mojoMethods => _mojoMethods;
+
+  _DirectoryProxy.unbound() : this(new DirectoryProxy.unbound());
+
+  static final Map<Symbol, Function> _mojoResponses = {
+    #read: new DirectoryReadResponseParams#init,
+    #stat: new DirectoryStatResponseParams#init,
+    #touch: new DirectoryTouchResponseParams#init,
+    #openFile: new DirectoryOpenFileResponseParams#init,
+    #openDirectory: new DirectoryOpenDirectoryResponseParams#init,
+    #rename: new DirectoryRenameResponseParams#init,
+    #delete: new DirectoryDeleteResponseParams#init,
+  };
+  Map<Symbol, Function> get mojoResponses => _mojoResponses;
+}
+
 // When developing, set fileSystemDeveloper to true and the file system will
 // persist under ~/MojoAppPersistentCaches/.
 const bool fileSystemDeveloper = false;
@@ -34,11 +215,11 @@ const String systemTempPath = 'tmp';
 //
 int _networkServiceHandle;
 int _filesServiceHandle;
-NetworkServiceProxy _networkService;
-HostResolverProxy _hostResolver;
-FilesProxy _files;
-DirectoryProxy _rootDirectory;
-DirectoryProxy _systemTempDirectory;
+_NetworkServiceProxy _networkService;
+_HostResolverProxy _hostResolver;
+_FilesProxy _files;
+_DirectoryProxy _rootDirectory;
+_DirectoryProxy _systemTempDirectory;
 
 void _initialize(
     int networkServiceHandle, int filesServiceHandle, String scriptPath) {
@@ -94,57 +275,59 @@ _closeProxies() {
 }
 
 /// Get the singleton NetworkServiceProxy.
-NetworkServiceProxy _getNetworkService() {
+_NetworkServiceProxy _getNetworkService() {
   if (_networkService != null) {
     return _networkService;
   }
-  _networkService = new NetworkServiceProxy.fromHandle(
+  var networkService = new NetworkServiceProxy.fromHandle(
       new MojoHandle(_networkServiceHandle).pass());
+  _networkService = new _NetworkServiceProxy(networkService);
   _networkServiceHandle = null;
   return _networkService;
 }
 
 /// Get the singleton HostResolverProxy.
-HostResolverProxy _getHostResolver() {
+_HostResolverProxy _getHostResolver() {
   if (_hostResolver != null) {
     return _hostResolver;
   }
-  var networkService = _getNetworkService();
+  _NetworkServiceProxy networkService = _getNetworkService();
   if (networkService == null) {
     return null;
   }
-  _hostResolver = new HostResolverProxy.unbound();
-  networkService.createHostResolver(_hostResolver);
+  _hostResolver = new _HostResolverProxy.unbound();
+  networkService.createHostResolver(_hostResolver.proxy);
   // Remove the host resolver's handle from the open set because it is not
   // under application control and does not affect isolate shutdown.
-  _hostResolver.ctrl.endpoint.handle.pass();
+  _hostResolver.proxy.ctrl.endpoint.handle.pass();
   return _hostResolver;
 }
 
 /// Get the singleton FilesProxy.
-FilesProxy _getFiles() {
+_FilesProxy _getFiles() {
   if (_files != null) {
     return _files;
   }
-  _files = new FilesProxy.fromHandle(
+  var files = new FilesProxy.fromHandle(
       new MojoHandle(_filesServiceHandle).pass());
+  _files = new _FilesProxy(files);
   _filesServiceHandle = null;
   return _files;
 }
 
 /// Get the singleton DirectoryProxy for the root directory.
-Future<DirectoryProxy> _getRootDirectory() async {
+Future<_DirectoryProxy> _getRootDirectory() async {
   if (_rootDirectory != null) {
     return _rootDirectory;
   }
-  FilesProxy files = _getFiles();
+  _FilesProxy files = _getFiles();
   assert(files != null);
-  _rootDirectory = new DirectoryProxy.unbound();
+  _rootDirectory = new _DirectoryProxy.unbound();
   var response =
-      await files.openFileSystem(fileSystemName, _rootDirectory);
+      await files.openFileSystem(fileSystemName, _rootDirectory.proxy);
   // Remove the root directory's handle from the open set because it is not
   // under application control and does not affect isolate shutdown.
-  _rootDirectory.ctrl.endpoint.handle.pass();
+  _rootDirectory.proxy.ctrl.endpoint.handle.pass();
 
   // Ensure system temporary directory exists before returning the root
   // directory.
@@ -153,23 +336,23 @@ Future<DirectoryProxy> _getRootDirectory() async {
 }
 
 /// Get the singleton DirectoryProxy for the system temp directory.
-Future<DirectoryProxy> _getSystemTempDirectory() async {
+Future<_DirectoryProxy> _getSystemTempDirectory() async {
   if (_systemTempDirectory != null) {
     return _systempTempDirectory;
   }
-  DirectoryProxy rootDirectory = await _getRootDirectory();
+  _DirectoryProxy rootDirectory = await _getRootDirectory();
   int flags = types.kOpenFlagRead |
               types.kOpenFlagWrite |
               types.kOpenFlagCreate;
-  _systemTempDirectory = new DirectoryProxy.unbound();
+  _systemTempDirectory = new _DirectoryProxy.unbound();
   var response =
       await rootDirectory.openDirectory(systemTempPath,
-                                        _systemTempDirectory,
+                                        _systemTempDirectory.proxy,
                                         flags);
   assert(response.error == types.Error.ok);
   // Remove the system temp directory's handle from the open set because it
   // is not under application control and does not affect isolate shutdown.
-  _systemTempDirectory.ctrl.endpoint.handle.pass();
+  _systemTempDirectory.proxy.ctrl.endpoint.handle.pass();
   return _systemTempDirectory;
 }
 

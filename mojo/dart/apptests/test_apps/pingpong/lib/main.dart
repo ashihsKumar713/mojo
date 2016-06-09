@@ -47,10 +47,10 @@ class PingPongServiceImpl implements PingPongService {
     }
   }
 
-  Future pingTargetUrl(String url, int count,
-      [Function responseFactory]) async {
+  void pingTargetUrl(String url, int count, void callback(bool ok)) {
     if (_application == null) {
-      return responseFactory(false);
+      callback(false);
+      return;
     }
     var completer = new Completer();
     var pingPongService = new PingPongServiceInterfaceRequest();
@@ -62,14 +62,14 @@ class PingPongServiceImpl implements PingPongService {
     for (var i = 0; i < count; i++) {
       pingPongService.ping(i);
     }
-    await completer.future;
-    await pingPongService.close();
-
-    return responseFactory(true);
+    completer.future.then((_) {
+      callback(true);
+      pingPongService.close();
+    });
   }
 
-  Future pingTargetService(PingPongServiceInterface service, int count,
-      [Function responseFactory]) async {
+  void pingTargetService(
+      PingPongServiceInterface service, int count, void callback(bool ok)) {
     var pingPongService = service;
     var completer = new Completer();
     var client = new PingPongClientImpl(count, completer);
@@ -78,10 +78,10 @@ class PingPongServiceImpl implements PingPongService {
     for (var i = 0; i < count; i++) {
       pingPongService.ping(i);
     }
-    await completer.future;
-    await pingPongService.close();
-
-    return responseFactory(true);
+    completer.future.then((_) {
+      callback(true);
+      pingPongService.close();
+    });
   }
 
   getPingPongService(PingPongServiceInterfaceRequest service) {

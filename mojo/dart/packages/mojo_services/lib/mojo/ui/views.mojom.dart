@@ -26,6 +26,13 @@ class ViewInvalidation extends bindings.Struct {
 
   ViewInvalidation() : super(kVersions.last.size);
 
+  ViewInvalidation.init(
+    view_properties_mojom.ViewProperties this.properties, 
+    int this.containerFlushToken, 
+    int this.sceneVersion, 
+    scheduling_mojom.FrameInfo this.frameInfo
+  ) : super(kVersions.last.size);
+
   static ViewInvalidation deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -138,6 +145,9 @@ class _ViewGetTokenParams extends bindings.Struct {
 
   _ViewGetTokenParams() : super(kVersions.last.size);
 
+  _ViewGetTokenParams.init(
+  ) : super(kVersions.last.size);
+
   static _ViewGetTokenParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -196,6 +206,10 @@ class ViewGetTokenResponseParams extends bindings.Struct {
   view_token_mojom.ViewToken token = null;
 
   ViewGetTokenResponseParams() : super(kVersions.last.size);
+
+  ViewGetTokenResponseParams.init(
+    view_token_mojom.ViewToken this.token
+  ) : super(kVersions.last.size);
 
   static ViewGetTokenResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -270,6 +284,10 @@ class _ViewGetServiceProviderParams extends bindings.Struct {
 
   _ViewGetServiceProviderParams() : super(kVersions.last.size);
 
+  _ViewGetServiceProviderParams.init(
+    service_provider_mojom.ServiceProviderInterfaceRequest this.serviceProvider
+  ) : super(kVersions.last.size);
+
   static _ViewGetServiceProviderParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -340,6 +358,10 @@ class _ViewCreateSceneParams extends bindings.Struct {
   scenes_mojom.SceneInterfaceRequest scene = null;
 
   _ViewCreateSceneParams() : super(kVersions.last.size);
+
+  _ViewCreateSceneParams.init(
+    scenes_mojom.SceneInterfaceRequest this.scene
+  ) : super(kVersions.last.size);
 
   static _ViewCreateSceneParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -412,6 +434,10 @@ class _ViewGetContainerParams extends bindings.Struct {
 
   _ViewGetContainerParams() : super(kVersions.last.size);
 
+  _ViewGetContainerParams.init(
+    view_containers_mojom.ViewContainerInterfaceRequest this.container
+  ) : super(kVersions.last.size);
+
   static _ViewGetContainerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -482,6 +508,9 @@ class _ViewInvalidateParams extends bindings.Struct {
 
   _ViewInvalidateParams() : super(kVersions.last.size);
 
+  _ViewInvalidateParams.init(
+  ) : super(kVersions.last.size);
+
   static _ViewInvalidateParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -540,6 +569,10 @@ class _ViewListenerOnInvalidationParams extends bindings.Struct {
   ViewInvalidation invalidation = null;
 
   _ViewListenerOnInvalidationParams() : super(kVersions.last.size);
+
+  _ViewListenerOnInvalidationParams.init(
+    ViewInvalidation this.invalidation
+  ) : super(kVersions.last.size);
 
   static _ViewListenerOnInvalidationParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -613,6 +646,9 @@ class ViewListenerOnInvalidationResponseParams extends bindings.Struct {
 
   ViewListenerOnInvalidationResponseParams() : super(kVersions.last.size);
 
+  ViewListenerOnInvalidationResponseParams.init(
+  ) : super(kVersions.last.size);
+
   static ViewListenerOnInvalidationResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -670,14 +706,17 @@ const int _viewMethodGetContainerName = 3;
 const int _viewMethodInvalidateName = 4;
 
 class _ViewServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class View {
@@ -702,7 +741,7 @@ abstract class View {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getToken([Function responseFactory = null]);
+  void getToken(void callback(view_token_mojom.ViewToken token));
   void getServiceProvider(service_provider_mojom.ServiceProviderInterfaceRequest serviceProvider);
   void createScene(scenes_mojom.SceneInterfaceRequest scene);
   void getContainer(view_containers_mojom.ViewContainerInterfaceRequest container);
@@ -756,18 +795,14 @@ class _ViewProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.token );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -812,16 +847,18 @@ class ViewProxy
   }
 
 
-  dynamic getToken([Function responseFactory = null]) {
+  void getToken(void callback(view_token_mojom.ViewToken token)) {
     if (impl != null) {
-      return new Future(() => impl.getToken(_ViewStubControl._viewGetTokenResponseParamsFactory));
+      impl.getToken(callback);
+      return;
     }
     var params = new _ViewGetTokenParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _viewMethodGetTokenName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void getServiceProvider(service_provider_mojom.ServiceProviderInterfaceRequest serviceProvider) {
     if (impl != null) {
@@ -902,41 +939,31 @@ class _ViewStubControl
   String get serviceName => View.serviceName;
 
 
-  static ViewGetTokenResponseParams _viewGetTokenResponseParamsFactory(view_token_mojom.ViewToken token) {
-    var result = new ViewGetTokenResponseParams();
-    result.token = token;
-    return result;
+  Function _viewGetTokenResponseParamsResponder(
+      int requestId) {
+  return (view_token_mojom.ViewToken token) {
+      var result = new ViewGetTokenResponseParams();
+      result.token = token;
+      sendResponse(buildResponseWithId(
+          result,
+          _viewMethodGetTokenName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _viewMethodGetTokenName:
-        var response = _impl.getToken(_viewGetTokenResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _viewMethodGetTokenName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _viewMethodGetTokenName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getToken(_viewGetTokenResponseParamsResponder(message.header.requestId));
         break;
       case _viewMethodGetServiceProviderName:
         var params = _ViewGetServiceProviderParams.deserialize(
@@ -960,7 +987,6 @@ class _ViewStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   View get impl => _impl;
@@ -1014,8 +1040,8 @@ class ViewStub
   }
 
 
-  dynamic getToken([Function responseFactory = null]) {
-    return impl.getToken(responseFactory);
+  void getToken(void callback(view_token_mojom.ViewToken token)) {
+    return impl.getToken(callback);
   }
   void getServiceProvider(service_provider_mojom.ServiceProviderInterfaceRequest serviceProvider) {
     return impl.getServiceProvider(serviceProvider);
@@ -1034,14 +1060,17 @@ class ViewStub
 const int _viewListenerMethodOnInvalidationName = 0;
 
 class _ViewListenerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ViewListener {
@@ -1066,7 +1095,7 @@ abstract class ViewListener {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic onInvalidation(ViewInvalidation invalidation,[Function responseFactory = null]);
+  void onInvalidation(ViewInvalidation invalidation,void callback());
 }
 
 abstract class ViewListenerInterface
@@ -1116,18 +1145,14 @@ class _ViewListenerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1172,17 +1197,19 @@ class ViewListenerProxy
   }
 
 
-  dynamic onInvalidation(ViewInvalidation invalidation,[Function responseFactory = null]) {
+  void onInvalidation(ViewInvalidation invalidation,void callback()) {
     if (impl != null) {
-      return new Future(() => impl.onInvalidation(invalidation,_ViewListenerStubControl._viewListenerOnInvalidationResponseParamsFactory));
+      impl.onInvalidation(invalidation,callback);
+      return;
     }
     var params = new _ViewListenerOnInvalidationParams();
     params.invalidation = invalidation;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _viewListenerMethodOnInvalidationName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -1208,16 +1235,23 @@ class _ViewListenerStubControl
   String get serviceName => ViewListener.serviceName;
 
 
-  static ViewListenerOnInvalidationResponseParams _viewListenerOnInvalidationResponseParamsFactory() {
-    var result = new ViewListenerOnInvalidationResponseParams();
-    return result;
+  Function _viewListenerOnInvalidationResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new ViewListenerOnInvalidationResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _viewListenerMethodOnInvalidationName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1226,30 +1260,12 @@ class _ViewListenerStubControl
       case _viewListenerMethodOnInvalidationName:
         var params = _ViewListenerOnInvalidationParams.deserialize(
             message.payload);
-        var response = _impl.onInvalidation(params.invalidation,_viewListenerOnInvalidationResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _viewListenerMethodOnInvalidationName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _viewListenerMethodOnInvalidationName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.onInvalidation(params.invalidation, _viewListenerOnInvalidationResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ViewListener get impl => _impl;
@@ -1303,8 +1319,8 @@ class ViewListenerStub
   }
 
 
-  dynamic onInvalidation(ViewInvalidation invalidation,[Function responseFactory = null]) {
-    return impl.onInvalidation(invalidation,responseFactory);
+  void onInvalidation(ViewInvalidation invalidation,void callback()) {
+    return impl.onInvalidation(invalidation,callback);
   }
 }
 

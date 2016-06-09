@@ -39,6 +39,27 @@ class EchoArgs extends bindings.Struct {
 
   EchoArgs() : super(kVersions.last.size);
 
+  EchoArgs.init(
+    int this.si64, 
+    int this.si32, 
+    int this.si16, 
+    int this.si8, 
+    int this.ui8, 
+    int this.ui64, 
+    int this.ui32, 
+    int this.ui16, 
+    double this.floatVal, 
+    double this.floatInf, 
+    double this.floatNan, 
+    core.MojoMessagePipeEndpoint this.messageHandle, 
+    double this.doubleVal, 
+    double this.doubleInf, 
+    double this.doubleNan, 
+    String this.name, 
+    List<String> this.stringArray, 
+    core.MojoDataPipeConsumer this.dataHandle
+  ) : super(kVersions.last.size);
+
   static EchoArgs deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -332,6 +353,11 @@ class EchoArgsList extends bindings.Struct {
 
   EchoArgsList() : super(kVersions.last.size);
 
+  EchoArgsList.init(
+    EchoArgsList this.next, 
+    EchoArgs this.item
+  ) : super(kVersions.last.size);
+
   static EchoArgsList deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -416,6 +442,9 @@ class _CppSideStartTestParams extends bindings.Struct {
 
   _CppSideStartTestParams() : super(kVersions.last.size);
 
+  _CppSideStartTestParams.init(
+  ) : super(kVersions.last.size);
+
   static _CppSideStartTestParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -473,6 +502,9 @@ class _CppSideTestFinishedParams extends bindings.Struct {
   ];
 
   _CppSideTestFinishedParams() : super(kVersions.last.size);
+
+  _CppSideTestFinishedParams.init(
+  ) : super(kVersions.last.size);
 
   static _CppSideTestFinishedParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -532,6 +564,9 @@ class _CppSidePingResponseParams extends bindings.Struct {
 
   _CppSidePingResponseParams() : super(kVersions.last.size);
 
+  _CppSidePingResponseParams.init(
+  ) : super(kVersions.last.size);
+
   static _CppSidePingResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -590,6 +625,10 @@ class _CppSideEchoResponseParams extends bindings.Struct {
   EchoArgsList list = null;
 
   _CppSideEchoResponseParams() : super(kVersions.last.size);
+
+  _CppSideEchoResponseParams.init(
+    EchoArgsList this.list
+  ) : super(kVersions.last.size);
 
   static _CppSideEchoResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -663,6 +702,10 @@ class _DartSideSetClientParams extends bindings.Struct {
 
   _DartSideSetClientParams() : super(kVersions.last.size);
 
+  _DartSideSetClientParams.init(
+    CppSideInterface this.cppSide
+  ) : super(kVersions.last.size);
+
   static _DartSideSetClientParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -733,6 +776,9 @@ class _DartSidePingParams extends bindings.Struct {
 
   _DartSidePingParams() : super(kVersions.last.size);
 
+  _DartSidePingParams.init(
+  ) : super(kVersions.last.size);
+
   static _DartSidePingParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -792,6 +838,11 @@ class _DartSideEchoParams extends bindings.Struct {
   EchoArgs arg = null;
 
   _DartSideEchoParams() : super(kVersions.last.size);
+
+  _DartSideEchoParams.init(
+    int this.numIterations, 
+    EchoArgs this.arg
+  ) : super(kVersions.last.size);
 
   static _DartSideEchoParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -874,14 +925,17 @@ const int _cppSideMethodPingResponseName = 100000000;
 const int _cppSideMethodEchoResponseName = 100000001;
 
 class _CppSideServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class CppSide {
@@ -1073,11 +1127,11 @@ class _CppSideStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1101,7 +1155,6 @@ class _CppSideStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   CppSide get impl => _impl;
@@ -1174,14 +1227,17 @@ const int _dartSideMethodPingName = 1;
 const int _dartSideMethodEchoName = 2;
 
 class _DartSideServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class DartSide {
@@ -1361,11 +1417,11 @@ class _DartSideStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1388,7 +1444,6 @@ class _DartSideStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   DartSide get impl => _impl;
@@ -1466,7 +1521,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/9yaz2/bNhTHJdlObMdOnMTNvK3rPKDFsmKN0x8ojJ08dBkyrBiMtSjak6vGrK3Blj1JHrJbjjvu2D9lf8L+hByz2467FNitJdtHh6VJmRIs0YmAB1oxY/H74ePT45NqxvujAu0+tPzfaZvnWr7fKbS72LLY6nDegvY5tCfQXsd2FdvjZ+2Dzo8Hz77p2l7QCUado/F478F4/MjpItLvBrbPZP2+w5+hY2i/g6P+6Fuv5+Pvv8L2xbx+Dx0/gHEegh6iM4Otyeh+d752fm4SnTsfnv9185yLwXChx3/ceYs7p/NCr/sGjkNDfGxgW8VGEX6KP29jk+CdmUfCsYjtCbafsDX6oyFqeJPuaOi4yGsMR7+MGr539P4D+dXGxHWCAPmB30DDF6jbRV6HnOLO7EVJ/+Hs9eqMPxHOzScPc2/OXueMf17nTGy8P+1awCULXFbEfM84LuR3w/jy/fYlfDexFbA9CrC2x2jqJ7yuL7FZCXKsc9c949p5OqkfNSU6PwatU523PPTrRK6XHknpzRsfris+DhlcfJrnD+98TIUT7meG+EMVW4nEEzzy7x3X8fuoK+Jz84L7w1XQyupkXeKi+wOJN6qcLAV/aDtu72fkj0euj0R8bl0Sf2B1XiZ/MCP4Q0bBH0hqEeYPe5r8oW0t1h9YnTr9gfeDFpdHke/JBP9rqB0qfFi/4o8S5DEDR8xjDxgmPf+GJP9i/ZRNgaPmy2Hrz2Sum1Y+XIGx0K0C9VPJNmJmXm5ryoersL+g3Czm+wwzzhPodJxTvM9F9Oe5eTAKHgwc5Mrywjua4lrLWnAeTHVqzoOXLa7R/eYR7ClF81/VENdqkv2wat0hbhw75fOICJxNhfsHybdEfnc35XV2yrWq60wlb77IeSQ//1YEPpbC/JNbrojLPU3zf5hZ7PwTfTrnvwYcp/VPUx5nDYi1i4yzMj5XsJWxuZPhD3joduDgDFviB+UE+US93+RjcAiLg2uQ/9hez5Ctgxsa7zc036SpsWpdOizeWMw5vw5pvrxbXWy+TIcmypeZYc/wL8D9Nin+r/BvbmH7E673B6zPEwi0xxCPxlAf7sMCfQ514qersO8F0O0CtEVooZ7fLkFbhnYd/n8DrguCX22Gx4eVlPeXvnP/nmheijCvacaFsPi46Lhwrv/uHZH+NU36syHjjarfUtJ/+75If0mT/oxkvOsx9GcU7gu+0xTeF8oJxyWZ/mJInI2qP6sw/xPJ+l+H2Jy2/oJkvLUY+nNK+sXrf0OT/nxIvTSq/hUl/eL1X9GkfzWkbhBV/6rC+p9I1v+mpvhnScZbj6E/r1CPezkY2UHnN3sgqU9tLRmH6zE4FJQ5OO5LCYftJeOwG4NDUZmDa7sSDlVNHEzJuPdjcFgL4bAF9+DuaPJigM4XBs/hiqb4KOPQjMGhpM5hujB4DjtLxqEVg0NZncN0YfAcPtLAwQypoxzG4LCukC+49lD43KuW8HOviqQ+zvKwBM8D6dGOwWND4Tm9H3iO2+vYnmf/LuJCnwclXV8yYcx8XUi2b2C5ZUO4fR2DWyWE2w7sLYbI9+0e6vRttztAs9w+AZZp+JMZg8vTGFw2Q7hsQ07atQN7CkXgT+T9zGspcbHm1BlJbOxL6oz/Q/v3nHp/i6szthXq/ewrBHW4puw1A57ftYT39fzzgLG5XO+TuOhY+Jzkc/icRpxK8n0S3c8bKGcnQEMR5zr0SZtzWs8b3gYAAP//ZmL1wygwAAA=";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/9yaPWzbRhTHSUqyJVmy5a9EbdNUBRLULWrTcYJA6KQideGiGYwmKJIuCi1dJBYSqZJUkXbK2LGjx4wdM3bsmLFjxnTLmCVAtvQufpTP57vTiVCogwg8nBhezHs//u/du4+qcXJVoNyFkv33uMwzJVvvOZRb2LLYanDfgPIBlI+hvILtEra79w/3m9/v3/+q7QRRM/KbrcFg59ZgcMdtI1LvKraPRfW+wb+horTefqvrfx10Qvz8c2yfjqt32w0jaOcB+EP8zGCrU36T++dLp/cmticXz95vbZ9yMSguo8s8e9tgHsffJX7vW7gODP61gm0RW4zwI/x7HZsA77nvSDgWsR1h+wmbPQwDu+e3nJ7d8f1OD9ldv4/s3wPH7vs/+3t2GLTe/bLJG+yh50YRCqPQRv0j1G6joEluUWDTDSD1+3wd1Sh9Ee71H2/n3r54nTP+e50zsbH6OrBOykH2pDxe4PN+xXAif1fGm623K+C9iq2A7U6E/buLRrph/foMm5Ui1xrTjldMOc7vWGd1gd8fgO8jv7cD9MtQ7H98peV/3jjbD9m4ZTDxbJxe3mlQhRuuZ0r0soGtROIPbv23rueGXdTm8fpizvRyCXyn/aYlM296IfFKlZuloJdD1+v8gMKB74WIx2t7TvVC+z3PejEn0EtGQS8klZHpZUcTvQys6eqF9lsnvbA6aTB5HXlOBPDGULtUeNG6Y68S5FE9l89nB5imrQ9DkA/SuqZT9EnzeVl/Nan3ppWvV6At8VQm1rFgmnPuO13TJF/fgPlQjMiinmeo//cUKj3LKY6jE+p9bJ6Ools9F3miPHVPk7j4wJpynh77rVmerltcjOfPLZgj8/SxoUFcrArm+6rrKknj4EtBOFThbiqMRyTf4+ny+oz75UumVO2XKnn9POW1rD6sCXhZCvogQzqP0w1N9PEoM119EH910kcVOI/Gf1Mctw2I3dOM2yJem9jK2Lxh/zvcfCdy8QxAoJNyirwmHc/yCbjI4uoS5F9O0DFE/eaqRuNZnA/Hqbvqur4sXlnUPdtv4wHs3uZ08/m4abx8nmr2ue9RgPE8re9xjG0N25/w/mPg8QQC918Qz57C+vrf0KH/gXX2Z4sn5b8A/kUB8tgiFbiJf2XgvwxcV2D9Hhz/YxXetyaPJwspz49D9+YN3ncqwneeZRyRxddpx5FTHtf3eDyWNOGRlbR/Uh6WEo9rN3k8SprwyAjav5yAR0ZhnAndOnecKacc10Q8ipK4PSmPrII+hoL4sQyxftY8CoL2VxPwyCnx4MePFU145CXry5PyWFDiwY8fFU14LErWSSblsagQP4aC+LGqSTy1BO2vJeCRV1ivfNjznaj5q9MTrNetac7lSgIuBWUurvdQwGVdcy5bCbgUlbl4jifgsqEJF1Pgx24CLksSLmsw5rf94VEPnXYklsumJvFWxKWegEtJncuoI7FcLmjOpZGAS1mdy6gjsVwuasDFlKwjHSTgsqyQr3hOn7sPWU15H7Ii2H+g+VgS4Rwm4LOicO4ijALX6zSdIHB+43GK9+PSXm8zwQd2nUw076E5ZiUcv0zAsSLheAHmRn0Uhk4HNbuO1+6h8xw/BLaz0JuZgNO9BJxWJZzWIWduO5EzgsTRGzn/e3lGnKwx67Ik1nYF67J54PhmzH5Kg1mXPVTYT6GPhNTgnaJjIyzPyymvY7D7LY9Nvc4PeegRd1/qE/g9izj3Ps8PzXo/J+buRqgvOo9T0oB7Wvs5/wcAAP//rWXXIMgyAAA=";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

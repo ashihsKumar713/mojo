@@ -19,8 +19,9 @@ class IntegerAccessorImpl implements sample.IntegerAccessor {
   // Some initial value.
   int _value = 0;
 
-  dynamic getInteger([Function responseFactory = null]) =>
-      responseFactory(_value, sample.Enum.value);
+  void getInteger(Function response) {
+    response(_value, sample.Enum.value);
+  }
 
   void setInteger(int data, sample.Enum type) {
     Expect.equals(sample.Enum.value, type);
@@ -39,11 +40,11 @@ List buildConnectedProxyAndStub() {
   return [proxy, stub];
 }
 
-void closeProxyAndStub(List ps) {
+closeProxyAndStub(List ps) async {
   var proxy = ps[0];
   var stub = ps[1];
-  proxy.close();
-  stub.close();
+  await proxy.close();
+  await stub.close();
 }
 
 testQueryVersion() async {
@@ -56,7 +57,7 @@ testQueryVersion() async {
   Expect.equals(maxVersion, providedVersion);
   // The proxy's version has been updated.
   Expect.equals(providedVersion, proxy.ctrl.version);
-  closeProxyAndStub(ps);
+  await closeProxyAndStub(ps);
 }
 
 testRequireVersionSuccess() async {
@@ -65,10 +66,15 @@ testRequireVersionSuccess() async {
   Expect.equals(0, proxy.ctrl.version);
   // Require version maxVersion.
   proxy.ctrl.requireVersion(maxVersion);
+  Expect.equals(maxVersion, proxy.ctrl.version);
   // Make a request and get a response.
-  var response = await proxy.getInteger();
-  Expect.equals(0, response.data);
-  closeProxyAndStub(ps);
+  var c = new Completer();
+  proxy.getInteger((int response, sample.Enum type) {
+    c.complete(response);
+  });
+  var response = await proxy.responseOrError(c.future);
+  Expect.equals(0, response);
+  await closeProxyAndStub(ps);
 }
 
 testRequireVersionDisconnect() async {
@@ -81,22 +87,30 @@ testRequireVersionDisconnect() async {
   // Set integer.
   proxy.setInteger(34, sample.Enum.value);
   // Get integer.
-  var response = await proxy.getInteger();
-  Expect.equals(34, response.data);
+  var c = new Completer();
+  proxy.getInteger((int response, sample.Enum type) {
+    c.complete(response);
+  });
+  var response = await proxy.responseOrError(c.future);
+  Expect.equals(34, response);
   // Require version maxVersion + 1
   proxy.ctrl.requireVersion(maxVersion + 1);
   // Version number is updated synchronously.
   Expect.equals(maxVersion + 1, proxy.ctrl.version);
   // Get integer, expect a failure.
   bool exceptionCaught = false;
+  c = new Completer();
+  proxy.getInteger((int response, sample.Enum type) {
+    Expect.fail('Should ahve an exception.');
+  });
   try {
-    response = await proxy.getInteger();
+    response = await proxy.responseOrError(c.future);
     Expect.fail('Should have an exception.');
   } catch(e) {
     exceptionCaught = true;
   }
   Expect.isTrue(exceptionCaught);
-  closeProxyAndStub(ps);
+  await closeProxyAndStub(ps);
 }
 
 main() async {

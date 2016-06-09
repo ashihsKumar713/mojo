@@ -16,6 +16,11 @@ class SurfaceId extends bindings.Struct {
 
   SurfaceId() : super(kVersions.last.size);
 
+  SurfaceId.init(
+    int this.local, 
+    int this.idNamespace
+  ) : super(kVersions.last.size);
+
   static SurfaceId deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);

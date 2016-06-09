@@ -28,6 +28,20 @@ class UrlResponse extends bindings.Struct {
 
   UrlResponse() : super(kVersions.last.size);
 
+  UrlResponse.init(
+    network_error_mojom.NetworkError this.error, 
+    core.MojoDataPipeConsumer this.body, 
+    int this.statusCode, 
+    String this.url, 
+    String this.statusLine, 
+    List<http_header_mojom.HttpHeader> this.headers, 
+    String this.mimeType, 
+    String this.charset, 
+    String this.redirectMethod, 
+    String this.redirectUrl, 
+    String this.redirectReferrer
+  ) : super(kVersions.last.size);
+
   static UrlResponse deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);

@@ -526,6 +526,13 @@ class MediaType extends bindings.Struct {
 
   MediaType() : super(kVersions.last.size);
 
+  MediaType.init(
+    MediaTypeMedium this.medium, 
+    MediaTypeDetails this.details, 
+    String this.encoding, 
+    List<int> this.encodingParameters
+  ) : super(kVersions.last.size);
+
   static MediaType deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -646,6 +653,12 @@ class MediaTypeSet extends bindings.Struct {
   List<String> encodings = null;
 
   MediaTypeSet() : super(kVersions.last.size);
+
+  MediaTypeSet.init(
+    MediaTypeMedium this.medium, 
+    MediaTypeSetDetails this.details, 
+    List<String> this.encodings
+  ) : super(kVersions.last.size);
 
   static MediaTypeSet deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -770,6 +783,12 @@ class AudioMediaTypeDetails extends bindings.Struct {
 
   AudioMediaTypeDetails() : super(kVersions.last.size);
 
+  AudioMediaTypeDetails.init(
+    AudioSampleFormat this.sampleFormat, 
+    int this.channels, 
+    int this.framesPerSecond
+  ) : super(kVersions.last.size);
+
   static AudioMediaTypeDetails deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -875,6 +894,14 @@ class AudioMediaTypeSetDetails extends bindings.Struct {
   int maxFramesPerSecond = 0;
 
   AudioMediaTypeSetDetails() : super(kVersions.last.size);
+
+  AudioMediaTypeSetDetails.init(
+    AudioSampleFormat this.sampleFormat, 
+    int this.minChannels, 
+    int this.maxChannels, 
+    int this.minFramesPerSecond, 
+    int this.maxFramesPerSecond
+  ) : super(kVersions.last.size);
 
   static AudioMediaTypeSetDetails deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1009,6 +1036,16 @@ class VideoMediaTypeDetails extends bindings.Struct {
   int codedHeight = 0;
 
   VideoMediaTypeDetails() : super(kVersions.last.size);
+
+  VideoMediaTypeDetails.init(
+    VideoProfile this.profile, 
+    PixelFormat this.pixelFormat, 
+    ColorSpace this.colorSpace, 
+    int this.width, 
+    int this.height, 
+    int this.codedWidth, 
+    int this.codedHeight
+  ) : super(kVersions.last.size);
 
   static VideoMediaTypeDetails deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1175,6 +1212,13 @@ class VideoMediaTypeSetDetails extends bindings.Struct {
 
   VideoMediaTypeSetDetails() : super(kVersions.last.size);
 
+  VideoMediaTypeSetDetails.init(
+    int this.minWidth, 
+    int this.maxWidth, 
+    int this.minHeight, 
+    int this.maxHeight
+  ) : super(kVersions.last.size);
+
   static VideoMediaTypeSetDetails deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1285,6 +1329,9 @@ class TextMediaTypeDetails extends bindings.Struct {
 
   TextMediaTypeDetails() : super(kVersions.last.size);
 
+  TextMediaTypeDetails.init(
+  ) : super(kVersions.last.size);
+
   static TextMediaTypeDetails deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1342,6 +1389,9 @@ class TextMediaTypeSetDetails extends bindings.Struct {
   ];
 
   TextMediaTypeSetDetails() : super(kVersions.last.size);
+
+  TextMediaTypeSetDetails.init(
+  ) : super(kVersions.last.size);
 
   static TextMediaTypeSetDetails deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1401,6 +1451,9 @@ class SubpictureMediaTypeDetails extends bindings.Struct {
 
   SubpictureMediaTypeDetails() : super(kVersions.last.size);
 
+  SubpictureMediaTypeDetails.init(
+  ) : super(kVersions.last.size);
+
   static SubpictureMediaTypeDetails deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1458,6 +1511,9 @@ class SubpictureMediaTypeSetDetails extends bindings.Struct {
   ];
 
   SubpictureMediaTypeSetDetails() : super(kVersions.last.size);
+
+  SubpictureMediaTypeSetDetails.init(
+  ) : super(kVersions.last.size);
 
   static SubpictureMediaTypeSetDetails deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);

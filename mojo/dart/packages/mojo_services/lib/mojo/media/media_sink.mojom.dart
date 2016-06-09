@@ -19,6 +19,10 @@ class _MediaSinkGetConsumerParams extends bindings.Struct {
 
   _MediaSinkGetConsumerParams() : super(kVersions.last.size);
 
+  _MediaSinkGetConsumerParams.init(
+    media_transport_mojom.MediaConsumerInterfaceRequest this.consumer
+  ) : super(kVersions.last.size);
+
   static _MediaSinkGetConsumerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -90,6 +94,10 @@ class _MediaSinkGetTimelineControlSiteParams extends bindings.Struct {
 
   _MediaSinkGetTimelineControlSiteParams() : super(kVersions.last.size);
 
+  _MediaSinkGetTimelineControlSiteParams.init(
+    timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest this.timelineControlSite
+  ) : super(kVersions.last.size);
+
   static _MediaSinkGetTimelineControlSiteParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -156,14 +164,17 @@ const int _mediaSinkMethodGetConsumerName = 0;
 const int _mediaSinkMethodGetTimelineControlSiteName = 1;
 
 class _MediaSinkServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class MediaSink {
@@ -328,11 +339,11 @@ class _MediaSinkStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -352,7 +363,6 @@ class _MediaSinkStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   MediaSink get impl => _impl;

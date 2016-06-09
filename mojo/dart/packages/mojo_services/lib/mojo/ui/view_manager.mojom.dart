@@ -25,6 +25,13 @@ class _ViewManagerCreateViewParams extends bindings.Struct {
 
   _ViewManagerCreateViewParams() : super(kVersions.last.size);
 
+  _ViewManagerCreateViewParams.init(
+    views_mojom.ViewInterfaceRequest this.view, 
+    view_token_mojom.ViewOwnerInterfaceRequest this.viewOwner, 
+    views_mojom.ViewListenerInterface this.viewListener, 
+    String this.label
+  ) : super(kVersions.last.size);
+
   static _ViewManagerCreateViewParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -134,6 +141,12 @@ class _ViewManagerCreateViewTreeParams extends bindings.Struct {
 
   _ViewManagerCreateViewTreeParams() : super(kVersions.last.size);
 
+  _ViewManagerCreateViewTreeParams.init(
+    view_trees_mojom.ViewTreeInterfaceRequest this.viewTree, 
+    view_trees_mojom.ViewTreeListenerInterface this.viewTreeListener, 
+    String this.label
+  ) : super(kVersions.last.size);
+
   static _ViewManagerCreateViewTreeParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -231,6 +244,12 @@ class _ViewManagerRegisterViewAssociateParams extends bindings.Struct {
 
   _ViewManagerRegisterViewAssociateParams() : super(kVersions.last.size);
 
+  _ViewManagerRegisterViewAssociateParams.init(
+    view_associates_mojom.ViewAssociateInterface this.viewAssociate, 
+    view_associates_mojom.ViewAssociateOwnerInterfaceRequest this.viewAssociateOwner, 
+    String this.label
+  ) : super(kVersions.last.size);
+
   static _ViewManagerRegisterViewAssociateParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -325,6 +344,9 @@ class _ViewManagerFinishedRegisteringViewAssociatesParams extends bindings.Struc
 
   _ViewManagerFinishedRegisteringViewAssociatesParams() : super(kVersions.last.size);
 
+  _ViewManagerFinishedRegisteringViewAssociatesParams.init(
+  ) : super(kVersions.last.size);
+
   static _ViewManagerFinishedRegisteringViewAssociatesParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -381,14 +403,17 @@ const int _viewManagerMethodRegisterViewAssociateName = 2;
 const int _viewManagerMethodFinishedRegisteringViewAssociatesName = 3;
 
 class _ViewManagerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ViewManager {
@@ -589,11 +614,11 @@ class _ViewManagerStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -621,7 +646,6 @@ class _ViewManagerStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ViewManager get impl => _impl;

@@ -27,6 +27,22 @@ class Location extends bindings.Struct {
 
   Location() : super(kVersions.last.size);
 
+  Location.init(
+    int this.time, 
+    bool this.hasElapsedRealTimeNanos, 
+    bool this.hasAltitude, 
+    bool this.hasSpeed, 
+    bool this.hasBearing, 
+    bool this.hasAccuracy, 
+    double this.speed, 
+    int this.elapsedRealTimeNanos, 
+    double this.latitude, 
+    double this.longitude, 
+    double this.altitude, 
+    double this.bearing, 
+    double this.accuracy
+  ) : super(kVersions.last.size);
+
   static Location deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);

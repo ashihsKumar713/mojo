@@ -282,6 +282,11 @@ class StringExtra extends bindings.Struct {
 
   StringExtra() : super(kVersions.last.size);
 
+  StringExtra.init(
+    String this.name, 
+    String this.value
+  ) : super(kVersions.last.size);
+
   static StringExtra deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -367,6 +372,11 @@ class ComponentName extends bindings.Struct {
   String className = null;
 
   ComponentName() : super(kVersions.last.size);
+
+  ComponentName.init(
+    String this.packageName, 
+    String this.className
+  ) : super(kVersions.last.size);
 
   static ComponentName deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -457,6 +467,15 @@ class Intent extends bindings.Struct {
   String type = null;
 
   Intent() : super(kVersions.last.size);
+
+  Intent.init(
+    String this.action, 
+    String this.url, 
+    int this.flags, 
+    ComponentName this.component, 
+    List<StringExtra> this.stringExtras, 
+    String this.type
+  ) : super(kVersions.last.size);
 
   static Intent deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -615,6 +634,11 @@ class TaskDescription extends bindings.Struct {
 
   TaskDescription() : super(kVersions.last.size);
 
+  TaskDescription.init(
+    String this.label, 
+    int this.primaryColor
+  ) : super(kVersions.last.size);
+
   static TaskDescription deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -700,6 +724,10 @@ class _ActivityGetUserFeedbackParams extends bindings.Struct {
 
   _ActivityGetUserFeedbackParams() : super(kVersions.last.size);
 
+  _ActivityGetUserFeedbackParams.init(
+    UserFeedbackInterfaceRequest this.userFeedback
+  ) : super(kVersions.last.size);
+
   static _ActivityGetUserFeedbackParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -770,6 +798,10 @@ class _ActivityStartActivityParams extends bindings.Struct {
   Intent intent = null;
 
   _ActivityStartActivityParams() : super(kVersions.last.size);
+
+  _ActivityStartActivityParams.init(
+    Intent this.intent
+  ) : super(kVersions.last.size);
 
   static _ActivityStartActivityParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -843,6 +875,9 @@ class _ActivityFinishCurrentActivityParams extends bindings.Struct {
 
   _ActivityFinishCurrentActivityParams() : super(kVersions.last.size);
 
+  _ActivityFinishCurrentActivityParams.init(
+  ) : super(kVersions.last.size);
+
   static _ActivityFinishCurrentActivityParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -901,6 +936,10 @@ class _ActivitySetTaskDescriptionParams extends bindings.Struct {
   TaskDescription description = null;
 
   _ActivitySetTaskDescriptionParams() : super(kVersions.last.size);
+
+  _ActivitySetTaskDescriptionParams.init(
+    TaskDescription this.description
+  ) : super(kVersions.last.size);
 
   static _ActivitySetTaskDescriptionParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -974,6 +1013,10 @@ class _ActivitySetSystemUiVisibilityParams extends bindings.Struct {
   SystemUiVisibility visibility = null;
 
   _ActivitySetSystemUiVisibilityParams() : super(kVersions.last.size);
+
+  _ActivitySetSystemUiVisibilityParams.init(
+    SystemUiVisibility this.visibility
+  ) : super(kVersions.last.size);
 
   static _ActivitySetSystemUiVisibilityParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1051,6 +1094,10 @@ class _ActivitySetRequestedOrientationParams extends bindings.Struct {
 
   _ActivitySetRequestedOrientationParams() : super(kVersions.last.size);
 
+  _ActivitySetRequestedOrientationParams.init(
+    ScreenOrientation this.orientation
+  ) : super(kVersions.last.size);
+
   static _ActivitySetRequestedOrientationParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1126,6 +1173,9 @@ class _PathServiceGetAppDataDirParams extends bindings.Struct {
 
   _PathServiceGetAppDataDirParams() : super(kVersions.last.size);
 
+  _PathServiceGetAppDataDirParams.init(
+  ) : super(kVersions.last.size);
+
   static _PathServiceGetAppDataDirParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1184,6 +1234,10 @@ class PathServiceGetAppDataDirResponseParams extends bindings.Struct {
   String path = null;
 
   PathServiceGetAppDataDirResponseParams() : super(kVersions.last.size);
+
+  PathServiceGetAppDataDirResponseParams.init(
+    String this.path
+  ) : super(kVersions.last.size);
 
   static PathServiceGetAppDataDirResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1256,6 +1310,9 @@ class _PathServiceGetFilesDirParams extends bindings.Struct {
 
   _PathServiceGetFilesDirParams() : super(kVersions.last.size);
 
+  _PathServiceGetFilesDirParams.init(
+  ) : super(kVersions.last.size);
+
   static _PathServiceGetFilesDirParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1314,6 +1371,10 @@ class PathServiceGetFilesDirResponseParams extends bindings.Struct {
   String path = null;
 
   PathServiceGetFilesDirResponseParams() : super(kVersions.last.size);
+
+  PathServiceGetFilesDirResponseParams.init(
+    String this.path
+  ) : super(kVersions.last.size);
 
   static PathServiceGetFilesDirResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1386,6 +1447,9 @@ class _PathServiceGetCacheDirParams extends bindings.Struct {
 
   _PathServiceGetCacheDirParams() : super(kVersions.last.size);
 
+  _PathServiceGetCacheDirParams.init(
+  ) : super(kVersions.last.size);
+
   static _PathServiceGetCacheDirParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1444,6 +1508,10 @@ class PathServiceGetCacheDirResponseParams extends bindings.Struct {
   String path = null;
 
   PathServiceGetCacheDirResponseParams() : super(kVersions.last.size);
+
+  PathServiceGetCacheDirResponseParams.init(
+    String this.path
+  ) : super(kVersions.last.size);
 
   static PathServiceGetCacheDirResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1516,6 +1584,10 @@ class _UserFeedbackPerformHapticFeedbackParams extends bindings.Struct {
   HapticFeedbackType type = null;
 
   _UserFeedbackPerformHapticFeedbackParams() : super(kVersions.last.size);
+
+  _UserFeedbackPerformHapticFeedbackParams.init(
+    HapticFeedbackType this.type
+  ) : super(kVersions.last.size);
 
   static _UserFeedbackPerformHapticFeedbackParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1593,6 +1665,10 @@ class _UserFeedbackPerformAuralFeedbackParams extends bindings.Struct {
 
   _UserFeedbackPerformAuralFeedbackParams() : super(kVersions.last.size);
 
+  _UserFeedbackPerformAuralFeedbackParams.init(
+    AuralFeedbackType this.type
+  ) : super(kVersions.last.size);
+
   static _UserFeedbackPerformAuralFeedbackParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1668,14 +1744,17 @@ const int _activityMethodSetSystemUiVisibilityName = 4;
 const int _activityMethodSetRequestedOrientationName = 5;
 
 class _ActivityServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Activity {
@@ -1899,11 +1978,11 @@ class _ActivityStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1941,7 +2020,6 @@ class _ActivityStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Activity get impl => _impl;
@@ -2020,14 +2098,17 @@ const int _pathServiceMethodGetFilesDirName = 1;
 const int _pathServiceMethodGetCacheDirName = 2;
 
 class _PathServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class PathService {
@@ -2052,9 +2133,9 @@ abstract class PathService {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getAppDataDir([Function responseFactory = null]);
-  dynamic getFilesDir([Function responseFactory = null]);
-  dynamic getCacheDir([Function responseFactory = null]);
+  void getAppDataDir(void callback(String path));
+  void getFilesDir(void callback(String path));
+  void getCacheDir(void callback(String path));
 }
 
 abstract class PathServiceInterface
@@ -2104,18 +2185,14 @@ class _PathServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.path );
         break;
       case _pathServiceMethodGetFilesDirName:
         var r = PathServiceGetFilesDirResponseParams.deserialize(
@@ -2124,18 +2201,14 @@ class _PathServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.path );
         break;
       case _pathServiceMethodGetCacheDirName:
         var r = PathServiceGetCacheDirResponseParams.deserialize(
@@ -2144,18 +2217,14 @@ class _PathServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.path );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -2200,38 +2269,44 @@ class PathServiceProxy
   }
 
 
-  dynamic getAppDataDir([Function responseFactory = null]) {
+  void getAppDataDir(void callback(String path)) {
     if (impl != null) {
-      return new Future(() => impl.getAppDataDir(_PathServiceStubControl._pathServiceGetAppDataDirResponseParamsFactory));
+      impl.getAppDataDir(callback);
+      return;
     }
     var params = new _PathServiceGetAppDataDirParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _pathServiceMethodGetAppDataDirName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic getFilesDir([Function responseFactory = null]) {
+  void getFilesDir(void callback(String path)) {
     if (impl != null) {
-      return new Future(() => impl.getFilesDir(_PathServiceStubControl._pathServiceGetFilesDirResponseParamsFactory));
+      impl.getFilesDir(callback);
+      return;
     }
     var params = new _PathServiceGetFilesDirParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _pathServiceMethodGetFilesDirName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic getCacheDir([Function responseFactory = null]) {
+  void getCacheDir(void callback(String path)) {
     if (impl != null) {
-      return new Future(() => impl.getCacheDir(_PathServiceStubControl._pathServiceGetCacheDirResponseParamsFactory));
+      impl.getCacheDir(callback);
+      return;
     }
     var params = new _PathServiceGetCacheDirParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _pathServiceMethodGetCacheDirName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -2257,97 +2332,66 @@ class _PathServiceStubControl
   String get serviceName => PathService.serviceName;
 
 
-  static PathServiceGetAppDataDirResponseParams _pathServiceGetAppDataDirResponseParamsFactory(String path) {
-    var result = new PathServiceGetAppDataDirResponseParams();
-    result.path = path;
-    return result;
+  Function _pathServiceGetAppDataDirResponseParamsResponder(
+      int requestId) {
+  return (String path) {
+      var result = new PathServiceGetAppDataDirResponseParams();
+      result.path = path;
+      sendResponse(buildResponseWithId(
+          result,
+          _pathServiceMethodGetAppDataDirName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static PathServiceGetFilesDirResponseParams _pathServiceGetFilesDirResponseParamsFactory(String path) {
-    var result = new PathServiceGetFilesDirResponseParams();
-    result.path = path;
-    return result;
+  Function _pathServiceGetFilesDirResponseParamsResponder(
+      int requestId) {
+  return (String path) {
+      var result = new PathServiceGetFilesDirResponseParams();
+      result.path = path;
+      sendResponse(buildResponseWithId(
+          result,
+          _pathServiceMethodGetFilesDirName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static PathServiceGetCacheDirResponseParams _pathServiceGetCacheDirResponseParamsFactory(String path) {
-    var result = new PathServiceGetCacheDirResponseParams();
-    result.path = path;
-    return result;
+  Function _pathServiceGetCacheDirResponseParamsResponder(
+      int requestId) {
+  return (String path) {
+      var result = new PathServiceGetCacheDirResponseParams();
+      result.path = path;
+      sendResponse(buildResponseWithId(
+          result,
+          _pathServiceMethodGetCacheDirName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _pathServiceMethodGetAppDataDirName:
-        var response = _impl.getAppDataDir(_pathServiceGetAppDataDirResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _pathServiceMethodGetAppDataDirName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _pathServiceMethodGetAppDataDirName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getAppDataDir(_pathServiceGetAppDataDirResponseParamsResponder(message.header.requestId));
         break;
       case _pathServiceMethodGetFilesDirName:
-        var response = _impl.getFilesDir(_pathServiceGetFilesDirResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _pathServiceMethodGetFilesDirName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _pathServiceMethodGetFilesDirName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getFilesDir(_pathServiceGetFilesDirResponseParamsResponder(message.header.requestId));
         break;
       case _pathServiceMethodGetCacheDirName:
-        var response = _impl.getCacheDir(_pathServiceGetCacheDirResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _pathServiceMethodGetCacheDirName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _pathServiceMethodGetCacheDirName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getCacheDir(_pathServiceGetCacheDirResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   PathService get impl => _impl;
@@ -2401,14 +2445,14 @@ class PathServiceStub
   }
 
 
-  dynamic getAppDataDir([Function responseFactory = null]) {
-    return impl.getAppDataDir(responseFactory);
+  void getAppDataDir(void callback(String path)) {
+    return impl.getAppDataDir(callback);
   }
-  dynamic getFilesDir([Function responseFactory = null]) {
-    return impl.getFilesDir(responseFactory);
+  void getFilesDir(void callback(String path)) {
+    return impl.getFilesDir(callback);
   }
-  dynamic getCacheDir([Function responseFactory = null]) {
-    return impl.getCacheDir(responseFactory);
+  void getCacheDir(void callback(String path)) {
+    return impl.getCacheDir(callback);
   }
 }
 
@@ -2416,14 +2460,17 @@ const int _userFeedbackMethodPerformHapticFeedbackName = 0;
 const int _userFeedbackMethodPerformAuralFeedbackName = 1;
 
 class _UserFeedbackServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class UserFeedback {
@@ -2588,11 +2635,11 @@ class _UserFeedbackStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -2612,7 +2659,6 @@ class _UserFeedbackStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   UserFeedback get impl => _impl;

@@ -21,6 +21,10 @@ class _TcpBoundSocketStartListeningParams extends bindings.Struct {
 
   _TcpBoundSocketStartListeningParams() : super(kVersions.last.size);
 
+  _TcpBoundSocketStartListeningParams.init(
+    tcp_server_socket_mojom.TcpServerSocketInterfaceRequest this.server
+  ) : super(kVersions.last.size);
+
   static _TcpBoundSocketStartListeningParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -91,6 +95,10 @@ class TcpBoundSocketStartListeningResponseParams extends bindings.Struct {
   network_error_mojom.NetworkError result = null;
 
   TcpBoundSocketStartListeningResponseParams() : super(kVersions.last.size);
+
+  TcpBoundSocketStartListeningResponseParams.init(
+    network_error_mojom.NetworkError this.result
+  ) : super(kVersions.last.size);
 
   static TcpBoundSocketStartListeningResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -167,6 +175,13 @@ class _TcpBoundSocketConnectParams extends bindings.Struct {
   tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket = null;
 
   _TcpBoundSocketConnectParams() : super(kVersions.last.size);
+
+  _TcpBoundSocketConnectParams.init(
+    net_address_mojom.NetAddress this.remoteAddress, 
+    core.MojoDataPipeConsumer this.sendStream, 
+    core.MojoDataPipeProducer this.receiveStream, 
+    tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest this.clientSocket
+  ) : super(kVersions.last.size);
 
   static _TcpBoundSocketConnectParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -276,6 +291,10 @@ class TcpBoundSocketConnectResponseParams extends bindings.Struct {
 
   TcpBoundSocketConnectResponseParams() : super(kVersions.last.size);
 
+  TcpBoundSocketConnectResponseParams.init(
+    network_error_mojom.NetworkError this.result
+  ) : super(kVersions.last.size);
+
   static TcpBoundSocketConnectResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -344,14 +363,17 @@ const int _tcpBoundSocketMethodStartListeningName = 0;
 const int _tcpBoundSocketMethodConnectName = 1;
 
 class _TcpBoundSocketServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class TcpBoundSocket {
@@ -376,8 +398,8 @@ abstract class TcpBoundSocket {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic startListening(tcp_server_socket_mojom.TcpServerSocketInterfaceRequest server,[Function responseFactory = null]);
-  dynamic connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]);
+  void startListening(tcp_server_socket_mojom.TcpServerSocketInterfaceRequest server,void callback(network_error_mojom.NetworkError result));
+  void connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,void callback(network_error_mojom.NetworkError result));
 }
 
 abstract class TcpBoundSocketInterface
@@ -427,18 +449,14 @@ class _TcpBoundSocketProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.result );
         break;
       case _tcpBoundSocketMethodConnectName:
         var r = TcpBoundSocketConnectResponseParams.deserialize(
@@ -447,18 +465,14 @@ class _TcpBoundSocketProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.result );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -503,32 +517,36 @@ class TcpBoundSocketProxy
   }
 
 
-  dynamic startListening(tcp_server_socket_mojom.TcpServerSocketInterfaceRequest server,[Function responseFactory = null]) {
+  void startListening(tcp_server_socket_mojom.TcpServerSocketInterfaceRequest server,void callback(network_error_mojom.NetworkError result)) {
     if (impl != null) {
-      return new Future(() => impl.startListening(server,_TcpBoundSocketStubControl._tcpBoundSocketStartListeningResponseParamsFactory));
+      impl.startListening(server,callback);
+      return;
     }
     var params = new _TcpBoundSocketStartListeningParams();
     params.server = server;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _tcpBoundSocketMethodStartListeningName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]) {
+  void connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,void callback(network_error_mojom.NetworkError result)) {
     if (impl != null) {
-      return new Future(() => impl.connect(remoteAddress,sendStream,receiveStream,clientSocket,_TcpBoundSocketStubControl._tcpBoundSocketConnectResponseParamsFactory));
+      impl.connect(remoteAddress,sendStream,receiveStream,clientSocket,callback);
+      return;
     }
     var params = new _TcpBoundSocketConnectParams();
     params.remoteAddress = remoteAddress;
     params.sendStream = sendStream;
     params.receiveStream = receiveStream;
     params.clientSocket = clientSocket;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _tcpBoundSocketMethodConnectName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -554,22 +572,36 @@ class _TcpBoundSocketStubControl
   String get serviceName => TcpBoundSocket.serviceName;
 
 
-  static TcpBoundSocketStartListeningResponseParams _tcpBoundSocketStartListeningResponseParamsFactory(network_error_mojom.NetworkError result) {
-    var result = new TcpBoundSocketStartListeningResponseParams();
-    result.result = result;
-    return result;
+  Function _tcpBoundSocketStartListeningResponseParamsResponder(
+      int requestId) {
+  return (network_error_mojom.NetworkError result) {
+      var result = new TcpBoundSocketStartListeningResponseParams();
+      result.result = result;
+      sendResponse(buildResponseWithId(
+          result,
+          _tcpBoundSocketMethodStartListeningName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static TcpBoundSocketConnectResponseParams _tcpBoundSocketConnectResponseParamsFactory(network_error_mojom.NetworkError result) {
-    var result = new TcpBoundSocketConnectResponseParams();
-    result.result = result;
-    return result;
+  Function _tcpBoundSocketConnectResponseParamsResponder(
+      int requestId) {
+  return (network_error_mojom.NetworkError result) {
+      var result = new TcpBoundSocketConnectResponseParams();
+      result.result = result;
+      sendResponse(buildResponseWithId(
+          result,
+          _tcpBoundSocketMethodConnectName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -578,52 +610,17 @@ class _TcpBoundSocketStubControl
       case _tcpBoundSocketMethodStartListeningName:
         var params = _TcpBoundSocketStartListeningParams.deserialize(
             message.payload);
-        var response = _impl.startListening(params.server,_tcpBoundSocketStartListeningResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _tcpBoundSocketMethodStartListeningName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _tcpBoundSocketMethodStartListeningName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.startListening(params.server, _tcpBoundSocketStartListeningResponseParamsResponder(message.header.requestId));
         break;
       case _tcpBoundSocketMethodConnectName:
         var params = _TcpBoundSocketConnectParams.deserialize(
             message.payload);
-        var response = _impl.connect(params.remoteAddress,params.sendStream,params.receiveStream,params.clientSocket,_tcpBoundSocketConnectResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _tcpBoundSocketMethodConnectName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _tcpBoundSocketMethodConnectName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.connect(params.remoteAddress, params.sendStream, params.receiveStream, params.clientSocket, _tcpBoundSocketConnectResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   TcpBoundSocket get impl => _impl;
@@ -677,11 +674,11 @@ class TcpBoundSocketStub
   }
 
 
-  dynamic startListening(tcp_server_socket_mojom.TcpServerSocketInterfaceRequest server,[Function responseFactory = null]) {
-    return impl.startListening(server,responseFactory);
+  void startListening(tcp_server_socket_mojom.TcpServerSocketInterfaceRequest server,void callback(network_error_mojom.NetworkError result)) {
+    return impl.startListening(server,callback);
   }
-  dynamic connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]) {
-    return impl.connect(remoteAddress,sendStream,receiveStream,clientSocket,responseFactory);
+  void connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,void callback(network_error_mojom.NetworkError result)) {
+    return impl.connect(remoteAddress,sendStream,receiveStream,clientSocket,callback);
   }
 }
 

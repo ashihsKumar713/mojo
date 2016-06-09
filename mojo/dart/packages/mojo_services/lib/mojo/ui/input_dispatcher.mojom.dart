@@ -18,6 +18,10 @@ class _InputDispatcherDispatchEventParams extends bindings.Struct {
 
   _InputDispatcherDispatchEventParams() : super(kVersions.last.size);
 
+  _InputDispatcherDispatchEventParams.init(
+    input_events_mojom.Event this.event
+  ) : super(kVersions.last.size);
+
   static _InputDispatcherDispatchEventParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -85,14 +89,17 @@ class _InputDispatcherDispatchEventParams extends bindings.Struct {
 const int _inputDispatcherMethodDispatchEventName = 0;
 
 class _InputDispatcherServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class InputDispatcher {
@@ -242,11 +249,11 @@ class _InputDispatcherStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -261,7 +268,6 @@ class _InputDispatcherStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   InputDispatcher get impl => _impl;

@@ -16,6 +16,11 @@ class Point extends bindings.Struct {
 
   Point() : super(kVersions.last.size);
 
+  Point.init(
+    int this.x, 
+    int this.y
+  ) : super(kVersions.last.size);
+
   static Point deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -102,6 +107,11 @@ class PointF extends bindings.Struct {
 
   PointF() : super(kVersions.last.size);
 
+  PointF.init(
+    double this.x, 
+    double this.y
+  ) : super(kVersions.last.size);
+
   static PointF deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -187,6 +197,11 @@ class Size extends bindings.Struct {
   int height = 0;
 
   Size() : super(kVersions.last.size);
+
+  Size.init(
+    int this.width, 
+    int this.height
+  ) : super(kVersions.last.size);
 
   static Size deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -275,6 +290,13 @@ class Rect extends bindings.Struct {
   int height = 0;
 
   Rect() : super(kVersions.last.size);
+
+  Rect.init(
+    int this.x, 
+    int this.y, 
+    int this.width, 
+    int this.height
+  ) : super(kVersions.last.size);
 
   static Rect deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -389,6 +411,13 @@ class RectF extends bindings.Struct {
   double height = 0.0;
 
   RectF() : super(kVersions.last.size);
+
+  RectF.init(
+    double this.x, 
+    double this.y, 
+    double this.width, 
+    double this.height
+  ) : super(kVersions.last.size);
 
   static RectF deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -511,6 +540,21 @@ class RRectF extends bindings.Struct {
   double bottomRightRadiusY = 0.0;
 
   RRectF() : super(kVersions.last.size);
+
+  RRectF.init(
+    double this.x, 
+    double this.y, 
+    double this.width, 
+    double this.height, 
+    double this.topLeftRadiusX, 
+    double this.topLeftRadiusY, 
+    double this.topRightRadiusX, 
+    double this.topRightRadiusY, 
+    double this.bottomLeftRadiusX, 
+    double this.bottomLeftRadiusY, 
+    double this.bottomRightRadiusX, 
+    double this.bottomRightRadiusY
+  ) : super(kVersions.last.size);
 
   static RRectF deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -726,6 +770,10 @@ class Transform extends bindings.Struct {
   List<double> matrix = null;
 
   Transform() : super(kVersions.last.size);
+
+  Transform.init(
+    List<double> this.matrix
+  ) : super(kVersions.last.size);
 
   static Transform deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);

@@ -21,6 +21,11 @@ class UrlLoaderStatus extends bindings.Struct {
 
   UrlLoaderStatus() : super(kVersions.last.size);
 
+  UrlLoaderStatus.init(
+    network_error_mojom.NetworkError this.error, 
+    bool this.isLoading
+  ) : super(kVersions.last.size);
+
   static UrlLoaderStatus deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -107,6 +112,10 @@ class _UrlLoaderStartParams extends bindings.Struct {
 
   _UrlLoaderStartParams() : super(kVersions.last.size);
 
+  _UrlLoaderStartParams.init(
+    url_request_mojom.UrlRequest this.request
+  ) : super(kVersions.last.size);
+
   static _UrlLoaderStartParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -179,6 +188,10 @@ class UrlLoaderStartResponseParams extends bindings.Struct {
 
   UrlLoaderStartResponseParams() : super(kVersions.last.size);
 
+  UrlLoaderStartResponseParams.init(
+    url_response_mojom.UrlResponse this.response
+  ) : super(kVersions.last.size);
+
   static UrlLoaderStartResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -250,6 +263,9 @@ class _UrlLoaderFollowRedirectParams extends bindings.Struct {
 
   _UrlLoaderFollowRedirectParams() : super(kVersions.last.size);
 
+  _UrlLoaderFollowRedirectParams.init(
+  ) : super(kVersions.last.size);
+
   static _UrlLoaderFollowRedirectParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -308,6 +324,10 @@ class UrlLoaderFollowRedirectResponseParams extends bindings.Struct {
   url_response_mojom.UrlResponse response = null;
 
   UrlLoaderFollowRedirectResponseParams() : super(kVersions.last.size);
+
+  UrlLoaderFollowRedirectResponseParams.init(
+    url_response_mojom.UrlResponse this.response
+  ) : super(kVersions.last.size);
 
   static UrlLoaderFollowRedirectResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -380,6 +400,9 @@ class _UrlLoaderQueryStatusParams extends bindings.Struct {
 
   _UrlLoaderQueryStatusParams() : super(kVersions.last.size);
 
+  _UrlLoaderQueryStatusParams.init(
+  ) : super(kVersions.last.size);
+
   static _UrlLoaderQueryStatusParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -438,6 +461,10 @@ class UrlLoaderQueryStatusResponseParams extends bindings.Struct {
   UrlLoaderStatus status = null;
 
   UrlLoaderQueryStatusResponseParams() : super(kVersions.last.size);
+
+  UrlLoaderQueryStatusResponseParams.init(
+    UrlLoaderStatus this.status
+  ) : super(kVersions.last.size);
 
   static UrlLoaderQueryStatusResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -508,14 +535,17 @@ const int _urlLoaderMethodFollowRedirectName = 1;
 const int _urlLoaderMethodQueryStatusName = 2;
 
 class _UrlLoaderServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class UrlLoader {
@@ -540,9 +570,9 @@ abstract class UrlLoader {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic start(url_request_mojom.UrlRequest request,[Function responseFactory = null]);
-  dynamic followRedirect([Function responseFactory = null]);
-  dynamic queryStatus([Function responseFactory = null]);
+  void start(url_request_mojom.UrlRequest request,void callback(url_response_mojom.UrlResponse response));
+  void followRedirect(void callback(url_response_mojom.UrlResponse response));
+  void queryStatus(void callback(UrlLoaderStatus status));
 }
 
 abstract class UrlLoaderInterface
@@ -592,18 +622,14 @@ class _UrlLoaderProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.response );
         break;
       case _urlLoaderMethodFollowRedirectName:
         var r = UrlLoaderFollowRedirectResponseParams.deserialize(
@@ -612,18 +638,14 @@ class _UrlLoaderProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.response );
         break;
       case _urlLoaderMethodQueryStatusName:
         var r = UrlLoaderQueryStatusResponseParams.deserialize(
@@ -632,18 +654,14 @@ class _UrlLoaderProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.status );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -688,39 +706,45 @@ class UrlLoaderProxy
   }
 
 
-  dynamic start(url_request_mojom.UrlRequest request,[Function responseFactory = null]) {
+  void start(url_request_mojom.UrlRequest request,void callback(url_response_mojom.UrlResponse response)) {
     if (impl != null) {
-      return new Future(() => impl.start(request,_UrlLoaderStubControl._urlLoaderStartResponseParamsFactory));
+      impl.start(request,callback);
+      return;
     }
     var params = new _UrlLoaderStartParams();
     params.request = request;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _urlLoaderMethodStartName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic followRedirect([Function responseFactory = null]) {
+  void followRedirect(void callback(url_response_mojom.UrlResponse response)) {
     if (impl != null) {
-      return new Future(() => impl.followRedirect(_UrlLoaderStubControl._urlLoaderFollowRedirectResponseParamsFactory));
+      impl.followRedirect(callback);
+      return;
     }
     var params = new _UrlLoaderFollowRedirectParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _urlLoaderMethodFollowRedirectName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic queryStatus([Function responseFactory = null]) {
+  void queryStatus(void callback(UrlLoaderStatus status)) {
     if (impl != null) {
-      return new Future(() => impl.queryStatus(_UrlLoaderStubControl._urlLoaderQueryStatusResponseParamsFactory));
+      impl.queryStatus(callback);
+      return;
     }
     var params = new _UrlLoaderQueryStatusParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _urlLoaderMethodQueryStatusName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -746,27 +770,48 @@ class _UrlLoaderStubControl
   String get serviceName => UrlLoader.serviceName;
 
 
-  static UrlLoaderStartResponseParams _urlLoaderStartResponseParamsFactory(url_response_mojom.UrlResponse response) {
-    var result = new UrlLoaderStartResponseParams();
-    result.response = response;
-    return result;
+  Function _urlLoaderStartResponseParamsResponder(
+      int requestId) {
+  return (url_response_mojom.UrlResponse response) {
+      var result = new UrlLoaderStartResponseParams();
+      result.response = response;
+      sendResponse(buildResponseWithId(
+          result,
+          _urlLoaderMethodStartName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static UrlLoaderFollowRedirectResponseParams _urlLoaderFollowRedirectResponseParamsFactory(url_response_mojom.UrlResponse response) {
-    var result = new UrlLoaderFollowRedirectResponseParams();
-    result.response = response;
-    return result;
+  Function _urlLoaderFollowRedirectResponseParamsResponder(
+      int requestId) {
+  return (url_response_mojom.UrlResponse response) {
+      var result = new UrlLoaderFollowRedirectResponseParams();
+      result.response = response;
+      sendResponse(buildResponseWithId(
+          result,
+          _urlLoaderMethodFollowRedirectName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static UrlLoaderQueryStatusResponseParams _urlLoaderQueryStatusResponseParamsFactory(UrlLoaderStatus status) {
-    var result = new UrlLoaderQueryStatusResponseParams();
-    result.status = status;
-    return result;
+  Function _urlLoaderQueryStatusResponseParamsResponder(
+      int requestId) {
+  return (UrlLoaderStatus status) {
+      var result = new UrlLoaderQueryStatusResponseParams();
+      result.status = status;
+      sendResponse(buildResponseWithId(
+          result,
+          _urlLoaderMethodQueryStatusName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -775,70 +820,18 @@ class _UrlLoaderStubControl
       case _urlLoaderMethodStartName:
         var params = _UrlLoaderStartParams.deserialize(
             message.payload);
-        var response = _impl.start(params.request,_urlLoaderStartResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _urlLoaderMethodStartName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _urlLoaderMethodStartName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.start(params.request, _urlLoaderStartResponseParamsResponder(message.header.requestId));
         break;
       case _urlLoaderMethodFollowRedirectName:
-        var response = _impl.followRedirect(_urlLoaderFollowRedirectResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _urlLoaderMethodFollowRedirectName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _urlLoaderMethodFollowRedirectName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.followRedirect(_urlLoaderFollowRedirectResponseParamsResponder(message.header.requestId));
         break;
       case _urlLoaderMethodQueryStatusName:
-        var response = _impl.queryStatus(_urlLoaderQueryStatusResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _urlLoaderMethodQueryStatusName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _urlLoaderMethodQueryStatusName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.queryStatus(_urlLoaderQueryStatusResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   UrlLoader get impl => _impl;
@@ -892,14 +885,14 @@ class UrlLoaderStub
   }
 
 
-  dynamic start(url_request_mojom.UrlRequest request,[Function responseFactory = null]) {
-    return impl.start(request,responseFactory);
+  void start(url_request_mojom.UrlRequest request,void callback(url_response_mojom.UrlResponse response)) {
+    return impl.start(request,callback);
   }
-  dynamic followRedirect([Function responseFactory = null]) {
-    return impl.followRedirect(responseFactory);
+  void followRedirect(void callback(url_response_mojom.UrlResponse response)) {
+    return impl.followRedirect(callback);
   }
-  dynamic queryStatus([Function responseFactory = null]) {
-    return impl.queryStatus(responseFactory);
+  void queryStatus(void callback(UrlLoaderStatus status)) {
+    return impl.queryStatus(callback);
   }
 }
 

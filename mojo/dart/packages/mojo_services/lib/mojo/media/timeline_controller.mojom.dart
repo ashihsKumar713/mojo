@@ -19,6 +19,11 @@ class MediaTimelineControlSiteStatus extends bindings.Struct {
 
   MediaTimelineControlSiteStatus() : super(kVersions.last.size);
 
+  MediaTimelineControlSiteStatus.init(
+    timelines_mojom.TimelineTransform this.timelineTransform, 
+    bool this.endOfStream
+  ) : super(kVersions.last.size);
+
   static MediaTimelineControlSiteStatus deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -105,6 +110,10 @@ class _MediaTimelineControllerAddControlSiteParams extends bindings.Struct {
 
   _MediaTimelineControllerAddControlSiteParams() : super(kVersions.last.size);
 
+  _MediaTimelineControllerAddControlSiteParams.init(
+    MediaTimelineControlSiteInterface this.controlSite
+  ) : super(kVersions.last.size);
+
   static _MediaTimelineControllerAddControlSiteParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -176,6 +185,10 @@ class _MediaTimelineControllerGetControlSiteParams extends bindings.Struct {
 
   _MediaTimelineControllerGetControlSiteParams() : super(kVersions.last.size);
 
+  _MediaTimelineControllerGetControlSiteParams.init(
+    MediaTimelineControlSiteInterfaceRequest this.controlSite
+  ) : super(kVersions.last.size);
+
   static _MediaTimelineControllerGetControlSiteParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -246,6 +259,10 @@ class _MediaTimelineControlSiteGetStatusParams extends bindings.Struct {
   int versionLastSeen = 0;
 
   _MediaTimelineControlSiteGetStatusParams() : super(kVersions.last.size);
+
+  _MediaTimelineControlSiteGetStatusParams.init(
+    int this.versionLastSeen
+  ) : super(kVersions.last.size);
 
   static _MediaTimelineControlSiteGetStatusParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -319,6 +336,11 @@ class MediaTimelineControlSiteGetStatusResponseParams extends bindings.Struct {
   MediaTimelineControlSiteStatus status = null;
 
   MediaTimelineControlSiteGetStatusResponseParams() : super(kVersions.last.size);
+
+  MediaTimelineControlSiteGetStatusResponseParams.init(
+    int this.version, 
+    MediaTimelineControlSiteStatus this.status
+  ) : super(kVersions.last.size);
 
   static MediaTimelineControlSiteGetStatusResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -406,6 +428,10 @@ class _MediaTimelineControlSiteGetTimelineConsumerParams extends bindings.Struct
 
   _MediaTimelineControlSiteGetTimelineConsumerParams() : super(kVersions.last.size);
 
+  _MediaTimelineControlSiteGetTimelineConsumerParams.init(
+    timelines_mojom.TimelineConsumerInterfaceRequest this.timelineConsumer
+  ) : super(kVersions.last.size);
+
   static _MediaTimelineControlSiteGetTimelineConsumerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -472,14 +498,17 @@ const int _mediaTimelineControllerMethodAddControlSiteName = 0;
 const int _mediaTimelineControllerMethodGetControlSiteName = 1;
 
 class _MediaTimelineControllerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class MediaTimelineController {
@@ -644,11 +673,11 @@ class _MediaTimelineControllerStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -668,7 +697,6 @@ class _MediaTimelineControllerStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   MediaTimelineController get impl => _impl;
@@ -734,14 +762,17 @@ const int _mediaTimelineControlSiteMethodGetStatusName = 0;
 const int _mediaTimelineControlSiteMethodGetTimelineConsumerName = 1;
 
 class _MediaTimelineControlSiteServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class MediaTimelineControlSite {
@@ -766,7 +797,7 @@ abstract class MediaTimelineControlSite {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]);
+  void getStatus(int versionLastSeen,void callback(int version, MediaTimelineControlSiteStatus status));
   void getTimelineConsumer(timelines_mojom.TimelineConsumerInterfaceRequest timelineConsumer);
   static const int kInitialStatus = 0;
 }
@@ -818,18 +849,14 @@ class _MediaTimelineControlSiteProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.version , r.status );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -874,17 +901,19 @@ class MediaTimelineControlSiteProxy
   }
 
 
-  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
+  void getStatus(int versionLastSeen,void callback(int version, MediaTimelineControlSiteStatus status)) {
     if (impl != null) {
-      return new Future(() => impl.getStatus(versionLastSeen,_MediaTimelineControlSiteStubControl._mediaTimelineControlSiteGetStatusResponseParamsFactory));
+      impl.getStatus(versionLastSeen,callback);
+      return;
     }
     var params = new _MediaTimelineControlSiteGetStatusParams();
     params.versionLastSeen = versionLastSeen;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaTimelineControlSiteMethodGetStatusName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void getTimelineConsumer(timelines_mojom.TimelineConsumerInterfaceRequest timelineConsumer) {
     if (impl != null) {
@@ -924,18 +953,25 @@ class _MediaTimelineControlSiteStubControl
   String get serviceName => MediaTimelineControlSite.serviceName;
 
 
-  static MediaTimelineControlSiteGetStatusResponseParams _mediaTimelineControlSiteGetStatusResponseParamsFactory(int version, MediaTimelineControlSiteStatus status) {
-    var result = new MediaTimelineControlSiteGetStatusResponseParams();
-    result.version = version;
-    result.status = status;
-    return result;
+  Function _mediaTimelineControlSiteGetStatusResponseParamsResponder(
+      int requestId) {
+  return (int version, MediaTimelineControlSiteStatus status) {
+      var result = new MediaTimelineControlSiteGetStatusResponseParams();
+      result.version = version;
+      result.status = status;
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaTimelineControlSiteMethodGetStatusName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -944,24 +980,7 @@ class _MediaTimelineControlSiteStubControl
       case _mediaTimelineControlSiteMethodGetStatusName:
         var params = _MediaTimelineControlSiteGetStatusParams.deserialize(
             message.payload);
-        var response = _impl.getStatus(params.versionLastSeen,_mediaTimelineControlSiteGetStatusResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaTimelineControlSiteMethodGetStatusName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaTimelineControlSiteMethodGetStatusName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getStatus(params.versionLastSeen, _mediaTimelineControlSiteGetStatusResponseParamsResponder(message.header.requestId));
         break;
       case _mediaTimelineControlSiteMethodGetTimelineConsumerName:
         var params = _MediaTimelineControlSiteGetTimelineConsumerParams.deserialize(
@@ -972,7 +991,6 @@ class _MediaTimelineControlSiteStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   MediaTimelineControlSite get impl => _impl;
@@ -1026,8 +1044,8 @@ class MediaTimelineControlSiteStub
   }
 
 
-  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
-    return impl.getStatus(versionLastSeen,responseFactory);
+  void getStatus(int versionLastSeen,void callback(int version, MediaTimelineControlSiteStatus status)) {
+    return impl.getStatus(versionLastSeen,callback);
   }
   void getTimelineConsumer(timelines_mojom.TimelineConsumerInterfaceRequest timelineConsumer) {
     return impl.getTimelineConsumer(timelineConsumer);

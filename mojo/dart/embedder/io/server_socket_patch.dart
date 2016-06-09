@@ -28,8 +28,8 @@ patch class ServerSocket {
 
 class _MojoRawServerSocket extends Stream<RawSocket>
                            implements RawServerSocket {
-  final _tcpBoundSocket = new TcpBoundSocketProxy.unbound();
-  final _tcpServerSocket = new TcpServerSocketProxy.unbound();
+  final _tcpBoundSocket = new _TcpBoundSocketProxy.unbound();
+  final _tcpServerSocket = new _TcpServerSocketProxy.unbound();
   final bool _v6Only;
   InternetAddress _boundAddress;
   int _boundPort;
@@ -50,7 +50,7 @@ class _MojoRawServerSocket extends Stream<RawSocket>
     var response =
         await networkService.createTcpBoundSocket(
             bindAddress,
-            rawServerSocket._tcpBoundSocket);
+            rawServerSocket._tcpBoundSocket.proxy);
     if (!_NetworkService._okay(response.result)) {
       rawServerSocket.close();
       _NetworkService._throwOnError(response.result);
@@ -60,8 +60,8 @@ class _MojoRawServerSocket extends Stream<RawSocket>
     rawServerSocket._boundPort =
         _NetworkServiceCodec._portFromNetAddress(response.boundTo);
     final boundSocket = rawServerSocket._tcpBoundSocket;
-    response =
-        await boundSocket.startListening(rawServerSocket._tcpServerSocket);
+    response = await boundSocket.startListening(
+        rawServerSocket._tcpServerSocket.proxy);
     if (!_NetworkService._okay(response.result)) {
       rawServerSocket.close();
       _NetworkService._throwOnError(response.result);

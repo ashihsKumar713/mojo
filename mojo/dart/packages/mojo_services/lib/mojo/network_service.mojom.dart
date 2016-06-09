@@ -28,6 +28,10 @@ class _NetworkServiceCreateUrlLoaderParams extends bindings.Struct {
 
   _NetworkServiceCreateUrlLoaderParams() : super(kVersions.last.size);
 
+  _NetworkServiceCreateUrlLoaderParams.init(
+    url_loader_mojom.UrlLoaderInterfaceRequest this.loader
+  ) : super(kVersions.last.size);
+
   static _NetworkServiceCreateUrlLoaderParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -98,6 +102,10 @@ class _NetworkServiceGetCookieStoreParams extends bindings.Struct {
   cookie_store_mojom.CookieStoreInterfaceRequest cookieStore = null;
 
   _NetworkServiceGetCookieStoreParams() : super(kVersions.last.size);
+
+  _NetworkServiceGetCookieStoreParams.init(
+    cookie_store_mojom.CookieStoreInterfaceRequest this.cookieStore
+  ) : super(kVersions.last.size);
 
   static _NetworkServiceGetCookieStoreParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -170,6 +178,10 @@ class _NetworkServiceCreateWebSocketParams extends bindings.Struct {
 
   _NetworkServiceCreateWebSocketParams() : super(kVersions.last.size);
 
+  _NetworkServiceCreateWebSocketParams.init(
+    web_socket_mojom.WebSocketInterfaceRequest this.socket
+  ) : super(kVersions.last.size);
+
   static _NetworkServiceCreateWebSocketParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -241,6 +253,11 @@ class _NetworkServiceCreateTcpBoundSocketParams extends bindings.Struct {
   tcp_bound_socket_mojom.TcpBoundSocketInterfaceRequest boundSocket = null;
 
   _NetworkServiceCreateTcpBoundSocketParams() : super(kVersions.last.size);
+
+  _NetworkServiceCreateTcpBoundSocketParams.init(
+    net_address_mojom.NetAddress this.localAddress, 
+    tcp_bound_socket_mojom.TcpBoundSocketInterfaceRequest this.boundSocket
+  ) : super(kVersions.last.size);
 
   static _NetworkServiceCreateTcpBoundSocketParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -326,6 +343,11 @@ class NetworkServiceCreateTcpBoundSocketResponseParams extends bindings.Struct {
   net_address_mojom.NetAddress boundTo = null;
 
   NetworkServiceCreateTcpBoundSocketResponseParams() : super(kVersions.last.size);
+
+  NetworkServiceCreateTcpBoundSocketResponseParams.init(
+    network_error_mojom.NetworkError this.result, 
+    net_address_mojom.NetAddress this.boundTo
+  ) : super(kVersions.last.size);
 
   static NetworkServiceCreateTcpBoundSocketResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -416,6 +438,13 @@ class _NetworkServiceCreateTcpConnectedSocketParams extends bindings.Struct {
   tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket = null;
 
   _NetworkServiceCreateTcpConnectedSocketParams() : super(kVersions.last.size);
+
+  _NetworkServiceCreateTcpConnectedSocketParams.init(
+    net_address_mojom.NetAddress this.remoteAddress, 
+    core.MojoDataPipeConsumer this.sendStream, 
+    core.MojoDataPipeProducer this.receiveStream, 
+    tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest this.clientSocket
+  ) : super(kVersions.last.size);
 
   static _NetworkServiceCreateTcpConnectedSocketParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -526,6 +555,11 @@ class NetworkServiceCreateTcpConnectedSocketResponseParams extends bindings.Stru
 
   NetworkServiceCreateTcpConnectedSocketResponseParams() : super(kVersions.last.size);
 
+  NetworkServiceCreateTcpConnectedSocketResponseParams.init(
+    network_error_mojom.NetworkError this.result, 
+    net_address_mojom.NetAddress this.localAddress
+  ) : super(kVersions.last.size);
+
   static NetworkServiceCreateTcpConnectedSocketResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -613,6 +647,10 @@ class _NetworkServiceCreateUdpSocketParams extends bindings.Struct {
 
   _NetworkServiceCreateUdpSocketParams() : super(kVersions.last.size);
 
+  _NetworkServiceCreateUdpSocketParams.init(
+    udp_socket_mojom.UdpSocketInterfaceRequest this.socket
+  ) : super(kVersions.last.size);
+
   static _NetworkServiceCreateUdpSocketParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -684,6 +722,11 @@ class _NetworkServiceCreateHttpServerParams extends bindings.Struct {
   http_server_mojom.HttpServerDelegateInterface delegate = null;
 
   _NetworkServiceCreateHttpServerParams() : super(kVersions.last.size);
+
+  _NetworkServiceCreateHttpServerParams.init(
+    net_address_mojom.NetAddress this.localAddress, 
+    http_server_mojom.HttpServerDelegateInterface this.delegate
+  ) : super(kVersions.last.size);
 
   static _NetworkServiceCreateHttpServerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -769,6 +812,11 @@ class NetworkServiceCreateHttpServerResponseParams extends bindings.Struct {
   net_address_mojom.NetAddress boundTo = null;
 
   NetworkServiceCreateHttpServerResponseParams() : super(kVersions.last.size);
+
+  NetworkServiceCreateHttpServerResponseParams.init(
+    network_error_mojom.NetworkError this.result, 
+    net_address_mojom.NetAddress this.boundTo
+  ) : super(kVersions.last.size);
 
   static NetworkServiceCreateHttpServerResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -857,6 +905,10 @@ class _NetworkServiceRegisterUrlLoaderInterceptorParams extends bindings.Struct 
 
   _NetworkServiceRegisterUrlLoaderInterceptorParams() : super(kVersions.last.size);
 
+  _NetworkServiceRegisterUrlLoaderInterceptorParams.init(
+    url_loader_interceptor_mojom.UrlLoaderInterceptorFactoryInterface this.factory
+  ) : super(kVersions.last.size);
+
   static _NetworkServiceRegisterUrlLoaderInterceptorParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -927,6 +979,10 @@ class _NetworkServiceCreateHostResolverParams extends bindings.Struct {
   host_resolver_mojom.HostResolverInterfaceRequest hostResolver = null;
 
   _NetworkServiceCreateHostResolverParams() : super(kVersions.last.size);
+
+  _NetworkServiceCreateHostResolverParams.init(
+    host_resolver_mojom.HostResolverInterfaceRequest this.hostResolver
+  ) : super(kVersions.last.size);
 
   static _NetworkServiceCreateHostResolverParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1001,14 +1057,17 @@ const int _networkServiceMethodRegisterUrlLoaderInterceptorName = 7;
 const int _networkServiceMethodCreateHostResolverName = 8;
 
 class _NetworkServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class NetworkService {
@@ -1036,10 +1095,10 @@ abstract class NetworkService {
   void createUrlLoader(url_loader_mojom.UrlLoaderInterfaceRequest loader);
   void getCookieStore(cookie_store_mojom.CookieStoreInterfaceRequest cookieStore);
   void createWebSocket(web_socket_mojom.WebSocketInterfaceRequest socket);
-  dynamic createTcpBoundSocket(net_address_mojom.NetAddress localAddress,tcp_bound_socket_mojom.TcpBoundSocketInterfaceRequest boundSocket,[Function responseFactory = null]);
-  dynamic createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]);
+  void createTcpBoundSocket(net_address_mojom.NetAddress localAddress,tcp_bound_socket_mojom.TcpBoundSocketInterfaceRequest boundSocket,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo));
+  void createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddress));
   void createUdpSocket(udp_socket_mojom.UdpSocketInterfaceRequest socket);
-  dynamic createHttpServer(net_address_mojom.NetAddress localAddress,http_server_mojom.HttpServerDelegateInterface delegate,[Function responseFactory = null]);
+  void createHttpServer(net_address_mojom.NetAddress localAddress,http_server_mojom.HttpServerDelegateInterface delegate,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo));
   void registerUrlLoaderInterceptor(url_loader_interceptor_mojom.UrlLoaderInterceptorFactoryInterface factory);
   void createHostResolver(host_resolver_mojom.HostResolverInterfaceRequest hostResolver);
 }
@@ -1091,18 +1150,14 @@ class _NetworkServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.result , r.boundTo );
         break;
       case _networkServiceMethodCreateTcpConnectedSocketName:
         var r = NetworkServiceCreateTcpConnectedSocketResponseParams.deserialize(
@@ -1111,18 +1166,14 @@ class _NetworkServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.result , r.localAddress );
         break;
       case _networkServiceMethodCreateHttpServerName:
         var r = NetworkServiceCreateHttpServerResponseParams.deserialize(
@@ -1131,18 +1182,14 @@ class _NetworkServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.result , r.boundTo );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1229,33 +1276,37 @@ class NetworkServiceProxy
     ctrl.sendMessage(params,
         _networkServiceMethodCreateWebSocketName);
   }
-  dynamic createTcpBoundSocket(net_address_mojom.NetAddress localAddress,tcp_bound_socket_mojom.TcpBoundSocketInterfaceRequest boundSocket,[Function responseFactory = null]) {
+  void createTcpBoundSocket(net_address_mojom.NetAddress localAddress,tcp_bound_socket_mojom.TcpBoundSocketInterfaceRequest boundSocket,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo)) {
     if (impl != null) {
-      return new Future(() => impl.createTcpBoundSocket(localAddress,boundSocket,_NetworkServiceStubControl._networkServiceCreateTcpBoundSocketResponseParamsFactory));
+      impl.createTcpBoundSocket(localAddress,boundSocket,callback);
+      return;
     }
     var params = new _NetworkServiceCreateTcpBoundSocketParams();
     params.localAddress = localAddress;
     params.boundSocket = boundSocket;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _networkServiceMethodCreateTcpBoundSocketName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]) {
+  void createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddress)) {
     if (impl != null) {
-      return new Future(() => impl.createTcpConnectedSocket(remoteAddress,sendStream,receiveStream,clientSocket,_NetworkServiceStubControl._networkServiceCreateTcpConnectedSocketResponseParamsFactory));
+      impl.createTcpConnectedSocket(remoteAddress,sendStream,receiveStream,clientSocket,callback);
+      return;
     }
     var params = new _NetworkServiceCreateTcpConnectedSocketParams();
     params.remoteAddress = remoteAddress;
     params.sendStream = sendStream;
     params.receiveStream = receiveStream;
     params.clientSocket = clientSocket;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _networkServiceMethodCreateTcpConnectedSocketName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void createUdpSocket(udp_socket_mojom.UdpSocketInterfaceRequest socket) {
     if (impl != null) {
@@ -1271,18 +1322,20 @@ class NetworkServiceProxy
     ctrl.sendMessage(params,
         _networkServiceMethodCreateUdpSocketName);
   }
-  dynamic createHttpServer(net_address_mojom.NetAddress localAddress,http_server_mojom.HttpServerDelegateInterface delegate,[Function responseFactory = null]) {
+  void createHttpServer(net_address_mojom.NetAddress localAddress,http_server_mojom.HttpServerDelegateInterface delegate,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo)) {
     if (impl != null) {
-      return new Future(() => impl.createHttpServer(localAddress,delegate,_NetworkServiceStubControl._networkServiceCreateHttpServerResponseParamsFactory));
+      impl.createHttpServer(localAddress,delegate,callback);
+      return;
     }
     var params = new _NetworkServiceCreateHttpServerParams();
     params.localAddress = localAddress;
     params.delegate = delegate;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _networkServiceMethodCreateHttpServerName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void registerUrlLoaderInterceptor(url_loader_interceptor_mojom.UrlLoaderInterceptorFactoryInterface factory) {
     if (impl != null) {
@@ -1336,30 +1389,51 @@ class _NetworkServiceStubControl
   String get serviceName => NetworkService.serviceName;
 
 
-  static NetworkServiceCreateTcpBoundSocketResponseParams _networkServiceCreateTcpBoundSocketResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo) {
-    var result = new NetworkServiceCreateTcpBoundSocketResponseParams();
-    result.result = result;
-    result.boundTo = boundTo;
-    return result;
+  Function _networkServiceCreateTcpBoundSocketResponseParamsResponder(
+      int requestId) {
+  return (network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo) {
+      var result = new NetworkServiceCreateTcpBoundSocketResponseParams();
+      result.result = result;
+      result.boundTo = boundTo;
+      sendResponse(buildResponseWithId(
+          result,
+          _networkServiceMethodCreateTcpBoundSocketName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static NetworkServiceCreateTcpConnectedSocketResponseParams _networkServiceCreateTcpConnectedSocketResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddress) {
-    var result = new NetworkServiceCreateTcpConnectedSocketResponseParams();
-    result.result = result;
-    result.localAddress = localAddress;
-    return result;
+  Function _networkServiceCreateTcpConnectedSocketResponseParamsResponder(
+      int requestId) {
+  return (network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddress) {
+      var result = new NetworkServiceCreateTcpConnectedSocketResponseParams();
+      result.result = result;
+      result.localAddress = localAddress;
+      sendResponse(buildResponseWithId(
+          result,
+          _networkServiceMethodCreateTcpConnectedSocketName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static NetworkServiceCreateHttpServerResponseParams _networkServiceCreateHttpServerResponseParamsFactory(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo) {
-    var result = new NetworkServiceCreateHttpServerResponseParams();
-    result.result = result;
-    result.boundTo = boundTo;
-    return result;
+  Function _networkServiceCreateHttpServerResponseParamsResponder(
+      int requestId) {
+  return (network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo) {
+      var result = new NetworkServiceCreateHttpServerResponseParams();
+      result.result = result;
+      result.boundTo = boundTo;
+      sendResponse(buildResponseWithId(
+          result,
+          _networkServiceMethodCreateHttpServerName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1383,46 +1457,12 @@ class _NetworkServiceStubControl
       case _networkServiceMethodCreateTcpBoundSocketName:
         var params = _NetworkServiceCreateTcpBoundSocketParams.deserialize(
             message.payload);
-        var response = _impl.createTcpBoundSocket(params.localAddress,params.boundSocket,_networkServiceCreateTcpBoundSocketResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _networkServiceMethodCreateTcpBoundSocketName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _networkServiceMethodCreateTcpBoundSocketName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.createTcpBoundSocket(params.localAddress, params.boundSocket, _networkServiceCreateTcpBoundSocketResponseParamsResponder(message.header.requestId));
         break;
       case _networkServiceMethodCreateTcpConnectedSocketName:
         var params = _NetworkServiceCreateTcpConnectedSocketParams.deserialize(
             message.payload);
-        var response = _impl.createTcpConnectedSocket(params.remoteAddress,params.sendStream,params.receiveStream,params.clientSocket,_networkServiceCreateTcpConnectedSocketResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _networkServiceMethodCreateTcpConnectedSocketName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _networkServiceMethodCreateTcpConnectedSocketName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.createTcpConnectedSocket(params.remoteAddress, params.sendStream, params.receiveStream, params.clientSocket, _networkServiceCreateTcpConnectedSocketResponseParamsResponder(message.header.requestId));
         break;
       case _networkServiceMethodCreateUdpSocketName:
         var params = _NetworkServiceCreateUdpSocketParams.deserialize(
@@ -1432,24 +1472,7 @@ class _NetworkServiceStubControl
       case _networkServiceMethodCreateHttpServerName:
         var params = _NetworkServiceCreateHttpServerParams.deserialize(
             message.payload);
-        var response = _impl.createHttpServer(params.localAddress,params.delegate,_networkServiceCreateHttpServerResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _networkServiceMethodCreateHttpServerName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _networkServiceMethodCreateHttpServerName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.createHttpServer(params.localAddress, params.delegate, _networkServiceCreateHttpServerResponseParamsResponder(message.header.requestId));
         break;
       case _networkServiceMethodRegisterUrlLoaderInterceptorName:
         var params = _NetworkServiceRegisterUrlLoaderInterceptorParams.deserialize(
@@ -1465,7 +1488,6 @@ class _NetworkServiceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   NetworkService get impl => _impl;
@@ -1528,17 +1550,17 @@ class NetworkServiceStub
   void createWebSocket(web_socket_mojom.WebSocketInterfaceRequest socket) {
     return impl.createWebSocket(socket);
   }
-  dynamic createTcpBoundSocket(net_address_mojom.NetAddress localAddress,tcp_bound_socket_mojom.TcpBoundSocketInterfaceRequest boundSocket,[Function responseFactory = null]) {
-    return impl.createTcpBoundSocket(localAddress,boundSocket,responseFactory);
+  void createTcpBoundSocket(net_address_mojom.NetAddress localAddress,tcp_bound_socket_mojom.TcpBoundSocketInterfaceRequest boundSocket,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo)) {
+    return impl.createTcpBoundSocket(localAddress,boundSocket,callback);
   }
-  dynamic createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,[Function responseFactory = null]) {
-    return impl.createTcpConnectedSocket(remoteAddress,sendStream,receiveStream,clientSocket,responseFactory);
+  void createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddress)) {
+    return impl.createTcpConnectedSocket(remoteAddress,sendStream,receiveStream,clientSocket,callback);
   }
   void createUdpSocket(udp_socket_mojom.UdpSocketInterfaceRequest socket) {
     return impl.createUdpSocket(socket);
   }
-  dynamic createHttpServer(net_address_mojom.NetAddress localAddress,http_server_mojom.HttpServerDelegateInterface delegate,[Function responseFactory = null]) {
-    return impl.createHttpServer(localAddress,delegate,responseFactory);
+  void createHttpServer(net_address_mojom.NetAddress localAddress,http_server_mojom.HttpServerDelegateInterface delegate,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo)) {
+    return impl.createHttpServer(localAddress,delegate,callback);
   }
   void registerUrlLoaderInterceptor(url_loader_interceptor_mojom.UrlLoaderInterceptorFactoryInterface factory) {
     return impl.registerUrlLoaderInterceptor(factory);

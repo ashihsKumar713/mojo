@@ -22,6 +22,10 @@ class _PingPongServiceSetClientParams extends bindings.Struct {
 
   _PingPongServiceSetClientParams() : super(kVersions.last.size);
 
+  _PingPongServiceSetClientParams.init(
+    PingPongClientInterface this.client
+  ) : super(kVersions.last.size);
+
   static _PingPongServiceSetClientParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -92,6 +96,10 @@ class _PingPongServicePingParams extends bindings.Struct {
   int pingValue = 0;
 
   _PingPongServicePingParams() : super(kVersions.last.size);
+
+  _PingPongServicePingParams.init(
+    int this.pingValue
+  ) : super(kVersions.last.size);
 
   static _PingPongServicePingParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -165,6 +173,11 @@ class _PingPongServicePingTargetUrlParams extends bindings.Struct {
   int count = 0;
 
   _PingPongServicePingTargetUrlParams() : super(kVersions.last.size);
+
+  _PingPongServicePingTargetUrlParams.init(
+    String this.url, 
+    int this.count
+  ) : super(kVersions.last.size);
 
   static _PingPongServicePingTargetUrlParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -251,6 +264,10 @@ class PingPongServicePingTargetUrlResponseParams extends bindings.Struct {
 
   PingPongServicePingTargetUrlResponseParams() : super(kVersions.last.size);
 
+  PingPongServicePingTargetUrlResponseParams.init(
+    bool this.ok
+  ) : super(kVersions.last.size);
+
   static PingPongServicePingTargetUrlResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -323,6 +340,11 @@ class _PingPongServicePingTargetServiceParams extends bindings.Struct {
   int count = 0;
 
   _PingPongServicePingTargetServiceParams() : super(kVersions.last.size);
+
+  _PingPongServicePingTargetServiceParams.init(
+    PingPongServiceInterface this.service, 
+    int this.count
+  ) : super(kVersions.last.size);
 
   static _PingPongServicePingTargetServiceParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -407,6 +429,10 @@ class PingPongServicePingTargetServiceResponseParams extends bindings.Struct {
 
   PingPongServicePingTargetServiceResponseParams() : super(kVersions.last.size);
 
+  PingPongServicePingTargetServiceResponseParams.init(
+    bool this.ok
+  ) : super(kVersions.last.size);
+
   static PingPongServicePingTargetServiceResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -479,6 +505,10 @@ class _PingPongServiceGetPingPongServiceParams extends bindings.Struct {
 
   _PingPongServiceGetPingPongServiceParams() : super(kVersions.last.size);
 
+  _PingPongServiceGetPingPongServiceParams.init(
+    PingPongServiceInterfaceRequest this.service
+  ) : super(kVersions.last.size);
+
   static _PingPongServiceGetPingPongServiceParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -550,6 +580,10 @@ class _PingPongServiceGetPingPongServiceDelayedParams extends bindings.Struct {
 
   _PingPongServiceGetPingPongServiceDelayedParams() : super(kVersions.last.size);
 
+  _PingPongServiceGetPingPongServiceDelayedParams.init(
+    PingPongServiceInterfaceRequest this.service
+  ) : super(kVersions.last.size);
+
   static _PingPongServiceGetPingPongServiceDelayedParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -620,6 +654,9 @@ class _PingPongServiceQuitParams extends bindings.Struct {
 
   _PingPongServiceQuitParams() : super(kVersions.last.size);
 
+  _PingPongServiceQuitParams.init(
+  ) : super(kVersions.last.size);
+
   static _PingPongServiceQuitParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -678,6 +715,10 @@ class _PingPongClientPongParams extends bindings.Struct {
   int pongValue = 0;
 
   _PingPongClientPongParams() : super(kVersions.last.size);
+
+  _PingPongClientPongParams.init(
+    int this.pongValue
+  ) : super(kVersions.last.size);
 
   static _PingPongClientPongParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -751,17 +792,19 @@ const int _pingPongServiceMethodGetPingPongServiceDelayedName = 5;
 const int _pingPongServiceMethodQuitName = 6;
 
 class _PingPongServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]){
+  void getTopLevelInterface(Function responder){
     var interfaceTypeKey = getRuntimeTypeInfo().services["test::PingPongService"];
     var userDefinedType = getAllMojomTypeDefinitions()[interfaceTypeKey];
-    return responseFactory(userDefinedType.interfaceType);
+    responder(userDefinedType.interfaceType);
   }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-    responseFactory(getAllMojomTypeDefinitions()[typeKey]);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(getAllMojomTypeDefinitions()[typeKey]);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-    responseFactory(getAllMojomTypeDefinitions());
+  void getAllTypeDefinitions(Function responder) {
+    responder(getAllMojomTypeDefinitions());
+  }
 }
 
 abstract class PingPongService {
@@ -788,8 +831,8 @@ abstract class PingPongService {
   }
   void setClient(PingPongClientInterface client);
   void ping(int pingValue);
-  dynamic pingTargetUrl(String url,int count,[Function responseFactory = null]);
-  dynamic pingTargetService(PingPongServiceInterface service,int count,[Function responseFactory = null]);
+  void pingTargetUrl(String url,int count,void callback(bool ok));
+  void pingTargetService(PingPongServiceInterface service,int count,void callback(bool ok));
   void getPingPongService(PingPongServiceInterfaceRequest service);
   void getPingPongServiceDelayed(PingPongServiceInterfaceRequest service);
   void quit();
@@ -842,18 +885,14 @@ class _PingPongServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.ok );
         break;
       case _pingPongServiceMethodPingTargetServiceName:
         var r = PingPongServicePingTargetServiceResponseParams.deserialize(
@@ -862,18 +901,14 @@ class _PingPongServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.ok );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -946,31 +981,35 @@ class PingPongServiceProxy
     ctrl.sendMessage(params,
         _pingPongServiceMethodPingName);
   }
-  dynamic pingTargetUrl(String url,int count,[Function responseFactory = null]) {
+  void pingTargetUrl(String url,int count,void callback(bool ok)) {
     if (impl != null) {
-      return new Future(() => impl.pingTargetUrl(url,count,_PingPongServiceStubControl._pingPongServicePingTargetUrlResponseParamsFactory));
+      impl.pingTargetUrl(url,count,callback);
+      return;
     }
     var params = new _PingPongServicePingTargetUrlParams();
     params.url = url;
     params.count = count;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _pingPongServiceMethodPingTargetUrlName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic pingTargetService(PingPongServiceInterface service,int count,[Function responseFactory = null]) {
+  void pingTargetService(PingPongServiceInterface service,int count,void callback(bool ok)) {
     if (impl != null) {
-      return new Future(() => impl.pingTargetService(service,count,_PingPongServiceStubControl._pingPongServicePingTargetServiceResponseParamsFactory));
+      impl.pingTargetService(service,count,callback);
+      return;
     }
     var params = new _PingPongServicePingTargetServiceParams();
     params.service = service;
     params.count = count;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _pingPongServiceMethodPingTargetServiceName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void getPingPongService(PingPongServiceInterfaceRequest service) {
     if (impl != null) {
@@ -1037,22 +1076,36 @@ class _PingPongServiceStubControl
   String get serviceName => PingPongService.serviceName;
 
 
-  static PingPongServicePingTargetUrlResponseParams _pingPongServicePingTargetUrlResponseParamsFactory(bool ok) {
-    var result = new PingPongServicePingTargetUrlResponseParams();
-    result.ok = ok;
-    return result;
+  Function _pingPongServicePingTargetUrlResponseParamsResponder(
+      int requestId) {
+  return (bool ok) {
+      var result = new PingPongServicePingTargetUrlResponseParams();
+      result.ok = ok;
+      sendResponse(buildResponseWithId(
+          result,
+          _pingPongServiceMethodPingTargetUrlName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static PingPongServicePingTargetServiceResponseParams _pingPongServicePingTargetServiceResponseParamsFactory(bool ok) {
-    var result = new PingPongServicePingTargetServiceResponseParams();
-    result.ok = ok;
-    return result;
+  Function _pingPongServicePingTargetServiceResponseParamsResponder(
+      int requestId) {
+  return (bool ok) {
+      var result = new PingPongServicePingTargetServiceResponseParams();
+      result.ok = ok;
+      sendResponse(buildResponseWithId(
+          result,
+          _pingPongServiceMethodPingTargetServiceName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1071,46 +1124,12 @@ class _PingPongServiceStubControl
       case _pingPongServiceMethodPingTargetUrlName:
         var params = _PingPongServicePingTargetUrlParams.deserialize(
             message.payload);
-        var response = _impl.pingTargetUrl(params.url,params.count,_pingPongServicePingTargetUrlResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _pingPongServiceMethodPingTargetUrlName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _pingPongServiceMethodPingTargetUrlName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.pingTargetUrl(params.url, params.count, _pingPongServicePingTargetUrlResponseParamsResponder(message.header.requestId));
         break;
       case _pingPongServiceMethodPingTargetServiceName:
         var params = _PingPongServicePingTargetServiceParams.deserialize(
             message.payload);
-        var response = _impl.pingTargetService(params.service,params.count,_pingPongServicePingTargetServiceResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _pingPongServiceMethodPingTargetServiceName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _pingPongServiceMethodPingTargetServiceName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.pingTargetService(params.service, params.count, _pingPongServicePingTargetServiceResponseParamsResponder(message.header.requestId));
         break;
       case _pingPongServiceMethodGetPingPongServiceName:
         var params = _PingPongServiceGetPingPongServiceParams.deserialize(
@@ -1129,7 +1148,6 @@ class _PingPongServiceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   PingPongService get impl => _impl;
@@ -1189,11 +1207,11 @@ class PingPongServiceStub
   void ping(int pingValue) {
     return impl.ping(pingValue);
   }
-  dynamic pingTargetUrl(String url,int count,[Function responseFactory = null]) {
-    return impl.pingTargetUrl(url,count,responseFactory);
+  void pingTargetUrl(String url,int count,void callback(bool ok)) {
+    return impl.pingTargetUrl(url,count,callback);
   }
-  dynamic pingTargetService(PingPongServiceInterface service,int count,[Function responseFactory = null]) {
-    return impl.pingTargetService(service,count,responseFactory);
+  void pingTargetService(PingPongServiceInterface service,int count,void callback(bool ok)) {
+    return impl.pingTargetService(service,count,callback);
   }
   void getPingPongService(PingPongServiceInterfaceRequest service) {
     return impl.getPingPongService(service);
@@ -1209,14 +1227,17 @@ class PingPongServiceStub
 const int _pingPongClientMethodPongName = 0;
 
 class _PingPongClientServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class PingPongClient {
@@ -1366,11 +1387,11 @@ class _PingPongClientStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1385,7 +1406,6 @@ class _PingPongClientStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   PingPongClient get impl => _impl;
@@ -1457,7 +1477,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xZTU/bTBB2HD7ywhs+3hdKSigKlFb0AEZqD4gTUkFFalWlLVXLKVhhC26T2LUdpN565CfwE/oTeuxP4dgjR27tLpltl/VOYkeJbVpWGsyuP3bn2Zl5ZicFrdUm4HoCV3l8XehnqOSgf4fKNBWfeP7GRtlqHJbtxuEr4h5bVaJ4/h68s7tX3q483d7bYC+uBt+T53eEdenC+Bpcl6jMod99XLNIw48y/7IwT1ZaD+t/Hmj1l2G8pEktc7W7Kd1ek8Z/QCtr6naLyhgVWaMiHfsf8FeoG8BxgcoIlQqVN1SMI7tODLd5YNetBnGNuv3eNjy32vrnwHR9w3Qc9nXPYH8rtOcZVsMn7juzSjzDoXM6dM6K18Julb1YD8zL+/9K0Mj2IeN5huCB4akJeIrfkxtbB9tCBpcKp0XY/37jVJLw4fpeZMLrydoaoucU6Mr0XHHJxyZdm0pf3vqtr7zfm4r4ogn3O7WwdoDh8x/4w+VSj81ak6jj3yL4X9z4FKSQMoH4iQP2coLEHY7vKVy/SPbzFcFHXk9JwQ/DwjiLRaNUIJI+N+skFE/MUBkX4hu/Mwc2jITpwD7lYopvnfSR1yXy1LCwnzrwCYtFg1SGhH0bFvbtWxbiAzywn29dd6ZgfAb2v6i2j+998p9JKv9c7rcvsE5Q/5GE4inX+60eLZ6uI/reBp1/6SsG1ZTHVWZf5z2Oqxi/joEtV8EoVPZQjNEeNGn+Uoe8Kmw+2W28PkPSxTC4Z8LkNZY6r8n/aXmNdZPXtM1rrPZ5TT7leQ2P3+tw3tIj4KO3wWcadGf2s2u6h8R//fKZAp/JhHmrkO0Nb/F85Yq+guMk5Tfyeb6Uwf0nEyN/jUJe1nRrSr+ZhJw1Dr9pl893iiu5LnBpxy95yCOqdrPhI7jcTTie6EIf86uoPIT51TzkELJfeXTNHkk/H2kx+RPP/+0PGupPD1PMQzzunAIPZSPgkhVwx84Tv+1HONwqcJpOiI+4/k5EPtpE9F4A3QN6p+Q8JfOSk0nHuWoc6gKwWqV9LKXgXIXVc8LW39POcwznRynmuXPxoR74K6t/ziL+yrnuOpy/0sJ3zH62rgHf8TYQAZeBNnw3C2fTJ8RXVHM15e9GSfLdfo/9J6j3VcK7qR+G4znWvx+jXeh94rlu/fNCwmswAu6DiufkvCxop1ukZn4iB0heVkzITzkORxH9dAfR/wFggOp/U+/vyl+Zfaz8xf4q1/uHIuA+FKLe/6JpKevf8wnX+8+03tb7mZ5pqPfnkN/HC8i55GcAAAD//zW0L99oJQAA";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xazW7TThC3nabNv/33Cwikn0pLQeXQugIOVU+VaEUlEApQDj1VVrqkpk4cbKcCTj32EXrkyCNw5DF4jB65wW4zWzbr3cSO3GSNstJgdhNnZ347M7/Z3Ra0ZpuC5zk8+fFNpq9jyUF/AUseS4D8YGurZNcqJbdWeYu8U7uMBN9/AO/sH5R2D1/sHmyRF9fD7/Hz1xm9DGZ8A54rWOalv/vMsVEtiDP/KjNPhtOH9H8MNfurMF7UWtuU3trf5j7f4MZ/Qytp4nYXywQW3qI5PHYb8BeYG8JxCcsolhMsZSxmw/dMxy1bjllx3YqDzGO3iswvnmVW3Q/uY9P3ylf/M48sLzCtep3M5Jvk30Pc8027FiDvvVVGvlnH89fx/Id+E8d18mJVqAft/w/+oUn8i8f3UoKPDF+NwZf9Pb4RPciSEvhE+i6DP/QatyKHF7W/YES3m7QNid13wHZi95qHPjawfiL7aeu1/bw/bAvykcZ83qlF9RMZXrcgfq7UPbWcBhLny2WI137jVWB01xn9+Lg6gyC8kOQtivcFPL9x/vVdghevT1HALyPMOMllY1ggE7+yqigSz9zDMsnkR/rJPPi4JM2H1i3Xp/zYyT5eT5b3Rpj1NYCfSC7LYhlm1nGEWcfLDIzDy8WJ5vM4D78/A3gsiP3l1w3F1zSW/67WP2BYLGz/qCL5mOLwKWY+3pTYPwMYXNvPJuWU5eWsxpF7AnlZxt8T4OtlcBqRv8z10V80Tp9ih7ouaj3bbb7n6yg9xjroUeooW1xHjf/rdZQ9qKNi1VF2+zpqPGV11DUfwP7QiIGX0QavPGBB/Gvf8iooePfmpQCvacV4cS+TDC/S+qjFfibQVImz0PmELo83vYf8OAZ1YcNzhHE2DTV0P+Ks3X6jU17KdYFTO/4ah7ql7DZqgQSn+4rlI4Ppy+KwkFB9ugg1Cx+HPtbbR+njO03rTfzR/Yp7oknj70mKeI7mrZ/Ac5kYOGWYdZDtf/76F7NZF+CWV4TvKB5fY/LdtgSHJcAihIOi+0Ge9850NfaFk3DuARoL/WdFwX2h7Dwr6v2F6jxKcH+aIh6l/lo0kolvcj48K4lvyqVp3D+qwqfEv3ZSyKe0DcXAaagNn87CXvs5CgSn3+J7OZX49CzheAvj0Eqog/PV7niU9B/20W+MG+LRbuM5x61LNsY6ZAXf4+vCsB/vIMf6jI4kdeGcInFNcTmPGdd7EjweASZSPAb3J4nEN/GftUF8S+9PhmOsw3CE+5PXDVt4f7Co2P3JpZbs/QmxW8X7k5zk7xkKkn3UnwAAAP//RrpkZ1gnAAA=";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

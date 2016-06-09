@@ -16,6 +16,9 @@ class _DeviceInfoGetDeviceTypeParams extends bindings.Struct {
 
   _DeviceInfoGetDeviceTypeParams() : super(kVersions.last.size);
 
+  _DeviceInfoGetDeviceTypeParams.init(
+  ) : super(kVersions.last.size);
+
   static _DeviceInfoGetDeviceTypeParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -74,6 +77,10 @@ class DeviceInfoGetDeviceTypeResponseParams extends bindings.Struct {
   DeviceInfoDeviceType deviceType = null;
 
   DeviceInfoGetDeviceTypeResponseParams() : super(kVersions.last.size);
+
+  DeviceInfoGetDeviceTypeResponseParams.init(
+    DeviceInfoDeviceType this.deviceType
+  ) : super(kVersions.last.size);
 
   static DeviceInfoGetDeviceTypeResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -232,14 +239,17 @@ class DeviceInfoDeviceType extends bindings.MojoEnum {
 }
 
 class _DeviceInfoServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class DeviceInfo {
@@ -264,7 +274,7 @@ abstract class DeviceInfo {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getDeviceType([Function responseFactory = null]);
+  void getDeviceType(void callback(DeviceInfoDeviceType deviceType));
 }
 
 abstract class DeviceInfoInterface
@@ -314,18 +324,14 @@ class _DeviceInfoProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.deviceType );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -370,16 +376,18 @@ class DeviceInfoProxy
   }
 
 
-  dynamic getDeviceType([Function responseFactory = null]) {
+  void getDeviceType(void callback(DeviceInfoDeviceType deviceType)) {
     if (impl != null) {
-      return new Future(() => impl.getDeviceType(_DeviceInfoStubControl._deviceInfoGetDeviceTypeResponseParamsFactory));
+      impl.getDeviceType(callback);
+      return;
     }
     var params = new _DeviceInfoGetDeviceTypeParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _deviceInfoMethodGetDeviceTypeName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -405,47 +413,36 @@ class _DeviceInfoStubControl
   String get serviceName => DeviceInfo.serviceName;
 
 
-  static DeviceInfoGetDeviceTypeResponseParams _deviceInfoGetDeviceTypeResponseParamsFactory(DeviceInfoDeviceType deviceType) {
-    var result = new DeviceInfoGetDeviceTypeResponseParams();
-    result.deviceType = deviceType;
-    return result;
+  Function _deviceInfoGetDeviceTypeResponseParamsResponder(
+      int requestId) {
+  return (DeviceInfoDeviceType deviceType) {
+      var result = new DeviceInfoGetDeviceTypeResponseParams();
+      result.deviceType = deviceType;
+      sendResponse(buildResponseWithId(
+          result,
+          _deviceInfoMethodGetDeviceTypeName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _deviceInfoMethodGetDeviceTypeName:
-        var response = _impl.getDeviceType(_deviceInfoGetDeviceTypeResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _deviceInfoMethodGetDeviceTypeName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _deviceInfoMethodGetDeviceTypeName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getDeviceType(_deviceInfoGetDeviceTypeResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   DeviceInfo get impl => _impl;
@@ -499,8 +496,8 @@ class DeviceInfoStub
   }
 
 
-  dynamic getDeviceType([Function responseFactory = null]) {
-    return impl.getDeviceType(responseFactory);
+  void getDeviceType(void callback(DeviceInfoDeviceType deviceType)) {
+    return impl.getDeviceType(callback);
   }
 }
 

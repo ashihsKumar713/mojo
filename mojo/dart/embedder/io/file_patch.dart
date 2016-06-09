@@ -90,6 +90,7 @@ int _openFlagsFromFileMode(FileMode fileMode) {
   return flags;
 }
 
+
 patch class _Directory {
   // We start at the root of the file system.
   static String _currentDirectoryPath = '/';
@@ -107,7 +108,7 @@ patch class _Directory {
         }
       });
     }
-    DirectoryProxy rootDirectory = await _getRootDirectory();
+    _DirectoryProxy rootDirectory = await _getRootDirectory();
     int flags =
         types.kOpenFlagRead | types.kOpenFlagWrite | types.kOpenFlagCreate;
     var response =
@@ -124,7 +125,7 @@ patch class _Directory {
   /* patch */ void createSync({bool recursive: false}) => _onSyncOperation();
 
   /* patch */ Future<Directory> createTemp([String prefix]) async {
-    DirectoryProxy rootDirectory = await _getRootDirectory();
+    _DirectoryProxy rootDirectory = await _getRootDirectory();
     // Create directory and fail if it already exists.
     int flags = types.kOpenFlagRead | types.kOpenFlagWrite |
                 types.kOpenFlagCreate | types.kOpenFlagExclusive;
@@ -147,7 +148,7 @@ patch class _Directory {
   /* patch */ Directory createTempSync([String prefix]) => _onSyncOperation();
 
   /* patch */ Future<bool> exists() async {
-    DirectoryProxy rootDirectory = await _getRootDirectory();
+    _DirectoryProxy rootDirectory = await _getRootDirectory();
     int flags = types.kOpenFlagRead | types.kOpenFlagWrite;
     var response =
         await await rootDirectory.responseOrError(
@@ -180,7 +181,7 @@ patch class _Directory {
   /* patch */ FileStat statSync() => _onSyncOperation();
 
   /* patch */ Future<Directory> rename(String newPath) async {
-    DirectoryProxy rootDirectory = await _getRootDirectory();
+    _DirectoryProxy rootDirectory = await _getRootDirectory();
     var response = await rootDirectory.responseOrError(
         rootDirectory.rename(_ensurePathIsRelative(path),
                              _ensurePathIsRelative(newPath)));
@@ -240,18 +241,18 @@ class _DirectoryLister {
   list(StreamController streamController) async {
     _directoriesToList.add(_path);
 
-    DirectoryProxy rootDirectory = await _getRootDirectory();
+    _DirectoryProxy rootDirectory = await _getRootDirectory();
     int flags = types.kOpenFlagRead | types.kOpenFlagWrite;
 
     while (_directoriesToList.length > 0) {
       // Remove head.
       String path = _directoriesToList.removeAt(0);
       // Open directory.
-      DirectoryProxy directory = new DirectoryProxy.unbound();
+      _DirectoryProxy directory = new _DirectoryProxy.unbound();
       var response =
           await rootDirectory.responseOrError(
               rootDirectory.openDirectory(_ensurePathIsRelative(path),
-                                          directory,
+                                          directory.proxy,
                                           flags));
       if (response.error != types.Error.ok) {
         // Skip if we can't open it.
@@ -287,7 +288,7 @@ class _DirectoryLister {
 
 patch class _File {
   /* patch */ Future<bool> exists() async {
-    DirectoryProxy rootDirectory = await _getRootDirectory();
+    _DirectoryProxy rootDirectory = await _getRootDirectory();
     int flags = types.kOpenFlagRead;
     var response =
         await rootDirectory.responseOrError(
@@ -307,7 +308,7 @@ patch class _File {
       // Create any parent directories.
       await parent.create(recursive: true);
     }
-    DirectoryProxy rootDirectory = await _getRootDirectory();
+    _DirectoryProxy rootDirectory = await _getRootDirectory();
     int flags = types.kOpenFlagWrite | types.kOpenFlagCreate;
     var response =
         await rootDirectory.responseOrError(
@@ -323,7 +324,7 @@ patch class _File {
   /* patch */ void createSync({bool recursive: false}) => _onSyncOperation();
 
   /* patch */ Future<File> rename(String newPath) async {
-    DirectoryProxy rootDirectory = await _getRootDirectory();
+    _DirectoryProxy rootDirectory = await _getRootDirectory();
     var response = await rootDirectory.responseOrError(
         rootDirectory.rename(_ensurePathIsRelative(path),
                              _ensurePathIsRelative(newPath)));
@@ -350,17 +351,17 @@ patch class _File {
 
   /* patch */ Future<RandomAccessFile> open(
       {FileMode mode: FileMode.READ}) async {
-    DirectoryProxy rootDirectory = await _getRootDirectory();
-    FileProxy file = new FileProxy.unbound();
+    _DirectoryProxy rootDirectory = await _getRootDirectory();
+    _FileProxy file = new _FileProxy.unbound();
     var response = await rootDirectory.responseOrError(
         rootDirectory.openFile(_ensurePathIsRelative(path),
-                               file,
+                               file.proxy,
                                _openFlagsFromFileMode(mode)));
     if (response.error != types.Error.ok) {
       throw _OSErrorFromError(response.error);
     }
     // We use the raw mojo handle as our fd.
-    final int fd = file.ctrl.endpoint.handle.h;
+    final int fd = file.proxy.ctrl.endpoint.handle.h;
     // Construct the RandomAccessFile using the original constructor.
     _RandomAccessFile raf = new _RandomAccessFile(fd, path);
     // Hook up our proxy.
@@ -501,13 +502,13 @@ patch class FileStat {
   }
 
   /* patch */ static Future<FileStat> stat(String path) async {
-    DirectoryProxy rootDirectory = await _getRootDirectory();
+    _DirectoryProxy rootDirectory = await _getRootDirectory();
     int flags = types.kOpenFlagRead | types.kOpenFlagWrite;
-    DirectoryProxy directory = new DirectoryProxy.unbound();
+    _DirectoryProxy directory = new _DirectoryProxy.unbound();
     var response =
         await await rootDirectory.responseOrError(
             rootDirectory.openDirectory(_ensurePathIsRelative(path),
-                                        directory,
+                                        directory.proxy,
                                         flags));
     if (response.error != types.Error.ok) {
       throw _OSErrorFromError(response.error);
@@ -550,7 +551,7 @@ patch class FileSystemEntity {
   }
 
   /* patch */ Future<FileSystemEntity> delete({bool recursive: false}) async {
-    DirectoryProxy rootDirectory = await _getRootDirectory();
+    _DirectoryProxy rootDirectory = await _getRootDirectory();
     int flags = recursive ? types.kDeleteFlagRecursive : 0;
     var response = await rootDirectory.responseOrError(
         rootDirectory.delete(_ensurePathIsRelative(path), flags));
@@ -632,7 +633,7 @@ class _RandomAccessFileOpsImpl implements _RandomAccessFileOps {
 }
 
 patch class _RandomAccessFile {
-  FileProxy _proxy;
+  _FileProxy _proxy;
 
   void _ensureProxy() {
     if (_proxy == null) {

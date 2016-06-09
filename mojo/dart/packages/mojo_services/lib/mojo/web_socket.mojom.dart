@@ -21,6 +21,14 @@ class _WebSocketConnectParams extends bindings.Struct {
 
   _WebSocketConnectParams() : super(kVersions.last.size);
 
+  _WebSocketConnectParams.init(
+    String this.url, 
+    List<String> this.protocols, 
+    String this.origin, 
+    core.MojoDataPipeConsumer this.sendStream, 
+    WebSocketClientInterface this.client
+  ) : super(kVersions.last.size);
+
   static _WebSocketConnectParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -157,6 +165,12 @@ class _WebSocketSendParams extends bindings.Struct {
 
   _WebSocketSendParams() : super(kVersions.last.size);
 
+  _WebSocketSendParams.init(
+    bool this.fin, 
+    WebSocketMessageType this.type, 
+    int this.numBytes
+  ) : super(kVersions.last.size);
+
   static _WebSocketSendParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -259,6 +273,10 @@ class _WebSocketFlowControlParams extends bindings.Struct {
 
   _WebSocketFlowControlParams() : super(kVersions.last.size);
 
+  _WebSocketFlowControlParams.init(
+    int this.quota
+  ) : super(kVersions.last.size);
+
   static _WebSocketFlowControlParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -331,6 +349,11 @@ class _WebSocketCloseParams extends bindings.Struct {
   String reason = null;
 
   _WebSocketCloseParams() : super(kVersions.last.size);
+
+  _WebSocketCloseParams.init(
+    int this.code, 
+    String this.reason
+  ) : super(kVersions.last.size);
 
   static _WebSocketCloseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -418,6 +441,12 @@ class _WebSocketClientDidConnectParams extends bindings.Struct {
   core.MojoDataPipeConsumer receiveStream = null;
 
   _WebSocketClientDidConnectParams() : super(kVersions.last.size);
+
+  _WebSocketClientDidConnectParams.init(
+    String this.selectedSubprotocol, 
+    String this.extensions, 
+    core.MojoDataPipeConsumer this.receiveStream
+  ) : super(kVersions.last.size);
 
   static _WebSocketClientDidConnectParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -515,6 +544,12 @@ class _WebSocketClientDidReceiveDataParams extends bindings.Struct {
   int numBytes = 0;
 
   _WebSocketClientDidReceiveDataParams() : super(kVersions.last.size);
+
+  _WebSocketClientDidReceiveDataParams.init(
+    bool this.fin, 
+    WebSocketMessageType this.type, 
+    int this.numBytes
+  ) : super(kVersions.last.size);
 
   static _WebSocketClientDidReceiveDataParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -618,6 +653,10 @@ class _WebSocketClientDidReceiveFlowControlParams extends bindings.Struct {
 
   _WebSocketClientDidReceiveFlowControlParams() : super(kVersions.last.size);
 
+  _WebSocketClientDidReceiveFlowControlParams.init(
+    int this.quota
+  ) : super(kVersions.last.size);
+
   static _WebSocketClientDidReceiveFlowControlParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -689,6 +728,10 @@ class _WebSocketClientDidFailParams extends bindings.Struct {
   String message = null;
 
   _WebSocketClientDidFailParams() : super(kVersions.last.size);
+
+  _WebSocketClientDidFailParams.init(
+    String this.message
+  ) : super(kVersions.last.size);
 
   static _WebSocketClientDidFailParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -763,6 +806,12 @@ class _WebSocketClientDidCloseParams extends bindings.Struct {
   String reason = null;
 
   _WebSocketClientDidCloseParams() : super(kVersions.last.size);
+
+  _WebSocketClientDidCloseParams.init(
+    bool this.wasClean, 
+    int this.code, 
+    String this.reason
+  ) : super(kVersions.last.size);
 
   static _WebSocketClientDidCloseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -918,14 +967,17 @@ class WebSocketMessageType extends bindings.MojoEnum {
 }
 
 class _WebSocketServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class WebSocket {
@@ -1128,11 +1180,11 @@ class _WebSocketStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1162,7 +1214,6 @@ class _WebSocketStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   WebSocket get impl => _impl;
@@ -1237,14 +1288,17 @@ const int _webSocketClientMethodDidFailName = 3;
 const int _webSocketClientMethodDidCloseName = 4;
 
 class _WebSocketClientServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class WebSocketClient {
@@ -1460,11 +1514,11 @@ class _WebSocketClientStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1499,7 +1553,6 @@ class _WebSocketClientStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   WebSocketClient get impl => _impl;

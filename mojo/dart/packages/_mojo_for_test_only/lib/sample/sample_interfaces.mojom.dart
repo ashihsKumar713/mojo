@@ -68,6 +68,10 @@ class _ProviderEchoStringParams extends bindings.Struct {
 
   _ProviderEchoStringParams() : super(kVersions.last.size);
 
+  _ProviderEchoStringParams.init(
+    String this.a
+  ) : super(kVersions.last.size);
+
   static _ProviderEchoStringParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -139,6 +143,10 @@ class ProviderEchoStringResponseParams extends bindings.Struct {
   String a = null;
 
   ProviderEchoStringResponseParams() : super(kVersions.last.size);
+
+  ProviderEchoStringResponseParams.init(
+    String this.a
+  ) : super(kVersions.last.size);
 
   static ProviderEchoStringResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -212,6 +220,11 @@ class _ProviderEchoStringsParams extends bindings.Struct {
   String b = null;
 
   _ProviderEchoStringsParams() : super(kVersions.last.size);
+
+  _ProviderEchoStringsParams.init(
+    String this.a, 
+    String this.b
+  ) : super(kVersions.last.size);
 
   static _ProviderEchoStringsParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -299,6 +312,11 @@ class ProviderEchoStringsResponseParams extends bindings.Struct {
 
   ProviderEchoStringsResponseParams() : super(kVersions.last.size);
 
+  ProviderEchoStringsResponseParams.init(
+    String this.a, 
+    String this.b
+  ) : super(kVersions.last.size);
+
   static ProviderEchoStringsResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -384,6 +402,10 @@ class _ProviderEchoMessagePipeHandleParams extends bindings.Struct {
 
   _ProviderEchoMessagePipeHandleParams() : super(kVersions.last.size);
 
+  _ProviderEchoMessagePipeHandleParams.init(
+    core.MojoMessagePipeEndpoint this.a
+  ) : super(kVersions.last.size);
+
   static _ProviderEchoMessagePipeHandleParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -455,6 +477,10 @@ class ProviderEchoMessagePipeHandleResponseParams extends bindings.Struct {
 
   ProviderEchoMessagePipeHandleResponseParams() : super(kVersions.last.size);
 
+  ProviderEchoMessagePipeHandleResponseParams.init(
+    core.MojoMessagePipeEndpoint this.a
+  ) : super(kVersions.last.size);
+
   static ProviderEchoMessagePipeHandleResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -525,6 +551,10 @@ class _ProviderEchoEnumParams extends bindings.Struct {
   Enum a = null;
 
   _ProviderEchoEnumParams() : super(kVersions.last.size);
+
+  _ProviderEchoEnumParams.init(
+    Enum this.a
+  ) : super(kVersions.last.size);
 
   static _ProviderEchoEnumParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -602,6 +632,10 @@ class ProviderEchoEnumResponseParams extends bindings.Struct {
 
   ProviderEchoEnumResponseParams() : super(kVersions.last.size);
 
+  ProviderEchoEnumResponseParams.init(
+    Enum this.a
+  ) : super(kVersions.last.size);
+
   static ProviderEchoEnumResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -678,6 +712,10 @@ class _ProviderEchoIntParams extends bindings.Struct {
 
   _ProviderEchoIntParams() : super(kVersions.last.size);
 
+  _ProviderEchoIntParams.init(
+    int this.a
+  ) : super(kVersions.last.size);
+
   static _ProviderEchoIntParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -750,6 +788,10 @@ class ProviderEchoIntResponseParams extends bindings.Struct {
 
   ProviderEchoIntResponseParams() : super(kVersions.last.size);
 
+  ProviderEchoIntResponseParams.init(
+    int this.a
+  ) : super(kVersions.last.size);
+
   static ProviderEchoIntResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -821,6 +863,9 @@ class _IntegerAccessorGetIntegerParams extends bindings.Struct {
 
   _IntegerAccessorGetIntegerParams() : super(kVersions.last.size);
 
+  _IntegerAccessorGetIntegerParams.init(
+  ) : super(kVersions.last.size);
+
   static _IntegerAccessorGetIntegerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -881,6 +926,11 @@ class IntegerAccessorGetIntegerResponseParams extends bindings.Struct {
   Enum type = null;
 
   IntegerAccessorGetIntegerResponseParams() : super(kVersions.last.size);
+
+  IntegerAccessorGetIntegerResponseParams.init(
+    int this.data, 
+    Enum this.type
+  ) : super(kVersions.last.size);
 
   static IntegerAccessorGetIntegerResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -973,6 +1023,11 @@ class _IntegerAccessorSetIntegerParams extends bindings.Struct {
 
   _IntegerAccessorSetIntegerParams() : super(kVersions.last.size);
 
+  _IntegerAccessorSetIntegerParams.init(
+    int this.data, 
+    Enum this.type
+  ) : super(kVersions.last.size);
+
   static _IntegerAccessorSetIntegerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1063,6 +1118,11 @@ class _SampleInterfaceSampleMethod1Params extends bindings.Struct {
 
   _SampleInterfaceSampleMethod1Params() : super(kVersions.last.size);
 
+  _SampleInterfaceSampleMethod1Params.init(
+    int this.in1, 
+    String this.in2
+  ) : super(kVersions.last.size);
+
   static _SampleInterfaceSampleMethod1Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1148,6 +1208,11 @@ class SampleInterfaceSampleMethod1ResponseParams extends bindings.Struct {
   Enum out2 = null;
 
   SampleInterfaceSampleMethod1ResponseParams() : super(kVersions.last.size);
+
+  SampleInterfaceSampleMethod1ResponseParams.init(
+    String this.out1, 
+    Enum this.out2
+  ) : super(kVersions.last.size);
 
   static SampleInterfaceSampleMethod1ResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1237,6 +1302,9 @@ class _SampleInterfaceSampleMethod0Params extends bindings.Struct {
 
   _SampleInterfaceSampleMethod0Params() : super(kVersions.last.size);
 
+  _SampleInterfaceSampleMethod0Params.init(
+  ) : super(kVersions.last.size);
+
   static _SampleInterfaceSampleMethod0Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1295,6 +1363,9 @@ class _SampleInterfaceSampleMethod2Params extends bindings.Struct {
 
   _SampleInterfaceSampleMethod2Params() : super(kVersions.last.size);
 
+  _SampleInterfaceSampleMethod2Params.init(
+  ) : super(kVersions.last.size);
+
   static _SampleInterfaceSampleMethod2Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1352,14 +1423,17 @@ const int _providerMethodEchoEnumName = 3;
 const int _providerMethodEchoIntName = 4;
 
 class _ProviderServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Provider {
@@ -1384,11 +1458,11 @@ abstract class Provider {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic echoString(String a,[Function responseFactory = null]);
-  dynamic echoStrings(String a,String b,[Function responseFactory = null]);
-  dynamic echoMessagePipeHandle(core.MojoMessagePipeEndpoint a,[Function responseFactory = null]);
-  dynamic echoEnum(Enum a,[Function responseFactory = null]);
-  dynamic echoInt(int a,[Function responseFactory = null]);
+  void echoString(String a,void callback(String a));
+  void echoStrings(String a,String b,void callback(String a, String b));
+  void echoMessagePipeHandle(core.MojoMessagePipeEndpoint a,void callback(core.MojoMessagePipeEndpoint a));
+  void echoEnum(Enum a,void callback(Enum a));
+  void echoInt(int a,void callback(int a));
 }
 
 abstract class ProviderInterface
@@ -1438,18 +1512,14 @@ class _ProviderProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.a );
         break;
       case _providerMethodEchoStringsName:
         var r = ProviderEchoStringsResponseParams.deserialize(
@@ -1458,18 +1528,14 @@ class _ProviderProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.a , r.b );
         break;
       case _providerMethodEchoMessagePipeHandleName:
         var r = ProviderEchoMessagePipeHandleResponseParams.deserialize(
@@ -1478,18 +1544,14 @@ class _ProviderProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.a );
         break;
       case _providerMethodEchoEnumName:
         var r = ProviderEchoEnumResponseParams.deserialize(
@@ -1498,18 +1560,14 @@ class _ProviderProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.a );
         break;
       case _providerMethodEchoIntName:
         var r = ProviderEchoIntResponseParams.deserialize(
@@ -1518,18 +1576,14 @@ class _ProviderProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.a );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1574,66 +1628,76 @@ class ProviderProxy
   }
 
 
-  dynamic echoString(String a,[Function responseFactory = null]) {
+  void echoString(String a,void callback(String a)) {
     if (impl != null) {
-      return new Future(() => impl.echoString(a,_ProviderStubControl._providerEchoStringResponseParamsFactory));
+      impl.echoString(a,callback);
+      return;
     }
     var params = new _ProviderEchoStringParams();
     params.a = a;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _providerMethodEchoStringName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic echoStrings(String a,String b,[Function responseFactory = null]) {
+  void echoStrings(String a,String b,void callback(String a, String b)) {
     if (impl != null) {
-      return new Future(() => impl.echoStrings(a,b,_ProviderStubControl._providerEchoStringsResponseParamsFactory));
+      impl.echoStrings(a,b,callback);
+      return;
     }
     var params = new _ProviderEchoStringsParams();
     params.a = a;
     params.b = b;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _providerMethodEchoStringsName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic echoMessagePipeHandle(core.MojoMessagePipeEndpoint a,[Function responseFactory = null]) {
+  void echoMessagePipeHandle(core.MojoMessagePipeEndpoint a,void callback(core.MojoMessagePipeEndpoint a)) {
     if (impl != null) {
-      return new Future(() => impl.echoMessagePipeHandle(a,_ProviderStubControl._providerEchoMessagePipeHandleResponseParamsFactory));
+      impl.echoMessagePipeHandle(a,callback);
+      return;
     }
     var params = new _ProviderEchoMessagePipeHandleParams();
     params.a = a;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _providerMethodEchoMessagePipeHandleName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic echoEnum(Enum a,[Function responseFactory = null]) {
+  void echoEnum(Enum a,void callback(Enum a)) {
     if (impl != null) {
-      return new Future(() => impl.echoEnum(a,_ProviderStubControl._providerEchoEnumResponseParamsFactory));
+      impl.echoEnum(a,callback);
+      return;
     }
     var params = new _ProviderEchoEnumParams();
     params.a = a;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _providerMethodEchoEnumName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic echoInt(int a,[Function responseFactory = null]) {
+  void echoInt(int a,void callback(int a)) {
     if (impl != null) {
-      return new Future(() => impl.echoInt(a,_ProviderStubControl._providerEchoIntResponseParamsFactory));
+      impl.echoInt(a,callback);
+      return;
     }
     var params = new _ProviderEchoIntParams();
     params.a = a;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _providerMethodEchoIntName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -1659,38 +1723,73 @@ class _ProviderStubControl
   String get serviceName => Provider.serviceName;
 
 
-  static ProviderEchoStringResponseParams _providerEchoStringResponseParamsFactory(String a) {
-    var result = new ProviderEchoStringResponseParams();
-    result.a = a;
-    return result;
+  Function _providerEchoStringResponseParamsResponder(
+      int requestId) {
+  return (String a) {
+      var result = new ProviderEchoStringResponseParams();
+      result.a = a;
+      sendResponse(buildResponseWithId(
+          result,
+          _providerMethodEchoStringName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static ProviderEchoStringsResponseParams _providerEchoStringsResponseParamsFactory(String a, String b) {
-    var result = new ProviderEchoStringsResponseParams();
-    result.a = a;
-    result.b = b;
-    return result;
+  Function _providerEchoStringsResponseParamsResponder(
+      int requestId) {
+  return (String a, String b) {
+      var result = new ProviderEchoStringsResponseParams();
+      result.a = a;
+      result.b = b;
+      sendResponse(buildResponseWithId(
+          result,
+          _providerMethodEchoStringsName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static ProviderEchoMessagePipeHandleResponseParams _providerEchoMessagePipeHandleResponseParamsFactory(core.MojoMessagePipeEndpoint a) {
-    var result = new ProviderEchoMessagePipeHandleResponseParams();
-    result.a = a;
-    return result;
+  Function _providerEchoMessagePipeHandleResponseParamsResponder(
+      int requestId) {
+  return (core.MojoMessagePipeEndpoint a) {
+      var result = new ProviderEchoMessagePipeHandleResponseParams();
+      result.a = a;
+      sendResponse(buildResponseWithId(
+          result,
+          _providerMethodEchoMessagePipeHandleName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static ProviderEchoEnumResponseParams _providerEchoEnumResponseParamsFactory(Enum a) {
-    var result = new ProviderEchoEnumResponseParams();
-    result.a = a;
-    return result;
+  Function _providerEchoEnumResponseParamsResponder(
+      int requestId) {
+  return (Enum a) {
+      var result = new ProviderEchoEnumResponseParams();
+      result.a = a;
+      sendResponse(buildResponseWithId(
+          result,
+          _providerMethodEchoEnumName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static ProviderEchoIntResponseParams _providerEchoIntResponseParamsFactory(int a) {
-    var result = new ProviderEchoIntResponseParams();
-    result.a = a;
-    return result;
+  Function _providerEchoIntResponseParamsResponder(
+      int requestId) {
+  return (int a) {
+      var result = new ProviderEchoIntResponseParams();
+      result.a = a;
+      sendResponse(buildResponseWithId(
+          result,
+          _providerMethodEchoIntName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1699,118 +1798,32 @@ class _ProviderStubControl
       case _providerMethodEchoStringName:
         var params = _ProviderEchoStringParams.deserialize(
             message.payload);
-        var response = _impl.echoString(params.a,_providerEchoStringResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _providerMethodEchoStringName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _providerMethodEchoStringName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.echoString(params.a, _providerEchoStringResponseParamsResponder(message.header.requestId));
         break;
       case _providerMethodEchoStringsName:
         var params = _ProviderEchoStringsParams.deserialize(
             message.payload);
-        var response = _impl.echoStrings(params.a,params.b,_providerEchoStringsResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _providerMethodEchoStringsName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _providerMethodEchoStringsName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.echoStrings(params.a, params.b, _providerEchoStringsResponseParamsResponder(message.header.requestId));
         break;
       case _providerMethodEchoMessagePipeHandleName:
         var params = _ProviderEchoMessagePipeHandleParams.deserialize(
             message.payload);
-        var response = _impl.echoMessagePipeHandle(params.a,_providerEchoMessagePipeHandleResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _providerMethodEchoMessagePipeHandleName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _providerMethodEchoMessagePipeHandleName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.echoMessagePipeHandle(params.a, _providerEchoMessagePipeHandleResponseParamsResponder(message.header.requestId));
         break;
       case _providerMethodEchoEnumName:
         var params = _ProviderEchoEnumParams.deserialize(
             message.payload);
-        var response = _impl.echoEnum(params.a,_providerEchoEnumResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _providerMethodEchoEnumName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _providerMethodEchoEnumName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.echoEnum(params.a, _providerEchoEnumResponseParamsResponder(message.header.requestId));
         break;
       case _providerMethodEchoIntName:
         var params = _ProviderEchoIntParams.deserialize(
             message.payload);
-        var response = _impl.echoInt(params.a,_providerEchoIntResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _providerMethodEchoIntName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _providerMethodEchoIntName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.echoInt(params.a, _providerEchoIntResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Provider get impl => _impl;
@@ -1864,20 +1877,20 @@ class ProviderStub
   }
 
 
-  dynamic echoString(String a,[Function responseFactory = null]) {
-    return impl.echoString(a,responseFactory);
+  void echoString(String a,void callback(String a)) {
+    return impl.echoString(a,callback);
   }
-  dynamic echoStrings(String a,String b,[Function responseFactory = null]) {
-    return impl.echoStrings(a,b,responseFactory);
+  void echoStrings(String a,String b,void callback(String a, String b)) {
+    return impl.echoStrings(a,b,callback);
   }
-  dynamic echoMessagePipeHandle(core.MojoMessagePipeEndpoint a,[Function responseFactory = null]) {
-    return impl.echoMessagePipeHandle(a,responseFactory);
+  void echoMessagePipeHandle(core.MojoMessagePipeEndpoint a,void callback(core.MojoMessagePipeEndpoint a)) {
+    return impl.echoMessagePipeHandle(a,callback);
   }
-  dynamic echoEnum(Enum a,[Function responseFactory = null]) {
-    return impl.echoEnum(a,responseFactory);
+  void echoEnum(Enum a,void callback(Enum a)) {
+    return impl.echoEnum(a,callback);
   }
-  dynamic echoInt(int a,[Function responseFactory = null]) {
-    return impl.echoInt(a,responseFactory);
+  void echoInt(int a,void callback(int a)) {
+    return impl.echoInt(a,callback);
   }
 }
 
@@ -1885,14 +1898,17 @@ const int _integerAccessorMethodGetIntegerName = 0;
 const int _integerAccessorMethodSetIntegerName = 1;
 
 class _IntegerAccessorServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class IntegerAccessor {
@@ -1917,7 +1933,7 @@ abstract class IntegerAccessor {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getInteger([Function responseFactory = null]);
+  void getInteger(void callback(int data, Enum type));
   void setInteger(int data, Enum type);
 }
 
@@ -1968,18 +1984,14 @@ class _IntegerAccessorProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.data , r.type );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -2024,16 +2036,18 @@ class IntegerAccessorProxy
   }
 
 
-  dynamic getInteger([Function responseFactory = null]) {
+  void getInteger(void callback(int data, Enum type)) {
     if (impl != null) {
-      return new Future(() => impl.getInteger(_IntegerAccessorStubControl._integerAccessorGetIntegerResponseParamsFactory));
+      impl.getInteger(callback);
+      return;
     }
     var params = new _IntegerAccessorGetIntegerParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _integerAccessorMethodGetIntegerName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void setInteger(int data, Enum type) {
     if (impl != null) {
@@ -2074,42 +2088,32 @@ class _IntegerAccessorStubControl
   String get serviceName => IntegerAccessor.serviceName;
 
 
-  static IntegerAccessorGetIntegerResponseParams _integerAccessorGetIntegerResponseParamsFactory(int data, Enum type) {
-    var result = new IntegerAccessorGetIntegerResponseParams();
-    result.data = data;
-    result.type = type;
-    return result;
+  Function _integerAccessorGetIntegerResponseParamsResponder(
+      int requestId) {
+  return (int data, Enum type) {
+      var result = new IntegerAccessorGetIntegerResponseParams();
+      result.data = data;
+      result.type = type;
+      sendResponse(buildResponseWithId(
+          result,
+          _integerAccessorMethodGetIntegerName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          3,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 3, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _integerAccessorMethodGetIntegerName:
-        var response = _impl.getInteger(_integerAccessorGetIntegerResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _integerAccessorMethodGetIntegerName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _integerAccessorMethodGetIntegerName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getInteger(_integerAccessorGetIntegerResponseParamsResponder(message.header.requestId));
         break;
       case _integerAccessorMethodSetIntegerName:
         var params = _IntegerAccessorSetIntegerParams.deserialize(
@@ -2120,7 +2124,6 @@ class _IntegerAccessorStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   IntegerAccessor get impl => _impl;
@@ -2174,8 +2177,8 @@ class IntegerAccessorStub
   }
 
 
-  dynamic getInteger([Function responseFactory = null]) {
-    return impl.getInteger(responseFactory);
+  void getInteger(void callback(int data, Enum type)) {
+    return impl.getInteger(callback);
   }
   void setInteger(int data, Enum type) {
     return impl.setInteger(data, type);
@@ -2187,14 +2190,17 @@ const int _sampleInterfaceMethodSampleMethod0Name = 0;
 const int _sampleInterfaceMethodSampleMethod2Name = 2;
 
 class _SampleInterfaceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class SampleInterface {
@@ -2219,7 +2225,7 @@ abstract class SampleInterface {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic sampleMethod1(int in1,String in2,[Function responseFactory = null]);
+  void sampleMethod1(int in1,String in2,void callback(String out1, Enum out2));
   void sampleMethod0();
   void sampleMethod2();
 }
@@ -2271,18 +2277,14 @@ class _SampleInterfaceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.out1 , r.out2 );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -2327,18 +2329,20 @@ class SampleInterfaceProxy
   }
 
 
-  dynamic sampleMethod1(int in1,String in2,[Function responseFactory = null]) {
+  void sampleMethod1(int in1,String in2,void callback(String out1, Enum out2)) {
     if (impl != null) {
-      return new Future(() => impl.sampleMethod1(in1,in2,_SampleInterfaceStubControl._sampleInterfaceSampleMethod1ResponseParamsFactory));
+      impl.sampleMethod1(in1,in2,callback);
+      return;
     }
     var params = new _SampleInterfaceSampleMethod1Params();
     params.in1 = in1;
     params.in2 = in2;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _sampleInterfaceMethodSampleMethod1Name,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void sampleMethod0() {
     if (impl != null) {
@@ -2390,18 +2394,25 @@ class _SampleInterfaceStubControl
   String get serviceName => SampleInterface.serviceName;
 
 
-  static SampleInterfaceSampleMethod1ResponseParams _sampleInterfaceSampleMethod1ResponseParamsFactory(String out1, Enum out2) {
-    var result = new SampleInterfaceSampleMethod1ResponseParams();
-    result.out1 = out1;
-    result.out2 = out2;
-    return result;
+  Function _sampleInterfaceSampleMethod1ResponseParamsResponder(
+      int requestId) {
+  return (String out1, Enum out2) {
+      var result = new SampleInterfaceSampleMethod1ResponseParams();
+      result.out1 = out1;
+      result.out2 = out2;
+      sendResponse(buildResponseWithId(
+          result,
+          _sampleInterfaceMethodSampleMethod1Name,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -2410,24 +2421,7 @@ class _SampleInterfaceStubControl
       case _sampleInterfaceMethodSampleMethod1Name:
         var params = _SampleInterfaceSampleMethod1Params.deserialize(
             message.payload);
-        var response = _impl.sampleMethod1(params.in1,params.in2,_sampleInterfaceSampleMethod1ResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _sampleInterfaceMethodSampleMethod1Name,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _sampleInterfaceMethodSampleMethod1Name,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.sampleMethod1(params.in1, params.in2, _sampleInterfaceSampleMethod1ResponseParamsResponder(message.header.requestId));
         break;
       case _sampleInterfaceMethodSampleMethod0Name:
         _impl.sampleMethod0();
@@ -2439,7 +2433,6 @@ class _SampleInterfaceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   SampleInterface get impl => _impl;
@@ -2493,8 +2486,8 @@ class SampleInterfaceStub
   }
 
 
-  dynamic sampleMethod1(int in1,String in2,[Function responseFactory = null]) {
-    return impl.sampleMethod1(in1,in2,responseFactory);
+  void sampleMethod1(int in1,String in2,void callback(String out1, Enum out2)) {
+    return impl.sampleMethod1(in1,in2,callback);
   }
   void sampleMethod0() {
     return impl.sampleMethod0();
@@ -2517,7 +2510,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xb3W7jRBT2xOkSdil0ty2k7F920UJu2qRFgoir9CIiFVSqVKjYG1ZpMjRGjR1sBy13PAqXPAaPwmUv9w1gvDmnGU9m/NM69qTbkUZT/2V8Pn/nOzNnplVjWtagbUIrnse2IrTiff9AW2e1zGoNjlvQ/gTtGNpHrG6w+sPLo86r7zovv/F6o/E53enYk1Fw/QtWn0quH9g+PaPufr9PPc9x3/ZTldx35Dq/WwPqqn7n+G0T/Jr7S69PjS6895rw3sGxyWq7FD6++DB8/OeOHJcLaNtGuDSFfv6DIt6H5QN4P8RnndV7rAqwzfUfPLfC6s+snrDaGDoj2nAnA2dk2dRtjJxfnYbn9qd/jCen51a/YSEsXuPUsgeWfeY1fOr5XmPa3avZDTvBc6Npf4TjRx3amhFdkuLSVTy/Cvad7H//Y4e1W6zeD+Oyg9dk+ATPl3LAR4kHmTZmDB5tAY8jBR6fsPoRq6KfPGHnPp7hIl6ewyU4vpsDLrJ+8bjEQVSFY7yvfkfOM/S3SikZzwwOV9l5LA8Aj2+pD9jJ+bSVE59qAl4XCfXGEHjUUtj7Kdg8s3fbpb9N2EvJ7cayaLsrXL9EEo8MIU6pcPrLzAanh6DFIZy8sWN7tFCcRH9ZI2F7W8J73TGSlaR+VI+JY4Oe31P5z1YO+MhwCOJIi8jfG/lUMuQ4vpbgQLjxjlhE/tYk+mdy/aH+HFr2CXU9y7HDePp/jKkKzy9z1CNDoefi+CVu/CfytybxcyLppwS1qhiHNMl8+CUpvufra35PEvM98fxxTJx5WHCcyUo/Mc4caxZnllU/MR7pqp9mzvppXlM/Azy33yH9NGP0E8ubK87j2hHfM/iWOG/HeYwwnZfmJ4qYp9S5PMYKh2cJMCxzOKxw9/8NNw9X4cQ64FmNns/UzcXMZzr9oXPsuwwCud7eLzjO4Dwuqzgzs1ePOCPqmExXicTfFhVf3of+eoaaDxs54RKl9yodWzSPML6GeKTBfG8ZefRcYx6pdLhbDqXtEuFEInQY87gzPnlSvB4UrMN1c1H+44WEWJfxfo0shx8FvNgswI/S4lK5Ai4kAS6nEbg81Uxf+HH1ov0M5wdhP5sFqls/S+9n27d+JsXla439TIzjiFvLlOdzo3Aqcd9BLI9BhwN/O6Se1zujR9aYdnv24JxKcFsvKJ6j/Wspx8OqefsLsF1qNxfZdR4XlzXSmfUCdIZcY36VNZ8+Z/VJBJ8wgt3yKTmfDjTmk6jP/+J+ITPZvggeJzMCJ8wvBrwKcqQiThsF6THa207pP6r5ZBVsQjtRgnX2lxWN/GUD/l62fP9182PdjPJjuP+K4x+XHdNbt3Xj4aMbzEOV7ldA8MspcC5H4BysIb0HfDyw/TmcNwvW/TckG93H9TKw83LkrbO/GdzaWdH+tpmT7l9Vp7PmCz9OmPJlKtO3fEnOl8ca8SVuf3EcLm2BN3H7i8X988L+YvHyHH61gtbta1x8NYV1e7xucjg34ULtbvS6UFr+Yb8q/wz4tXqJ8yH1h86gKeHhc+Nm7DfG/FnIXg3yR2n3G6v40Uq5bkgieKPix64Ep2cF86NqLo4fuxrwI+0+wbzi1z3QMcvelcavZ3CuiH2Cea5fzHDYU+LwIsf8GMlonXCYkV9h3Bb9qug8q67rhDgfdib+ropPXxXAp7T5jKz9jMNlT4XL/g3LZ0StM4rjwqTrjPj/C2ni/p4E789u8LhwbwnHhf8HAAD//+5ePoRwPQAA";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xb3XLbRBSWLKeElkLaJOD01y1T8E0i28xAhivnwoMzkBnPBDrpVevYi+2OLRlJZgJPwCPwCFzyCDwCj8Jl7ugqPqderXdlyZajVZKdObPRn1f76Tvf2T27KWiTsgF1GWr+PNbrXM3f9w/UJWp5akU43of6BOoR1I+obVH78VWz/vr7+qtv3dZwNCB7dWs89K9/Se2p4Pqh5ZEucQ7abeK6tnPRTkFwX9Oxf+13iCP7neOLyv815+dWm2gNeO8N7r39Y4Pam1zw+K9PgsdaRYzLOdQ1LVjKXDv/Q+Hvw/IRvB/is0ntDjUOtpn2/efWqL2ldkrNHLuOObDbrYHZte3ugJg9e0jM352WObTf2lXTddoXf5mj8emg3zb7CJFrnvatTt/quqZHXM81J02/nt6w5z83nLavM3wpQV3UwktUnBqS5+9Cf18e/PBTndY71O4FcdrDayK8/OdzKeAlw2dDn9TGHHxqHD5NCT6fUfOpy/vRE3ru0ylO/OUZnPzj2yngJHoPPAYXveBdAY7xvrNbYpzRP0u5aDzUGJxF57HcB3y+Ix5gKX7/nZT4VuTwO4+oVxrHs31J/x8ABtP+7zrklzF9MTEOWC4bh3VNrFcF7r3WtXDc/jWSwe0haHsAN3dkWy5RCjfev4p6sP/73Hve0qKVqH5XmhMnOy2vJfO3nRTwEuHix6mGLu4H8i2niZ8/E+CiM+MrvvD8Lgr002DaQ/066lsvieP2bSuIr/fbiMjw/SpFPdMk8YEfP80bf87wW6ALuqCdHFhBMu6pcd9bB4v6fc+W/L76nO+L54/nxK2HisWtpPQX49ax4nErq/qL8S0r+mtcsv4aS+qvj+/uNdZfY47+Bh5eYN5ZC/m+/rfFvAPOs7h0hDC/osI8qsTkZdYYiHKAaZ7BZY25/xxuLn0Mv7c1qZsPwudbJ8Zq5lv1ds8+9hwKg7if9xSLWzjvTCpuTfuvZtzidVCky7rAP1cVrz6EplqanC9bKeEUFj9kOrhqnmH8DvBMwflpFnn2PEM8k+n6H/lgeI2Cmx6i65jnnvLNFeJ3XzFdPzFW5W9uQNhVnY+U9Wz4nc+bbQX8Li5O6wvgpEfA6TQEp6eK6xM77l+1X+L8JeiX00B445fL++XujV9G8stvMuSXM/NxwLFniPPdYbjlmO/Cl8eg675/HhHXbXVJsz8ijZbVGRABjpuKjB8Qj3LM8bosL/ECsBDiwIwksjRuzyukU5sK6JS+xPwwab59Qe1JCN8wQt7wbXG+HWaIb7ze/4fzRCPavhYWNyMEN8y/+rzzc8g8bluK6Dv2/01Mf5PNjwvQR+w3SnqW/GtNIf/agr+zvn6ybL6wl1C+EPffMfxksoXZigOq8fTRNeKpLI7sQwDJx8A9H4K7v2b3AfD10PJmcN9WLI5sJBRHcL0S+v1+ZpAl/9SYtcu0/XM7pTiyqO4nzSd2XDLh00T2b/i0OJ8eK8ynefvX5+FU43g1b/86//8b3P51/vIMnkVF9l0UmXhucPsu8LrBPNeEC3/fDl+Hi8tPbFfmzz7/7r7H/Yh4PbtTFvTnuXY197NjPjHQfwXzZ3H3s8v4cxZzHVcP4ZWMPxUBbs8U40/DWB1/KgryJ+6+0suKj3dAB/tWRaijz+CcCvtKL3N9aIpLVYrLixTzhXpC67Z/JuSHOE7g/VC1vLSq67Y4v7fHXkXGt68V4Fvc/E3SfsngVJXhdHDF8zdh6778ODXqui/+f02ccUZVgP/n12icWr0C49R3AQAA//8untFvsEAAAA==";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

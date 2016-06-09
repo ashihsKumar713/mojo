@@ -20,6 +20,11 @@ class _HttpServerSetHandlerParams extends bindings.Struct {
 
   _HttpServerSetHandlerParams() : super(kVersions.last.size);
 
+  _HttpServerSetHandlerParams.init(
+    String this.pattern, 
+    HttpHandlerInterface this.handler
+  ) : super(kVersions.last.size);
+
   static _HttpServerSetHandlerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -103,6 +108,10 @@ class HttpServerSetHandlerResponseParams extends bindings.Struct {
 
   HttpServerSetHandlerResponseParams() : super(kVersions.last.size);
 
+  HttpServerSetHandlerResponseParams.init(
+    bool this.success
+  ) : super(kVersions.last.size);
+
   static HttpServerSetHandlerResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -174,6 +183,9 @@ class _HttpServerGetPortParams extends bindings.Struct {
 
   _HttpServerGetPortParams() : super(kVersions.last.size);
 
+  _HttpServerGetPortParams.init(
+  ) : super(kVersions.last.size);
+
   static _HttpServerGetPortParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -232,6 +244,10 @@ class HttpServerGetPortResponseParams extends bindings.Struct {
   int port = 0;
 
   HttpServerGetPortResponseParams() : super(kVersions.last.size);
+
+  HttpServerGetPortResponseParams.init(
+    int this.port
+  ) : super(kVersions.last.size);
 
   static HttpServerGetPortResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -305,6 +321,10 @@ class _HttpHandlerHandleRequestParams extends bindings.Struct {
 
   _HttpHandlerHandleRequestParams() : super(kVersions.last.size);
 
+  _HttpHandlerHandleRequestParams.init(
+    http_request_mojom.HttpRequest this.request
+  ) : super(kVersions.last.size);
+
   static _HttpHandlerHandleRequestParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -377,6 +397,10 @@ class HttpHandlerHandleRequestResponseParams extends bindings.Struct {
 
   HttpHandlerHandleRequestResponseParams() : super(kVersions.last.size);
 
+  HttpHandlerHandleRequestResponseParams.init(
+    http_response_mojom.HttpResponse this.response
+  ) : super(kVersions.last.size);
+
   static HttpHandlerHandleRequestResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -444,14 +468,17 @@ const int _httpServerMethodSetHandlerName = 0;
 const int _httpServerMethodGetPortName = 1;
 
 class _HttpServerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class HttpServer {
@@ -476,8 +503,8 @@ abstract class HttpServer {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic setHandler(String pattern,HttpHandlerInterface handler,[Function responseFactory = null]);
-  dynamic getPort([Function responseFactory = null]);
+  void setHandler(String pattern,HttpHandlerInterface handler,void callback(bool success));
+  void getPort(void callback(int port));
 }
 
 abstract class HttpServerInterface
@@ -527,18 +554,14 @@ class _HttpServerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.success );
         break;
       case _httpServerMethodGetPortName:
         var r = HttpServerGetPortResponseParams.deserialize(
@@ -547,18 +570,14 @@ class _HttpServerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.port );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -603,29 +622,33 @@ class HttpServerProxy
   }
 
 
-  dynamic setHandler(String pattern,HttpHandlerInterface handler,[Function responseFactory = null]) {
+  void setHandler(String pattern,HttpHandlerInterface handler,void callback(bool success)) {
     if (impl != null) {
-      return new Future(() => impl.setHandler(pattern,handler,_HttpServerStubControl._httpServerSetHandlerResponseParamsFactory));
+      impl.setHandler(pattern,handler,callback);
+      return;
     }
     var params = new _HttpServerSetHandlerParams();
     params.pattern = pattern;
     params.handler = handler;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _httpServerMethodSetHandlerName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic getPort([Function responseFactory = null]) {
+  void getPort(void callback(int port)) {
     if (impl != null) {
-      return new Future(() => impl.getPort(_HttpServerStubControl._httpServerGetPortResponseParamsFactory));
+      impl.getPort(callback);
+      return;
     }
     var params = new _HttpServerGetPortParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _httpServerMethodGetPortName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -651,22 +674,36 @@ class _HttpServerStubControl
   String get serviceName => HttpServer.serviceName;
 
 
-  static HttpServerSetHandlerResponseParams _httpServerSetHandlerResponseParamsFactory(bool success) {
-    var result = new HttpServerSetHandlerResponseParams();
-    result.success = success;
-    return result;
+  Function _httpServerSetHandlerResponseParamsResponder(
+      int requestId) {
+  return (bool success) {
+      var result = new HttpServerSetHandlerResponseParams();
+      result.success = success;
+      sendResponse(buildResponseWithId(
+          result,
+          _httpServerMethodSetHandlerName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static HttpServerGetPortResponseParams _httpServerGetPortResponseParamsFactory(int port) {
-    var result = new HttpServerGetPortResponseParams();
-    result.port = port;
-    return result;
+  Function _httpServerGetPortResponseParamsResponder(
+      int requestId) {
+  return (int port) {
+      var result = new HttpServerGetPortResponseParams();
+      result.port = port;
+      sendResponse(buildResponseWithId(
+          result,
+          _httpServerMethodGetPortName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -675,50 +712,15 @@ class _HttpServerStubControl
       case _httpServerMethodSetHandlerName:
         var params = _HttpServerSetHandlerParams.deserialize(
             message.payload);
-        var response = _impl.setHandler(params.pattern,params.handler,_httpServerSetHandlerResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _httpServerMethodSetHandlerName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _httpServerMethodSetHandlerName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.setHandler(params.pattern, params.handler, _httpServerSetHandlerResponseParamsResponder(message.header.requestId));
         break;
       case _httpServerMethodGetPortName:
-        var response = _impl.getPort(_httpServerGetPortResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _httpServerMethodGetPortName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _httpServerMethodGetPortName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getPort(_httpServerGetPortResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   HttpServer get impl => _impl;
@@ -772,25 +774,28 @@ class HttpServerStub
   }
 
 
-  dynamic setHandler(String pattern,HttpHandlerInterface handler,[Function responseFactory = null]) {
-    return impl.setHandler(pattern,handler,responseFactory);
+  void setHandler(String pattern,HttpHandlerInterface handler,void callback(bool success)) {
+    return impl.setHandler(pattern,handler,callback);
   }
-  dynamic getPort([Function responseFactory = null]) {
-    return impl.getPort(responseFactory);
+  void getPort(void callback(int port)) {
+    return impl.getPort(callback);
   }
 }
 
 const int _httpHandlerMethodHandleRequestName = 0;
 
 class _HttpHandlerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class HttpHandler {
@@ -815,7 +820,7 @@ abstract class HttpHandler {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic handleRequest(http_request_mojom.HttpRequest request,[Function responseFactory = null]);
+  void handleRequest(http_request_mojom.HttpRequest request,void callback(http_response_mojom.HttpResponse response));
 }
 
 abstract class HttpHandlerInterface
@@ -865,18 +870,14 @@ class _HttpHandlerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.response );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -921,17 +922,19 @@ class HttpHandlerProxy
   }
 
 
-  dynamic handleRequest(http_request_mojom.HttpRequest request,[Function responseFactory = null]) {
+  void handleRequest(http_request_mojom.HttpRequest request,void callback(http_response_mojom.HttpResponse response)) {
     if (impl != null) {
-      return new Future(() => impl.handleRequest(request,_HttpHandlerStubControl._httpHandlerHandleRequestResponseParamsFactory));
+      impl.handleRequest(request,callback);
+      return;
     }
     var params = new _HttpHandlerHandleRequestParams();
     params.request = request;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _httpHandlerMethodHandleRequestName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -957,17 +960,24 @@ class _HttpHandlerStubControl
   String get serviceName => HttpHandler.serviceName;
 
 
-  static HttpHandlerHandleRequestResponseParams _httpHandlerHandleRequestResponseParamsFactory(http_response_mojom.HttpResponse response) {
-    var result = new HttpHandlerHandleRequestResponseParams();
-    result.response = response;
-    return result;
+  Function _httpHandlerHandleRequestResponseParamsResponder(
+      int requestId) {
+  return (http_response_mojom.HttpResponse response) {
+      var result = new HttpHandlerHandleRequestResponseParams();
+      result.response = response;
+      sendResponse(buildResponseWithId(
+          result,
+          _httpHandlerMethodHandleRequestName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -976,30 +986,12 @@ class _HttpHandlerStubControl
       case _httpHandlerMethodHandleRequestName:
         var params = _HttpHandlerHandleRequestParams.deserialize(
             message.payload);
-        var response = _impl.handleRequest(params.request,_httpHandlerHandleRequestResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _httpHandlerMethodHandleRequestName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _httpHandlerMethodHandleRequestName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.handleRequest(params.request, _httpHandlerHandleRequestResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   HttpHandler get impl => _impl;
@@ -1053,8 +1045,8 @@ class HttpHandlerStub
   }
 
 
-  dynamic handleRequest(http_request_mojom.HttpRequest request,[Function responseFactory = null]) {
-    return impl.handleRequest(request,responseFactory);
+  void handleRequest(http_request_mojom.HttpRequest request,void callback(http_response_mojom.HttpResponse response)) {
+    return impl.handleRequest(request,callback);
   }
 }
 

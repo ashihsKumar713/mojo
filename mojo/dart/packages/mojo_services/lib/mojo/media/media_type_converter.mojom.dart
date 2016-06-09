@@ -18,6 +18,9 @@ class _MediaTypeConverterGetOutputTypeParams extends bindings.Struct {
 
   _MediaTypeConverterGetOutputTypeParams() : super(kVersions.last.size);
 
+  _MediaTypeConverterGetOutputTypeParams.init(
+  ) : super(kVersions.last.size);
+
   static _MediaTypeConverterGetOutputTypeParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -76,6 +79,10 @@ class MediaTypeConverterGetOutputTypeResponseParams extends bindings.Struct {
   media_types_mojom.MediaType outputType = null;
 
   MediaTypeConverterGetOutputTypeResponseParams() : super(kVersions.last.size);
+
+  MediaTypeConverterGetOutputTypeResponseParams.init(
+    media_types_mojom.MediaType this.outputType
+  ) : super(kVersions.last.size);
 
   static MediaTypeConverterGetOutputTypeResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -150,6 +157,10 @@ class _MediaTypeConverterGetConsumerParams extends bindings.Struct {
 
   _MediaTypeConverterGetConsumerParams() : super(kVersions.last.size);
 
+  _MediaTypeConverterGetConsumerParams.init(
+    media_transport_mojom.MediaConsumerInterfaceRequest this.consumer
+  ) : super(kVersions.last.size);
+
   static _MediaTypeConverterGetConsumerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -221,6 +232,10 @@ class _MediaTypeConverterGetProducerParams extends bindings.Struct {
 
   _MediaTypeConverterGetProducerParams() : super(kVersions.last.size);
 
+  _MediaTypeConverterGetProducerParams.init(
+    media_transport_mojom.MediaProducerInterfaceRequest this.producer
+  ) : super(kVersions.last.size);
+
   static _MediaTypeConverterGetProducerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -288,14 +303,17 @@ const int _mediaTypeConverterMethodGetConsumerName = 1;
 const int _mediaTypeConverterMethodGetProducerName = 2;
 
 class _MediaTypeConverterServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class MediaTypeConverter {
@@ -320,7 +338,7 @@ abstract class MediaTypeConverter {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getOutputType([Function responseFactory = null]);
+  void getOutputType(void callback(media_types_mojom.MediaType outputType));
   void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer);
   void getProducer(media_transport_mojom.MediaProducerInterfaceRequest producer);
 }
@@ -372,18 +390,14 @@ class _MediaTypeConverterProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.outputType );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -428,16 +442,18 @@ class MediaTypeConverterProxy
   }
 
 
-  dynamic getOutputType([Function responseFactory = null]) {
+  void getOutputType(void callback(media_types_mojom.MediaType outputType)) {
     if (impl != null) {
-      return new Future(() => impl.getOutputType(_MediaTypeConverterStubControl._mediaTypeConverterGetOutputTypeResponseParamsFactory));
+      impl.getOutputType(callback);
+      return;
     }
     var params = new _MediaTypeConverterGetOutputTypeParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaTypeConverterMethodGetOutputTypeName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
     if (impl != null) {
@@ -491,41 +507,31 @@ class _MediaTypeConverterStubControl
   String get serviceName => MediaTypeConverter.serviceName;
 
 
-  static MediaTypeConverterGetOutputTypeResponseParams _mediaTypeConverterGetOutputTypeResponseParamsFactory(media_types_mojom.MediaType outputType) {
-    var result = new MediaTypeConverterGetOutputTypeResponseParams();
-    result.outputType = outputType;
-    return result;
+  Function _mediaTypeConverterGetOutputTypeResponseParamsResponder(
+      int requestId) {
+  return (media_types_mojom.MediaType outputType) {
+      var result = new MediaTypeConverterGetOutputTypeResponseParams();
+      result.outputType = outputType;
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaTypeConverterMethodGetOutputTypeName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _mediaTypeConverterMethodGetOutputTypeName:
-        var response = _impl.getOutputType(_mediaTypeConverterGetOutputTypeResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaTypeConverterMethodGetOutputTypeName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaTypeConverterMethodGetOutputTypeName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getOutputType(_mediaTypeConverterGetOutputTypeResponseParamsResponder(message.header.requestId));
         break;
       case _mediaTypeConverterMethodGetConsumerName:
         var params = _MediaTypeConverterGetConsumerParams.deserialize(
@@ -541,7 +547,6 @@ class _MediaTypeConverterStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   MediaTypeConverter get impl => _impl;
@@ -595,8 +600,8 @@ class MediaTypeConverterStub
   }
 
 
-  dynamic getOutputType([Function responseFactory = null]) {
-    return impl.getOutputType(responseFactory);
+  void getOutputType(void callback(media_types_mojom.MediaType outputType)) {
+    return impl.getOutputType(callback);
   }
   void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
     return impl.getConsumer(consumer);

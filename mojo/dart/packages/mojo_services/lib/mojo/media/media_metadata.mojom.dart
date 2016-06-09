@@ -21,6 +21,16 @@ class MediaMetadata extends bindings.Struct {
 
   MediaMetadata() : super(kVersions.last.size);
 
+  MediaMetadata.init(
+    int this.duration, 
+    String this.title, 
+    String this.artist, 
+    String this.album, 
+    String this.publisher, 
+    String this.genre, 
+    String this.composer
+  ) : super(kVersions.last.size);
+
   static MediaMetadata deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);

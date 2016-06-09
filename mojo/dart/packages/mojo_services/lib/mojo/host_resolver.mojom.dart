@@ -20,6 +20,11 @@ class _HostResolverGetHostAddressesParams extends bindings.Struct {
 
   _HostResolverGetHostAddressesParams() : super(kVersions.last.size);
 
+  _HostResolverGetHostAddressesParams.init(
+    String this.host, 
+    net_address_mojom.NetAddressFamily this.family
+  ) : super(kVersions.last.size);
+
   static _HostResolverGetHostAddressesParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -109,6 +114,11 @@ class HostResolverGetHostAddressesResponseParams extends bindings.Struct {
   List<net_address_mojom.NetAddress> addresses = null;
 
   HostResolverGetHostAddressesResponseParams() : super(kVersions.last.size);
+
+  HostResolverGetHostAddressesResponseParams.init(
+    network_error_mojom.NetworkError this.result, 
+    List<net_address_mojom.NetAddress> this.addresses
+  ) : super(kVersions.last.size);
 
   static HostResolverGetHostAddressesResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -208,14 +218,17 @@ class HostResolverGetHostAddressesResponseParams extends bindings.Struct {
 const int _hostResolverMethodGetHostAddressesName = 0;
 
 class _HostResolverServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class HostResolver {
@@ -240,7 +253,7 @@ abstract class HostResolver {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getHostAddresses(String host,net_address_mojom.NetAddressFamily family,[Function responseFactory = null]);
+  void getHostAddresses(String host,net_address_mojom.NetAddressFamily family,void callback(network_error_mojom.NetworkError result, List<net_address_mojom.NetAddress> addresses));
 }
 
 abstract class HostResolverInterface
@@ -290,18 +303,14 @@ class _HostResolverProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.result , r.addresses );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -346,18 +355,20 @@ class HostResolverProxy
   }
 
 
-  dynamic getHostAddresses(String host,net_address_mojom.NetAddressFamily family,[Function responseFactory = null]) {
+  void getHostAddresses(String host,net_address_mojom.NetAddressFamily family,void callback(network_error_mojom.NetworkError result, List<net_address_mojom.NetAddress> addresses)) {
     if (impl != null) {
-      return new Future(() => impl.getHostAddresses(host,family,_HostResolverStubControl._hostResolverGetHostAddressesResponseParamsFactory));
+      impl.getHostAddresses(host,family,callback);
+      return;
     }
     var params = new _HostResolverGetHostAddressesParams();
     params.host = host;
     params.family = family;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _hostResolverMethodGetHostAddressesName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -383,18 +394,25 @@ class _HostResolverStubControl
   String get serviceName => HostResolver.serviceName;
 
 
-  static HostResolverGetHostAddressesResponseParams _hostResolverGetHostAddressesResponseParamsFactory(network_error_mojom.NetworkError result, List<net_address_mojom.NetAddress> addresses) {
-    var result = new HostResolverGetHostAddressesResponseParams();
-    result.result = result;
-    result.addresses = addresses;
-    return result;
+  Function _hostResolverGetHostAddressesResponseParamsResponder(
+      int requestId) {
+  return (network_error_mojom.NetworkError result, List<net_address_mojom.NetAddress> addresses) {
+      var result = new HostResolverGetHostAddressesResponseParams();
+      result.result = result;
+      result.addresses = addresses;
+      sendResponse(buildResponseWithId(
+          result,
+          _hostResolverMethodGetHostAddressesName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -403,30 +421,12 @@ class _HostResolverStubControl
       case _hostResolverMethodGetHostAddressesName:
         var params = _HostResolverGetHostAddressesParams.deserialize(
             message.payload);
-        var response = _impl.getHostAddresses(params.host,params.family,_hostResolverGetHostAddressesResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _hostResolverMethodGetHostAddressesName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _hostResolverMethodGetHostAddressesName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getHostAddresses(params.host, params.family, _hostResolverGetHostAddressesResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   HostResolver get impl => _impl;
@@ -480,8 +480,8 @@ class HostResolverStub
   }
 
 
-  dynamic getHostAddresses(String host,net_address_mojom.NetAddressFamily family,[Function responseFactory = null]) {
-    return impl.getHostAddresses(host,family,responseFactory);
+  void getHostAddresses(String host,net_address_mojom.NetAddressFamily family,void callback(network_error_mojom.NetworkError result, List<net_address_mojom.NetAddress> addresses)) {
+    return impl.getHostAddresses(host,family,callback);
   }
 }
 

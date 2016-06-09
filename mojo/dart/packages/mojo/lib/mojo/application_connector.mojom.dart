@@ -19,6 +19,11 @@ class _ApplicationConnectorConnectToApplicationParams extends bindings.Struct {
 
   _ApplicationConnectorConnectToApplicationParams() : super(kVersions.last.size);
 
+  _ApplicationConnectorConnectToApplicationParams.init(
+    String this.applicationUrl, 
+    service_provider_mojom.ServiceProviderInterfaceRequest this.services
+  ) : super(kVersions.last.size);
+
   static _ApplicationConnectorConnectToApplicationParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -102,6 +107,10 @@ class _ApplicationConnectorDuplicateParams extends bindings.Struct {
 
   _ApplicationConnectorDuplicateParams() : super(kVersions.last.size);
 
+  _ApplicationConnectorDuplicateParams.init(
+    ApplicationConnectorInterfaceRequest this.applicationConnectorRequest
+  ) : super(kVersions.last.size);
+
   static _ApplicationConnectorDuplicateParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -168,14 +177,17 @@ const int _applicationConnectorMethodConnectToApplicationName = 0;
 const int _applicationConnectorMethodDuplicateName = 1;
 
 class _ApplicationConnectorServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ApplicationConnector {
@@ -341,11 +353,11 @@ class _ApplicationConnectorStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -365,7 +377,6 @@ class _ApplicationConnectorStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ApplicationConnector get impl => _impl;

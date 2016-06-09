@@ -15,6 +15,10 @@ class SceneToken extends bindings.Struct {
 
   SceneToken() : super(kVersions.last.size);
 
+  SceneToken.init(
+    int this.value
+  ) : super(kVersions.last.size);
+
   static SceneToken deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);

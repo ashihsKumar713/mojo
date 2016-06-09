@@ -17,6 +17,10 @@ class _AuthenticationAdminServiceGetOAuth2DeviceCodeParams extends bindings.Stru
 
   _AuthenticationAdminServiceGetOAuth2DeviceCodeParams() : super(kVersions.last.size);
 
+  _AuthenticationAdminServiceGetOAuth2DeviceCodeParams.init(
+    List<String> this.scopes
+  ) : super(kVersions.last.size);
+
   static _AuthenticationAdminServiceGetOAuth2DeviceCodeParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -106,6 +110,13 @@ class AuthenticationAdminServiceGetOAuth2DeviceCodeResponseParams extends bindin
   String error = null;
 
   AuthenticationAdminServiceGetOAuth2DeviceCodeResponseParams() : super(kVersions.last.size);
+
+  AuthenticationAdminServiceGetOAuth2DeviceCodeResponseParams.init(
+    String this.verificationUrl, 
+    String this.deviceCode, 
+    String this.userCode, 
+    String this.error
+  ) : super(kVersions.last.size);
 
   static AuthenticationAdminServiceGetOAuth2DeviceCodeResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -218,6 +229,10 @@ class _AuthenticationAdminServiceAddAccountParams extends bindings.Struct {
 
   _AuthenticationAdminServiceAddAccountParams() : super(kVersions.last.size);
 
+  _AuthenticationAdminServiceAddAccountParams.init(
+    String this.deviceCode
+  ) : super(kVersions.last.size);
+
   static _AuthenticationAdminServiceAddAccountParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -290,6 +305,11 @@ class AuthenticationAdminServiceAddAccountResponseParams extends bindings.Struct
   String error = null;
 
   AuthenticationAdminServiceAddAccountResponseParams() : super(kVersions.last.size);
+
+  AuthenticationAdminServiceAddAccountResponseParams.init(
+    String this.username, 
+    String this.error
+  ) : super(kVersions.last.size);
 
   static AuthenticationAdminServiceAddAccountResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -375,6 +395,9 @@ class _AuthenticationAdminServiceGetAllUsersParams extends bindings.Struct {
 
   _AuthenticationAdminServiceGetAllUsersParams() : super(kVersions.last.size);
 
+  _AuthenticationAdminServiceGetAllUsersParams.init(
+  ) : super(kVersions.last.size);
+
   static _AuthenticationAdminServiceGetAllUsersParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -434,6 +457,11 @@ class AuthenticationAdminServiceGetAllUsersResponseParams extends bindings.Struc
   String error = null;
 
   AuthenticationAdminServiceGetAllUsersResponseParams() : super(kVersions.last.size);
+
+  AuthenticationAdminServiceGetAllUsersResponseParams.init(
+    List<String> this.usernames, 
+    String this.error
+  ) : super(kVersions.last.size);
 
   static AuthenticationAdminServiceGetAllUsersResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -531,14 +559,17 @@ const int _authenticationAdminServiceMethodAddAccountName = 1;
 const int _authenticationAdminServiceMethodGetAllUsersName = 2;
 
 class _AuthenticationAdminServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class AuthenticationAdminService {
@@ -563,9 +594,9 @@ abstract class AuthenticationAdminService {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getOAuth2DeviceCode(List<String> scopes,[Function responseFactory = null]);
-  dynamic addAccount(String deviceCode,[Function responseFactory = null]);
-  dynamic getAllUsers([Function responseFactory = null]);
+  void getOAuth2DeviceCode(List<String> scopes,void callback(String verificationUrl, String deviceCode, String userCode, String error));
+  void addAccount(String deviceCode,void callback(String username, String error));
+  void getAllUsers(void callback(List<String> usernames, String error));
 }
 
 abstract class AuthenticationAdminServiceInterface
@@ -615,18 +646,14 @@ class _AuthenticationAdminServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.verificationUrl , r.deviceCode , r.userCode , r.error );
         break;
       case _authenticationAdminServiceMethodAddAccountName:
         var r = AuthenticationAdminServiceAddAccountResponseParams.deserialize(
@@ -635,18 +662,14 @@ class _AuthenticationAdminServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.username , r.error );
         break;
       case _authenticationAdminServiceMethodGetAllUsersName:
         var r = AuthenticationAdminServiceGetAllUsersResponseParams.deserialize(
@@ -655,18 +678,14 @@ class _AuthenticationAdminServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.usernames , r.error );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -711,40 +730,46 @@ class AuthenticationAdminServiceProxy
   }
 
 
-  dynamic getOAuth2DeviceCode(List<String> scopes,[Function responseFactory = null]) {
+  void getOAuth2DeviceCode(List<String> scopes,void callback(String verificationUrl, String deviceCode, String userCode, String error)) {
     if (impl != null) {
-      return new Future(() => impl.getOAuth2DeviceCode(scopes,_AuthenticationAdminServiceStubControl._authenticationAdminServiceGetOAuth2DeviceCodeResponseParamsFactory));
+      impl.getOAuth2DeviceCode(scopes,callback);
+      return;
     }
     var params = new _AuthenticationAdminServiceGetOAuth2DeviceCodeParams();
     params.scopes = scopes;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _authenticationAdminServiceMethodGetOAuth2DeviceCodeName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic addAccount(String deviceCode,[Function responseFactory = null]) {
+  void addAccount(String deviceCode,void callback(String username, String error)) {
     if (impl != null) {
-      return new Future(() => impl.addAccount(deviceCode,_AuthenticationAdminServiceStubControl._authenticationAdminServiceAddAccountResponseParamsFactory));
+      impl.addAccount(deviceCode,callback);
+      return;
     }
     var params = new _AuthenticationAdminServiceAddAccountParams();
     params.deviceCode = deviceCode;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _authenticationAdminServiceMethodAddAccountName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic getAllUsers([Function responseFactory = null]) {
+  void getAllUsers(void callback(List<String> usernames, String error)) {
     if (impl != null) {
-      return new Future(() => impl.getAllUsers(_AuthenticationAdminServiceStubControl._authenticationAdminServiceGetAllUsersResponseParamsFactory));
+      impl.getAllUsers(callback);
+      return;
     }
     var params = new _AuthenticationAdminServiceGetAllUsersParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _authenticationAdminServiceMethodGetAllUsersName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -770,32 +795,53 @@ class _AuthenticationAdminServiceStubControl
   String get serviceName => AuthenticationAdminService.serviceName;
 
 
-  static AuthenticationAdminServiceGetOAuth2DeviceCodeResponseParams _authenticationAdminServiceGetOAuth2DeviceCodeResponseParamsFactory(String verificationUrl, String deviceCode, String userCode, String error) {
-    var result = new AuthenticationAdminServiceGetOAuth2DeviceCodeResponseParams();
-    result.verificationUrl = verificationUrl;
-    result.deviceCode = deviceCode;
-    result.userCode = userCode;
-    result.error = error;
-    return result;
+  Function _authenticationAdminServiceGetOAuth2DeviceCodeResponseParamsResponder(
+      int requestId) {
+  return (String verificationUrl, String deviceCode, String userCode, String error) {
+      var result = new AuthenticationAdminServiceGetOAuth2DeviceCodeResponseParams();
+      result.verificationUrl = verificationUrl;
+      result.deviceCode = deviceCode;
+      result.userCode = userCode;
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _authenticationAdminServiceMethodGetOAuth2DeviceCodeName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static AuthenticationAdminServiceAddAccountResponseParams _authenticationAdminServiceAddAccountResponseParamsFactory(String username, String error) {
-    var result = new AuthenticationAdminServiceAddAccountResponseParams();
-    result.username = username;
-    result.error = error;
-    return result;
+  Function _authenticationAdminServiceAddAccountResponseParamsResponder(
+      int requestId) {
+  return (String username, String error) {
+      var result = new AuthenticationAdminServiceAddAccountResponseParams();
+      result.username = username;
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _authenticationAdminServiceMethodAddAccountName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static AuthenticationAdminServiceGetAllUsersResponseParams _authenticationAdminServiceGetAllUsersResponseParamsFactory(List<String> usernames, String error) {
-    var result = new AuthenticationAdminServiceGetAllUsersResponseParams();
-    result.usernames = usernames;
-    result.error = error;
-    return result;
+  Function _authenticationAdminServiceGetAllUsersResponseParamsResponder(
+      int requestId) {
+  return (List<String> usernames, String error) {
+      var result = new AuthenticationAdminServiceGetAllUsersResponseParams();
+      result.usernames = usernames;
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _authenticationAdminServiceMethodGetAllUsersName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -804,72 +850,20 @@ class _AuthenticationAdminServiceStubControl
       case _authenticationAdminServiceMethodGetOAuth2DeviceCodeName:
         var params = _AuthenticationAdminServiceGetOAuth2DeviceCodeParams.deserialize(
             message.payload);
-        var response = _impl.getOAuth2DeviceCode(params.scopes,_authenticationAdminServiceGetOAuth2DeviceCodeResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _authenticationAdminServiceMethodGetOAuth2DeviceCodeName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _authenticationAdminServiceMethodGetOAuth2DeviceCodeName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getOAuth2DeviceCode(params.scopes, _authenticationAdminServiceGetOAuth2DeviceCodeResponseParamsResponder(message.header.requestId));
         break;
       case _authenticationAdminServiceMethodAddAccountName:
         var params = _AuthenticationAdminServiceAddAccountParams.deserialize(
             message.payload);
-        var response = _impl.addAccount(params.deviceCode,_authenticationAdminServiceAddAccountResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _authenticationAdminServiceMethodAddAccountName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _authenticationAdminServiceMethodAddAccountName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.addAccount(params.deviceCode, _authenticationAdminServiceAddAccountResponseParamsResponder(message.header.requestId));
         break;
       case _authenticationAdminServiceMethodGetAllUsersName:
-        var response = _impl.getAllUsers(_authenticationAdminServiceGetAllUsersResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _authenticationAdminServiceMethodGetAllUsersName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _authenticationAdminServiceMethodGetAllUsersName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getAllUsers(_authenticationAdminServiceGetAllUsersResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   AuthenticationAdminService get impl => _impl;
@@ -923,14 +917,14 @@ class AuthenticationAdminServiceStub
   }
 
 
-  dynamic getOAuth2DeviceCode(List<String> scopes,[Function responseFactory = null]) {
-    return impl.getOAuth2DeviceCode(scopes,responseFactory);
+  void getOAuth2DeviceCode(List<String> scopes,void callback(String verificationUrl, String deviceCode, String userCode, String error)) {
+    return impl.getOAuth2DeviceCode(scopes,callback);
   }
-  dynamic addAccount(String deviceCode,[Function responseFactory = null]) {
-    return impl.addAccount(deviceCode,responseFactory);
+  void addAccount(String deviceCode,void callback(String username, String error)) {
+    return impl.addAccount(deviceCode,callback);
   }
-  dynamic getAllUsers([Function responseFactory = null]) {
-    return impl.getAllUsers(responseFactory);
+  void getAllUsers(void callback(List<String> usernames, String error)) {
+    return impl.getAllUsers(callback);
   }
 }
 

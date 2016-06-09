@@ -210,6 +210,10 @@ class StringType extends bindings.Struct {
 
   StringType() : super(kVersions.last.size);
 
+  StringType.init(
+    bool this.nullable
+  ) : super(kVersions.last.size);
+
   static StringType deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -356,6 +360,11 @@ class HandleType extends bindings.Struct {
 
   HandleType() : super(kVersions.last.size);
 
+  HandleType.init(
+    bool this.nullable, 
+    HandleTypeKind this.kind
+  ) : super(kVersions.last.size);
+
   static HandleType deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -446,6 +455,12 @@ class ArrayType extends bindings.Struct {
   Type elementType = null;
 
   ArrayType() : super(kVersions.last.size);
+
+  ArrayType.init(
+    bool this.nullable, 
+    int this.fixedLength, 
+    Type this.elementType
+  ) : super(kVersions.last.size);
 
   static ArrayType deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -550,6 +565,12 @@ class MapType extends bindings.Struct {
   Type valueType = null;
 
   MapType() : super(kVersions.last.size);
+
+  MapType.init(
+    bool this.nullable, 
+    Type this.keyType, 
+    Type this.valueType
+  ) : super(kVersions.last.size);
 
   static MapType deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -659,6 +680,13 @@ class TypeReference extends bindings.Struct {
   String typeKey = null;
 
   TypeReference() : super(kVersions.last.size);
+
+  TypeReference.init(
+    bool this.nullable, 
+    bool this.isInterfaceRequest, 
+    String this.identifier, 
+    String this.typeKey
+  ) : super(kVersions.last.size);
 
   static TypeReference deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -775,6 +803,15 @@ class StructField extends bindings.Struct {
   int minVersion = 0;
 
   StructField() : super(kVersions.last.size);
+
+  StructField.init(
+    DeclarationData this.declData, 
+    Type this.type, 
+    DefaultFieldValue this.defaultValue, 
+    int this.offset, 
+    int this.bit, 
+    int this.minVersion
+  ) : super(kVersions.last.size);
 
   static StructField deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -917,6 +954,9 @@ class DefaultKeyword extends bindings.Struct {
 
   DefaultKeyword() : super(kVersions.last.size);
 
+  DefaultKeyword.init(
+  ) : super(kVersions.last.size);
+
   static DefaultKeyword deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -977,6 +1017,12 @@ class StructVersion extends bindings.Struct {
   int numBytes = 0;
 
   StructVersion() : super(kVersions.last.size);
+
+  StructVersion.init(
+    int this.versionNumber, 
+    int this.numFields, 
+    int this.numBytes
+  ) : super(kVersions.last.size);
 
   static StructVersion deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1077,6 +1123,12 @@ class MojomStruct extends bindings.Struct {
   List<StructVersion> versionInfo = null;
 
   MojomStruct() : super(kVersions.last.size);
+
+  MojomStruct.init(
+    DeclarationData this.declData, 
+    List<StructField> this.fields, 
+    List<StructVersion> this.versionInfo
+  ) : super(kVersions.last.size);
 
   static MojomStruct deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1213,6 +1265,12 @@ class UnionField extends bindings.Struct {
 
   UnionField() : super(kVersions.last.size);
 
+  UnionField.init(
+    DeclarationData this.declData, 
+    Type this.type, 
+    int this.tag
+  ) : super(kVersions.last.size);
+
   static UnionField deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1316,6 +1374,11 @@ class MojomUnion extends bindings.Struct {
   List<UnionField> fields = null;
 
   MojomUnion() : super(kVersions.last.size);
+
+  MojomUnion.init(
+    DeclarationData this.declData, 
+    List<UnionField> this.fields
+  ) : super(kVersions.last.size);
 
   static MojomUnion deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1421,6 +1484,12 @@ class EnumValue extends bindings.Struct {
 
   EnumValue() : super(kVersions.last.size);
 
+  EnumValue.init(
+    DeclarationData this.declData, 
+    Value this.initializerValue, 
+    int this.intValue
+  ) : super(kVersions.last.size);
+
   static EnumValue deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1520,6 +1589,11 @@ class MojomEnum extends bindings.Struct {
   List<EnumValue> values = null;
 
   MojomEnum() : super(kVersions.last.size);
+
+  MojomEnum.init(
+    DeclarationData this.declData, 
+    List<EnumValue> this.values
+  ) : super(kVersions.last.size);
 
   static MojomEnum deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1626,6 +1700,14 @@ class MojomMethod extends bindings.Struct {
   int minVersion = 0;
 
   MojomMethod() : super(kVersions.last.size);
+
+  MojomMethod.init(
+    DeclarationData this.declData, 
+    MojomStruct this.parameters, 
+    MojomStruct this.responseParams, 
+    int this.ordinal, 
+    int this.minVersion
+  ) : super(kVersions.last.size);
 
   static MojomMethod deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1756,6 +1838,13 @@ class MojomInterface extends bindings.Struct {
   int currentVersion = 0;
 
   MojomInterface() : super(kVersions.last.size);
+
+  MojomInterface.init(
+    DeclarationData this.declData, 
+    String this.serviceName_, 
+    Map<int, MojomMethod> this.methods, 
+    int this.currentVersion
+  ) : super(kVersions.last.size);
 
   static MojomInterface deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1908,6 +1997,11 @@ class ConstantReference extends bindings.Struct {
 
   ConstantReference() : super(kVersions.last.size);
 
+  ConstantReference.init(
+    String this.identifier, 
+    String this.constantKey
+  ) : super(kVersions.last.size);
+
   static ConstantReference deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1994,6 +2088,12 @@ class EnumValueReference extends bindings.Struct {
   int enumValueIndex = 0;
 
   EnumValueReference() : super(kVersions.last.size);
+
+  EnumValueReference.init(
+    String this.identifier, 
+    String this.enumTypeKey, 
+    int this.enumValueIndex
+  ) : super(kVersions.last.size);
 
   static EnumValueReference deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -2095,6 +2195,13 @@ class DeclaredConstant extends bindings.Struct {
   Value resolvedConcreteValue = null;
 
   DeclaredConstant() : super(kVersions.last.size);
+
+  DeclaredConstant.init(
+    DeclarationData this.declData, 
+    Type this.type, 
+    Value this.value, 
+    Value this.resolvedConcreteValue
+  ) : super(kVersions.last.size);
 
   static DeclaredConstant deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -2217,6 +2324,11 @@ class Attribute extends bindings.Struct {
 
   Attribute() : super(kVersions.last.size);
 
+  Attribute.init(
+    String this.key, 
+    LiteralValue this.value
+  ) : super(kVersions.last.size);
+
   static Attribute deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -2312,6 +2424,17 @@ class DeclarationData extends bindings.Struct {
   String containerTypeKey = null;
 
   DeclarationData() : super(kVersions.last.size);
+
+  DeclarationData.init(
+    List<Attribute> this.attributes, 
+    String this.shortName, 
+    String this.fullIdentifier, 
+    int this.declaredOrdinal, 
+    int this.declarationOrder, 
+    SourceFileInfo this.sourceFileInfo, 
+    ContainedDeclarations this.containedDeclarations, 
+    String this.containerTypeKey
+  ) : super(kVersions.last.size);
 
   static DeclarationData deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -2498,6 +2621,12 @@ class SourceFileInfo extends bindings.Struct {
 
   SourceFileInfo() : super(kVersions.last.size);
 
+  SourceFileInfo.init(
+    String this.fileName, 
+    int this.lineNumber, 
+    int this.columnNumber
+  ) : super(kVersions.last.size);
+
   static SourceFileInfo deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -2596,6 +2725,11 @@ class ContainedDeclarations extends bindings.Struct {
   List<String> constants = null;
 
   ContainedDeclarations() : super(kVersions.last.size);
+
+  ContainedDeclarations.init(
+    List<String> this.enums, 
+    List<String> this.constants
+  ) : super(kVersions.last.size);
 
   static ContainedDeclarations deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -2716,6 +2850,11 @@ class RuntimeTypeInfo extends bindings.Struct {
   Map<String, UserDefinedType> typeMap = null;
 
   RuntimeTypeInfo() : super(kVersions.last.size);
+
+  RuntimeTypeInfo.init(
+    Map<String, String> this.services, 
+    Map<String, UserDefinedType> this.typeMap
+  ) : super(kVersions.last.size);
 
   static RuntimeTypeInfo deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);

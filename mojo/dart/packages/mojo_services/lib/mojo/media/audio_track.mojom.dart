@@ -20,6 +20,10 @@ class AudioTrackDescriptor extends bindings.Struct {
 
   AudioTrackDescriptor() : super(kVersions.last.size);
 
+  AudioTrackDescriptor.init(
+    List<media_types_mojom.MediaTypeSet> this.supportedMediaTypes
+  ) : super(kVersions.last.size);
+
   static AudioTrackDescriptor deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -109,6 +113,12 @@ class AudioTrackConfiguration extends bindings.Struct {
   int mediaTimeRatio = 1;
 
   AudioTrackConfiguration() : super(kVersions.last.size);
+
+  AudioTrackConfiguration.init(
+    media_types_mojom.MediaType this.mediaType, 
+    int this.audioFrameRatio, 
+    int this.mediaTimeRatio
+  ) : super(kVersions.last.size);
 
   static AudioTrackConfiguration deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -208,6 +218,9 @@ class _AudioTrackDescribeParams extends bindings.Struct {
 
   _AudioTrackDescribeParams() : super(kVersions.last.size);
 
+  _AudioTrackDescribeParams.init(
+  ) : super(kVersions.last.size);
+
   static _AudioTrackDescribeParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -266,6 +279,10 @@ class AudioTrackDescribeResponseParams extends bindings.Struct {
   AudioTrackDescriptor descriptor = null;
 
   AudioTrackDescribeResponseParams() : super(kVersions.last.size);
+
+  AudioTrackDescribeResponseParams.init(
+    AudioTrackDescriptor this.descriptor
+  ) : super(kVersions.last.size);
 
   static AudioTrackDescribeResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -340,6 +357,11 @@ class _AudioTrackConfigureParams extends bindings.Struct {
   media_transport_mojom.MediaConsumerInterfaceRequest pipe = null;
 
   _AudioTrackConfigureParams() : super(kVersions.last.size);
+
+  _AudioTrackConfigureParams.init(
+    AudioTrackConfiguration this.configuration, 
+    media_transport_mojom.MediaConsumerInterfaceRequest this.pipe
+  ) : super(kVersions.last.size);
 
   static _AudioTrackConfigureParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -425,6 +447,10 @@ class _AudioTrackGetTimelineControlSiteParams extends bindings.Struct {
 
   _AudioTrackGetTimelineControlSiteParams() : super(kVersions.last.size);
 
+  _AudioTrackGetTimelineControlSiteParams.init(
+    timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest this.timelineControlSite
+  ) : super(kVersions.last.size);
+
   static _AudioTrackGetTimelineControlSiteParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -496,6 +522,10 @@ class _AudioTrackSetGainParams extends bindings.Struct {
 
   _AudioTrackSetGainParams() : super(kVersions.last.size);
 
+  _AudioTrackSetGainParams.init(
+    double this.dbGain
+  ) : super(kVersions.last.size);
+
   static _AudioTrackSetGainParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -565,14 +595,17 @@ const int _audioTrackMethodGetTimelineControlSiteName = 2;
 const int _audioTrackMethodSetGainName = 3;
 
 class _AudioTrackServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class AudioTrack {
@@ -597,7 +630,7 @@ abstract class AudioTrack {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic describe([Function responseFactory = null]);
+  void describe(void callback(AudioTrackDescriptor descriptor));
   void configure(AudioTrackConfiguration configuration, media_transport_mojom.MediaConsumerInterfaceRequest pipe);
   void getTimelineControlSite(timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite);
   void setGain(double dbGain);
@@ -652,18 +685,14 @@ class _AudioTrackProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.descriptor );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -708,16 +737,18 @@ class AudioTrackProxy
   }
 
 
-  dynamic describe([Function responseFactory = null]) {
+  void describe(void callback(AudioTrackDescriptor descriptor)) {
     if (impl != null) {
-      return new Future(() => impl.describe(_AudioTrackStubControl._audioTrackDescribeResponseParamsFactory));
+      impl.describe(callback);
+      return;
     }
     var params = new _AudioTrackDescribeParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _audioTrackMethodDescribeName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void configure(AudioTrackConfiguration configuration, media_transport_mojom.MediaConsumerInterfaceRequest pipe) {
     if (impl != null) {
@@ -786,41 +817,31 @@ class _AudioTrackStubControl
   String get serviceName => AudioTrack.serviceName;
 
 
-  static AudioTrackDescribeResponseParams _audioTrackDescribeResponseParamsFactory(AudioTrackDescriptor descriptor) {
-    var result = new AudioTrackDescribeResponseParams();
-    result.descriptor = descriptor;
-    return result;
+  Function _audioTrackDescribeResponseParamsResponder(
+      int requestId) {
+  return (AudioTrackDescriptor descriptor) {
+      var result = new AudioTrackDescribeResponseParams();
+      result.descriptor = descriptor;
+      sendResponse(buildResponseWithId(
+          result,
+          _audioTrackMethodDescribeName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _audioTrackMethodDescribeName:
-        var response = _impl.describe(_audioTrackDescribeResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _audioTrackMethodDescribeName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _audioTrackMethodDescribeName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.describe(_audioTrackDescribeResponseParamsResponder(message.header.requestId));
         break;
       case _audioTrackMethodConfigureName:
         var params = _AudioTrackConfigureParams.deserialize(
@@ -841,7 +862,6 @@ class _AudioTrackStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   AudioTrack get impl => _impl;
@@ -895,8 +915,8 @@ class AudioTrackStub
   }
 
 
-  dynamic describe([Function responseFactory = null]) {
-    return impl.describe(responseFactory);
+  void describe(void callback(AudioTrackDescriptor descriptor)) {
+    return impl.describe(callback);
   }
   void configure(AudioTrackConfiguration configuration, media_transport_mojom.MediaConsumerInterfaceRequest pipe) {
     return impl.configure(configuration, pipe);

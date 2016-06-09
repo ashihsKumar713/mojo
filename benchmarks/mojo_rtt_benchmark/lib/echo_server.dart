@@ -18,8 +18,9 @@ class EchoImpl implements Echo {
     _echo.ctrl.onError = _errorHandler;
   }
 
-  echoString(String value, [Function responseFactory]) =>
-      responseFactory(value);
+  void echoString(String value, void respond(String response)) {
+    respond(value);
+  }
 
   Future close() => _echo.close();
 

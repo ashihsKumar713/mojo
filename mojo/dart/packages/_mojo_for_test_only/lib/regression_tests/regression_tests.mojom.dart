@@ -442,6 +442,10 @@ class Edge extends bindings.Struct {
 
   Edge() : super(kVersions.last.size);
 
+  Edge.init(
+    Vertex this.v
+  ) : super(kVersions.last.size);
+
   static Edge deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -515,6 +519,10 @@ class Vertex extends bindings.Struct {
 
   Vertex() : super(kVersions.last.size);
 
+  Vertex.init(
+    EmptyStruct this.e
+  ) : super(kVersions.last.size);
+
   static Vertex deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -587,6 +595,9 @@ class EmptyStruct extends bindings.Struct {
 
   EmptyStruct() : super(kVersions.last.size);
 
+  EmptyStruct.init(
+  ) : super(kVersions.last.size);
+
   static EmptyStruct deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -645,6 +656,10 @@ class A extends bindings.Struct {
   B b = null;
 
   A() : super(kVersions.last.size);
+
+  A.init(
+    B this.b
+  ) : super(kVersions.last.size);
 
   static A deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -719,6 +734,10 @@ class B extends bindings.Struct {
 
   B() : super(kVersions.last.size);
 
+  B.init(
+    A this.a
+  ) : super(kVersions.last.size);
+
   static B deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -792,6 +811,10 @@ class StructWithHandleCalledHandles extends bindings.Struct {
 
   StructWithHandleCalledHandles() : super(kVersions.last.size);
 
+  StructWithHandleCalledHandles.init(
+    core.MojoHandle this.handles
+  ) : super(kVersions.last.size);
+
   static StructWithHandleCalledHandles deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -862,6 +885,10 @@ class StructWithArrayOfHandlesCalledHandles extends bindings.Struct {
   List<core.MojoHandle> handles = null;
 
   StructWithArrayOfHandlesCalledHandles() : super(kVersions.last.size);
+
+  StructWithArrayOfHandlesCalledHandles.init(
+    List<core.MojoHandle> this.handles
+  ) : super(kVersions.last.size);
 
   static StructWithArrayOfHandlesCalledHandles deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -934,6 +961,10 @@ class StructWithInterfaceCalledHandles extends bindings.Struct {
 
   StructWithInterfaceCalledHandles() : super(kVersions.last.size);
 
+  StructWithInterfaceCalledHandles.init(
+    TestInterfaceInterface this.handles
+  ) : super(kVersions.last.size);
+
   static StructWithInterfaceCalledHandles deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1004,6 +1035,10 @@ class ContainsArrayOfEnum extends bindings.Struct {
   List<NormalEnum> arrayOfEnums = null;
 
   ContainsArrayOfEnum() : super(kVersions.last.size);
+
+  ContainsArrayOfEnum.init(
+    List<NormalEnum> this.arrayOfEnums
+  ) : super(kVersions.last.size);
 
   static ContainsArrayOfEnum deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1088,6 +1123,9 @@ class _CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseParams extend
 
   _CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseParams() : super(kVersions.last.size);
 
+  _CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseParams.init(
+  ) : super(kVersions.last.size);
+
   static _CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1145,6 +1183,9 @@ class CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParams
   ];
 
   CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParams() : super(kVersions.last.size);
+
+  CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParams.init(
+  ) : super(kVersions.last.size);
 
   static CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1204,6 +1245,10 @@ class _CheckMethodWithEmptyResponseWithParameterAndEmptyResponseParams extends b
   bool b = false;
 
   _CheckMethodWithEmptyResponseWithParameterAndEmptyResponseParams() : super(kVersions.last.size);
+
+  _CheckMethodWithEmptyResponseWithParameterAndEmptyResponseParams.init(
+    bool this.b
+  ) : super(kVersions.last.size);
 
   static _CheckMethodWithEmptyResponseWithParameterAndEmptyResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1276,6 +1321,9 @@ class CheckMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParams ex
 
   CheckMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParams() : super(kVersions.last.size);
 
+  CheckMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParams.init(
+  ) : super(kVersions.last.size);
+
   static CheckMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1335,6 +1383,11 @@ class _CheckNameCollisionWithNameCollisionParams extends bindings.Struct {
   bool response = false;
 
   _CheckNameCollisionWithNameCollisionParams() : super(kVersions.last.size);
+
+  _CheckNameCollisionWithNameCollisionParams.init(
+    bool this.message, 
+    bool this.response
+  ) : super(kVersions.last.size);
 
   static _CheckNameCollisionWithNameCollisionParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1422,6 +1475,11 @@ class CheckNameCollisionWithNameCollisionResponseParams extends bindings.Struct 
 
   CheckNameCollisionWithNameCollisionResponseParams() : super(kVersions.last.size);
 
+  CheckNameCollisionWithNameCollisionResponseParams.init(
+    bool this.message, 
+    bool this.response
+  ) : super(kVersions.last.size);
+
   static CheckNameCollisionWithNameCollisionResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1507,6 +1565,10 @@ class _CheckEnumCapsSetEnumWithInternalAllCapsParams extends bindings.Struct {
 
   _CheckEnumCapsSetEnumWithInternalAllCapsParams() : super(kVersions.last.size);
 
+  _CheckEnumCapsSetEnumWithInternalAllCapsParams.init(
+    EnumWithInternalAllCaps this.e
+  ) : super(kVersions.last.size);
+
   static _CheckEnumCapsSetEnumWithInternalAllCapsParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1582,6 +1644,9 @@ class _TestInterfaceSomeMessageParams extends bindings.Struct {
 
   _TestInterfaceSomeMessageParams() : super(kVersions.last.size);
 
+  _TestInterfaceSomeMessageParams.init(
+  ) : super(kVersions.last.size);
+
   static _TestInterfaceSomeMessageParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1640,6 +1705,10 @@ class _Regression551GetParams extends bindings.Struct {
   List<String> keyPrefixes = null;
 
   _Regression551GetParams() : super(kVersions.last.size);
+
+  _Regression551GetParams.init(
+    List<String> this.keyPrefixes
+  ) : super(kVersions.last.size);
 
   static _Regression551GetParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1728,6 +1797,10 @@ class Regression551GetResponseParams extends bindings.Struct {
 
   Regression551GetResponseParams() : super(kVersions.last.size);
 
+  Regression551GetResponseParams.init(
+    int this.result
+  ) : super(kVersions.last.size);
+
   static Regression551GetResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1799,6 +1872,9 @@ class _ServiceNameServiceNameParams extends bindings.Struct {
 
   _ServiceNameServiceNameParams() : super(kVersions.last.size);
 
+  _ServiceNameServiceNameParams.init(
+  ) : super(kVersions.last.size);
+
   static _ServiceNameServiceNameParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1857,6 +1933,10 @@ class ServiceNameServiceNameResponseParams extends bindings.Struct {
   String serviceName_ = null;
 
   ServiceNameServiceNameResponseParams() : super(kVersions.last.size);
+
+  ServiceNameServiceNameResponseParams.init(
+    String this.serviceName_
+  ) : super(kVersions.last.size);
 
   static ServiceNameServiceNameResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1925,14 +2005,17 @@ const int _checkMethodWithEmptyResponseMethodWithoutParameterAndEmptyResponseNam
 const int _checkMethodWithEmptyResponseMethodWithParameterAndEmptyResponseName = 1;
 
 class _CheckMethodWithEmptyResponseServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class CheckMethodWithEmptyResponse {
@@ -1957,8 +2040,8 @@ abstract class CheckMethodWithEmptyResponse {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic withoutParameterAndEmptyResponse([Function responseFactory = null]);
-  dynamic withParameterAndEmptyResponse(bool b,[Function responseFactory = null]);
+  void withoutParameterAndEmptyResponse(void callback());
+  void withParameterAndEmptyResponse(bool b,void callback());
 }
 
 abstract class CheckMethodWithEmptyResponseInterface
@@ -2008,18 +2091,14 @@ class _CheckMethodWithEmptyResponseProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       case _checkMethodWithEmptyResponseMethodWithParameterAndEmptyResponseName:
         var r = CheckMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParams.deserialize(
@@ -2028,18 +2107,14 @@ class _CheckMethodWithEmptyResponseProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -2084,28 +2159,32 @@ class CheckMethodWithEmptyResponseProxy
   }
 
 
-  dynamic withoutParameterAndEmptyResponse([Function responseFactory = null]) {
+  void withoutParameterAndEmptyResponse(void callback()) {
     if (impl != null) {
-      return new Future(() => impl.withoutParameterAndEmptyResponse(_CheckMethodWithEmptyResponseStubControl._checkMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParamsFactory));
+      impl.withoutParameterAndEmptyResponse(callback);
+      return;
     }
     var params = new _CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _checkMethodWithEmptyResponseMethodWithoutParameterAndEmptyResponseName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic withParameterAndEmptyResponse(bool b,[Function responseFactory = null]) {
+  void withParameterAndEmptyResponse(bool b,void callback()) {
     if (impl != null) {
-      return new Future(() => impl.withParameterAndEmptyResponse(b,_CheckMethodWithEmptyResponseStubControl._checkMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParamsFactory));
+      impl.withParameterAndEmptyResponse(b,callback);
+      return;
     }
     var params = new _CheckMethodWithEmptyResponseWithParameterAndEmptyResponseParams();
     params.b = b;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _checkMethodWithEmptyResponseMethodWithParameterAndEmptyResponseName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -2131,72 +2210,51 @@ class _CheckMethodWithEmptyResponseStubControl
   String get serviceName => CheckMethodWithEmptyResponse.serviceName;
 
 
-  static CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParams _checkMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParamsFactory() {
-    var result = new CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParams();
-    return result;
+  Function _checkMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _checkMethodWithEmptyResponseMethodWithoutParameterAndEmptyResponseName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static CheckMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParams _checkMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParamsFactory() {
-    var result = new CheckMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParams();
-    return result;
+  Function _checkMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new CheckMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _checkMethodWithEmptyResponseMethodWithParameterAndEmptyResponseName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _checkMethodWithEmptyResponseMethodWithoutParameterAndEmptyResponseName:
-        var response = _impl.withoutParameterAndEmptyResponse(_checkMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _checkMethodWithEmptyResponseMethodWithoutParameterAndEmptyResponseName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _checkMethodWithEmptyResponseMethodWithoutParameterAndEmptyResponseName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.withoutParameterAndEmptyResponse(_checkMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParamsResponder(message.header.requestId));
         break;
       case _checkMethodWithEmptyResponseMethodWithParameterAndEmptyResponseName:
         var params = _CheckMethodWithEmptyResponseWithParameterAndEmptyResponseParams.deserialize(
             message.payload);
-        var response = _impl.withParameterAndEmptyResponse(params.b,_checkMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _checkMethodWithEmptyResponseMethodWithParameterAndEmptyResponseName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _checkMethodWithEmptyResponseMethodWithParameterAndEmptyResponseName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.withParameterAndEmptyResponse(params.b, _checkMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   CheckMethodWithEmptyResponse get impl => _impl;
@@ -2250,25 +2308,28 @@ class CheckMethodWithEmptyResponseStub
   }
 
 
-  dynamic withoutParameterAndEmptyResponse([Function responseFactory = null]) {
-    return impl.withoutParameterAndEmptyResponse(responseFactory);
+  void withoutParameterAndEmptyResponse(void callback()) {
+    return impl.withoutParameterAndEmptyResponse(callback);
   }
-  dynamic withParameterAndEmptyResponse(bool b,[Function responseFactory = null]) {
-    return impl.withParameterAndEmptyResponse(b,responseFactory);
+  void withParameterAndEmptyResponse(bool b,void callback()) {
+    return impl.withParameterAndEmptyResponse(b,callback);
   }
 }
 
 const int _checkNameCollisionMethodWithNameCollisionName = 0;
 
 class _CheckNameCollisionServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class CheckNameCollision {
@@ -2293,7 +2354,7 @@ abstract class CheckNameCollision {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic withNameCollision(bool message,bool response,[Function responseFactory = null]);
+  void withNameCollision(bool message,bool response,void callback(bool message, bool response));
 }
 
 abstract class CheckNameCollisionInterface
@@ -2343,18 +2404,14 @@ class _CheckNameCollisionProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.message , r.response );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -2399,18 +2456,20 @@ class CheckNameCollisionProxy
   }
 
 
-  dynamic withNameCollision(bool message,bool response,[Function responseFactory = null]) {
+  void withNameCollision(bool message,bool response,void callback(bool message, bool response)) {
     if (impl != null) {
-      return new Future(() => impl.withNameCollision(message,response,_CheckNameCollisionStubControl._checkNameCollisionWithNameCollisionResponseParamsFactory));
+      impl.withNameCollision(message,response,callback);
+      return;
     }
     var params = new _CheckNameCollisionWithNameCollisionParams();
     params.message = message;
     params.response = response;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _checkNameCollisionMethodWithNameCollisionName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -2436,18 +2495,25 @@ class _CheckNameCollisionStubControl
   String get serviceName => CheckNameCollision.serviceName;
 
 
-  static CheckNameCollisionWithNameCollisionResponseParams _checkNameCollisionWithNameCollisionResponseParamsFactory(bool message, bool response) {
-    var result = new CheckNameCollisionWithNameCollisionResponseParams();
-    result.message = message;
-    result.response = response;
-    return result;
+  Function _checkNameCollisionWithNameCollisionResponseParamsResponder(
+      int requestId) {
+  return (bool message, bool response) {
+      var result = new CheckNameCollisionWithNameCollisionResponseParams();
+      result.message = message;
+      result.response = response;
+      sendResponse(buildResponseWithId(
+          result,
+          _checkNameCollisionMethodWithNameCollisionName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -2456,30 +2522,12 @@ class _CheckNameCollisionStubControl
       case _checkNameCollisionMethodWithNameCollisionName:
         var params = _CheckNameCollisionWithNameCollisionParams.deserialize(
             message.payload);
-        var response = _impl.withNameCollision(params.message,params.response,_checkNameCollisionWithNameCollisionResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _checkNameCollisionMethodWithNameCollisionName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _checkNameCollisionMethodWithNameCollisionName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.withNameCollision(params.message, params.response, _checkNameCollisionWithNameCollisionResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   CheckNameCollision get impl => _impl;
@@ -2533,22 +2581,25 @@ class CheckNameCollisionStub
   }
 
 
-  dynamic withNameCollision(bool message,bool response,[Function responseFactory = null]) {
-    return impl.withNameCollision(message,response,responseFactory);
+  void withNameCollision(bool message,bool response,void callback(bool message, bool response)) {
+    return impl.withNameCollision(message,response,callback);
   }
 }
 
 const int _checkEnumCapsMethodSetEnumWithInternalAllCapsName = 0;
 
 class _CheckEnumCapsServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class CheckEnumCaps {
@@ -2698,11 +2749,11 @@ class _CheckEnumCapsStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -2717,7 +2768,6 @@ class _CheckEnumCapsStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   CheckEnumCaps get impl => _impl;
@@ -2779,14 +2829,17 @@ class CheckEnumCapsStub
 const int _testInterfaceMethodSomeMessageName = 0;
 
 class _TestInterfaceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class TestInterface {
@@ -2935,11 +2988,11 @@ class _TestInterfaceStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -2952,7 +3005,6 @@ class _TestInterfaceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   TestInterface get impl => _impl;
@@ -3014,14 +3066,17 @@ class TestInterfaceStub
 const int _regression551MethodGetName = 0;
 
 class _Regression551ServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Regression551 {
@@ -3046,7 +3101,7 @@ abstract class Regression551 {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic get(List<String> keyPrefixes,[Function responseFactory = null]);
+  void get(List<String> keyPrefixes,void callback(int result));
 }
 
 abstract class Regression551Interface
@@ -3096,18 +3151,14 @@ class _Regression551ProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.result );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -3152,17 +3203,19 @@ class Regression551Proxy
   }
 
 
-  dynamic get(List<String> keyPrefixes,[Function responseFactory = null]) {
+  void get(List<String> keyPrefixes,void callback(int result)) {
     if (impl != null) {
-      return new Future(() => impl.get(keyPrefixes,_Regression551StubControl._regression551GetResponseParamsFactory));
+      impl.get(keyPrefixes,callback);
+      return;
     }
     var params = new _Regression551GetParams();
     params.keyPrefixes = keyPrefixes;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _regression551MethodGetName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -3188,17 +3241,24 @@ class _Regression551StubControl
   String get serviceName => Regression551.serviceName;
 
 
-  static Regression551GetResponseParams _regression551GetResponseParamsFactory(int result) {
-    var result = new Regression551GetResponseParams();
-    result.result = result;
-    return result;
+  Function _regression551GetResponseParamsResponder(
+      int requestId) {
+  return (int result) {
+      var result = new Regression551GetResponseParams();
+      result.result = result;
+      sendResponse(buildResponseWithId(
+          result,
+          _regression551MethodGetName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -3207,30 +3267,12 @@ class _Regression551StubControl
       case _regression551MethodGetName:
         var params = _Regression551GetParams.deserialize(
             message.payload);
-        var response = _impl.get(params.keyPrefixes,_regression551GetResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _regression551MethodGetName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _regression551MethodGetName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.get(params.keyPrefixes, _regression551GetResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Regression551 get impl => _impl;
@@ -3284,22 +3326,25 @@ class Regression551Stub
   }
 
 
-  dynamic get(List<String> keyPrefixes,[Function responseFactory = null]) {
-    return impl.get(keyPrefixes,responseFactory);
+  void get(List<String> keyPrefixes,void callback(int result)) {
+    return impl.get(keyPrefixes,callback);
   }
 }
 
 const int _serviceNameMethodServiceNameName = 0;
 
 class _ServiceNameServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ServiceName {
@@ -3324,7 +3369,7 @@ abstract class ServiceName {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic serviceName_([Function responseFactory = null]);
+  void serviceName_(void callback(String serviceName_));
 }
 
 abstract class ServiceNameInterface
@@ -3374,18 +3419,14 @@ class _ServiceNameProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.serviceName_ );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -3430,16 +3471,18 @@ class ServiceNameProxy
   }
 
 
-  dynamic serviceName_([Function responseFactory = null]) {
+  void serviceName_(void callback(String serviceName_)) {
     if (impl != null) {
-      return new Future(() => impl.serviceName_(_ServiceNameStubControl._serviceNameServiceNameResponseParamsFactory));
+      impl.serviceName_(callback);
+      return;
     }
     var params = new _ServiceNameServiceNameParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _serviceNameMethodServiceNameName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -3465,47 +3508,36 @@ class _ServiceNameStubControl
   String get serviceName => ServiceName.serviceName;
 
 
-  static ServiceNameServiceNameResponseParams _serviceNameServiceNameResponseParamsFactory(String serviceName_) {
-    var result = new ServiceNameServiceNameResponseParams();
-    result.serviceName_ = serviceName_;
-    return result;
+  Function _serviceNameServiceNameResponseParamsResponder(
+      int requestId) {
+  return (String serviceName_) {
+      var result = new ServiceNameServiceNameResponseParams();
+      result.serviceName_ = serviceName_;
+      sendResponse(buildResponseWithId(
+          result,
+          _serviceNameMethodServiceNameName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _serviceNameMethodServiceNameName:
-        var response = _impl.serviceName_(_serviceNameServiceNameResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _serviceNameMethodServiceNameName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _serviceNameMethodServiceNameName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.serviceName_(_serviceNameServiceNameResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ServiceName get impl => _impl;
@@ -3559,8 +3591,8 @@ class ServiceNameStub
   }
 
 
-  dynamic serviceName_([Function responseFactory = null]) {
-    return impl.serviceName_(responseFactory);
+  void serviceName_(void callback(String serviceName_)) {
+    return impl.serviceName_(callback);
   }
 }
 
@@ -3577,7 +3609,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "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";
+  var serializedRuntimeTypeInfo = "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";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

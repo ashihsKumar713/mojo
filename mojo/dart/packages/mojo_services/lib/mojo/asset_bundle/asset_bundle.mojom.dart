@@ -17,6 +17,10 @@ class _AssetBundleGetAsStreamParams extends bindings.Struct {
 
   _AssetBundleGetAsStreamParams() : super(kVersions.last.size);
 
+  _AssetBundleGetAsStreamParams.init(
+    String this.assetName
+  ) : super(kVersions.last.size);
+
   static _AssetBundleGetAsStreamParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -89,6 +93,10 @@ class AssetBundleGetAsStreamResponseParams extends bindings.Struct {
 
   AssetBundleGetAsStreamResponseParams() : super(kVersions.last.size);
 
+  AssetBundleGetAsStreamResponseParams.init(
+    core.MojoDataPipeConsumer this.assetData
+  ) : super(kVersions.last.size);
+
   static AssetBundleGetAsStreamResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -160,6 +168,11 @@ class _AssetUnpackerUnpackZipStreamParams extends bindings.Struct {
   AssetBundleInterfaceRequest assetBundle = null;
 
   _AssetUnpackerUnpackZipStreamParams() : super(kVersions.last.size);
+
+  _AssetUnpackerUnpackZipStreamParams.init(
+    core.MojoDataPipeConsumer this.zippedAssets, 
+    AssetBundleInterfaceRequest this.assetBundle
+  ) : super(kVersions.last.size);
 
   static _AssetUnpackerUnpackZipStreamParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -238,14 +251,17 @@ class _AssetUnpackerUnpackZipStreamParams extends bindings.Struct {
 const int _assetBundleMethodGetAsStreamName = 0;
 
 class _AssetBundleServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class AssetBundle {
@@ -270,7 +286,7 @@ abstract class AssetBundle {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getAsStream(String assetName,[Function responseFactory = null]);
+  void getAsStream(String assetName,void callback(core.MojoDataPipeConsumer assetData));
 }
 
 abstract class AssetBundleInterface
@@ -320,18 +336,14 @@ class _AssetBundleProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.assetData );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -376,17 +388,19 @@ class AssetBundleProxy
   }
 
 
-  dynamic getAsStream(String assetName,[Function responseFactory = null]) {
+  void getAsStream(String assetName,void callback(core.MojoDataPipeConsumer assetData)) {
     if (impl != null) {
-      return new Future(() => impl.getAsStream(assetName,_AssetBundleStubControl._assetBundleGetAsStreamResponseParamsFactory));
+      impl.getAsStream(assetName,callback);
+      return;
     }
     var params = new _AssetBundleGetAsStreamParams();
     params.assetName = assetName;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _assetBundleMethodGetAsStreamName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -412,17 +426,24 @@ class _AssetBundleStubControl
   String get serviceName => AssetBundle.serviceName;
 
 
-  static AssetBundleGetAsStreamResponseParams _assetBundleGetAsStreamResponseParamsFactory(core.MojoDataPipeConsumer assetData) {
-    var result = new AssetBundleGetAsStreamResponseParams();
-    result.assetData = assetData;
-    return result;
+  Function _assetBundleGetAsStreamResponseParamsResponder(
+      int requestId) {
+  return (core.MojoDataPipeConsumer assetData) {
+      var result = new AssetBundleGetAsStreamResponseParams();
+      result.assetData = assetData;
+      sendResponse(buildResponseWithId(
+          result,
+          _assetBundleMethodGetAsStreamName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -431,30 +452,12 @@ class _AssetBundleStubControl
       case _assetBundleMethodGetAsStreamName:
         var params = _AssetBundleGetAsStreamParams.deserialize(
             message.payload);
-        var response = _impl.getAsStream(params.assetName,_assetBundleGetAsStreamResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _assetBundleMethodGetAsStreamName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _assetBundleMethodGetAsStreamName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getAsStream(params.assetName, _assetBundleGetAsStreamResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   AssetBundle get impl => _impl;
@@ -508,22 +511,25 @@ class AssetBundleStub
   }
 
 
-  dynamic getAsStream(String assetName,[Function responseFactory = null]) {
-    return impl.getAsStream(assetName,responseFactory);
+  void getAsStream(String assetName,void callback(core.MojoDataPipeConsumer assetData)) {
+    return impl.getAsStream(assetName,callback);
   }
 }
 
 const int _assetUnpackerMethodUnpackZipStreamName = 0;
 
 class _AssetUnpackerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class AssetUnpacker {
@@ -674,11 +680,11 @@ class _AssetUnpackerStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -693,7 +699,6 @@ class _AssetUnpackerStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   AssetUnpacker get impl => _impl;

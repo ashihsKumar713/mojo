@@ -19,6 +19,12 @@ class RunMessageParams extends bindings.Struct {
 
   RunMessageParams() : super(kVersions.last.size);
 
+  RunMessageParams.init(
+    int this.reserved0, 
+    int this.reserved1, 
+    QueryVersion this.queryVersion
+  ) : super(kVersions.last.size);
+
   static RunMessageParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -120,6 +126,12 @@ class RunResponseMessageParams extends bindings.Struct {
 
   RunResponseMessageParams() : super(kVersions.last.size);
 
+  RunResponseMessageParams.init(
+    int this.reserved0, 
+    int this.reserved1, 
+    QueryVersionResult this.queryVersionResult
+  ) : super(kVersions.last.size);
+
   static RunResponseMessageParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -218,6 +230,9 @@ class QueryVersion extends bindings.Struct {
 
   QueryVersion() : super(kVersions.last.size);
 
+  QueryVersion.init(
+  ) : super(kVersions.last.size);
+
   static QueryVersion deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -276,6 +291,10 @@ class QueryVersionResult extends bindings.Struct {
   int version = 0;
 
   QueryVersionResult() : super(kVersions.last.size);
+
+  QueryVersionResult.init(
+    int this.version
+  ) : super(kVersions.last.size);
 
   static QueryVersionResult deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -350,6 +369,12 @@ class RunOrClosePipeMessageParams extends bindings.Struct {
   RequireVersion requireVersion = null;
 
   RunOrClosePipeMessageParams() : super(kVersions.last.size);
+
+  RunOrClosePipeMessageParams.init(
+    int this.reserved0, 
+    int this.reserved1, 
+    RequireVersion this.requireVersion
+  ) : super(kVersions.last.size);
 
   static RunOrClosePipeMessageParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -449,6 +474,10 @@ class RequireVersion extends bindings.Struct {
   int version = 0;
 
   RequireVersion() : super(kVersions.last.size);
+
+  RequireVersion.init(
+    int this.version
+  ) : super(kVersions.last.size);
 
   static RequireVersion deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);

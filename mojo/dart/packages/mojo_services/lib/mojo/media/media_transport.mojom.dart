@@ -18,6 +18,11 @@ class MediaPacketRegion extends bindings.Struct {
 
   MediaPacketRegion() : super(kVersions.last.size);
 
+  MediaPacketRegion.init(
+    int this.offset, 
+    int this.length
+  ) : super(kVersions.last.size);
+
   static MediaPacketRegion deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -106,6 +111,13 @@ class MediaPacket extends bindings.Struct {
   List<MediaPacketRegion> extraPayload = null;
 
   MediaPacket() : super(kVersions.last.size);
+
+  MediaPacket.init(
+    int this.pts, 
+    bool this.endOfStream, 
+    MediaPacketRegion this.payload, 
+    List<MediaPacketRegion> this.extraPayload
+  ) : super(kVersions.last.size);
 
   static MediaPacket deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -237,6 +249,10 @@ class _MediaProducerConnectParams extends bindings.Struct {
 
   _MediaProducerConnectParams() : super(kVersions.last.size);
 
+  _MediaProducerConnectParams.init(
+    MediaConsumerInterface this.consumer
+  ) : super(kVersions.last.size);
+
   static _MediaProducerConnectParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -307,6 +323,9 @@ class MediaProducerConnectResponseParams extends bindings.Struct {
 
   MediaProducerConnectResponseParams() : super(kVersions.last.size);
 
+  MediaProducerConnectResponseParams.init(
+  ) : super(kVersions.last.size);
+
   static MediaProducerConnectResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -364,6 +383,9 @@ class _MediaProducerDisconnectParams extends bindings.Struct {
   ];
 
   _MediaProducerDisconnectParams() : super(kVersions.last.size);
+
+  _MediaProducerDisconnectParams.init(
+  ) : super(kVersions.last.size);
 
   static _MediaProducerDisconnectParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -423,6 +445,9 @@ class _MediaPullModeProducerGetBufferParams extends bindings.Struct {
 
   _MediaPullModeProducerGetBufferParams() : super(kVersions.last.size);
 
+  _MediaPullModeProducerGetBufferParams.init(
+  ) : super(kVersions.last.size);
+
   static _MediaPullModeProducerGetBufferParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -481,6 +506,10 @@ class MediaPullModeProducerGetBufferResponseParams extends bindings.Struct {
   core.MojoSharedBuffer buffer = null;
 
   MediaPullModeProducerGetBufferResponseParams() : super(kVersions.last.size);
+
+  MediaPullModeProducerGetBufferResponseParams.init(
+    core.MojoSharedBuffer this.buffer
+  ) : super(kVersions.last.size);
 
   static MediaPullModeProducerGetBufferResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -552,6 +581,10 @@ class _MediaPullModeProducerPullPacketParams extends bindings.Struct {
   MediaPacket toRelease = null;
 
   _MediaPullModeProducerPullPacketParams() : super(kVersions.last.size);
+
+  _MediaPullModeProducerPullPacketParams.init(
+    MediaPacket this.toRelease
+  ) : super(kVersions.last.size);
 
   static _MediaPullModeProducerPullPacketParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -626,6 +659,10 @@ class MediaPullModeProducerPullPacketResponseParams extends bindings.Struct {
 
   MediaPullModeProducerPullPacketResponseParams() : super(kVersions.last.size);
 
+  MediaPullModeProducerPullPacketResponseParams.init(
+    MediaPacket this.packet
+  ) : super(kVersions.last.size);
+
   static MediaPullModeProducerPullPacketResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -698,6 +735,10 @@ class _MediaPullModeProducerReleasePacketParams extends bindings.Struct {
   MediaPacket toRelease = null;
 
   _MediaPullModeProducerReleasePacketParams() : super(kVersions.last.size);
+
+  _MediaPullModeProducerReleasePacketParams.init(
+    MediaPacket this.toRelease
+  ) : super(kVersions.last.size);
 
   static _MediaPullModeProducerReleasePacketParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -772,6 +813,10 @@ class _MediaConsumerSetBufferParams extends bindings.Struct {
 
   _MediaConsumerSetBufferParams() : super(kVersions.last.size);
 
+  _MediaConsumerSetBufferParams.init(
+    core.MojoSharedBuffer this.buffer
+  ) : super(kVersions.last.size);
+
   static _MediaConsumerSetBufferParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -842,6 +887,9 @@ class MediaConsumerSetBufferResponseParams extends bindings.Struct {
 
   MediaConsumerSetBufferResponseParams() : super(kVersions.last.size);
 
+  MediaConsumerSetBufferResponseParams.init(
+  ) : super(kVersions.last.size);
+
   static MediaConsumerSetBufferResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -900,6 +948,10 @@ class _MediaConsumerSendPacketParams extends bindings.Struct {
   MediaPacket packet = null;
 
   _MediaConsumerSendPacketParams() : super(kVersions.last.size);
+
+  _MediaConsumerSendPacketParams.init(
+    MediaPacket this.packet
+  ) : super(kVersions.last.size);
 
   static _MediaConsumerSendPacketParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -973,6 +1025,10 @@ class MediaConsumerSendPacketResponseParams extends bindings.Struct {
   MediaConsumerSendResult result = null;
 
   MediaConsumerSendPacketResponseParams() : super(kVersions.last.size);
+
+  MediaConsumerSendPacketResponseParams.init(
+    MediaConsumerSendResult this.result
+  ) : super(kVersions.last.size);
 
   static MediaConsumerSendPacketResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1049,6 +1105,9 @@ class _MediaConsumerPrimeParams extends bindings.Struct {
 
   _MediaConsumerPrimeParams() : super(kVersions.last.size);
 
+  _MediaConsumerPrimeParams.init(
+  ) : super(kVersions.last.size);
+
   static _MediaConsumerPrimeParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1106,6 +1165,9 @@ class MediaConsumerPrimeResponseParams extends bindings.Struct {
   ];
 
   MediaConsumerPrimeResponseParams() : super(kVersions.last.size);
+
+  MediaConsumerPrimeResponseParams.init(
+  ) : super(kVersions.last.size);
 
   static MediaConsumerPrimeResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1165,6 +1227,9 @@ class _MediaConsumerFlushParams extends bindings.Struct {
 
   _MediaConsumerFlushParams() : super(kVersions.last.size);
 
+  _MediaConsumerFlushParams.init(
+  ) : super(kVersions.last.size);
+
   static _MediaConsumerFlushParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1223,6 +1288,9 @@ class MediaConsumerFlushResponseParams extends bindings.Struct {
 
   MediaConsumerFlushResponseParams() : super(kVersions.last.size);
 
+  MediaConsumerFlushResponseParams.init(
+  ) : super(kVersions.last.size);
+
   static MediaConsumerFlushResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1277,14 +1345,17 @@ const int _mediaProducerMethodConnectName = 0;
 const int _mediaProducerMethodDisconnectName = 1;
 
 class _MediaProducerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class MediaProducer {
@@ -1309,7 +1380,7 @@ abstract class MediaProducer {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic connect(MediaConsumerInterface consumer,[Function responseFactory = null]);
+  void connect(MediaConsumerInterface consumer,void callback());
   void disconnect();
 }
 
@@ -1360,18 +1431,14 @@ class _MediaProducerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1416,17 +1483,19 @@ class MediaProducerProxy
   }
 
 
-  dynamic connect(MediaConsumerInterface consumer,[Function responseFactory = null]) {
+  void connect(MediaConsumerInterface consumer,void callback()) {
     if (impl != null) {
-      return new Future(() => impl.connect(consumer,_MediaProducerStubControl._mediaProducerConnectResponseParamsFactory));
+      impl.connect(consumer,callback);
+      return;
     }
     var params = new _MediaProducerConnectParams();
     params.consumer = consumer;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaProducerMethodConnectName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void disconnect() {
     if (impl != null) {
@@ -1465,16 +1534,23 @@ class _MediaProducerStubControl
   String get serviceName => MediaProducer.serviceName;
 
 
-  static MediaProducerConnectResponseParams _mediaProducerConnectResponseParamsFactory() {
-    var result = new MediaProducerConnectResponseParams();
-    return result;
+  Function _mediaProducerConnectResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new MediaProducerConnectResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaProducerMethodConnectName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1483,24 +1559,7 @@ class _MediaProducerStubControl
       case _mediaProducerMethodConnectName:
         var params = _MediaProducerConnectParams.deserialize(
             message.payload);
-        var response = _impl.connect(params.consumer,_mediaProducerConnectResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaProducerMethodConnectName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaProducerMethodConnectName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.connect(params.consumer, _mediaProducerConnectResponseParamsResponder(message.header.requestId));
         break;
       case _mediaProducerMethodDisconnectName:
         _impl.disconnect();
@@ -1509,7 +1568,6 @@ class _MediaProducerStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   MediaProducer get impl => _impl;
@@ -1563,8 +1621,8 @@ class MediaProducerStub
   }
 
 
-  dynamic connect(MediaConsumerInterface consumer,[Function responseFactory = null]) {
-    return impl.connect(consumer,responseFactory);
+  void connect(MediaConsumerInterface consumer,void callback()) {
+    return impl.connect(consumer,callback);
   }
   void disconnect() {
     return impl.disconnect();
@@ -1576,14 +1634,17 @@ const int _mediaPullModeProducerMethodPullPacketName = 1;
 const int _mediaPullModeProducerMethodReleasePacketName = 2;
 
 class _MediaPullModeProducerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class MediaPullModeProducer {
@@ -1608,8 +1669,8 @@ abstract class MediaPullModeProducer {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getBuffer([Function responseFactory = null]);
-  dynamic pullPacket(MediaPacket toRelease,[Function responseFactory = null]);
+  void getBuffer(void callback(core.MojoSharedBuffer buffer));
+  void pullPacket(MediaPacket toRelease,void callback(MediaPacket packet));
   void releasePacket(MediaPacket toRelease);
 }
 
@@ -1660,18 +1721,14 @@ class _MediaPullModeProducerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.buffer );
         break;
       case _mediaPullModeProducerMethodPullPacketName:
         var r = MediaPullModeProducerPullPacketResponseParams.deserialize(
@@ -1680,18 +1737,14 @@ class _MediaPullModeProducerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.packet );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1736,28 +1789,32 @@ class MediaPullModeProducerProxy
   }
 
 
-  dynamic getBuffer([Function responseFactory = null]) {
+  void getBuffer(void callback(core.MojoSharedBuffer buffer)) {
     if (impl != null) {
-      return new Future(() => impl.getBuffer(_MediaPullModeProducerStubControl._mediaPullModeProducerGetBufferResponseParamsFactory));
+      impl.getBuffer(callback);
+      return;
     }
     var params = new _MediaPullModeProducerGetBufferParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaPullModeProducerMethodGetBufferName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic pullPacket(MediaPacket toRelease,[Function responseFactory = null]) {
+  void pullPacket(MediaPacket toRelease,void callback(MediaPacket packet)) {
     if (impl != null) {
-      return new Future(() => impl.pullPacket(toRelease,_MediaPullModeProducerStubControl._mediaPullModeProducerPullPacketResponseParamsFactory));
+      impl.pullPacket(toRelease,callback);
+      return;
     }
     var params = new _MediaPullModeProducerPullPacketParams();
     params.toRelease = toRelease;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaPullModeProducerMethodPullPacketName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void releasePacket(MediaPacket toRelease) {
     if (impl != null) {
@@ -1797,68 +1854,48 @@ class _MediaPullModeProducerStubControl
   String get serviceName => MediaPullModeProducer.serviceName;
 
 
-  static MediaPullModeProducerGetBufferResponseParams _mediaPullModeProducerGetBufferResponseParamsFactory(core.MojoSharedBuffer buffer) {
-    var result = new MediaPullModeProducerGetBufferResponseParams();
-    result.buffer = buffer;
-    return result;
+  Function _mediaPullModeProducerGetBufferResponseParamsResponder(
+      int requestId) {
+  return (core.MojoSharedBuffer buffer) {
+      var result = new MediaPullModeProducerGetBufferResponseParams();
+      result.buffer = buffer;
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaPullModeProducerMethodGetBufferName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static MediaPullModeProducerPullPacketResponseParams _mediaPullModeProducerPullPacketResponseParamsFactory(MediaPacket packet) {
-    var result = new MediaPullModeProducerPullPacketResponseParams();
-    result.packet = packet;
-    return result;
+  Function _mediaPullModeProducerPullPacketResponseParamsResponder(
+      int requestId) {
+  return (MediaPacket packet) {
+      var result = new MediaPullModeProducerPullPacketResponseParams();
+      result.packet = packet;
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaPullModeProducerMethodPullPacketName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _mediaPullModeProducerMethodGetBufferName:
-        var response = _impl.getBuffer(_mediaPullModeProducerGetBufferResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaPullModeProducerMethodGetBufferName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaPullModeProducerMethodGetBufferName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getBuffer(_mediaPullModeProducerGetBufferResponseParamsResponder(message.header.requestId));
         break;
       case _mediaPullModeProducerMethodPullPacketName:
         var params = _MediaPullModeProducerPullPacketParams.deserialize(
             message.payload);
-        var response = _impl.pullPacket(params.toRelease,_mediaPullModeProducerPullPacketResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaPullModeProducerMethodPullPacketName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaPullModeProducerMethodPullPacketName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.pullPacket(params.toRelease, _mediaPullModeProducerPullPacketResponseParamsResponder(message.header.requestId));
         break;
       case _mediaPullModeProducerMethodReleasePacketName:
         var params = _MediaPullModeProducerReleasePacketParams.deserialize(
@@ -1869,7 +1906,6 @@ class _MediaPullModeProducerStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   MediaPullModeProducer get impl => _impl;
@@ -1923,11 +1959,11 @@ class MediaPullModeProducerStub
   }
 
 
-  dynamic getBuffer([Function responseFactory = null]) {
-    return impl.getBuffer(responseFactory);
+  void getBuffer(void callback(core.MojoSharedBuffer buffer)) {
+    return impl.getBuffer(callback);
   }
-  dynamic pullPacket(MediaPacket toRelease,[Function responseFactory = null]) {
-    return impl.pullPacket(toRelease,responseFactory);
+  void pullPacket(MediaPacket toRelease,void callback(MediaPacket packet)) {
+    return impl.pullPacket(toRelease,callback);
   }
   void releasePacket(MediaPacket toRelease) {
     return impl.releasePacket(toRelease);
@@ -1992,14 +2028,17 @@ class MediaConsumerSendResult extends bindings.MojoEnum {
 }
 
 class _MediaConsumerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class MediaConsumer {
@@ -2024,10 +2063,10 @@ abstract class MediaConsumer {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic setBuffer(core.MojoSharedBuffer buffer,[Function responseFactory = null]);
-  dynamic sendPacket(MediaPacket packet,[Function responseFactory = null]);
-  dynamic prime([Function responseFactory = null]);
-  dynamic flush([Function responseFactory = null]);
+  void setBuffer(core.MojoSharedBuffer buffer,void callback());
+  void sendPacket(MediaPacket packet,void callback(MediaConsumerSendResult result));
+  void prime(void callback());
+  void flush(void callback());
   static const int kMaxBufferLen = 4611686018427387903;
 }
 
@@ -2078,18 +2117,14 @@ class _MediaConsumerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       case _mediaConsumerMethodSendPacketName:
         var r = MediaConsumerSendPacketResponseParams.deserialize(
@@ -2098,18 +2133,14 @@ class _MediaConsumerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.result );
         break;
       case _mediaConsumerMethodPrimeName:
         var r = MediaConsumerPrimeResponseParams.deserialize(
@@ -2118,18 +2149,14 @@ class _MediaConsumerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       case _mediaConsumerMethodFlushName:
         var r = MediaConsumerFlushResponseParams.deserialize(
@@ -2138,18 +2165,14 @@ class _MediaConsumerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -2194,51 +2217,59 @@ class MediaConsumerProxy
   }
 
 
-  dynamic setBuffer(core.MojoSharedBuffer buffer,[Function responseFactory = null]) {
+  void setBuffer(core.MojoSharedBuffer buffer,void callback()) {
     if (impl != null) {
-      return new Future(() => impl.setBuffer(buffer,_MediaConsumerStubControl._mediaConsumerSetBufferResponseParamsFactory));
+      impl.setBuffer(buffer,callback);
+      return;
     }
     var params = new _MediaConsumerSetBufferParams();
     params.buffer = buffer;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaConsumerMethodSetBufferName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic sendPacket(MediaPacket packet,[Function responseFactory = null]) {
+  void sendPacket(MediaPacket packet,void callback(MediaConsumerSendResult result)) {
     if (impl != null) {
-      return new Future(() => impl.sendPacket(packet,_MediaConsumerStubControl._mediaConsumerSendPacketResponseParamsFactory));
+      impl.sendPacket(packet,callback);
+      return;
     }
     var params = new _MediaConsumerSendPacketParams();
     params.packet = packet;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaConsumerMethodSendPacketName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic prime([Function responseFactory = null]) {
+  void prime(void callback()) {
     if (impl != null) {
-      return new Future(() => impl.prime(_MediaConsumerStubControl._mediaConsumerPrimeResponseParamsFactory));
+      impl.prime(callback);
+      return;
     }
     var params = new _MediaConsumerPrimeParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaConsumerMethodPrimeName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic flush([Function responseFactory = null]) {
+  void flush(void callback()) {
     if (impl != null) {
-      return new Future(() => impl.flush(_MediaConsumerStubControl._mediaConsumerFlushResponseParamsFactory));
+      impl.flush(callback);
+      return;
     }
     var params = new _MediaConsumerFlushParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaConsumerMethodFlushName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -2264,29 +2295,57 @@ class _MediaConsumerStubControl
   String get serviceName => MediaConsumer.serviceName;
 
 
-  static MediaConsumerSetBufferResponseParams _mediaConsumerSetBufferResponseParamsFactory() {
-    var result = new MediaConsumerSetBufferResponseParams();
-    return result;
+  Function _mediaConsumerSetBufferResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new MediaConsumerSetBufferResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaConsumerMethodSetBufferName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static MediaConsumerSendPacketResponseParams _mediaConsumerSendPacketResponseParamsFactory(MediaConsumerSendResult result) {
-    var result = new MediaConsumerSendPacketResponseParams();
-    result.result = result;
-    return result;
+  Function _mediaConsumerSendPacketResponseParamsResponder(
+      int requestId) {
+  return (MediaConsumerSendResult result) {
+      var result = new MediaConsumerSendPacketResponseParams();
+      result.result = result;
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaConsumerMethodSendPacketName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static MediaConsumerPrimeResponseParams _mediaConsumerPrimeResponseParamsFactory() {
-    var result = new MediaConsumerPrimeResponseParams();
-    return result;
+  Function _mediaConsumerPrimeResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new MediaConsumerPrimeResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaConsumerMethodPrimeName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static MediaConsumerFlushResponseParams _mediaConsumerFlushResponseParamsFactory() {
-    var result = new MediaConsumerFlushResponseParams();
-    return result;
+  Function _mediaConsumerFlushResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new MediaConsumerFlushResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaConsumerMethodFlushName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -2295,92 +2354,23 @@ class _MediaConsumerStubControl
       case _mediaConsumerMethodSetBufferName:
         var params = _MediaConsumerSetBufferParams.deserialize(
             message.payload);
-        var response = _impl.setBuffer(params.buffer,_mediaConsumerSetBufferResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaConsumerMethodSetBufferName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaConsumerMethodSetBufferName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.setBuffer(params.buffer, _mediaConsumerSetBufferResponseParamsResponder(message.header.requestId));
         break;
       case _mediaConsumerMethodSendPacketName:
         var params = _MediaConsumerSendPacketParams.deserialize(
             message.payload);
-        var response = _impl.sendPacket(params.packet,_mediaConsumerSendPacketResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaConsumerMethodSendPacketName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaConsumerMethodSendPacketName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.sendPacket(params.packet, _mediaConsumerSendPacketResponseParamsResponder(message.header.requestId));
         break;
       case _mediaConsumerMethodPrimeName:
-        var response = _impl.prime(_mediaConsumerPrimeResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaConsumerMethodPrimeName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaConsumerMethodPrimeName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.prime(_mediaConsumerPrimeResponseParamsResponder(message.header.requestId));
         break;
       case _mediaConsumerMethodFlushName:
-        var response = _impl.flush(_mediaConsumerFlushResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaConsumerMethodFlushName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaConsumerMethodFlushName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.flush(_mediaConsumerFlushResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   MediaConsumer get impl => _impl;
@@ -2434,17 +2424,17 @@ class MediaConsumerStub
   }
 
 
-  dynamic setBuffer(core.MojoSharedBuffer buffer,[Function responseFactory = null]) {
-    return impl.setBuffer(buffer,responseFactory);
+  void setBuffer(core.MojoSharedBuffer buffer,void callback()) {
+    return impl.setBuffer(buffer,callback);
   }
-  dynamic sendPacket(MediaPacket packet,[Function responseFactory = null]) {
-    return impl.sendPacket(packet,responseFactory);
+  void sendPacket(MediaPacket packet,void callback(MediaConsumerSendResult result)) {
+    return impl.sendPacket(packet,callback);
   }
-  dynamic prime([Function responseFactory = null]) {
-    return impl.prime(responseFactory);
+  void prime(void callback()) {
+    return impl.prime(callback);
   }
-  dynamic flush([Function responseFactory = null]) {
-    return impl.flush(responseFactory);
+  void flush(void callback()) {
+    return impl.flush(callback);
   }
 }
 

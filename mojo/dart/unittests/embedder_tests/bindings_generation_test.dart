@@ -36,54 +36,47 @@ class ProviderImpl implements sample.Provider {
     _stub = new sample.ProviderStub.fromEndpoint(endpoint, this);
   }
 
-  echoString(String a, Function responseFactory) =>
-      new Future.value(responseFactory(a));
+  void echoString(String a, Function response) {
+    response(a);
+  }
 
-  echoStrings(String a, String b, Function responseFactory) =>
-      new Future.value(responseFactory(a, b));
+  void echoStrings(String a, String b, Function response) {
+    response(a, b);
+  }
 
-  echoMessagePipeHandle(core.MojoHandle a, Function responseFactory) =>
-      new Future.value(responseFactory(a));
+  void echoMessagePipeHandle(core.MojoHandle a, Function responseFactory) {
+    response(a);
+  }
 
-  echoEnum(sample.Enum a, Function responseFactory) =>
-      new Future.value(responseFactory(a));
+  void echoEnum(sample.Enum a, Function response) {
+    response(a);
+  }
 }
 
 void providerIsolate(core.MojoMessagePipeEndpoint endpoint) {
   new ProviderImpl(endpoint);
 }
 
-Future<bool> testCallResponse() {
-  var pipe = new core.MojoMessagePipe();
-  var client = new sample.ProviderProxy.fromEndpoint(pipe.endpoints[0]);
-  var c = new Completer();
-  Isolate.spawn(providerIsolate, pipe.endpoints[1]).then((_) {
-    client.echoString("hello!").then((echoStringResponse) {
-      Expect.equals("hello!", echoStringResponse.a);
-    }).then((_) {
-      client.echoStrings("hello", "mojo!").then((echoStringsResponse) {
-        Expect.equals("hello", echoStringsResponse.a);
-        Expect.equals("mojo!", echoStringsResponse.b);
-        client.close().then((_) {
-          c.complete(true);
-        });
-      });
-    });
-  });
-  return c.future;
-}
 
 Future testAwaitCallResponse() async {
   var pipe = new core.MojoMessagePipe();
   var client = new sample.ProviderProxy.fromEndpoint(pipe.endpoints[0]);
   var isolate = await Isolate.spawn(providerIsolate, pipe.endpoints[1]);
 
-  var echoStringResponse = await client.echoString("hello!");
-  Expect.equals("hello!", echoStringResponse.a);
+  var c = new Completer();
+  client.echoString("hello!", (String response) {
+    c.complete(response);
+  });
+  var echoStringResponse = await client.responseOrError(c.future);
+  Expect.equals("hello!", echoStringResponse);
 
-  var echoStringsResponse = await client.echoStrings("hello", "mojo!");
-  Expect.equals("hello", echoStringsResponse.a);
-  Expect.equals("mojo!", echoStringsResponse.b);
+  c = new Completer();
+  client.echoStrings("hello", "mojo!", (String r1, String r2) {
+    c.complete([r1, r2]);
+  });
+  var echoStringsResponse = await client.responseOrError(c.future);
+  Expect.equals("hello", echoStringsResponse[0]);
+  Expect.equals("mojo!", echoStringsResponse[1]);
 
   await client.close();
 }
@@ -334,8 +327,9 @@ class Regression551Impl implements regression.Regression551 {
     _stub = new regression.Regression551Stub.fromEndpoint(endpoint, this);
   }
 
-  dynamic get(List<String> keyPrefixes, Function responseFactory) =>
-    responseFactory(0);
+  void get(List<String> keyPrefixes, Function response) {
+    response(0);
+  }
 }
 
 void regression551Isolate(core.MojoMessagePipeEndpoint endpoint) {
@@ -347,8 +341,8 @@ Future<bool> testRegression551() {
   var client = new regression.Regression551Proxy.fromEndpoint(pipe.endpoints[0]);
   var c = new Completer();
   Isolate.spawn(regression551Isolate, pipe.endpoints[1]).then((_) {
-    client.get(["hello!"]).then((response) {
-      Expect.equals(0, response.result);
+    client.get(["hello!"], (int response) {
+      Expect.equals(0, response);
       client.close().then((_) {
         c.complete(true);
       });
@@ -364,8 +358,9 @@ class ServiceNameImpl implements regression.ServiceName {
     _stub = new regression.ServiceNameStub.fromEndpoint(endpoint, this);
   }
 
-  dynamic serviceName_(Function responseFactory) =>
-      responseFactory(regression.ServiceName.serviceName);
+  void serviceName_(Function response) {
+    response(regression.ServiceName.serviceName);
+  }
 }
 
 void serviceNameIsolate(core.MojoMessagePipeEndpoint endpoint) {
@@ -377,8 +372,8 @@ Future<bool> testServiceName() {
   var client = new regression.ServiceNameProxy.fromEndpoint(pipe.endpoints[0]);
   var c = new Completer();
   Isolate.spawn(serviceNameIsolate, pipe.endpoints[1]).then((_) {
-    client.serviceName_().then((response) {
-      Expect.equals(ServiceName.serviceName, response.serviceName_);
+    client.serviceName_((String response) {
+      Expect.equals(ServiceName.serviceName, response);
       client.close().then((_) {
         c.complete(true);
       });
@@ -665,18 +660,24 @@ _checkServiceDescription(service_describer.ServiceDescription sd,
     String interfaceID, String shortName, String fullIdentifier,
     Map<int, String> methodMap) {
   // Check the top level interface, which must pass _checkMojomInterface.
-  Function identity = (v) => v;
-  mojom_types.MojomInterface mi = sd.getTopLevelInterface(identity);
+  Object sdValue;
+  Function setSdValue = (v) {
+    sdValue = v;
+  };
+  sd.getTopLevelInterface(setSdValue);
+  mojom_types.MojomInterface mi = sdValue;
   _checkMojomInterface(mi, shortName, fullIdentifier, methodMap);
 
   // Try out sd.GetTypeDefinition with the given interfaceID.
-  mojom_types.UserDefinedType udt = sd.getTypeDefinition(interfaceID, identity);
+  sd.getTypeDefinition(interfaceID, setSdValue);
+  mojom_types.UserDefinedType udt = sdValue;
   Expect.isNotNull(udt.interfaceType);
   _checkMojomInterface(udt.interfaceType, shortName, fullIdentifier, methodMap);
 
   // Check all type definitions. Reflect-wise, all data inside should match the
   // imported Descriptor.
-  var actualDescriptions = sd.getAllTypeDefinitions(identity);
+  sd.getAllTypeDefinitions(setSdValue);
+  var actualDescriptions = sdValue;
   var expectedDescriptions = validation.getAllMojomTypeDefinitions();
   Expect.mapEquals(actualDescriptions, expectedDescriptions);
 }
@@ -750,7 +751,6 @@ main() async {
   testCamelCase();
   testSerializeErrorMessage();
   await testEnums();
-  await testCallResponse();
   await testAwaitCallResponse();
   await runOnClosedTest();
   await testRegression551();

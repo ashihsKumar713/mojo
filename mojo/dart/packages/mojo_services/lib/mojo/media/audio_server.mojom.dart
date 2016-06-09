@@ -18,6 +18,10 @@ class _AudioServerCreateTrackParams extends bindings.Struct {
 
   _AudioServerCreateTrackParams() : super(kVersions.last.size);
 
+  _AudioServerCreateTrackParams.init(
+    audio_track_mojom.AudioTrackInterfaceRequest this.track
+  ) : super(kVersions.last.size);
+
   static _AudioServerCreateTrackParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -83,14 +87,17 @@ class _AudioServerCreateTrackParams extends bindings.Struct {
 const int _audioServerMethodCreateTrackName = 0;
 
 class _AudioServerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class AudioServer {
@@ -240,11 +247,11 @@ class _AudioServerStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -259,7 +266,6 @@ class _AudioServerStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   AudioServer get impl => _impl;

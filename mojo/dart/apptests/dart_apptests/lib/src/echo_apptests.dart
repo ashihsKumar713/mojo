@@ -13,13 +13,17 @@ import 'package:mojo/core.dart';
 import 'package:_mojo_for_test_only/test/echo_service.mojom.dart';
 
 class EchoServiceMock implements EchoService {
-  dynamic echoString(String value, [Function responseFactory])
-      => responseFactory(value);
+  void echoString(String value, void callback(String value)) {
+    callback(value);
+  }
 
-  dynamic delayedEchoString(String value,int millis, [Function responseFactory])
-      => new Future.delayed(new Duration(milliseconds : millis),
-                            () => responseFactory(value));
+  void delayedEchoString(String value, int millis,
+                         void callback(String value)) {
+    new Timer(new Duration(milliseconds : millis), () => callback(value));
+  }
+
   void swap() {}
+
   void quit() {}
 }
 
@@ -28,11 +32,22 @@ echoApptests(Application application, String url) {
     test('String', () async {
       var echo = EchoService.connectToService(application, "mojo:dart_echo");
 
-      var v = await echo.echoString("foo");
-      expect(v.value, equals("foo"));
+      var c = new Completer();
+      echo.echoString("foo", (String value) {
+        c.complete(value);
+      });
+      expect(await echo.responseOrError(c.future), equals("foo"));
 
-      var q = await echo.echoString("quit");
-      expect(q.value, equals("quit"));
+      c = new Completer();
+      echo.echoString("quit", (String value) {
+        fail("unreachable");
+      });
+      try {
+        await echo.responseOrError(c.future);
+        fail("unreachable");
+      } catch (e) {
+        expect(e is ProxyError, isTrue);
+      }
 
       await echo.close();
     });
@@ -40,11 +55,22 @@ echoApptests(Application application, String url) {
     test('Empty String', () async {
       var echo = EchoService.connectToService(application, "mojo:dart_echo");
 
-      var v = await echo.echoString("");
-      expect(v.value, equals(""));
+      var c = new Completer();
+      echo.echoString("", (String value) {
+        c.complete(value);
+      });
+      expect(await echo.responseOrError(c.future), equals(""));
 
-      var q = await echo.echoString("quit");
-      expect(q.value, equals("quit"));
+      c = new Completer();
+      echo.echoString("quit", (String value) {
+        fail("unreachable");
+      });
+      try {
+        await echo.responseOrError(c.future);
+        fail("unreachable");
+      } catch (e) {
+        expect(e is ProxyError, isTrue);
+      }
 
       await echo.close();
     });
@@ -52,11 +78,22 @@ echoApptests(Application application, String url) {
     test('Null String', () async {
       var echo = EchoService.connectToService(application, "mojo:dart_echo");
 
-      var v = await echo.echoString(null);
-      expect(v.value, equals(null));
+      var c = new Completer();
+      echo.echoString(null, (String value) {
+        c.complete(value);
+      });
+      expect(await echo.responseOrError(c.future), equals(null));
 
-      var q = await echo.echoString("quit");
-      expect(q.value, equals("quit"));
+      c = new Completer();
+      echo.echoString("quit", (String value) {
+        fail("unreachable");
+      });
+      try {
+        await echo.responseOrError(c.future);
+        fail("unreachable");
+      } catch (e) {
+        expect(e is ProxyError, isTrue);
+      }
 
       await echo.close();
     });
@@ -66,27 +103,43 @@ echoApptests(Application application, String url) {
 
       var milliseconds = 100;
       var watch = new Stopwatch()..start();
-      var v = await echo.delayedEchoString("foo", milliseconds);
-      var elapsed = watch.elapsedMilliseconds;
-      expect(v.value, equals("foo"));
-      expect(elapsed, greaterThanOrEqualTo(milliseconds));
+      var c = new Completer();
+      echo.delayedEchoString("foo", milliseconds, (String value) {
+        var elapsed = watch.elapsedMilliseconds;
+        c.complete([value, elapsed]);
+      });
+      var result = await echo.responseOrError(c.future);
+      expect(result[0], equals("foo"));
+      expect(result[1], greaterThanOrEqualTo(milliseconds));
 
-      var q = await echo.echoString("quit");
-      expect(q.value, equals("quit"));
+      c = new Completer();
+      echo.echoString("quit", (String value) {
+        fail("unreachable");
+      });
+      try {
+        await echo.responseOrError(c.future);
+        fail("unreachable");
+      } catch (e) {
+        expect(e is ProxyError, isTrue);
+      }
 
       await echo.close();
     });
 
-    test('Delayed Close', () {
+    test('Delayed Close', () async {
       var echo = EchoService.connectToService(application, "mojo:dart_echo");
 
       var milliseconds = 100;
-      echo.responseOrError(echo.delayedEchoString(
-          "quit", milliseconds)).then((result) {
-        fail('This future should not complete.');
-      }, onError: (e) {
-        expect(e is ProxyError, isTrue);
+      var c = new Completer();
+      echo.delayedEchoString("quit", milliseconds, (String value) {
+        fail("unreachable");
       });
+      try {
+        await echo.responseOrError(c.future);
+        fail("unreachable");
+      } catch (e) {
+        expect(e is ProxyError, isTrue);
+      };
 
       return new Future.delayed(
           new Duration(milliseconds: 10), () => echo.close());
@@ -96,8 +149,11 @@ echoApptests(Application application, String url) {
       var echo = EchoService.connectToService(application, "mojo:dart_echo");
 
       for (int i = 0; i < 10; i++) {
-        var v = await echo.responseOrError(echo.echoString("foo"));
-        expect(v.value, equals("foo"));
+        var c = new Completer();
+        echo.echoString("foo", (String value) {
+          c.complete(value);
+        });
+        expect(await echo.responseOrError(c.future), equals("foo"));
       }
 
       echo.ctrl.errorFuture.then((e) {
@@ -110,12 +166,12 @@ echoApptests(Application application, String url) {
       expect(echo.ctrl.isBound, isTrue);
 
       for (int i = 0; i < 10; i++) {
-        var v = await echo.responseOrError(echo.echoString("foo"));
-        expect(v.value, equals("foo"));
+        var c = new Completer();
+        echo.echoString("foo", (String value) {
+          c.complete(value);
+        });
+        expect(await echo.responseOrError(c.future), equals("foo"));
       }
-
-      var q = await echo.responseOrError(echo.echoString("quit"));
-      expect(q.value, equals("quit"));
 
       await echo.close();
     });
@@ -125,12 +181,11 @@ echoApptests(Application application, String url) {
 
       List<Future> futures = [];
       for (int i = 0; i < 100; i++) {
-        var f = echo.responseOrError(echo.echoString("foo")).then((r) {
-          expect(r.value, equals("foo"));
-        }, onError: (e) {
-          fail('There should be no errors');
+        var c = new Completer();
+        echo.echoString("foo", (String value) {
+          c.complete(value);
         });
-        futures.add(f);
+        futures.add(echo.responseOrError(c.future));
       }
       return Future.wait(futures).whenComplete(() => echo.close());
     });
@@ -141,9 +196,12 @@ echoApptests(Application application, String url) {
       List<Future> futures = [];
       var milliseconds = 100;
       for (int i = 0; i < 100; i++) {
-        var f = echo.responseOrError(
-            echo.delayedEchoString("foo", milliseconds)).then((_) {
-          fail('This call should fail');
+        var c = new Completer();
+        echo.delayedEchoString("foo", milliseconds, (String value) {
+          fail("unreachable");
+        });
+        var f = echo.responseOrError(c.future).then((_) {
+          fail("unreachable");
         }, onError: (e) {
           expect(e is ProxyError, isTrue);
         });
@@ -156,14 +214,17 @@ echoApptests(Application application, String url) {
       var echo = EchoService.connectToService(application, "mojo:dart_echo");
 
       // Do a normal call.
-      var v = await echo.echoString("foo");
-      expect(v.value, equals("foo"));
+      var c = new Completer();
+      echo.echoString("foo", (String value) {
+        c.complete(value);
+      });
+      expect(await echo.responseOrError(c.future), equals("foo"));
 
       // Close the proxy.
       await echo.close();
 
       // Try to do another call, which should not return.
-      echo.echoString("foo").then((_) {
+      echo.echoString("foo", (_) {
         fail('This should be unreachable');
       });
     });
@@ -172,16 +233,23 @@ echoApptests(Application application, String url) {
       var echo = EchoService.connectToService(application, "mojo:dart_echo");
 
       // Do a normal call.
-      var v = await echo.echoString("foo");
-      expect(v.value, equals("foo"));
+      var c = new Completer();
+      echo.echoString("foo", (String value) {
+        c.complete(value);
+      });
+      expect(await echo.responseOrError(c.future), equals("foo"));
 
       // Close the proxy.
       await echo.close();
 
       // Try to do another call, which should fail.
       bool caughtException = false;
+      c = new Completer();
+      echo.echoString("foo", (String value) {
+        fail("unreachable");
+      });
       try {
-        v = await echo.responseOrError(echo.echoString("foo"));
+        await echo.responseOrError(c.future);
         fail('This should be unreachable');
       } on ProxyError catch (e) {
         caughtException = true;
@@ -193,26 +261,37 @@ echoApptests(Application application, String url) {
       var echo = EchoService.connectToService(application, "mojo:dart_echo");
 
       // Do a normal call.
-      var v = await echo.echoString("foo");
-      expect(v.value, equals("foo"));
+      var c = new Completer();
+      echo.echoString("foo", (String value) {
+        c.complete(value);
+      });
+      expect(await echo.responseOrError(c.future), equals("foo"));
 
       // Close the proxy.
       await echo.close();
 
       // Try to do another call, which should fail.
       bool caughtException = false;
+      c = new Completer();
+      echo.echoString("foo", (String value) {
+        fail("unreachable");
+      });
       try {
-        v = await echo.responseOrError(echo.echoString("foo"));
+        await echo.responseOrError(c.future);
         fail('This should be unreachable');
       } on ProxyError catch (e) {
         caughtException = true;
       }
       expect(caughtException, isTrue);
 
-      // Make sure we can catch an error more than once.
+      // Try to do another call, which should fail.
       caughtException = false;
+      c = new Completer();
+      echo.echoString("foo", (String value) {
+        fail("unreachable");
+      });
       try {
-        v = await echo.responseOrError(echo.echoString("foo"));
+        await echo.responseOrError(c.future);
         fail('This should be unreachable');
       } on ProxyError catch (e) {
         caughtException = true;
@@ -224,21 +303,31 @@ echoApptests(Application application, String url) {
       var echo = EchoService.connectToService(application, "mojo:dart_echo");
 
       // Do a normal call.
-      var v = await echo.echoString("foo");
-      expect(v.value, equals("foo"));
+      var c = new Completer();
+      echo.echoString("foo", (String value) {
+        c.complete(value);
+      });
+      expect(await echo.responseOrError(c.future), equals("foo"));
 
       // Close the proxy.
       await echo.close();
 
       // Queue up two calls after the close, and make sure they both fail.
-      var f1 = echo.responseOrError(echo.echoString("foo")).then((_) {
-        fail('This should be unreachable');
+      var c1 = new Completer();
+      echo.echoString("foo", (String value) {
+        fail("unreachable");
+      });
+      var c2 = new Completer();
+      echo.echoString("foo", (String value) {
+        fail("unreachable");
+      });
+      var f1 = echo.responseOrError(c1.future).then((_) {
+        fail("unreachable");
       }, onError: (e) {
         expect(e is ProxyError, isTrue);
       });
-
-      var f2 = echo.responseOrError(echo.echoString("foo")).then((_) {
-        fail('This should be unreachable');
+      var f2 = echo.responseOrError(c2.future).then((_) {
+        fail("unreachable");
       }, onError: (e) {
         expect(e is ProxyError, isTrue);
       });
@@ -246,28 +335,63 @@ echoApptests(Application application, String url) {
       return Future.wait([f1, f2]);
     });
 
-    test('Unbind, close', () async {
+    test('Unbind, Rebind, Close', () async {
       var echo = EchoService.connectToService(application, "mojo:dart_echo");
 
-      var r = await echo.responseOrError(echo.echoString("foo"));
-      expect(r.value, equals("foo"));
+      // Do a normal call.
+      var c = new Completer();
+      echo.echoString("foo", (String value) {
+        c.complete(value);
+      });
+      expect(await echo.responseOrError(c.future), equals("foo"));
 
       var endpoint = echo.ctrl.unbind();
+      echo.ctrl.bind(endpoint);
+
+      c = new Completer();
+      echo.echoString("quit", (String value) {
+        fail("unreachable");
+      });
+      try {
+        await echo.responseOrError(c.future);
+        fail("unreachable");
+      } catch (e) {
+        expect(e is ProxyError, isTrue);
+      }
+
       await echo.close();
-      endpoint.close();
     });
 
     test('Unbind, rebind to same', () async {
       var echo = EchoService.connectToService(application, "mojo:dart_echo");
 
-      var r = await echo.responseOrError(echo.echoString("foo"));
-      expect(r.value, equals("foo"));
+      // Do a normal call.
+      var c = new Completer();
+      echo.echoString("foo", (String value) {
+        c.complete(value);
+      });
+      expect(await echo.responseOrError(c.future), equals("foo"));
 
       var endpoint = echo.ctrl.unbind();
       echo.ctrl.bind(endpoint);
 
-      r = await echo.responseOrError(echo.echoString("foo"));
-      expect(r.value, equals("foo"));
+      // Do a normal call.
+      c = new Completer();
+      echo.echoString("foo", (String value) {
+        c.complete(value);
+      });
+      expect(await echo.responseOrError(c.future), equals("foo"));
+
+      c = new Completer();
+      echo.echoString("quit", (String value) {
+        fail("unreachable");
+      });
+      try {
+        await echo.responseOrError(c.future);
+        fail("unreachable");
+      } catch (e) {
+        expect(e is ProxyError, isTrue);
+      }
 
       await echo.close();
     });
@@ -275,15 +399,22 @@ echoApptests(Application application, String url) {
     test('Unbind, rebind to different', () async {
       var echo = EchoService.connectToService(application, "mojo:dart_echo");
 
-      var r = await echo.responseOrError(echo.echoString("foo"));
-      expect(r.value, equals("foo"));
+      // Do a normal call.
+      var c = new Completer();
+      echo.echoString("foo", (String value) {
+        c.complete(value);
+      });
+      expect(await echo.responseOrError(c.future), equals("foo"));
 
       var endpoint = echo.ctrl.unbind();
       var differentEchoProxy = new EchoServiceProxy.fromEndpoint(endpoint);
 
-      r = await differentEchoProxy.responseOrError(
-          differentEchoProxy.echoString("foo"));
-      expect(r.value, equals("foo"));
+      // Do a normal call.
+      c = new Completer();
+      differentEchoProxy.echoString("foo", (String value) {
+        c.complete(value);
+      });
+      expect(await differentEchoProxy.responseOrError(c.future), equals("foo"));
 
       await differentEchoProxy.close();
     });
@@ -291,16 +422,23 @@ echoApptests(Application application, String url) {
     test('Unbind, rebind to different, close original', () async {
       var echo = EchoService.connectToService(application, "mojo:dart_echo");
 
-      var r = await echo.responseOrError(echo.echoString("foo"));
-      expect(r.value, equals("foo"));
+      // Do a normal call.
+      var c = new Completer();
+      echo.echoString("foo", (String value) {
+        c.complete(value);
+      });
+      expect(await echo.responseOrError(c.future), equals("foo"));
 
       var endpoint = echo.ctrl.unbind();
       var differentEchoProxy = new EchoServiceProxy.fromEndpoint(endpoint);
       await echo.close();
 
-      r = await differentEchoProxy.responseOrError(
-          differentEchoProxy.echoString("foo"));
-      expect(r.value, equals("foo"));
+      // Do a normal call.
+      c = new Completer();
+      differentEchoProxy.echoString("foo", (String value) {
+        c.complete(value);
+      });
+      expect(await differentEchoProxy.responseOrError(c.future), equals("foo"));
 
       await differentEchoProxy.close();
     });
@@ -308,8 +446,11 @@ echoApptests(Application application, String url) {
     test('Mock', () async {
       var echo = new EchoServiceInterface.fromMock(new EchoServiceMock());
 
-      var r = await echo.echoString("foo");
-      expect(r.value, equals("foo"));
+      var c = new Completer();
+      echo.echoString("foo", (String value) {
+        c.complete(value);
+      });
+      expect(await echo.responseOrError(c.future), equals("foo"));
 
       await echo.close();
     });

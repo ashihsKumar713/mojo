@@ -33,7 +33,7 @@ NetAddress makeIPv4NetAddress(List<int> addr, int port) {
 }
 
 void fputs(files.File f, String s) {
-  ignoreFuture(f.write((s + '\n').codeUnits, 0, files.Whence.fromCurrent));
+  f.write((s + '\n').codeUnits, 0, files.Whence.fromCurrent, (e, n) {});
 }
 
 // Connects the terminal |File| and the socket.
@@ -65,7 +65,11 @@ class Connector {
 
       NetAddress local_address = makeIPv4NetAddress([0, 0, 0, 0], 0);
       var boundSocket = new TcpBoundSocketProxy.unbound();
-      await networkService.createTcpBoundSocket(local_address, boundSocket);
+      var c = new Completer();
+      networkService.createTcpBoundSocket(local_address, boundSocket, (_) {
+        c.complete(null);
+      });
+      await networkService.responseOrError(c.future);
       await networkService.close();
 
       var sendDataPipe = new MojoDataPipe();
@@ -73,8 +77,12 @@ class Connector {
       var receiveDataPipe = new MojoDataPipe();
       _socketReceiver = receiveDataPipe.consumer;
       _socket = new TcpConnectedSocketProxy.unbound();
-      await boundSocket.connect(remote_address, sendDataPipe.consumer,
-          receiveDataPipe.producer, _socket);
+      c = new Completer();
+      boundSocket.connect(remote_address, sendDataPipe.consumer,
+          receiveDataPipe.producer, _socket, (_) {
+        c.complete(null);
+      });
+      await boundSocket.responseOrError(c.future);
       await boundSocket.close();
 
       // Set up reading from the terminal.
@@ -91,34 +99,38 @@ class Connector {
 
   void _startReadingFromTerminal() {
     // TODO(vtl): Do we have to do something on error?
-    _terminal
-        .read(_writeBuffer.lengthInBytes, 0, files.Whence.fromCurrent)
-        .then(_onReadFromTerminal)
-        .catchError((e) {
+    var c = new Completer();
+    _terminal.read(
+        _writeBuffer.lengthInBytes, 0,
+        files.Whence.fromCurrent, (error, bytes) {
+      _onReadFromTerminal(error, bytes);
+      c.complete(null);
+    });
+    _terminal.responseOrError(c.future).catchError((_) {
       _shutDown();
     });
   }
 
-  void _onReadFromTerminal(files.FileReadResponseParams p) {
-    if (p.error != files.Error.ok) {
+  void _onReadFromTerminal(files.Error error, List<int> bytesRead) {
+    if (error != files.Error.ok) {
       // TODO(vtl): Do terminal errors.
       return;
     }
 
     // TODO(vtl): Verify that |bytesRead.length| is within the expected range.
-    for (var i = 0, j = 0; i < p.bytesRead.length; i++, j++) {
+    for (var i = 0, j = 0; i < bytesRead.length; i++, j++) {
       // TODO(vtl): Temporary hack: Translate \r to \n, since we don't have
       // built-in support for that.
-      if (p.bytesRead[i] == 13) {
+      if (bytesRead[i] == 13) {
         _writeBuffer.setUint8(i, 10);
       } else {
-        _writeBuffer.setUint8(i, p.bytesRead[i]);
+        _writeBuffer.setUint8(i, bytesRead[i]);
       }
     }
 
     // TODO(vtl): Handle the send data pipe being full (or closed).
     _socketSender
-        .write(new ByteData.view(_writeBuffer.buffer, 0, p.bytesRead.length));
+        .write(new ByteData.view(_writeBuffer.buffer, 0, bytesRead.length));
 
     _startReadingFromTerminal();
   }
@@ -129,10 +141,12 @@ class Connector {
       var numBytesRead = _socketReceiver.read(_readBuffer);
       if (_socketReceiver.status == MojoResult.kOk) {
         assert(numBytesRead > 0);
-        _terminal
-            .write(_readBuffer.buffer.asUint8List(0, numBytesRead), 0,
-                files.Whence.fromCurrent)
-            .catchError((e) {
+        var c = new Completer();
+        _terminal.write(_readBuffer.buffer.asUint8List(0, numBytesRead), 0,
+            files.Whence.fromCurrent, (e, n) {
+          c.complete(null);
+        });
+        _terminal.responseOrError(c.future).catchError((_) {
           _shutDown();
         });
         _socketReceiverEventSubscription.enableReadEvents();

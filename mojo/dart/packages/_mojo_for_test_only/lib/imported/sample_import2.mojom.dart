@@ -74,6 +74,11 @@ class Size extends bindings.Struct {
 
   Size() : super(kVersions.last.size);
 
+  Size.init(
+    int this.width, 
+    int this.height
+  ) : super(kVersions.last.size);
+
   static Size deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -161,6 +166,13 @@ class Thing extends bindings.Struct {
   Size size = null;
 
   Thing() : super(kVersions.last.size);
+
+  Thing.init(
+    sample_import_mojom.Shape this.shape, 
+    Color this.color, 
+    sample_import_mojom.Point this.location, 
+    Size this.size
+  ) : super(kVersions.last.size);
 
   static Thing deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -287,7 +299,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/8yXzW7TQBCA101CgwolQKGhIMixp7jiFHGihIhIrVBFcqk4VKmz1Itib2S7QuIJ+gg8HsceeQNYZ2fAGXvtNEpMVxpNnbV3d77Z+WmT6dEAfQCa/o66TjR97wp0S0klMY/r9kG/UrKrZHh60js76p2+Ed5UBhEft7tyIgP2Us09zZwfiO887/uhK/wL1oH98Vz7iXNa8Tkq889Xd7LtuQb9ls0PtKcD+jcM+h6O+0pqSrR12rZtJcTs1P743WclAyW2Kz1uB5dj6QmfB7Ynv0o7DBz9x/TyfCIcW/gRD76MHB7a58IfKx6hHfEwCu1w5E0n/Ezv+rodf+T9tXsjsW/TmufWYvljUT59w/db4K9Pvfez5z0lj1J82jid4rQN5183pyIe1op4oN/fHR92j5R+oWQnzQOnUzwelMSjRfLALzxHZTVxc09JNbZhFvWMPQE2JB2k7I/vzuZ/iJuGNW93h5yrxhYbJm4swS15H03355sYR24Gn8eQw9fN56YcqktwsHI4xHkhTu0uFxdulOawUxIHrDO0bjJyf0zx1N9cbR3SVTKjDsEE5bRbUjztwx1ADj8hnn5APrmumuOrlsw/OG+tN75CdzTNyj/x88MS8y8j++PvKf8O9IHN/ZN+oQH3sm64l5RLbOvdWf3uDg8/fjjuFfZ5ep9F/XhgrSc/oB8d6MuoH5+VlB9Mfmwa+sei/nlR/1mJerCF6/9rKwr3KfIfHfUl/LeR478GrDmRzigS0qf+27tl/juRavFcrvqNm3JtLMG1ksMV+64Q+i7K9XlJ9aCIK+0Pi/5vzKvDybrzJwAA//8GIg9dGA8AAA==";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/8yXzW7TQBCA13VDgwolQKGhIMixpyzqKeLUEiIqtUIVzaWn4DrGXmRnLa8rpD4Bj8Ij8EgcOXKDdXZW2OO/NEpdVhpNnbX355vfdokaHdCvQePftW4jjd/7BronxUzN63WPQL+SsiNlfH46mhyPzt+wIORR7Ez7Q+7ziLyUc08L58/YlVP1/dhjM5cMYH99rr3UOQ0pn8zs8487xff5BfqAZIe+zwD0Hxj4PT3uS2lJUbdTd9uSgq6d219/50qZSKGXIqI+ty2fupy7vkM9Hjj0KrJowL/wfSoie/4XDS8vfGZTNoud6LNlO4JesNlUshE0dkQsqLCC0Hcm6gT7/eSjYL7/Wmr/npHl1yPVY1FORyXfb4LdPo7ezZ93pTzKcerr6RyvLTh/U7zquBgr4qL94O3J4fBY6hdStvNc9HSOy4OGufRQfvit49BcTTzdk7IuRWUDQp4AI5QmchwSX9q4xXjqGtn7D9D5WmSxUcaPpPil47bMn76yaewVcHoMOb4pTtflsb4ED6OCR5I3khLgOcz14jyP7YZ56LqE6yzB+bkkzsKN1dYtVVUL6hZMYF47DcfZHviE5vET4uy7mXWkIj9rpbjp8x8YNxt3wrPCovyUPD+8hTxN0Dn07zl7n6mDl/df6oUO+Gm7xE8xn+TOd+d1fzg+/PD+ZFTbJ6p9FrXnwLiZvKHtaUNfh+35rOG8UWbPbkkfWteHL2pHI1U3NvX6/9qR2n3q7IhHewk7rlXYsQNrJqaJGZ9hO+7+p3Y85XLhSr7qjevy7SzB16zgq/s1Af0a5vu84XpRxxf3l3X/j1bV63Rd+hsAAP//s/jsknAPAAA=";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

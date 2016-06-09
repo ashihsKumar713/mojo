@@ -69,18 +69,18 @@ class EchoTracingApp extends Application {
     }
     if (_doEcho) {
       if (_warmup) {
-        _echo(idx, "ping").then((r) {
+        _echo(idx, "ping", (String r) {
           new Timer(kDelay, () => _run(idx + 1));
         });
       } else {
-        _tracedEcho(idx, "ping").then((r) {
+        _tracedEcho(idx, "ping", (String r) {
           new Timer(kDelay, () => _run(idx + 1));
         });
       }
     }
   }
 
-  Future _tracedEcho(int idx, String s) {
+  void _tracedEcho(int idx, String s, void callback(String r)) {
     // This is not the correct way to use the Timeline API. In particular,
     // the start and end events below could occur on different threads.
     // This could mess up the interpretation of the trace by about:tracing.
@@ -89,14 +89,14 @@ class EchoTracingApp extends Application {
     // Using the sync API means that we only record one event after the finish
     // time has been recorded.
     Timeline.startSync("ping");
-    return _echo(idx, s).then((r) {
+    _echo(idx, s, (String r) {
       Timeline.finishSync();
-      return r;
+      callback(r);
     });
   }
 
-  Future _echo(int idx, String s) {
-    return _echoProxies[idx].echoString(s);
+  void _echo(int idx, String s, void callback(String r)) {
+    _echoProxies[idx].echoString(s, callback);
   }
 
   _errorHandler(Object e) {

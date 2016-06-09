@@ -12,6 +12,7 @@ import 'dart:typed_data';
 import 'package:mojo/application.dart';
 import 'package:mojo/core.dart';
 import 'package:mojo/mojo/url_request.mojom.dart';
+import 'package:mojo/mojo/url_response.mojom.dart';
 import 'package:mojo_services/mojo/network_service.mojom.dart';
 import 'package:mojo_services/mojo/url_loader.mojom.dart';
 
@@ -47,11 +48,15 @@ class WGet extends Application {
       ..url = url
       ..autoFollowRedirects = true;
 
-    var urlResponse = await _urlLoader.start(urlRequest);
+    var c = new Completer();
+    _urlLoader.start(urlRequest, (UrlResponse response) {
+      c.complete(response);
+    });
+    var urlResponse = await _urlLoader.responseOrError(c.future);
     print(">>> Headers <<<");
-    print(urlResponse.response.headers.join('\n'));
+    print(urlResponse.headers.join('\n'));
 
-    return DataPipeDrainer.drainHandle(urlResponse.response.body);
+    return DataPipeDrainer.drainHandle(urlResponse.body);
   }
 
   void _initInterfacesIfNeeded() {

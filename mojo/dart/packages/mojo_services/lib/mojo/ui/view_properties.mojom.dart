@@ -17,6 +17,11 @@ class ViewProperties extends bindings.Struct {
 
   ViewProperties() : super(kVersions.last.size);
 
+  ViewProperties.init(
+    DisplayMetrics this.displayMetrics, 
+    ViewLayout this.viewLayout
+  ) : super(kVersions.last.size);
+
   static ViewProperties deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -104,6 +109,10 @@ class DisplayMetrics extends bindings.Struct {
 
   DisplayMetrics() : super(kVersions.last.size);
 
+  DisplayMetrics.init(
+    double this.devicePixelRatio
+  ) : super(kVersions.last.size);
+
   static DisplayMetrics deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -175,6 +184,10 @@ class ViewLayout extends bindings.Struct {
   geometry_mojom.Size size = null;
 
   ViewLayout() : super(kVersions.last.size);
+
+  ViewLayout.init(
+    geometry_mojom.Size this.size
+  ) : super(kVersions.last.size);
 
   static ViewLayout deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);

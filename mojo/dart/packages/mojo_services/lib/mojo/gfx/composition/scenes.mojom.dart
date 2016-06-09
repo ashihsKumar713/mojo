@@ -25,6 +25,13 @@ class SceneUpdate extends bindings.Struct {
 
   SceneUpdate() : super(kVersions.last.size);
 
+  SceneUpdate.init(
+    bool this.clearResources, 
+    bool this.clearNodes, 
+    Map<int, resources_mojom.Resource> this.resources, 
+    Map<int, nodes_mojom.Node> this.nodes
+  ) : super(kVersions.last.size);
+
   static SceneUpdate deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -212,6 +219,11 @@ class SceneMetadata extends bindings.Struct {
 
   SceneMetadata() : super(kVersions.last.size);
 
+  SceneMetadata.init(
+    int this.version, 
+    int this.presentationTime
+  ) : super(kVersions.last.size);
+
   static SceneMetadata deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -297,6 +309,10 @@ class _SceneSetListenerParams extends bindings.Struct {
 
   _SceneSetListenerParams() : super(kVersions.last.size);
 
+  _SceneSetListenerParams.init(
+    SceneListenerInterface this.listener
+  ) : super(kVersions.last.size);
+
   static _SceneSetListenerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -367,6 +383,10 @@ class _SceneUpdateParams extends bindings.Struct {
   SceneUpdate update = null;
 
   _SceneUpdateParams() : super(kVersions.last.size);
+
+  _SceneUpdateParams.init(
+    SceneUpdate this.update
+  ) : super(kVersions.last.size);
 
   static _SceneUpdateParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -439,6 +459,10 @@ class _ScenePublishParams extends bindings.Struct {
   SceneMetadata metadata = null;
 
   _ScenePublishParams() : super(kVersions.last.size);
+
+  _ScenePublishParams.init(
+    SceneMetadata this.metadata
+  ) : super(kVersions.last.size);
 
   static _ScenePublishParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -513,6 +537,10 @@ class _SceneGetSchedulerParams extends bindings.Struct {
 
   _SceneGetSchedulerParams() : super(kVersions.last.size);
 
+  _SceneGetSchedulerParams.init(
+    scheduling_mojom.FrameSchedulerInterfaceRequest this.scheduler
+  ) : super(kVersions.last.size);
+
   static _SceneGetSchedulerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -583,6 +611,10 @@ class _SceneListenerOnResourceUnavailableParams extends bindings.Struct {
   int resourceId = 0;
 
   _SceneListenerOnResourceUnavailableParams() : super(kVersions.last.size);
+
+  _SceneListenerOnResourceUnavailableParams.init(
+    int this.resourceId
+  ) : super(kVersions.last.size);
 
   static _SceneListenerOnResourceUnavailableParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -655,6 +687,9 @@ class SceneListenerOnResourceUnavailableResponseParams extends bindings.Struct {
 
   SceneListenerOnResourceUnavailableResponseParams() : super(kVersions.last.size);
 
+  SceneListenerOnResourceUnavailableResponseParams.init(
+  ) : super(kVersions.last.size);
+
   static SceneListenerOnResourceUnavailableResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -711,14 +746,17 @@ const int _sceneMethodPublishName = 2;
 const int _sceneMethodGetSchedulerName = 3;
 
 class _SceneServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Scene {
@@ -913,11 +951,11 @@ class _SceneStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -947,7 +985,6 @@ class _SceneStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Scene get impl => _impl;
@@ -1018,14 +1055,17 @@ class SceneStub
 const int _sceneListenerMethodOnResourceUnavailableName = 0;
 
 class _SceneListenerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class SceneListener {
@@ -1050,7 +1090,7 @@ abstract class SceneListener {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic onResourceUnavailable(int resourceId,[Function responseFactory = null]);
+  void onResourceUnavailable(int resourceId,void callback());
 }
 
 abstract class SceneListenerInterface
@@ -1100,18 +1140,14 @@ class _SceneListenerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1156,17 +1192,19 @@ class SceneListenerProxy
   }
 
 
-  dynamic onResourceUnavailable(int resourceId,[Function responseFactory = null]) {
+  void onResourceUnavailable(int resourceId,void callback()) {
     if (impl != null) {
-      return new Future(() => impl.onResourceUnavailable(resourceId,_SceneListenerStubControl._sceneListenerOnResourceUnavailableResponseParamsFactory));
+      impl.onResourceUnavailable(resourceId,callback);
+      return;
     }
     var params = new _SceneListenerOnResourceUnavailableParams();
     params.resourceId = resourceId;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _sceneListenerMethodOnResourceUnavailableName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -1192,16 +1230,23 @@ class _SceneListenerStubControl
   String get serviceName => SceneListener.serviceName;
 
 
-  static SceneListenerOnResourceUnavailableResponseParams _sceneListenerOnResourceUnavailableResponseParamsFactory() {
-    var result = new SceneListenerOnResourceUnavailableResponseParams();
-    return result;
+  Function _sceneListenerOnResourceUnavailableResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new SceneListenerOnResourceUnavailableResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _sceneListenerMethodOnResourceUnavailableName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1210,30 +1255,12 @@ class _SceneListenerStubControl
       case _sceneListenerMethodOnResourceUnavailableName:
         var params = _SceneListenerOnResourceUnavailableParams.deserialize(
             message.payload);
-        var response = _impl.onResourceUnavailable(params.resourceId,_sceneListenerOnResourceUnavailableResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _sceneListenerMethodOnResourceUnavailableName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _sceneListenerMethodOnResourceUnavailableName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.onResourceUnavailable(params.resourceId, _sceneListenerOnResourceUnavailableResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   SceneListener get impl => _impl;
@@ -1287,8 +1314,8 @@ class SceneListenerStub
   }
 
 
-  dynamic onResourceUnavailable(int resourceId,[Function responseFactory = null]) {
-    return impl.onResourceUnavailable(resourceId,responseFactory);
+  void onResourceUnavailable(int resourceId,void callback()) {
+    return impl.onResourceUnavailable(resourceId,callback);
   }
 }
 

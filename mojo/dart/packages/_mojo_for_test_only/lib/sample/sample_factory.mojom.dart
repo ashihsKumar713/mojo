@@ -26,6 +26,13 @@ class Request extends bindings.Struct {
 
   Request() : super(kVersions.last.size);
 
+  Request.init(
+    int this.x, 
+    core.MojoMessagePipeEndpoint this.pipe, 
+    List<core.MojoMessagePipeEndpoint> this.morePipes, 
+    sample_import_mojom.ImportedInterfaceInterface this.obj
+  ) : super(kVersions.last.size);
+
   static Request deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -134,6 +141,11 @@ class Response extends bindings.Struct {
 
   Response() : super(kVersions.last.size);
 
+  Response.init(
+    int this.x, 
+    core.MojoMessagePipeEndpoint this.pipe
+  ) : super(kVersions.last.size);
+
   static Response deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -217,6 +229,10 @@ class _NamedObjectSetNameParams extends bindings.Struct {
 
   _NamedObjectSetNameParams() : super(kVersions.last.size);
 
+  _NamedObjectSetNameParams.init(
+    String this.name
+  ) : super(kVersions.last.size);
+
   static _NamedObjectSetNameParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -288,6 +304,9 @@ class _NamedObjectGetNameParams extends bindings.Struct {
 
   _NamedObjectGetNameParams() : super(kVersions.last.size);
 
+  _NamedObjectGetNameParams.init(
+  ) : super(kVersions.last.size);
+
   static _NamedObjectGetNameParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -346,6 +365,10 @@ class NamedObjectGetNameResponseParams extends bindings.Struct {
   String name = null;
 
   NamedObjectGetNameResponseParams() : super(kVersions.last.size);
+
+  NamedObjectGetNameResponseParams.init(
+    String this.name
+  ) : super(kVersions.last.size);
 
   static NamedObjectGetNameResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -419,6 +442,11 @@ class _FactoryDoStuffParams extends bindings.Struct {
   core.MojoMessagePipeEndpoint pipe = null;
 
   _FactoryDoStuffParams() : super(kVersions.last.size);
+
+  _FactoryDoStuffParams.init(
+    Request this.request, 
+    core.MojoMessagePipeEndpoint this.pipe
+  ) : super(kVersions.last.size);
 
   static _FactoryDoStuffParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -505,6 +533,11 @@ class FactoryDoStuffResponseParams extends bindings.Struct {
 
   FactoryDoStuffResponseParams() : super(kVersions.last.size);
 
+  FactoryDoStuffResponseParams.init(
+    Response this.response, 
+    String this.text
+  ) : super(kVersions.last.size);
+
   static FactoryDoStuffResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -589,6 +622,10 @@ class _FactoryDoStuff2Params extends bindings.Struct {
 
   _FactoryDoStuff2Params() : super(kVersions.last.size);
 
+  _FactoryDoStuff2Params.init(
+    core.MojoDataPipeConsumer this.pipe
+  ) : super(kVersions.last.size);
+
   static _FactoryDoStuff2Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -659,6 +696,10 @@ class FactoryDoStuff2ResponseParams extends bindings.Struct {
   String text = null;
 
   FactoryDoStuff2ResponseParams() : super(kVersions.last.size);
+
+  FactoryDoStuff2ResponseParams.init(
+    String this.text
+  ) : super(kVersions.last.size);
 
   static FactoryDoStuff2ResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -732,6 +773,10 @@ class _FactoryCreateNamedObjectParams extends bindings.Struct {
 
   _FactoryCreateNamedObjectParams() : super(kVersions.last.size);
 
+  _FactoryCreateNamedObjectParams.init(
+    NamedObjectInterfaceRequest this.obj
+  ) : super(kVersions.last.size);
+
   static _FactoryCreateNamedObjectParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -802,6 +847,10 @@ class _FactoryRequestImportedInterfaceParams extends bindings.Struct {
   sample_import_mojom.ImportedInterfaceInterfaceRequest obj = null;
 
   _FactoryRequestImportedInterfaceParams() : super(kVersions.last.size);
+
+  _FactoryRequestImportedInterfaceParams.init(
+    sample_import_mojom.ImportedInterfaceInterfaceRequest this.obj
+  ) : super(kVersions.last.size);
 
   static _FactoryRequestImportedInterfaceParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -874,6 +923,10 @@ class FactoryRequestImportedInterfaceResponseParams extends bindings.Struct {
 
   FactoryRequestImportedInterfaceResponseParams() : super(kVersions.last.size);
 
+  FactoryRequestImportedInterfaceResponseParams.init(
+    sample_import_mojom.ImportedInterfaceInterfaceRequest this.obj
+  ) : super(kVersions.last.size);
+
   static FactoryRequestImportedInterfaceResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -944,6 +997,10 @@ class _FactoryTakeImportedInterfaceParams extends bindings.Struct {
   sample_import_mojom.ImportedInterfaceInterface obj = null;
 
   _FactoryTakeImportedInterfaceParams() : super(kVersions.last.size);
+
+  _FactoryTakeImportedInterfaceParams.init(
+    sample_import_mojom.ImportedInterfaceInterface this.obj
+  ) : super(kVersions.last.size);
 
   static _FactoryTakeImportedInterfaceParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1016,6 +1073,10 @@ class FactoryTakeImportedInterfaceResponseParams extends bindings.Struct {
 
   FactoryTakeImportedInterfaceResponseParams() : super(kVersions.last.size);
 
+  FactoryTakeImportedInterfaceResponseParams.init(
+    sample_import_mojom.ImportedInterfaceInterface this.obj
+  ) : super(kVersions.last.size);
+
   static FactoryTakeImportedInterfaceResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1082,17 +1143,19 @@ const int _namedObjectMethodSetNameName = 0;
 const int _namedObjectMethodGetNameName = 1;
 
 class _NamedObjectServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]){
+  void getTopLevelInterface(Function responder){
     var interfaceTypeKey = getRuntimeTypeInfo().services["sample::NamedObject"];
     var userDefinedType = getAllMojomTypeDefinitions()[interfaceTypeKey];
-    return responseFactory(userDefinedType.interfaceType);
+    responder(userDefinedType.interfaceType);
   }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-    responseFactory(getAllMojomTypeDefinitions()[typeKey]);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(getAllMojomTypeDefinitions()[typeKey]);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-    responseFactory(getAllMojomTypeDefinitions());
+  void getAllTypeDefinitions(Function responder) {
+    responder(getAllMojomTypeDefinitions());
+  }
 }
 
 abstract class NamedObject {
@@ -1118,7 +1181,7 @@ abstract class NamedObject {
     return p;
   }
   void setName(String name);
-  dynamic getName([Function responseFactory = null]);
+  void getName(void callback(String name));
 }
 
 abstract class NamedObjectInterface
@@ -1168,18 +1231,14 @@ class _NamedObjectProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.name );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1238,16 +1297,18 @@ class NamedObjectProxy
     ctrl.sendMessage(params,
         _namedObjectMethodSetNameName);
   }
-  dynamic getName([Function responseFactory = null]) {
+  void getName(void callback(String name)) {
     if (impl != null) {
-      return new Future(() => impl.getName(_NamedObjectStubControl._namedObjectGetNameResponseParamsFactory));
+      impl.getName(callback);
+      return;
     }
     var params = new _NamedObjectGetNameParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _namedObjectMethodGetNameName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -1273,17 +1334,24 @@ class _NamedObjectStubControl
   String get serviceName => NamedObject.serviceName;
 
 
-  static NamedObjectGetNameResponseParams _namedObjectGetNameResponseParamsFactory(String name) {
-    var result = new NamedObjectGetNameResponseParams();
-    result.name = name;
-    return result;
+  Function _namedObjectGetNameResponseParamsResponder(
+      int requestId) {
+  return (String name) {
+      var result = new NamedObjectGetNameResponseParams();
+      result.name = name;
+      sendResponse(buildResponseWithId(
+          result,
+          _namedObjectMethodGetNameName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1295,30 +1363,12 @@ class _NamedObjectStubControl
         _impl.setName(params.name);
         break;
       case _namedObjectMethodGetNameName:
-        var response = _impl.getName(_namedObjectGetNameResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _namedObjectMethodGetNameName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _namedObjectMethodGetNameName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getName(_namedObjectGetNameResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   NamedObject get impl => _impl;
@@ -1375,8 +1425,8 @@ class NamedObjectStub
   void setName(String name) {
     return impl.setName(name);
   }
-  dynamic getName([Function responseFactory = null]) {
-    return impl.getName(responseFactory);
+  void getName(void callback(String name)) {
+    return impl.getName(callback);
   }
 }
 
@@ -1387,14 +1437,17 @@ const int _factoryMethodRequestImportedInterfaceName = 3;
 const int _factoryMethodTakeImportedInterfaceName = 4;
 
 class _FactoryServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Factory {
@@ -1419,11 +1472,11 @@ abstract class Factory {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic doStuff(Request request,core.MojoMessagePipeEndpoint pipe,[Function responseFactory = null]);
-  dynamic doStuff2(core.MojoDataPipeConsumer pipe,[Function responseFactory = null]);
+  void doStuff(Request request,core.MojoMessagePipeEndpoint pipe,void callback(Response response, String text));
+  void doStuff2(core.MojoDataPipeConsumer pipe,void callback(String text));
   void createNamedObject(NamedObjectInterfaceRequest obj);
-  dynamic requestImportedInterface(sample_import_mojom.ImportedInterfaceInterfaceRequest obj,[Function responseFactory = null]);
-  dynamic takeImportedInterface(sample_import_mojom.ImportedInterfaceInterface obj,[Function responseFactory = null]);
+  void requestImportedInterface(sample_import_mojom.ImportedInterfaceInterfaceRequest obj,void callback(sample_import_mojom.ImportedInterfaceInterfaceRequest obj));
+  void takeImportedInterface(sample_import_mojom.ImportedInterfaceInterface obj,void callback(sample_import_mojom.ImportedInterfaceInterface obj));
 }
 
 abstract class FactoryInterface
@@ -1473,18 +1526,14 @@ class _FactoryProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.response , r.text );
         break;
       case _factoryMethodDoStuff2Name:
         var r = FactoryDoStuff2ResponseParams.deserialize(
@@ -1493,18 +1542,14 @@ class _FactoryProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.text );
         break;
       case _factoryMethodRequestImportedInterfaceName:
         var r = FactoryRequestImportedInterfaceResponseParams.deserialize(
@@ -1513,18 +1558,14 @@ class _FactoryProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.obj );
         break;
       case _factoryMethodTakeImportedInterfaceName:
         var r = FactoryTakeImportedInterfaceResponseParams.deserialize(
@@ -1533,18 +1574,14 @@ class _FactoryProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.obj );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1589,30 +1626,34 @@ class FactoryProxy
   }
 
 
-  dynamic doStuff(Request request,core.MojoMessagePipeEndpoint pipe,[Function responseFactory = null]) {
+  void doStuff(Request request,core.MojoMessagePipeEndpoint pipe,void callback(Response response, String text)) {
     if (impl != null) {
-      return new Future(() => impl.doStuff(request,pipe,_FactoryStubControl._factoryDoStuffResponseParamsFactory));
+      impl.doStuff(request,pipe,callback);
+      return;
     }
     var params = new _FactoryDoStuffParams();
     params.request = request;
     params.pipe = pipe;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _factoryMethodDoStuffName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic doStuff2(core.MojoDataPipeConsumer pipe,[Function responseFactory = null]) {
+  void doStuff2(core.MojoDataPipeConsumer pipe,void callback(String text)) {
     if (impl != null) {
-      return new Future(() => impl.doStuff2(pipe,_FactoryStubControl._factoryDoStuff2ResponseParamsFactory));
+      impl.doStuff2(pipe,callback);
+      return;
     }
     var params = new _FactoryDoStuff2Params();
     params.pipe = pipe;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _factoryMethodDoStuff2Name,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void createNamedObject(NamedObjectInterfaceRequest obj) {
     if (impl != null) {
@@ -1628,29 +1669,33 @@ class FactoryProxy
     ctrl.sendMessage(params,
         _factoryMethodCreateNamedObjectName);
   }
-  dynamic requestImportedInterface(sample_import_mojom.ImportedInterfaceInterfaceRequest obj,[Function responseFactory = null]) {
+  void requestImportedInterface(sample_import_mojom.ImportedInterfaceInterfaceRequest obj,void callback(sample_import_mojom.ImportedInterfaceInterfaceRequest obj)) {
     if (impl != null) {
-      return new Future(() => impl.requestImportedInterface(obj,_FactoryStubControl._factoryRequestImportedInterfaceResponseParamsFactory));
+      impl.requestImportedInterface(obj,callback);
+      return;
     }
     var params = new _FactoryRequestImportedInterfaceParams();
     params.obj = obj;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _factoryMethodRequestImportedInterfaceName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic takeImportedInterface(sample_import_mojom.ImportedInterfaceInterface obj,[Function responseFactory = null]) {
+  void takeImportedInterface(sample_import_mojom.ImportedInterfaceInterface obj,void callback(sample_import_mojom.ImportedInterfaceInterface obj)) {
     if (impl != null) {
-      return new Future(() => impl.takeImportedInterface(obj,_FactoryStubControl._factoryTakeImportedInterfaceResponseParamsFactory));
+      impl.takeImportedInterface(obj,callback);
+      return;
     }
     var params = new _FactoryTakeImportedInterfaceParams();
     params.obj = obj;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _factoryMethodTakeImportedInterfaceName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -1676,33 +1721,61 @@ class _FactoryStubControl
   String get serviceName => Factory.serviceName;
 
 
-  static FactoryDoStuffResponseParams _factoryDoStuffResponseParamsFactory(Response response, String text) {
-    var result = new FactoryDoStuffResponseParams();
-    result.response = response;
-    result.text = text;
-    return result;
+  Function _factoryDoStuffResponseParamsResponder(
+      int requestId) {
+  return (Response response, String text) {
+      var result = new FactoryDoStuffResponseParams();
+      result.response = response;
+      result.text = text;
+      sendResponse(buildResponseWithId(
+          result,
+          _factoryMethodDoStuffName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FactoryDoStuff2ResponseParams _factoryDoStuff2ResponseParamsFactory(String text) {
-    var result = new FactoryDoStuff2ResponseParams();
-    result.text = text;
-    return result;
+  Function _factoryDoStuff2ResponseParamsResponder(
+      int requestId) {
+  return (String text) {
+      var result = new FactoryDoStuff2ResponseParams();
+      result.text = text;
+      sendResponse(buildResponseWithId(
+          result,
+          _factoryMethodDoStuff2Name,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FactoryRequestImportedInterfaceResponseParams _factoryRequestImportedInterfaceResponseParamsFactory(sample_import_mojom.ImportedInterfaceInterfaceRequest obj) {
-    var result = new FactoryRequestImportedInterfaceResponseParams();
-    result.obj = obj;
-    return result;
+  Function _factoryRequestImportedInterfaceResponseParamsResponder(
+      int requestId) {
+  return (sample_import_mojom.ImportedInterfaceInterfaceRequest obj) {
+      var result = new FactoryRequestImportedInterfaceResponseParams();
+      result.obj = obj;
+      sendResponse(buildResponseWithId(
+          result,
+          _factoryMethodRequestImportedInterfaceName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static FactoryTakeImportedInterfaceResponseParams _factoryTakeImportedInterfaceResponseParamsFactory(sample_import_mojom.ImportedInterfaceInterface obj) {
-    var result = new FactoryTakeImportedInterfaceResponseParams();
-    result.obj = obj;
-    return result;
+  Function _factoryTakeImportedInterfaceResponseParamsResponder(
+      int requestId) {
+  return (sample_import_mojom.ImportedInterfaceInterface obj) {
+      var result = new FactoryTakeImportedInterfaceResponseParams();
+      result.obj = obj;
+      sendResponse(buildResponseWithId(
+          result,
+          _factoryMethodTakeImportedInterfaceName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1711,46 +1784,12 @@ class _FactoryStubControl
       case _factoryMethodDoStuffName:
         var params = _FactoryDoStuffParams.deserialize(
             message.payload);
-        var response = _impl.doStuff(params.request,params.pipe,_factoryDoStuffResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _factoryMethodDoStuffName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _factoryMethodDoStuffName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.doStuff(params.request, params.pipe, _factoryDoStuffResponseParamsResponder(message.header.requestId));
         break;
       case _factoryMethodDoStuff2Name:
         var params = _FactoryDoStuff2Params.deserialize(
             message.payload);
-        var response = _impl.doStuff2(params.pipe,_factoryDoStuff2ResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _factoryMethodDoStuff2Name,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _factoryMethodDoStuff2Name,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.doStuff2(params.pipe, _factoryDoStuff2ResponseParamsResponder(message.header.requestId));
         break;
       case _factoryMethodCreateNamedObjectName:
         var params = _FactoryCreateNamedObjectParams.deserialize(
@@ -1760,52 +1799,17 @@ class _FactoryStubControl
       case _factoryMethodRequestImportedInterfaceName:
         var params = _FactoryRequestImportedInterfaceParams.deserialize(
             message.payload);
-        var response = _impl.requestImportedInterface(params.obj,_factoryRequestImportedInterfaceResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _factoryMethodRequestImportedInterfaceName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _factoryMethodRequestImportedInterfaceName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.requestImportedInterface(params.obj, _factoryRequestImportedInterfaceResponseParamsResponder(message.header.requestId));
         break;
       case _factoryMethodTakeImportedInterfaceName:
         var params = _FactoryTakeImportedInterfaceParams.deserialize(
             message.payload);
-        var response = _impl.takeImportedInterface(params.obj,_factoryTakeImportedInterfaceResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _factoryMethodTakeImportedInterfaceName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _factoryMethodTakeImportedInterfaceName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.takeImportedInterface(params.obj, _factoryTakeImportedInterfaceResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Factory get impl => _impl;
@@ -1859,20 +1863,20 @@ class FactoryStub
   }
 
 
-  dynamic doStuff(Request request,core.MojoMessagePipeEndpoint pipe,[Function responseFactory = null]) {
-    return impl.doStuff(request,pipe,responseFactory);
+  void doStuff(Request request,core.MojoMessagePipeEndpoint pipe,void callback(Response response, String text)) {
+    return impl.doStuff(request,pipe,callback);
   }
-  dynamic doStuff2(core.MojoDataPipeConsumer pipe,[Function responseFactory = null]) {
-    return impl.doStuff2(pipe,responseFactory);
+  void doStuff2(core.MojoDataPipeConsumer pipe,void callback(String text)) {
+    return impl.doStuff2(pipe,callback);
   }
   void createNamedObject(NamedObjectInterfaceRequest obj) {
     return impl.createNamedObject(obj);
   }
-  dynamic requestImportedInterface(sample_import_mojom.ImportedInterfaceInterfaceRequest obj,[Function responseFactory = null]) {
-    return impl.requestImportedInterface(obj,responseFactory);
+  void requestImportedInterface(sample_import_mojom.ImportedInterfaceInterfaceRequest obj,void callback(sample_import_mojom.ImportedInterfaceInterfaceRequest obj)) {
+    return impl.requestImportedInterface(obj,callback);
   }
-  dynamic takeImportedInterface(sample_import_mojom.ImportedInterfaceInterface obj,[Function responseFactory = null]) {
-    return impl.takeImportedInterface(obj,responseFactory);
+  void takeImportedInterface(sample_import_mojom.ImportedInterfaceInterface obj,void callback(sample_import_mojom.ImportedInterfaceInterface obj)) {
+    return impl.takeImportedInterface(obj,callback);
   }
 }
 
@@ -1889,7 +1893,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xaSZPbRBTW4qmYJYknU8QiJDMekgyZohiZcMA1p1RBSFJUQQpzIMVhxkubaIgsIcmUuXHMT+DIkZ+QI8f8jBw55pgbtKzXdrvVrcXR5mBVdbWlkab7ff19771eNCm4GlA/hZp93qHuZVzqcP8BLju4uD3TfoKOj7/pmWj4bf8MDTzu+9fhm+8fPbx78vXdR8fBh0fsd2z7z6C+hUsNlxbTrx+gtqHew6XJaeer3sCznN8S90P0f75Dv0yQ6836oXH/7trW2EX3ob++HSqDo3//fG8ZV+1w+b6jL+yWKLvJ9ZK5v8Pctxmc/oWLfY9cF3E5hwvB6TL+fWE+vnP4QuOzj8vbuPyISxcX/bFlIt2ZDC3TGCNHN60zS3edQfDDnvSfGAPdGHvIGfUGyNX7xnhojH9ydQ+j6upBcyejoLkj/yOTywuCy1VctuC3j5sC+NYoHLao9x8CIf8+D/zZDurnTT7eL6Ce1pLhLVF40/9PhPeXVtebjEYh+z4EW/LGtcXonth7qia307/aAjubYCvY+YkD+mHtJVcRPFKodk/lZTtpnW5xdCa6suKDCB+fD5cK5IPEtK8x/SR+MM5P8nCtReBaXwFXOQLXd6E927ARz4/4uH5aAK4NykfJnPioUX1WqPu89alBXxb6DOLXRp9hHdRn+uTjcx3yobL1SfpJ8pC4POWOIM8rWp8emno8ffq43ihQn5Ig3xXpU5QvaOpC71ngRMYVdHqbxelGyfnCrPHs/dFtkjCU5Y9YHqSNZ1n7obh45vPgoGC9KDF6kan3Wf78Q/xKSv50BPi8j8v2Mn8CRyeY31aJR3IJPBL5XZ9Hn1fM78qc+V9LMB9WUuCkUOMg4tMXDup5iF0lCON2syQ/TOw/Takj0XrAPtgesns+g6u+norMD9+BdQerfybkxX6BvFCY9snzHegry+Sk62Kvq88/IS9SU+CuRuiT5Lcw33xg2pbjoeEDghw7Dgcl63OakT5vQRsiu9chb6qSPg8Kincifbap9YgruBgwoEehkQ3e+xg0O9drzAer5mevoP49JW/vC8bhEPxgBG/XJl+rEn8/Kijvrzp/4+JOLcV41CLizjVc3vP73/sZ8XrM2694E+LOTbCdazeVG250m0y3/neflbhuWNW4kzVvfd+4G8FbEnQ2vE3G20PwBf933rLxxoYF36cyfzzIeP4B9V8Mf59FrP/S/Wlx8qNznHleFzm/GoPZBD7RuQ3R/PAK7D8KpoUhflwt6FxAnD1axD6JQo0nu+/UUaPX9/Pa/+0ibzZWbL+vvSHr++Q8ANhZ+nmAqq7LjkGwPB5sr9G6LOHPKznb/TCil3sCveyWrJcXUrZ6uVcRvdQT8EGKiFN57Rcu8Cn3/MK6+ZNd4FhV/YloXvByKxqftOceyXkl5twjeRzC7Tx8lzdu7LnXFjjQNujnsSrmmSQtzkbmzbO3YNymgnW7CzDWeeOVdn++ltN5FtH+/EV4VvR5Mx4uCrW+m8U5H4XznFyXYD5gWg468cFx+Tzx670C47YMfSc8qXPihrzCfLyxAn7qa8zHd8CXF4lbVebjS/5REC9aajbxgj1fR/Iz5lhdaHwuFxQv2HlsQ16P+NDcxIc5LmXEh7jzjuT9/wIAAP//4cQFxDg0AAA=";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xaT3PbRBTXH4eaf6nTDI0oberQNrgwRCYcyOTUGShthxnoEA705JGdteNgW0KSGcOJY44c8xH4CPkYfIweOXKjK+utvV7tSpYrS+uOd2ZnLUWK9v3e7/3Z3WcoYavAeAEje/+IulZxL8P1R7hv4+5ZfaeHjo+/t/ro9IfmOWr53OfvwTs/vXj+uPHd4xfH4YsH7Hvs969grOFewr3KzOtnGB0Y7+K+w/nOt1bLt93f556H6P/8iH4dIs8fz8Pg/t1z7IGHnsJ8Azl0Bsfg+rI6i2vt09lrpz6VW6HkJu0/5voRc11ncPofGvscaddxv4Y7wekm/r050e8Evoh+9nB/B/cO7g3czaHnmj27ZfXMjm13esg8s/vI/MO1zL59bh+antsa/zKdYbPXbZndgY/cttVCntnsDk67g45n+hhhzww/3WiHnz4IXupHvk/wuY37BvwO8NMA5xKFxwb1/AUQs7oZjv9sheOZwcf9JYyXpflwVyjc6f8nwv0b+8QfttsR+T4GWfLCt8r4ASL3SJ9f3qDVBfLugMwg7+cu2BMrN2l58kqjvn+mzspL2+8Gx/5ELSt+iHAK+HGjAH4ozDwMZr7ETyb5UR6+pRh8ywvgq8bg+x58z+k6iBd/Any/yBHfCuXDVE4cNai5a9T1su3WgLlM7TaMc2u75bcK6EyE0z3In2SxWzJfkr8k5TePBPlh3nbro5HPs9sA3/sF2K0iyJdFdivKM+r61A9kgRfRL9jvIYvXfUnyjIq2FH91SBKNov0Vy4u08S9rP5UU/wJe7BdkR1qCHanUPFk+/UuuU/LpSIDTh7hvzfIpdISCdbOMvFIL4JXIPwe8+kpS/6xy1pdVwbpbS4GXRulDxK+vXWT5iN2NiOL3oGB/TXBwUtqXaP9hDzCIyD9ZIa6OneWZZ74L+xx281zIk70CeKIx8yD3t2HOLMPn3Zd7Xbu9grxKT4G/HmO3JE+G9eyzvmO7Pjp9RlBj9bEvid1eZGS3NcBAJP8q5V0y2e1+zvFRZLd1ah/kFu5dUPBBRNPhc5+BLU/sOOGFRfM7sjD6KyWPnwr08RD8ZAyPVy7fk4nPn+S8jpCdz0nxqZRCL6WY+HQH9w+C+Vu/IN6Meecpb1J8egAYcOWncsu1Paez5+C9LyXYv5Q1PmXN48B37sbwmASnNY/T8fgh+Ig1j/lxaUTyLJWvF6LXSxj/Zvh8FbMfTc+nysmrrnHWjSfI/a3bGm8QzFWHIlpv3oJzU8EyM8KT2znXOSTJZcSc42iUXtnzsed6/LnDss6vT5A/1hk77ztv2LkDqW8AeaWpb5B1f3gAhszjxdYK7g8TPpW1bM/viB09EdjRriR29FLJ1o6eSGZH5Tn4ocTEtWWdc05xkqMuY9X8zS5wTnZ/I1pnGG/F45S2DpTUZzF1oOR2BL/34b288GPrgWuk7gfs6k9dzDtFmdaKLpt3b4P+RoJ9w03QeV64pa03KOVcb3cd7hVVb8fDR6MDeQZ1TRrnPmk3YJ3Rt13UCEDy+LwJxrsFxHsVZCC8KXPijLrAur+yAI76a6z7t8HnF4GfLOt+2n+K4sqRnk1cYesLSX7HlBVG9HQz57jCrpcNdTXiyM46jkT2Q4qMI0n1n+T5VwEAAP//hkGPYIg1AAA=";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

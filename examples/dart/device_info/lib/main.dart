@@ -17,7 +17,11 @@ class DeviceInfoApp extends Application {
 
   Future initialize(List<String> args, String url) async {
     connectToService("mojo:device_info", _deviceInfo);
-    print(await _deviceInfo.getDeviceType());
+    var c = new Completer();
+    _deviceInfo.getDeviceType((DeviceInfoDeviceType type) {
+      c.complete(type);
+    });
+    print(await _deviceInfo.responseOrError(c.future));
     _deviceInfo.close();
     close();
   }

@@ -244,6 +244,11 @@ class Timespec extends bindings.Struct {
 
   Timespec() : super(kVersions.last.size);
 
+  Timespec.init(
+    int this.seconds, 
+    int this.nanoseconds
+  ) : super(kVersions.last.size);
+
   static Timespec deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -329,6 +334,11 @@ class TimespecOrNow extends bindings.Struct {
   Timespec timespec = null;
 
   TimespecOrNow() : super(kVersions.last.size);
+
+  TimespecOrNow.init(
+    bool this.now, 
+    Timespec this.timespec
+  ) : super(kVersions.last.size);
 
   static TimespecOrNow deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -418,6 +428,13 @@ class FileInformation extends bindings.Struct {
   Timespec mtime = null;
 
   FileInformation() : super(kVersions.last.size);
+
+  FileInformation.init(
+    FileType this.type, 
+    int this.size, 
+    Timespec this.atime, 
+    Timespec this.mtime
+  ) : super(kVersions.last.size);
 
   static FileInformation deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -536,6 +553,11 @@ class DirectoryEntry extends bindings.Struct {
   String name = null;
 
   DirectoryEntry() : super(kVersions.last.size);
+
+  DirectoryEntry.init(
+    FileType this.type, 
+    String this.name
+  ) : super(kVersions.last.size);
 
   static DirectoryEntry deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);

@@ -21,6 +21,13 @@ class TimelineTransform extends bindings.Struct {
 
   TimelineTransform() : super(kVersions.last.size);
 
+  TimelineTransform.init(
+    int this.referenceTime, 
+    int this.subjectTime, 
+    int this.referenceDelta, 
+    int this.subjectDelta
+  ) : super(kVersions.last.size);
+
   static TimelineTransform deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -135,6 +142,14 @@ class _TimelineConsumerSetTimelineTransformParams extends bindings.Struct {
   int effectiveSubjectTime = 0;
 
   _TimelineConsumerSetTimelineTransformParams() : super(kVersions.last.size);
+
+  _TimelineConsumerSetTimelineTransformParams.init(
+    int this.subjectTime, 
+    int this.referenceDelta, 
+    int this.subjectDelta, 
+    int this.effectiveReferenceTime, 
+    int this.effectiveSubjectTime
+  ) : super(kVersions.last.size);
 
   static _TimelineConsumerSetTimelineTransformParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -260,6 +275,10 @@ class TimelineConsumerSetTimelineTransformResponseParams extends bindings.Struct
 
   TimelineConsumerSetTimelineTransformResponseParams() : super(kVersions.last.size);
 
+  TimelineConsumerSetTimelineTransformResponseParams.init(
+    bool this.completed
+  ) : super(kVersions.last.size);
+
   static TimelineConsumerSetTimelineTransformResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -326,14 +345,17 @@ class TimelineConsumerSetTimelineTransformResponseParams extends bindings.Struct
 const int _timelineConsumerMethodSetTimelineTransformName = 0;
 
 class _TimelineConsumerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class TimelineConsumer {
@@ -358,7 +380,7 @@ abstract class TimelineConsumer {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic setTimelineTransform(int subjectTime,int referenceDelta,int subjectDelta,int effectiveReferenceTime,int effectiveSubjectTime,[Function responseFactory = null]);
+  void setTimelineTransform(int subjectTime,int referenceDelta,int subjectDelta,int effectiveReferenceTime,int effectiveSubjectTime,void callback(bool completed));
 }
 
 abstract class TimelineConsumerInterface
@@ -408,18 +430,14 @@ class _TimelineConsumerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.completed );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -464,9 +482,10 @@ class TimelineConsumerProxy
   }
 
 
-  dynamic setTimelineTransform(int subjectTime,int referenceDelta,int subjectDelta,int effectiveReferenceTime,int effectiveSubjectTime,[Function responseFactory = null]) {
+  void setTimelineTransform(int subjectTime,int referenceDelta,int subjectDelta,int effectiveReferenceTime,int effectiveSubjectTime,void callback(bool completed)) {
     if (impl != null) {
-      return new Future(() => impl.setTimelineTransform(subjectTime,referenceDelta,subjectDelta,effectiveReferenceTime,effectiveSubjectTime,_TimelineConsumerStubControl._timelineConsumerSetTimelineTransformResponseParamsFactory));
+      impl.setTimelineTransform(subjectTime,referenceDelta,subjectDelta,effectiveReferenceTime,effectiveSubjectTime,callback);
+      return;
     }
     var params = new _TimelineConsumerSetTimelineTransformParams();
     params.subjectTime = subjectTime;
@@ -474,11 +493,12 @@ class TimelineConsumerProxy
     params.subjectDelta = subjectDelta;
     params.effectiveReferenceTime = effectiveReferenceTime;
     params.effectiveSubjectTime = effectiveSubjectTime;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _timelineConsumerMethodSetTimelineTransformName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -504,17 +524,24 @@ class _TimelineConsumerStubControl
   String get serviceName => TimelineConsumer.serviceName;
 
 
-  static TimelineConsumerSetTimelineTransformResponseParams _timelineConsumerSetTimelineTransformResponseParamsFactory(bool completed) {
-    var result = new TimelineConsumerSetTimelineTransformResponseParams();
-    result.completed = completed;
-    return result;
+  Function _timelineConsumerSetTimelineTransformResponseParamsResponder(
+      int requestId) {
+  return (bool completed) {
+      var result = new TimelineConsumerSetTimelineTransformResponseParams();
+      result.completed = completed;
+      sendResponse(buildResponseWithId(
+          result,
+          _timelineConsumerMethodSetTimelineTransformName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -523,30 +550,12 @@ class _TimelineConsumerStubControl
       case _timelineConsumerMethodSetTimelineTransformName:
         var params = _TimelineConsumerSetTimelineTransformParams.deserialize(
             message.payload);
-        var response = _impl.setTimelineTransform(params.subjectTime,params.referenceDelta,params.subjectDelta,params.effectiveReferenceTime,params.effectiveSubjectTime,_timelineConsumerSetTimelineTransformResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _timelineConsumerMethodSetTimelineTransformName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _timelineConsumerMethodSetTimelineTransformName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.setTimelineTransform(params.subjectTime, params.referenceDelta, params.subjectDelta, params.effectiveReferenceTime, params.effectiveSubjectTime, _timelineConsumerSetTimelineTransformResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   TimelineConsumer get impl => _impl;
@@ -600,8 +609,8 @@ class TimelineConsumerStub
   }
 
 
-  dynamic setTimelineTransform(int subjectTime,int referenceDelta,int subjectDelta,int effectiveReferenceTime,int effectiveSubjectTime,[Function responseFactory = null]) {
-    return impl.setTimelineTransform(subjectTime,referenceDelta,subjectDelta,effectiveReferenceTime,effectiveSubjectTime,responseFactory);
+  void setTimelineTransform(int subjectTime,int referenceDelta,int subjectDelta,int effectiveReferenceTime,int effectiveSubjectTime,void callback(bool completed)) {
+    return impl.setTimelineTransform(subjectTime,referenceDelta,subjectDelta,effectiveReferenceTime,effectiveSubjectTime,callback);
   }
 }
 

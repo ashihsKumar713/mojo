@@ -23,6 +23,13 @@ class Rect extends bindings.Struct {
 
   Rect() : super(kVersions.last.size);
 
+  Rect.init(
+    int this.x, 
+    int this.y, 
+    int this.width, 
+    int this.height
+  ) : super(kVersions.last.size);
+
   static Rect deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -138,7 +145,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/5JggAABKG0ApdHFYTQHGo2uzgKJz4ikTh6IxYE4JDLANd7bNdIqNz8rX68ktbhELyg1uQRsDiMWfQpo9ryA2c8KoR0YUIEBmjv+QwG6OhjgAWIWIAY7AgjEgJgPiNGch+FPkPvYgTgQiD2BWD8jPzdVv6g0JT83My+1SB+kX7+4KBnCKChNyslM1s/MK0ktSktMTi3WT8rMS8nMSy/WB9lRrF8EtEQPpDQXar4G1F1w/zNC7WeC2s+M6n8LNPexMhAHcIUfA1L4wdyDDXBC46sCR3rghIYVrcKJVP+zkOF/RiL8X4nD/1yDzP8cZPifCY//eaF2lWemlGRg8T/3IPM/Dxn+Z8bjf1BZwQbEGamZ6RlYygkeGvsfvbyUQEvrMD4gAAD///PaA+DoBQAA";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/5JggAABKG0ApdHFYTQHGo2uzgKJz4ikTh6IxYE4JDLANd7bNdIqNz8rX68ktbhELyg1uQRsDiMWfQpo9nyAuZMVQjswoAIDNHf8hwJ0dTDAA8QsQAx2BBCIATEfEKM5D8OfIPexA3EsEIcCsX5pcZF+Tn5yYo5+en5+ek6qfkZ+bqp+VVGiPsgoI/3iomQwS7+gNCknM1k/M68ktSgtMTm1WD8pMy8lMy+9WB9kX7F+EdBCPZDSXKC5GlD3wcJBgRFKM0FpZtRwsEBzJysDcQBXODIghSMD1D3YACc03ipwpAtOaJjROrxIDQcWMsKBkYhwqMQRDlyDNBw4yAgHJjzhwAu1qzwzpSQDSzhwD9Jw4CEjHJjxhAOoLGED4ozUzPQMLOUID53CAb1clUDLAzA+IAAA//9N6JF1EAYAAA==";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

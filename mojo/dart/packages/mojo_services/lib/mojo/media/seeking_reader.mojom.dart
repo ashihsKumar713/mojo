@@ -17,6 +17,9 @@ class _SeekingReaderDescribeParams extends bindings.Struct {
 
   _SeekingReaderDescribeParams() : super(kVersions.last.size);
 
+  _SeekingReaderDescribeParams.init(
+  ) : super(kVersions.last.size);
+
   static _SeekingReaderDescribeParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -77,6 +80,12 @@ class SeekingReaderDescribeResponseParams extends bindings.Struct {
   int size = 0;
 
   SeekingReaderDescribeResponseParams() : super(kVersions.last.size);
+
+  SeekingReaderDescribeResponseParams.init(
+    media_common_mojom.MediaResult this.result, 
+    bool this.canSeek, 
+    int this.size
+  ) : super(kVersions.last.size);
 
   static SeekingReaderDescribeResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -180,6 +189,10 @@ class _SeekingReaderReadAtParams extends bindings.Struct {
 
   _SeekingReaderReadAtParams() : super(kVersions.last.size);
 
+  _SeekingReaderReadAtParams.init(
+    int this.position
+  ) : super(kVersions.last.size);
+
   static _SeekingReaderReadAtParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -252,6 +265,11 @@ class SeekingReaderReadAtResponseParams extends bindings.Struct {
   core.MojoDataPipeConsumer dataPipe = null;
 
   SeekingReaderReadAtResponseParams() : super(kVersions.last.size);
+
+  SeekingReaderReadAtResponseParams.init(
+    media_common_mojom.MediaResult this.result, 
+    core.MojoDataPipeConsumer this.dataPipe
+  ) : super(kVersions.last.size);
 
   static SeekingReaderReadAtResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -335,14 +353,17 @@ const int _seekingReaderMethodDescribeName = 0;
 const int _seekingReaderMethodReadAtName = 1;
 
 class _SeekingReaderServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class SeekingReader {
@@ -367,8 +388,8 @@ abstract class SeekingReader {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic describe([Function responseFactory = null]);
-  dynamic readAt(int position,[Function responseFactory = null]);
+  void describe(void callback(media_common_mojom.MediaResult result, int size, bool canSeek));
+  void readAt(int position,void callback(media_common_mojom.MediaResult result, core.MojoDataPipeConsumer dataPipe));
   static const int kUnknownSize = 18446744073709551615;
 }
 
@@ -419,18 +440,14 @@ class _SeekingReaderProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.result , r.size , r.canSeek );
         break;
       case _seekingReaderMethodReadAtName:
         var r = SeekingReaderReadAtResponseParams.deserialize(
@@ -439,18 +456,14 @@ class _SeekingReaderProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.result , r.dataPipe );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -495,28 +508,32 @@ class SeekingReaderProxy
   }
 
 
-  dynamic describe([Function responseFactory = null]) {
+  void describe(void callback(media_common_mojom.MediaResult result, int size, bool canSeek)) {
     if (impl != null) {
-      return new Future(() => impl.describe(_SeekingReaderStubControl._seekingReaderDescribeResponseParamsFactory));
+      impl.describe(callback);
+      return;
     }
     var params = new _SeekingReaderDescribeParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _seekingReaderMethodDescribeName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic readAt(int position,[Function responseFactory = null]) {
+  void readAt(int position,void callback(media_common_mojom.MediaResult result, core.MojoDataPipeConsumer dataPipe)) {
     if (impl != null) {
-      return new Future(() => impl.readAt(position,_SeekingReaderStubControl._seekingReaderReadAtResponseParamsFactory));
+      impl.readAt(position,callback);
+      return;
     }
     var params = new _SeekingReaderReadAtParams();
     params.position = position;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _seekingReaderMethodReadAtName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -542,77 +559,56 @@ class _SeekingReaderStubControl
   String get serviceName => SeekingReader.serviceName;
 
 
-  static SeekingReaderDescribeResponseParams _seekingReaderDescribeResponseParamsFactory(media_common_mojom.MediaResult result, int size, bool canSeek) {
-    var result = new SeekingReaderDescribeResponseParams();
-    result.result = result;
-    result.size = size;
-    result.canSeek = canSeek;
-    return result;
+  Function _seekingReaderDescribeResponseParamsResponder(
+      int requestId) {
+  return (media_common_mojom.MediaResult result, int size, bool canSeek) {
+      var result = new SeekingReaderDescribeResponseParams();
+      result.result = result;
+      result.size = size;
+      result.canSeek = canSeek;
+      sendResponse(buildResponseWithId(
+          result,
+          _seekingReaderMethodDescribeName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static SeekingReaderReadAtResponseParams _seekingReaderReadAtResponseParamsFactory(media_common_mojom.MediaResult result, core.MojoDataPipeConsumer dataPipe) {
-    var result = new SeekingReaderReadAtResponseParams();
-    result.result = result;
-    result.dataPipe = dataPipe;
-    return result;
+  Function _seekingReaderReadAtResponseParamsResponder(
+      int requestId) {
+  return (media_common_mojom.MediaResult result, core.MojoDataPipeConsumer dataPipe) {
+      var result = new SeekingReaderReadAtResponseParams();
+      result.result = result;
+      result.dataPipe = dataPipe;
+      sendResponse(buildResponseWithId(
+          result,
+          _seekingReaderMethodReadAtName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _seekingReaderMethodDescribeName:
-        var response = _impl.describe(_seekingReaderDescribeResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _seekingReaderMethodDescribeName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _seekingReaderMethodDescribeName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.describe(_seekingReaderDescribeResponseParamsResponder(message.header.requestId));
         break;
       case _seekingReaderMethodReadAtName:
         var params = _SeekingReaderReadAtParams.deserialize(
             message.payload);
-        var response = _impl.readAt(params.position,_seekingReaderReadAtResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _seekingReaderMethodReadAtName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _seekingReaderMethodReadAtName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.readAt(params.position, _seekingReaderReadAtResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   SeekingReader get impl => _impl;
@@ -666,11 +662,11 @@ class SeekingReaderStub
   }
 
 
-  dynamic describe([Function responseFactory = null]) {
-    return impl.describe(responseFactory);
+  void describe(void callback(media_common_mojom.MediaResult result, int size, bool canSeek)) {
+    return impl.describe(callback);
   }
-  dynamic readAt(int position,[Function responseFactory = null]) {
-    return impl.readAt(position,responseFactory);
+  void readAt(int position,void callback(media_common_mojom.MediaResult result, core.MojoDataPipeConsumer dataPipe)) {
+    return impl.readAt(position,callback);
   }
 }
 

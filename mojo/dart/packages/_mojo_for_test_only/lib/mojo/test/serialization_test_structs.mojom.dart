@@ -21,6 +21,10 @@ class Struct1 extends bindings.Struct {
 
   Struct1() : super(kVersions.last.size);
 
+  Struct1.init(
+    int this.i
+  ) : super(kVersions.last.size);
+
   static Struct1 deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -93,6 +97,10 @@ class Struct2 extends bindings.Struct {
 
   Struct2() : super(kVersions.last.size);
 
+  Struct2.init(
+    core.MojoHandle this.hdl
+  ) : super(kVersions.last.size);
+
   static Struct2 deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -163,6 +171,10 @@ class Struct3 extends bindings.Struct {
   Struct1 struct1 = null;
 
   Struct3() : super(kVersions.last.size);
+
+  Struct3.init(
+    Struct1 this.struct1
+  ) : super(kVersions.last.size);
 
   static Struct3 deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -236,6 +248,10 @@ class Struct4 extends bindings.Struct {
   List<Struct1> data = null;
 
   Struct4() : super(kVersions.last.size);
+
+  Struct4.init(
+    List<Struct1> this.data
+  ) : super(kVersions.last.size);
 
   static Struct4 deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -325,6 +341,10 @@ class Struct5 extends bindings.Struct {
 
   Struct5() : super(kVersions.last.size);
 
+  Struct5.init(
+    List<Struct1> this.pair
+  ) : super(kVersions.last.size);
+
   static Struct5 deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -413,6 +433,10 @@ class Struct6 extends bindings.Struct {
 
   Struct6() : super(kVersions.last.size);
 
+  Struct6.init(
+    String this.str
+  ) : super(kVersions.last.size);
+
   static Struct6 deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -486,6 +510,12 @@ class StructOfNullables extends bindings.Struct {
   String str = null;
 
   StructOfNullables() : super(kVersions.last.size);
+
+  StructOfNullables.init(
+    core.MojoHandle this.hdl, 
+    Struct1 this.struct1, 
+    String this.str
+  ) : super(kVersions.last.size);
 
   static StructOfNullables deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -587,7 +617,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+yYzW7TQBDHbbdV3NKqQQLJ5UMKLYccUNzmSxUnLpUqIQESHOjJOInbLHLsyOtIiBOPwJFH4MiRR+mjcIPdeqyuF0/kxvgDwUqj8Vpje/yfn2c3MZRoNMEfgpfPx16XvBw3VSP/jFmD2TGcfwv+A/gv4L+DvwT/A/w+s3vM3py9OrGen5w9nfnv/U7o0LDzOgwW4/AoY1w3Y1wvY1w/Y9wgY9wwinvC7PGyuJfnLxaua49ch8Y6NkB3LvlUqAOff9OSc30jOf/aSM6nW8l5eyc5/7QbzVtS3RWot6Fd110cMU8xBz9hnCrpYxfeKy7yHju+zQwp/2/86XD9BTOLmTn1Z44ZLCb+jHhOYPL7mDQYRwfzxcglY5N4oROc22OHmiPiTYh3QU3+LGpSJyC2Sz7aIfE9i5+z6NXzaYffYHatr5J8/2Mpr4aSbWD6KYJ+3LeR6zchH4Loswm5VqWPIeSqCnlhXLUL4aqLctVFdNuuIVfrQr8smqtbzNZ4n5i4qfrsAFtl6iOOvJzNC+Gsh3LWW7LO1o2zjRI5a0IuUZbWkawP13KrRH1aKfmJdZPXq6z7lry8fi6E1z7Kax/h9U4NedVK5HUb+vDEDu00fe6CnlXwynOPv19d4unf4HmA8jxAeDb+83zF89wmQZo+e/DNV8GzJqxHdee5mH3rEOV5iPD8oIY8qxXsW1mWqfo8/Ev3rQZwdrm+XKdTibN3iE4xV6l/NrBxwOx+CndypKxvq2T+WlDvOI9DZH2p6++oRyXvb5vJtnXj/b++gj5qjv3/PmhY9vqj/uH15aZ9sbmCzlqOvnhQMYfL+uKa0A9/BQAA//9CnCj5wBYAAA==";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+yYzW7TQBDHY5cobmlFkEBK+ZBCy6EHlKX5UsQpl0qRkAAJDvQUNo6bLGziyutIqE/BkcfgyCNw5Mgj8AjcYDcZw3rZjUxCYge60mi8ztgZ/+eX2XVKudkogn8IXj0feUfxatzQmvk2twK3Fpx/Cf4t+PfgP4L/Av4b+ANut7i9OH120n18cvpo5L/2K6HHwsrzMJi44XHCuGrCuFrCuHrCuEbCuOYs7gG3+/Pinp49mVCKe9RjkY4F0F1IPpTqIOaf7fi8k4/PHSc+/7oTn3/ai8/bUOCyWneod8v+VXd5RDxFHHyH0cnpxzV4rqjI+/z4OjdD+X/jz4HrhUhvuKEJCxD1XUzRwPcH1ENDf+ShiwAjccsqYoE7PULnkx4lLiLj0AvOsOsx1CPjPhkPGBLfyxDzAoIpucAh8cddca7LprmwirjBKK5vLq5HS8mzkEs2THrmJD2FPzJcvw35EINe25BrVvQqSblbUp4m7jor4a5q5K5q0HF3A7i7Ij631sPdVW5boi/1qVavPWAvTb3ksSyH71bCYc3IYW3OOp11DvNr5LAY9bdppt1jVS+h7U6KepU1+cp1VdfDpPuiZXn+sBKe60ae6waeb2wAz/Yaed6FPt7HIdbpdRP0zQLP4ll+/t4V3v4P3htG3hsG3kuXvGt5P8ck0Om1Dz0iC7zb8vqWcd5Xs29uGnlvGni/swG8Wynsm3mmWr3u/iP75iPQs5Sfr1tH4fCVQbeIO+2fJXwccrut4VKNVPUup8xnGXiI8mob1qusvufdS3l/XZRYXOR9xFlAL2uJ95ED0DTt9cz6y+vVn/bV4gK620v01cOMcTqvr25JdfoRAAD//xj2NYbAFwAA";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

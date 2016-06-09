@@ -24,12 +24,17 @@ tests(Application application, String url) {
 
       // Query database and get a response back (even though the client does not
       // know about the birthday field).
+      var c = new Completer();
       bool retrieveFingerPrint = true;
-      var response = await database.queryEmployee(1, retrieveFingerPrint);
-      expect(response.employee.employeeId, equals(1));
-      expect(response.employee.name, equals("Homer Simpson"));
-      expect(response.employee.department, equals(Department.dev));
-      expect(response.fingerPrint, isNotNull);
+      database.queryEmployee(1, retrieveFingerPrint,
+          (Employee e, List<int> fingerPrint) {
+        c.complete([e, fingerPrint]);
+      });
+      var response = await database.responseOrError(c.future);
+      expect(response[0].employeeId, equals(1));
+      expect(response[0].name, equals("Homer Simpson"));
+      expect(response[0].department, equals(Department.dev));
+      expect(response[1], isNotNull);
 
       // Pass an Employee struct to the service side that lacks the 'birthday'
       // field.
@@ -37,16 +42,25 @@ tests(Application application, String url) {
       newEmployee.employeeId = 2;
       newEmployee.name = "Marge Simpson";
       newEmployee.department = Department.sales;
-      response = await database.addEmployee(newEmployee);
-      expect(response.success, isTrue);
+      c = new Completer();
+      database.addEmployee(newEmployee, (bool success) {
+        c.complete(success);
+      });
+      response = await database.responseOrError(c.future);
+      expect(response, isTrue);
 
       // Query for employee #2.
+      c = new Completer();
       retrieveFingerPrint = false;
-      response = await database.queryEmployee(2, retrieveFingerPrint);
-      expect(response.employee.employeeId, equals(2));
-      expect(response.employee.name, equals("Marge Simpson"));
-      expect(response.employee.department, equals(Department.sales));
-      expect(response.fingerPrint, isNull);
+      database.queryEmployee(2, retrieveFingerPrint,
+          (Employee e, List<int> fingerPrint) {
+        c.complete([e, fingerPrint]);
+      });
+      response = await database.responseOrError(c.future);
+      expect(response[0].employeeId, equals(2));
+      expect(response[0].name, equals("Marge Simpson"));
+      expect(response[0].department, equals(Department.sales));
+      expect(response[1], isNull);
 
       // Disconnect from database.
       database.close();
@@ -75,7 +89,12 @@ tests(Application application, String url) {
 
       // Query for employee #3.
       var retrieveFingerPrint = false;
-      var response = await database.queryEmployee(3, retrieveFingerPrint);
+      var c = new Completer();
+      database.queryEmployee(3, retrieveFingerPrint,
+          (Employee e, List<int> fingerPrint) {
+        c.complete([e, fingerPrint]);
+      });
+      var response = await database.responseOrError(c.future);
 
       // Got some kind of response.
       expect(response, isNotNull);
@@ -86,9 +105,13 @@ tests(Application application, String url) {
 
       // Query for employee #1, observe that the call fails.
       bool exceptionCaught = false;
+      c = new Completer();
+      database.queryEmployee(1, retrieveFingerPrint,
+          (Employee e, List<int> fingerPrint) {
+        c.complete([e, fingerPrint]);
+      });
       try {
-        response = await database.responseOrError(
-            database.queryEmployee(1, retrieveFingerPrint));
+        response = await database.responseOrError(c.future);
         fail('Exception should be thrown.');
       } catch (e) {
         exceptionCaught = true;
@@ -111,14 +134,22 @@ tests(Application application, String url) {
       // Although the client side doesn't know whether the service side supports
       // version 1, calling a version 1 method succeeds as long as the service
       // side supports version 1.
-      var response = await database.attachFingerPrint(1, fingerPrint);
-      expect(response.success, isTrue);
+      var c = new Completer();
+      database.attachFingerPrint(1, fingerPrint, (bool success) {
+        c.complete(success);
+      });
+      var response = await database.responseOrError(c.future);
+      expect(response, isTrue);
 
       // Calling a version 2 method (which the service side doesn't support)
       // closes the pipe.
       bool exceptionCaught = false;
+      c = new Completer();
+      database.listEmployeeIds((List<int> ids) {
+        c.complete(ids);
+      });
       try {
-        response = await database.responseOrError(database.listEmployeeIds());
+        response = await database.responseOrError(c.future);
         fail('Exception should be thrown.');
       } catch (e) {
         exceptionCaught = true;

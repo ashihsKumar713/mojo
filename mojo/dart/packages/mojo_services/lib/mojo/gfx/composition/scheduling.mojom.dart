@@ -20,6 +20,13 @@ class FrameInfo extends bindings.Struct {
 
   FrameInfo() : super(kVersions.last.size);
 
+  FrameInfo.init(
+    int this.frameTime, 
+    int this.frameInterval, 
+    int this.frameDeadline, 
+    int this.presentationTime
+  ) : super(kVersions.last.size);
+
   static FrameInfo deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -130,6 +137,9 @@ class _FrameSchedulerScheduleFrameParams extends bindings.Struct {
 
   _FrameSchedulerScheduleFrameParams() : super(kVersions.last.size);
 
+  _FrameSchedulerScheduleFrameParams.init(
+  ) : super(kVersions.last.size);
+
   static _FrameSchedulerScheduleFrameParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -188,6 +198,10 @@ class FrameSchedulerScheduleFrameResponseParams extends bindings.Struct {
   FrameInfo frameInfo = null;
 
   FrameSchedulerScheduleFrameResponseParams() : super(kVersions.last.size);
+
+  FrameSchedulerScheduleFrameResponseParams.init(
+    FrameInfo this.frameInfo
+  ) : super(kVersions.last.size);
 
   static FrameSchedulerScheduleFrameResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -256,14 +270,17 @@ class FrameSchedulerScheduleFrameResponseParams extends bindings.Struct {
 const int _frameSchedulerMethodScheduleFrameName = 0;
 
 class _FrameSchedulerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class FrameScheduler {
@@ -288,7 +305,7 @@ abstract class FrameScheduler {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic scheduleFrame([Function responseFactory = null]);
+  void scheduleFrame(void callback(FrameInfo frameInfo));
 }
 
 abstract class FrameSchedulerInterface
@@ -338,18 +355,14 @@ class _FrameSchedulerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.frameInfo );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -394,16 +407,18 @@ class FrameSchedulerProxy
   }
 
 
-  dynamic scheduleFrame([Function responseFactory = null]) {
+  void scheduleFrame(void callback(FrameInfo frameInfo)) {
     if (impl != null) {
-      return new Future(() => impl.scheduleFrame(_FrameSchedulerStubControl._frameSchedulerScheduleFrameResponseParamsFactory));
+      impl.scheduleFrame(callback);
+      return;
     }
     var params = new _FrameSchedulerScheduleFrameParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _frameSchedulerMethodScheduleFrameName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -429,47 +444,36 @@ class _FrameSchedulerStubControl
   String get serviceName => FrameScheduler.serviceName;
 
 
-  static FrameSchedulerScheduleFrameResponseParams _frameSchedulerScheduleFrameResponseParamsFactory(FrameInfo frameInfo) {
-    var result = new FrameSchedulerScheduleFrameResponseParams();
-    result.frameInfo = frameInfo;
-    return result;
+  Function _frameSchedulerScheduleFrameResponseParamsResponder(
+      int requestId) {
+  return (FrameInfo frameInfo) {
+      var result = new FrameSchedulerScheduleFrameResponseParams();
+      result.frameInfo = frameInfo;
+      sendResponse(buildResponseWithId(
+          result,
+          _frameSchedulerMethodScheduleFrameName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _frameSchedulerMethodScheduleFrameName:
-        var response = _impl.scheduleFrame(_frameSchedulerScheduleFrameResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _frameSchedulerMethodScheduleFrameName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _frameSchedulerMethodScheduleFrameName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.scheduleFrame(_frameSchedulerScheduleFrameResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   FrameScheduler get impl => _impl;
@@ -523,8 +527,8 @@ class FrameSchedulerStub
   }
 
 
-  dynamic scheduleFrame([Function responseFactory = null]) {
-    return impl.scheduleFrame(responseFactory);
+  void scheduleFrame(void callback(FrameInfo frameInfo)) {
+    return impl.scheduleFrame(callback);
   }
 }
 

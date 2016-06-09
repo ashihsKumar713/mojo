@@ -453,6 +453,10 @@ class Color extends bindings.Struct {
 
   Color() : super(kVersions.last.size);
 
+  Color.init(
+    int this.rgba
+  ) : super(kVersions.last.size);
+
   static Color deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -524,6 +528,9 @@ class CheckerboardQuadState extends bindings.Struct {
 
   CheckerboardQuadState() : super(kVersions.last.size);
 
+  CheckerboardQuadState.init(
+  ) : super(kVersions.last.size);
+
   static CheckerboardQuadState deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -582,6 +589,9 @@ class DebugBorderQuadState extends bindings.Struct {
 
   DebugBorderQuadState() : super(kVersions.last.size);
 
+  DebugBorderQuadState.init(
+  ) : super(kVersions.last.size);
+
   static DebugBorderQuadState deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -639,6 +649,9 @@ class IoSurfaceContentQuadState extends bindings.Struct {
   ];
 
   IoSurfaceContentQuadState() : super(kVersions.last.size);
+
+  IoSurfaceContentQuadState.init(
+  ) : super(kVersions.last.size);
 
   static IoSurfaceContentQuadState deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -699,6 +712,11 @@ class RenderPassId extends bindings.Struct {
   int index = 0;
 
   RenderPassId() : super(kVersions.last.size);
+
+  RenderPassId.init(
+    int this.layerId, 
+    int this.index
+  ) : super(kVersions.last.size);
 
   static RenderPassId deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -788,6 +806,14 @@ class RenderPassQuadState extends bindings.Struct {
   geometry_mojom.PointF filtersScale = null;
 
   RenderPassQuadState() : super(kVersions.last.size);
+
+  RenderPassQuadState.init(
+    RenderPassId this.renderPassId, 
+    int this.maskResourceId, 
+    geometry_mojom.PointF this.maskUvScale, 
+    geometry_mojom.Size this.maskTextureSize, 
+    geometry_mojom.PointF this.filtersScale
+  ) : super(kVersions.last.size);
 
   static RenderPassQuadState deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -918,6 +944,11 @@ class SolidColorQuadState extends bindings.Struct {
 
   SolidColorQuadState() : super(kVersions.last.size);
 
+  SolidColorQuadState.init(
+    Color this.color, 
+    bool this.forceAntiAliasingOff
+  ) : super(kVersions.last.size);
+
   static SolidColorQuadState deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1004,6 +1035,10 @@ class SurfaceQuadState extends bindings.Struct {
 
   SurfaceQuadState() : super(kVersions.last.size);
 
+  SurfaceQuadState.init(
+    surface_id_mojom.SurfaceId this.surface
+  ) : super(kVersions.last.size);
+
   static SurfaceQuadState deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1083,6 +1118,17 @@ class TextureQuadState extends bindings.Struct {
   List<double> vertexOpacity = null;
 
   TextureQuadState() : super(kVersions.last.size);
+
+  TextureQuadState.init(
+    int this.resourceId, 
+    bool this.premultipliedAlpha, 
+    bool this.flipped, 
+    bool this.nearestNeighbor, 
+    geometry_mojom.PointF this.uvTopLeft, 
+    geometry_mojom.PointF this.uvBottomRight, 
+    Color this.backgroundColor, 
+    List<double> this.vertexOpacity
+  ) : super(kVersions.last.size);
 
   static TextureQuadState deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1254,6 +1300,14 @@ class TileQuadState extends bindings.Struct {
 
   TileQuadState() : super(kVersions.last.size);
 
+  TileQuadState.init(
+    geometry_mojom.RectF this.texCoordRect, 
+    geometry_mojom.Size this.textureSize, 
+    bool this.swizzleContents, 
+    bool this.nearestNeighbor, 
+    int this.resourceId
+  ) : super(kVersions.last.size);
+
   static TileQuadState deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1379,6 +1433,9 @@ class StreamVideoQuadState extends bindings.Struct {
 
   StreamVideoQuadState() : super(kVersions.last.size);
 
+  StreamVideoQuadState.init(
+  ) : super(kVersions.last.size);
+
   static StreamVideoQuadState deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1442,6 +1499,15 @@ class YuvVideoQuadState extends bindings.Struct {
   YuvColorSpace colorSpace = null;
 
   YuvVideoQuadState() : super(kVersions.last.size);
+
+  YuvVideoQuadState.init(
+    geometry_mojom.RectF this.texCoordRect, 
+    int this.yPlaneResourceId, 
+    int this.uPlaneResourceId, 
+    int this.vPlaneResourceId, 
+    int this.aPlaneResourceId, 
+    YuvColorSpace this.colorSpace
+  ) : super(kVersions.last.size);
 
   static YuvVideoQuadState deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1599,6 +1665,25 @@ class Quad extends bindings.Struct {
   YuvVideoQuadState yuvVideoQuadState = null;
 
   Quad() : super(kVersions.last.size);
+
+  Quad.init(
+    Material this.material, 
+    bool this.needsBlending, 
+    geometry_mojom.Rect this.rect, 
+    geometry_mojom.Rect this.opaqueRect, 
+    geometry_mojom.Rect this.visibleRect, 
+    int this.sharedQuadStateIndex, 
+    CheckerboardQuadState this.checkerboardQuadState, 
+    DebugBorderQuadState this.debugBorderQuadState, 
+    IoSurfaceContentQuadState this.ioSurfaceQuadState, 
+    RenderPassQuadState this.renderPassQuadState, 
+    SolidColorQuadState this.solidColorQuadState, 
+    SurfaceQuadState this.surfaceQuadState, 
+    TextureQuadState this.textureQuadState, 
+    TileQuadState this.tileQuadState, 
+    StreamVideoQuadState this.streamVideoQuadState, 
+    YuvVideoQuadState this.yuvVideoQuadState
+  ) : super(kVersions.last.size);
 
   static Quad deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1891,6 +1976,17 @@ class SharedQuadState extends bindings.Struct {
 
   SharedQuadState() : super(kVersions.last.size);
 
+  SharedQuadState.init(
+    geometry_mojom.Transform this.contentToTargetTransform, 
+    geometry_mojom.Size this.contentBounds, 
+    geometry_mojom.Rect this.visibleContentRect, 
+    geometry_mojom.Rect this.clipRect, 
+    bool this.isClipped, 
+    double this.opacity, 
+    SkXfermode this.blendMode, 
+    int this.sortingContextId
+  ) : super(kVersions.last.size);
+
   static SharedQuadState deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -2067,6 +2163,16 @@ class Pass extends bindings.Struct {
   List<SharedQuadState> sharedQuadStates = null;
 
   Pass() : super(kVersions.last.size);
+
+  Pass.init(
+    int this.id, 
+    bool this.hasTransparentBackground, 
+    geometry_mojom.Rect this.outputRect, 
+    geometry_mojom.Rect this.damageRect, 
+    geometry_mojom.Transform this.transformToRootTarget, 
+    List<Quad> this.quads, 
+    List<SharedQuadState> this.sharedQuadStates
+  ) : super(kVersions.last.size);
 
   static Pass deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);

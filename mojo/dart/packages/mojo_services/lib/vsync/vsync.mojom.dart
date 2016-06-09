@@ -16,6 +16,9 @@ class _VSyncProviderAwaitVSyncParams extends bindings.Struct {
 
   _VSyncProviderAwaitVSyncParams() : super(kVersions.last.size);
 
+  _VSyncProviderAwaitVSyncParams.init(
+  ) : super(kVersions.last.size);
+
   static _VSyncProviderAwaitVSyncParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -74,6 +77,10 @@ class VSyncProviderAwaitVSyncResponseParams extends bindings.Struct {
   int timeStamp = 0;
 
   VSyncProviderAwaitVSyncResponseParams() : super(kVersions.last.size);
+
+  VSyncProviderAwaitVSyncResponseParams.init(
+    int this.timeStamp
+  ) : super(kVersions.last.size);
 
   static VSyncProviderAwaitVSyncResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -141,14 +148,17 @@ class VSyncProviderAwaitVSyncResponseParams extends bindings.Struct {
 const int _vSyncProviderMethodAwaitVSyncName = 0;
 
 class _VSyncProviderServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class VSyncProvider {
@@ -173,7 +183,7 @@ abstract class VSyncProvider {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic awaitVSync([Function responseFactory = null]);
+  void awaitVSync(void callback(int timeStamp));
 }
 
 abstract class VSyncProviderInterface
@@ -223,18 +233,14 @@ class _VSyncProviderProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.timeStamp );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -279,16 +285,18 @@ class VSyncProviderProxy
   }
 
 
-  dynamic awaitVSync([Function responseFactory = null]) {
+  void awaitVSync(void callback(int timeStamp)) {
     if (impl != null) {
-      return new Future(() => impl.awaitVSync(_VSyncProviderStubControl._vSyncProviderAwaitVSyncResponseParamsFactory));
+      impl.awaitVSync(callback);
+      return;
     }
     var params = new _VSyncProviderAwaitVSyncParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _vSyncProviderMethodAwaitVSyncName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -314,47 +322,36 @@ class _VSyncProviderStubControl
   String get serviceName => VSyncProvider.serviceName;
 
 
-  static VSyncProviderAwaitVSyncResponseParams _vSyncProviderAwaitVSyncResponseParamsFactory(int timeStamp) {
-    var result = new VSyncProviderAwaitVSyncResponseParams();
-    result.timeStamp = timeStamp;
-    return result;
+  Function _vSyncProviderAwaitVSyncResponseParamsResponder(
+      int requestId) {
+  return (int timeStamp) {
+      var result = new VSyncProviderAwaitVSyncResponseParams();
+      result.timeStamp = timeStamp;
+      sendResponse(buildResponseWithId(
+          result,
+          _vSyncProviderMethodAwaitVSyncName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _vSyncProviderMethodAwaitVSyncName:
-        var response = _impl.awaitVSync(_vSyncProviderAwaitVSyncResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _vSyncProviderMethodAwaitVSyncName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _vSyncProviderMethodAwaitVSyncName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.awaitVSync(_vSyncProviderAwaitVSyncResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   VSyncProvider get impl => _impl;
@@ -408,8 +405,8 @@ class VSyncProviderStub
   }
 
 
-  dynamic awaitVSync([Function responseFactory = null]) {
-    return impl.awaitVSync(responseFactory);
+  void awaitVSync(void callback(int timeStamp)) {
+    return impl.awaitVSync(callback);
   }
 }
 

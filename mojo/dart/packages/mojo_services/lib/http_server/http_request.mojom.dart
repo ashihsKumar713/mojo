@@ -19,6 +19,13 @@ class HttpRequest extends bindings.Struct {
 
   HttpRequest() : super(kVersions.last.size);
 
+  HttpRequest.init(
+    String this.relativeUrl, 
+    String this.method, 
+    Map<String, String> this.headers, 
+    core.MojoDataPipeConsumer this.body
+  ) : super(kVersions.last.size);
+
   static HttpRequest deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);

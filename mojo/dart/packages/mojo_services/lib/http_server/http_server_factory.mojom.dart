@@ -20,6 +20,11 @@ class _HttpServerFactoryCreateHttpServerParams extends bindings.Struct {
 
   _HttpServerFactoryCreateHttpServerParams() : super(kVersions.last.size);
 
+  _HttpServerFactoryCreateHttpServerParams.init(
+    http_server_mojom.HttpServerInterfaceRequest this.serverRequest, 
+    net_address_mojom.NetAddress this.localAddress
+  ) : super(kVersions.last.size);
+
   static _HttpServerFactoryCreateHttpServerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -98,14 +103,17 @@ class _HttpServerFactoryCreateHttpServerParams extends bindings.Struct {
 const int _httpServerFactoryMethodCreateHttpServerName = 0;
 
 class _HttpServerFactoryServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class HttpServerFactory {
@@ -256,11 +264,11 @@ class _HttpServerFactoryStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -275,7 +283,6 @@ class _HttpServerFactoryStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   HttpServerFactory get impl => _impl;

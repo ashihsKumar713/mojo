@@ -132,6 +132,13 @@ class CompletionData extends bindings.Struct {
 
   CompletionData() : super(kVersions.last.size);
 
+  CompletionData.init(
+    int this.id, 
+    int this.position, 
+    String this.text, 
+    String this.label
+  ) : super(kVersions.last.size);
+
   static CompletionData deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -245,6 +252,12 @@ class CorrectionData extends bindings.Struct {
 
   CorrectionData() : super(kVersions.last.size);
 
+  CorrectionData.init(
+    int this.offset, 
+    String this.oldText, 
+    String this.newText
+  ) : super(kVersions.last.size);
+
   static CorrectionData deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -343,6 +356,10 @@ class _KeyboardClientCommitCompletionParams extends bindings.Struct {
 
   _KeyboardClientCommitCompletionParams() : super(kVersions.last.size);
 
+  _KeyboardClientCommitCompletionParams.init(
+    CompletionData this.completion
+  ) : super(kVersions.last.size);
+
   static _KeyboardClientCommitCompletionParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -415,6 +432,10 @@ class _KeyboardClientCommitCorrectionParams extends bindings.Struct {
   CorrectionData correction = null;
 
   _KeyboardClientCommitCorrectionParams() : super(kVersions.last.size);
+
+  _KeyboardClientCommitCorrectionParams.init(
+    CorrectionData this.correction
+  ) : super(kVersions.last.size);
 
   static _KeyboardClientCommitCorrectionParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -489,6 +510,11 @@ class _KeyboardClientCommitTextParams extends bindings.Struct {
   int newCursorPosition = 0;
 
   _KeyboardClientCommitTextParams() : super(kVersions.last.size);
+
+  _KeyboardClientCommitTextParams.init(
+    String this.text, 
+    int this.newCursorPosition
+  ) : super(kVersions.last.size);
 
   static _KeyboardClientCommitTextParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -576,6 +602,11 @@ class _KeyboardClientDeleteSurroundingTextParams extends bindings.Struct {
 
   _KeyboardClientDeleteSurroundingTextParams() : super(kVersions.last.size);
 
+  _KeyboardClientDeleteSurroundingTextParams.init(
+    int this.beforeLength, 
+    int this.afterLength
+  ) : super(kVersions.last.size);
+
   static _KeyboardClientDeleteSurroundingTextParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -661,6 +692,11 @@ class _KeyboardClientSetComposingRegionParams extends bindings.Struct {
   int end = 0;
 
   _KeyboardClientSetComposingRegionParams() : super(kVersions.last.size);
+
+  _KeyboardClientSetComposingRegionParams.init(
+    int this.start, 
+    int this.end
+  ) : super(kVersions.last.size);
 
   static _KeyboardClientSetComposingRegionParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -748,6 +784,11 @@ class _KeyboardClientSetComposingTextParams extends bindings.Struct {
 
   _KeyboardClientSetComposingTextParams() : super(kVersions.last.size);
 
+  _KeyboardClientSetComposingTextParams.init(
+    String this.text, 
+    int this.newCursorPosition
+  ) : super(kVersions.last.size);
+
   static _KeyboardClientSetComposingTextParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -834,6 +875,11 @@ class _KeyboardClientSetSelectionParams extends bindings.Struct {
 
   _KeyboardClientSetSelectionParams() : super(kVersions.last.size);
 
+  _KeyboardClientSetSelectionParams.init(
+    int this.start, 
+    int this.end
+  ) : super(kVersions.last.size);
+
   static _KeyboardClientSetSelectionParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -919,6 +965,10 @@ class _KeyboardClientSubmitParams extends bindings.Struct {
 
   _KeyboardClientSubmitParams() : super(kVersions.last.size);
 
+  _KeyboardClientSubmitParams.init(
+    SubmitAction this.action
+  ) : super(kVersions.last.size);
+
   static _KeyboardClientSubmitParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -995,6 +1045,11 @@ class _KeyboardServiceShowParams extends bindings.Struct {
   KeyboardType type = null;
 
   _KeyboardServiceShowParams() : super(kVersions.last.size);
+
+  _KeyboardServiceShowParams.init(
+    KeyboardClientInterface this.client, 
+    KeyboardType this.type
+  ) : super(kVersions.last.size);
 
   static _KeyboardServiceShowParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1082,6 +1137,9 @@ class _KeyboardServiceShowByRequestParams extends bindings.Struct {
 
   _KeyboardServiceShowByRequestParams() : super(kVersions.last.size);
 
+  _KeyboardServiceShowByRequestParams.init(
+  ) : super(kVersions.last.size);
+
   static _KeyboardServiceShowByRequestParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1139,6 +1197,9 @@ class _KeyboardServiceHideParams extends bindings.Struct {
   ];
 
   _KeyboardServiceHideParams() : super(kVersions.last.size);
+
+  _KeyboardServiceHideParams.init(
+  ) : super(kVersions.last.size);
 
   static _KeyboardServiceHideParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1198,6 +1259,10 @@ class _KeyboardServiceSetTextParams extends bindings.Struct {
   String text = null;
 
   _KeyboardServiceSetTextParams() : super(kVersions.last.size);
+
+  _KeyboardServiceSetTextParams.init(
+    String this.text
+  ) : super(kVersions.last.size);
 
   static _KeyboardServiceSetTextParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1271,6 +1336,11 @@ class _KeyboardServiceSetSelectionParams extends bindings.Struct {
   int end = 0;
 
   _KeyboardServiceSetSelectionParams() : super(kVersions.last.size);
+
+  _KeyboardServiceSetSelectionParams.init(
+    int this.start, 
+    int this.end
+  ) : super(kVersions.last.size);
 
   static _KeyboardServiceSetSelectionParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1358,6 +1428,11 @@ class _KeyboardServiceFactoryCreateKeyboardServiceParams extends bindings.Struct
 
   _KeyboardServiceFactoryCreateKeyboardServiceParams() : super(kVersions.last.size);
 
+  _KeyboardServiceFactoryCreateKeyboardServiceParams.init(
+    native_viewport_event_dispatcher_mojom.NativeViewportEventDispatcherInterfaceRequest this.keyEventDispatcher, 
+    KeyboardServiceInterfaceRequest this.serviceRequest
+  ) : super(kVersions.last.size);
+
   static _KeyboardServiceFactoryCreateKeyboardServiceParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1442,14 +1517,17 @@ const int _keyboardClientMethodSetSelectionName = 6;
 const int _keyboardClientMethodSubmitName = 7;
 
 class _KeyboardClientServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class KeyboardClient {
@@ -1709,11 +1787,11 @@ class _KeyboardClientStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1763,7 +1841,6 @@ class _KeyboardClientStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   KeyboardClient get impl => _impl;
@@ -1850,14 +1927,17 @@ const int _keyboardServiceMethodSetTextName = 3;
 const int _keyboardServiceMethodSetSelectionName = 4;
 
 class _KeyboardServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class KeyboardService {
@@ -2067,11 +2147,11 @@ class _KeyboardServiceStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -2102,7 +2182,6 @@ class _KeyboardServiceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   KeyboardService get impl => _impl;
@@ -2176,14 +2255,17 @@ class KeyboardServiceStub
 const int _keyboardServiceFactoryMethodCreateKeyboardServiceName = 0;
 
 class _KeyboardServiceFactoryServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class KeyboardServiceFactory {
@@ -2334,11 +2416,11 @@ class _KeyboardServiceFactoryStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -2353,7 +2435,6 @@ class _KeyboardServiceFactoryStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   KeyboardServiceFactory get impl => _impl;

@@ -22,6 +22,15 @@ class FlogDescription extends bindings.Struct {
 
   FlogDescription() : super(kVersions.last.size);
 
+  FlogDescription.init(
+    String this.label, 
+    int this.logId, 
+    int this.entryCount, 
+    int this.startTimeUs, 
+    int this.stopTimeUs, 
+    bool this.open
+  ) : super(kVersions.last.size);
+
   static FlogDescription deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -162,6 +171,13 @@ class FlogEntry extends bindings.Struct {
 
   FlogEntry() : super(kVersions.last.size);
 
+  FlogEntry.init(
+    int this.timeUs, 
+    int this.logId, 
+    int this.channelId, 
+    FlogEntryDetails this.details
+  ) : super(kVersions.last.size);
+
   static FlogEntry deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -273,6 +289,10 @@ class FlogChannelCreationEntryDetails extends bindings.Struct {
 
   FlogChannelCreationEntryDetails() : super(kVersions.last.size);
 
+  FlogChannelCreationEntryDetails.init(
+    String this.typeName
+  ) : super(kVersions.last.size);
+
   static FlogChannelCreationEntryDetails deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -344,6 +364,10 @@ class FlogChannelMessageEntryDetails extends bindings.Struct {
   List<int> data = null;
 
   FlogChannelMessageEntryDetails() : super(kVersions.last.size);
+
+  FlogChannelMessageEntryDetails.init(
+    List<int> this.data
+  ) : super(kVersions.last.size);
 
   static FlogChannelMessageEntryDetails deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -417,6 +441,11 @@ class _FlogServiceCreateLoggerParams extends bindings.Struct {
   String label = null;
 
   _FlogServiceCreateLoggerParams() : super(kVersions.last.size);
+
+  _FlogServiceCreateLoggerParams.init(
+    FlogLoggerInterfaceRequest this.logger, 
+    String this.label
+  ) : super(kVersions.last.size);
 
   static _FlogServiceCreateLoggerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -500,6 +529,9 @@ class _FlogServiceGetLogDescriptionsParams extends bindings.Struct {
 
   _FlogServiceGetLogDescriptionsParams() : super(kVersions.last.size);
 
+  _FlogServiceGetLogDescriptionsParams.init(
+  ) : super(kVersions.last.size);
+
   static _FlogServiceGetLogDescriptionsParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -558,6 +590,10 @@ class FlogServiceGetLogDescriptionsResponseParams extends bindings.Struct {
   List<FlogDescription> descriptions = null;
 
   FlogServiceGetLogDescriptionsResponseParams() : super(kVersions.last.size);
+
+  FlogServiceGetLogDescriptionsResponseParams.init(
+    List<FlogDescription> this.descriptions
+  ) : super(kVersions.last.size);
 
   static FlogServiceGetLogDescriptionsResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -648,6 +684,11 @@ class _FlogServiceCreateReaderParams extends bindings.Struct {
 
   _FlogServiceCreateReaderParams() : super(kVersions.last.size);
 
+  _FlogServiceCreateReaderParams.init(
+    FlogReaderInterfaceRequest this.reader, 
+    int this.logId
+  ) : super(kVersions.last.size);
+
   static _FlogServiceCreateReaderParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -732,6 +773,12 @@ class _FlogLoggerLogChannelCreationParams extends bindings.Struct {
   String typeName = null;
 
   _FlogLoggerLogChannelCreationParams() : super(kVersions.last.size);
+
+  _FlogLoggerLogChannelCreationParams.init(
+    int this.timeUs, 
+    int this.channelId, 
+    String this.typeName
+  ) : super(kVersions.last.size);
 
   static _FlogLoggerLogChannelCreationParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -833,6 +880,12 @@ class _FlogLoggerLogChannelMessageParams extends bindings.Struct {
 
   _FlogLoggerLogChannelMessageParams() : super(kVersions.last.size);
 
+  _FlogLoggerLogChannelMessageParams.init(
+    int this.timeUs, 
+    int this.channelId, 
+    List<int> this.data
+  ) : super(kVersions.last.size);
+
   static _FlogLoggerLogChannelMessageParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -932,6 +985,11 @@ class _FlogLoggerLogChannelDeletionParams extends bindings.Struct {
 
   _FlogLoggerLogChannelDeletionParams() : super(kVersions.last.size);
 
+  _FlogLoggerLogChannelDeletionParams.init(
+    int this.timeUs, 
+    int this.channelId
+  ) : super(kVersions.last.size);
+
   static _FlogLoggerLogChannelDeletionParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1017,6 +1075,11 @@ class _FlogReaderGetEntriesParams extends bindings.Struct {
   int maxCount = 0;
 
   _FlogReaderGetEntriesParams() : super(kVersions.last.size);
+
+  _FlogReaderGetEntriesParams.init(
+    int this.startIndex, 
+    int this.maxCount
+  ) : super(kVersions.last.size);
 
   static _FlogReaderGetEntriesParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1104,6 +1167,12 @@ class FlogReaderGetEntriesResponseParams extends bindings.Struct {
   bool open = false;
 
   FlogReaderGetEntriesResponseParams() : super(kVersions.last.size);
+
+  FlogReaderGetEntriesResponseParams.init(
+    List<FlogEntry> this.entries, 
+    int this.entryCount, 
+    bool this.open
+  ) : super(kVersions.last.size);
 
   static FlogReaderGetEntriesResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1320,14 +1389,17 @@ const int _flogServiceMethodGetLogDescriptionsName = 1;
 const int _flogServiceMethodCreateReaderName = 2;
 
 class _FlogServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class FlogService {
@@ -1353,7 +1425,7 @@ abstract class FlogService {
     return p;
   }
   void createLogger(FlogLoggerInterfaceRequest logger, String label);
-  dynamic getLogDescriptions([Function responseFactory = null]);
+  void getLogDescriptions(void callback(List<FlogDescription> descriptions));
   void createReader(FlogReaderInterfaceRequest reader, int logId);
 }
 
@@ -1404,18 +1476,14 @@ class _FlogServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.descriptions );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1475,16 +1543,18 @@ class FlogServiceProxy
     ctrl.sendMessage(params,
         _flogServiceMethodCreateLoggerName);
   }
-  dynamic getLogDescriptions([Function responseFactory = null]) {
+  void getLogDescriptions(void callback(List<FlogDescription> descriptions)) {
     if (impl != null) {
-      return new Future(() => impl.getLogDescriptions(_FlogServiceStubControl._flogServiceGetLogDescriptionsResponseParamsFactory));
+      impl.getLogDescriptions(callback);
+      return;
     }
     var params = new _FlogServiceGetLogDescriptionsParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _flogServiceMethodGetLogDescriptionsName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void createReader(FlogReaderInterfaceRequest reader, int logId) {
     if (impl != null) {
@@ -1525,17 +1595,24 @@ class _FlogServiceStubControl
   String get serviceName => FlogService.serviceName;
 
 
-  static FlogServiceGetLogDescriptionsResponseParams _flogServiceGetLogDescriptionsResponseParamsFactory(List<FlogDescription> descriptions) {
-    var result = new FlogServiceGetLogDescriptionsResponseParams();
-    result.descriptions = descriptions;
-    return result;
+  Function _flogServiceGetLogDescriptionsResponseParamsResponder(
+      int requestId) {
+  return (List<FlogDescription> descriptions) {
+      var result = new FlogServiceGetLogDescriptionsResponseParams();
+      result.descriptions = descriptions;
+      sendResponse(buildResponseWithId(
+          result,
+          _flogServiceMethodGetLogDescriptionsName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1547,24 +1624,7 @@ class _FlogServiceStubControl
         _impl.createLogger(params.logger, params.label);
         break;
       case _flogServiceMethodGetLogDescriptionsName:
-        var response = _impl.getLogDescriptions(_flogServiceGetLogDescriptionsResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _flogServiceMethodGetLogDescriptionsName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _flogServiceMethodGetLogDescriptionsName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getLogDescriptions(_flogServiceGetLogDescriptionsResponseParamsResponder(message.header.requestId));
         break;
       case _flogServiceMethodCreateReaderName:
         var params = _FlogServiceCreateReaderParams.deserialize(
@@ -1575,7 +1635,6 @@ class _FlogServiceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   FlogService get impl => _impl;
@@ -1632,8 +1691,8 @@ class FlogServiceStub
   void createLogger(FlogLoggerInterfaceRequest logger, String label) {
     return impl.createLogger(logger, label);
   }
-  dynamic getLogDescriptions([Function responseFactory = null]) {
-    return impl.getLogDescriptions(responseFactory);
+  void getLogDescriptions(void callback(List<FlogDescription> descriptions)) {
+    return impl.getLogDescriptions(callback);
   }
   void createReader(FlogReaderInterfaceRequest reader, int logId) {
     return impl.createReader(reader, logId);
@@ -1645,14 +1704,17 @@ const int _flogLoggerMethodLogChannelMessageName = 1;
 const int _flogLoggerMethodLogChannelDeletionName = 2;
 
 class _FlogLoggerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class FlogLogger {
@@ -1837,11 +1899,11 @@ class _FlogLoggerStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1866,7 +1928,6 @@ class _FlogLoggerStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   FlogLogger get impl => _impl;
@@ -1934,14 +1995,17 @@ class FlogLoggerStub
 const int _flogReaderMethodGetEntriesName = 0;
 
 class _FlogReaderServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class FlogReader {
@@ -1966,7 +2030,7 @@ abstract class FlogReader {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getEntries(int startIndex,int maxCount,[Function responseFactory = null]);
+  void getEntries(int startIndex,int maxCount,void callback(List<FlogEntry> entries, int entryCount, bool open));
 }
 
 abstract class FlogReaderInterface
@@ -2016,18 +2080,14 @@ class _FlogReaderProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.entries , r.entryCount , r.open );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -2072,18 +2132,20 @@ class FlogReaderProxy
   }
 
 
-  dynamic getEntries(int startIndex,int maxCount,[Function responseFactory = null]) {
+  void getEntries(int startIndex,int maxCount,void callback(List<FlogEntry> entries, int entryCount, bool open)) {
     if (impl != null) {
-      return new Future(() => impl.getEntries(startIndex,maxCount,_FlogReaderStubControl._flogReaderGetEntriesResponseParamsFactory));
+      impl.getEntries(startIndex,maxCount,callback);
+      return;
     }
     var params = new _FlogReaderGetEntriesParams();
     params.startIndex = startIndex;
     params.maxCount = maxCount;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _flogReaderMethodGetEntriesName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -2109,19 +2171,26 @@ class _FlogReaderStubControl
   String get serviceName => FlogReader.serviceName;
 
 
-  static FlogReaderGetEntriesResponseParams _flogReaderGetEntriesResponseParamsFactory(List<FlogEntry> entries, int entryCount, bool open) {
-    var result = new FlogReaderGetEntriesResponseParams();
-    result.entries = entries;
-    result.entryCount = entryCount;
-    result.open = open;
-    return result;
+  Function _flogReaderGetEntriesResponseParamsResponder(
+      int requestId) {
+  return (List<FlogEntry> entries, int entryCount, bool open) {
+      var result = new FlogReaderGetEntriesResponseParams();
+      result.entries = entries;
+      result.entryCount = entryCount;
+      result.open = open;
+      sendResponse(buildResponseWithId(
+          result,
+          _flogReaderMethodGetEntriesName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -2130,30 +2199,12 @@ class _FlogReaderStubControl
       case _flogReaderMethodGetEntriesName:
         var params = _FlogReaderGetEntriesParams.deserialize(
             message.payload);
-        var response = _impl.getEntries(params.startIndex,params.maxCount,_flogReaderGetEntriesResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _flogReaderMethodGetEntriesName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _flogReaderMethodGetEntriesName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getEntries(params.startIndex, params.maxCount, _flogReaderGetEntriesResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   FlogReader get impl => _impl;
@@ -2207,8 +2258,8 @@ class FlogReaderStub
   }
 
 
-  dynamic getEntries(int startIndex,int maxCount,[Function responseFactory = null]) {
-    return impl.getEntries(startIndex,maxCount,responseFactory);
+  void getEntries(int startIndex,int maxCount,void callback(List<FlogEntry> entries, int entryCount, bool open)) {
+    return impl.getEntries(startIndex,maxCount,callback);
   }
 }
 

@@ -22,7 +22,7 @@ patch class RawSocket {
 
 class _MojoRawSocket extends Stream<RawSocketEvent> implements RawSocket {
   StreamController<RawSocketEvent> _controller;
-  final _tcpBoundSocket = new TcpBoundSocketProxy.unbound();
+  final _tcpBoundSocket = new _TcpBoundSocketProxy.unbound();
   final _tcpConnectedSocket = new TcpConnectedSocketProxy.unbound();
   // Constructing a new MojoDataPipe allocates two handles. All failure paths
   // must be sure that these handles are closed so we do not leak any handles.
@@ -54,8 +54,10 @@ class _MojoRawSocket extends Stream<RawSocketEvent> implements RawSocket {
     if (!_trace) {
       return;
     }
-    _tracePrint('_tcpBoundSocket handle = ${_tcpBoundSocket.handle}');
-    _tracePrint('_tcpConnectedSocket handle = ${_tcpConnectedSocket.handle}');
+    _tracePrint(
+        '_tcpBoundSocket handle = ${_tcpBoundSocket.proxy.handle}');
+    _tracePrint(
+        '_tcpConnectedSocket handle = ${_tcpConnectedSocket.handle}');
   }
 
   _tracePipeIn() {
@@ -124,7 +126,7 @@ class _MojoRawSocket extends Stream<RawSocketEvent> implements RawSocket {
     if (!_trace) {
       return;
     }
-    _tracePrint(_tcpBoundSocket.toString());
+    _tracePrint(_tcpBoundSocket.proxy.toString());
   }
 
   static int _traceIdGenerator = 0;
@@ -152,9 +154,8 @@ class _MojoRawSocket extends Stream<RawSocketEvent> implements RawSocket {
     var rawSocket = new _MojoRawSocket();
     var networkService = _getNetworkService();
     assert(networkService != null);
-    var response =
-        await networkService.createTcpBoundSocket(source,
-                                                  rawSocket._tcpBoundSocket);
+    var response = await networkService.createTcpBoundSocket(
+        source, rawSocket._tcpBoundSocket.proxy);
     if (!_NetworkService._okay(response.result)) {
       rawSocket.close();
       _NetworkService._throwOnError(response.result);

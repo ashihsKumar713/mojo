@@ -78,6 +78,11 @@ class _NavigatorHostRequestNavigateParams extends bindings.Struct {
 
   _NavigatorHostRequestNavigateParams() : super(kVersions.last.size);
 
+  _NavigatorHostRequestNavigateParams.init(
+    Target this.target, 
+    url_request_mojom.UrlRequest this.request
+  ) : super(kVersions.last.size);
+
   static _NavigatorHostRequestNavigateParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -166,6 +171,10 @@ class _NavigatorHostRequestNavigateHistoryParams extends bindings.Struct {
 
   _NavigatorHostRequestNavigateHistoryParams() : super(kVersions.last.size);
 
+  _NavigatorHostRequestNavigateHistoryParams.init(
+    int this.delta
+  ) : super(kVersions.last.size);
+
   static _NavigatorHostRequestNavigateHistoryParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -238,6 +247,10 @@ class _NavigatorHostDidNavigateLocallyParams extends bindings.Struct {
 
   _NavigatorHostDidNavigateLocallyParams() : super(kVersions.last.size);
 
+  _NavigatorHostDidNavigateLocallyParams.init(
+    String this.url
+  ) : super(kVersions.last.size);
+
   static _NavigatorHostDidNavigateLocallyParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -306,14 +319,17 @@ const int _navigatorHostMethodRequestNavigateHistoryName = 1;
 const int _navigatorHostMethodDidNavigateLocallyName = 2;
 
 class _NavigatorHostServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class NavigatorHost {
@@ -494,11 +510,11 @@ class _NavigatorHostStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -523,7 +539,6 @@ class _NavigatorHostStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   NavigatorHost get impl => _impl;

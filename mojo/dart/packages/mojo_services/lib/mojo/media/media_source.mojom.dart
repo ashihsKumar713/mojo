@@ -22,6 +22,12 @@ class MediaSourceStreamDescriptor extends bindings.Struct {
 
   MediaSourceStreamDescriptor() : super(kVersions.last.size);
 
+  MediaSourceStreamDescriptor.init(
+    int this.index, 
+    media_types_mojom.MediaType this.mediaType, 
+    media_types_mojom.MediaType this.originalMediaType
+  ) : super(kVersions.last.size);
+
   static MediaSourceStreamDescriptor deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -122,6 +128,10 @@ class MediaSourceStatus extends bindings.Struct {
 
   MediaSourceStatus() : super(kVersions.last.size);
 
+  MediaSourceStatus.init(
+    media_metadata_mojom.MediaMetadata this.metadata
+  ) : super(kVersions.last.size);
+
   static MediaSourceStatus deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -194,6 +204,9 @@ class _MediaSourceGetStreamsParams extends bindings.Struct {
 
   _MediaSourceGetStreamsParams() : super(kVersions.last.size);
 
+  _MediaSourceGetStreamsParams.init(
+  ) : super(kVersions.last.size);
+
   static _MediaSourceGetStreamsParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -252,6 +265,10 @@ class MediaSourceGetStreamsResponseParams extends bindings.Struct {
   List<MediaSourceStreamDescriptor> streams = null;
 
   MediaSourceGetStreamsResponseParams() : super(kVersions.last.size);
+
+  MediaSourceGetStreamsResponseParams.init(
+    List<MediaSourceStreamDescriptor> this.streams
+  ) : super(kVersions.last.size);
 
   static MediaSourceGetStreamsResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -342,6 +359,11 @@ class _MediaSourceGetProducerParams extends bindings.Struct {
 
   _MediaSourceGetProducerParams() : super(kVersions.last.size);
 
+  _MediaSourceGetProducerParams.init(
+    int this.streamIndex, 
+    media_transport_mojom.MediaProducerInterfaceRequest this.producer
+  ) : super(kVersions.last.size);
+
   static _MediaSourceGetProducerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -426,6 +448,11 @@ class _MediaSourceGetPullModeProducerParams extends bindings.Struct {
 
   _MediaSourceGetPullModeProducerParams() : super(kVersions.last.size);
 
+  _MediaSourceGetPullModeProducerParams.init(
+    int this.streamIndex, 
+    media_transport_mojom.MediaPullModeProducerInterfaceRequest this.producer
+  ) : super(kVersions.last.size);
+
   static _MediaSourceGetPullModeProducerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -509,6 +536,10 @@ class _MediaSourceGetStatusParams extends bindings.Struct {
 
   _MediaSourceGetStatusParams() : super(kVersions.last.size);
 
+  _MediaSourceGetStatusParams.init(
+    int this.versionLastSeen
+  ) : super(kVersions.last.size);
+
   static _MediaSourceGetStatusParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -581,6 +612,11 @@ class MediaSourceGetStatusResponseParams extends bindings.Struct {
   MediaSourceStatus status = null;
 
   MediaSourceGetStatusResponseParams() : super(kVersions.last.size);
+
+  MediaSourceGetStatusResponseParams.init(
+    int this.version, 
+    MediaSourceStatus this.status
+  ) : super(kVersions.last.size);
 
   static MediaSourceGetStatusResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -667,6 +703,9 @@ class _MediaSourcePrepareParams extends bindings.Struct {
 
   _MediaSourcePrepareParams() : super(kVersions.last.size);
 
+  _MediaSourcePrepareParams.init(
+  ) : super(kVersions.last.size);
+
   static _MediaSourcePrepareParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -724,6 +763,9 @@ class MediaSourcePrepareResponseParams extends bindings.Struct {
   ];
 
   MediaSourcePrepareResponseParams() : super(kVersions.last.size);
+
+  MediaSourcePrepareResponseParams.init(
+  ) : super(kVersions.last.size);
 
   static MediaSourcePrepareResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -783,6 +825,9 @@ class _MediaSourcePrimeParams extends bindings.Struct {
 
   _MediaSourcePrimeParams() : super(kVersions.last.size);
 
+  _MediaSourcePrimeParams.init(
+  ) : super(kVersions.last.size);
+
   static _MediaSourcePrimeParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -840,6 +885,9 @@ class MediaSourcePrimeResponseParams extends bindings.Struct {
   ];
 
   MediaSourcePrimeResponseParams() : super(kVersions.last.size);
+
+  MediaSourcePrimeResponseParams.init(
+  ) : super(kVersions.last.size);
 
   static MediaSourcePrimeResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -899,6 +947,9 @@ class _MediaSourceFlushParams extends bindings.Struct {
 
   _MediaSourceFlushParams() : super(kVersions.last.size);
 
+  _MediaSourceFlushParams.init(
+  ) : super(kVersions.last.size);
+
   static _MediaSourceFlushParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -956,6 +1007,9 @@ class MediaSourceFlushResponseParams extends bindings.Struct {
   ];
 
   MediaSourceFlushResponseParams() : super(kVersions.last.size);
+
+  MediaSourceFlushResponseParams.init(
+  ) : super(kVersions.last.size);
 
   static MediaSourceFlushResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1015,6 +1069,10 @@ class _MediaSourceSeekParams extends bindings.Struct {
   int position = 0;
 
   _MediaSourceSeekParams() : super(kVersions.last.size);
+
+  _MediaSourceSeekParams.init(
+    int this.position
+  ) : super(kVersions.last.size);
 
   static _MediaSourceSeekParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1087,6 +1145,9 @@ class MediaSourceSeekResponseParams extends bindings.Struct {
 
   MediaSourceSeekResponseParams() : super(kVersions.last.size);
 
+  MediaSourceSeekResponseParams.init(
+  ) : super(kVersions.last.size);
+
   static MediaSourceSeekResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1147,14 +1208,17 @@ const int _mediaSourceMethodFlushName = 6;
 const int _mediaSourceMethodSeekName = 7;
 
 class _MediaSourceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class MediaSource {
@@ -1179,14 +1243,14 @@ abstract class MediaSource {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getStreams([Function responseFactory = null]);
+  void getStreams(void callback(List<MediaSourceStreamDescriptor> streams));
   void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer);
   void getPullModeProducer(int streamIndex, media_transport_mojom.MediaPullModeProducerInterfaceRequest producer);
-  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]);
-  dynamic prepare([Function responseFactory = null]);
-  dynamic prime([Function responseFactory = null]);
-  dynamic flush([Function responseFactory = null]);
-  dynamic seek(int position,[Function responseFactory = null]);
+  void getStatus(int versionLastSeen,void callback(int version, MediaSourceStatus status));
+  void prepare(void callback());
+  void prime(void callback());
+  void flush(void callback());
+  void seek(int position,void callback());
   static const int kInitialStatus = 0;
 }
 
@@ -1237,18 +1301,14 @@ class _MediaSourceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.streams );
         break;
       case _mediaSourceMethodGetStatusName:
         var r = MediaSourceGetStatusResponseParams.deserialize(
@@ -1257,18 +1317,14 @@ class _MediaSourceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.version , r.status );
         break;
       case _mediaSourceMethodPrepareName:
         var r = MediaSourcePrepareResponseParams.deserialize(
@@ -1277,18 +1333,14 @@ class _MediaSourceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       case _mediaSourceMethodPrimeName:
         var r = MediaSourcePrimeResponseParams.deserialize(
@@ -1297,18 +1349,14 @@ class _MediaSourceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       case _mediaSourceMethodFlushName:
         var r = MediaSourceFlushResponseParams.deserialize(
@@ -1317,18 +1365,14 @@ class _MediaSourceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       case _mediaSourceMethodSeekName:
         var r = MediaSourceSeekResponseParams.deserialize(
@@ -1337,18 +1381,14 @@ class _MediaSourceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1393,16 +1433,18 @@ class MediaSourceProxy
   }
 
 
-  dynamic getStreams([Function responseFactory = null]) {
+  void getStreams(void callback(List<MediaSourceStreamDescriptor> streams)) {
     if (impl != null) {
-      return new Future(() => impl.getStreams(_MediaSourceStubControl._mediaSourceGetStreamsResponseParamsFactory));
+      impl.getStreams(callback);
+      return;
     }
     var params = new _MediaSourceGetStreamsParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaSourceMethodGetStreamsName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer) {
     if (impl != null) {
@@ -1434,62 +1476,72 @@ class MediaSourceProxy
     ctrl.sendMessage(params,
         _mediaSourceMethodGetPullModeProducerName);
   }
-  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
+  void getStatus(int versionLastSeen,void callback(int version, MediaSourceStatus status)) {
     if (impl != null) {
-      return new Future(() => impl.getStatus(versionLastSeen,_MediaSourceStubControl._mediaSourceGetStatusResponseParamsFactory));
+      impl.getStatus(versionLastSeen,callback);
+      return;
     }
     var params = new _MediaSourceGetStatusParams();
     params.versionLastSeen = versionLastSeen;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaSourceMethodGetStatusName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic prepare([Function responseFactory = null]) {
+  void prepare(void callback()) {
     if (impl != null) {
-      return new Future(() => impl.prepare(_MediaSourceStubControl._mediaSourcePrepareResponseParamsFactory));
+      impl.prepare(callback);
+      return;
     }
     var params = new _MediaSourcePrepareParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaSourceMethodPrepareName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic prime([Function responseFactory = null]) {
+  void prime(void callback()) {
     if (impl != null) {
-      return new Future(() => impl.prime(_MediaSourceStubControl._mediaSourcePrimeResponseParamsFactory));
+      impl.prime(callback);
+      return;
     }
     var params = new _MediaSourcePrimeParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaSourceMethodPrimeName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic flush([Function responseFactory = null]) {
+  void flush(void callback()) {
     if (impl != null) {
-      return new Future(() => impl.flush(_MediaSourceStubControl._mediaSourceFlushResponseParamsFactory));
+      impl.flush(callback);
+      return;
     }
     var params = new _MediaSourceFlushParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaSourceMethodFlushName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic seek(int position,[Function responseFactory = null]) {
+  void seek(int position,void callback()) {
     if (impl != null) {
-      return new Future(() => impl.seek(position,_MediaSourceStubControl._mediaSourceSeekResponseParamsFactory));
+      impl.seek(position,callback);
+      return;
     }
     var params = new _MediaSourceSeekParams();
     params.position = position;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _mediaSourceMethodSeekName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -1515,63 +1567,88 @@ class _MediaSourceStubControl
   String get serviceName => MediaSource.serviceName;
 
 
-  static MediaSourceGetStreamsResponseParams _mediaSourceGetStreamsResponseParamsFactory(List<MediaSourceStreamDescriptor> streams) {
-    var result = new MediaSourceGetStreamsResponseParams();
-    result.streams = streams;
-    return result;
+  Function _mediaSourceGetStreamsResponseParamsResponder(
+      int requestId) {
+  return (List<MediaSourceStreamDescriptor> streams) {
+      var result = new MediaSourceGetStreamsResponseParams();
+      result.streams = streams;
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaSourceMethodGetStreamsName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static MediaSourceGetStatusResponseParams _mediaSourceGetStatusResponseParamsFactory(int version, MediaSourceStatus status) {
-    var result = new MediaSourceGetStatusResponseParams();
-    result.version = version;
-    result.status = status;
-    return result;
+  Function _mediaSourceGetStatusResponseParamsResponder(
+      int requestId) {
+  return (int version, MediaSourceStatus status) {
+      var result = new MediaSourceGetStatusResponseParams();
+      result.version = version;
+      result.status = status;
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaSourceMethodGetStatusName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static MediaSourcePrepareResponseParams _mediaSourcePrepareResponseParamsFactory() {
-    var result = new MediaSourcePrepareResponseParams();
-    return result;
+  Function _mediaSourcePrepareResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new MediaSourcePrepareResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaSourceMethodPrepareName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static MediaSourcePrimeResponseParams _mediaSourcePrimeResponseParamsFactory() {
-    var result = new MediaSourcePrimeResponseParams();
-    return result;
+  Function _mediaSourcePrimeResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new MediaSourcePrimeResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaSourceMethodPrimeName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static MediaSourceFlushResponseParams _mediaSourceFlushResponseParamsFactory() {
-    var result = new MediaSourceFlushResponseParams();
-    return result;
+  Function _mediaSourceFlushResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new MediaSourceFlushResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaSourceMethodFlushName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static MediaSourceSeekResponseParams _mediaSourceSeekResponseParamsFactory() {
-    var result = new MediaSourceSeekResponseParams();
-    return result;
+  Function _mediaSourceSeekResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new MediaSourceSeekResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaSourceMethodSeekName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _mediaSourceMethodGetStreamsName:
-        var response = _impl.getStreams(_mediaSourceGetStreamsResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaSourceMethodGetStreamsName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaSourceMethodGetStreamsName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getStreams(_mediaSourceGetStreamsResponseParamsResponder(message.header.requestId));
         break;
       case _mediaSourceMethodGetProducerName:
         var params = _MediaSourceGetProducerParams.deserialize(
@@ -1586,112 +1663,26 @@ class _MediaSourceStubControl
       case _mediaSourceMethodGetStatusName:
         var params = _MediaSourceGetStatusParams.deserialize(
             message.payload);
-        var response = _impl.getStatus(params.versionLastSeen,_mediaSourceGetStatusResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaSourceMethodGetStatusName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaSourceMethodGetStatusName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getStatus(params.versionLastSeen, _mediaSourceGetStatusResponseParamsResponder(message.header.requestId));
         break;
       case _mediaSourceMethodPrepareName:
-        var response = _impl.prepare(_mediaSourcePrepareResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaSourceMethodPrepareName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaSourceMethodPrepareName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.prepare(_mediaSourcePrepareResponseParamsResponder(message.header.requestId));
         break;
       case _mediaSourceMethodPrimeName:
-        var response = _impl.prime(_mediaSourcePrimeResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaSourceMethodPrimeName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaSourceMethodPrimeName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.prime(_mediaSourcePrimeResponseParamsResponder(message.header.requestId));
         break;
       case _mediaSourceMethodFlushName:
-        var response = _impl.flush(_mediaSourceFlushResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaSourceMethodFlushName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaSourceMethodFlushName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.flush(_mediaSourceFlushResponseParamsResponder(message.header.requestId));
         break;
       case _mediaSourceMethodSeekName:
         var params = _MediaSourceSeekParams.deserialize(
             message.payload);
-        var response = _impl.seek(params.position,_mediaSourceSeekResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _mediaSourceMethodSeekName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _mediaSourceMethodSeekName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.seek(params.position, _mediaSourceSeekResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   MediaSource get impl => _impl;
@@ -1745,8 +1736,8 @@ class MediaSourceStub
   }
 
 
-  dynamic getStreams([Function responseFactory = null]) {
-    return impl.getStreams(responseFactory);
+  void getStreams(void callback(List<MediaSourceStreamDescriptor> streams)) {
+    return impl.getStreams(callback);
   }
   void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer) {
     return impl.getProducer(streamIndex, producer);
@@ -1754,20 +1745,20 @@ class MediaSourceStub
   void getPullModeProducer(int streamIndex, media_transport_mojom.MediaPullModeProducerInterfaceRequest producer) {
     return impl.getPullModeProducer(streamIndex, producer);
   }
-  dynamic getStatus(int versionLastSeen,[Function responseFactory = null]) {
-    return impl.getStatus(versionLastSeen,responseFactory);
+  void getStatus(int versionLastSeen,void callback(int version, MediaSourceStatus status)) {
+    return impl.getStatus(versionLastSeen,callback);
   }
-  dynamic prepare([Function responseFactory = null]) {
-    return impl.prepare(responseFactory);
+  void prepare(void callback()) {
+    return impl.prepare(callback);
   }
-  dynamic prime([Function responseFactory = null]) {
-    return impl.prime(responseFactory);
+  void prime(void callback()) {
+    return impl.prime(callback);
   }
-  dynamic flush([Function responseFactory = null]) {
-    return impl.flush(responseFactory);
+  void flush(void callback()) {
+    return impl.flush(callback);
   }
-  dynamic seek(int position,[Function responseFactory = null]) {
-    return impl.seek(position,responseFactory);
+  void seek(int position,void callback()) {
+    return impl.seek(position,callback);
   }
 }
 

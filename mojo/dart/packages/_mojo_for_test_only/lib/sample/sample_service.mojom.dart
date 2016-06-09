@@ -94,6 +94,13 @@ class Bar extends bindings.Struct {
 
   Bar() : super(kVersions.last.size);
 
+  Bar.init(
+    int this.alpha, 
+    int this.beta, 
+    int this.gamma, 
+    BarType this.type
+  ) : super(kVersions.last.size);
+
   static Bar deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -223,6 +230,24 @@ class Foo extends bindings.Struct {
   List<bool> arrayOfBools = null;
 
   Foo() : super(kVersions.last.size);
+
+  Foo.init(
+    int this.x, 
+    int this.y, 
+    bool this.a, 
+    bool this.b, 
+    bool this.c, 
+    core.MojoMessagePipeEndpoint this.source, 
+    Bar this.bar, 
+    List<int> this.data, 
+    List<Bar> this.extraBars, 
+    String this.name, 
+    List<core.MojoDataPipeConsumer> this.inputStreams, 
+    List<core.MojoDataPipeProducer> this.outputStreams, 
+    List<List<bool>> this.arrayOfArrayOfBools, 
+    List<List<List<String>>> this.multiArrayOfStrings, 
+    List<bool> this.arrayOfBools
+  ) : super(kVersions.last.size);
 
   static Foo deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -576,6 +601,41 @@ class DefaultsTest extends bindings.Struct {
   double a31 = double.NAN;
 
   DefaultsTest() : super(kVersions.last.size);
+
+  DefaultsTest.init(
+    int this.a0, 
+    int this.a1, 
+    int this.a2, 
+    int this.a3, 
+    bool this.a11, 
+    bool this.a12, 
+    int this.a4, 
+    int this.a5, 
+    int this.a6, 
+    int this.a7, 
+    int this.a8, 
+    int this.a9, 
+    int this.a10, 
+    double this.a13, 
+    double this.a14, 
+    double this.a15, 
+    double this.a16, 
+    double this.a17, 
+    List<int> this.a18, 
+    String this.a19, 
+    BarType this.a20, 
+    double this.a29, 
+    sample_import_mojom.Point this.a21, 
+    sample_import2_mojom.Thing this.a22, 
+    int this.a23, 
+    int this.a24, 
+    int this.a25, 
+    double this.a26, 
+    double this.a27, 
+    double this.a28, 
+    double this.a30, 
+    double this.a31
+  ) : super(kVersions.last.size);
 
   static DefaultsTest deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1059,6 +1119,11 @@ class StructWithHoleV1 extends bindings.Struct {
 
   StructWithHoleV1() : super(kVersions.last.size);
 
+  StructWithHoleV1.init(
+    int this.v1, 
+    int this.v2
+  ) : super(kVersions.last.size);
+
   static StructWithHoleV1 deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1145,6 +1210,12 @@ class StructWithHoleV2 extends bindings.Struct {
   int v2 = 2;
 
   StructWithHoleV2() : super(kVersions.last.size);
+
+  StructWithHoleV2.init(
+    int this.v1, 
+    int this.v3, 
+    int this.v2
+  ) : super(kVersions.last.size);
 
   static StructWithHoleV2 deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1243,6 +1314,10 @@ class NonNullableMapStruct extends bindings.Struct {
   Map<String, String> mapField = null;
 
   NonNullableMapStruct() : super(kVersions.last.size);
+
+  NonNullableMapStruct.init(
+    Map<String, String> this.mapField
+  ) : super(kVersions.last.size);
 
   static NonNullableMapStruct deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1369,6 +1444,12 @@ class _ServiceFrobinateParams extends bindings.Struct {
 
   _ServiceFrobinateParams() : super(kVersions.last.size);
 
+  _ServiceFrobinateParams.init(
+    Foo this.foo, 
+    ServiceBazOptions this.baz, 
+    PortInterface this.port
+  ) : super(kVersions.last.size);
+
   static _ServiceFrobinateParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1469,6 +1550,10 @@ class ServiceFrobinateResponseParams extends bindings.Struct {
 
   ServiceFrobinateResponseParams() : super(kVersions.last.size);
 
+  ServiceFrobinateResponseParams.init(
+    int this.result
+  ) : super(kVersions.last.size);
+
   static ServiceFrobinateResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1541,6 +1626,10 @@ class _ServiceGetPortParams extends bindings.Struct {
 
   _ServiceGetPortParams() : super(kVersions.last.size);
 
+  _ServiceGetPortParams.init(
+    PortInterfaceRequest this.port
+  ) : super(kVersions.last.size);
+
   static _ServiceGetPortParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1612,6 +1701,11 @@ class _PortPostMessageParams extends bindings.Struct {
   PortInterface port = null;
 
   _PortPostMessageParams() : super(kVersions.last.size);
+
+  _PortPostMessageParams.init(
+    String this.messageText, 
+    PortInterface this.port
+  ) : super(kVersions.last.size);
 
   static _PortPostMessageParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1743,14 +1837,17 @@ class ServiceBazOptions extends bindings.MojoEnum {
 }
 
 class _ServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Service {
@@ -1775,7 +1872,7 @@ abstract class Service {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic frobinate(Foo foo,ServiceBazOptions baz,PortInterface port,[Function responseFactory = null]);
+  void frobinate(Foo foo,ServiceBazOptions baz,PortInterface port,void callback(int result));
   void getPort(PortInterfaceRequest port);
   static const int kFavoriteBaz = 1;
 }
@@ -1827,18 +1924,14 @@ class _ServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.result );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1883,19 +1976,21 @@ class ServiceProxy
   }
 
 
-  dynamic frobinate(Foo foo,ServiceBazOptions baz,PortInterface port,[Function responseFactory = null]) {
+  void frobinate(Foo foo,ServiceBazOptions baz,PortInterface port,void callback(int result)) {
     if (impl != null) {
-      return new Future(() => impl.frobinate(foo,baz,port,_ServiceStubControl._serviceFrobinateResponseParamsFactory));
+      impl.frobinate(foo,baz,port,callback);
+      return;
     }
     var params = new _ServiceFrobinateParams();
     params.foo = foo;
     params.baz = baz;
     params.port = port;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _serviceMethodFrobinateName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void getPort(PortInterfaceRequest port) {
     if (impl != null) {
@@ -1935,17 +2030,24 @@ class _ServiceStubControl
   String get serviceName => Service.serviceName;
 
 
-  static ServiceFrobinateResponseParams _serviceFrobinateResponseParamsFactory(int result) {
-    var result = new ServiceFrobinateResponseParams();
-    result.result = result;
-    return result;
+  Function _serviceFrobinateResponseParamsResponder(
+      int requestId) {
+  return (int result) {
+      var result = new ServiceFrobinateResponseParams();
+      result.result = result;
+      sendResponse(buildResponseWithId(
+          result,
+          _serviceMethodFrobinateName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1954,24 +2056,7 @@ class _ServiceStubControl
       case _serviceMethodFrobinateName:
         var params = _ServiceFrobinateParams.deserialize(
             message.payload);
-        var response = _impl.frobinate(params.foo,params.baz,params.port,_serviceFrobinateResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _serviceMethodFrobinateName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _serviceMethodFrobinateName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.frobinate(params.foo, params.baz, params.port, _serviceFrobinateResponseParamsResponder(message.header.requestId));
         break;
       case _serviceMethodGetPortName:
         var params = _ServiceGetPortParams.deserialize(
@@ -1982,7 +2067,6 @@ class _ServiceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Service get impl => _impl;
@@ -2036,8 +2120,8 @@ class ServiceStub
   }
 
 
-  dynamic frobinate(Foo foo,ServiceBazOptions baz,PortInterface port,[Function responseFactory = null]) {
-    return impl.frobinate(foo,baz,port,responseFactory);
+  void frobinate(Foo foo,ServiceBazOptions baz,PortInterface port,void callback(int result)) {
+    return impl.frobinate(foo,baz,port,callback);
   }
   void getPort(PortInterfaceRequest port) {
     return impl.getPort(port);
@@ -2047,14 +2131,17 @@ class ServiceStub
 const int _portMethodPostMessageName = 0;
 
 class _PortServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Port {
@@ -2205,11 +2292,11 @@ class _PortStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -2224,7 +2311,6 @@ class _PortStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Port get impl => _impl;
@@ -2296,7 +2382,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "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";
+  var serializedRuntimeTypeInfo = "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";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

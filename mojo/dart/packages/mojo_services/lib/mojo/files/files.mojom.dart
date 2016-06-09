@@ -20,6 +20,11 @@ class _FilesOpenFileSystemParams extends bindings.Struct {
 
   _FilesOpenFileSystemParams() : super(kVersions.last.size);
 
+  _FilesOpenFileSystemParams.init(
+    String this.fileSystem, 
+    directory_mojom.DirectoryInterfaceRequest this.directory
+  ) : super(kVersions.last.size);
+
   static _FilesOpenFileSystemParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -103,6 +108,10 @@ class FilesOpenFileSystemResponseParams extends bindings.Struct {
 
   FilesOpenFileSystemResponseParams() : super(kVersions.last.size);
 
+  FilesOpenFileSystemResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
+
   static FilesOpenFileSystemResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -173,14 +182,17 @@ class FilesOpenFileSystemResponseParams extends bindings.Struct {
 const int _filesMethodOpenFileSystemName = 0;
 
 class _FilesServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Files {
@@ -205,7 +217,7 @@ abstract class Files {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic openFileSystem(String fileSystem,directory_mojom.DirectoryInterfaceRequest directory,[Function responseFactory = null]);
+  void openFileSystem(String fileSystem,directory_mojom.DirectoryInterfaceRequest directory,void callback(types_mojom.Error error));
 }
 
 abstract class FilesInterface
@@ -255,18 +267,14 @@ class _FilesProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -311,18 +319,20 @@ class FilesProxy
   }
 
 
-  dynamic openFileSystem(String fileSystem,directory_mojom.DirectoryInterfaceRequest directory,[Function responseFactory = null]) {
+  void openFileSystem(String fileSystem,directory_mojom.DirectoryInterfaceRequest directory,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.openFileSystem(fileSystem,directory,_FilesStubControl._filesOpenFileSystemResponseParamsFactory));
+      impl.openFileSystem(fileSystem,directory,callback);
+      return;
     }
     var params = new _FilesOpenFileSystemParams();
     params.fileSystem = fileSystem;
     params.directory = directory;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _filesMethodOpenFileSystemName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -348,17 +358,24 @@ class _FilesStubControl
   String get serviceName => Files.serviceName;
 
 
-  static FilesOpenFileSystemResponseParams _filesOpenFileSystemResponseParamsFactory(types_mojom.Error error) {
-    var result = new FilesOpenFileSystemResponseParams();
-    result.error = error;
-    return result;
+  Function _filesOpenFileSystemResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new FilesOpenFileSystemResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _filesMethodOpenFileSystemName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -367,30 +384,12 @@ class _FilesStubControl
       case _filesMethodOpenFileSystemName:
         var params = _FilesOpenFileSystemParams.deserialize(
             message.payload);
-        var response = _impl.openFileSystem(params.fileSystem,params.directory,_filesOpenFileSystemResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _filesMethodOpenFileSystemName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _filesMethodOpenFileSystemName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.openFileSystem(params.fileSystem, params.directory, _filesOpenFileSystemResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Files get impl => _impl;
@@ -444,8 +443,8 @@ class FilesStub
   }
 
 
-  dynamic openFileSystem(String fileSystem,directory_mojom.DirectoryInterfaceRequest directory,[Function responseFactory = null]) {
-    return impl.openFileSystem(fileSystem,directory,responseFactory);
+  void openFileSystem(String fileSystem,directory_mojom.DirectoryInterfaceRequest directory,void callback(types_mojom.Error error)) {
+    return impl.openFileSystem(fileSystem,directory,callback);
   }
 }
 

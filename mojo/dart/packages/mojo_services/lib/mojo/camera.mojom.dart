@@ -18,6 +18,11 @@ class Photo extends bindings.Struct {
 
   Photo() : super(kVersions.last.size);
 
+  Photo.init(
+    String this.uniqueId, 
+    core.MojoDataPipeConsumer this.content
+  ) : super(kVersions.last.size);
+
   static Photo deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -100,6 +105,9 @@ class _CameraRollServiceUpdateParams extends bindings.Struct {
 
   _CameraRollServiceUpdateParams() : super(kVersions.last.size);
 
+  _CameraRollServiceUpdateParams.init(
+  ) : super(kVersions.last.size);
+
   static _CameraRollServiceUpdateParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -157,6 +165,9 @@ class _CameraRollServiceGetCountParams extends bindings.Struct {
   ];
 
   _CameraRollServiceGetCountParams() : super(kVersions.last.size);
+
+  _CameraRollServiceGetCountParams.init(
+  ) : super(kVersions.last.size);
 
   static _CameraRollServiceGetCountParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -216,6 +227,10 @@ class CameraRollServiceGetCountResponseParams extends bindings.Struct {
   int numPhotos = 0;
 
   CameraRollServiceGetCountResponseParams() : super(kVersions.last.size);
+
+  CameraRollServiceGetCountResponseParams.init(
+    int this.numPhotos
+  ) : super(kVersions.last.size);
 
   static CameraRollServiceGetCountResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -289,6 +304,10 @@ class _CameraRollServiceGetPhotoParams extends bindings.Struct {
 
   _CameraRollServiceGetPhotoParams() : super(kVersions.last.size);
 
+  _CameraRollServiceGetPhotoParams.init(
+    int this.index
+  ) : super(kVersions.last.size);
+
   static _CameraRollServiceGetPhotoParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -361,6 +380,10 @@ class CameraRollServiceGetPhotoResponseParams extends bindings.Struct {
 
   CameraRollServiceGetPhotoResponseParams() : super(kVersions.last.size);
 
+  CameraRollServiceGetPhotoResponseParams.init(
+    Photo this.photo
+  ) : super(kVersions.last.size);
+
   static CameraRollServiceGetPhotoResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -432,6 +455,9 @@ class _CameraServiceGetLatestFrameParams extends bindings.Struct {
 
   _CameraServiceGetLatestFrameParams() : super(kVersions.last.size);
 
+  _CameraServiceGetLatestFrameParams.init(
+  ) : super(kVersions.last.size);
+
   static _CameraServiceGetLatestFrameParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -490,6 +516,10 @@ class CameraServiceGetLatestFrameResponseParams extends bindings.Struct {
   core.MojoDataPipeConsumer content = null;
 
   CameraServiceGetLatestFrameResponseParams() : super(kVersions.last.size);
+
+  CameraServiceGetLatestFrameResponseParams.init(
+    core.MojoDataPipeConsumer this.content
+  ) : super(kVersions.last.size);
 
   static CameraServiceGetLatestFrameResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -558,14 +588,17 @@ const int _cameraRollServiceMethodGetCountName = 1;
 const int _cameraRollServiceMethodGetPhotoName = 2;
 
 class _CameraRollServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class CameraRollService {
@@ -591,8 +624,8 @@ abstract class CameraRollService {
     return p;
   }
   void update();
-  dynamic getCount([Function responseFactory = null]);
-  dynamic getPhoto(int index,[Function responseFactory = null]);
+  void getCount(void callback(int numPhotos));
+  void getPhoto(int index,void callback(Photo photo));
 }
 
 abstract class CameraRollServiceInterface
@@ -642,18 +675,14 @@ class _CameraRollServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.numPhotos );
         break;
       case _cameraRollServiceMethodGetPhotoName:
         var r = CameraRollServiceGetPhotoResponseParams.deserialize(
@@ -662,18 +691,14 @@ class _CameraRollServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.photo );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -731,28 +756,32 @@ class CameraRollServiceProxy
     ctrl.sendMessage(params,
         _cameraRollServiceMethodUpdateName);
   }
-  dynamic getCount([Function responseFactory = null]) {
+  void getCount(void callback(int numPhotos)) {
     if (impl != null) {
-      return new Future(() => impl.getCount(_CameraRollServiceStubControl._cameraRollServiceGetCountResponseParamsFactory));
+      impl.getCount(callback);
+      return;
     }
     var params = new _CameraRollServiceGetCountParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _cameraRollServiceMethodGetCountName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic getPhoto(int index,[Function responseFactory = null]) {
+  void getPhoto(int index,void callback(Photo photo)) {
     if (impl != null) {
-      return new Future(() => impl.getPhoto(index,_CameraRollServiceStubControl._cameraRollServiceGetPhotoResponseParamsFactory));
+      impl.getPhoto(index,callback);
+      return;
     }
     var params = new _CameraRollServiceGetPhotoParams();
     params.index = index;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _cameraRollServiceMethodGetPhotoName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -778,22 +807,36 @@ class _CameraRollServiceStubControl
   String get serviceName => CameraRollService.serviceName;
 
 
-  static CameraRollServiceGetCountResponseParams _cameraRollServiceGetCountResponseParamsFactory(int numPhotos) {
-    var result = new CameraRollServiceGetCountResponseParams();
-    result.numPhotos = numPhotos;
-    return result;
+  Function _cameraRollServiceGetCountResponseParamsResponder(
+      int requestId) {
+  return (int numPhotos) {
+      var result = new CameraRollServiceGetCountResponseParams();
+      result.numPhotos = numPhotos;
+      sendResponse(buildResponseWithId(
+          result,
+          _cameraRollServiceMethodGetCountName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static CameraRollServiceGetPhotoResponseParams _cameraRollServiceGetPhotoResponseParamsFactory(Photo photo) {
-    var result = new CameraRollServiceGetPhotoResponseParams();
-    result.photo = photo;
-    return result;
+  Function _cameraRollServiceGetPhotoResponseParamsResponder(
+      int requestId) {
+  return (Photo photo) {
+      var result = new CameraRollServiceGetPhotoResponseParams();
+      result.photo = photo;
+      sendResponse(buildResponseWithId(
+          result,
+          _cameraRollServiceMethodGetPhotoName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -803,52 +846,17 @@ class _CameraRollServiceStubControl
         _impl.update();
         break;
       case _cameraRollServiceMethodGetCountName:
-        var response = _impl.getCount(_cameraRollServiceGetCountResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _cameraRollServiceMethodGetCountName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _cameraRollServiceMethodGetCountName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getCount(_cameraRollServiceGetCountResponseParamsResponder(message.header.requestId));
         break;
       case _cameraRollServiceMethodGetPhotoName:
         var params = _CameraRollServiceGetPhotoParams.deserialize(
             message.payload);
-        var response = _impl.getPhoto(params.index,_cameraRollServiceGetPhotoResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _cameraRollServiceMethodGetPhotoName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _cameraRollServiceMethodGetPhotoName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getPhoto(params.index, _cameraRollServiceGetPhotoResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   CameraRollService get impl => _impl;
@@ -905,25 +913,28 @@ class CameraRollServiceStub
   void update() {
     return impl.update();
   }
-  dynamic getCount([Function responseFactory = null]) {
-    return impl.getCount(responseFactory);
+  void getCount(void callback(int numPhotos)) {
+    return impl.getCount(callback);
   }
-  dynamic getPhoto(int index,[Function responseFactory = null]) {
-    return impl.getPhoto(index,responseFactory);
+  void getPhoto(int index,void callback(Photo photo)) {
+    return impl.getPhoto(index,callback);
   }
 }
 
 const int _cameraServiceMethodGetLatestFrameName = 0;
 
 class _CameraServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class CameraService {
@@ -948,7 +959,7 @@ abstract class CameraService {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getLatestFrame([Function responseFactory = null]);
+  void getLatestFrame(void callback(core.MojoDataPipeConsumer content));
 }
 
 abstract class CameraServiceInterface
@@ -998,18 +1009,14 @@ class _CameraServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.content );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1054,16 +1061,18 @@ class CameraServiceProxy
   }
 
 
-  dynamic getLatestFrame([Function responseFactory = null]) {
+  void getLatestFrame(void callback(core.MojoDataPipeConsumer content)) {
     if (impl != null) {
-      return new Future(() => impl.getLatestFrame(_CameraServiceStubControl._cameraServiceGetLatestFrameResponseParamsFactory));
+      impl.getLatestFrame(callback);
+      return;
     }
     var params = new _CameraServiceGetLatestFrameParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _cameraServiceMethodGetLatestFrameName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -1089,47 +1098,36 @@ class _CameraServiceStubControl
   String get serviceName => CameraService.serviceName;
 
 
-  static CameraServiceGetLatestFrameResponseParams _cameraServiceGetLatestFrameResponseParamsFactory(core.MojoDataPipeConsumer content) {
-    var result = new CameraServiceGetLatestFrameResponseParams();
-    result.content = content;
-    return result;
+  Function _cameraServiceGetLatestFrameResponseParamsResponder(
+      int requestId) {
+  return (core.MojoDataPipeConsumer content) {
+      var result = new CameraServiceGetLatestFrameResponseParams();
+      result.content = content;
+      sendResponse(buildResponseWithId(
+          result,
+          _cameraServiceMethodGetLatestFrameName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _cameraServiceMethodGetLatestFrameName:
-        var response = _impl.getLatestFrame(_cameraServiceGetLatestFrameResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _cameraServiceMethodGetLatestFrameName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _cameraServiceMethodGetLatestFrameName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getLatestFrame(_cameraServiceGetLatestFrameResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   CameraService get impl => _impl;
@@ -1183,8 +1181,8 @@ class CameraServiceStub
   }
 
 
-  dynamic getLatestFrame([Function responseFactory = null]) {
-    return impl.getLatestFrame(responseFactory);
+  void getLatestFrame(void callback(core.MojoDataPipeConsumer content)) {
+    return impl.getLatestFrame(callback);
   }
 }
 

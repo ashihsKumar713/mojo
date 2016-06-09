@@ -23,6 +23,12 @@ class _RendererSetRootSceneParams extends bindings.Struct {
 
   _RendererSetRootSceneParams() : super(kVersions.last.size);
 
+  _RendererSetRootSceneParams.init(
+    scene_token_mojom.SceneToken this.sceneToken, 
+    int this.sceneVersion, 
+    geometry_mojom.Rect this.viewport
+  ) : super(kVersions.last.size);
+
   static _RendererSetRootSceneParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -122,6 +128,9 @@ class _RendererClearRootSceneParams extends bindings.Struct {
 
   _RendererClearRootSceneParams() : super(kVersions.last.size);
 
+  _RendererClearRootSceneParams.init(
+  ) : super(kVersions.last.size);
+
   static _RendererClearRootSceneParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -180,6 +189,10 @@ class _RendererGetSchedulerParams extends bindings.Struct {
   scheduling_mojom.FrameSchedulerInterfaceRequest scheduler = null;
 
   _RendererGetSchedulerParams() : super(kVersions.last.size);
+
+  _RendererGetSchedulerParams.init(
+    scheduling_mojom.FrameSchedulerInterfaceRequest this.scheduler
+  ) : super(kVersions.last.size);
 
   static _RendererGetSchedulerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -252,6 +265,10 @@ class _RendererGetHitTesterParams extends bindings.Struct {
 
   _RendererGetHitTesterParams() : super(kVersions.last.size);
 
+  _RendererGetHitTesterParams.init(
+    hit_tests_mojom.HitTesterInterfaceRequest this.hitTester
+  ) : super(kVersions.last.size);
+
   static _RendererGetHitTesterParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -320,14 +337,17 @@ const int _rendererMethodGetSchedulerName = 2;
 const int _rendererMethodGetHitTesterName = 3;
 
 class _RendererServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Renderer {
@@ -523,11 +543,11 @@ class _RendererStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -555,7 +575,6 @@ class _RendererStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Renderer get impl => _impl;

@@ -18,6 +18,10 @@ class _TerminalClientConnectToTerminalParams extends bindings.Struct {
 
   _TerminalClientConnectToTerminalParams() : super(kVersions.last.size);
 
+  _TerminalClientConnectToTerminalParams.init(
+    file_mojom.FileInterface this.terminal
+  ) : super(kVersions.last.size);
+
   static _TerminalClientConnectToTerminalParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -83,14 +87,17 @@ class _TerminalClientConnectToTerminalParams extends bindings.Struct {
 const int _terminalClientMethodConnectToTerminalName = 0;
 
 class _TerminalClientServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class TerminalClient {
@@ -240,11 +247,11 @@ class _TerminalClientStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -259,7 +266,6 @@ class _TerminalClientStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   TerminalClient get impl => _impl;

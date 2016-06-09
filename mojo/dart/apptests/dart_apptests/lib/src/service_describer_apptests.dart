@@ -39,18 +39,24 @@ tests(Application application, String url) {
 
       // Compare the service description obtained by the service describer and
       // the expected description taken from the pingpong service import.
-      var serviceDescription2 = pingpong_service.PingPongService.
-        serviceDescription;
+      var serviceDescription2 =
+          pingpong_service.PingPongService.serviceDescription;
 
-      Function identity = (v) => v;
+      Object sdValue;
+      Function sdValueAssign = (v) => sdValue = v;
 
       // Top-level Mojom Interfaces must match.
-      mojom_types.MojomInterface interfaceA =
-          (await serviceDescription.responseOrError(
-              serviceDescription.getTopLevelInterface())).mojomInterface;
+      var c = new Completer();
+      serviceDescription.getTopLevelInterface(
+          (mojom_types.MojomInterface iface) {
+        c.complete(iface);
+      });
 
-      mojom_types.MojomInterface interfaceB = serviceDescription2.
-          getTopLevelInterface(identity);
+      mojom_types.MojomInterface interfaceA =
+          (await serviceDescription.responseOrError(c.future));
+
+      serviceDescription2.getTopLevelInterface(sdValueAssign);
+      mojom_types.MojomInterface interfaceB = sdValue;
       _compare(interfaceA, interfaceB);
 
       // Get the type key for the type of the first parameter of the
@@ -61,19 +67,28 @@ tests(Application application, String url) {
 
       // Use getTypeDefinition() to get the type and check that it
       // is named "PingPongClient".
+      c = new Completer();
+      serviceDescription.getTypeDefinition(typeKey,
+          (mojom_types.UserDefinedType type) {
+        c.complete(type);
+      });
       mojom_types.MojomInterface pingPongClientInterface =
-         (await serviceDescription.responseOrError(
-              serviceDescription.getTypeDefinition(typeKey))).type.
-             interfaceType;
+          (await serviceDescription.responseOrError(c.future)).interfaceType;
       expect(pingPongClientInterface.declData.shortName,
           equals("PingPongClient"));
 
       // Check that the mojom type definitions match between mappings.
       // For simplicity, check in a shallow manner.
-      var actualDescriptions = (await serviceDescription.responseOrError(
-          serviceDescription.getAllTypeDefinitions())).definitions;
-      var expectedDescriptions = serviceDescription2.
-          getAllTypeDefinitions(identity);
+      c = new Completer();
+      serviceDescription.getAllTypeDefinitions(
+          (Map<String, mojom_types.UserDefinedType> definitions) {
+        c.complete(definitions);
+      });
+
+      var actualDescriptions =
+          (await serviceDescription.responseOrError(c.future));
+      serviceDescription2.getAllTypeDefinitions(sdValueAssign);
+      var expectedDescriptions = sdValue;
       actualDescriptions.keys.forEach((String key) {
         var a = actualDescriptions[key];
         var e = expectedDescriptions[key];

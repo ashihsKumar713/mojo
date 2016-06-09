@@ -17,6 +17,10 @@ class _CookieStoreGetParams extends bindings.Struct {
 
   _CookieStoreGetParams() : super(kVersions.last.size);
 
+  _CookieStoreGetParams.init(
+    String this.url
+  ) : super(kVersions.last.size);
+
   static _CookieStoreGetParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -88,6 +92,10 @@ class CookieStoreGetResponseParams extends bindings.Struct {
   String cookies = null;
 
   CookieStoreGetResponseParams() : super(kVersions.last.size);
+
+  CookieStoreGetResponseParams.init(
+    String this.cookies
+  ) : super(kVersions.last.size);
 
   static CookieStoreGetResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -161,6 +169,11 @@ class _CookieStoreSetParams extends bindings.Struct {
   String cookie = null;
 
   _CookieStoreSetParams() : super(kVersions.last.size);
+
+  _CookieStoreSetParams.init(
+    String this.url, 
+    String this.cookie
+  ) : super(kVersions.last.size);
 
   static _CookieStoreSetParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -247,6 +260,10 @@ class CookieStoreSetResponseParams extends bindings.Struct {
 
   CookieStoreSetResponseParams() : super(kVersions.last.size);
 
+  CookieStoreSetResponseParams.init(
+    bool this.success
+  ) : super(kVersions.last.size);
+
   static CookieStoreSetResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -314,14 +331,17 @@ const int _cookieStoreMethodGetName = 0;
 const int _cookieStoreMethodSetName = 1;
 
 class _CookieStoreServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class CookieStore {
@@ -346,8 +366,8 @@ abstract class CookieStore {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic get(String url,[Function responseFactory = null]);
-  dynamic set(String url,String cookie,[Function responseFactory = null]);
+  void get(String url,void callback(String cookies));
+  void set(String url,String cookie,void callback(bool success));
 }
 
 abstract class CookieStoreInterface
@@ -397,18 +417,14 @@ class _CookieStoreProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.cookies );
         break;
       case _cookieStoreMethodSetName:
         var r = CookieStoreSetResponseParams.deserialize(
@@ -417,18 +433,14 @@ class _CookieStoreProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.success );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -473,30 +485,34 @@ class CookieStoreProxy
   }
 
 
-  dynamic get(String url,[Function responseFactory = null]) {
+  void get(String url,void callback(String cookies)) {
     if (impl != null) {
-      return new Future(() => impl.get(url,_CookieStoreStubControl._cookieStoreGetResponseParamsFactory));
+      impl.get(url,callback);
+      return;
     }
     var params = new _CookieStoreGetParams();
     params.url = url;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _cookieStoreMethodGetName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic set(String url,String cookie,[Function responseFactory = null]) {
+  void set(String url,String cookie,void callback(bool success)) {
     if (impl != null) {
-      return new Future(() => impl.set(url,cookie,_CookieStoreStubControl._cookieStoreSetResponseParamsFactory));
+      impl.set(url,cookie,callback);
+      return;
     }
     var params = new _CookieStoreSetParams();
     params.url = url;
     params.cookie = cookie;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _cookieStoreMethodSetName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -522,22 +538,36 @@ class _CookieStoreStubControl
   String get serviceName => CookieStore.serviceName;
 
 
-  static CookieStoreGetResponseParams _cookieStoreGetResponseParamsFactory(String cookies) {
-    var result = new CookieStoreGetResponseParams();
-    result.cookies = cookies;
-    return result;
+  Function _cookieStoreGetResponseParamsResponder(
+      int requestId) {
+  return (String cookies) {
+      var result = new CookieStoreGetResponseParams();
+      result.cookies = cookies;
+      sendResponse(buildResponseWithId(
+          result,
+          _cookieStoreMethodGetName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static CookieStoreSetResponseParams _cookieStoreSetResponseParamsFactory(bool success) {
-    var result = new CookieStoreSetResponseParams();
-    result.success = success;
-    return result;
+  Function _cookieStoreSetResponseParamsResponder(
+      int requestId) {
+  return (bool success) {
+      var result = new CookieStoreSetResponseParams();
+      result.success = success;
+      sendResponse(buildResponseWithId(
+          result,
+          _cookieStoreMethodSetName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -546,52 +576,17 @@ class _CookieStoreStubControl
       case _cookieStoreMethodGetName:
         var params = _CookieStoreGetParams.deserialize(
             message.payload);
-        var response = _impl.get(params.url,_cookieStoreGetResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _cookieStoreMethodGetName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _cookieStoreMethodGetName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.get(params.url, _cookieStoreGetResponseParamsResponder(message.header.requestId));
         break;
       case _cookieStoreMethodSetName:
         var params = _CookieStoreSetParams.deserialize(
             message.payload);
-        var response = _impl.set(params.url,params.cookie,_cookieStoreSetResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _cookieStoreMethodSetName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _cookieStoreMethodSetName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.set(params.url, params.cookie, _cookieStoreSetResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   CookieStore get impl => _impl;
@@ -645,11 +640,11 @@ class CookieStoreStub
   }
 
 
-  dynamic get(String url,[Function responseFactory = null]) {
-    return impl.get(url,responseFactory);
+  void get(String url,void callback(String cookies)) {
+    return impl.get(url,callback);
   }
-  dynamic set(String url,String cookie,[Function responseFactory = null]) {
-    return impl.set(url,cookie,responseFactory);
+  void set(String url,String cookie,void callback(bool success)) {
+    return impl.set(url,cookie,callback);
   }
 }
 

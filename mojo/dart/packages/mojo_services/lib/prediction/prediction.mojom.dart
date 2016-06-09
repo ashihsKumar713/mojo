@@ -18,6 +18,11 @@ class PrevWordInfo extends bindings.Struct {
 
   PrevWordInfo() : super(kVersions.last.size);
 
+  PrevWordInfo.init(
+    String this.word, 
+    bool this.isBeginningOfSentence
+  ) : super(kVersions.last.size);
+
   static PrevWordInfo deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -103,6 +108,11 @@ class PredictionInfo extends bindings.Struct {
   String currentWord = null;
 
   PredictionInfo() : super(kVersions.last.size);
+
+  PredictionInfo.init(
+    List<PrevWordInfo> this.previousWords, 
+    String this.currentWord
+  ) : super(kVersions.last.size);
 
   static PredictionInfo deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -205,6 +215,10 @@ class _PredictionServiceGetPredictionListParams extends bindings.Struct {
 
   _PredictionServiceGetPredictionListParams() : super(kVersions.last.size);
 
+  _PredictionServiceGetPredictionListParams.init(
+    PredictionInfo this.predictionInfo
+  ) : super(kVersions.last.size);
+
   static _PredictionServiceGetPredictionListParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -277,6 +291,10 @@ class PredictionServiceGetPredictionListResponseParams extends bindings.Struct {
   List<String> predictionList = null;
 
   PredictionServiceGetPredictionListResponseParams() : super(kVersions.last.size);
+
+  PredictionServiceGetPredictionListResponseParams.init(
+    List<String> this.predictionList
+  ) : super(kVersions.last.size);
 
   static PredictionServiceGetPredictionListResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -361,14 +379,17 @@ class PredictionServiceGetPredictionListResponseParams extends bindings.Struct {
 const int _predictionServiceMethodGetPredictionListName = 0;
 
 class _PredictionServiceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class PredictionService {
@@ -393,7 +414,7 @@ abstract class PredictionService {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic getPredictionList(PredictionInfo predictionInfo,[Function responseFactory = null]);
+  void getPredictionList(PredictionInfo predictionInfo,void callback(List<String> predictionList));
 }
 
 abstract class PredictionServiceInterface
@@ -443,18 +464,14 @@ class _PredictionServiceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.predictionList );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -499,17 +516,19 @@ class PredictionServiceProxy
   }
 
 
-  dynamic getPredictionList(PredictionInfo predictionInfo,[Function responseFactory = null]) {
+  void getPredictionList(PredictionInfo predictionInfo,void callback(List<String> predictionList)) {
     if (impl != null) {
-      return new Future(() => impl.getPredictionList(predictionInfo,_PredictionServiceStubControl._predictionServiceGetPredictionListResponseParamsFactory));
+      impl.getPredictionList(predictionInfo,callback);
+      return;
     }
     var params = new _PredictionServiceGetPredictionListParams();
     params.predictionInfo = predictionInfo;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _predictionServiceMethodGetPredictionListName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -535,17 +554,24 @@ class _PredictionServiceStubControl
   String get serviceName => PredictionService.serviceName;
 
 
-  static PredictionServiceGetPredictionListResponseParams _predictionServiceGetPredictionListResponseParamsFactory(List<String> predictionList) {
-    var result = new PredictionServiceGetPredictionListResponseParams();
-    result.predictionList = predictionList;
-    return result;
+  Function _predictionServiceGetPredictionListResponseParamsResponder(
+      int requestId) {
+  return (List<String> predictionList) {
+      var result = new PredictionServiceGetPredictionListResponseParams();
+      result.predictionList = predictionList;
+      sendResponse(buildResponseWithId(
+          result,
+          _predictionServiceMethodGetPredictionListName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -554,30 +580,12 @@ class _PredictionServiceStubControl
       case _predictionServiceMethodGetPredictionListName:
         var params = _PredictionServiceGetPredictionListParams.deserialize(
             message.payload);
-        var response = _impl.getPredictionList(params.predictionInfo,_predictionServiceGetPredictionListResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _predictionServiceMethodGetPredictionListName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _predictionServiceMethodGetPredictionListName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.getPredictionList(params.predictionInfo, _predictionServiceGetPredictionListResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   PredictionService get impl => _impl;
@@ -631,8 +639,8 @@ class PredictionServiceStub
   }
 
 
-  dynamic getPredictionList(PredictionInfo predictionInfo,[Function responseFactory = null]) {
-    return impl.getPredictionList(predictionInfo,responseFactory);
+  void getPredictionList(PredictionInfo predictionInfo,void callback(List<String> predictionList)) {
+    return impl.getPredictionList(predictionInfo,callback);
   }
 }
 

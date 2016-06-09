@@ -21,6 +21,12 @@ class _ApplicationInitializeParams extends bindings.Struct {
 
   _ApplicationInitializeParams() : super(kVersions.last.size);
 
+  _ApplicationInitializeParams.init(
+    shell_mojom.ShellInterface this.shell, 
+    List<String> this.args, 
+    String this.url
+  ) : super(kVersions.last.size);
+
   static _ApplicationInitializeParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -135,6 +141,12 @@ class _ApplicationAcceptConnectionParams extends bindings.Struct {
 
   _ApplicationAcceptConnectionParams() : super(kVersions.last.size);
 
+  _ApplicationAcceptConnectionParams.init(
+    String this.requestorUrl, 
+    String this.resolvedUrl, 
+    service_provider_mojom.ServiceProviderInterfaceRequest this.services
+  ) : super(kVersions.last.size);
+
   static _ApplicationAcceptConnectionParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -229,6 +241,9 @@ class _ApplicationRequestQuitParams extends bindings.Struct {
 
   _ApplicationRequestQuitParams() : super(kVersions.last.size);
 
+  _ApplicationRequestQuitParams.init(
+  ) : super(kVersions.last.size);
+
   static _ApplicationRequestQuitParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -284,14 +299,17 @@ const int _applicationMethodAcceptConnectionName = 1;
 const int _applicationMethodRequestQuitName = 2;
 
 class _ApplicationServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Application {
@@ -474,11 +492,11 @@ class _ApplicationStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -501,7 +519,6 @@ class _ApplicationStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Application get impl => _impl;

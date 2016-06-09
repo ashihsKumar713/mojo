@@ -18,6 +18,9 @@ class _DirectoryReadParams extends bindings.Struct {
 
   _DirectoryReadParams() : super(kVersions.last.size);
 
+  _DirectoryReadParams.init(
+  ) : super(kVersions.last.size);
+
   static _DirectoryReadParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -77,6 +80,11 @@ class DirectoryReadResponseParams extends bindings.Struct {
   List<types_mojom.DirectoryEntry> directoryContents = null;
 
   DirectoryReadResponseParams() : super(kVersions.last.size);
+
+  DirectoryReadResponseParams.init(
+    types_mojom.Error this.error, 
+    List<types_mojom.DirectoryEntry> this.directoryContents
+  ) : super(kVersions.last.size);
 
   static DirectoryReadResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -184,6 +192,9 @@ class _DirectoryStatParams extends bindings.Struct {
 
   _DirectoryStatParams() : super(kVersions.last.size);
 
+  _DirectoryStatParams.init(
+  ) : super(kVersions.last.size);
+
   static _DirectoryStatParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -243,6 +254,11 @@ class DirectoryStatResponseParams extends bindings.Struct {
   types_mojom.FileInformation fileInformation = null;
 
   DirectoryStatResponseParams() : super(kVersions.last.size);
+
+  DirectoryStatResponseParams.init(
+    types_mojom.Error this.error, 
+    types_mojom.FileInformation this.fileInformation
+  ) : super(kVersions.last.size);
 
   static DirectoryStatResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -335,6 +351,11 @@ class _DirectoryTouchParams extends bindings.Struct {
 
   _DirectoryTouchParams() : super(kVersions.last.size);
 
+  _DirectoryTouchParams.init(
+    types_mojom.TimespecOrNow this.atime, 
+    types_mojom.TimespecOrNow this.mtime
+  ) : super(kVersions.last.size);
+
   static _DirectoryTouchParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -422,6 +443,10 @@ class DirectoryTouchResponseParams extends bindings.Struct {
 
   DirectoryTouchResponseParams() : super(kVersions.last.size);
 
+  DirectoryTouchResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
+
   static DirectoryTouchResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -499,6 +524,12 @@ class _DirectoryOpenFileParams extends bindings.Struct {
   int openFlags = 0;
 
   _DirectoryOpenFileParams() : super(kVersions.last.size);
+
+  _DirectoryOpenFileParams.init(
+    String this.path, 
+    file_mojom.FileInterfaceRequest this.file, 
+    int this.openFlags
+  ) : super(kVersions.last.size);
 
   static _DirectoryOpenFileParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -595,6 +626,10 @@ class DirectoryOpenFileResponseParams extends bindings.Struct {
 
   DirectoryOpenFileResponseParams() : super(kVersions.last.size);
 
+  DirectoryOpenFileResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
+
   static DirectoryOpenFileResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -672,6 +707,12 @@ class _DirectoryOpenDirectoryParams extends bindings.Struct {
   int openFlags = 0;
 
   _DirectoryOpenDirectoryParams() : super(kVersions.last.size);
+
+  _DirectoryOpenDirectoryParams.init(
+    String this.path, 
+    DirectoryInterfaceRequest this.directory, 
+    int this.openFlags
+  ) : super(kVersions.last.size);
 
   static _DirectoryOpenDirectoryParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -768,6 +809,10 @@ class DirectoryOpenDirectoryResponseParams extends bindings.Struct {
 
   DirectoryOpenDirectoryResponseParams() : super(kVersions.last.size);
 
+  DirectoryOpenDirectoryResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
+
   static DirectoryOpenDirectoryResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -844,6 +889,11 @@ class _DirectoryRenameParams extends bindings.Struct {
   String newPath = null;
 
   _DirectoryRenameParams() : super(kVersions.last.size);
+
+  _DirectoryRenameParams.init(
+    String this.path, 
+    String this.newPath
+  ) : super(kVersions.last.size);
 
   static _DirectoryRenameParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -930,6 +980,10 @@ class DirectoryRenameResponseParams extends bindings.Struct {
 
   DirectoryRenameResponseParams() : super(kVersions.last.size);
 
+  DirectoryRenameResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
+
   static DirectoryRenameResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1006,6 +1060,11 @@ class _DirectoryDeleteParams extends bindings.Struct {
   int deleteFlags = 0;
 
   _DirectoryDeleteParams() : super(kVersions.last.size);
+
+  _DirectoryDeleteParams.init(
+    String this.path, 
+    int this.deleteFlags
+  ) : super(kVersions.last.size);
 
   static _DirectoryDeleteParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1092,6 +1151,10 @@ class DirectoryDeleteResponseParams extends bindings.Struct {
 
   DirectoryDeleteResponseParams() : super(kVersions.last.size);
 
+  DirectoryDeleteResponseParams.init(
+    types_mojom.Error this.error
+  ) : super(kVersions.last.size);
+
   static DirectoryDeleteResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1168,14 +1231,17 @@ const int _directoryMethodRenameName = 5;
 const int _directoryMethodDeleteName = 6;
 
 class _DirectoryServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class Directory {
@@ -1200,13 +1266,13 @@ abstract class Directory {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic read([Function responseFactory = null]);
-  dynamic stat([Function responseFactory = null]);
-  dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]);
-  dynamic openFile(String path,file_mojom.FileInterfaceRequest file,int openFlags,[Function responseFactory = null]);
-  dynamic openDirectory(String path,DirectoryInterfaceRequest directory,int openFlags,[Function responseFactory = null]);
-  dynamic rename(String path,String newPath,[Function responseFactory = null]);
-  dynamic delete(String path,int deleteFlags,[Function responseFactory = null]);
+  void read(void callback(types_mojom.Error error, List<types_mojom.DirectoryEntry> directoryContents));
+  void stat(void callback(types_mojom.Error error, types_mojom.FileInformation fileInformation));
+  void touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,void callback(types_mojom.Error error));
+  void openFile(String path,file_mojom.FileInterfaceRequest file,int openFlags,void callback(types_mojom.Error error));
+  void openDirectory(String path,DirectoryInterfaceRequest directory,int openFlags,void callback(types_mojom.Error error));
+  void rename(String path,String newPath,void callback(types_mojom.Error error));
+  void delete(String path,int deleteFlags,void callback(types_mojom.Error error));
 }
 
 abstract class DirectoryInterface
@@ -1256,18 +1322,14 @@ class _DirectoryProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error , r.directoryContents );
         break;
       case _directoryMethodStatName:
         var r = DirectoryStatResponseParams.deserialize(
@@ -1276,18 +1338,14 @@ class _DirectoryProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error , r.fileInformation );
         break;
       case _directoryMethodTouchName:
         var r = DirectoryTouchResponseParams.deserialize(
@@ -1296,18 +1354,14 @@ class _DirectoryProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       case _directoryMethodOpenFileName:
         var r = DirectoryOpenFileResponseParams.deserialize(
@@ -1316,18 +1370,14 @@ class _DirectoryProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       case _directoryMethodOpenDirectoryName:
         var r = DirectoryOpenDirectoryResponseParams.deserialize(
@@ -1336,18 +1386,14 @@ class _DirectoryProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       case _directoryMethodRenameName:
         var r = DirectoryRenameResponseParams.deserialize(
@@ -1356,18 +1402,14 @@ class _DirectoryProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       case _directoryMethodDeleteName:
         var r = DirectoryDeleteResponseParams.deserialize(
@@ -1376,18 +1418,14 @@ class _DirectoryProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.error );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1432,94 +1470,108 @@ class DirectoryProxy
   }
 
 
-  dynamic read([Function responseFactory = null]) {
+  void read(void callback(types_mojom.Error error, List<types_mojom.DirectoryEntry> directoryContents)) {
     if (impl != null) {
-      return new Future(() => impl.read(_DirectoryStubControl._directoryReadResponseParamsFactory));
+      impl.read(callback);
+      return;
     }
     var params = new _DirectoryReadParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _directoryMethodReadName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic stat([Function responseFactory = null]) {
+  void stat(void callback(types_mojom.Error error, types_mojom.FileInformation fileInformation)) {
     if (impl != null) {
-      return new Future(() => impl.stat(_DirectoryStubControl._directoryStatResponseParamsFactory));
+      impl.stat(callback);
+      return;
     }
     var params = new _DirectoryStatParams();
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _directoryMethodStatName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]) {
+  void touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.touch(atime,mtime,_DirectoryStubControl._directoryTouchResponseParamsFactory));
+      impl.touch(atime,mtime,callback);
+      return;
     }
     var params = new _DirectoryTouchParams();
     params.atime = atime;
     params.mtime = mtime;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _directoryMethodTouchName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic openFile(String path,file_mojom.FileInterfaceRequest file,int openFlags,[Function responseFactory = null]) {
+  void openFile(String path,file_mojom.FileInterfaceRequest file,int openFlags,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.openFile(path,file,openFlags,_DirectoryStubControl._directoryOpenFileResponseParamsFactory));
+      impl.openFile(path,file,openFlags,callback);
+      return;
     }
     var params = new _DirectoryOpenFileParams();
     params.path = path;
     params.file = file;
     params.openFlags = openFlags;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _directoryMethodOpenFileName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic openDirectory(String path,DirectoryInterfaceRequest directory,int openFlags,[Function responseFactory = null]) {
+  void openDirectory(String path,DirectoryInterfaceRequest directory,int openFlags,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.openDirectory(path,directory,openFlags,_DirectoryStubControl._directoryOpenDirectoryResponseParamsFactory));
+      impl.openDirectory(path,directory,openFlags,callback);
+      return;
     }
     var params = new _DirectoryOpenDirectoryParams();
     params.path = path;
     params.directory = directory;
     params.openFlags = openFlags;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _directoryMethodOpenDirectoryName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic rename(String path,String newPath,[Function responseFactory = null]) {
+  void rename(String path,String newPath,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.rename(path,newPath,_DirectoryStubControl._directoryRenameResponseParamsFactory));
+      impl.rename(path,newPath,callback);
+      return;
     }
     var params = new _DirectoryRenameParams();
     params.path = path;
     params.newPath = newPath;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _directoryMethodRenameName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic delete(String path,int deleteFlags,[Function responseFactory = null]) {
+  void delete(String path,int deleteFlags,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      return new Future(() => impl.delete(path,deleteFlags,_DirectoryStubControl._directoryDeleteResponseParamsFactory));
+      impl.delete(path,deleteFlags,callback);
+      return;
     }
     var params = new _DirectoryDeleteParams();
     params.path = path;
     params.deleteFlags = deleteFlags;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _directoryMethodDeleteName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -1545,209 +1597,138 @@ class _DirectoryStubControl
   String get serviceName => Directory.serviceName;
 
 
-  static DirectoryReadResponseParams _directoryReadResponseParamsFactory(types_mojom.Error error, List<types_mojom.DirectoryEntry> directoryContents) {
-    var result = new DirectoryReadResponseParams();
-    result.error = error;
-    result.directoryContents = directoryContents;
-    return result;
+  Function _directoryReadResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error, List<types_mojom.DirectoryEntry> directoryContents) {
+      var result = new DirectoryReadResponseParams();
+      result.error = error;
+      result.directoryContents = directoryContents;
+      sendResponse(buildResponseWithId(
+          result,
+          _directoryMethodReadName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static DirectoryStatResponseParams _directoryStatResponseParamsFactory(types_mojom.Error error, types_mojom.FileInformation fileInformation) {
-    var result = new DirectoryStatResponseParams();
-    result.error = error;
-    result.fileInformation = fileInformation;
-    return result;
+  Function _directoryStatResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error, types_mojom.FileInformation fileInformation) {
+      var result = new DirectoryStatResponseParams();
+      result.error = error;
+      result.fileInformation = fileInformation;
+      sendResponse(buildResponseWithId(
+          result,
+          _directoryMethodStatName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static DirectoryTouchResponseParams _directoryTouchResponseParamsFactory(types_mojom.Error error) {
-    var result = new DirectoryTouchResponseParams();
-    result.error = error;
-    return result;
+  Function _directoryTouchResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new DirectoryTouchResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _directoryMethodTouchName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static DirectoryOpenFileResponseParams _directoryOpenFileResponseParamsFactory(types_mojom.Error error) {
-    var result = new DirectoryOpenFileResponseParams();
-    result.error = error;
-    return result;
+  Function _directoryOpenFileResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new DirectoryOpenFileResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _directoryMethodOpenFileName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static DirectoryOpenDirectoryResponseParams _directoryOpenDirectoryResponseParamsFactory(types_mojom.Error error) {
-    var result = new DirectoryOpenDirectoryResponseParams();
-    result.error = error;
-    return result;
+  Function _directoryOpenDirectoryResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new DirectoryOpenDirectoryResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _directoryMethodOpenDirectoryName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static DirectoryRenameResponseParams _directoryRenameResponseParamsFactory(types_mojom.Error error) {
-    var result = new DirectoryRenameResponseParams();
-    result.error = error;
-    return result;
+  Function _directoryRenameResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new DirectoryRenameResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _directoryMethodRenameName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static DirectoryDeleteResponseParams _directoryDeleteResponseParamsFactory(types_mojom.Error error) {
-    var result = new DirectoryDeleteResponseParams();
-    result.error = error;
-    return result;
+  Function _directoryDeleteResponseParamsResponder(
+      int requestId) {
+  return (types_mojom.Error error) {
+      var result = new DirectoryDeleteResponseParams();
+      result.error = error;
+      sendResponse(buildResponseWithId(
+          result,
+          _directoryMethodDeleteName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
       case _directoryMethodReadName:
-        var response = _impl.read(_directoryReadResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _directoryMethodReadName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _directoryMethodReadName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.read(_directoryReadResponseParamsResponder(message.header.requestId));
         break;
       case _directoryMethodStatName:
-        var response = _impl.stat(_directoryStatResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _directoryMethodStatName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _directoryMethodStatName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.stat(_directoryStatResponseParamsResponder(message.header.requestId));
         break;
       case _directoryMethodTouchName:
         var params = _DirectoryTouchParams.deserialize(
             message.payload);
-        var response = _impl.touch(params.atime,params.mtime,_directoryTouchResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _directoryMethodTouchName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _directoryMethodTouchName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.touch(params.atime, params.mtime, _directoryTouchResponseParamsResponder(message.header.requestId));
         break;
       case _directoryMethodOpenFileName:
         var params = _DirectoryOpenFileParams.deserialize(
             message.payload);
-        var response = _impl.openFile(params.path,params.file,params.openFlags,_directoryOpenFileResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _directoryMethodOpenFileName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _directoryMethodOpenFileName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.openFile(params.path, params.file, params.openFlags, _directoryOpenFileResponseParamsResponder(message.header.requestId));
         break;
       case _directoryMethodOpenDirectoryName:
         var params = _DirectoryOpenDirectoryParams.deserialize(
             message.payload);
-        var response = _impl.openDirectory(params.path,params.directory,params.openFlags,_directoryOpenDirectoryResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _directoryMethodOpenDirectoryName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _directoryMethodOpenDirectoryName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.openDirectory(params.path, params.directory, params.openFlags, _directoryOpenDirectoryResponseParamsResponder(message.header.requestId));
         break;
       case _directoryMethodRenameName:
         var params = _DirectoryRenameParams.deserialize(
             message.payload);
-        var response = _impl.rename(params.path,params.newPath,_directoryRenameResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _directoryMethodRenameName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _directoryMethodRenameName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.rename(params.path, params.newPath, _directoryRenameResponseParamsResponder(message.header.requestId));
         break;
       case _directoryMethodDeleteName:
         var params = _DirectoryDeleteParams.deserialize(
             message.payload);
-        var response = _impl.delete(params.path,params.deleteFlags,_directoryDeleteResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _directoryMethodDeleteName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _directoryMethodDeleteName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.delete(params.path, params.deleteFlags, _directoryDeleteResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   Directory get impl => _impl;
@@ -1801,26 +1782,26 @@ class DirectoryStub
   }
 
 
-  dynamic read([Function responseFactory = null]) {
-    return impl.read(responseFactory);
+  void read(void callback(types_mojom.Error error, List<types_mojom.DirectoryEntry> directoryContents)) {
+    return impl.read(callback);
   }
-  dynamic stat([Function responseFactory = null]) {
-    return impl.stat(responseFactory);
+  void stat(void callback(types_mojom.Error error, types_mojom.FileInformation fileInformation)) {
+    return impl.stat(callback);
   }
-  dynamic touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,[Function responseFactory = null]) {
-    return impl.touch(atime,mtime,responseFactory);
+  void touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,void callback(types_mojom.Error error)) {
+    return impl.touch(atime,mtime,callback);
   }
-  dynamic openFile(String path,file_mojom.FileInterfaceRequest file,int openFlags,[Function responseFactory = null]) {
-    return impl.openFile(path,file,openFlags,responseFactory);
+  void openFile(String path,file_mojom.FileInterfaceRequest file,int openFlags,void callback(types_mojom.Error error)) {
+    return impl.openFile(path,file,openFlags,callback);
   }
-  dynamic openDirectory(String path,DirectoryInterfaceRequest directory,int openFlags,[Function responseFactory = null]) {
-    return impl.openDirectory(path,directory,openFlags,responseFactory);
+  void openDirectory(String path,DirectoryInterfaceRequest directory,int openFlags,void callback(types_mojom.Error error)) {
+    return impl.openDirectory(path,directory,openFlags,callback);
   }
-  dynamic rename(String path,String newPath,[Function responseFactory = null]) {
-    return impl.rename(path,newPath,responseFactory);
+  void rename(String path,String newPath,void callback(types_mojom.Error error)) {
+    return impl.rename(path,newPath,callback);
   }
-  dynamic delete(String path,int deleteFlags,[Function responseFactory = null]) {
-    return impl.delete(path,deleteFlags,responseFactory);
+  void delete(String path,int deleteFlags,void callback(types_mojom.Error error)) {
+    return impl.delete(path,deleteFlags,callback);
   }
 }
 

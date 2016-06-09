@@ -20,6 +20,13 @@ class HttpRequest extends bindings.Struct {
 
   HttpRequest() : super(kVersions.last.size);
 
+  HttpRequest.init(
+    String this.method, 
+    String this.url, 
+    List<http_header_mojom.HttpHeader> this.headers, 
+    core.MojoDataPipeConsumer this.body
+  ) : super(kVersions.last.size);
+
   static HttpRequest deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -146,6 +153,12 @@ class HttpResponse extends bindings.Struct {
   List<http_header_mojom.HttpHeader> headers = null;
 
   HttpResponse() : super(kVersions.last.size);
+
+  HttpResponse.init(
+    int this.statusCode, 
+    core.MojoDataPipeConsumer this.body, 
+    List<http_header_mojom.HttpHeader> this.headers
+  ) : super(kVersions.last.size);
 
   static HttpResponse deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);

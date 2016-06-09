@@ -63,9 +63,11 @@ pingpongApptests(Application application, String url) {
       pingPongService.ctrl.errorFuture.then((e) => fail('$e'));
       application.connectToService("mojo:dart_pingpong", pingPongService);
 
-      var r = await pingPongService.pingTargetUrl(
-          "mojo:dart_pingpong_target", 9);
-      expect(r.ok, equals(true));
+      var c = new Completer();
+      pingPongService.pingTargetUrl("mojo:dart_pingpong_target", 9, (bool ok) {
+        c.complete(ok);
+      });
+      expect(await pingPongService.responseOrError(c.future), isTrue);
 
       await pingPongService.close();
     });
@@ -81,8 +83,12 @@ pingpongApptests(Application application, String url) {
       targetService.ctrl.errorFuture.then((e) => fail('$e'));
       application.connectToService("mojo:dart_pingpong_target", targetService);
 
-      var r = await pingPongService.pingTargetService(targetService, 9);
-      expect(r.ok, equals(true));
+      var c = new Completer();
+      pingPongService.pingTargetService(targetService, 9, (bool ok) {
+        c.complete(ok);
+      });
+      expect(await pingPongService.responseOrError(c.future), isTrue);
+
       // This side no longer has access to the pipe.
       expect(targetService.ctrl.isOpen, equals(false));
       expect(targetService.ctrl.isBound, equals(false));

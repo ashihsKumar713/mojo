@@ -95,6 +95,10 @@ class StructA extends bindings.Struct {
 
   StructA() : super(kVersions.last.size);
 
+  StructA.init(
+    int this.i
+  ) : super(kVersions.last.size);
+
   static StructA deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -166,6 +170,10 @@ class StructB extends bindings.Struct {
   StructA structA = null;
 
   StructB() : super(kVersions.last.size);
+
+  StructB.init(
+    StructA this.structA
+  ) : super(kVersions.last.size);
 
   static StructB deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -240,6 +248,10 @@ class StructC extends bindings.Struct {
 
   StructC() : super(kVersions.last.size);
 
+  StructC.init(
+    List<int> this.data
+  ) : super(kVersions.last.size);
+
   static StructC deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -312,6 +324,10 @@ class StructD extends bindings.Struct {
 
   StructD() : super(kVersions.last.size);
 
+  StructD.init(
+    List<core.MojoMessagePipeEndpoint> this.messagePipes
+  ) : super(kVersions.last.size);
+
   static StructD deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -383,6 +399,11 @@ class StructE extends bindings.Struct {
   core.MojoDataPipeConsumer dataPipeConsumer = null;
 
   StructE() : super(kVersions.last.size);
+
+  StructE.init(
+    StructD this.structD, 
+    core.MojoDataPipeConsumer this.dataPipeConsumer
+  ) : super(kVersions.last.size);
 
   static StructE deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -468,6 +489,10 @@ class StructF extends bindings.Struct {
 
   StructF() : super(kVersions.last.size);
 
+  StructF.init(
+    List<int> this.fixedSizeArray
+  ) : super(kVersions.last.size);
+
   static StructF deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -544,6 +569,13 @@ class StructG extends bindings.Struct {
   String str = null;
 
   StructG() : super(kVersions.last.size);
+
+  StructG.init(
+    int this.i, 
+    bool this.b, 
+    StructA this.structA, 
+    String this.str
+  ) : super(kVersions.last.size);
 
   static StructG deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -660,6 +692,14 @@ class StructH extends bindings.Struct {
   Map<int, UnionA> e = null;
 
   StructH() : super(kVersions.last.size);
+
+  StructH.init(
+    bool this.a, 
+    int this.b, 
+    UnionA this.c, 
+    List<UnionA> this.d, 
+    Map<int, UnionA> this.e
+  ) : super(kVersions.last.size);
 
   static StructH deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -849,6 +889,10 @@ class BasicStruct extends bindings.Struct {
 
   BasicStruct() : super(kVersions.last.size);
 
+  BasicStruct.init(
+    int this.a
+  ) : super(kVersions.last.size);
+
   static BasicStruct deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -986,6 +1030,9 @@ class StructWithEnum extends bindings.Struct {
 
   StructWithEnum() : super(kVersions.last.size);
 
+  StructWithEnum.init(
+  ) : super(kVersions.last.size);
+
   static StructWithEnum deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1044,6 +1091,10 @@ class _BoundsCheckTestInterfaceMethod0Params extends bindings.Struct {
   int param0 = 0;
 
   _BoundsCheckTestInterfaceMethod0Params() : super(kVersions.last.size);
+
+  _BoundsCheckTestInterfaceMethod0Params.init(
+    int this.param0
+  ) : super(kVersions.last.size);
 
   static _BoundsCheckTestInterfaceMethod0Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1117,6 +1168,10 @@ class BoundsCheckTestInterfaceMethod0ResponseParams extends bindings.Struct {
 
   BoundsCheckTestInterfaceMethod0ResponseParams() : super(kVersions.last.size);
 
+  BoundsCheckTestInterfaceMethod0ResponseParams.init(
+    int this.param0
+  ) : super(kVersions.last.size);
+
   static BoundsCheckTestInterfaceMethod0ResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1188,6 +1243,10 @@ class _BoundsCheckTestInterfaceMethod1Params extends bindings.Struct {
   int param0 = 0;
 
   _BoundsCheckTestInterfaceMethod1Params() : super(kVersions.last.size);
+
+  _BoundsCheckTestInterfaceMethod1Params.init(
+    int this.param0
+  ) : super(kVersions.last.size);
 
   static _BoundsCheckTestInterfaceMethod1Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1261,6 +1320,10 @@ class _ConformanceTestInterfaceMethod0Params extends bindings.Struct {
 
   _ConformanceTestInterfaceMethod0Params() : super(kVersions.last.size);
 
+  _ConformanceTestInterfaceMethod0Params.init(
+    double this.param0
+  ) : super(kVersions.last.size);
+
   static _ConformanceTestInterfaceMethod0Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1332,6 +1395,10 @@ class _ConformanceTestInterfaceMethod1Params extends bindings.Struct {
   StructA param0 = null;
 
   _ConformanceTestInterfaceMethod1Params() : super(kVersions.last.size);
+
+  _ConformanceTestInterfaceMethod1Params.init(
+    StructA this.param0
+  ) : super(kVersions.last.size);
 
   static _ConformanceTestInterfaceMethod1Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1406,6 +1473,11 @@ class _ConformanceTestInterfaceMethod2Params extends bindings.Struct {
   StructA param1 = null;
 
   _ConformanceTestInterfaceMethod2Params() : super(kVersions.last.size);
+
+  _ConformanceTestInterfaceMethod2Params.init(
+    StructB this.param0, 
+    StructA this.param1
+  ) : super(kVersions.last.size);
 
   static _ConformanceTestInterfaceMethod2Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1494,6 +1566,10 @@ class _ConformanceTestInterfaceMethod3Params extends bindings.Struct {
 
   _ConformanceTestInterfaceMethod3Params() : super(kVersions.last.size);
 
+  _ConformanceTestInterfaceMethod3Params.init(
+    List<bool> this.param0
+  ) : super(kVersions.last.size);
+
   static _ConformanceTestInterfaceMethod3Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1566,6 +1642,11 @@ class _ConformanceTestInterfaceMethod4Params extends bindings.Struct {
   List<int> param1 = null;
 
   _ConformanceTestInterfaceMethod4Params() : super(kVersions.last.size);
+
+  _ConformanceTestInterfaceMethod4Params.init(
+    StructC this.param0, 
+    List<int> this.param1
+  ) : super(kVersions.last.size);
 
   static _ConformanceTestInterfaceMethod4Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1654,6 +1735,11 @@ class _ConformanceTestInterfaceMethod5Params extends bindings.Struct {
 
   _ConformanceTestInterfaceMethod5Params() : super(kVersions.last.size);
 
+  _ConformanceTestInterfaceMethod5Params.init(
+    StructE this.param0, 
+    core.MojoDataPipeProducer this.param1
+  ) : super(kVersions.last.size);
+
   static _ConformanceTestInterfaceMethod5Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -1737,6 +1823,10 @@ class _ConformanceTestInterfaceMethod6Params extends bindings.Struct {
   List<List<int>> param0 = null;
 
   _ConformanceTestInterfaceMethod6Params() : super(kVersions.last.size);
+
+  _ConformanceTestInterfaceMethod6Params.init(
+    List<List<int>> this.param0
+  ) : super(kVersions.last.size);
 
   static _ConformanceTestInterfaceMethod6Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1825,6 +1915,11 @@ class _ConformanceTestInterfaceMethod7Params extends bindings.Struct {
   List<List<int>> param1 = null;
 
   _ConformanceTestInterfaceMethod7Params() : super(kVersions.last.size);
+
+  _ConformanceTestInterfaceMethod7Params.init(
+    StructF this.param0, 
+    List<List<int>> this.param1
+  ) : super(kVersions.last.size);
 
   static _ConformanceTestInterfaceMethod7Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -1926,6 +2021,10 @@ class _ConformanceTestInterfaceMethod8Params extends bindings.Struct {
   List<List<String>> param0 = null;
 
   _ConformanceTestInterfaceMethod8Params() : super(kVersions.last.size);
+
+  _ConformanceTestInterfaceMethod8Params.init(
+    List<List<String>> this.param0
+  ) : super(kVersions.last.size);
 
   static _ConformanceTestInterfaceMethod8Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -2031,6 +2130,10 @@ class _ConformanceTestInterfaceMethod9Params extends bindings.Struct {
 
   _ConformanceTestInterfaceMethod9Params() : super(kVersions.last.size);
 
+  _ConformanceTestInterfaceMethod9Params.init(
+    List<List<core.MojoHandle>> this.param0
+  ) : super(kVersions.last.size);
+
   static _ConformanceTestInterfaceMethod9Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -2118,6 +2221,10 @@ class _ConformanceTestInterfaceMethod10Params extends bindings.Struct {
   Map<String, int> param0 = null;
 
   _ConformanceTestInterfaceMethod10Params() : super(kVersions.last.size);
+
+  _ConformanceTestInterfaceMethod10Params.init(
+    Map<String, int> this.param0
+  ) : super(kVersions.last.size);
 
   static _ConformanceTestInterfaceMethod10Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -2228,6 +2335,10 @@ class _ConformanceTestInterfaceMethod11Params extends bindings.Struct {
 
   _ConformanceTestInterfaceMethod11Params() : super(kVersions.last.size);
 
+  _ConformanceTestInterfaceMethod11Params.init(
+    StructG this.param0
+  ) : super(kVersions.last.size);
+
   static _ConformanceTestInterfaceMethod11Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -2301,6 +2412,10 @@ class _ConformanceTestInterfaceMethod12Params extends bindings.Struct {
 
   _ConformanceTestInterfaceMethod12Params() : super(kVersions.last.size);
 
+  _ConformanceTestInterfaceMethod12Params.init(
+    double this.param0
+  ) : super(kVersions.last.size);
+
   static _ConformanceTestInterfaceMethod12Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -2372,6 +2487,10 @@ class ConformanceTestInterfaceMethod12ResponseParams extends bindings.Struct {
   double param0 = 0.0;
 
   ConformanceTestInterfaceMethod12ResponseParams() : super(kVersions.last.size);
+
+  ConformanceTestInterfaceMethod12ResponseParams.init(
+    double this.param0
+  ) : super(kVersions.last.size);
 
   static ConformanceTestInterfaceMethod12ResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -2446,6 +2565,12 @@ class _ConformanceTestInterfaceMethod13Params extends bindings.Struct {
   InterfaceAInterface param2 = null;
 
   _ConformanceTestInterfaceMethod13Params() : super(kVersions.last.size);
+
+  _ConformanceTestInterfaceMethod13Params.init(
+    InterfaceAInterface this.param0, 
+    int this.param1, 
+    InterfaceAInterface this.param2
+  ) : super(kVersions.last.size);
 
   static _ConformanceTestInterfaceMethod13Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -2542,6 +2667,10 @@ class _ConformanceTestInterfaceMethod14Params extends bindings.Struct {
 
   _ConformanceTestInterfaceMethod14Params() : super(kVersions.last.size);
 
+  _ConformanceTestInterfaceMethod14Params.init(
+    UnionA this.param0
+  ) : super(kVersions.last.size);
+
   static _ConformanceTestInterfaceMethod14Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -2618,6 +2747,10 @@ class _ConformanceTestInterfaceMethod15Params extends bindings.Struct {
 
   _ConformanceTestInterfaceMethod15Params() : super(kVersions.last.size);
 
+  _ConformanceTestInterfaceMethod15Params.init(
+    StructH this.param0
+  ) : super(kVersions.last.size);
+
   static _ConformanceTestInterfaceMethod15Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -2691,6 +2824,10 @@ class _IntegrationTestInterfaceMethod0Params extends bindings.Struct {
 
   _IntegrationTestInterfaceMethod0Params() : super(kVersions.last.size);
 
+  _IntegrationTestInterfaceMethod0Params.init(
+    BasicStruct this.param0
+  ) : super(kVersions.last.size);
+
   static _IntegrationTestInterfaceMethod0Params deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -2763,6 +2900,10 @@ class IntegrationTestInterfaceMethod0ResponseParams extends bindings.Struct {
   List<int> param0 = null;
 
   IntegrationTestInterfaceMethod0ResponseParams() : super(kVersions.last.size);
+
+  IntegrationTestInterfaceMethod0ResponseParams.init(
+    List<int> this.param0
+  ) : super(kVersions.last.size);
 
   static IntegrationTestInterfaceMethod0ResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -3353,14 +3494,17 @@ class UnionB extends bindings.Union {
 }
 
 class _InterfaceAServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class InterfaceA {
@@ -3495,11 +3639,11 @@ class _InterfaceAStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -3509,7 +3653,6 @@ class _InterfaceAStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   InterfaceA get impl => _impl;
@@ -3569,17 +3712,19 @@ const int _boundsCheckTestInterfaceMethodMethod0Name = 0;
 const int _boundsCheckTestInterfaceMethodMethod1Name = 1;
 
 class _BoundsCheckTestInterfaceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]){
+  void getTopLevelInterface(Function responder){
     var interfaceTypeKey = getRuntimeTypeInfo().services["this.is.the.service.name.for.BoundsCheckTestInterface"];
     var userDefinedType = getAllMojomTypeDefinitions()[interfaceTypeKey];
-    return responseFactory(userDefinedType.interfaceType);
+    responder(userDefinedType.interfaceType);
   }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-    responseFactory(getAllMojomTypeDefinitions()[typeKey]);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(getAllMojomTypeDefinitions()[typeKey]);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-    responseFactory(getAllMojomTypeDefinitions());
+  void getAllTypeDefinitions(Function responder) {
+    responder(getAllMojomTypeDefinitions());
+  }
 }
 
 abstract class BoundsCheckTestInterface {
@@ -3604,7 +3749,7 @@ abstract class BoundsCheckTestInterface {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic method0(int param0,[Function responseFactory = null]);
+  void method0(int param0,void callback(int param0));
   void method1(int param0);
 }
 
@@ -3655,18 +3800,14 @@ class _BoundsCheckTestInterfaceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.param0 );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -3711,17 +3852,19 @@ class BoundsCheckTestInterfaceProxy
   }
 
 
-  dynamic method0(int param0,[Function responseFactory = null]) {
+  void method0(int param0,void callback(int param0)) {
     if (impl != null) {
-      return new Future(() => impl.method0(param0,_BoundsCheckTestInterfaceStubControl._boundsCheckTestInterfaceMethod0ResponseParamsFactory));
+      impl.method0(param0,callback);
+      return;
     }
     var params = new _BoundsCheckTestInterfaceMethod0Params();
     params.param0 = param0;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _boundsCheckTestInterfaceMethodMethod0Name,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void method1(int param0) {
     if (impl != null) {
@@ -3761,17 +3904,24 @@ class _BoundsCheckTestInterfaceStubControl
   String get serviceName => BoundsCheckTestInterface.serviceName;
 
 
-  static BoundsCheckTestInterfaceMethod0ResponseParams _boundsCheckTestInterfaceMethod0ResponseParamsFactory(int param0) {
-    var result = new BoundsCheckTestInterfaceMethod0ResponseParams();
-    result.param0 = param0;
-    return result;
+  Function _boundsCheckTestInterfaceMethod0ResponseParamsResponder(
+      int requestId) {
+  return (int param0) {
+      var result = new BoundsCheckTestInterfaceMethod0ResponseParams();
+      result.param0 = param0;
+      sendResponse(buildResponseWithId(
+          result,
+          _boundsCheckTestInterfaceMethodMethod0Name,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -3780,24 +3930,7 @@ class _BoundsCheckTestInterfaceStubControl
       case _boundsCheckTestInterfaceMethodMethod0Name:
         var params = _BoundsCheckTestInterfaceMethod0Params.deserialize(
             message.payload);
-        var response = _impl.method0(params.param0,_boundsCheckTestInterfaceMethod0ResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _boundsCheckTestInterfaceMethodMethod0Name,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _boundsCheckTestInterfaceMethodMethod0Name,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.method0(params.param0, _boundsCheckTestInterfaceMethod0ResponseParamsResponder(message.header.requestId));
         break;
       case _boundsCheckTestInterfaceMethodMethod1Name:
         var params = _BoundsCheckTestInterfaceMethod1Params.deserialize(
@@ -3808,7 +3941,6 @@ class _BoundsCheckTestInterfaceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   BoundsCheckTestInterface get impl => _impl;
@@ -3862,8 +3994,8 @@ class BoundsCheckTestInterfaceStub
   }
 
 
-  dynamic method0(int param0,[Function responseFactory = null]) {
-    return impl.method0(param0,responseFactory);
+  void method0(int param0,void callback(int param0)) {
+    return impl.method0(param0,callback);
   }
   void method1(int param0) {
     return impl.method1(param0);
@@ -3888,14 +4020,17 @@ const int _conformanceTestInterfaceMethodMethod14Name = 14;
 const int _conformanceTestInterfaceMethodMethod15Name = 15;
 
 class _ConformanceTestInterfaceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ConformanceTestInterface {
@@ -3932,7 +4067,7 @@ abstract class ConformanceTestInterface {
   void method9(List<List<core.MojoHandle>> param0);
   void method10(Map<String, int> param0);
   void method11(StructG param0);
-  dynamic method12(double param0,[Function responseFactory = null]);
+  void method12(double param0,void callback(double param0));
   void method13(InterfaceAInterface param0, int param1, InterfaceAInterface param2);
   void method14(UnionA param0);
   void method15(StructH param0);
@@ -3985,18 +4120,14 @@ class _ConformanceTestInterfaceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.param0 );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -4213,17 +4344,19 @@ class ConformanceTestInterfaceProxy
     ctrl.sendMessage(params,
         _conformanceTestInterfaceMethodMethod11Name);
   }
-  dynamic method12(double param0,[Function responseFactory = null]) {
+  void method12(double param0,void callback(double param0)) {
     if (impl != null) {
-      return new Future(() => impl.method12(param0,_ConformanceTestInterfaceStubControl._conformanceTestInterfaceMethod12ResponseParamsFactory));
+      impl.method12(param0,callback);
+      return;
     }
     var params = new _ConformanceTestInterfaceMethod12Params();
     params.param0 = param0;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _conformanceTestInterfaceMethodMethod12Name,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
   void method13(InterfaceAInterface param0, int param1, InterfaceAInterface param2) {
     if (impl != null) {
@@ -4293,17 +4426,24 @@ class _ConformanceTestInterfaceStubControl
   String get serviceName => ConformanceTestInterface.serviceName;
 
 
-  static ConformanceTestInterfaceMethod12ResponseParams _conformanceTestInterfaceMethod12ResponseParamsFactory(double param0) {
-    var result = new ConformanceTestInterfaceMethod12ResponseParams();
-    result.param0 = param0;
-    return result;
+  Function _conformanceTestInterfaceMethod12ResponseParamsResponder(
+      int requestId) {
+  return (double param0) {
+      var result = new ConformanceTestInterfaceMethod12ResponseParams();
+      result.param0 = param0;
+      sendResponse(buildResponseWithId(
+          result,
+          _conformanceTestInterfaceMethodMethod12Name,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -4372,24 +4512,7 @@ class _ConformanceTestInterfaceStubControl
       case _conformanceTestInterfaceMethodMethod12Name:
         var params = _ConformanceTestInterfaceMethod12Params.deserialize(
             message.payload);
-        var response = _impl.method12(params.param0,_conformanceTestInterfaceMethod12ResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _conformanceTestInterfaceMethodMethod12Name,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _conformanceTestInterfaceMethodMethod12Name,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.method12(params.param0, _conformanceTestInterfaceMethod12ResponseParamsResponder(message.header.requestId));
         break;
       case _conformanceTestInterfaceMethodMethod13Name:
         var params = _ConformanceTestInterfaceMethod13Params.deserialize(
@@ -4410,7 +4533,6 @@ class _ConformanceTestInterfaceStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ConformanceTestInterface get impl => _impl;
@@ -4500,8 +4622,8 @@ class ConformanceTestInterfaceStub
   void method11(StructG param0) {
     return impl.method11(param0);
   }
-  dynamic method12(double param0,[Function responseFactory = null]) {
-    return impl.method12(param0,responseFactory);
+  void method12(double param0,void callback(double param0)) {
+    return impl.method12(param0,callback);
   }
   void method13(InterfaceAInterface param0, int param1, InterfaceAInterface param2) {
     return impl.method13(param0, param1, param2);
@@ -4517,14 +4639,17 @@ class ConformanceTestInterfaceStub
 const int _integrationTestInterfaceMethodMethod0Name = 0;
 
 class _IntegrationTestInterfaceServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class IntegrationTestInterface {
@@ -4549,7 +4674,7 @@ abstract class IntegrationTestInterface {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic method0(BasicStruct param0,[Function responseFactory = null]);
+  void method0(BasicStruct param0,void callback(List<int> param0));
 }
 
 abstract class IntegrationTestInterfaceInterface
@@ -4599,18 +4724,14 @@ class _IntegrationTestInterfaceProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback(r.param0 );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -4655,17 +4776,19 @@ class IntegrationTestInterfaceProxy
   }
 
 
-  dynamic method0(BasicStruct param0,[Function responseFactory = null]) {
+  void method0(BasicStruct param0,void callback(List<int> param0)) {
     if (impl != null) {
-      return new Future(() => impl.method0(param0,_IntegrationTestInterfaceStubControl._integrationTestInterfaceMethod0ResponseParamsFactory));
+      impl.method0(param0,callback);
+      return;
     }
     var params = new _IntegrationTestInterfaceMethod0Params();
     params.param0 = param0;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _integrationTestInterfaceMethodMethod0Name,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -4691,17 +4814,24 @@ class _IntegrationTestInterfaceStubControl
   String get serviceName => IntegrationTestInterface.serviceName;
 
 
-  static IntegrationTestInterfaceMethod0ResponseParams _integrationTestInterfaceMethod0ResponseParamsFactory(List<int> param0) {
-    var result = new IntegrationTestInterfaceMethod0ResponseParams();
-    result.param0 = param0;
-    return result;
+  Function _integrationTestInterfaceMethod0ResponseParamsResponder(
+      int requestId) {
+  return (List<int> param0) {
+      var result = new IntegrationTestInterfaceMethod0ResponseParams();
+      result.param0 = param0;
+      sendResponse(buildResponseWithId(
+          result,
+          _integrationTestInterfaceMethodMethod0Name,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -4710,30 +4840,12 @@ class _IntegrationTestInterfaceStubControl
       case _integrationTestInterfaceMethodMethod0Name:
         var params = _IntegrationTestInterfaceMethod0Params.deserialize(
             message.payload);
-        var response = _impl.method0(params.param0,_integrationTestInterfaceMethod0ResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _integrationTestInterfaceMethodMethod0Name,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _integrationTestInterfaceMethodMethod0Name,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.method0(params.param0, _integrationTestInterfaceMethod0ResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   IntegrationTestInterface get impl => _impl;
@@ -4787,8 +4899,8 @@ class IntegrationTestInterfaceStub
   }
 
 
-  dynamic method0(BasicStruct param0,[Function responseFactory = null]) {
-    return impl.method0(param0,responseFactory);
+  void method0(BasicStruct param0,void callback(List<int> param0)) {
+    return impl.method0(param0,callback);
   }
 }
 
@@ -4805,7 +4917,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "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";
+  var serializedRuntimeTypeInfo = "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";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

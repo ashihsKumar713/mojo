@@ -19,6 +19,10 @@ class SceneResource extends bindings.Struct {
 
   SceneResource() : super(kVersions.last.size);
 
+  SceneResource.init(
+    scene_token_mojom.SceneToken this.sceneToken
+  ) : super(kVersions.last.size);
+
   static SceneResource deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -148,6 +152,14 @@ class MailboxTextureResource extends bindings.Struct {
 
   MailboxTextureResource() : super(kVersions.last.size);
 
+  MailboxTextureResource.init(
+    List<int> this.mailboxName, 
+    int this.syncPoint, 
+    MailboxTextureResourceOrigin this.origin, 
+    geometry_mojom.Size this.size, 
+    MailboxTextureCallbackInterface this.callback
+  ) : super(kVersions.last.size);
+
   static MailboxTextureResource deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -270,6 +282,9 @@ class _MailboxTextureCallbackOnMailboxTextureReleasedParams extends bindings.Str
   ];
 
   _MailboxTextureCallbackOnMailboxTextureReleasedParams() : super(kVersions.last.size);
+
+  _MailboxTextureCallbackOnMailboxTextureReleasedParams.init(
+  ) : super(kVersions.last.size);
 
   static _MailboxTextureCallbackOnMailboxTextureReleasedParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -429,14 +444,17 @@ class Resource extends bindings.Union {
 const int _mailboxTextureCallbackMethodOnMailboxTextureReleasedName = 0;
 
 class _MailboxTextureCallbackServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class MailboxTextureCallback {
@@ -585,11 +603,11 @@ class _MailboxTextureCallbackStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -602,7 +620,6 @@ class _MailboxTextureCallbackStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   MailboxTextureCallback get impl => _impl;

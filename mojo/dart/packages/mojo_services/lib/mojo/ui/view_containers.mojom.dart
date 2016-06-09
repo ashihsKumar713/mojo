@@ -20,6 +20,10 @@ class ViewInfo extends bindings.Struct {
 
   ViewInfo() : super(kVersions.last.size);
 
+  ViewInfo.init(
+    scene_token_mojom.SceneToken this.sceneToken
+  ) : super(kVersions.last.size);
+
   static ViewInfo deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -93,6 +97,10 @@ class _ViewContainerSetListenerParams extends bindings.Struct {
 
   _ViewContainerSetListenerParams() : super(kVersions.last.size);
 
+  _ViewContainerSetListenerParams.init(
+    ViewContainerListenerInterface this.listener
+  ) : super(kVersions.last.size);
+
   static _ViewContainerSetListenerParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -164,6 +172,11 @@ class _ViewContainerAddChildParams extends bindings.Struct {
   view_token_mojom.ViewOwnerInterface childViewOwner = null;
 
   _ViewContainerAddChildParams() : super(kVersions.last.size);
+
+  _ViewContainerAddChildParams.init(
+    int this.childKey, 
+    view_token_mojom.ViewOwnerInterface this.childViewOwner
+  ) : super(kVersions.last.size);
 
   static _ViewContainerAddChildParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -249,6 +262,11 @@ class _ViewContainerRemoveChildParams extends bindings.Struct {
 
   _ViewContainerRemoveChildParams() : super(kVersions.last.size);
 
+  _ViewContainerRemoveChildParams.init(
+    int this.childKey, 
+    view_token_mojom.ViewOwnerInterfaceRequest this.transferredViewOwner
+  ) : super(kVersions.last.size);
+
   static _ViewContainerRemoveChildParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -333,6 +351,12 @@ class _ViewContainerSetChildPropertiesParams extends bindings.Struct {
   view_properties_mojom.ViewProperties childViewProperties = null;
 
   _ViewContainerSetChildPropertiesParams() : super(kVersions.last.size);
+
+  _ViewContainerSetChildPropertiesParams.init(
+    int this.childKey, 
+    int this.childSceneVersion, 
+    view_properties_mojom.ViewProperties this.childViewProperties
+  ) : super(kVersions.last.size);
 
   static _ViewContainerSetChildPropertiesParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -433,6 +457,10 @@ class _ViewContainerFlushChildrenParams extends bindings.Struct {
 
   _ViewContainerFlushChildrenParams() : super(kVersions.last.size);
 
+  _ViewContainerFlushChildrenParams.init(
+    int this.flushToken
+  ) : super(kVersions.last.size);
+
   static _ViewContainerFlushChildrenParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -505,6 +533,11 @@ class _ViewContainerListenerOnChildAttachedParams extends bindings.Struct {
   ViewInfo childViewInfo = null;
 
   _ViewContainerListenerOnChildAttachedParams() : super(kVersions.last.size);
+
+  _ViewContainerListenerOnChildAttachedParams.init(
+    int this.childKey, 
+    ViewInfo this.childViewInfo
+  ) : super(kVersions.last.size);
 
   static _ViewContainerListenerOnChildAttachedParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -591,6 +624,9 @@ class ViewContainerListenerOnChildAttachedResponseParams extends bindings.Struct
 
   ViewContainerListenerOnChildAttachedResponseParams() : super(kVersions.last.size);
 
+  ViewContainerListenerOnChildAttachedResponseParams.init(
+  ) : super(kVersions.last.size);
+
   static ViewContainerListenerOnChildAttachedResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -649,6 +685,10 @@ class _ViewContainerListenerOnChildUnavailableParams extends bindings.Struct {
   int childKey = 0;
 
   _ViewContainerListenerOnChildUnavailableParams() : super(kVersions.last.size);
+
+  _ViewContainerListenerOnChildUnavailableParams.init(
+    int this.childKey
+  ) : super(kVersions.last.size);
 
   static _ViewContainerListenerOnChildUnavailableParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -721,6 +761,9 @@ class ViewContainerListenerOnChildUnavailableResponseParams extends bindings.Str
 
   ViewContainerListenerOnChildUnavailableResponseParams() : super(kVersions.last.size);
 
+  ViewContainerListenerOnChildUnavailableResponseParams.init(
+  ) : super(kVersions.last.size);
+
   static ViewContainerListenerOnChildUnavailableResponseParams deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -778,14 +821,17 @@ const int _viewContainerMethodSetChildPropertiesName = 3;
 const int _viewContainerMethodFlushChildrenName = 4;
 
 class _ViewContainerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ViewContainer {
@@ -999,11 +1045,11 @@ class _ViewContainerStubControl
 
 
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1038,7 +1084,6 @@ class _ViewContainerStubControl
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ViewContainer get impl => _impl;
@@ -1113,14 +1158,17 @@ const int _viewContainerListenerMethodOnChildAttachedName = 0;
 const int _viewContainerListenerMethodOnChildUnavailableName = 1;
 
 class _ViewContainerListenerServiceDescription implements service_describer.ServiceDescription {
-  dynamic getTopLevelInterface([Function responseFactory]) =>
-      responseFactory(null);
+  void getTopLevelInterface(Function responder) {
+    responder(null);
+  }
 
-  dynamic getTypeDefinition(String typeKey, [Function responseFactory]) =>
-      responseFactory(null);
+  void getTypeDefinition(String typeKey, Function responder) {
+    responder(null);
+  }
 
-  dynamic getAllTypeDefinitions([Function responseFactory]) =>
-      responseFactory(null);
+  void getAllTypeDefinitions(Function responder) {
+    responder(null);
+  }
 }
 
 abstract class ViewContainerListener {
@@ -1145,8 +1193,8 @@ abstract class ViewContainerListener {
     s.connectToService(url, p, name);
     return p;
   }
-  dynamic onChildAttached(int childKey,ViewInfo childViewInfo,[Function responseFactory = null]);
-  dynamic onChildUnavailable(int childKey,[Function responseFactory = null]);
+  void onChildAttached(int childKey,ViewInfo childViewInfo,void callback());
+  void onChildUnavailable(int childKey,void callback());
 }
 
 abstract class ViewContainerListenerInterface
@@ -1196,18 +1244,14 @@ class _ViewContainerListenerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       case _viewContainerListenerMethodOnChildUnavailableName:
         var r = ViewContainerListenerOnChildUnavailableResponseParams.deserialize(
@@ -1216,18 +1260,14 @@ class _ViewContainerListenerProxyControl
           proxyError("Expected a message with a valid request Id.");
           return;
         }
-        Completer c = completerMap[message.header.requestId];
-        if (c == null) {
+        Function callback = callbackMap[message.header.requestId];
+        if (callback == null) {
           proxyError(
               "Message had unknown request Id: ${message.header.requestId}");
           return;
         }
-        completerMap.remove(message.header.requestId);
-        if (c.isCompleted) {
-          proxyError("Response completer already completed");
-          return;
-        }
-        c.complete(r);
+        callbackMap.remove(message.header.requestId);
+        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1272,30 +1312,34 @@ class ViewContainerListenerProxy
   }
 
 
-  dynamic onChildAttached(int childKey,ViewInfo childViewInfo,[Function responseFactory = null]) {
+  void onChildAttached(int childKey,ViewInfo childViewInfo,void callback()) {
     if (impl != null) {
-      return new Future(() => impl.onChildAttached(childKey,childViewInfo,_ViewContainerListenerStubControl._viewContainerListenerOnChildAttachedResponseParamsFactory));
+      impl.onChildAttached(childKey,childViewInfo,callback);
+      return;
     }
     var params = new _ViewContainerListenerOnChildAttachedParams();
     params.childKey = childKey;
     params.childViewInfo = childViewInfo;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _viewContainerListenerMethodOnChildAttachedName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
-  dynamic onChildUnavailable(int childKey,[Function responseFactory = null]) {
+  void onChildUnavailable(int childKey,void callback()) {
     if (impl != null) {
-      return new Future(() => impl.onChildUnavailable(childKey,_ViewContainerListenerStubControl._viewContainerListenerOnChildUnavailableResponseParamsFactory));
+      impl.onChildUnavailable(childKey,callback);
+      return;
     }
     var params = new _ViewContainerListenerOnChildUnavailableParams();
     params.childKey = childKey;
-    return ctrl.sendMessageWithRequestId(
+    ctrl.sendMessageWithRequestId(
         params,
         _viewContainerListenerMethodOnChildUnavailableName,
         -1,
-        bindings.MessageHeader.kMessageExpectsResponse);
+        bindings.MessageHeader.kMessageExpectsResponse,
+        callback);
   }
 }
 
@@ -1321,20 +1365,34 @@ class _ViewContainerListenerStubControl
   String get serviceName => ViewContainerListener.serviceName;
 
 
-  static ViewContainerListenerOnChildAttachedResponseParams _viewContainerListenerOnChildAttachedResponseParamsFactory() {
-    var result = new ViewContainerListenerOnChildAttachedResponseParams();
-    return result;
+  Function _viewContainerListenerOnChildAttachedResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new ViewContainerListenerOnChildAttachedResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _viewContainerListenerMethodOnChildAttachedName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
-  static ViewContainerListenerOnChildUnavailableResponseParams _viewContainerListenerOnChildUnavailableResponseParamsFactory() {
-    var result = new ViewContainerListenerOnChildUnavailableResponseParams();
-    return result;
+  Function _viewContainerListenerOnChildUnavailableResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new ViewContainerListenerOnChildUnavailableResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _viewContainerListenerMethodOnChildUnavailableName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
   }
 
-  dynamic handleMessage(bindings.ServiceMessage message) {
+  void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      return bindings.ControlMessageHandler.handleMessage(this,
-                                                          0,
-                                                          message);
+      bindings.ControlMessageHandler.handleMessage(
+          this, 0, message);
+      return;
     }
     if (_impl == null) {
       throw new core.MojoApiError("$this has no implementation set");
@@ -1343,52 +1401,17 @@ class _ViewContainerListenerStubControl
       case _viewContainerListenerMethodOnChildAttachedName:
         var params = _ViewContainerListenerOnChildAttachedParams.deserialize(
             message.payload);
-        var response = _impl.onChildAttached(params.childKey,params.childViewInfo,_viewContainerListenerOnChildAttachedResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _viewContainerListenerMethodOnChildAttachedName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _viewContainerListenerMethodOnChildAttachedName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.onChildAttached(params.childKey, params.childViewInfo, _viewContainerListenerOnChildAttachedResponseParamsResponder(message.header.requestId));
         break;
       case _viewContainerListenerMethodOnChildUnavailableName:
         var params = _ViewContainerListenerOnChildUnavailableParams.deserialize(
             message.payload);
-        var response = _impl.onChildUnavailable(params.childKey,_viewContainerListenerOnChildUnavailableResponseParamsFactory);
-        if (response is Future) {
-          return response.then((response) {
-            if (response != null) {
-              return buildResponseWithId(
-                  response,
-                  _viewContainerListenerMethodOnChildUnavailableName,
-                  message.header.requestId,
-                  bindings.MessageHeader.kMessageIsResponse);
-            }
-          });
-        } else if (response != null) {
-          return buildResponseWithId(
-              response,
-              _viewContainerListenerMethodOnChildUnavailableName,
-              message.header.requestId,
-              bindings.MessageHeader.kMessageIsResponse);
-        }
+        _impl.onChildUnavailable(params.childKey, _viewContainerListenerOnChildUnavailableResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
         break;
     }
-    return null;
   }
 
   ViewContainerListener get impl => _impl;
@@ -1442,11 +1465,11 @@ class ViewContainerListenerStub
   }
 
 
-  dynamic onChildAttached(int childKey,ViewInfo childViewInfo,[Function responseFactory = null]) {
-    return impl.onChildAttached(childKey,childViewInfo,responseFactory);
+  void onChildAttached(int childKey,ViewInfo childViewInfo,void callback()) {
+    return impl.onChildAttached(childKey,childViewInfo,callback);
   }
-  dynamic onChildUnavailable(int childKey,[Function responseFactory = null]) {
-    return impl.onChildUnavailable(childKey,responseFactory);
+  void onChildUnavailable(int childKey,void callback()) {
+    return impl.onChildUnavailable(childKey,callback);
   }
 }
 

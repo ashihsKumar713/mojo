@@ -75,6 +75,11 @@ class NetAddressIPv4 extends bindings.Struct {
 
   NetAddressIPv4() : super(kVersions.last.size);
 
+  NetAddressIPv4.init(
+    int this.port, 
+    List<int> this.addr
+  ) : super(kVersions.last.size);
+
   static NetAddressIPv4 deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -160,6 +165,11 @@ class NetAddressIPv6 extends bindings.Struct {
   List<int> addr = null;
 
   NetAddressIPv6() : super(kVersions.last.size);
+
+  NetAddressIPv6.init(
+    int this.port, 
+    List<int> this.addr
+  ) : super(kVersions.last.size);
 
   static NetAddressIPv6 deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -247,6 +257,12 @@ class NetAddress extends bindings.Struct {
   NetAddressIPv6 ipv6 = null;
 
   NetAddress() : super(kVersions.last.size);
+
+  NetAddress.init(
+    NetAddressFamily this.family, 
+    NetAddressIPv4 this.ipv4, 
+    NetAddressIPv6 this.ipv6
+  ) : super(kVersions.last.size);
 
   static NetAddress deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);

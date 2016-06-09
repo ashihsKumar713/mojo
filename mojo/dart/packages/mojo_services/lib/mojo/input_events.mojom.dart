@@ -23,6 +23,16 @@ class KeyData extends bindings.Struct {
 
   KeyData() : super(kVersions.last.size);
 
+  KeyData.init(
+    int this.keyCode, 
+    bool this.isChar, 
+    int this.character, 
+    input_key_codes_mojom.KeyboardCode this.windowsKeyCode, 
+    int this.nativeKeyCode, 
+    int this.text, 
+    int this.unmodifiedText
+  ) : super(kVersions.last.size);
+
   static KeyData deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
     var result = decode(decoder);
@@ -187,6 +197,21 @@ class PointerData extends bindings.Struct {
   double verticalWheel = 0.0;
 
   PointerData() : super(kVersions.last.size);
+
+  PointerData.init(
+    int this.pointerId, 
+    input_event_constants_mojom.PointerKind this.kind, 
+    double this.x, 
+    double this.y, 
+    double this.screenX, 
+    double this.screenY, 
+    double this.pressure, 
+    double this.radiusMajor, 
+    double this.radiusMinor, 
+    double this.orientation, 
+    double this.horizontalWheel, 
+    double this.verticalWheel
+  ) : super(kVersions.last.size);
 
   static PointerData deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
@@ -410,6 +435,14 @@ class Event extends bindings.Struct {
   PointerData pointerData = null;
 
   Event() : super(kVersions.last.size);
+
+  Event.init(
+    input_event_constants_mojom.EventType this.action, 
+    input_event_constants_mojom.EventFlags this.flags, 
+    int this.timeStamp, 
+    KeyData this.keyData, 
+    PointerData this.pointerData
+  ) : super(kVersions.last.size);
 
   static Event deserialize(bindings.Message message) {
     var decoder = new bindings.Decoder(message);
