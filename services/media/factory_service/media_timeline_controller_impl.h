@@ -151,7 +151,7 @@ class MediaTimelineControllerImpl
   MojoPublisher<GetStatusCallback> status_publisher_;
   std::vector<SiteState> site_states_;
   TimelineFunction current_timeline_function_;
-  bool end_of_stream_;
+  bool end_of_stream_ = false;
   std::weak_ptr<TimelineTransition> pending_transition_;
 };
 
