@@ -885,8 +885,8 @@ template("junit_binary") {
       "//testing/android/junit:junit_test_support",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
-      "//third_party/robolectric:robolectric_java",
       "//third_party/robolectric:android-all-4.3_r2-robolectric-0",
+      "//third_party/robolectric:robolectric_java",
     ]
     if (defined(invoker.deps)) {
       deps += invoker.deps
@@ -1022,19 +1022,7 @@ template("java_library") {
 template("java_prebuilt") {
   set_sources_assignment_filter([])
   java_prebuilt_impl(target_name) {
-    jar_path = invoker.jar_path
-    if (defined(invoker.testonly)) {
-      testonly = invoker.testonly
-    }
-    if (defined(invoker.deps)) {
-      deps = invoker.deps
-    }
-    if (defined(invoker.proguard_config)) {
-      proguard_config = invoker.proguard_config
-    }
-    if (defined(invoker.proguard_preprocess)) {
-      proguard_preprocess = invoker.proguard_preprocess
-    }
+    forward_variables_from(invoker, "*")
   }
 }
 
@@ -1619,8 +1607,8 @@ template("android_apk") {
 
     # This target generates the input file _all_resources_zip_path.
     deps = [
-      ":$process_resources_target",
       ":$final_dex_target_name",
+      ":$process_resources_target",
     ]
     if (defined(invoker.deps)) {
       deps += invoker.deps
