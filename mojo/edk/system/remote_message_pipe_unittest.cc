@@ -178,7 +178,7 @@ TEST_F(RemoteMessagePipeTest, Basic) {
   uint32_t buffer_size = static_cast<uint32_t>(sizeof(buffer));
   Waiter waiter;
   HandleSignalsState hss;
-  uint32_t context = 0;
+  uint64_t context = 0;
 
   // Connect message pipes. MP 0, port 1 will be attached to channel 0 and
   // connected to MP 1, port 0, which will be attached to channel 1. This leaves
@@ -281,7 +281,7 @@ TEST_F(RemoteMessagePipeTest, Basic) {
 TEST_F(RemoteMessagePipeTest, PeerClosed) {
   Waiter waiter;
   HandleSignalsState hss;
-  uint32_t context = 0;
+  uint64_t context = 0;
 
   // Connect message pipes. MP 0, port 1 will be attached to channel 0 and
   // connected to MP 1, port 0, which will be attached to channel 1. This leaves
@@ -321,7 +321,7 @@ TEST_F(RemoteMessagePipeTest, Multiplex) {
   uint32_t buffer_size = static_cast<uint32_t>(sizeof(buffer));
   Waiter waiter;
   HandleSignalsState hss;
-  uint32_t context = 0;
+  uint64_t context = 0;
 
   // Connect message pipes as in the |Basic| test.
 
@@ -497,7 +497,7 @@ TEST_F(RemoteMessagePipeTest, CloseBeforeAttachAndRun) {
   uint32_t buffer_size = static_cast<uint32_t>(sizeof(buffer));
   Waiter waiter;
   HandleSignalsState hss;
-  uint32_t context = 0;
+  uint64_t context = 0;
 
   // Connect message pipes. MP 0, port 1 will be attached to channel 0 and
   // connected to MP 1, port 0, which will be attached to channel 1. This leaves
@@ -559,7 +559,7 @@ TEST_F(RemoteMessagePipeTest, CloseBeforeConnect) {
   uint32_t buffer_size = static_cast<uint32_t>(sizeof(buffer));
   Waiter waiter;
   HandleSignalsState hss;
-  uint32_t context = 0;
+  uint64_t context = 0;
 
   // Connect message pipes. MP 0, port 1 will be attached to channel 0 and
   // connected to MP 1, port 0, which will be attached to channel 1. This leaves
@@ -619,7 +619,7 @@ TEST_F(RemoteMessagePipeTest, HandlePassing) {
   static const char kHello[] = "hello";
   Waiter waiter;
   HandleSignalsState hss;
-  uint32_t context = 0;
+  uint64_t context = 0;
 
   RefPtr<ChannelEndpoint> ep0;
   auto mp0 = MessagePipe::CreateLocalProxy(&ep0);
@@ -779,7 +779,7 @@ TEST_F(RemoteMessagePipeTest, HandlePassingHalfClosed) {
   static const char kWorld[] = "world!";
   Waiter waiter;
   HandleSignalsState hss;
-  uint32_t context = 0;
+  uint64_t context = 0;
 
   // We'll try to pass this dispatcher.
   auto dispatcher = MessagePipeDispatcher::Create(
@@ -930,7 +930,7 @@ TEST_F(RemoteMessagePipeTest, SharedBufferPassing) {
   static const char kHello[] = "hello";
   Waiter waiter;
   HandleSignalsState hss;
-  uint32_t context = 0;
+  uint64_t context = 0;
 
   RefPtr<ChannelEndpoint> ep0;
   auto mp0 = MessagePipe::CreateLocalProxy(&ep0);
@@ -1056,7 +1056,7 @@ TEST_F(RemoteMessagePipeTest, PlatformHandlePassing) {
   static const char kHello[] = "hello";
   static const char kWorld[] = "world";
   Waiter waiter;
-  uint32_t context = 0;
+  uint64_t context = 0;
   HandleSignalsState hss;
 
   RefPtr<ChannelEndpoint> ep0;
@@ -1198,7 +1198,7 @@ TEST_F(RemoteMessagePipeTest, PassMessagePipeHandleAcrossAndBack) {
   static const char kWorld[] = "world";
   Waiter waiter;
   HandleSignalsState hss;
-  uint32_t context = 0;
+  uint64_t context = 0;
 
   RefPtr<ChannelEndpoint> ep0;
   auto mp0 = MessagePipe::CreateLocalProxy(&ep0);

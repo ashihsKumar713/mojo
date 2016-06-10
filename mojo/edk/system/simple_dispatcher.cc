@@ -28,7 +28,7 @@ void SimpleDispatcher::CancelAllStateNoLock() {
 MojoResult SimpleDispatcher::AddAwakableImplNoLock(
     Awakable* awakable,
     MojoHandleSignals signals,
-    uint32_t context,
+    uint64_t context,
     HandleSignalsState* signals_state) {
   mutex().AssertHeld();
 

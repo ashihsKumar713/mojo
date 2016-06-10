@@ -151,7 +151,7 @@ HandleSignalsState LocalMessagePipeEndpoint::GetHandleSignalsState() const {
 MojoResult LocalMessagePipeEndpoint::AddAwakable(
     Awakable* awakable,
     MojoHandleSignals signals,
-    uint32_t context,
+    uint64_t context,
     HandleSignalsState* signals_state) {
   DCHECK(is_open_);
 

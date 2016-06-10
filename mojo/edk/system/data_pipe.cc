@@ -399,7 +399,7 @@ HandleSignalsState DataPipe::ProducerGetHandleSignalsState() {
 
 MojoResult DataPipe::ProducerAddAwakable(Awakable* awakable,
                                          MojoHandleSignals signals,
-                                         uint32_t context,
+                                         uint64_t context,
                                          HandleSignalsState* signals_state) {
   MutexLocker locker(&mutex_);
   DCHECK(has_local_producer_no_lock());
@@ -618,7 +618,7 @@ HandleSignalsState DataPipe::ConsumerGetHandleSignalsState() {
 
 MojoResult DataPipe::ConsumerAddAwakable(Awakable* awakable,
                                          MojoHandleSignals signals,
-                                         uint32_t context,
+                                         uint64_t context,
                                          HandleSignalsState* signals_state) {
   MutexLocker locker(&mutex_);
   DCHECK(has_local_consumer_no_lock());

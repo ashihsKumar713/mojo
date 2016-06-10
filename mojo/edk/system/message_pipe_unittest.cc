@@ -460,7 +460,7 @@ TEST(MessagePipeTest, ThreadedWaiting) {
   const uint32_t kBufferSize = static_cast<uint32_t>(sizeof(buffer));
 
   MojoResult result;
-  uint32_t context;
+  uint64_t context;
 
   // Write to wake up waiter waiting for read.
   {

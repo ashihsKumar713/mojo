@@ -203,7 +203,7 @@ HandleSignalsState MessagePipeDispatcher::GetHandleSignalsStateImplNoLock()
 MojoResult MessagePipeDispatcher::AddAwakableImplNoLock(
     Awakable* awakable,
     MojoHandleSignals signals,
-    uint32_t context,
+    uint64_t context,
     HandleSignalsState* signals_state) {
   mutex().AssertHeld();
   return message_pipe_->AddAwakable(port_, awakable, signals, context,

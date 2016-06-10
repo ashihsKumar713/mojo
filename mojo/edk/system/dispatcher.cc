@@ -282,7 +282,7 @@ HandleSignalsState Dispatcher::GetHandleSignalsState() const {
 
 MojoResult Dispatcher::AddAwakable(Awakable* awakable,
                                    MojoHandleSignals signals,
-                                   uint32_t context,
+                                   uint64_t context,
                                    HandleSignalsState* signals_state) {
   MutexLocker locker(&mutex_);
   if (is_closed_) {
@@ -483,7 +483,7 @@ HandleSignalsState Dispatcher::GetHandleSignalsStateImplNoLock() const {
 MojoResult Dispatcher::AddAwakableImplNoLock(
     Awakable* /*awakable*/,
     MojoHandleSignals /*signals*/,
-    uint32_t /*context*/,
+    uint64_t /*context*/,
     HandleSignalsState* signals_state) {
   mutex_.AssertHeld();
   DCHECK(!is_closed_);

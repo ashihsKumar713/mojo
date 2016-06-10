@@ -135,7 +135,7 @@ TEST_F(RemoteDataPipeImplTest, Sanity) {
   uint32_t read_buffer_size = static_cast<uint32_t>(sizeof(read_buffer));
   Waiter waiter;
   HandleSignalsState hss;
-  uint32_t context = 0;
+  uint64_t context = 0;
 
   // Write on MP 0 (port 0). Wait and receive on MP 1 (port 0). (Add the waiter
   // first, to avoid any handling the case where it's already readable.)
@@ -171,7 +171,7 @@ TEST_F(RemoteDataPipeImplTest, SendConsumerWithClosedProducer) {
   uint32_t read_num_handles = 10;  // Maximum to get.
   Waiter waiter;
   HandleSignalsState hss;
-  uint32_t context = 0;
+  uint64_t context = 0;
 
   RefPtr<DataPipe> dp(CreateLocal(sizeof(int32_t), 1000));
   // This is the consumer dispatcher we'll send.
@@ -296,7 +296,7 @@ TEST_F(RemoteDataPipeImplTest, SendConsumerDuringTwoPhaseWrite) {
   uint32_t read_num_handles = 10;  // Maximum to get.
   Waiter waiter;
   HandleSignalsState hss;
-  uint32_t context = 0;
+  uint64_t context = 0;
 
   RefPtr<DataPipe> dp(CreateLocal(sizeof(int32_t), 1000));
   // This is the consumer dispatcher we'll send.
@@ -413,7 +413,7 @@ TEST_F(RemoteDataPipeImplTest, SendConsumerDuringSecondTwoPhaseWrite) {
   uint32_t read_num_handles = 10;  // Maximum to get.
   Waiter waiter;
   HandleSignalsState hss;
-  uint32_t context = 0;
+  uint64_t context = 0;
 
   RefPtr<DataPipe> dp(CreateLocal(sizeof(int32_t), 1000));
   // This is the consumer dispatcher we'll send.

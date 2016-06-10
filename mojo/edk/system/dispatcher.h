@@ -189,7 +189,7 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
   //    that |signals| will ever be satisfied.
   MojoResult AddAwakable(Awakable* awakable,
                          MojoHandleSignals signals,
-                         uint32_t context,
+                         uint64_t context,
                          HandleSignalsState* signals_state);
   // Removes an awakable from this dispatcher. (It is valid to call this
   // multiple times for the same |awakable| on the same object, so long as
@@ -353,7 +353,7 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
       MOJO_SHARED_LOCKS_REQUIRED(mutex_);
   virtual MojoResult AddAwakableImplNoLock(Awakable* awakable,
                                            MojoHandleSignals signals,
-                                           uint32_t context,
+                                           uint64_t context,
                                            HandleSignalsState* signals_state)
       MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
   virtual void RemoveAwakableImplNoLock(Awakable* awakable,
