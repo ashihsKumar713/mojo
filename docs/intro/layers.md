@@ -1,3 +1,0 @@
-# Layers
-
-**TODO(vtl)**

@@ -23,7 +23,12 @@ That said, there are some differences:
   sent, the Mojo handle values become invalid in the sending process. (Even if
   the receiving process is the same as the sending process, the received Mojo
   handle values will probably be different from the values that were sent.)
-* Mojo handles have a well-defined life-cycle, and are only invalidated by
-  either transfer across a message pipe (as above) or by closing them. Unlike
-  Unix's overloaded `close()` (which may fail due to data loss, i.e., inability
-  to flush), closing a (valid) Mojo handle never fails.
+* Each Mojo handle has a set of "rights", which control what operations can be
+  performed on a given handle. The rights for a given handle are immutable.
+  However, any handle may be replaced with an "equivalent" handle with a
+  (possibly) reduced set of rights.
+* A Mojo handle has a well-defined life-cycle, and is only invalidated either by
+  being transferred across a message pipe, by being replaced (by an "equivalent"
+  handle), or by being closed. Unlike Unix's overloaded `close()` (which may
+  fail due to data loss, i.e., inability to flush), closing a (valid) Mojo
+  handle never fails.
