@@ -91,6 +91,10 @@ RefPtr<Dispatcher> Dispatcher::TransportDataAccess::Deserialize(
     case Type::SHARED_BUFFER:
       return SharedBufferDispatcher::Deserialize(channel, source, size,
                                                  platform_handles);
+    case Type::WAIT_SET:
+      // Wait sets aren't transferrable.
+      LOG(WARNING) << "Received wait set handle";
+      return nullptr;
     case Type::PLATFORM_HANDLE:
       return PlatformHandleDispatcher::Deserialize(channel, source, size,
                                                    platform_handles);
@@ -272,6 +276,36 @@ MojoResult Dispatcher::MapBuffer(
   return MapBufferImplNoLock(offset, num_bytes, flags, mapping);
 }
 
+MojoResult Dispatcher::WaitSetAdd(
+    UserPointer<const MojoWaitSetAddOptions> options,
+    Handle&& handle,
+    MojoHandleSignals signals,
+    uint64_t cookie) {
+  MutexLocker locker(&mutex_);
+  if (is_closed_)
+    return MOJO_RESULT_INVALID_ARGUMENT;
+
+  return WaitSetAddImplNoLock(options, std::move(handle), signals, cookie);
+}
+
+MojoResult Dispatcher::WaitSetRemove(uint64_t cookie) {
+  MutexLocker locker(&mutex_);
+  if (is_closed_)
+    return MOJO_RESULT_INVALID_ARGUMENT;
+
+  return WaitSetRemoveImplNoLock(cookie);
+}
+
+MojoResult Dispatcher::WaitSetWait(MojoDeadline deadline,
+                                   UserPointer<uint32_t> num_results,
+                                   UserPointer<MojoWaitSetResult> results,
+                                   UserPointer<uint32_t> max_results) {
+  // Note: This doesn't lock |mutex_|, and leaves everything for
+  // |WaitSetWaitImpl()| to do. (We could just make this method virtual, but we
+  // prefer to have a separate "impl" method for consistency.)
+  return WaitSetWaitImpl(deadline, num_results, results, max_results);
+}
+
 HandleSignalsState Dispatcher::GetHandleSignalsState() const {
   MutexLocker locker(&mutex_);
   if (is_closed_)
@@ -365,6 +399,7 @@ MojoResult Dispatcher::SetDataPipeProducerOptionsImplNoLock(
     UserPointer<const MojoDataPipeProducerOptions> /*options*/) {
   mutex_.AssertHeld();
   DCHECK(!is_closed_);
+  // By default, not supported. Only needed for data pipe producer dispatchers.
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
@@ -373,6 +408,7 @@ MojoResult Dispatcher::GetDataPipeProducerOptionsImplNoLock(
     uint32_t /*options_num_bytes*/) {
   mutex_.AssertHeld();
   DCHECK(!is_closed_);
+  // By default, not supported. Only needed for data pipe producer dispatchers.
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
@@ -381,7 +417,7 @@ MojoResult Dispatcher::WriteDataImplNoLock(UserPointer<const void> /*elements*/,
                                            MojoWriteDataFlags /*flags*/) {
   mutex_.AssertHeld();
   DCHECK(!is_closed_);
-  // By default, not supported. Only needed for data pipe dispatchers.
+  // By default, not supported. Only needed for data pipe producer dispatchers.
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
@@ -391,23 +427,14 @@ MojoResult Dispatcher::BeginWriteDataImplNoLock(
     MojoWriteDataFlags /*flags*/) {
   mutex_.AssertHeld();
   DCHECK(!is_closed_);
-  // By default, not supported. Only needed for data pipe dispatchers.
+  // By default, not supported. Only needed for data pipe producer dispatchers.
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
 MojoResult Dispatcher::EndWriteDataImplNoLock(uint32_t /*num_bytes_written*/) {
   mutex_.AssertHeld();
   DCHECK(!is_closed_);
-  // By default, not supported. Only needed for data pipe dispatchers.
-  return MOJO_RESULT_INVALID_ARGUMENT;
-}
-
-MojoResult Dispatcher::ReadDataImplNoLock(UserPointer<void> /*elements*/,
-                                          UserPointer<uint32_t> /*num_bytes*/,
-                                          MojoReadDataFlags /*flags*/) {
-  mutex_.AssertHeld();
-  DCHECK(!is_closed_);
-  // By default, not supported. Only needed for data pipe dispatchers.
+  // By default, not supported. Only needed for data pipe producer dispatchers.
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
@@ -415,6 +442,7 @@ MojoResult Dispatcher::SetDataPipeConsumerOptionsImplNoLock(
     UserPointer<const MojoDataPipeConsumerOptions> /*options*/) {
   mutex_.AssertHeld();
   DCHECK(!is_closed_);
+  // By default, not supported. Only needed for data pipe consumer dispatchers.
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
@@ -423,6 +451,16 @@ MojoResult Dispatcher::GetDataPipeConsumerOptionsImplNoLock(
     uint32_t /*options_num_bytes*/) {
   mutex_.AssertHeld();
   DCHECK(!is_closed_);
+  // By default, not supported. Only needed for data pipe consumer dispatchers.
+  return MOJO_RESULT_INVALID_ARGUMENT;
+}
+
+MojoResult Dispatcher::ReadDataImplNoLock(UserPointer<void> /*elements*/,
+                                          UserPointer<uint32_t> /*num_bytes*/,
+                                          MojoReadDataFlags /*flags*/) {
+  mutex_.AssertHeld();
+  DCHECK(!is_closed_);
+  // By default, not supported. Only needed for data pipe consumer dispatchers.
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
@@ -432,14 +470,14 @@ MojoResult Dispatcher::BeginReadDataImplNoLock(
     MojoReadDataFlags /*flags*/) {
   mutex_.AssertHeld();
   DCHECK(!is_closed_);
-  // By default, not supported. Only needed for data pipe dispatchers.
+  // By default, not supported. Only needed for data pipe consumer dispatchers.
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
 MojoResult Dispatcher::EndReadDataImplNoLock(uint32_t /*num_bytes_read*/) {
   mutex_.AssertHeld();
   DCHECK(!is_closed_);
-  // By default, not supported. Only needed for data pipe dispatchers.
+  // By default, not supported. Only needed for data pipe consumer dispatchers.
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
@@ -469,6 +507,36 @@ MojoResult Dispatcher::MapBufferImplNoLock(
   mutex_.AssertHeld();
   DCHECK(!is_closed_);
   // By default, not supported. Only needed for buffer dispatchers.
+  return MOJO_RESULT_INVALID_ARGUMENT;
+}
+
+MojoResult Dispatcher::WaitSetAddImplNoLock(
+    UserPointer<const MojoWaitSetAddOptions> /*options*/,
+    Handle&& /*handle*/,
+    MojoHandleSignals /*signals*/,
+    uint64_t /*cookie*/) {
+  mutex_.AssertHeld();
+  DCHECK(!is_closed_);
+  // By default, not supported. Only needed for wait set dispatchers.
+  return MOJO_RESULT_INVALID_ARGUMENT;
+}
+
+MojoResult Dispatcher::WaitSetRemoveImplNoLock(uint64_t /*cookie*/) {
+  mutex_.AssertHeld();
+  DCHECK(!is_closed_);
+  // By default, not supported. Only needed for wait set dispatchers.
+  return MOJO_RESULT_INVALID_ARGUMENT;
+}
+
+MojoResult Dispatcher::WaitSetWaitImpl(
+    MojoDeadline /*deadline*/,
+    UserPointer<uint32_t> /*num_results*/,
+    UserPointer<MojoWaitSetResult> /*results*/,
+    UserPointer<uint32_t> /*max_results*/) {
+  // Note that this is *not* called under |mutex_| and |is_closed_| hasn't been
+  // checked. But since we'll return |MOJO_RESULT_INVALID_ARGUMENT| in either
+  // case (by default, this is not supported: it's only needed for wait set
+  // dispatchers), we don't need to lock |mutex_| and check |is_closed_|.
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 

@@ -26,6 +26,7 @@
 #include "mojo/public/c/system/handle.h"
 #include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/c/system/result.h"
+#include "mojo/public/c/system/wait_set.h"
 #include "mojo/public/cpp/system/macros.h"
 
 namespace mojo {
@@ -73,6 +74,7 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
     DATA_PIPE_PRODUCER,
     DATA_PIPE_CONSUMER,
     SHARED_BUFFER,
+    WAIT_SET,
 
     // "Private" types (not exposed via the public interface):
     PLATFORM_HANDLE = -1
@@ -166,6 +168,19 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
       uint64_t num_bytes,
       MojoMapBufferFlags flags,
       std::unique_ptr<platform::PlatformSharedBufferMapping>* mapping);
+
+  // |EntrypointClass::WAIT_SET|:
+  MojoResult WaitSetAdd(UserPointer<const MojoWaitSetAddOptions> options,
+                        Handle&& handle,
+                        MojoHandleSignals signals,
+                        uint64_t cookie);
+  MojoResult WaitSetRemove(uint64_t cookie);
+  // Note: This will likely block the calling thread (so, e.g., no mutexes
+  // should be held when it's called).
+  MojoResult WaitSetWait(MojoDeadline deadline,
+                         UserPointer<uint32_t> num_results,
+                         UserPointer<MojoWaitSetResult> results,
+                         UserPointer<uint32_t> max_results);
 
   // Gets the current handle signals state. (The default implementation simply
   // returns a default-constructed |HandleSignalsState|, i.e., no signals
@@ -320,16 +335,16 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
       MojoWriteDataFlags flags) MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
   virtual MojoResult EndWriteDataImplNoLock(uint32_t num_bytes_written)
       MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
-  virtual MojoResult ReadDataImplNoLock(UserPointer<void> elements,
-                                        UserPointer<uint32_t> num_bytes,
-                                        MojoReadDataFlags flags)
-      MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
   virtual MojoResult SetDataPipeConsumerOptionsImplNoLock(
       UserPointer<const MojoDataPipeConsumerOptions> options)
       MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
   virtual MojoResult GetDataPipeConsumerOptionsImplNoLock(
       UserPointer<MojoDataPipeConsumerOptions> options,
       uint32_t options_num_bytes) MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
+  virtual MojoResult ReadDataImplNoLock(UserPointer<void> elements,
+                                        UserPointer<uint32_t> num_bytes,
+                                        MojoReadDataFlags flags)
+      MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
   virtual MojoResult BeginReadDataImplNoLock(
       UserPointer<const void*> buffer,
       UserPointer<uint32_t> buffer_num_bytes,
@@ -349,6 +364,21 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
       MojoMapBufferFlags flags,
       std::unique_ptr<platform::PlatformSharedBufferMapping>* mapping)
       MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
+  virtual MojoResult WaitSetAddImplNoLock(
+      UserPointer<const MojoWaitSetAddOptions> options,
+      Handle&& handle,
+      MojoHandleSignals signals,
+      uint64_t cookie) MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
+  virtual MojoResult WaitSetRemoveImplNoLock(uint64_t cookie)
+      MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
+  // WARNING: Unlike the others, this method is *not* called under |mutex_| and
+  // |is_closed_| is *not* checked. Thus any override must lock |mutex()| and
+  // check |is_closed_no_lock()| (returning |MOJO_RESULT_INVALID_ARGUMENT| if it
+  // is true).
+  virtual MojoResult WaitSetWaitImpl(MojoDeadline deadline,
+                                     UserPointer<uint32_t> num_results,
+                                     UserPointer<MojoWaitSetResult> results,
+                                     UserPointer<uint32_t> max_results);
   virtual HandleSignalsState GetHandleSignalsStateImplNoLock() const
       MOJO_SHARED_LOCKS_REQUIRED(mutex_);
   virtual MojoResult AddAwakableImplNoLock(Awakable* awakable,
@@ -386,6 +416,10 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
       MOJO_NOT_THREAD_SAFE;
 
   util::Mutex& mutex() const MOJO_LOCK_RETURNED(mutex_) { return mutex_; }
+
+  bool is_closed_no_lock() const MOJO_SHARED_LOCKS_REQUIRED(mutex_) {
+    return is_closed_;
+  }
 
  private:
   FRIEND_REF_COUNTED_THREAD_SAFE(Dispatcher);
