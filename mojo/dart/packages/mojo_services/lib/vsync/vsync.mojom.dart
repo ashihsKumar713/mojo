@@ -291,12 +291,23 @@ class VSyncProviderProxy
       return;
     }
     var params = new _VSyncProviderAwaitVSyncParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int timeStamp) {
+        z.bindCallback(() {
+          callback(timeStamp);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _vSyncProviderMethodAwaitVSyncName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

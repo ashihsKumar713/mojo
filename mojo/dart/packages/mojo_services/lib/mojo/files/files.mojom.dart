@@ -327,12 +327,23 @@ class FilesProxy
     var params = new _FilesOpenFileSystemParams();
     params.fileSystem = fileSystem;
     params.directory = directory;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _filesMethodOpenFileSystemName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

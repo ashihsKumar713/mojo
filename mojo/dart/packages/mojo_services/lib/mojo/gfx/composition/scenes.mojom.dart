@@ -1199,12 +1199,23 @@ class SceneListenerProxy
     }
     var params = new _SceneListenerOnResourceUnavailableParams();
     params.resourceId = resourceId;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _sceneListenerMethodOnResourceUnavailableName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

@@ -1023,12 +1023,23 @@ class MediaDemuxProxy
       return;
     }
     var params = new _MediaDemuxDescribeParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((List<media_types_mojom.MediaType> streamTypes) {
+        z.bindCallback(() {
+          callback(streamTypes);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaDemuxMethodDescribeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer) {
     if (impl != null) {
@@ -1052,12 +1063,23 @@ class MediaDemuxProxy
     }
     var params = new _MediaDemuxGetMetadataParams();
     params.versionLastSeen = versionLastSeen;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int version, media_metadata_mojom.MediaMetadata metadata) {
+        z.bindCallback(() {
+          callback(version, metadata);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaDemuxMethodGetMetadataName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void prime(void callback()) {
     if (impl != null) {
@@ -1065,12 +1087,23 @@ class MediaDemuxProxy
       return;
     }
     var params = new _MediaDemuxPrimeParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaDemuxMethodPrimeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void flush(void callback()) {
     if (impl != null) {
@@ -1078,12 +1111,23 @@ class MediaDemuxProxy
       return;
     }
     var params = new _MediaDemuxFlushParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaDemuxMethodFlushName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void seek(int position,void callback()) {
     if (impl != null) {
@@ -1092,12 +1136,23 @@ class MediaDemuxProxy
     }
     var params = new _MediaDemuxSeekParams();
     params.position = position;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaDemuxMethodSeekName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

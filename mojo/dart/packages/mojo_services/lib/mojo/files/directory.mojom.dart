@@ -1476,12 +1476,23 @@ class DirectoryProxy
       return;
     }
     var params = new _DirectoryReadParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error, List<types_mojom.DirectoryEntry> directoryContents) {
+        z.bindCallback(() {
+          callback(error, directoryContents);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _directoryMethodReadName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void stat(void callback(types_mojom.Error error, types_mojom.FileInformation fileInformation)) {
     if (impl != null) {
@@ -1489,12 +1500,23 @@ class DirectoryProxy
       return;
     }
     var params = new _DirectoryStatParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error, types_mojom.FileInformation fileInformation) {
+        z.bindCallback(() {
+          callback(error, fileInformation);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _directoryMethodStatName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,void callback(types_mojom.Error error)) {
     if (impl != null) {
@@ -1504,12 +1526,23 @@ class DirectoryProxy
     var params = new _DirectoryTouchParams();
     params.atime = atime;
     params.mtime = mtime;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _directoryMethodTouchName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void openFile(String path,file_mojom.FileInterfaceRequest file,int openFlags,void callback(types_mojom.Error error)) {
     if (impl != null) {
@@ -1520,12 +1553,23 @@ class DirectoryProxy
     params.path = path;
     params.file = file;
     params.openFlags = openFlags;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _directoryMethodOpenFileName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void openDirectory(String path,DirectoryInterfaceRequest directory,int openFlags,void callback(types_mojom.Error error)) {
     if (impl != null) {
@@ -1536,12 +1580,23 @@ class DirectoryProxy
     params.path = path;
     params.directory = directory;
     params.openFlags = openFlags;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _directoryMethodOpenDirectoryName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void rename(String path,String newPath,void callback(types_mojom.Error error)) {
     if (impl != null) {
@@ -1551,12 +1606,23 @@ class DirectoryProxy
     var params = new _DirectoryRenameParams();
     params.path = path;
     params.newPath = newPath;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _directoryMethodRenameName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void delete(String path,int deleteFlags,void callback(types_mojom.Error error)) {
     if (impl != null) {
@@ -1566,12 +1632,23 @@ class DirectoryProxy
     var params = new _DirectoryDeleteParams();
     params.path = path;
     params.deleteFlags = deleteFlags;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _directoryMethodDeleteName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

@@ -762,12 +762,23 @@ class CameraRollServiceProxy
       return;
     }
     var params = new _CameraRollServiceGetCountParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int numPhotos) {
+        z.bindCallback(() {
+          callback(numPhotos);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _cameraRollServiceMethodGetCountName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getPhoto(int index,void callback(Photo photo)) {
     if (impl != null) {
@@ -776,12 +787,23 @@ class CameraRollServiceProxy
     }
     var params = new _CameraRollServiceGetPhotoParams();
     params.index = index;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((Photo photo) {
+        z.bindCallback(() {
+          callback(photo);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _cameraRollServiceMethodGetPhotoName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 
@@ -1067,12 +1089,23 @@ class CameraServiceProxy
       return;
     }
     var params = new _CameraServiceGetLatestFrameParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((core.MojoDataPipeConsumer content) {
+        z.bindCallback(() {
+          callback(content);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _cameraServiceMethodGetLatestFrameName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

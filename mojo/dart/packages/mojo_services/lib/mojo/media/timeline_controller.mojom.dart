@@ -908,12 +908,23 @@ class MediaTimelineControlSiteProxy
     }
     var params = new _MediaTimelineControlSiteGetStatusParams();
     params.versionLastSeen = versionLastSeen;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int version, MediaTimelineControlSiteStatus status) {
+        z.bindCallback(() {
+          callback(version, status);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaTimelineControlSiteMethodGetStatusName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getTimelineConsumer(timelines_mojom.TimelineConsumerInterfaceRequest timelineConsumer) {
     if (impl != null) {

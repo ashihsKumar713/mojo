@@ -454,5 +454,45 @@ echoApptests(Application application, String url) {
 
       await echo.close();
     });
+
+    test('Right Zone', () async {
+      var echo = EchoService.connectToService(application, "mojo:dart_echo");
+
+      await runZoned(() async {
+        var c = new Completer();
+        var currentZone = Zone.current;
+        var callbackZone = null;
+        echo.echoString("foo", (String value) {
+          callbackZone = Zone.current;
+          c.complete(value);
+        });
+        expect(await echo.responseOrError(c.future), equals("foo"));
+        expect(identical(currentZone, callbackZone), isTrue);
+        expect(identical(callbackZone, Zone.ROOT), isFalse);
+      });
+
+      await echo.close();
+    });
+
+    test('Zone Error', () async {
+      var echo = EchoService.connectToService(application, "mojo:dart_echo");
+
+      echo.ctrl.onError = ((e) {
+        fail("Error incorrectly passed to onError: $e");
+      });
+
+      var c = new Completer();
+      await runZoned(() async {
+        echo.echoString("foo", (String value) {
+          throw "An error";
+        });
+      }, onError: (e) {
+        expect(e, equals("An error"));
+        c.complete(null);
+      });
+
+      await c.future;
+      await echo.close();
+    });
   });
 }

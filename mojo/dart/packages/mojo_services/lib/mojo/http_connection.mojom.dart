@@ -813,12 +813,23 @@ class HttpConnectionProxy
     }
     var params = new _HttpConnectionSetSendBufferSizeParams();
     params.size = size;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((network_error_mojom.NetworkError result) {
+        z.bindCallback(() {
+          callback(result);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _httpConnectionMethodSetSendBufferSizeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void setReceiveBufferSize(int size,void callback(network_error_mojom.NetworkError result)) {
     if (impl != null) {
@@ -827,12 +838,23 @@ class HttpConnectionProxy
     }
     var params = new _HttpConnectionSetReceiveBufferSizeParams();
     params.size = size;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((network_error_mojom.NetworkError result) {
+        z.bindCallback(() {
+          callback(result);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _httpConnectionMethodSetReceiveBufferSizeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 
@@ -1133,12 +1155,23 @@ class HttpConnectionDelegateProxy
     }
     var params = new _HttpConnectionDelegateOnReceivedRequestParams();
     params.request = request;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((http_message_mojom.HttpResponse response) {
+        z.bindCallback(() {
+          callback(response);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _httpConnectionDelegateMethodOnReceivedRequestName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void onReceivedWebSocketRequest(http_message_mojom.HttpRequest request,void callback(web_socket_mojom.WebSocketInterfaceRequest webSocket, core.MojoDataPipeConsumer sendStream, web_socket_mojom.WebSocketClientInterface client)) {
     if (impl != null) {
@@ -1147,12 +1180,23 @@ class HttpConnectionDelegateProxy
     }
     var params = new _HttpConnectionDelegateOnReceivedWebSocketRequestParams();
     params.request = request;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((web_socket_mojom.WebSocketInterfaceRequest webSocket, core.MojoDataPipeConsumer sendStream, web_socket_mojom.WebSocketClientInterface client) {
+        z.bindCallback(() {
+          callback(webSocket, sendStream, client);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _httpConnectionDelegateMethodOnReceivedWebSocketRequestName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

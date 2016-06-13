@@ -413,12 +413,23 @@ class FrameSchedulerProxy
       return;
     }
     var params = new _FrameSchedulerScheduleFrameParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((FrameInfo frameInfo) {
+        z.bindCallback(() {
+          callback(frameInfo);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _frameSchedulerMethodScheduleFrameName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

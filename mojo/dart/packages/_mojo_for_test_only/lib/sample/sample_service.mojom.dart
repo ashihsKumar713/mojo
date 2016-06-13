@@ -1985,12 +1985,23 @@ class ServiceProxy
     params.foo = foo;
     params.baz = baz;
     params.port = port;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int result) {
+        z.bindCallback(() {
+          callback(result);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _serviceMethodFrobinateName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getPort(PortInterfaceRequest port) {
     if (impl != null) {

@@ -743,12 +743,23 @@ class AudioTrackProxy
       return;
     }
     var params = new _AudioTrackDescribeParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((AudioTrackDescriptor descriptor) {
+        z.bindCallback(() {
+          callback(descriptor);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _audioTrackMethodDescribeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void configure(AudioTrackConfiguration configuration, media_transport_mojom.MediaConsumerInterfaceRequest pipe) {
     if (impl != null) {

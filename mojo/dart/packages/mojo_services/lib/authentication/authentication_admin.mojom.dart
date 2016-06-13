@@ -737,12 +737,23 @@ class AuthenticationAdminServiceProxy
     }
     var params = new _AuthenticationAdminServiceGetOAuth2DeviceCodeParams();
     params.scopes = scopes;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String verificationUrl, String deviceCode, String userCode, String error) {
+        z.bindCallback(() {
+          callback(verificationUrl, deviceCode, userCode, error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _authenticationAdminServiceMethodGetOAuth2DeviceCodeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void addAccount(String deviceCode,void callback(String username, String error)) {
     if (impl != null) {
@@ -751,12 +762,23 @@ class AuthenticationAdminServiceProxy
     }
     var params = new _AuthenticationAdminServiceAddAccountParams();
     params.deviceCode = deviceCode;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String username, String error) {
+        z.bindCallback(() {
+          callback(username, error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _authenticationAdminServiceMethodAddAccountName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getAllUsers(void callback(List<String> usernames, String error)) {
     if (impl != null) {
@@ -764,12 +786,23 @@ class AuthenticationAdminServiceProxy
       return;
     }
     var params = new _AuthenticationAdminServiceGetAllUsersParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((List<String> usernames, String error) {
+        z.bindCallback(() {
+          callback(usernames, error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _authenticationAdminServiceMethodGetAllUsersName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

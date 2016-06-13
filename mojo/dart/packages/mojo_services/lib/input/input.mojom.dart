@@ -351,12 +351,23 @@ class InputClientProxy
       return;
     }
     var params = new _InputClientOnBackButtonParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _inputClientMethodOnBackButtonName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

@@ -514,12 +514,23 @@ class SeekingReaderProxy
       return;
     }
     var params = new _SeekingReaderDescribeParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((media_common_mojom.MediaResult result, int size, bool canSeek) {
+        z.bindCallback(() {
+          callback(result, size, canSeek);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _seekingReaderMethodDescribeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void readAt(int position,void callback(media_common_mojom.MediaResult result, core.MojoDataPipeConsumer dataPipe)) {
     if (impl != null) {
@@ -528,12 +539,23 @@ class SeekingReaderProxy
     }
     var params = new _SeekingReaderReadAtParams();
     params.position = position;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((media_common_mojom.MediaResult result, core.MojoDataPipeConsumer dataPipe) {
+        z.bindCallback(() {
+          callback(result, dataPipe);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _seekingReaderMethodReadAtName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

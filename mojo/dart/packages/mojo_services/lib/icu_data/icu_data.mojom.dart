@@ -306,12 +306,23 @@ class IcuDataProxy
     }
     var params = new _IcuDataMapParams();
     params.sha1hash = sha1hash;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((core.MojoSharedBuffer icuData) {
+        z.bindCallback(() {
+          callback(icuData);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _icuDataMethodMapName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

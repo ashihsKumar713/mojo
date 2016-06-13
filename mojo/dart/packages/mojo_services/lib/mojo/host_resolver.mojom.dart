@@ -363,12 +363,23 @@ class HostResolverProxy
     var params = new _HostResolverGetHostAddressesParams();
     params.host = host;
     params.family = family;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((network_error_mojom.NetworkError result, List<net_address_mojom.NetAddress> addresses) {
+        z.bindCallback(() {
+          callback(result, addresses);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _hostResolverMethodGetHostAddressesName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

@@ -523,12 +523,23 @@ class PredictionServiceProxy
     }
     var params = new _PredictionServiceGetPredictionListParams();
     params.predictionInfo = predictionInfo;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((List<String> predictionList) {
+        z.bindCallback(() {
+          callback(predictionList);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _predictionServiceMethodGetPredictionListName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

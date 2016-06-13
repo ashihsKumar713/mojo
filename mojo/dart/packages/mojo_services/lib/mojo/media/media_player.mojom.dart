@@ -678,12 +678,23 @@ class MediaPlayerProxy
     }
     var params = new _MediaPlayerGetStatusParams();
     params.versionLastSeen = versionLastSeen;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int version, MediaPlayerStatus status) {
+        z.bindCallback(() {
+          callback(version, status);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaPlayerMethodGetStatusName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

@@ -6396,12 +6396,23 @@ class SomeInterfaceProxy
     }
     var params = new _SomeInterfaceSomeMethodParams();
     params.pair = pair;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((RectPair otherPair) {
+        z.bindCallback(() {
+          callback(otherPair);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _someInterfaceMethodSomeMethodName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

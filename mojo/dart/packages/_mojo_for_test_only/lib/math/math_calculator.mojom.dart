@@ -636,12 +636,23 @@ class CalculatorProxy
       return;
     }
     var params = new _CalculatorClearParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((double value) {
+        z.bindCallback(() {
+          callback(value);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _calculatorMethodClearName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void add(double value,void callback(double value)) {
     if (impl != null) {
@@ -650,12 +661,23 @@ class CalculatorProxy
     }
     var params = new _CalculatorAddParams();
     params.value = value;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((double value) {
+        z.bindCallback(() {
+          callback(value);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _calculatorMethodAddName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void multiply(double value,void callback(double value)) {
     if (impl != null) {
@@ -664,12 +686,23 @@ class CalculatorProxy
     }
     var params = new _CalculatorMultiplyParams();
     params.value = value;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((double value) {
+        z.bindCallback(() {
+          callback(value);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _calculatorMethodMultiplyName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

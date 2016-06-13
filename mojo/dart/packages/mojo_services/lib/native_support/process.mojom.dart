@@ -1011,12 +1011,23 @@ class ProcessProxy
     params.stdoutFile = stdoutFile;
     params.stderrFile = stderrFile;
     params.processController = processController;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _processMethodSpawnName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void spawnWithTerminal(List<int> path,List<List<int>> argv,List<List<int>> envp,file_mojom.FileInterface terminalFile,ProcessControllerInterfaceRequest processController,void callback(types_mojom.Error error)) {
     if (impl != null) {
@@ -1029,12 +1040,23 @@ class ProcessProxy
     params.envp = envp;
     params.terminalFile = terminalFile;
     params.processController = processController;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _processMethodSpawnWithTerminalName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 
@@ -1334,12 +1356,23 @@ class ProcessControllerProxy
       return;
     }
     var params = new _ProcessControllerWaitParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error, int exitStatus) {
+        z.bindCallback(() {
+          callback(error, exitStatus);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _processControllerMethodWaitName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void kill(int signal,void callback(types_mojom.Error error)) {
     if (impl != null) {
@@ -1348,12 +1381,23 @@ class ProcessControllerProxy
     }
     var params = new _ProcessControllerKillParams();
     params.signal = signal;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _processControllerMethodKillName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

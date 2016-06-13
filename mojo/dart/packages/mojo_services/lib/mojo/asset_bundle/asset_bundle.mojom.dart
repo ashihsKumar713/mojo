@@ -395,12 +395,23 @@ class AssetBundleProxy
     }
     var params = new _AssetBundleGetAsStreamParams();
     params.assetName = assetName;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((core.MojoDataPipeConsumer assetData) {
+        z.bindCallback(() {
+          callback(assetData);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _assetBundleMethodGetAsStreamName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

@@ -881,12 +881,23 @@ class HitTesterProxy
     }
     var params = new _HitTesterHitTestParams();
     params.point = point;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((HitTestResult result) {
+        z.bindCallback(() {
+          callback(result);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _hitTesterMethodHitTestName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

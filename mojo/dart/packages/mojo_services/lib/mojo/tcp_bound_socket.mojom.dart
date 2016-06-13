@@ -524,12 +524,23 @@ class TcpBoundSocketProxy
     }
     var params = new _TcpBoundSocketStartListeningParams();
     params.server = server;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((network_error_mojom.NetworkError result) {
+        z.bindCallback(() {
+          callback(result);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _tcpBoundSocketMethodStartListeningName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,void callback(network_error_mojom.NetworkError result)) {
     if (impl != null) {
@@ -541,12 +552,23 @@ class TcpBoundSocketProxy
     params.sendStream = sendStream;
     params.receiveStream = receiveStream;
     params.clientSocket = clientSocket;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((network_error_mojom.NetworkError result) {
+        z.bindCallback(() {
+          callback(result);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _tcpBoundSocketMethodConnectName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

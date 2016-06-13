@@ -1549,12 +1549,23 @@ class FlogServiceProxy
       return;
     }
     var params = new _FlogServiceGetLogDescriptionsParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((List<FlogDescription> descriptions) {
+        z.bindCallback(() {
+          callback(descriptions);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _flogServiceMethodGetLogDescriptionsName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void createReader(FlogReaderInterfaceRequest reader, int logId) {
     if (impl != null) {
@@ -2140,12 +2151,23 @@ class FlogReaderProxy
     var params = new _FlogReaderGetEntriesParams();
     params.startIndex = startIndex;
     params.maxCount = maxCount;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((List<FlogEntry> entries, int entryCount, bool open) {
+        z.bindCallback(() {
+          callback(entries, entryCount, open);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _flogReaderMethodGetEntriesName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

@@ -1635,12 +1635,23 @@ class ProviderProxy
     }
     var params = new _ProviderEchoStringParams();
     params.a = a;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String a) {
+        z.bindCallback(() {
+          callback(a);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _providerMethodEchoStringName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void echoStrings(String a,String b,void callback(String a, String b)) {
     if (impl != null) {
@@ -1650,12 +1661,23 @@ class ProviderProxy
     var params = new _ProviderEchoStringsParams();
     params.a = a;
     params.b = b;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String a, String b) {
+        z.bindCallback(() {
+          callback(a, b);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _providerMethodEchoStringsName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void echoMessagePipeHandle(core.MojoMessagePipeEndpoint a,void callback(core.MojoMessagePipeEndpoint a)) {
     if (impl != null) {
@@ -1664,12 +1686,23 @@ class ProviderProxy
     }
     var params = new _ProviderEchoMessagePipeHandleParams();
     params.a = a;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((core.MojoMessagePipeEndpoint a) {
+        z.bindCallback(() {
+          callback(a);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _providerMethodEchoMessagePipeHandleName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void echoEnum(Enum a,void callback(Enum a)) {
     if (impl != null) {
@@ -1678,12 +1711,23 @@ class ProviderProxy
     }
     var params = new _ProviderEchoEnumParams();
     params.a = a;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((Enum a) {
+        z.bindCallback(() {
+          callback(a);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _providerMethodEchoEnumName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void echoInt(int a,void callback(int a)) {
     if (impl != null) {
@@ -1692,12 +1736,23 @@ class ProviderProxy
     }
     var params = new _ProviderEchoIntParams();
     params.a = a;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int a) {
+        z.bindCallback(() {
+          callback(a);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _providerMethodEchoIntName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 
@@ -2042,12 +2097,23 @@ class IntegerAccessorProxy
       return;
     }
     var params = new _IntegerAccessorGetIntegerParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int data, Enum type) {
+        z.bindCallback(() {
+          callback(data, type);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _integerAccessorMethodGetIntegerName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void setInteger(int data, Enum type) {
     if (impl != null) {
@@ -2337,12 +2403,23 @@ class SampleInterfaceProxy
     var params = new _SampleInterfaceSampleMethod1Params();
     params.in1 = in1;
     params.in2 = in2;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String out1, Enum out2) {
+        z.bindCallback(() {
+          callback(out1, out2);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _sampleInterfaceMethodSampleMethod1Name,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void sampleMethod0() {
     if (impl != null) {

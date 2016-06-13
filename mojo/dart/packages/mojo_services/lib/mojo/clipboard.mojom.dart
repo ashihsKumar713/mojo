@@ -901,12 +901,23 @@ class ClipboardProxy
     }
     var params = new _ClipboardGetSequenceNumberParams();
     params.clipboardType = clipboardType;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int sequence) {
+        z.bindCallback(() {
+          callback(sequence);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _clipboardMethodGetSequenceNumberName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getAvailableMimeTypes(ClipboardType clipboardTypes,void callback(List<String> types)) {
     if (impl != null) {
@@ -915,12 +926,23 @@ class ClipboardProxy
     }
     var params = new _ClipboardGetAvailableMimeTypesParams();
     params.clipboardTypes = clipboardTypes;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((List<String> types) {
+        z.bindCallback(() {
+          callback(types);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _clipboardMethodGetAvailableMimeTypesName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void readMimeType(ClipboardType clipboardType,String mimeType,void callback(List<int> data)) {
     if (impl != null) {
@@ -930,12 +952,23 @@ class ClipboardProxy
     var params = new _ClipboardReadMimeTypeParams();
     params.clipboardType = clipboardType;
     params.mimeType = mimeType;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((List<int> data) {
+        z.bindCallback(() {
+          callback(data);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _clipboardMethodReadMimeTypeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void writeClipboardData(ClipboardType clipboardType, Map<String, List<int>> data) {
     if (impl != null) {

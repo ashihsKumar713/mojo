@@ -1320,12 +1320,23 @@ class ViewContainerListenerProxy
     var params = new _ViewContainerListenerOnChildAttachedParams();
     params.childKey = childKey;
     params.childViewInfo = childViewInfo;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _viewContainerListenerMethodOnChildAttachedName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void onChildUnavailable(int childKey,void callback()) {
     if (impl != null) {
@@ -1334,12 +1345,23 @@ class ViewContainerListenerProxy
     }
     var params = new _ViewContainerListenerOnChildUnavailableParams();
     params.childKey = childKey;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _viewContainerListenerMethodOnChildUnavailableName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

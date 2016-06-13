@@ -1308,12 +1308,23 @@ class GeocoderProxy
     var params = new _GeocoderAddressToLocationParams();
     params.address = address;
     params.options = options;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String status, List<Result> results) {
+        z.bindCallback(() {
+          callback(status, results);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _geocoderMethodAddressToLocationName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void locationToAddress(location_mojom.Location location,Options options,void callback(String status, List<Result> results)) {
     if (impl != null) {
@@ -1323,12 +1334,23 @@ class GeocoderProxy
     var params = new _GeocoderLocationToAddressParams();
     params.location = location;
     params.options = options;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String status, List<Result> results) {
+        z.bindCallback(() {
+          callback(status, results);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _geocoderMethodLocationToAddressName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

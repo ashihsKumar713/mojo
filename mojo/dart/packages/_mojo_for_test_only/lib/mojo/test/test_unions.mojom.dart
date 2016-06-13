@@ -3181,12 +3181,23 @@ class SmallCacheProxy
       return;
     }
     var params = new _SmallCacheGetIntValueParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int intValue) {
+        z.bindCallback(() {
+          callback(intValue);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _smallCacheMethodGetIntValueName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 
@@ -3455,12 +3466,23 @@ class UnionInterfaceProxy
     }
     var params = new _UnionInterfaceEchoParams();
     params.inVal = inVal;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((PodUnion outVal) {
+        z.bindCallback(() {
+          callback(outVal);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _unionInterfaceMethodEchoName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

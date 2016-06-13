@@ -624,12 +624,23 @@ class InputListenerProxy
     }
     var params = new _InputListenerOnEventParams();
     params.event = event;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((bool consumed) {
+        z.bindCallback(() {
+          callback(consumed);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _inputListenerMethodOnEventName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

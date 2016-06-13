@@ -862,12 +862,23 @@ class UrlResponseDiskCacheProxy
     }
     var params = new _UrlResponseDiskCacheGetParams();
     params.url = url;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((url_response_mojom.UrlResponse response, List<int> filePath, List<int> cacheDirPath) {
+        z.bindCallback(() {
+          callback(response, filePath, cacheDirPath);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _urlResponseDiskCacheMethodGetName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void validate(String url) {
     if (impl != null) {
@@ -904,12 +915,23 @@ class UrlResponseDiskCacheProxy
     }
     var params = new _UrlResponseDiskCacheUpdateAndGetParams();
     params.response = response;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((List<int> filePath, List<int> cacheDirPath) {
+        z.bindCallback(() {
+          callback(filePath, cacheDirPath);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _urlResponseDiskCacheMethodUpdateAndGetName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void updateAndGetExtracted(url_response_mojom.UrlResponse response,void callback(List<int> extractedDirPath, List<int> cacheDirPath)) {
     if (impl != null) {
@@ -918,12 +940,23 @@ class UrlResponseDiskCacheProxy
     }
     var params = new _UrlResponseDiskCacheUpdateAndGetExtractedParams();
     params.response = response;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((List<int> extractedDirPath, List<int> cacheDirPath) {
+        z.bindCallback(() {
+          callback(extractedDirPath, cacheDirPath);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _urlResponseDiskCacheMethodUpdateAndGetExtractedName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

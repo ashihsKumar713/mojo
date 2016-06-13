@@ -1040,12 +1040,23 @@ class UrlLoaderInterceptorProxy
     }
     var params = new _UrlLoaderInterceptorInterceptRequestParams();
     params.request = request;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((UrlLoaderInterceptorResponse response) {
+        z.bindCallback(() {
+          callback(response);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _urlLoaderInterceptorMethodInterceptRequestName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void interceptFollowRedirect(void callback(UrlLoaderInterceptorResponse response)) {
     if (impl != null) {
@@ -1053,12 +1064,23 @@ class UrlLoaderInterceptorProxy
       return;
     }
     var params = new _UrlLoaderInterceptorInterceptFollowRedirectParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((UrlLoaderInterceptorResponse response) {
+        z.bindCallback(() {
+          callback(response);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _urlLoaderInterceptorMethodInterceptFollowRedirectName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void interceptResponse(url_response_mojom.UrlResponse response,void callback(UrlLoaderInterceptorResponse response)) {
     if (impl != null) {
@@ -1067,12 +1089,23 @@ class UrlLoaderInterceptorProxy
     }
     var params = new _UrlLoaderInterceptorInterceptResponseParams();
     params.response = response;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((UrlLoaderInterceptorResponse response) {
+        z.bindCallback(() {
+          callback(response);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _urlLoaderInterceptorMethodInterceptResponseName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

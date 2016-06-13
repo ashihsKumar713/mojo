@@ -625,12 +625,23 @@ class EchoServiceProxy
     }
     var params = new _EchoServiceEchoStringParams();
     params.value = value;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String value) {
+        z.bindCallback(() {
+          callback(value);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _echoServiceMethodEchoStringName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void delayedEchoString(String value,int millis,void callback(String value)) {
     if (impl != null) {
@@ -640,12 +651,23 @@ class EchoServiceProxy
     var params = new _EchoServiceDelayedEchoStringParams();
     params.value = value;
     params.millis = millis;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String value) {
+        z.bindCallback(() {
+          callback(value);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _echoServiceMethodDelayedEchoStringName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void swap() {
     if (impl != null) {

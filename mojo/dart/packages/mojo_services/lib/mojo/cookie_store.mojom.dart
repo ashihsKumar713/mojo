@@ -492,12 +492,23 @@ class CookieStoreProxy
     }
     var params = new _CookieStoreGetParams();
     params.url = url;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String cookies) {
+        z.bindCallback(() {
+          callback(cookies);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _cookieStoreMethodGetName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void set(String url,String cookie,void callback(bool success)) {
     if (impl != null) {
@@ -507,12 +518,23 @@ class CookieStoreProxy
     var params = new _CookieStoreSetParams();
     params.url = url;
     params.cookie = cookie;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((bool success) {
+        z.bindCallback(() {
+          callback(success);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _cookieStoreMethodSetName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

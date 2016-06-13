@@ -1579,12 +1579,23 @@ class UdpSocketProxy
       return;
     }
     var params = new _UdpSocketAllowAddressReuseParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((network_error_mojom.NetworkError result) {
+        z.bindCallback(() {
+          callback(result);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _udpSocketMethodAllowAddressReuseName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void bind(net_address_mojom.NetAddress addr,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundAddr, UdpSocketReceiverInterfaceRequest receiver)) {
     if (impl != null) {
@@ -1593,12 +1604,23 @@ class UdpSocketProxy
     }
     var params = new _UdpSocketBindParams();
     params.addr = addr;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundAddr, UdpSocketReceiverInterfaceRequest receiver) {
+        z.bindCallback(() {
+          callback(result, boundAddr, receiver);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _udpSocketMethodBindName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void connect(net_address_mojom.NetAddress remoteAddr,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddr, UdpSocketReceiverInterfaceRequest receiver)) {
     if (impl != null) {
@@ -1607,12 +1629,23 @@ class UdpSocketProxy
     }
     var params = new _UdpSocketConnectParams();
     params.remoteAddr = remoteAddr;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddr, UdpSocketReceiverInterfaceRequest receiver) {
+        z.bindCallback(() {
+          callback(result, localAddr, receiver);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _udpSocketMethodConnectName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void setSendBufferSize(int size,void callback(network_error_mojom.NetworkError result)) {
     if (impl != null) {
@@ -1621,12 +1654,23 @@ class UdpSocketProxy
     }
     var params = new _UdpSocketSetSendBufferSizeParams();
     params.size = size;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((network_error_mojom.NetworkError result) {
+        z.bindCallback(() {
+          callback(result);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _udpSocketMethodSetSendBufferSizeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void setReceiveBufferSize(int size,void callback(network_error_mojom.NetworkError result)) {
     if (impl != null) {
@@ -1635,12 +1679,23 @@ class UdpSocketProxy
     }
     var params = new _UdpSocketSetReceiveBufferSizeParams();
     params.size = size;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((network_error_mojom.NetworkError result) {
+        z.bindCallback(() {
+          callback(result);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _udpSocketMethodSetReceiveBufferSizeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void negotiateMaxPendingSendRequests(int requestedSize,void callback(int actualSize)) {
     if (impl != null) {
@@ -1649,12 +1704,23 @@ class UdpSocketProxy
     }
     var params = new _UdpSocketNegotiateMaxPendingSendRequestsParams();
     params.requestedSize = requestedSize;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int actualSize) {
+        z.bindCallback(() {
+          callback(actualSize);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _udpSocketMethodNegotiateMaxPendingSendRequestsName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void receiveMore(int datagramNumber) {
     if (impl != null) {
@@ -1678,12 +1744,23 @@ class UdpSocketProxy
     var params = new _UdpSocketSendToParams();
     params.destAddr = destAddr;
     params.data = data;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((network_error_mojom.NetworkError result) {
+        z.bindCallback(() {
+          callback(result);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _udpSocketMethodSendToName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

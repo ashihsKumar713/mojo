@@ -938,12 +938,23 @@ class TerminalProxy
     var params = new _TerminalConnectParams();
     params.terminalFile = terminalFile;
     params.force = force;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _terminalMethodConnectName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void connectToClient(terminal_client_mojom.TerminalClientInterface terminalClient,bool force,void callback(types_mojom.Error error)) {
     if (impl != null) {
@@ -953,12 +964,23 @@ class TerminalProxy
     var params = new _TerminalConnectToClientParams();
     params.terminalClient = terminalClient;
     params.force = force;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _terminalMethodConnectToClientName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getSize(void callback(types_mojom.Error error, int rows, int columns)) {
     if (impl != null) {
@@ -966,12 +988,23 @@ class TerminalProxy
       return;
     }
     var params = new _TerminalGetSizeParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error, int rows, int columns) {
+        z.bindCallback(() {
+          callback(error, rows, columns);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _terminalMethodGetSizeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void setSize(int rows,int columns,bool reset,void callback(types_mojom.Error error, int rows, int columns)) {
     if (impl != null) {
@@ -982,12 +1015,23 @@ class TerminalProxy
     params.rows = rows;
     params.columns = columns;
     params.reset = reset;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error, int rows, int columns) {
+        z.bindCallback(() {
+          callback(error, rows, columns);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _terminalMethodSetSizeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

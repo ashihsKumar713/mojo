@@ -294,12 +294,23 @@ class NativeViewportEventDispatcherProxy
     }
     var params = new _NativeViewportEventDispatcherOnEventParams();
     params.event = event;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _nativeViewportEventDispatcherMethodOnEventName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

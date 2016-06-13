@@ -1020,12 +1020,23 @@ class HumanResourceDatabaseProxy
     }
     var params = new _HumanResourceDatabaseAddEmployeeParams();
     params.employee = employee;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((bool success) {
+        z.bindCallback(() {
+          callback(success);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _humanResourceDatabaseMethodAddEmployeeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void queryEmployee(int id,bool retrieveFingerPrint,void callback(Employee employee, List<int> fingerPrint)) {
     if (impl != null) {
@@ -1035,12 +1046,23 @@ class HumanResourceDatabaseProxy
     var params = new _HumanResourceDatabaseQueryEmployeeParams();
     params.id = id;
     params.retrieveFingerPrint = retrieveFingerPrint;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((Employee employee, List<int> fingerPrint) {
+        z.bindCallback(() {
+          callback(employee, fingerPrint);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _humanResourceDatabaseMethodQueryEmployeeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void attachFingerPrint(int id,List<int> fingerPrint,void callback(bool success)) {
     if (impl != null) {
@@ -1050,12 +1072,23 @@ class HumanResourceDatabaseProxy
     var params = new _HumanResourceDatabaseAttachFingerPrintParams();
     params.id = id;
     params.fingerPrint = fingerPrint;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((bool success) {
+        z.bindCallback(() {
+          callback(success);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _humanResourceDatabaseMethodAttachFingerPrintName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void listEmployeeIds(void callback(List<int> ids)) {
     if (impl != null) {
@@ -1063,12 +1096,23 @@ class HumanResourceDatabaseProxy
       return;
     }
     var params = new _HumanResourceDatabaseListEmployeeIdsParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((List<int> ids) {
+        z.bindCallback(() {
+          callback(ids);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _humanResourceDatabaseMethodListEmployeeIdsName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

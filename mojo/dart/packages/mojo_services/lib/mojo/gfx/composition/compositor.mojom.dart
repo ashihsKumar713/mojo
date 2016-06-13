@@ -432,12 +432,23 @@ class CompositorProxy
     var params = new _CompositorCreateSceneParams();
     params.scene = scene;
     params.label = label;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((scene_token_mojom.SceneToken sceneToken) {
+        z.bindCallback(() {
+          callback(sceneToken);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _compositorMethodCreateSceneName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void createRenderer(context_provider_mojom.ContextProviderInterface contextProvider, renderers_mojom.RendererInterfaceRequest renderer, String label) {
     if (impl != null) {

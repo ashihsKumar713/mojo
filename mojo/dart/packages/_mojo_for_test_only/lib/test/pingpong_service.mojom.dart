@@ -989,12 +989,23 @@ class PingPongServiceProxy
     var params = new _PingPongServicePingTargetUrlParams();
     params.url = url;
     params.count = count;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((bool ok) {
+        z.bindCallback(() {
+          callback(ok);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _pingPongServiceMethodPingTargetUrlName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void pingTargetService(PingPongServiceInterface service,int count,void callback(bool ok)) {
     if (impl != null) {
@@ -1004,12 +1015,23 @@ class PingPongServiceProxy
     var params = new _PingPongServicePingTargetServiceParams();
     params.service = service;
     params.count = count;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((bool ok) {
+        z.bindCallback(() {
+          callback(ok);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _pingPongServiceMethodPingTargetServiceName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getPingPongService(PingPongServiceInterfaceRequest service) {
     if (impl != null) {

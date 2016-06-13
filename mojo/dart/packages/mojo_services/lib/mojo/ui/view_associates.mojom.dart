@@ -998,12 +998,23 @@ class ViewAssociateProxy
     }
     var params = new _ViewAssociateConnectParams();
     params.inspector = inspector;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((ViewAssociateInfo info) {
+        z.bindCallback(() {
+          callback(info);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _viewAssociateMethodConnectName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void connectToViewService(view_token_mojom.ViewToken viewToken, String serviceName_, core.MojoMessagePipeEndpoint pipe) {
     if (impl != null) {
@@ -1549,12 +1560,23 @@ class ViewInspectorProxy
     var params = new _ViewInspectorGetHitTesterParams();
     params.viewTreeToken = viewTreeToken;
     params.hitTester = hitTester;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((bool rendererChanged) {
+        z.bindCallback(() {
+          callback(rendererChanged);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _viewInspectorMethodGetHitTesterName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void resolveScenes(List<scene_token_mojom.SceneToken> sceneTokens,void callback(List<view_token_mojom.ViewToken> viewTokens)) {
     if (impl != null) {
@@ -1563,12 +1585,23 @@ class ViewInspectorProxy
     }
     var params = new _ViewInspectorResolveScenesParams();
     params.sceneTokens = sceneTokens;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((List<view_token_mojom.ViewToken> viewTokens) {
+        z.bindCallback(() {
+          callback(viewTokens);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _viewInspectorMethodResolveScenesName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

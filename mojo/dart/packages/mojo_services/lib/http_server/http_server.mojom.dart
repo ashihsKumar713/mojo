@@ -630,12 +630,23 @@ class HttpServerProxy
     var params = new _HttpServerSetHandlerParams();
     params.pattern = pattern;
     params.handler = handler;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((bool success) {
+        z.bindCallback(() {
+          callback(success);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _httpServerMethodSetHandlerName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getPort(void callback(int port)) {
     if (impl != null) {
@@ -643,12 +654,23 @@ class HttpServerProxy
       return;
     }
     var params = new _HttpServerGetPortParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int port) {
+        z.bindCallback(() {
+          callback(port);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _httpServerMethodGetPortName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 
@@ -929,12 +951,23 @@ class HttpHandlerProxy
     }
     var params = new _HttpHandlerHandleRequestParams();
     params.request = request;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((http_response_mojom.HttpResponse response) {
+        z.bindCallback(() {
+          callback(response);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _httpHandlerMethodHandleRequestName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

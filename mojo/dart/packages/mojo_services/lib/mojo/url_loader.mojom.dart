@@ -713,12 +713,23 @@ class UrlLoaderProxy
     }
     var params = new _UrlLoaderStartParams();
     params.request = request;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((url_response_mojom.UrlResponse response) {
+        z.bindCallback(() {
+          callback(response);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _urlLoaderMethodStartName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void followRedirect(void callback(url_response_mojom.UrlResponse response)) {
     if (impl != null) {
@@ -726,12 +737,23 @@ class UrlLoaderProxy
       return;
     }
     var params = new _UrlLoaderFollowRedirectParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((url_response_mojom.UrlResponse response) {
+        z.bindCallback(() {
+          callback(response);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _urlLoaderMethodFollowRedirectName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void queryStatus(void callback(UrlLoaderStatus status)) {
     if (impl != null) {
@@ -739,12 +761,23 @@ class UrlLoaderProxy
       return;
     }
     var params = new _UrlLoaderQueryStatusParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((UrlLoaderStatus status) {
+        z.bindCallback(() {
+          callback(status);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _urlLoaderMethodQueryStatusName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

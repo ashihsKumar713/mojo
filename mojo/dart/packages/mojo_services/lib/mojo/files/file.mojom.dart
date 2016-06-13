@@ -2824,12 +2824,23 @@ class FileProxy
       return;
     }
     var params = new _FileCloseParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error err) {
+        z.bindCallback(() {
+          callback(err);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _fileMethodCloseName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void read(int numBytesToRead,int offset,types_mojom.Whence whence,void callback(types_mojom.Error error, List<int> bytesRead)) {
     if (impl != null) {
@@ -2840,12 +2851,23 @@ class FileProxy
     params.numBytesToRead = numBytesToRead;
     params.offset = offset;
     params.whence = whence;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error, List<int> bytesRead) {
+        z.bindCallback(() {
+          callback(error, bytesRead);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _fileMethodReadName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void write(List<int> bytesToWrite,int offset,types_mojom.Whence whence,void callback(types_mojom.Error error, int numBytesWritten)) {
     if (impl != null) {
@@ -2856,12 +2878,23 @@ class FileProxy
     params.bytesToWrite = bytesToWrite;
     params.offset = offset;
     params.whence = whence;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error, int numBytesWritten) {
+        z.bindCallback(() {
+          callback(error, numBytesWritten);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _fileMethodWriteName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void readToStream(core.MojoDataPipeProducer source,int offset,types_mojom.Whence whence,int numBytesToRead,void callback(types_mojom.Error error)) {
     if (impl != null) {
@@ -2873,12 +2906,23 @@ class FileProxy
     params.offset = offset;
     params.whence = whence;
     params.numBytesToRead = numBytesToRead;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _fileMethodReadToStreamName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void writeFromStream(core.MojoDataPipeConsumer sink,int offset,types_mojom.Whence whence,void callback(types_mojom.Error error)) {
     if (impl != null) {
@@ -2889,12 +2933,23 @@ class FileProxy
     params.sink = sink;
     params.offset = offset;
     params.whence = whence;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _fileMethodWriteFromStreamName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void tell(void callback(types_mojom.Error error, int position)) {
     if (impl != null) {
@@ -2902,12 +2957,23 @@ class FileProxy
       return;
     }
     var params = new _FileTellParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error, int position) {
+        z.bindCallback(() {
+          callback(error, position);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _fileMethodTellName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void seek(int offset,types_mojom.Whence whence,void callback(types_mojom.Error error, int position)) {
     if (impl != null) {
@@ -2917,12 +2983,23 @@ class FileProxy
     var params = new _FileSeekParams();
     params.offset = offset;
     params.whence = whence;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error, int position) {
+        z.bindCallback(() {
+          callback(error, position);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _fileMethodSeekName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void stat(void callback(types_mojom.Error error, types_mojom.FileInformation fileInformation)) {
     if (impl != null) {
@@ -2930,12 +3007,23 @@ class FileProxy
       return;
     }
     var params = new _FileStatParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error, types_mojom.FileInformation fileInformation) {
+        z.bindCallback(() {
+          callback(error, fileInformation);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _fileMethodStatName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void truncate(int size,void callback(types_mojom.Error error)) {
     if (impl != null) {
@@ -2944,12 +3032,23 @@ class FileProxy
     }
     var params = new _FileTruncateParams();
     params.size = size;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _fileMethodTruncateName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,void callback(types_mojom.Error error)) {
     if (impl != null) {
@@ -2959,12 +3058,23 @@ class FileProxy
     var params = new _FileTouchParams();
     params.atime = atime;
     params.mtime = mtime;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _fileMethodTouchName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void dup(FileInterfaceRequest file,void callback(types_mojom.Error error)) {
     if (impl != null) {
@@ -2973,12 +3083,23 @@ class FileProxy
     }
     var params = new _FileDupParams();
     params.file = file;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _fileMethodDupName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void reopen(FileInterfaceRequest file,int openFlags,void callback(types_mojom.Error error)) {
     if (impl != null) {
@@ -2988,12 +3109,23 @@ class FileProxy
     var params = new _FileReopenParams();
     params.file = file;
     params.openFlags = openFlags;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error) {
+        z.bindCallback(() {
+          callback(error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _fileMethodReopenName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void asBuffer(void callback(types_mojom.Error error, core.MojoSharedBuffer buffer)) {
     if (impl != null) {
@@ -3001,12 +3133,23 @@ class FileProxy
       return;
     }
     var params = new _FileAsBufferParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error, core.MojoSharedBuffer buffer) {
+        z.bindCallback(() {
+          callback(error, buffer);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _fileMethodAsBufferName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void ioctl(int request,List<int> inValues,void callback(types_mojom.Error error, List<int> outValues)) {
     if (impl != null) {
@@ -3016,12 +3159,23 @@ class FileProxy
     var params = new _FileIoctlParams();
     params.request = request;
     params.inValues = inValues;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((types_mojom.Error error, List<int> outValues) {
+        z.bindCallback(() {
+          callback(error, outValues);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _fileMethodIoctlName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

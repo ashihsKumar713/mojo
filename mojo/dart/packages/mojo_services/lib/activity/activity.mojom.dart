@@ -2275,12 +2275,23 @@ class PathServiceProxy
       return;
     }
     var params = new _PathServiceGetAppDataDirParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String path) {
+        z.bindCallback(() {
+          callback(path);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _pathServiceMethodGetAppDataDirName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getFilesDir(void callback(String path)) {
     if (impl != null) {
@@ -2288,12 +2299,23 @@ class PathServiceProxy
       return;
     }
     var params = new _PathServiceGetFilesDirParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String path) {
+        z.bindCallback(() {
+          callback(path);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _pathServiceMethodGetFilesDirName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getCacheDir(void callback(String path)) {
     if (impl != null) {
@@ -2301,12 +2323,23 @@ class PathServiceProxy
       return;
     }
     var params = new _PathServiceGetCacheDirParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String path) {
+        z.bindCallback(() {
+          callback(path);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _pathServiceMethodGetCacheDirName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

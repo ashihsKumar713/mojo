@@ -379,12 +379,23 @@ class LocationServiceProxy
     }
     var params = new _LocationServiceGetNextLocationParams();
     params.priority = priority;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((location_mojom.Location location) {
+        z.bindCallback(() {
+          callback(location);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _locationServiceMethodGetNextLocationName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

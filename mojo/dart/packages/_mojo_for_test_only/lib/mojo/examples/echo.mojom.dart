@@ -314,12 +314,23 @@ class EchoProxy
     }
     var params = new _EchoEchoStringParams();
     params.value = value;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String value) {
+        z.bindCallback(() {
+          callback(value);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _echoMethodEchoStringName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

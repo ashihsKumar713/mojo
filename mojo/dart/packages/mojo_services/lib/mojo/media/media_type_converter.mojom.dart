@@ -448,12 +448,23 @@ class MediaTypeConverterProxy
       return;
     }
     var params = new _MediaTypeConverterGetOutputTypeParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((media_types_mojom.MediaType outputType) {
+        z.bindCallback(() {
+          callback(outputType);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaTypeConverterMethodGetOutputTypeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
     if (impl != null) {

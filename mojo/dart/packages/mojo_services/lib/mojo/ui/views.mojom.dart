@@ -853,12 +853,23 @@ class ViewProxy
       return;
     }
     var params = new _ViewGetTokenParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((view_token_mojom.ViewToken token) {
+        z.bindCallback(() {
+          callback(token);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _viewMethodGetTokenName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getServiceProvider(service_provider_mojom.ServiceProviderInterfaceRequest serviceProvider) {
     if (impl != null) {
@@ -1204,12 +1215,23 @@ class ViewListenerProxy
     }
     var params = new _ViewListenerOnInvalidationParams();
     params.invalidation = invalidation;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _viewListenerMethodOnInvalidationName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

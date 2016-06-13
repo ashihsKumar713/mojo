@@ -984,12 +984,23 @@ class ContactsServiceProxy
     }
     var params = new _ContactsServiceGetCountParams();
     params.filter = filter;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int count) {
+        z.bindCallback(() {
+          callback(count);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _contactsServiceMethodGetCountName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void get(String filter,int offset,int limit,void callback(List<Contact> contacts)) {
     if (impl != null) {
@@ -1000,12 +1011,23 @@ class ContactsServiceProxy
     params.filter = filter;
     params.offset = offset;
     params.limit = limit;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((List<Contact> contacts) {
+        z.bindCallback(() {
+          callback(contacts);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _contactsServiceMethodGetName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getEmails(int id,void callback(List<String> emails)) {
     if (impl != null) {
@@ -1014,12 +1036,23 @@ class ContactsServiceProxy
     }
     var params = new _ContactsServiceGetEmailsParams();
     params.id = id;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((List<String> emails) {
+        z.bindCallback(() {
+          callback(emails);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _contactsServiceMethodGetEmailsName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getPhoto(int id,bool highResolution,void callback(String photoUrl)) {
     if (impl != null) {
@@ -1029,12 +1062,23 @@ class ContactsServiceProxy
     var params = new _ContactsServiceGetPhotoParams();
     params.id = id;
     params.highResolution = highResolution;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String photoUrl) {
+        z.bindCallback(() {
+          callback(photoUrl);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _contactsServiceMethodGetPhotoName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

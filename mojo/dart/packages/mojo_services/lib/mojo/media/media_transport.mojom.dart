@@ -1490,12 +1490,23 @@ class MediaProducerProxy
     }
     var params = new _MediaProducerConnectParams();
     params.consumer = consumer;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaProducerMethodConnectName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void disconnect() {
     if (impl != null) {
@@ -1795,12 +1806,23 @@ class MediaPullModeProducerProxy
       return;
     }
     var params = new _MediaPullModeProducerGetBufferParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((core.MojoSharedBuffer buffer) {
+        z.bindCallback(() {
+          callback(buffer);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaPullModeProducerMethodGetBufferName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void pullPacket(MediaPacket toRelease,void callback(MediaPacket packet)) {
     if (impl != null) {
@@ -1809,12 +1831,23 @@ class MediaPullModeProducerProxy
     }
     var params = new _MediaPullModeProducerPullPacketParams();
     params.toRelease = toRelease;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((MediaPacket packet) {
+        z.bindCallback(() {
+          callback(packet);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaPullModeProducerMethodPullPacketName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void releasePacket(MediaPacket toRelease) {
     if (impl != null) {
@@ -2224,12 +2257,23 @@ class MediaConsumerProxy
     }
     var params = new _MediaConsumerSetBufferParams();
     params.buffer = buffer;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaConsumerMethodSetBufferName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void sendPacket(MediaPacket packet,void callback(MediaConsumerSendResult result)) {
     if (impl != null) {
@@ -2238,12 +2282,23 @@ class MediaConsumerProxy
     }
     var params = new _MediaConsumerSendPacketParams();
     params.packet = packet;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((MediaConsumerSendResult result) {
+        z.bindCallback(() {
+          callback(result);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaConsumerMethodSendPacketName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void prime(void callback()) {
     if (impl != null) {
@@ -2251,12 +2306,23 @@ class MediaConsumerProxy
       return;
     }
     var params = new _MediaConsumerPrimeParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaConsumerMethodPrimeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void flush(void callback()) {
     if (impl != null) {
@@ -2264,12 +2330,23 @@ class MediaConsumerProxy
       return;
     }
     var params = new _MediaConsumerFlushParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaConsumerMethodFlushName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

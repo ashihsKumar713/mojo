@@ -368,12 +368,23 @@ class ViewOwnerProxy
       return;
     }
     var params = new _ViewOwnerGetTokenParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((ViewToken token) {
+        z.bindCallback(() {
+          callback(token);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _viewOwnerMethodGetTokenName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

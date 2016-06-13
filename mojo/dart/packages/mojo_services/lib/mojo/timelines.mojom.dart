@@ -493,12 +493,23 @@ class TimelineConsumerProxy
     params.subjectDelta = subjectDelta;
     params.effectiveReferenceTime = effectiveReferenceTime;
     params.effectiveSubjectTime = effectiveSubjectTime;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((bool completed) {
+        z.bindCallback(() {
+          callback(completed);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _timelineConsumerMethodSetTimelineTransformName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

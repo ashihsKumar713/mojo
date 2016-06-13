@@ -649,12 +649,23 @@ class ViewTreeProxy
       return;
     }
     var params = new _ViewTreeGetTokenParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((view_tree_token_mojom.ViewTreeToken token) {
+        z.bindCallback(() {
+          callback(token);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _viewTreeMethodGetTokenName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getServiceProvider(service_provider_mojom.ServiceProviderInterfaceRequest serviceProvider) {
     if (impl != null) {
@@ -980,12 +991,23 @@ class ViewTreeListenerProxy
       return;
     }
     var params = new _ViewTreeListenerOnRendererDiedParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _viewTreeListenerMethodOnRendererDiedName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

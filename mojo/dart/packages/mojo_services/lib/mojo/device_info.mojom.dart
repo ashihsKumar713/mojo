@@ -382,12 +382,23 @@ class DeviceInfoProxy
       return;
     }
     var params = new _DeviceInfoGetDeviceTypeParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((DeviceInfoDeviceType deviceType) {
+        z.bindCallback(() {
+          callback(deviceType);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _deviceInfoMethodGetDeviceTypeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

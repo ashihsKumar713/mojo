@@ -615,12 +615,23 @@ class AuthenticationServiceProxy
     }
     var params = new _AuthenticationServiceSelectAccountParams();
     params.returnLastSelected = returnLastSelected;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String username, String error) {
+        z.bindCallback(() {
+          callback(username, error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _authenticationServiceMethodSelectAccountName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getOAuth2Token(String username,List<String> scopes,void callback(String token, String error)) {
     if (impl != null) {
@@ -630,12 +641,23 @@ class AuthenticationServiceProxy
     var params = new _AuthenticationServiceGetOAuth2TokenParams();
     params.username = username;
     params.scopes = scopes;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String token, String error) {
+        z.bindCallback(() {
+          callback(token, error);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _authenticationServiceMethodGetOAuth2TokenName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void clearOAuth2Token(String token) {
     if (impl != null) {

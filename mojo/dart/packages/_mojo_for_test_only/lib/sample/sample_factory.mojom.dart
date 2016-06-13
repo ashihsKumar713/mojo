@@ -1303,12 +1303,23 @@ class NamedObjectProxy
       return;
     }
     var params = new _NamedObjectGetNameParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String name) {
+        z.bindCallback(() {
+          callback(name);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _namedObjectMethodGetNameName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 
@@ -1634,12 +1645,23 @@ class FactoryProxy
     var params = new _FactoryDoStuffParams();
     params.request = request;
     params.pipe = pipe;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((Response response, String text) {
+        z.bindCallback(() {
+          callback(response, text);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _factoryMethodDoStuffName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void doStuff2(core.MojoDataPipeConsumer pipe,void callback(String text)) {
     if (impl != null) {
@@ -1648,12 +1670,23 @@ class FactoryProxy
     }
     var params = new _FactoryDoStuff2Params();
     params.pipe = pipe;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String text) {
+        z.bindCallback(() {
+          callback(text);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _factoryMethodDoStuff2Name,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void createNamedObject(NamedObjectInterfaceRequest obj) {
     if (impl != null) {
@@ -1676,12 +1709,23 @@ class FactoryProxy
     }
     var params = new _FactoryRequestImportedInterfaceParams();
     params.obj = obj;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((sample_import_mojom.ImportedInterfaceInterfaceRequest obj) {
+        z.bindCallback(() {
+          callback(obj);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _factoryMethodRequestImportedInterfaceName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void takeImportedInterface(sample_import_mojom.ImportedInterfaceInterface obj,void callback(sample_import_mojom.ImportedInterfaceInterface obj)) {
     if (impl != null) {
@@ -1690,12 +1734,23 @@ class FactoryProxy
     }
     var params = new _FactoryTakeImportedInterfaceParams();
     params.obj = obj;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((sample_import_mojom.ImportedInterfaceInterface obj) {
+        z.bindCallback(() {
+          callback(obj);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _factoryMethodTakeImportedInterfaceName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

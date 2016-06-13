@@ -2165,12 +2165,23 @@ class CheckMethodWithEmptyResponseProxy
       return;
     }
     var params = new _CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _checkMethodWithEmptyResponseMethodWithoutParameterAndEmptyResponseName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void withParameterAndEmptyResponse(bool b,void callback()) {
     if (impl != null) {
@@ -2179,12 +2190,23 @@ class CheckMethodWithEmptyResponseProxy
     }
     var params = new _CheckMethodWithEmptyResponseWithParameterAndEmptyResponseParams();
     params.b = b;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _checkMethodWithEmptyResponseMethodWithParameterAndEmptyResponseName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 
@@ -2464,12 +2486,23 @@ class CheckNameCollisionProxy
     var params = new _CheckNameCollisionWithNameCollisionParams();
     params.message = message;
     params.response = response;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((bool message, bool response) {
+        z.bindCallback(() {
+          callback(message, response);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _checkNameCollisionMethodWithNameCollisionName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 
@@ -3210,12 +3243,23 @@ class Regression551Proxy
     }
     var params = new _Regression551GetParams();
     params.keyPrefixes = keyPrefixes;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int result) {
+        z.bindCallback(() {
+          callback(result);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _regression551MethodGetName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 
@@ -3477,12 +3521,23 @@ class ServiceNameProxy
       return;
     }
     var params = new _ServiceNameServiceNameParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((String serviceName_) {
+        z.bindCallback(() {
+          callback(serviceName_);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _serviceNameMethodServiceNameName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

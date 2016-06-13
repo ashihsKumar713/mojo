@@ -1005,12 +1005,23 @@ class ServiceDescriptionProxy
       return;
     }
     var params = new _ServiceDescriptionGetTopLevelInterfaceParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((mojom_types_mojom.MojomInterface mojomInterface) {
+        z.bindCallback(() {
+          callback(mojomInterface);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _serviceDescriptionMethodGetTopLevelInterfaceName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getTypeDefinition(String typeKey,void callback(mojom_types_mojom.UserDefinedType type)) {
     if (impl != null) {
@@ -1019,12 +1030,23 @@ class ServiceDescriptionProxy
     }
     var params = new _ServiceDescriptionGetTypeDefinitionParams();
     params.typeKey = typeKey;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((mojom_types_mojom.UserDefinedType type) {
+        z.bindCallback(() {
+          callback(type);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _serviceDescriptionMethodGetTypeDefinitionName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getAllTypeDefinitions(void callback(Map<String, mojom_types_mojom.UserDefinedType> definitions)) {
     if (impl != null) {
@@ -1032,12 +1054,23 @@ class ServiceDescriptionProxy
       return;
     }
     var params = new _ServiceDescriptionGetAllTypeDefinitionsParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((Map<String, mojom_types_mojom.UserDefinedType> definitions) {
+        z.bindCallback(() {
+          callback(definitions);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _serviceDescriptionMethodGetAllTypeDefinitionsName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

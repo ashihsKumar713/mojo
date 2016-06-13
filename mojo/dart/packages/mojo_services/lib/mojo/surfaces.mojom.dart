@@ -1715,12 +1715,23 @@ class SurfaceProxy
       return;
     }
     var params = new _SurfaceGetIdNamespaceParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int idNamespace) {
+        z.bindCallback(() {
+          callback(idNamespace);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _surfaceMethodGetIdNamespaceName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void setResourceReturner(ResourceReturnerInterface returner) {
     if (impl != null) {
@@ -1758,12 +1769,23 @@ class SurfaceProxy
     var params = new _SurfaceSubmitFrameParams();
     params.idLocal = idLocal;
     params.frame = frame;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _surfaceMethodSubmitFrameName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void destroySurface(int idLocal) {
     if (impl != null) {

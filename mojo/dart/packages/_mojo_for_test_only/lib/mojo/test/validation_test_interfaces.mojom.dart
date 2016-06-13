@@ -3859,12 +3859,23 @@ class BoundsCheckTestInterfaceProxy
     }
     var params = new _BoundsCheckTestInterfaceMethod0Params();
     params.param0 = param0;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int param0) {
+        z.bindCallback(() {
+          callback(param0);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _boundsCheckTestInterfaceMethodMethod0Name,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void method1(int param0) {
     if (impl != null) {
@@ -4351,12 +4362,23 @@ class ConformanceTestInterfaceProxy
     }
     var params = new _ConformanceTestInterfaceMethod12Params();
     params.param0 = param0;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((double param0) {
+        z.bindCallback(() {
+          callback(param0);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _conformanceTestInterfaceMethodMethod12Name,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void method13(InterfaceAInterface param0, int param1, InterfaceAInterface param2) {
     if (impl != null) {
@@ -4783,12 +4805,23 @@ class IntegrationTestInterfaceProxy
     }
     var params = new _IntegrationTestInterfaceMethod0Params();
     params.param0 = param0;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((List<int> param0) {
+        z.bindCallback(() {
+          callback(param0);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _integrationTestInterfaceMethodMethod0Name,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

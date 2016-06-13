@@ -1439,12 +1439,23 @@ class MediaSourceProxy
       return;
     }
     var params = new _MediaSourceGetStreamsParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((List<MediaSourceStreamDescriptor> streams) {
+        z.bindCallback(() {
+          callback(streams);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaSourceMethodGetStreamsName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer) {
     if (impl != null) {
@@ -1483,12 +1494,23 @@ class MediaSourceProxy
     }
     var params = new _MediaSourceGetStatusParams();
     params.versionLastSeen = versionLastSeen;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((int version, MediaSourceStatus status) {
+        z.bindCallback(() {
+          callback(version, status);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaSourceMethodGetStatusName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void prepare(void callback()) {
     if (impl != null) {
@@ -1496,12 +1518,23 @@ class MediaSourceProxy
       return;
     }
     var params = new _MediaSourcePrepareParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaSourceMethodPrepareName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void prime(void callback()) {
     if (impl != null) {
@@ -1509,12 +1542,23 @@ class MediaSourceProxy
       return;
     }
     var params = new _MediaSourcePrimeParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaSourceMethodPrimeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void flush(void callback()) {
     if (impl != null) {
@@ -1522,12 +1566,23 @@ class MediaSourceProxy
       return;
     }
     var params = new _MediaSourceFlushParams();
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaSourceMethodFlushName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void seek(int position,void callback()) {
     if (impl != null) {
@@ -1536,12 +1591,23 @@ class MediaSourceProxy
     }
     var params = new _MediaSourceSeekParams();
     params.position = position;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _mediaSourceMethodSeekName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 

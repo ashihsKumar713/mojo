@@ -1284,12 +1284,23 @@ class NetworkServiceProxy
     var params = new _NetworkServiceCreateTcpBoundSocketParams();
     params.localAddress = localAddress;
     params.boundSocket = boundSocket;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo) {
+        z.bindCallback(() {
+          callback(result, boundTo);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _networkServiceMethodCreateTcpBoundSocketName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddress)) {
     if (impl != null) {
@@ -1301,12 +1312,23 @@ class NetworkServiceProxy
     params.sendStream = sendStream;
     params.receiveStream = receiveStream;
     params.clientSocket = clientSocket;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddress) {
+        z.bindCallback(() {
+          callback(result, localAddress);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _networkServiceMethodCreateTcpConnectedSocketName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void createUdpSocket(udp_socket_mojom.UdpSocketInterfaceRequest socket) {
     if (impl != null) {
@@ -1330,12 +1352,23 @@ class NetworkServiceProxy
     var params = new _NetworkServiceCreateHttpServerParams();
     params.localAddress = localAddress;
     params.delegate = delegate;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo) {
+        z.bindCallback(() {
+          callback(result, boundTo);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _networkServiceMethodCreateHttpServerName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void registerUrlLoaderInterceptor(url_loader_interceptor_mojom.UrlLoaderInterceptorFactoryInterface factory) {
     if (impl != null) {

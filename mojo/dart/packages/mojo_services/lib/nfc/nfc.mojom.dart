@@ -1139,12 +1139,23 @@ class NfcProxy
     var params = new _NfcTransmitOnNextConnectionParams();
     params.nfcData = nfcData;
     params.transmission = transmission;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((bool success) {
+        z.bindCallback(() {
+          callback(success);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _nfcMethodTransmitOnNextConnectionName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
   void register() {
     if (impl != null) {

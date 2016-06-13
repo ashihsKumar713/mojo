@@ -356,12 +356,23 @@ class TcpServerSocketProxy
     params.sendStream = sendStream;
     params.receiveStream = receiveStream;
     params.clientSocket = clientSocket;
+    Function zonedCallback;
+    if (identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = ((network_error_mojom.NetworkError result, net_address_mojom.NetAddress remoteAddress) {
+        z.bindCallback(() {
+          callback(result, remoteAddress);
+        })();
+      });
+    }
     ctrl.sendMessageWithRequestId(
         params,
         _tcpServerSocketMethodAcceptName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
-        callback);
+        zonedCallback);
   }
 }
 
