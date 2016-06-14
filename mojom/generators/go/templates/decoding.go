@@ -4,49 +4,9 @@
 
 package templates
 
-const structVersions = `
-{{- define "StructVersions" -}}
-{{- $struct := . -}}
-var {{$struct.PrivateName}}_Versions []bindings.DataHeader = []bindings.DataHeader{
-	{{- range $version := $struct.Versions}}
-	bindings.DataHeader{ {{$version.NumBytes}}, {{$version.Version}} },
-	{{- end}}
-}
-{{- end -}}
-`
-
-const structDecodingTmplText = `
-{{- define "StructDecodingTmpl" -}}
-{{- $struct := . -}}
-func (s *{{$struct.Name}}) Decode(decoder *bindings.Decoder) error {
-	header, err := decoder.StartStruct()
-	if err != nil {
-		return err
-	}
-
-	index := sort.Search(len({{$struct.PrivateName}}_Versions), func(i int) bool {
-		return {{$struct.PrivateName}}_Versions[i].ElementsOrVersion >= header.ElementsOrVersion
-	})
-	if index < len({{$struct.PrivateName}}_Versions) {
-		if {{$struct.PrivateName}}_Versions[index].ElementsOrVersion > header.ElementsOrVersion {
-			index--
-		}
-		expectedSize := {{$struct.PrivateName}}_Versions[index].Size
-		if expectedSize != header.Size {
-			return &bindings.ValidationError{bindings.UnexpectedStructHeader,
-				fmt.Sprintf("invalid struct header size: should be %d, but was %d", expectedSize, header.Size),
-			}
-		}
-	}
-
-	{{- range $field := $struct.Fields}}
-	if header.ElementsOrVersion >= {{$field.MinVersion}} {
-		{{ template "FieldDecodingTmpl" $field.EncodingInfo }}
-	}
-	{{- end}}
-}
-{{- end -}}
-`
+import (
+	"text/template"
+)
 
 const fieldDecodingTmplText = `
 {{- define "FieldDecodingTmpl" -}}
@@ -148,3 +108,8 @@ for i := 0; i < len({{$keyInfo.Identifier}}); i++ {
 {{- end -}}
 {{- end -}}
 `
+
+func initDecodingTemplates() {
+	template.Must(goFileTmpl.Parse(nonNullableFieldDecodingTmplText))
+	template.Must(goFileTmpl.Parse(fieldDecodingTmplText))
+}

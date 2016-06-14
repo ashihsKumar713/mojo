@@ -34,16 +34,13 @@ func ExecuteTemplates(tmplFile *translator.TmplFile) string {
 func init() {
 	// We parse the subtemplates only once.
 	goFileTmpl = template.New("GoFileTemplate")
-	template.Must(goFileTmpl.Parse(goFileTemplate))
-	template.Must(goFileTmpl.Parse(nonNullableFieldDecodingTmplText))
-	template.Must(goFileTmpl.Parse(fieldDecodingTmplText))
 
-	template.Must(goFileTmpl.Parse(nonNullableFieldEncodingTmplText))
-	template.Must(goFileTmpl.Parse(fieldEncodingTmplText))
-	template.Must(goFileTmpl.Parse(structEncodingTmplText))
-	template.Must(goFileTmpl.Parse(structDeclTmplText))
-	template.Must(goFileTmpl.Parse(structVersions))
-	template.Must(goFileTmpl.Parse(structDecodingTmplText))
+	template.Must(goFileTmpl.Parse(goFileTemplate))
+
+	initEncodingTemplates()
+	initDecodingTemplates()
+	initStructTemplates()
+	initUnionTemplates()
 }
 
 const goFileTemplate = `
@@ -58,13 +55,11 @@ import (
 )
 
 {{- range $struct := $fileTmpl.Structs}}
-	{{ template "StructDecl" $struct }}
+	{{ template "Struct" $struct }}
+{{- end}}
 
-	{{ template "StructEncodingTmpl" $struct }}
-
-	{{ template "StructVersions" $struct }}
-
-	{{ template "StructDecodingTmpl" $struct }}
+{{- range $union := $fileTmpl.Unions}}
+	{{ template "Union" $union }}
 {{- end}}
 {{- end -}}
 `

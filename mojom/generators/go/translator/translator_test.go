@@ -212,3 +212,43 @@ func TestStructTypeEncodingInfo(t *testing.T) {
 	checkEq(t, true, info.IsPointer())
 	checkEq(t, "SomeStruct", info.GoType())
 }
+
+func TestTranslateMojomUnion(t *testing.T) {
+	field1Name := "f_uint32"
+	field1 := mojom_types.UnionField{
+		DeclData: &mojom_types.DeclarationData{ShortName: &field1Name},
+		Type:     &mojom_types.TypeSimpleType{Value: mojom_types.SimpleType_Uint32},
+		Tag:      5}
+
+	field2Name := "f_uint16"
+	field2 := mojom_types.UnionField{
+		DeclData: &mojom_types.DeclarationData{ShortName: &field2Name},
+		Type:     &mojom_types.TypeSimpleType{Value: mojom_types.SimpleType_Uint16},
+		Tag:      6}
+
+	unionName := "foo"
+	union := mojom_types.MojomUnion{
+		DeclData: &mojom_types.DeclarationData{ShortName: &unionName},
+		Fields:   []mojom_types.UnionField{field1, field2},
+	}
+
+	graph := mojom_files.MojomFileGraph{}
+	typeKey := "typeKey"
+	graph.ResolvedTypes = map[string]mojom_types.UserDefinedType{
+		typeKey: &mojom_types.UserDefinedTypeUnionType{union},
+	}
+
+	translator := NewTranslator(&graph)
+
+	m := translator.translateMojomUnion(typeKey)
+
+	checkEq(t, "Foo", m.Name)
+	checkEq(t, "FUint32", m.Fields[0].Name)
+	checkEq(t, "uint32", m.Fields[0].Type)
+	checkEq(t, uint32(5), m.Fields[0].Tag)
+	checkEq(t, m, m.Fields[0].Union)
+	checkEq(t, "FUint16", m.Fields[1].Name)
+	checkEq(t, "uint16", m.Fields[1].Type)
+	checkEq(t, uint32(6), m.Fields[1].Tag)
+	checkEq(t, m, m.Fields[1].Union)
+}

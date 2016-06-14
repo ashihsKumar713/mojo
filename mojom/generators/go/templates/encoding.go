@@ -4,22 +4,9 @@
 
 package templates
 
-const structEncodingTmplText = `
-{{- define "StructEncodingTmpl" -}}
-{{ $struct := . }}
-func (s *{{$struct.Name}}) Encode(encoder *bindings.Encoder) error {
-	encoder.StartStruct({{$struct.CurVersionSize}}, {{$struct.CurVersionNumber}})
-	{{- range $field := $struct.Fields}}
-		{{ template "FieldEncodingTmpl" $field.EncodingInfo }}
-	{{- end}}
-
-	if err := encoder.Finish(); err != nil {
-		return err
-	}
-	return nil
-}
-{{- end -}}
-`
+import (
+	"text/template"
+)
 
 const fieldEncodingTmplText = `
 {{- define "FieldEncodingTmpl" -}}
@@ -100,3 +87,8 @@ if err := encoder.Finish(); err != nil {
 {{- end -}}
 {{- end -}}
 `
+
+func initEncodingTemplates() {
+	template.Must(goFileTmpl.Parse(nonNullableFieldEncodingTmplText))
+	template.Must(goFileTmpl.Parse(fieldEncodingTmplText))
+}

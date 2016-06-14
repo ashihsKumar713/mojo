@@ -10,6 +10,7 @@ type TmplFile struct {
 	PackageName string
 	Imports     []Import
 	Structs     []*StructTemplate
+	Unions      []*UnionTemplate
 }
 
 type Import struct {
@@ -67,6 +68,31 @@ type structVersion struct {
 
 	// Version is the version number.
 	Version uint32
+}
+
+type UnionTemplate struct {
+	// Name is the name of the union in go code.
+	Name string
+
+	// Fields contains the list of fields of the union.
+	Fields []UnionFieldTemplate
+}
+
+type UnionFieldTemplate struct {
+	// Name is the name of the field in go.
+	Name string
+
+	// Type is the go type of the field value.
+	Type string
+
+	// Tag of the field.
+	Tag uint32
+
+	// Union is the union containing this field.
+	Union *UnionTemplate
+
+	// EncodingInfo contains the information necessary to encode and decode the field.
+	EncodingInfo EncodingInfo
 }
 
 ////////////////////////////////////////////////////////////////////////////////

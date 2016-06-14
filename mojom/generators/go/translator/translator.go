@@ -41,6 +41,11 @@ func (t *translator) TranslateMojomFile(fileName string) (tmplFile *TmplFile) {
 		tmplFile.Structs[i] = t.translateMojomStruct(typeKey)
 	}
 
+	tmplFile.Unions = make([]*UnionTemplate, len(*file.DeclaredMojomObjects.Unions))
+	for i, typeKey := range *file.DeclaredMojomObjects.Unions {
+		tmplFile.Unions[i] = t.translateMojomUnion(typeKey)
+	}
+
 	tmplFile.Imports = []Import{
 		Import{PackagePath: "mojo/public/go/bindings", PackageName: "bindings"},
 		Import{PackagePath: "fmt", PackageName: "fmt"},
@@ -58,7 +63,7 @@ func (t *translator) translateMojomStruct(typeKey string) (m *StructTemplate) {
 	u := t.GetUserDefinedType(typeKey)
 	s, ok := u.Interface().(mojom_types.MojomStruct)
 	if !ok {
-		panic(fmt.Sprintf("%s is not a struct.", userDefinedTypeShortName(u)))
+		log.Panicf("%s is not a struct.", userDefinedTypeShortName(u))
 	}
 	m.Name = t.goTypeName(typeKey)
 	m.PrivateName = privateName(m.Name)
@@ -91,6 +96,32 @@ func (t *translator) translateStructField(mojomField *mojom_types.StructField) (
 	field.EncodingInfo = t.encodingInfo(mojomField.Type)
 	field.EncodingInfo.setIdentifier("s." + field.Name)
 	return
+}
+
+func (t *translator) translateMojomUnion(typeKey string) (m *UnionTemplate) {
+	m = new(UnionTemplate)
+	u := t.GetUserDefinedType(typeKey)
+	union, ok := u.Interface().(mojom_types.MojomUnion)
+	if !ok {
+		log.Panicf("%s is not a union.\n", userDefinedTypeShortName(u))
+	}
+	m.Name = t.goTypeName(typeKey)
+
+	for _, field := range union.Fields {
+		m.Fields = append(m.Fields, t.translateUnionField(&field))
+		m.Fields[len(m.Fields)-1].Union = m
+	}
+
+	return m
+}
+
+func (t *translator) translateUnionField(mojomField *mojom_types.UnionField) (field UnionFieldTemplate) {
+	field.Name = formatName(*mojomField.DeclData.ShortName)
+	field.Type = t.translateType(mojomField.Type)
+	field.Tag = mojomField.Tag
+	field.EncodingInfo = t.encodingInfo(mojomField.Type)
+	field.EncodingInfo.setIdentifier("u.Value")
+	return field
 }
 
 func (t *translator) encodingInfo(mojomType mojom_types.Type) EncodingInfo {

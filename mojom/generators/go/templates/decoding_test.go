@@ -8,33 +8,6 @@ import (
 	"testing"
 )
 
-func TestDecodingStructVersions(t *testing.T) {
-	expected := `var someStruct_Versions []bindings.DataHeader = []bindings.DataHeader{
-	bindings.DataHeader{80, 0},
-	bindings.DataHeader{100, 1},
-	bindings.DataHeader{120, 2},
-}`
-
-	type structVersion struct {
-		NumBytes uint32
-		Version  uint32
-	}
-
-	s := struct {
-		PrivateName string
-		Versions    []structVersion
-	}{
-		PrivateName: "someStruct",
-		Versions: []structVersion{
-			{80, 0},
-			{100, 1},
-			{120, 2},
-		},
-	}
-
-	check(t, expected, "StructVersions", s)
-}
-
 func TestDecodingSimpleFieldDecoding(t *testing.T) {
 	expected := `value, err := decoder.ReadUint8()
 if err != nil {
@@ -43,9 +16,9 @@ if err != nil {
 s.Fuint8 = value`
 
 	encodingInfo := mockEncodingInfo{
-		IsSimple:     true,
-		Identifier:   "s.Fuint8",
-		ReadFunction: "ReadUint8",
+		isSimple:     true,
+		identifier:   "s.Fuint8",
+		readFunction: "ReadUint8",
 	}
 
 	check(t, expected, "FieldDecodingTmpl", encodingInfo)
@@ -63,9 +36,9 @@ if handle.IsValid() {
 }`
 
 	encodingInfo := mockEncodingInfo{
-		IsHandle:     true,
-		Identifier:   "s.SomeHandle",
-		ReadFunction: "ReadHandle",
+		isHandle:     true,
+		identifier:   "s.SomeHandle",
+		readFunction: "ReadHandle",
 	}
 
 	check(t, expected, "FieldDecodingTmpl", encodingInfo)
@@ -83,10 +56,10 @@ if handle.IsValid() {
 }`
 
 	encodingInfo := mockEncodingInfo{
-		IsHandle:     true,
-		Identifier:   "s.SomeNullableHandle",
-		ReadFunction: "ReadHandle",
-		IsNullable:   true,
+		isHandle:     true,
+		identifier:   "s.SomeNullableHandle",
+		readFunction: "ReadHandle",
+		isNullable:   true,
 	}
 
 	check(t, expected, "FieldDecodingTmpl", encodingInfo)
@@ -108,10 +81,10 @@ if pointer == 0 {
 }`
 
 	encodingInfo := mockEncodingInfo{
-		IsSimple:     true,
-		Identifier:   "s.FString",
-		ReadFunction: "ReadString",
-		IsPointer:    true,
+		isSimple:     true,
+		identifier:   "s.FString",
+		readFunction: "ReadString",
+		isPointer:    true,
 	}
 
 	check(t, expected, "FieldDecodingTmpl", encodingInfo)
@@ -133,11 +106,11 @@ if pointer == 0 {
 }`
 
 	encodingInfo := mockEncodingInfo{
-		IsSimple:     true,
-		Identifier:   "s.FString",
-		ReadFunction: "ReadString",
-		IsPointer:    true,
-		IsNullable:   true,
+		isSimple:     true,
+		identifier:   "s.FString",
+		readFunction: "ReadString",
+		isPointer:    true,
+		isNullable:   true,
 	}
 
 	check(t, expected, "FieldDecodingTmpl", encodingInfo)
@@ -157,9 +130,9 @@ if pointer == 0 {
 }`
 
 	encodingInfo := mockEncodingInfo{
-		IsPointer:  true,
-		IsStruct:   true,
-		Identifier: "s.FStruct",
+		isPointer:  true,
+		isStruct:   true,
+		identifier: "s.FStruct",
 	}
 
 	check(t, expected, "FieldDecodingTmpl", encodingInfo)
@@ -180,11 +153,11 @@ if pointer == 0 {
 }`
 
 	encodingInfo := mockEncodingInfo{
-		IsNullable: true,
-		IsPointer:  true,
-		IsStruct:   true,
-		Identifier: "s.FStruct",
-		GoType:     "SomeStruct",
+		isNullable: true,
+		isPointer:  true,
+		isStruct:   true,
+		identifier: "s.FStruct",
+		goType:     "SomeStruct",
 	}
 
 	check(t, expected, "FieldDecodingTmpl", encodingInfo)

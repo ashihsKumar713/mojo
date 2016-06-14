@@ -11,12 +11,16 @@ import (
 	"testing"
 
 	"mojom/generators/go/gofmt"
-	"mojom/generators/go/translator"
 )
 
 func check(t *testing.T, expected string, template string, input interface{}) {
 	buffer := &bytes.Buffer{}
 	if err := goFileTmpl.ExecuteTemplate(buffer, template, input); err != nil {
+		panic(err)
+	}
+
+	expected, err := gofmt.FormatFragment(expected)
+	if err != nil {
 		panic(err)
 	}
 
@@ -33,21 +37,4 @@ func check(t *testing.T, expected string, template string, input interface{}) {
 		}
 		t.Fatalf(errorMsg)
 	}
-}
-
-func TestStructDecl(t *testing.T) {
-	expected := `type Foo struct {
-	Alpha string
-	Beta  uint32
-}`
-
-	s := translator.StructTemplate{
-		Name: "Foo",
-		Fields: []translator.StructFieldTemplate{
-			{Name: "Alpha", Type: "string"},
-			{Name: "Beta", Type: "uint32"},
-		},
-	}
-
-	check(t, expected, "StructDecl", s)
 }

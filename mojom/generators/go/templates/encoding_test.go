@@ -6,25 +6,44 @@ package templates
 
 import (
 	"testing"
+
+	"mojom/generators/go/translator"
 )
 
 type mockEncodingInfo struct {
-	IsSimple            bool
-	IsPointer           bool
-	IsHandle            bool
-	IsArray             bool
-	IsMap               bool
-	IsNullable          bool
-	IsStruct            bool
-	ElementEncodingInfo *mockEncodingInfo
-	KeyEncodingInfo     *mockEncodingInfo
-	ValueEncodingInfo   *mockEncodingInfo
-	BitSize             uint32
-	WriteFunction       string
-	ReadFunction        string
-	Identifier          string
-	GoType              string
+	translator.EncodingInfo
+	isSimple            bool
+	isPointer           bool
+	isHandle            bool
+	isArray             bool
+	isMap               bool
+	isNullable          bool
+	isStruct            bool
+	elementEncodingInfo *mockEncodingInfo
+	keyEncodingInfo     *mockEncodingInfo
+	valueEncodingInfo   *mockEncodingInfo
+	bitSize             uint32
+	writeFunction       string
+	readFunction        string
+	identifier          string
+	goType              string
 }
+
+func (m mockEncodingInfo) IsSimple() bool                               { return m.isSimple }
+func (m mockEncodingInfo) IsPointer() bool                              { return m.isPointer }
+func (m mockEncodingInfo) IsHandle() bool                               { return m.isHandle }
+func (m mockEncodingInfo) IsArray() bool                                { return m.isArray }
+func (m mockEncodingInfo) IsMap() bool                                  { return m.isMap }
+func (m mockEncodingInfo) IsNullable() bool                             { return m.isNullable }
+func (m mockEncodingInfo) IsStruct() bool                               { return m.isStruct }
+func (m mockEncodingInfo) ElementEncodingInfo() translator.EncodingInfo { return m.elementEncodingInfo }
+func (m mockEncodingInfo) KeyEncodingInfo() translator.EncodingInfo     { return m.keyEncodingInfo }
+func (m mockEncodingInfo) ValueEncodingInfo() translator.EncodingInfo   { return m.valueEncodingInfo }
+func (m mockEncodingInfo) BitSize() uint32                              { return m.bitSize }
+func (m mockEncodingInfo) WriteFunction() string                        { return m.writeFunction }
+func (m mockEncodingInfo) ReadFunction() string                         { return m.readFunction }
+func (m mockEncodingInfo) Identifier() string                           { return m.identifier }
+func (m mockEncodingInfo) GoType() string                               { return m.goType }
 
 func TestEncodingSimpleFieldEncoding(t *testing.T) {
 	expected := `if err := encoder.WriteUint8(s.Fuint8); err != nil {
@@ -32,9 +51,9 @@ func TestEncodingSimpleFieldEncoding(t *testing.T) {
 }`
 
 	encodingInfo := mockEncodingInfo{
-		IsSimple:      true,
-		Identifier:    "s.Fuint8",
-		WriteFunction: "WriteUint8",
+		isSimple:      true,
+		identifier:    "s.Fuint8",
+		writeFunction: "WriteUint8",
 	}
 
 	check(t, expected, "FieldEncodingTmpl", encodingInfo)
@@ -46,8 +65,8 @@ func TestEncodingHandleFieldEncoding(t *testing.T) {
 }`
 
 	encodingInfo := mockEncodingInfo{
-		IsHandle:   true,
-		Identifier: "s.SomeHandle",
+		isHandle:   true,
+		identifier: "s.SomeHandle",
 	}
 
 	check(t, expected, "FieldEncodingTmpl", encodingInfo)
@@ -63,9 +82,9 @@ func TestEncodingNullableHandleFieldEncoding(t *testing.T) {
 }`
 
 	encodingInfo := mockEncodingInfo{
-		IsHandle:   true,
-		Identifier: "s.SomeHandle",
-		IsNullable: true,
+		isHandle:   true,
+		identifier: "s.SomeHandle",
+		isNullable: true,
 	}
 
 	check(t, expected, "FieldEncodingTmpl", encodingInfo)
@@ -80,10 +99,10 @@ if err := encoder.WriteString(s.FString); err != nil {
 }`
 
 	encodingInfo := mockEncodingInfo{
-		IsSimple:      true,
-		Identifier:    "s.FString",
-		WriteFunction: "WriteString",
-		IsPointer:     true,
+		isSimple:      true,
+		identifier:    "s.FString",
+		writeFunction: "WriteString",
+		isPointer:     true,
 	}
 
 	check(t, expected, "FieldEncodingTmpl", encodingInfo)
@@ -102,11 +121,11 @@ func TestEncodingNullableStringFieldEncoding(t *testing.T) {
 }`
 
 	encodingInfo := mockEncodingInfo{
-		IsSimple:      true,
-		Identifier:    "s.FString",
-		WriteFunction: "WriteString",
-		IsPointer:     true,
-		IsNullable:    true,
+		isSimple:      true,
+		identifier:    "s.FString",
+		writeFunction: "WriteString",
+		isPointer:     true,
+		isNullable:    true,
 	}
 
 	check(t, expected, "FieldEncodingTmpl", encodingInfo)
@@ -136,19 +155,19 @@ if err := encoder.Finish(); err != nil {
 }`
 
 	encodingInfo := mockEncodingInfo{
-		IsPointer:  true,
-		IsArray:    true,
-		Identifier: "s.ArrayOfArrayOfInt",
-		ElementEncodingInfo: &mockEncodingInfo{
-			IsPointer:  true,
-			IsArray:    true,
-			BitSize:    64,
-			Identifier: "elem0",
-			ElementEncodingInfo: &mockEncodingInfo{
-				IsSimple:      true,
-				BitSize:       16,
-				WriteFunction: "WriteUint16",
-				Identifier:    "elem1",
+		isPointer:  true,
+		isArray:    true,
+		identifier: "s.ArrayOfArrayOfInt",
+		elementEncodingInfo: &mockEncodingInfo{
+			isPointer:  true,
+			isArray:    true,
+			bitSize:    64,
+			identifier: "elem0",
+			elementEncodingInfo: &mockEncodingInfo{
+				isSimple:      true,
+				bitSize:       16,
+				writeFunction: "WriteUint16",
+				identifier:    "elem1",
 			},
 		},
 	}
@@ -203,33 +222,33 @@ if err := encoder.Finish(); err != nil {
 }`
 
 	encodingInfo := mockEncodingInfo{
-		IsPointer:  true,
-		IsMap:      true,
-		Identifier: "s.MapUint16ToInt32",
-		KeyEncodingInfo: &mockEncodingInfo{
-			IsPointer:  true,
-			IsArray:    true,
-			BitSize:    64,
-			Identifier: "keys0",
-			GoType:     "[]uint16",
-			ElementEncodingInfo: &mockEncodingInfo{
-				IsSimple:      true,
-				BitSize:       16,
-				WriteFunction: "WriteUint16",
-				Identifier:    "key0",
+		isPointer:  true,
+		isMap:      true,
+		identifier: "s.MapUint16ToInt32",
+		keyEncodingInfo: &mockEncodingInfo{
+			isPointer:  true,
+			isArray:    true,
+			bitSize:    64,
+			identifier: "keys0",
+			goType:     "[]uint16",
+			elementEncodingInfo: &mockEncodingInfo{
+				isSimple:      true,
+				bitSize:       16,
+				writeFunction: "WriteUint16",
+				identifier:    "key0",
 			},
 		},
-		ValueEncodingInfo: &mockEncodingInfo{
-			IsPointer:  true,
-			IsArray:    true,
-			BitSize:    64,
-			Identifier: "values0",
-			GoType:     "[]int32",
-			ElementEncodingInfo: &mockEncodingInfo{
-				IsSimple:      true,
-				BitSize:       32,
-				WriteFunction: "WriteInt32",
-				Identifier:    "value0",
+		valueEncodingInfo: &mockEncodingInfo{
+			isPointer:  true,
+			isArray:    true,
+			bitSize:    64,
+			identifier: "values0",
+			goType:     "[]int32",
+			elementEncodingInfo: &mockEncodingInfo{
+				isSimple:      true,
+				bitSize:       32,
+				writeFunction: "WriteInt32",
+				identifier:    "value0",
 			},
 		},
 	}
@@ -246,9 +265,9 @@ if err := s.FStruct.Encode(encoder); err != nil {
 }`
 
 	encodingInfo := mockEncodingInfo{
-		IsPointer:  true,
-		IsStruct:   true,
-		Identifier: "s.FStruct",
+		isPointer:  true,
+		isStruct:   true,
+		identifier: "s.FStruct",
 	}
 
 	check(t, expected, "FieldEncodingTmpl", encodingInfo)
@@ -267,10 +286,10 @@ func TestEncodingNullableStructFieldEncoding(t *testing.T) {
 }`
 
 	encodingInfo := mockEncodingInfo{
-		IsPointer:  true,
-		IsStruct:   true,
-		IsNullable: true,
-		Identifier: "s.FNullableStruct",
+		isPointer:  true,
+		isStruct:   true,
+		isNullable: true,
+		identifier: "s.FNullableStruct",
 	}
 
 	check(t, expected, "FieldEncodingTmpl", encodingInfo)
