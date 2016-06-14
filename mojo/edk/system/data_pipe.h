@@ -116,6 +116,7 @@ class DataPipe final : public ChannelEndpointClient {
   HandleSignalsState ProducerGetHandleSignalsState();
   MojoResult ProducerAddAwakable(Awakable* awakable,
                                  MojoHandleSignals signals,
+                                 bool force,
                                  uint64_t context,
                                  HandleSignalsState* signals_state);
   void ProducerRemoveAwakable(Awakable* awakable,
@@ -150,6 +151,7 @@ class DataPipe final : public ChannelEndpointClient {
   HandleSignalsState ConsumerGetHandleSignalsState();
   MojoResult ConsumerAddAwakable(Awakable* awakable,
                                  MojoHandleSignals signals,
+                                 bool force,
                                  uint64_t context,
                                  HandleSignalsState* signals_state);
   void ConsumerRemoveAwakable(Awakable* awakable,

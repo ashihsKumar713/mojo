@@ -399,6 +399,7 @@ HandleSignalsState DataPipe::ProducerGetHandleSignalsState() {
 
 MojoResult DataPipe::ProducerAddAwakable(Awakable* awakable,
                                          MojoHandleSignals signals,
+                                         bool force,
                                          uint64_t context,
                                          HandleSignalsState* signals_state) {
   MutexLocker locker(&mutex_);
@@ -406,6 +407,8 @@ MojoResult DataPipe::ProducerAddAwakable(Awakable* awakable,
 
   HandleSignalsState producer_state = impl_->ProducerGetHandleSignalsState();
   if (producer_state.satisfies(signals)) {
+    if (force)
+      producer_awakable_list_->Add(awakable, signals, context);
     if (signals_state)
       *signals_state = producer_state;
     return MOJO_RESULT_ALREADY_EXISTS;
@@ -618,6 +621,7 @@ HandleSignalsState DataPipe::ConsumerGetHandleSignalsState() {
 
 MojoResult DataPipe::ConsumerAddAwakable(Awakable* awakable,
                                          MojoHandleSignals signals,
+                                         bool force,
                                          uint64_t context,
                                          HandleSignalsState* signals_state) {
   MutexLocker locker(&mutex_);
@@ -625,6 +629,8 @@ MojoResult DataPipe::ConsumerAddAwakable(Awakable* awakable,
 
   HandleSignalsState consumer_state = impl_->ConsumerGetHandleSignalsState();
   if (consumer_state.satisfies(signals)) {
+    if (force)
+      consumer_awakable_list_->Add(awakable, signals, context);
     if (signals_state)
       *signals_state = consumer_state;
     return MOJO_RESULT_ALREADY_EXISTS;

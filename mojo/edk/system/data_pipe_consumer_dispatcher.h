@@ -69,6 +69,7 @@ class DataPipeConsumerDispatcher final : public Dispatcher {
   HandleSignalsState GetHandleSignalsStateImplNoLock() const override;
   MojoResult AddAwakableImplNoLock(Awakable* awakable,
                                    MojoHandleSignals signals,
+                                   bool force,
                                    uint64_t context,
                                    HandleSignalsState* signals_state) override;
   void RemoveAwakableImplNoLock(Awakable* awakable,

@@ -65,7 +65,6 @@ class WaitSetDispatcher final : public Dispatcher {
                              UserPointer<MojoWaitSetResult> results,
                              UserPointer<uint32_t> max_results) override;
 
- private:
   MOJO_DISALLOW_COPY_AND_ASSIGN(WaitSetDispatcher);
 };
 

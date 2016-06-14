@@ -29,6 +29,7 @@ HandleSignalsState MessagePipeEndpoint::GetHandleSignalsState() const {
 
 MojoResult MessagePipeEndpoint::AddAwakable(Awakable* /*awakable*/,
                                             MojoHandleSignals /*signals*/,
+                                            bool /*force*/,
                                             uint64_t /*context*/,
                                             HandleSignalsState* signals_state) {
   NOTREACHED();

@@ -192,6 +192,7 @@ HandleSignalsState MessagePipe::GetHandleSignalsState(unsigned port) const {
 MojoResult MessagePipe::AddAwakable(unsigned port,
                                     Awakable* awakable,
                                     MojoHandleSignals signals,
+                                    bool force,
                                     uint64_t context,
                                     HandleSignalsState* signals_state) {
   DCHECK(port == 0 || port == 1);
@@ -199,7 +200,7 @@ MojoResult MessagePipe::AddAwakable(unsigned port,
   MutexLocker locker(&mutex_);
   DCHECK(endpoints_[port]);
 
-  return endpoints_[port]->AddAwakable(awakable, signals, context,
+  return endpoints_[port]->AddAwakable(awakable, signals, force, context,
                                        signals_state);
 }
 

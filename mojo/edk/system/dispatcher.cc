@@ -325,7 +325,23 @@ MojoResult Dispatcher::AddAwakable(Awakable* awakable,
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
-  return AddAwakableImplNoLock(awakable, signals, context, signals_state);
+  return AddAwakableImplNoLock(awakable, signals, false, context,
+                               signals_state);
+}
+
+MojoResult Dispatcher::AddAwakableUnconditional(
+    Awakable* awakable,
+    MojoHandleSignals signals,
+    uint64_t context,
+    HandleSignalsState* signals_state) {
+  MutexLocker locker(&mutex_);
+  if (is_closed_) {
+    if (signals_state)
+      *signals_state = HandleSignalsState();
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  return AddAwakableImplNoLock(awakable, signals, true, context, signals_state);
 }
 
 void Dispatcher::RemoveAwakable(Awakable* awakable,
@@ -551,6 +567,7 @@ HandleSignalsState Dispatcher::GetHandleSignalsStateImplNoLock() const {
 MojoResult Dispatcher::AddAwakableImplNoLock(
     Awakable* /*awakable*/,
     MojoHandleSignals /*signals*/,
+    bool /*force*/,
     uint64_t /*context*/,
     HandleSignalsState* signals_state) {
   mutex_.AssertHeld();

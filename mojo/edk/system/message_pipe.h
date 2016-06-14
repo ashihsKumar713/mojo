@@ -102,6 +102,7 @@ class MessagePipe final : public ChannelEndpointClient {
   MojoResult AddAwakable(unsigned port,
                          Awakable* awakable,
                          MojoHandleSignals signals,
+                         bool force,
                          uint64_t context,
                          HandleSignalsState* signals_state);
   void RemoveAwakable(unsigned port,

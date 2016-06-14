@@ -151,12 +151,15 @@ HandleSignalsState LocalMessagePipeEndpoint::GetHandleSignalsState() const {
 MojoResult LocalMessagePipeEndpoint::AddAwakable(
     Awakable* awakable,
     MojoHandleSignals signals,
+    bool force,
     uint64_t context,
     HandleSignalsState* signals_state) {
   DCHECK(is_open_);
 
   HandleSignalsState state = GetHandleSignalsState();
   if (state.satisfies(signals)) {
+    if (force)
+      awakable_list_.Add(awakable, signals, context);
     if (signals_state)
       *signals_state = state;
     return MOJO_RESULT_ALREADY_EXISTS;

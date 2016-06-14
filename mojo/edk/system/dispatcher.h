@@ -198,7 +198,8 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
   //
   // Returns:
   //  - |MOJO_RESULT_OK| if the awakable was added;
-  //  - |MOJO_RESULT_ALREADY_EXISTS| if |signals| is already satisfied;
+  //  - |MOJO_RESULT_ALREADY_EXISTS| if |signals| is already satisfied (if
+  //    |force| is true, the awakable will still be added);
   //  - |MOJO_RESULT_INVALID_ARGUMENT| if the dispatcher has been closed; and
   //  - |MOJO_RESULT_FAILED_PRECONDITION| if it is not (or no longer) possible
   //    that |signals| will ever be satisfied.
@@ -206,6 +207,13 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
                          MojoHandleSignals signals,
                          uint64_t context,
                          HandleSignalsState* signals_state);
+  // Like |AddAwakable()|, but in the |MOJO_RESULT_ALREADY_EXISTS| case still
+  // adds the awakable (|MOJO_RESULT_ALREADY_EXISTS| will still be returned and
+  // |*signals_state| will still be set if |signals_state| is non-null).
+  MojoResult AddAwakableUnconditional(Awakable* awakable,
+                                      MojoHandleSignals signals,
+                                      uint64_t context,
+                                      HandleSignalsState* signals_state);
   // Removes an awakable from this dispatcher. (It is valid to call this
   // multiple times for the same |awakable| on the same object, so long as
   // |AddAwakable()| was called at most once.) If |signals_state| is non-null,
@@ -383,6 +391,7 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
       MOJO_SHARED_LOCKS_REQUIRED(mutex_);
   virtual MojoResult AddAwakableImplNoLock(Awakable* awakable,
                                            MojoHandleSignals signals,
+                                           bool force,
                                            uint64_t context,
                                            HandleSignalsState* signals_state)
       MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);

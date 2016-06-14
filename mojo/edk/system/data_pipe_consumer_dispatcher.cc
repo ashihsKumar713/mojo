@@ -195,10 +195,11 @@ HandleSignalsState DataPipeConsumerDispatcher::GetHandleSignalsStateImplNoLock()
 MojoResult DataPipeConsumerDispatcher::AddAwakableImplNoLock(
     Awakable* awakable,
     MojoHandleSignals signals,
+    bool force,
     uint64_t context,
     HandleSignalsState* signals_state) {
   mutex().AssertHeld();
-  return data_pipe_->ConsumerAddAwakable(awakable, signals, context,
+  return data_pipe_->ConsumerAddAwakable(awakable, signals, force, context,
                                          signals_state);
 }
 

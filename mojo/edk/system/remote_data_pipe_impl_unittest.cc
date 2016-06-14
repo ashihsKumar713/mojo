@@ -142,7 +142,7 @@ TEST_F(RemoteDataPipeImplTest, Sanity) {
   waiter.Init();
   ASSERT_EQ(MOJO_RESULT_OK,
             message_pipe(1)->AddAwakable(
-                0, &waiter, MOJO_HANDLE_SIGNAL_READABLE, 123, nullptr));
+                0, &waiter, MOJO_HANDLE_SIGNAL_READABLE, false, 123, nullptr));
   EXPECT_EQ(MOJO_RESULT_OK,
             message_pipe(0)->WriteMessage(0, UserPointer<const void>(kHello),
                                           sizeof(kHello), nullptr,
@@ -195,7 +195,7 @@ TEST_F(RemoteDataPipeImplTest, SendConsumerWithClosedProducer) {
   waiter.Init();
   ASSERT_EQ(MOJO_RESULT_OK,
             message_pipe(1)->AddAwakable(
-                0, &waiter, MOJO_HANDLE_SIGNAL_READABLE, 123, nullptr));
+                0, &waiter, MOJO_HANDLE_SIGNAL_READABLE, false, 123, nullptr));
   {
     HandleTransport transport(test::HandleTryStartTransport(consumer_handle));
     EXPECT_TRUE(transport.is_valid());
@@ -318,7 +318,7 @@ TEST_F(RemoteDataPipeImplTest, SendConsumerDuringTwoPhaseWrite) {
   waiter.Init();
   ASSERT_EQ(MOJO_RESULT_OK,
             message_pipe(1)->AddAwakable(
-                0, &waiter, MOJO_HANDLE_SIGNAL_READABLE, 123, nullptr));
+                0, &waiter, MOJO_HANDLE_SIGNAL_READABLE, false, 123, nullptr));
   {
     HandleTransport transport(test::HandleTryStartTransport(consumer_handle));
     EXPECT_TRUE(transport.is_valid());
@@ -445,7 +445,7 @@ TEST_F(RemoteDataPipeImplTest, SendConsumerDuringSecondTwoPhaseWrite) {
   waiter.Init();
   ASSERT_EQ(MOJO_RESULT_OK,
             message_pipe(1)->AddAwakable(
-                0, &waiter, MOJO_HANDLE_SIGNAL_READABLE, 123, nullptr));
+                0, &waiter, MOJO_HANDLE_SIGNAL_READABLE, false, 123, nullptr));
   {
     HandleTransport transport(test::HandleTryStartTransport(consumer_handle));
     EXPECT_TRUE(transport.is_valid());
