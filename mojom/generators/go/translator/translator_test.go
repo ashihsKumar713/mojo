@@ -213,6 +213,31 @@ func TestStructTypeEncodingInfo(t *testing.T) {
 	checkEq(t, "SomeStruct", info.GoType())
 }
 
+func TestUnionTypeEncodingInfo(t *testing.T) {
+	fileGraph := mojom_files.MojomFileGraph{}
+	shortName := "SomeUnion"
+	typeKey := "typeKey"
+
+	mojomUnion := mojom_types.MojomUnion{
+		DeclData: &mojom_types.DeclarationData{ShortName: &shortName}}
+	fileGraph.ResolvedTypes = map[string]mojom_types.UserDefinedType{}
+	fileGraph.ResolvedTypes[typeKey] = &mojom_types.UserDefinedTypeUnionType{mojomUnion}
+	translator := NewTranslator(&fileGraph)
+
+	typeRef := &mojom_types.TypeTypeReference{mojom_types.TypeReference{TypeKey: &typeKey}}
+
+	info := translator.encodingInfo(typeRef)
+
+	checkEq(t, true, info.IsUnion())
+	checkEq(t, false, info.IsPointer())
+	checkEq(t, uint32(128), info.BitSize())
+	checkEq(t, "SomeUnion", info.GoType())
+
+	info.(*unionTypeEncodingInfo).nestedUnion = true
+	checkEq(t, true, info.IsPointer())
+	checkEq(t, uint32(64), info.BitSize())
+}
+
 func TestTranslateMojomUnion(t *testing.T) {
 	field1Name := "f_uint32"
 	field1 := mojom_types.UnionField{

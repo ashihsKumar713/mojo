@@ -162,3 +162,71 @@ if pointer == 0 {
 
 	check(t, expected, "FieldDecodingTmpl", encodingInfo)
 }
+
+func TestDecodingUnionFieldDecoding(t *testing.T) {
+	expected := `var err error
+s.FUnion, err = DecodeSomeUnion(decoder)
+if err != nil {
+	return err
+}
+if s.FUnion == nil {
+	return &bindings.ValidationError{bindings.UnexpectedNullUnion, "unexpected null union"}
+}`
+
+	encodingInfo := mockEncodingInfo{
+		isUnion:    true,
+		identifier: "s.FUnion",
+		goType:     "SomeUnion",
+	}
+
+	check(t, expected, "FieldDecodingTmpl", encodingInfo)
+}
+
+func TestDecodingNullableUnionFieldDecoding(t *testing.T) {
+	expected := `var err error
+s.FUnion, err = DecodeSomeUnion(decoder)
+if err != nil {
+	return err
+}`
+
+	encodingInfo := mockEncodingInfo{
+		isNullable: true,
+		isUnion:    true,
+		identifier: "s.FUnion",
+		goType:     "SomeUnion",
+	}
+
+	check(t, expected, "FieldDecodingTmpl", encodingInfo)
+}
+
+func TestDecodingNestedUnionFieldDecoding(t *testing.T) {
+	expected := `pointer, err := decoder.ReadPointer()
+if err != nil {
+	return err
+}
+if pointer == 0 {
+	return &bindings.ValidationError{bindings.UnexpectedNullPointer, "unexpected null union pointer"}
+} else {
+	if err := decoder.StartNestedUnion(); err != nil {
+		return err
+	}
+	var err error
+	u.Value, err = DecodeSomeUnion(decoder)
+	if err != nil {
+		return err
+	}
+	if u.Value == nil {
+		return &bindings.ValidationError{bindings.UnexpectedNullUnion, "unexpected null union"}
+	}
+	decoder.Finish()
+}`
+
+	encodingInfo := mockEncodingInfo{
+		isPointer:  true,
+		isUnion:    true,
+		identifier: "u.Value",
+		goType:     "SomeUnion",
+	}
+
+	check(t, expected, "FieldDecodingTmpl", encodingInfo)
+}

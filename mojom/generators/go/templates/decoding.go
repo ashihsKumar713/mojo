@@ -17,9 +17,11 @@ if err != nil {
 	return err
 }
 if pointer == 0 {
-{{- if $info.IsNullable }}
+{{- if $info.IsNullable}}
 	{{$info.Identifier}} = nil
-{{- else }}
+{{- else if $info.IsUnion}}
+	return &bindings.ValidationError{bindings.UnexpectedNullPointer, "unexpected null union pointer"}
+{{- else}}
 	return &bindings.ValidationError{bindings.UnexpectedNullPointer, "unexpected null pointer"}
 {{- end }}
 } else {
@@ -63,6 +65,25 @@ if handle.IsValid() {
 if err := {{$info.Identifier}}.Decode(decoder); err != nil {
 	return err
 }
+{{- else if $info.IsUnion -}}
+{{- if $info.IsPointer -}}
+if err := decoder.StartNestedUnion(); err != nil {
+	return err
+}
+{{end -}}
+var err error
+{{$info.Identifier}}, err = Decode{{$info.GoType}}(decoder)
+if err != nil {
+	return err
+}
+{{- if not $info.IsNullable}}
+if {{$info.Identifier}} == nil {
+	return &bindings.ValidationError{bindings.UnexpectedNullUnion, "unexpected null union"}
+}
+{{- end -}}
+{{- if $info.IsPointer}}
+decoder.Finish()
+{{- end -}}
 {{- else if $info.IsArray -}}
 {{ $elInfo := $info.ElementEncodingInfo -}}
 len0, err := decoder.StartArray({{$elInfo.BitSize}})

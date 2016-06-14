@@ -19,6 +19,7 @@ type mockEncodingInfo struct {
 	isMap               bool
 	isNullable          bool
 	isStruct            bool
+	isUnion             bool
 	elementEncodingInfo *mockEncodingInfo
 	keyEncodingInfo     *mockEncodingInfo
 	valueEncodingInfo   *mockEncodingInfo
@@ -36,6 +37,7 @@ func (m mockEncodingInfo) IsArray() bool                                { return
 func (m mockEncodingInfo) IsMap() bool                                  { return m.isMap }
 func (m mockEncodingInfo) IsNullable() bool                             { return m.isNullable }
 func (m mockEncodingInfo) IsStruct() bool                               { return m.isStruct }
+func (m mockEncodingInfo) IsUnion() bool                                { return m.isUnion }
 func (m mockEncodingInfo) ElementEncodingInfo() translator.EncodingInfo { return m.elementEncodingInfo }
 func (m mockEncodingInfo) KeyEncodingInfo() translator.EncodingInfo     { return m.keyEncodingInfo }
 func (m mockEncodingInfo) ValueEncodingInfo() translator.EncodingInfo   { return m.valueEncodingInfo }
@@ -290,6 +292,86 @@ func TestEncodingNullableStructFieldEncoding(t *testing.T) {
 		isStruct:   true,
 		isNullable: true,
 		identifier: "s.FNullableStruct",
+	}
+
+	check(t, expected, "FieldEncodingTmpl", encodingInfo)
+}
+
+func TestEncodingUnionFieldEncoding(t *testing.T) {
+	expected := `if s.FUnion == nil {
+	return &bindings.ValidationError{bindings.UnexpectedNullUnion, "unexpected null union"}
+} else {
+	if err := s.FUnion.Encode(encoder); err != nil {
+		return err
+	}
+}`
+
+	encodingInfo := mockEncodingInfo{
+		isUnion:    true,
+		identifier: "s.FUnion",
+	}
+
+	check(t, expected, "FieldEncodingTmpl", encodingInfo)
+}
+
+func TestEncodingNullableUnionFieldEncoding(t *testing.T) {
+	expected := `if s.FUnion == nil {
+	encoder.WriteNullUnion()
+} else {
+	if err := s.FUnion.Encode(encoder); err != nil {
+		return err
+	}
+}`
+
+	encodingInfo := mockEncodingInfo{
+		isNullable: true,
+		isUnion:    true,
+		identifier: "s.FUnion",
+	}
+
+	check(t, expected, "FieldEncodingTmpl", encodingInfo)
+}
+
+func TestEncodingNestedUnionFieldEncoding(t *testing.T) {
+	expected := `if err := encoder.WritePointer(); err != nil {
+		return err
+}
+encoder.StartNestedUnion()
+if s.FUnion == nil {
+	return &bindings.ValidationError{bindings.UnexpectedNullUnion, "unexpected null union"}
+} else {
+	if err := s.FUnion.Encode(encoder); err != nil {
+		return err
+	}
+}`
+
+	encodingInfo := mockEncodingInfo{
+		isPointer:  true,
+		isUnion:    true,
+		identifier: "s.FUnion",
+	}
+
+	check(t, expected, "FieldEncodingTmpl", encodingInfo)
+}
+
+func TestEncodingNestedNullableUnionFieldEncoding(t *testing.T) {
+	expected := `if err := encoder.WritePointer(); err != nil {
+		return err
+}
+encoder.StartNestedUnion()
+if s.FUnion == nil {
+	encoder.WriteNullUnion()
+} else {
+	if err := s.FUnion.Encode(encoder); err != nil {
+		return err
+	}
+}`
+
+	encodingInfo := mockEncodingInfo{
+		isNullable: true,
+		isPointer:  true,
+		isUnion:    true,
+		identifier: "s.FUnion",
 	}
 
 	check(t, expected, "FieldEncodingTmpl", encodingInfo)

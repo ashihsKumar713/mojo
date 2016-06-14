@@ -111,6 +111,9 @@ type EncodingInfo interface {
 	// IsStruct returns true if the field is a struct.
 	IsStruct() bool
 
+	// IsUnion returns true if the field is a union.
+	IsUnion() bool
+
 	// IsArray returns true if the field is an array.
 	IsArray() bool
 
@@ -180,6 +183,10 @@ func (b *baseEncodingInfo) IsPointer() bool {
 }
 
 func (b *baseEncodingInfo) IsStruct() bool {
+	return false
+}
+
+func (b *baseEncodingInfo) IsUnion() bool {
 	return false
 }
 
@@ -387,4 +394,44 @@ func (t *structTypeEncodingInfo) WriteFunction() string {
 
 func (t *structTypeEncodingInfo) ReadFunction() string {
 	panic("Structs don't have a read function.")
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// unionTypeEncodingInfo is the EncodingInfo for a union.
+type unionTypeEncodingInfo struct {
+	baseEncodingInfo
+	nestedUnion bool
+	nullable    bool
+}
+
+func (t *unionTypeEncodingInfo) BitSize() uint32 {
+	if t.nestedUnion {
+		return uint32(64)
+	}
+	return uint32(128)
+}
+
+func (t *unionTypeEncodingInfo) IsUnion() bool {
+	return true
+}
+
+func (t *unionTypeEncodingInfo) IsPointer() bool {
+	return t.nestedUnion
+}
+
+func (b *unionTypeEncodingInfo) IsNullable() bool {
+	return b.nullable
+}
+
+func (b *unionTypeEncodingInfo) setNullable(nullable bool) {
+	b.nullable = nullable
+}
+
+func (t *unionTypeEncodingInfo) WriteFunction() string {
+	panic("Unions don't have a write function.")
+}
+
+func (t *unionTypeEncodingInfo) ReadFunction() string {
+	panic("Unions don't have a read function.")
 }

@@ -11,7 +11,7 @@ import (
 const fieldEncodingTmplText = `
 {{- define "FieldEncodingTmpl" -}}
 {{- $info := . -}}
-{{- if $info.IsNullable -}}
+{{- if and (not $info.IsUnion) $info.IsNullable -}}
 if {{$info.Identifier}} == nil {
 {{- if $info.IsPointer -}}
 	encoder.WriteNullPointer()
@@ -50,6 +50,21 @@ if err := encoder.WriteHandle({{$info.Identifier}}); err != nil {
 {{- else if $info.IsStruct -}}
 if err := {{$info.Identifier}}.Encode(encoder); err != nil {
 	return err
+}
+{{- else if $info.IsUnion -}}
+{{- if $info.IsPointer -}}
+encoder.StartNestedUnion()
+{{end -}}
+if {{$info.Identifier}} == nil {
+{{- if $info.IsNullable -}}
+	encoder.WriteNullUnion()
+{{- else -}}
+	return &bindings.ValidationError{bindings.UnexpectedNullUnion, "unexpected null union"}
+{{- end -}}
+} else {
+	if err := {{$info.Identifier}}.Encode(encoder); err != nil {
+		return err
+	}
 }
 {{- else if $info.IsArray -}}
 {{ $elInfo := $info.ElementEncodingInfo -}}

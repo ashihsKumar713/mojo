@@ -121,6 +121,9 @@ func (t *translator) translateUnionField(mojomField *mojom_types.UnionField) (fi
 	field.Tag = mojomField.Tag
 	field.EncodingInfo = t.encodingInfo(mojomField.Type)
 	field.EncodingInfo.setIdentifier("u.Value")
+	if info, ok := field.EncodingInfo.(*unionTypeEncodingInfo); ok {
+		info.nestedUnion = true
+	}
 	return field
 }
 
@@ -254,6 +257,8 @@ func (t *translator) typeRefEncodingInfo(typeRef mojom_types.TypeReference) (inf
 	switch m := mojomType.(type) {
 	case *mojom_types.UserDefinedTypeStructType:
 		info = t.structTypeEncodingInfo(m.Value)
+	case *mojom_types.UserDefinedTypeUnionType:
+		info = t.unionTypeEncodingInfo(m.Value)
 	}
 	info.setNullable(typeRef.Nullable)
 	return info
@@ -261,6 +266,11 @@ func (t *translator) typeRefEncodingInfo(typeRef mojom_types.TypeReference) (inf
 
 func (t *translator) structTypeEncodingInfo(mojomType mojom_types.MojomStruct) (info *structTypeEncodingInfo) {
 	info = new(structTypeEncodingInfo)
+	return info
+}
+
+func (t *translator) unionTypeEncodingInfo(mojomType mojom_types.MojomUnion) (info *unionTypeEncodingInfo) {
+	info = new(unionTypeEncodingInfo)
 	return info
 }
 
