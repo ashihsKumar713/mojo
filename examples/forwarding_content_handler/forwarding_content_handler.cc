@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/scoped_ptr.h"
 #include "mojo/application/content_handler_factory.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
 #include "mojo/environment/scoped_chromium_init.h"
@@ -64,7 +63,7 @@ class ForwardingContentHandler : public ApplicationImplBase,
   }
 
   // Overridden from ContentHandlerFactory::ManagedDelegate:
-  scoped_ptr<ContentHandlerFactory::HandledApplicationHolder>
+  std::unique_ptr<ContentHandlerFactory::HandledApplicationHolder>
   CreateApplication(InterfaceRequest<Application> application_request,
                     URLResponsePtr response) override {
     CHECK(!response.is_null());

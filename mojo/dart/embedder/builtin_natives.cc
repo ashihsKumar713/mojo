@@ -6,12 +6,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <memory>
+
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/scoped_ptr.h"
 #include "base/rand_util.h"
 #include "dart/runtime/include/dart_api.h"
 #include "mojo/dart/embedder/builtin.h"
@@ -121,7 +122,7 @@ void Crypto_GetRandomBytes(Dart_NativeArguments args) {
     Dart_ThrowException(error);
   }
   intptr_t count = static_cast<intptr_t>(count64);
-  scoped_ptr<uint8_t[]> buffer(new uint8_t[count]);
+  std::unique_ptr<uint8_t[]> buffer(new uint8_t[count]);
 
   base::RandBytes(reinterpret_cast<void*>(buffer.get()), count);
 

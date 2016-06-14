@@ -4,6 +4,8 @@
 
 #include "mojo/gles2/control_thunks_impl.h"
 
+#include <memory>
+
 #include "mojo/gles2/gles2_context.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
@@ -33,7 +35,7 @@ MGLContext ControlThunksImpl::CreateContext(
     const struct MojoAsyncWaiter* async_waiter) {
   mojo::MessagePipeHandle mph(command_buffer_handle);
   mojo::ScopedMessagePipeHandle scoped_handle(mph);
-  scoped_ptr<GLES2Context> client(
+  std::unique_ptr<GLES2Context> client(
       new GLES2Context(async_waiter, scoped_handle.Pass(), lost_callback,
                        lost_callback_closure));
   if (!client->Initialize())

@@ -5,8 +5,9 @@
 #ifndef MOJO_GLES2_GLES2_CONTEXT_H_
 #define MOJO_GLES2_GLES2_CONTEXT_H_
 
+#include <memory>
+
 #include "base/macros.h"
-#include "base/memory/scoped_ptr.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "mojo/gles2/command_buffer_client_impl.h"
 #include "mojo/public/c/gpu/MGL/mgl_echo.h"
@@ -49,9 +50,9 @@ class GLES2Context : public CommandBufferDelegate, public MGLContextPrivate {
   void ContextLost() override;
 
   CommandBufferClientImpl command_buffer_;
-  scoped_ptr<gpu::gles2::GLES2CmdHelper> gles2_helper_;
-  scoped_ptr<gpu::TransferBuffer> transfer_buffer_;
-  scoped_ptr<gpu::gles2::GLES2Implementation> implementation_;
+  std::unique_ptr<gpu::gles2::GLES2CmdHelper> gles2_helper_;
+  std::unique_ptr<gpu::TransferBuffer> transfer_buffer_;
+  std::unique_ptr<gpu::gles2::GLES2Implementation> implementation_;
   MGLContextLostCallback lost_callback_;
   void* closure_;
 

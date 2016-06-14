@@ -206,7 +206,7 @@ bool DartContentHandlerApp::OnAcceptConnection(
   return true;
 }
 
-scoped_ptr<mojo::ContentHandlerFactory::HandledApplicationHolder>
+std::unique_ptr<mojo::ContentHandlerFactory::HandledApplicationHolder>
 DartContentHandler::CreateApplication(
     mojo::InterfaceRequest<mojo::Application> application_request,
     mojo::URLResponsePtr response) {
@@ -244,13 +244,15 @@ DartContentHandler::CreateApplication(
                 base::MessageLoop::current()->task_runner(), FROM_HERE,
                 base::MessageLoop::QuitWhenIdleClosure())));
     base::RunLoop().Run();
-    return make_scoped_ptr(
+    return std::unique_ptr<
+        mojo::ContentHandlerFactory::HandledApplicationHolder>(
         new DartApp(application_request.Pass(), url, application_dir, strict_,
                     run_on_message_loop, override_pause_isolates_flags,
                     pause_isolates_on_start, pause_isolates_on_exit));
   } else {
     // Loading a raw .dart file pointed at by |url|.
-    return make_scoped_ptr(
+    return std::unique_ptr<
+        mojo::ContentHandlerFactory::HandledApplicationHolder>(
         new DartApp(application_request.Pass(), url, strict_,
                     run_on_message_loop, override_pause_isolates_flags,
                     pause_isolates_on_start, pause_isolates_on_exit));

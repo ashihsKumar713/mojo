@@ -5,7 +5,6 @@
 #ifndef MOJO_CONVERTERS_OZONE_DRM_GPU_OZONE_DRM_GPU_TYPE_CONVERTERS_H_
 #define MOJO_CONVERTERS_OZONE_DRM_GPU_OZONE_DRM_GPU_TYPE_CONVERTERS_H_
 
-#include "base/memory/scoped_ptr.h"
 #include "mojo/services/ozone_drm_gpu/interfaces/ozone_drm_gpu.mojom.h"
 #include "ui/ozone/common/gpu/ozone_gpu_message_params.h"
 

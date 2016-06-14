@@ -6,9 +6,9 @@
 #define MOJO_GLES2_COMMAND_BUFFER_CLIENT_IMPL_H_
 
 #include <map>
+#include <memory>
 
 #include "base/macros.h"
-#include "base/memory/scoped_ptr.h"
 #include "gpu/command_buffer/client/gpu_control.h"
 #include "gpu/command_buffer/common/command_buffer.h"
 #include "gpu/command_buffer/common/command_buffer_shared.h"
@@ -88,8 +88,8 @@ class CommandBufferClientImpl : public mojo::CommandBufferLostContextObserver,
   CommandBufferDelegate* delegate_;
   mojo::Binding<mojo::CommandBufferLostContextObserver> observer_binding_;
   mojo::CommandBufferPtr command_buffer_;
-  scoped_ptr<SyncClientImpl> sync_client_impl_;
-  scoped_ptr<SyncPointClientImpl> sync_point_client_impl_;
+  std::unique_ptr<SyncClientImpl> sync_client_impl_;
+  std::unique_ptr<SyncPointClientImpl> sync_point_client_impl_;
 
   gpu::Capabilities capabilities_;
   State last_state_;

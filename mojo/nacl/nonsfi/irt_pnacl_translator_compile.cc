@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include <fcntl.h>
+#include <stdio.h>
+
+#include <memory>
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -41,7 +44,7 @@ class PexeCompilerImpl : public mojo::nacl::PexeCompiler {
 
     for (size_t i = 0; i < obj_file_count; i++) {
       base::FilePath obj_file_name;
-      CHECK(CreateTemporaryFile(&obj_file_name))
+      CHECK(base::CreateTemporaryFile(&obj_file_name))
           << "Could not make temporary object file";
       obj_file_fds[i] = open(obj_file_name.value().c_str(), O_RDWR, O_TRUNC);
       CHECK_GE(obj_file_fds[i], 0)
@@ -76,7 +79,7 @@ class PexeCompilerImpl : public mojo::nacl::PexeCompiler {
 
     // Read the pexe using fread, and write the pexe into the callback function.
     static const size_t kBufferSize = 0x100000;
-    scoped_ptr<char[]> buf(new char[kBufferSize]);
+    std::unique_ptr<char[]> buf(new char[kBufferSize]);
     FILE* pexe_file_stream = fopen(pexe_file_name.get().c_str(), "r");
     // Once the pexe has been opened, it is no longer needed, so we unlink it.
     CHECK(!unlink(pexe_file_name.get().c_str()))

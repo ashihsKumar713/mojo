@@ -38,11 +38,12 @@ class JsContentHandler : public mojo::ApplicationImplBase,
   }
 
   // Overridden from mojo::ContentHandlerFactory::ManagedDelegate:
-  scoped_ptr<mojo::ContentHandlerFactory::HandledApplicationHolder>
+  std::unique_ptr<mojo::ContentHandlerFactory::HandledApplicationHolder>
   CreateApplication(
       mojo::InterfaceRequest<mojo::Application> application_request,
       mojo::URLResponsePtr response) override {
-    return make_scoped_ptr(
+    return std::unique_ptr<
+        mojo::ContentHandlerFactory::HandledApplicationHolder>(
         new JSApp(application_request.Pass(), response.Pass()));
   }
 

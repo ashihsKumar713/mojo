@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/memory/scoped_ptr.h"
 #include "base/process/process_handle.h"
 #include "services/gles2/command_buffer_type_conversions.h"
 #include "services/gles2/mojo_buffer_backing.h"

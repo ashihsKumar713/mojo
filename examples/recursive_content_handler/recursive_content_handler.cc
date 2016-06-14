@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
-#include "base/memory/scoped_ptr.h"
 #include "mojo/application/content_handler_factory.h"
 #include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
@@ -29,7 +28,7 @@ class RecursiveContentHandler : public ApplicationImplBase,
   }
 
   // Overridden from ContentHandlerFactory::ManagedDelegate:
-  scoped_ptr<ContentHandlerFactory::HandledApplicationHolder>
+  std::unique_ptr<ContentHandlerFactory::HandledApplicationHolder>
   CreateApplication(InterfaceRequest<Application> application_request,
                     URLResponsePtr response) override {
     LOG(INFO) << "RecursiveContentHandler called with url: " << response->url;

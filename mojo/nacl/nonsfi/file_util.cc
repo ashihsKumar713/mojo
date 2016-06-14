@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/nacl/nonsfi/file_util.h"
+
 #include <fcntl.h>
 #include <unistd.h>
+
+#include <memory>
 #include <vector>
 
 #include "base/files/file_util.h"
@@ -14,7 +18,8 @@ namespace nacl {
 
 int DataToTempFileDescriptor(const mojo::embed::Data& data) {
   base::FilePath path;
-  CHECK(CreateTemporaryFile(&path)) << "Could not create temp file for data";
+  CHECK(base::CreateTemporaryFile(&path))
+      << "Could not create temp file for data";
 
   int fd = open(path.value().c_str(), O_RDWR);
   CHECK_GE(fd, 0) << "Could not open temporary file";
@@ -34,7 +39,8 @@ int DataToTempFileDescriptor(const mojo::embed::Data& data) {
 
 int MojoFileToTempFileDescriptor(mojo::files::FilePtr mojo_file) {
   base::FilePath path;
-  CHECK(CreateTemporaryFile(&path)) << "Could not create temp file for data";
+  CHECK(base::CreateTemporaryFile(&path))
+      << "Could not create temp file for data";
 
   int fd = open(path.value().c_str(), O_RDWR);
   CHECK_GE(fd, 0) << "Could not open temporary file";
@@ -84,7 +90,7 @@ void FileDescriptorToMojoFile(int fd, mojo::files::FilePtr mojo_file) {
   mojo::files::Error error = mojo::files::Error::INTERNAL;
 
   static const size_t kBufferSize = 0x100000;
-  scoped_ptr<uint8_t[]> buf(new uint8_t[kBufferSize]);
+  std::unique_ptr<uint8_t[]> buf(new uint8_t[kBufferSize]);
   int64_t offset = 0;
   while (true) {
     ssize_t bytes = HANDLE_EINTR(read(fd, buf.get(), kBufferSize));

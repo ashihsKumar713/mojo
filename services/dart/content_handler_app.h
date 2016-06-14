@@ -26,7 +26,7 @@ class DartContentHandler : public mojo::ContentHandlerFactory::ManagedDelegate {
 
  private:
   // Overridden from ContentHandlerFactory::ManagedDelegate:
-  scoped_ptr<mojo::ContentHandlerFactory::HandledApplicationHolder>
+  std::unique_ptr<mojo::ContentHandlerFactory::HandledApplicationHolder>
   CreateApplication(
       mojo::InterfaceRequest<mojo::Application> application_request,
       mojo::URLResponsePtr response) override;
