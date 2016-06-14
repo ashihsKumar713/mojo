@@ -5,6 +5,7 @@
 package common
 
 import (
+	"io"
 	"mojom/generated/mojom_files"
 )
 
@@ -38,6 +39,7 @@ type GeneratorConfig interface {
 // It is also made to faciliate testing by allowing generator code to write
 // to a provided buffer such as a bytes.Buffer.
 type Writer interface {
+	io.Writer
 	WriteString(s string) (n int, err error)
 }
 

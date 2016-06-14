@@ -59,7 +59,7 @@ func createAndOpen(outPath string) (file Writer) {
 	}
 
 	var err error
-	file, err = os.OpenFile(outPath, os.O_WRONLY|os.O_CREATE, 0666)
+	file, err = os.OpenFile(outPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}

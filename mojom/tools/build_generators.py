@@ -15,7 +15,7 @@ import builder
 
 
 def main():
-  all_generators = set(['deps', 'go'])
+  all_generators = set(['deps', 'go', 'c'])
   parser = builder.get_arg_parser('Build the mojom generators.')
   parser.add_argument('--generators', dest='generators', type=str,
       default=','.join(all_generators), action='store',
@@ -23,11 +23,6 @@ def main():
       'script. These should be directories under mojom/generators. By default '
       'every generator known to the build script will be built.')
   args = parser.parse_args()
-
-  generators = [
-      'deps',
-      'go',
-      ]
 
   generators = args.generators.split(',')
   for generator in generators:
