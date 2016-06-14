@@ -372,17 +372,16 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
       MojoMapBufferFlags flags,
       std::unique_ptr<platform::PlatformSharedBufferMapping>* mapping)
       MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
-  virtual MojoResult WaitSetAddImplNoLock(
+  // WARNING: Unlike the others, the following wait set methods are *not* called
+  // under |mutex_| and |is_closed_| is *not* checked. Thus any override must
+  // lock |mutex()| and check |is_closed_no_lock()| (returning
+  // |MOJO_RESULT_INVALID_ARGUMENT| if it is true).
+  virtual MojoResult WaitSetAddImpl(
       UserPointer<const MojoWaitSetAddOptions> options,
       Handle&& handle,
       MojoHandleSignals signals,
-      uint64_t cookie) MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
-  virtual MojoResult WaitSetRemoveImplNoLock(uint64_t cookie)
-      MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
-  // WARNING: Unlike the others, this method is *not* called under |mutex_| and
-  // |is_closed_| is *not* checked. Thus any override must lock |mutex()| and
-  // check |is_closed_no_lock()| (returning |MOJO_RESULT_INVALID_ARGUMENT| if it
-  // is true).
+      uint64_t cookie);
+  virtual MojoResult WaitSetRemoveImpl(uint64_t cookie);
   virtual MojoResult WaitSetWaitImpl(MojoDeadline deadline,
                                      UserPointer<uint32_t> num_results,
                                      UserPointer<MojoWaitSetResult> results,

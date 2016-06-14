@@ -54,12 +54,11 @@ class WaitSetDispatcher final : public Dispatcher {
   util::RefPtr<Dispatcher> CreateEquivalentDispatcherAndCloseImplNoLock(
       MessagePipe* message_pipe,
       unsigned port) override;
-  MojoResult WaitSetAddImplNoLock(
-      UserPointer<const MojoWaitSetAddOptions> options,
-      Handle&& handle,
-      MojoHandleSignals signals,
-      uint64_t cookie) override;
-  MojoResult WaitSetRemoveImplNoLock(uint64_t cookie) override;
+  MojoResult WaitSetAddImpl(UserPointer<const MojoWaitSetAddOptions> options,
+                            Handle&& handle,
+                            MojoHandleSignals signals,
+                            uint64_t cookie) override;
+  MojoResult WaitSetRemoveImpl(uint64_t cookie) override;
   MojoResult WaitSetWaitImpl(MojoDeadline deadline,
                              UserPointer<uint32_t> num_results,
                              UserPointer<MojoWaitSetResult> results,

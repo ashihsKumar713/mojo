@@ -72,20 +72,24 @@ WaitSetDispatcher::CreateEquivalentDispatcherAndCloseImplNoLock(
   return nullptr;
 }
 
-MojoResult WaitSetDispatcher::WaitSetAddImplNoLock(
+MojoResult WaitSetDispatcher::WaitSetAddImpl(
     UserPointer<const MojoWaitSetAddOptions> options,
     Handle&& handle,
     MojoHandleSignals signals,
     uint64_t cookie) {
-  mutex().AssertHeld();
+  MutexLocker locker(&mutex());
+  if (is_closed_no_lock())
+    return MOJO_RESULT_INVALID_ARGUMENT;
 
   // TODO(vtl)
   NOTIMPLEMENTED();
   return MOJO_RESULT_UNIMPLEMENTED;
 }
 
-MojoResult WaitSetDispatcher::WaitSetRemoveImplNoLock(uint64_t cookie) {
-  mutex().AssertHeld();
+MojoResult WaitSetDispatcher::WaitSetRemoveImpl(uint64_t cookie) {
+  MutexLocker locker(&mutex());
+  if (is_closed_no_lock())
+    return MOJO_RESULT_INVALID_ARGUMENT;
 
   // TODO(vtl)
   NOTIMPLEMENTED();

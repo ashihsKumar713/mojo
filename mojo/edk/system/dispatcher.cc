@@ -276,33 +276,25 @@ MojoResult Dispatcher::MapBuffer(
   return MapBufferImplNoLock(offset, num_bytes, flags, mapping);
 }
 
+// Note: The following three wait set methods don't lock |mutex_|, and leave
+// everything for |WaitSet...Impl()| to do. (We could just make these methods
+// virtual, but we prefer to have a separate "impl" methods for consistency.)
 MojoResult Dispatcher::WaitSetAdd(
     UserPointer<const MojoWaitSetAddOptions> options,
     Handle&& handle,
     MojoHandleSignals signals,
     uint64_t cookie) {
-  MutexLocker locker(&mutex_);
-  if (is_closed_)
-    return MOJO_RESULT_INVALID_ARGUMENT;
-
-  return WaitSetAddImplNoLock(options, std::move(handle), signals, cookie);
+  return WaitSetAddImpl(options, std::move(handle), signals, cookie);
 }
 
 MojoResult Dispatcher::WaitSetRemove(uint64_t cookie) {
-  MutexLocker locker(&mutex_);
-  if (is_closed_)
-    return MOJO_RESULT_INVALID_ARGUMENT;
-
-  return WaitSetRemoveImplNoLock(cookie);
+  return WaitSetRemoveImpl(cookie);
 }
 
 MojoResult Dispatcher::WaitSetWait(MojoDeadline deadline,
                                    UserPointer<uint32_t> num_results,
                                    UserPointer<MojoWaitSetResult> results,
                                    UserPointer<uint32_t> max_results) {
-  // Note: This doesn't lock |mutex_|, and leaves everything for
-  // |WaitSetWaitImpl()| to do. (We could just make this method virtual, but we
-  // prefer to have a separate "impl" method for consistency.)
   return WaitSetWaitImpl(deadline, num_results, results, max_results);
 }
 
@@ -526,21 +518,22 @@ MojoResult Dispatcher::MapBufferImplNoLock(
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
-MojoResult Dispatcher::WaitSetAddImplNoLock(
+// Note that the following three methods are *not* called under |mutex_| and
+// |is_closed_| hasn't been checked. However, since we'll return
+// |MOJO_RESULT_INVALID_ARGUMENT| regardless of the value of |is_closed_| (these
+// methods are only needed for wait set dispatchers), we don't need to lock
+// |mutex_| and check |is_closed_|.
+MojoResult Dispatcher::WaitSetAddImpl(
     UserPointer<const MojoWaitSetAddOptions> /*options*/,
     Handle&& /*handle*/,
     MojoHandleSignals /*signals*/,
     uint64_t /*cookie*/) {
-  mutex_.AssertHeld();
-  DCHECK(!is_closed_);
-  // By default, not supported. Only needed for wait set dispatchers.
+  // See note above.
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
-MojoResult Dispatcher::WaitSetRemoveImplNoLock(uint64_t /*cookie*/) {
-  mutex_.AssertHeld();
-  DCHECK(!is_closed_);
-  // By default, not supported. Only needed for wait set dispatchers.
+MojoResult Dispatcher::WaitSetRemoveImpl(uint64_t /*cookie*/) {
+  // See note above |WaitSetAddImpl()|.
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
@@ -549,10 +542,7 @@ MojoResult Dispatcher::WaitSetWaitImpl(
     UserPointer<uint32_t> /*num_results*/,
     UserPointer<MojoWaitSetResult> /*results*/,
     UserPointer<uint32_t> /*max_results*/) {
-  // Note that this is *not* called under |mutex_| and |is_closed_| hasn't been
-  // checked. But since we'll return |MOJO_RESULT_INVALID_ARGUMENT| in either
-  // case (by default, this is not supported: it's only needed for wait set
-  // dispatchers), we don't need to lock |mutex_| and check |is_closed_|.
+  // See note above |WaitSetAddImpl()|.
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
