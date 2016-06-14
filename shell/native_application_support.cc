@@ -26,7 +26,6 @@
 #include "mojo/public/platform/native/mgl_signal_sync_point_thunks.h"
 #include "mojo/public/platform/native/mgl_thunks.h"
 #include "mojo/public/platform/native/platform_handle_private_thunks.h"
-#include "mojo/public/platform/native/system_impl_private_thunks.h"
 #include "mojo/public/platform/native/system_thunks.h"
 
 namespace shell {
@@ -79,12 +78,6 @@ bool RunNativeApplication(
   // TODO(freiling): enforce the private nature of this API, somehow?
   SetThunks(&MojoMakePlatformHandlePrivateThunks,
             "MojoSetPlatformHandlePrivateThunks", app_library);
-
-  // TODO(ncbray): enforce the private nature of this API, somehow?
-  SetThunks(&MojoMakeSystemImplControlThunksPrivate,
-            "MojoSetSystemImplControlThunksPrivate", app_library);
-  SetThunks(&MojoMakeSystemImplThunksPrivate, "MojoSetSystemImplThunksPrivate",
-            app_library);
 
   SetThunks(&MojoMakeGLES2ImplThunks, "MojoSetGLES2ImplThunks",
             app_library);
