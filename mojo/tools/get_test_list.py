@@ -86,15 +86,6 @@ def GetTestList(config, verbose_count=0):
                  [os.path.join("mojo", "tools", "test_runner.py"),
                   os.path.join("mojo", "tools", "data", "unittests"),
                   build_dir] + verbose_flags)
-    # NaCl tests (Linux only):
-    if (target_os == Config.OS_LINUX and
-        config.sanitizer != Config.SANITIZER_ASAN):
-      AddEntry("SFI NaCl tests",
-               [os.path.join(build_dir, "monacl_shell_sfi"),
-                os.path.join(build_dir, "irt_" + config.target_cpu,
-                             "irt_mojo.nexe"),
-                os.path.join(build_dir, "clang_newlib_" + config.target_cpu,
-                             "monacl_test.nexe")])
 
   # C++ app tests:
   if ShouldRunTest(Config.TEST_TYPE_DEFAULT, "app"):
@@ -114,14 +105,6 @@ def GetTestList(config, verbose_count=0):
                    [os.path.join("mojo", "tools", "apptest_runner.py"),
                     os.path.join("mojo", "tools", "data",
                                  "nacl_nonsfi_apptests"),
-                    build_dir] + verbose_flags)
-    # NaCl app tests (Linux excluding Android):
-    if (target_os == Config.OS_LINUX and
-        config.sanitizer != Config.SANITIZER_ASAN):
-      # TODO(smklein): Add for Android once tests are pexes.
-      AddXvfbEntry("NaCl app tests",
-                   [os.path.join("mojo", "tools", "apptest_runner.py"),
-                    os.path.join("mojo", "tools", "data", "nacl_apptests"),
                     build_dir] + verbose_flags)
 
   # Go unit tests (Linux-only):
