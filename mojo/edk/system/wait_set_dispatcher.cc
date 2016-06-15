@@ -49,6 +49,37 @@ MojoResult WaitSetDispatcher::ValidateCreateOptions(
   return MOJO_RESULT_OK;
 }
 
+// static
+MojoResult WaitSetDispatcher::ValidateWaitSetAddOptions(
+    UserPointer<const MojoWaitSetAddOptions> in_options,
+    MojoWaitSetAddOptions* out_options) {
+  const MojoWaitSetAddOptionsFlags kKnownFlags =
+      MOJO_WAIT_SET_ADD_OPTIONS_FLAG_NONE;
+  static const MojoWaitSetAddOptions kDefaultOptions = {
+      static_cast<uint32_t>(sizeof(MojoWaitSetAddOptions)),
+      MOJO_WAIT_SET_ADD_OPTIONS_FLAG_NONE};
+
+  *out_options = kDefaultOptions;
+  if (in_options.IsNull())
+    return MOJO_RESULT_OK;
+
+  UserOptionsReader<MojoWaitSetAddOptions> reader(in_options);
+  if (!reader.is_valid())
+    return MOJO_RESULT_INVALID_ARGUMENT;
+
+  if (!OPTIONS_STRUCT_HAS_MEMBER(MojoWaitSetAddOptions, flags, reader))
+    return MOJO_RESULT_OK;
+  if ((reader.options().flags & ~kKnownFlags))
+    return MOJO_RESULT_UNIMPLEMENTED;
+  out_options->flags = reader.options().flags;
+
+  // Checks for fields beyond |flags|:
+
+  // (Nothing here yet.)
+
+  return MOJO_RESULT_OK;
+}
+
 Dispatcher::Type WaitSetDispatcher::GetType() const {
   return Type::WAIT_SET;
 }
@@ -80,6 +111,10 @@ MojoResult WaitSetDispatcher::WaitSetAddImpl(
   MutexLocker locker(&mutex());
   if (is_closed_no_lock())
     return MOJO_RESULT_INVALID_ARGUMENT;
+  MojoWaitSetAddOptions validated_options;
+  MojoResult result = ValidateWaitSetAddOptions(options, &validated_options);
+  if (result != MOJO_RESULT_OK)
+    return result;
 
   // TODO(vtl)
   NOTIMPLEMENTED();

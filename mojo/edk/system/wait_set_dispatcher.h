@@ -37,6 +37,11 @@ class WaitSetDispatcher final : public Dispatcher {
       UserPointer<const MojoCreateWaitSetOptions> in_options,
       MojoCreateWaitSetOptions* out_options);
 
+  // Like |ValidateCreateOptions()|, but for |MojoWaitSetAddOptions|.
+  static MojoResult ValidateWaitSetAddOptions(
+      UserPointer<const MojoWaitSetAddOptions> in_options,
+      MojoWaitSetAddOptions* out_options);
+
   static util::RefPtr<WaitSetDispatcher> Create(
       const MojoCreateWaitSetOptions& /*validated_options*/) {
     return AdoptRef(new WaitSetDispatcher());
