@@ -36,6 +36,8 @@ func GetCliConfig(args []string) GeneratorConfig {
 	flagSet.BoolVar(&config.noGenImports, "no-gen-imports", false,
 		"Generate code only for the files that are specified on the command line. "+
 			"By default, code is generated for all specified files and their transitive imports.")
+	flagSet.BoolVar(&config.genTypeInfo, "generate-type-info", false,
+		"Do not generate type information inside the mojom.")
 
 	flagSet.Parse(args[1:])
 
@@ -88,6 +90,7 @@ type generatorCliConfig struct {
 	outputDir    string
 	srcRootPath  string
 	noGenImports bool
+	genTypeInfo  bool
 }
 
 // See GeneratorConfig.
@@ -108,4 +111,9 @@ func (c *generatorCliConfig) SrcRootPath() string {
 // See GeneratorConfig.
 func (c *generatorCliConfig) GenImports() bool {
 	return !c.noGenImports
+}
+
+// See GeneratorConfig.
+func (c *generatorCliConfig) GenTypeInfo() bool {
+	return c.genTypeInfo
 }

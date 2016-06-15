@@ -27,8 +27,8 @@ func main() {
 
 	config := common.GetCliConfig(os.Args)
 	common.GenerateOutput(func(fileName string, config common.GeneratorConfig) {
-		headerWriter := common.OutputWriterByFilePath(fileName, config, ".mojom.c.h")
-		sourceWriter := common.OutputWriterByFilePath(fileName, config, ".mojom.c")
+		headerWriter := common.OutputWriterByFilePath(fileName, config, ".mojom-c.h")
+		sourceWriter := common.OutputWriterByFilePath(fileName, config, ".mojom-c.c")
 		mojomFile := config.FileGraph().Files[fileName]
 		headerInfo := cgen.NewHeaderTemplate(config.FileGraph(), &mojomFile, config.SrcRootPath())
 		sourceInfo := cgen.NewSourceTemplate(config.FileGraph(), &mojomFile, config.SrcRootPath(), &headerInfo)

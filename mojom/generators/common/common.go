@@ -33,6 +33,12 @@ type GeneratorConfig interface {
 	// generate output files only for the files which were explicitly specified
 	// (as indicated by the fact that they have a non-empty |SpecifiedFileName|).
 	GenImports() bool
+
+	// GenTypeInfo returns true if the generator should generate type information
+	// describing the mojom file it is generating for. This type information is a
+	// typically a serialized mojom describing all data types defined in a mojom,
+	// which can be used for mojom type-introspection.
+	GenTypeInfo() bool
 }
 
 // Writer is the interface used by the generators to write their output.
