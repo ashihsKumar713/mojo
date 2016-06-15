@@ -5,8 +5,6 @@
 [DartPackage="mojo_services"]
 module mojo.flog;
 
-// TODO(dalesat): Move out of media to somewhere more generic.
-
 // Exposed by the log service to enable creation and consumption of logs.
 [ServiceName="mojo::flog::FlogService"]
 interface FlogService {
@@ -30,6 +28,8 @@ interface FlogLogger {
 
   // Logs the deletion of a channel.
   LogChannelDeletion(int64 time_us, uint32 channel_id);
+
+  // TODO(dalesat): Add a method for logging text/file/line
 };
 
 // A reader that reads messages from one or more logs.
@@ -39,21 +39,20 @@ interface FlogReader {
   // when max_count entries are avaiable starting at start_index. If the log
   // is closed, the callback will be called immediately with as many entries
   // as are available starting at start_index and not exceeding max_count
-  // entries. entry_count and open refer to the entire log at the time the
-  // callback occurred.
+  // entries.
   GetEntries(uint32 start_index, uint32 max_count) =>
-      (array<FlogEntry> entries, uint32 entry_count, bool open);
+      (array<FlogEntry> entries);
 };
 
+// Describes a log.
 struct FlogDescription {
-  string label;
   uint32 log_id;
-  uint32 entry_count;
-  int64 start_time_us;
-  int64 stop_time_us;
+  string label;
   bool open;
 };
 
+// Log entry produced by |FlogReader|. Entry type is determined by interrogating
+// the |details| field.
 struct FlogEntry {
   int64 time_us;
   uint32 log_id;
@@ -64,6 +63,8 @@ struct FlogEntry {
 union FlogEntryDetails {
   FlogChannelCreationEntryDetails channel_creation;
   FlogChannelMessageEntryDetails channel_message;
+  FlogChannelDeletionEntryDetails channel_deletion;
+  // TODO(dalesat): Add details for text/file/line entry
 };
 
 struct FlogChannelCreationEntryDetails {
@@ -72,4 +73,7 @@ struct FlogChannelCreationEntryDetails {
 
 struct FlogChannelMessageEntryDetails {
   array<uint8> data;
+};
+
+struct FlogChannelDeletionEntryDetails {
 };

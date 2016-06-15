@@ -95,11 +95,11 @@ namespace flog {
 // Thread-safe logger for all channels in a given process.
 class Flog {
  public:
-  static void Initialize(ApplicationImpl* app, const std::string& label) {
+  static void Initialize(Shell* shell, const std::string& label) {
     MOJO_DCHECK(!logger_);
     FlogServicePtr flog_service;
     FlogLoggerPtr flog_logger;
-    ConnectToService(app->shell(), "mojo:flog", GetProxy(&flog_service));
+    ConnectToService(shell, "mojo:flog", GetProxy(&flog_service));
     flog_service->CreateLogger(GetProxy(&flog_logger), label);
     logger_ = flog_logger.Pass();
   }
@@ -149,6 +149,8 @@ class Flog {
 
     logger_->LogChannelDeletion(GetTimeTicksNow(), channel_id);
   }
+
+  // TODO(dalesat): Add method for text/file/line
 
  private:
   static std::atomic_ulong last_allocated_channel_id_;

@@ -11,24 +11,18 @@ import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as servic
 
 class FlogDescription extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(48, 0)
+    const bindings.StructDataHeader(24, 0)
   ];
-  String label = null;
   int logId = 0;
-  int entryCount = 0;
-  int startTimeUs = 0;
-  int stopTimeUs = 0;
   bool open = false;
+  String label = null;
 
   FlogDescription() : super(kVersions.last.size);
 
   FlogDescription.init(
-    String this.label, 
     int this.logId, 
-    int this.entryCount, 
-    int this.startTimeUs, 
-    int this.stopTimeUs, 
-    bool this.open
+    bool this.open, 
+    String this.label
   ) : super(kVersions.last.size);
 
   static FlogDescription deserialize(bindings.Message message) =>
@@ -43,27 +37,15 @@ class FlogDescription extends bindings.Struct {
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
-      result.label = decoder0.decodeString(8, false);
+      result.logId = decoder0.decodeUint32(8);
     }
     if (mainDataHeader.version >= 0) {
       
-      result.logId = decoder0.decodeUint32(16);
+      result.open = decoder0.decodeBool(12, 0);
     }
     if (mainDataHeader.version >= 0) {
       
-      result.entryCount = decoder0.decodeUint32(20);
-    }
-    if (mainDataHeader.version >= 0) {
-      
-      result.startTimeUs = decoder0.decodeInt64(24);
-    }
-    if (mainDataHeader.version >= 0) {
-      
-      result.stopTimeUs = decoder0.decodeInt64(32);
-    }
-    if (mainDataHeader.version >= 0) {
-      
-      result.open = decoder0.decodeBool(40, 0);
+      result.label = decoder0.decodeString(16, false);
     }
     return result;
   }
@@ -73,18 +55,12 @@ class FlogDescription extends bindings.Struct {
     const String structName = "FlogDescription";
     String fieldName;
     try {
-      fieldName = "label";
-      encoder0.encodeString(label, 8, false);
       fieldName = "logId";
-      encoder0.encodeUint32(logId, 16);
-      fieldName = "entryCount";
-      encoder0.encodeUint32(entryCount, 20);
-      fieldName = "startTimeUs";
-      encoder0.encodeInt64(startTimeUs, 24);
-      fieldName = "stopTimeUs";
-      encoder0.encodeInt64(stopTimeUs, 32);
+      encoder0.encodeUint32(logId, 8);
       fieldName = "open";
-      encoder0.encodeBool(open, 40, 0);
+      encoder0.encodeBool(open, 12, 0);
+      fieldName = "label";
+      encoder0.encodeString(label, 16, false);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -93,22 +69,16 @@ class FlogDescription extends bindings.Struct {
 
   String toString() {
     return "FlogDescription("
-           "label: $label" ", "
            "logId: $logId" ", "
-           "entryCount: $entryCount" ", "
-           "startTimeUs: $startTimeUs" ", "
-           "stopTimeUs: $stopTimeUs" ", "
-           "open: $open" ")";
+           "open: $open" ", "
+           "label: $label" ")";
   }
 
   Map toJson() {
     Map map = new Map();
-    map["label"] = label;
     map["logId"] = logId;
-    map["entryCount"] = entryCount;
-    map["startTimeUs"] = startTimeUs;
-    map["stopTimeUs"] = stopTimeUs;
     map["open"] = open;
+    map["label"] = label;
     return map;
   }
 }
@@ -304,6 +274,51 @@ class FlogChannelMessageEntryDetails extends bindings.Struct {
   Map toJson() {
     Map map = new Map();
     map["data"] = data;
+    return map;
+  }
+}
+
+
+class FlogChannelDeletionEntryDetails extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(8, 0)
+  ];
+
+  FlogChannelDeletionEntryDetails() : super(kVersions.last.size);
+
+  FlogChannelDeletionEntryDetails.init(
+  ) : super(kVersions.last.size);
+
+  static FlogChannelDeletionEntryDetails deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
+
+  static FlogChannelDeletionEntryDetails decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    FlogChannelDeletionEntryDetails result = new FlogChannelDeletionEntryDetails();
+
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FlogChannelDeletionEntryDetails";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "FlogChannelDeletionEntryDetails("")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
     return map;
   }
 }
@@ -833,18 +848,14 @@ class _FlogReaderGetEntriesParams extends bindings.Struct {
 
 class FlogReaderGetEntriesResponseParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(24, 0)
+    const bindings.StructDataHeader(16, 0)
   ];
   List<FlogEntry> entries = null;
-  int entryCount = 0;
-  bool open = false;
 
   FlogReaderGetEntriesResponseParams() : super(kVersions.last.size);
 
   FlogReaderGetEntriesResponseParams.init(
-    List<FlogEntry> this.entries, 
-    int this.entryCount, 
-    bool this.open
+    List<FlogEntry> this.entries
   ) : super(kVersions.last.size);
 
   static FlogReaderGetEntriesResponseParams deserialize(bindings.Message message) =>
@@ -870,14 +881,6 @@ class FlogReaderGetEntriesResponseParams extends bindings.Struct {
         }
       }
     }
-    if (mainDataHeader.version >= 0) {
-      
-      result.entryCount = decoder0.decodeUint32(16);
-    }
-    if (mainDataHeader.version >= 0) {
-      
-      result.open = decoder0.decodeBool(20, 0);
-    }
     return result;
   }
 
@@ -895,10 +898,6 @@ class FlogReaderGetEntriesResponseParams extends bindings.Struct {
           encoder1.encodeStruct(entries[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-      fieldName = "entryCount";
-      encoder0.encodeUint32(entryCount, 16);
-      fieldName = "open";
-      encoder0.encodeBool(open, 20, 0);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -907,16 +906,12 @@ class FlogReaderGetEntriesResponseParams extends bindings.Struct {
 
   String toString() {
     return "FlogReaderGetEntriesResponseParams("
-           "entries: $entries" ", "
-           "entryCount: $entryCount" ", "
-           "open: $open" ")";
+           "entries: $entries" ")";
   }
 
   Map toJson() {
     Map map = new Map();
     map["entries"] = entries;
-    map["entryCount"] = entryCount;
-    map["open"] = open;
     return map;
   }
 }
@@ -926,6 +921,7 @@ class FlogReaderGetEntriesResponseParams extends bindings.Struct {
 enum FlogEntryDetailsTag {
   channelCreation,
   channelMessage,
+  channelDeletion,
   unknown
 }
 
@@ -933,11 +929,13 @@ class FlogEntryDetails extends bindings.Union {
   static final _tagToInt = const {
     FlogEntryDetailsTag.channelCreation: 0,
     FlogEntryDetailsTag.channelMessage: 1,
+    FlogEntryDetailsTag.channelDeletion: 2,
   };
 
   static final _intToTag = const {
     0: FlogEntryDetailsTag.channelCreation,
     1: FlogEntryDetailsTag.channelMessage,
+    2: FlogEntryDetailsTag.channelDeletion,
   };
 
   var _data;
@@ -966,6 +964,17 @@ class FlogEntryDetails extends bindings.Union {
     _tag = FlogEntryDetailsTag.channelMessage;
     _data = value;
   }
+  FlogChannelDeletionEntryDetails get channelDeletion {
+    if (_tag != FlogEntryDetailsTag.channelDeletion) {
+      throw new bindings.UnsetUnionTagError(_tag, FlogEntryDetailsTag.channelDeletion);
+    }
+    return _data;
+  }
+
+  set channelDeletion(FlogChannelDeletionEntryDetails value) {
+    _tag = FlogEntryDetailsTag.channelDeletion;
+    _data = value;
+  }
 
   static FlogEntryDetails decode(bindings.Decoder decoder0, int offset) {
     int size = decoder0.decodeUint32(offset);
@@ -987,6 +996,11 @@ class FlogEntryDetails extends bindings.Union {
         var decoder1 = decoder0.decodePointer(offset + 8, false);
         result.channelMessage = FlogChannelMessageEntryDetails.decode(decoder1);
         break;
+      case FlogEntryDetailsTag.channelDeletion:
+        
+        var decoder1 = decoder0.decodePointer(offset + 8, false);
+        result.channelDeletion = FlogChannelDeletionEntryDetails.decode(decoder1);
+        break;
       default:
         throw new bindings.MojoCodecError("Bad union tag: $tag");
     }
@@ -1005,6 +1019,9 @@ class FlogEntryDetails extends bindings.Union {
       case FlogEntryDetailsTag.channelMessage:
         encoder0.encodeStruct(channelMessage, offset + 8, false);
         break;
+      case FlogEntryDetailsTag.channelDeletion:
+        encoder0.encodeStruct(channelDeletion, offset + 8, false);
+        break;
       default:
         throw new bindings.MojoCodecError("Bad union tag: $_tag");
     }
@@ -1018,6 +1035,9 @@ class FlogEntryDetails extends bindings.Union {
         break;
       case FlogEntryDetailsTag.channelMessage:
         result += "channelMessage";
+        break;
+      case FlogEntryDetailsTag.channelDeletion:
+        result += "channelDeletion";
         break;
       default:
         result += "unknown";
@@ -1683,7 +1703,7 @@ abstract class FlogReader {
     s.connectToService(url, p, name);
     return p;
   }
-  void getEntries(int startIndex,int maxCount,void callback(List<FlogEntry> entries, int entryCount, bool open));
+  void getEntries(int startIndex,int maxCount,void callback(List<FlogEntry> entries));
 }
 
 abstract class FlogReaderInterface
@@ -1740,7 +1760,7 @@ class _FlogReaderProxyControl
           return;
         }
         callbackMap.remove(message.header.requestId);
-        callback(r.entries , r.entryCount , r.open );
+        callback(r.entries );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1785,7 +1805,7 @@ class FlogReaderProxy
   }
 
 
-  void getEntries(int startIndex,int maxCount,void callback(List<FlogEntry> entries, int entryCount, bool open)) {
+  void getEntries(int startIndex,int maxCount,void callback(List<FlogEntry> entries)) {
     if (impl != null) {
       impl.getEntries(startIndex,maxCount,callback);
       return;
@@ -1798,9 +1818,9 @@ class FlogReaderProxy
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
-      zonedCallback = ((List<FlogEntry> entries, int entryCount, bool open) {
+      zonedCallback = ((List<FlogEntry> entries) {
         z.bindCallback(() {
-          callback(entries, entryCount, open);
+          callback(entries);
         })();
       });
     }
@@ -1837,11 +1857,9 @@ class _FlogReaderStubControl
 
   Function _flogReaderGetEntriesResponseParamsResponder(
       int requestId) {
-  return (List<FlogEntry> entries, int entryCount, bool open) {
+  return (List<FlogEntry> entries) {
       var result = new FlogReaderGetEntriesResponseParams();
       result.entries = entries;
-      result.entryCount = entryCount;
-      result.open = open;
       sendResponse(buildResponseWithId(
           result,
           _flogReaderMethodGetEntriesName,
@@ -1922,7 +1940,7 @@ class FlogReaderStub
   }
 
 
-  void getEntries(int startIndex,int maxCount,void callback(List<FlogEntry> entries, int entryCount, bool open)) {
+  void getEntries(int startIndex,int maxCount,void callback(List<FlogEntry> entries)) {
     return impl.getEntries(startIndex,maxCount,callback);
   }
 }

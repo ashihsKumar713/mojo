@@ -13,6 +13,7 @@ group("services") {
     "//services/clipboard",
     "//services/dart",
     "//services/debugger",
+    "//services/flog",
     "//services/gles2:lib",
     "//services/http_server",
     "//services/icu_data",
