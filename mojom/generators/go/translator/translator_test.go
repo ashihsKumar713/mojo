@@ -82,162 +82,6 @@ func TestFieldSerializationSorter(t *testing.T) {
 	checkEq(t, uint32(3), fields[5].Offset)
 }
 
-func TestSimpleTypeEncodingInfo(t *testing.T) {
-	type expected struct {
-		writeFunction string
-		bitSize       uint32
-	}
-	testCases := []struct {
-		simpleType mojom_types.SimpleType
-		expected   expected
-	}{
-		{mojom_types.SimpleType_Bool, expected{"WriteBool", 1}},
-		{mojom_types.SimpleType_Float, expected{"WriteFloat", 32}},
-		{mojom_types.SimpleType_Double, expected{"WriteDouble", 64}},
-		{mojom_types.SimpleType_Int8, expected{"WriteInt8", 8}},
-		{mojom_types.SimpleType_Int16, expected{"WriteInt16", 16}},
-		{mojom_types.SimpleType_Int32, expected{"WriteInt32", 32}},
-		{mojom_types.SimpleType_Int64, expected{"WriteInt64", 64}},
-		{mojom_types.SimpleType_Uint8, expected{"WriteUint8", 8}},
-		{mojom_types.SimpleType_Uint16, expected{"WriteUint16", 16}},
-		{mojom_types.SimpleType_Uint32, expected{"WriteUint32", 32}},
-		{mojom_types.SimpleType_Uint64, expected{"WriteUint64", 64}},
-	}
-
-	translator := translator{}
-	for _, testCase := range testCases {
-		actual := translator.encodingInfo(&mojom_types.TypeSimpleType{testCase.simpleType})
-		checkEq(t, true, actual.IsSimple())
-		checkEq(t, testCase.expected.writeFunction, actual.WriteFunction())
-		checkEq(t, testCase.expected.bitSize, actual.BitSize())
-	}
-}
-
-func TestStringTypeEncodingInfo(t *testing.T) {
-	mojomType := &mojom_types.TypeStringType{mojom_types.StringType{Nullable: false}}
-	translator := translator{}
-	info := translator.encodingInfo(mojomType)
-	checkEq(t, false, info.IsNullable())
-	checkEq(t, true, info.IsSimple())
-	checkEq(t, "WriteString", info.WriteFunction())
-	checkEq(t, uint32(64), info.BitSize())
-
-	mojomType.Value.Nullable = true
-	info = translator.encodingInfo(mojomType)
-	checkEq(t, true, info.IsNullable())
-}
-
-func TestArrayTypeEncodingInfo(t *testing.T) {
-	mojomType := &mojom_types.TypeArrayType{
-		mojom_types.ArrayType{
-			Nullable: false,
-			ElementType: &mojom_types.TypeArrayType{
-				mojom_types.ArrayType{
-					Nullable:    false,
-					ElementType: &mojom_types.TypeSimpleType{mojom_types.SimpleType_Float},
-				},
-			},
-		}}
-
-	translator := translator{}
-	info := translator.encodingInfo(mojomType)
-
-	checkEq(t, false, info.IsNullable())
-	checkEq(t, true, info.IsPointer())
-	checkEq(t, uint32(64), info.BitSize())
-	checkEq(t, uint32(64), info.ElementEncodingInfo().BitSize())
-	checkEq(t, "elem0", info.ElementEncodingInfo().Identifier())
-	checkEq(t, uint32(32), info.ElementEncodingInfo().ElementEncodingInfo().BitSize())
-	checkEq(t, "elem1", info.ElementEncodingInfo().ElementEncodingInfo().Identifier())
-}
-
-func TestHandleTypeEncodingInfo(t *testing.T) {
-	mojomType := &mojom_types.TypeHandleType{
-		mojom_types.HandleType{
-			Kind:     mojom_types.HandleType_Kind_Unspecified,
-			Nullable: false,
-		},
-	}
-
-	translator := translator{}
-	info := translator.encodingInfo(mojomType)
-
-	checkEq(t, false, info.IsNullable())
-	checkEq(t, true, info.IsHandle())
-	checkEq(t, "ReadHandle", info.ReadFunction())
-
-	mojomType.Value.Nullable = true
-
-	info = translator.encodingInfo(mojomType)
-	checkEq(t, true, info.IsNullable())
-}
-
-func TestMapTypeEncodingInfo(t *testing.T) {
-	mojomType := &mojom_types.TypeMapType{
-		mojom_types.MapType{
-			Nullable:  true,
-			KeyType:   &mojom_types.TypeSimpleType{mojom_types.SimpleType_Uint32},
-			ValueType: &mojom_types.TypeSimpleType{mojom_types.SimpleType_Int16},
-		},
-	}
-
-	translator := translator{}
-	info := translator.encodingInfo(mojomType)
-	checkEq(t, true, info.IsPointer())
-	checkEq(t, true, info.IsMap())
-	checkEq(t, true, info.IsNullable())
-	checkEq(t, "[]uint32", info.KeyEncodingInfo().GoType())
-	checkEq(t, "keys0", info.KeyEncodingInfo().Identifier())
-	checkEq(t, "key0", info.KeyEncodingInfo().ElementEncodingInfo().Identifier())
-	checkEq(t, "[]int16", info.ValueEncodingInfo().GoType())
-	checkEq(t, "values0", info.ValueEncodingInfo().Identifier())
-	checkEq(t, "value0", info.ValueEncodingInfo().ElementEncodingInfo().Identifier())
-}
-
-func TestStructTypeEncodingInfo(t *testing.T) {
-	fileGraph := mojom_files.MojomFileGraph{}
-	shortName := "SomeStruct"
-	typeKey := "typeKey"
-
-	mojomStruct := mojom_types.MojomStruct{
-		DeclData: &mojom_types.DeclarationData{ShortName: &shortName}}
-	fileGraph.ResolvedTypes = map[string]mojom_types.UserDefinedType{}
-	fileGraph.ResolvedTypes[typeKey] = &mojom_types.UserDefinedTypeStructType{mojomStruct}
-	translator := NewTranslator(&fileGraph)
-
-	typeRef := &mojom_types.TypeTypeReference{mojom_types.TypeReference{TypeKey: &typeKey}}
-
-	info := translator.encodingInfo(typeRef)
-
-	checkEq(t, true, info.IsPointer())
-	checkEq(t, "SomeStruct", info.GoType())
-}
-
-func TestUnionTypeEncodingInfo(t *testing.T) {
-	fileGraph := mojom_files.MojomFileGraph{}
-	shortName := "SomeUnion"
-	typeKey := "typeKey"
-
-	mojomUnion := mojom_types.MojomUnion{
-		DeclData: &mojom_types.DeclarationData{ShortName: &shortName}}
-	fileGraph.ResolvedTypes = map[string]mojom_types.UserDefinedType{}
-	fileGraph.ResolvedTypes[typeKey] = &mojom_types.UserDefinedTypeUnionType{mojomUnion}
-	translator := NewTranslator(&fileGraph)
-
-	typeRef := &mojom_types.TypeTypeReference{mojom_types.TypeReference{TypeKey: &typeKey}}
-
-	info := translator.encodingInfo(typeRef)
-
-	checkEq(t, true, info.IsUnion())
-	checkEq(t, false, info.IsPointer())
-	checkEq(t, uint32(128), info.BitSize())
-	checkEq(t, "SomeUnion", info.GoType())
-
-	info.(*unionTypeEncodingInfo).nestedUnion = true
-	checkEq(t, true, info.IsPointer())
-	checkEq(t, uint32(64), info.BitSize())
-}
-
 func TestTranslateMojomUnion(t *testing.T) {
 	field1Name := "f_uint32"
 	field1 := mojom_types.UnionField{
@@ -276,4 +120,79 @@ func TestTranslateMojomUnion(t *testing.T) {
 	checkEq(t, "uint16", m.Fields[1].Type)
 	checkEq(t, uint32(6), m.Fields[1].Tag)
 	checkEq(t, m, m.Fields[1].Union)
+}
+
+func TestTranslateMojomEnum(t *testing.T) {
+	value1Name := "ALPHA"
+	value1 := mojom_types.EnumValue{
+		DeclData: &mojom_types.DeclarationData{ShortName: &value1Name},
+		IntValue: int32(10)}
+
+	value2Name := "BETA"
+	value2 := mojom_types.EnumValue{
+		DeclData: &mojom_types.DeclarationData{ShortName: &value2Name},
+		IntValue: int32(20)}
+
+	enumName := "SomeEnum"
+	enum := mojom_types.MojomEnum{
+		DeclData: &mojom_types.DeclarationData{ShortName: &enumName},
+		Values:   []mojom_types.EnumValue{value1, value2}}
+
+	graph := mojom_files.MojomFileGraph{}
+	typeKey := "typeKey"
+	graph.ResolvedTypes = map[string]mojom_types.UserDefinedType{
+		typeKey: &mojom_types.UserDefinedTypeEnumType{enum},
+	}
+
+	translator := NewTranslator(&graph)
+
+	m := translator.translateMojomEnum(typeKey)
+
+	checkEq(t, "SomeEnum", m.Name)
+	checkEq(t, "SomeEnum_Alpha", m.Values[0].Name)
+	checkEq(t, int32(10), m.Values[0].Value)
+	checkEq(t, "SomeEnum_Beta", m.Values[1].Name)
+	checkEq(t, int32(20), m.Values[1].Value)
+}
+
+func TestTranslateNestedMojomEnum(t *testing.T) {
+	structName := "foo"
+	structTypeKey := "structTypeKey"
+	s := mojom_types.MojomStruct{
+		DeclData: &mojom_types.DeclarationData{ShortName: &structName},
+	}
+
+	value1Name := "ALPHA"
+	value1 := mojom_types.EnumValue{
+		DeclData: &mojom_types.DeclarationData{ShortName: &value1Name},
+		IntValue: int32(10)}
+
+	value2Name := "BETA"
+	value2 := mojom_types.EnumValue{
+		DeclData: &mojom_types.DeclarationData{ShortName: &value2Name},
+		IntValue: int32(20)}
+
+	enumName := "SomeEnum"
+	enumTypeKey := "enumTypeKey"
+	enum := mojom_types.MojomEnum{
+		DeclData: &mojom_types.DeclarationData{
+			ShortName:        &enumName,
+			ContainerTypeKey: &structTypeKey},
+		Values: []mojom_types.EnumValue{value1, value2}}
+
+	graph := mojom_files.MojomFileGraph{}
+	graph.ResolvedTypes = map[string]mojom_types.UserDefinedType{
+		enumTypeKey:   &mojom_types.UserDefinedTypeEnumType{enum},
+		structTypeKey: &mojom_types.UserDefinedTypeStructType{s},
+	}
+
+	translator := NewTranslator(&graph)
+
+	m := translator.translateMojomEnum(enumTypeKey)
+
+	checkEq(t, "Foo_SomeEnum", m.Name)
+	checkEq(t, "Foo_SomeEnum_Alpha", m.Values[0].Name)
+	checkEq(t, int32(10), m.Values[0].Value)
+	checkEq(t, "Foo_SomeEnum_Beta", m.Values[1].Name)
+	checkEq(t, int32(20), m.Values[1].Value)
 }

@@ -41,6 +41,7 @@ func init() {
 	initDecodingTemplates()
 	initStructTemplates()
 	initUnionTemplates()
+	initEnumTemplates()
 }
 
 const goFileTemplate = `
@@ -60,6 +61,10 @@ import (
 
 {{- range $union := $fileTmpl.Unions}}
 	{{ template "Union" $union }}
+{{- end}}
+
+{{- range $enum := $fileTmpl.Enums}}
+	{{ template "Enum" $enum }}
 {{- end}}
 {{- end -}}
 `

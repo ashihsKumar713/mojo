@@ -11,6 +11,7 @@ type TmplFile struct {
 	Imports     []Import
 	Structs     []*StructTemplate
 	Unions      []*UnionTemplate
+	Enums       []*EnumTemplate
 }
 
 type Import struct {
@@ -70,6 +71,8 @@ type structVersion struct {
 	Version uint32
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 type UnionTemplate struct {
 	// Name is the name of the union in go code.
 	Name string
@@ -97,6 +100,24 @@ type UnionFieldTemplate struct {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+type EnumTemplate struct {
+	// Name is the name of the enum type in go code.
+	Name string
+
+	// Values contains the list of possible values for the enum.
+	Values []EnumValueTemplate
+}
+
+type EnumValueTemplate struct {
+	// Name of the enum value in go.
+	Name string
+
+	// Value is the numeric representation of the enum value.
+	Value int32
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 // EncodingInfo describes the information necessary to encode a field.
 type EncodingInfo interface {
 	// IsSimple returns true if the field is a numeric type, boolean or string.
@@ -113,6 +134,9 @@ type EncodingInfo interface {
 
 	// IsUnion returns true if the field is a union.
 	IsUnion() bool
+
+	// IsEnum returns true if the field is an enum.
+	IsEnum() bool
 
 	// IsArray returns true if the field is an array.
 	IsArray() bool
@@ -187,6 +211,10 @@ func (b *baseEncodingInfo) IsStruct() bool {
 }
 
 func (b *baseEncodingInfo) IsUnion() bool {
+	return false
+}
+
+func (b *baseEncodingInfo) IsEnum() bool {
 	return false
 }
 
@@ -434,4 +462,27 @@ func (t *unionTypeEncodingInfo) WriteFunction() string {
 
 func (t *unionTypeEncodingInfo) ReadFunction() string {
 	panic("Unions don't have a read function.")
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+type enumTypeEncodingInfo struct {
+	baseEncodingInfo
+}
+
+func (t *enumTypeEncodingInfo) BitSize() uint32 {
+	// enums are encoded as 32 bit unsigned integers.
+	return uint32(32)
+}
+
+func (t *enumTypeEncodingInfo) IsEnum() bool {
+	return true
+}
+
+func (t *enumTypeEncodingInfo) WriteFunction() string {
+	panic("Enums don't have a write function.")
+}
+
+func (t *enumTypeEncodingInfo) ReadFunction() string {
+	return "ReadInt32"
 }

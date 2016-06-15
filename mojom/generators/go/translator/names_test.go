@@ -6,6 +6,9 @@ package translator
 
 import (
 	"testing"
+
+	"mojom/generated/mojom_files"
+	"mojom/generated/mojom_types"
 )
 
 func TestFormatName(t *testing.T) {
@@ -38,4 +41,48 @@ func TestPrivateName(t *testing.T) {
 	for _, testCase := range testCases {
 		checkEq(t, testCase.expected, privateName(testCase.public))
 	}
+}
+
+func TestGoTypeName(t *testing.T) {
+	structName := "foo"
+	s := mojom_types.MojomStruct{
+		DeclData: &mojom_types.DeclarationData{ShortName: &structName},
+	}
+
+	graph := mojom_files.MojomFileGraph{}
+	typeKey := "typeKey"
+	graph.ResolvedTypes = map[string]mojom_types.UserDefinedType{
+		typeKey: &mojom_types.UserDefinedTypeStructType{s},
+	}
+
+	translator := NewTranslator(&graph)
+
+	checkEq(t, "Foo", translator.goTypeName(typeKey))
+}
+
+func TestGoTypeNameNestedEnum(t *testing.T) {
+	structName := "foo"
+	structTypeKey := "structTypeKey"
+	s := mojom_types.MojomStruct{
+		DeclData: &mojom_types.DeclarationData{ShortName: &structName},
+	}
+
+	enumName := "some_enum"
+	enumTypeKey := "enumTypeKey"
+	e := mojom_types.MojomEnum{
+		DeclData: &mojom_types.DeclarationData{
+			ShortName:        &enumName,
+			ContainerTypeKey: &structTypeKey,
+		},
+	}
+
+	graph := mojom_files.MojomFileGraph{}
+	graph.ResolvedTypes = map[string]mojom_types.UserDefinedType{
+		structTypeKey: &mojom_types.UserDefinedTypeStructType{s},
+		enumTypeKey:   &mojom_types.UserDefinedTypeEnumType{e},
+	}
+
+	translator := NewTranslator(&graph)
+
+	checkEq(t, "Foo_SomeEnum", translator.goTypeName(enumTypeKey))
 }

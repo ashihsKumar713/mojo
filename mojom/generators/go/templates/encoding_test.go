@@ -20,6 +20,7 @@ type mockEncodingInfo struct {
 	isNullable          bool
 	isStruct            bool
 	isUnion             bool
+	isEnum              bool
 	elementEncodingInfo *mockEncodingInfo
 	keyEncodingInfo     *mockEncodingInfo
 	valueEncodingInfo   *mockEncodingInfo
@@ -38,6 +39,7 @@ func (m mockEncodingInfo) IsMap() bool                                  { return
 func (m mockEncodingInfo) IsNullable() bool                             { return m.isNullable }
 func (m mockEncodingInfo) IsStruct() bool                               { return m.isStruct }
 func (m mockEncodingInfo) IsUnion() bool                                { return m.isUnion }
+func (m mockEncodingInfo) IsEnum() bool                                 { return m.isEnum }
 func (m mockEncodingInfo) ElementEncodingInfo() translator.EncodingInfo { return m.elementEncodingInfo }
 func (m mockEncodingInfo) KeyEncodingInfo() translator.EncodingInfo     { return m.keyEncodingInfo }
 func (m mockEncodingInfo) ValueEncodingInfo() translator.EncodingInfo   { return m.valueEncodingInfo }
@@ -372,6 +374,19 @@ if s.FUnion == nil {
 		isPointer:  true,
 		isUnion:    true,
 		identifier: "s.FUnion",
+	}
+
+	check(t, expected, "FieldEncodingTmpl", encodingInfo)
+}
+
+func TestEncodingEnumFieldEncoding(t *testing.T) {
+	expected := `if err := encoder.WriteInt32(int32(s.EnumField)); err != nil {
+	return err
+}`
+
+	encodingInfo := mockEncodingInfo{
+		isEnum:     true,
+		identifier: "s.EnumField",
 	}
 
 	check(t, expected, "FieldEncodingTmpl", encodingInfo)

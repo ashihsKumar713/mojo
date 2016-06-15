@@ -46,6 +46,17 @@ func (t *translator) TranslateMojomFile(fileName string) (tmplFile *TmplFile) {
 		tmplFile.Unions[i] = t.translateMojomUnion(typeKey)
 	}
 
+	topLevelEnumsNum := len(*file.DeclaredMojomObjects.TopLevelEnums)
+	enumNum := len(*file.DeclaredMojomObjects.EmbeddedEnums) + topLevelEnumsNum
+	tmplFile.Enums = make([]*EnumTemplate, enumNum)
+	for i, typeKey := range *file.DeclaredMojomObjects.TopLevelEnums {
+		tmplFile.Enums[i] = t.translateMojomEnum(typeKey)
+	}
+
+	for i, typeKey := range *file.DeclaredMojomObjects.EmbeddedEnums {
+		tmplFile.Enums[i+topLevelEnumsNum] = t.translateMojomEnum(typeKey)
+	}
+
 	tmplFile.Imports = []Import{
 		Import{PackagePath: "mojo/public/go/bindings", PackageName: "bindings"},
 		Import{PackagePath: "fmt", PackageName: "fmt"},
@@ -127,152 +138,25 @@ func (t *translator) translateUnionField(mojomField *mojom_types.UnionField) (fi
 	return field
 }
 
-func (t *translator) encodingInfo(mojomType mojom_types.Type) EncodingInfo {
-	return t.encodingInfoNested(mojomType, 0)
-}
-
-func (t *translator) encodingInfoNested(mojomType mojom_types.Type, level int) (info EncodingInfo) {
-	switch m := mojomType.(type) {
-	default:
-		panic("This should never happen.")
-	case *mojom_types.TypeSimpleType:
-		info = t.simpleTypeEncodingInfo(m.Value)
-	case *mojom_types.TypeStringType:
-		info = t.stringTypeEncodingInfo(m.Value)
-	case *mojom_types.TypeHandleType:
-		info = t.handleTypeEncodingInfo(m.Value)
-	case *mojom_types.TypeArrayType:
-		info = t.arrayTypeEncodingInfo(m.Value, level)
-	case *mojom_types.TypeMapType:
-		info = t.mapTypeEncodingInfo(m.Value, level)
-	case *mojom_types.TypeTypeReference:
-		info = t.typeRefEncodingInfo(m.Value)
+func (t *translator) translateMojomEnum(typeKey string) (m *EnumTemplate) {
+	m = new(EnumTemplate)
+	e := t.GetUserDefinedType(typeKey)
+	enum, ok := e.Interface().(mojom_types.MojomEnum)
+	if !ok {
+		log.Panicf("%s is not an enum.\n", userDefinedTypeShortName(e))
 	}
-	info.setGoType(t.translateType(mojomType))
-	return info
-}
 
-func (t *translator) simpleTypeEncodingInfo(mojomType mojom_types.SimpleType) (info *simpleTypeEncodingInfo) {
-	info = new(simpleTypeEncodingInfo)
-	var typeSuffix string
-	var bitSize uint32
-	switch mojomType {
-	default:
-		panic("Not a valid SimpleType.")
-	case mojom_types.SimpleType_Bool:
-		typeSuffix = "Bool"
-		bitSize = 1
-	case mojom_types.SimpleType_Double:
-		typeSuffix = "Double"
-		bitSize = 64
-	case mojom_types.SimpleType_Float:
-		typeSuffix = "Float"
-		bitSize = 32
-	case mojom_types.SimpleType_Int8:
-		typeSuffix = "Int8"
-		bitSize = 8
-	case mojom_types.SimpleType_Int16:
-		typeSuffix = "Int16"
-		bitSize = 16
-	case mojom_types.SimpleType_Int32:
-		typeSuffix = "Int32"
-		bitSize = 32
-	case mojom_types.SimpleType_Int64:
-		typeSuffix = "Int64"
-		bitSize = 64
-	case mojom_types.SimpleType_Uint8:
-		typeSuffix = "Uint8"
-		bitSize = 8
-	case mojom_types.SimpleType_Uint16:
-		typeSuffix = "Uint16"
-		bitSize = 16
-	case mojom_types.SimpleType_Uint32:
-		typeSuffix = "Uint32"
-		bitSize = 32
-	case mojom_types.SimpleType_Uint64:
-		typeSuffix = "Uint64"
-		bitSize = 64
+	m.Name = t.goTypeName(typeKey)
+
+	for _, mojomValue := range enum.Values {
+		name := fmt.Sprintf("%s_%s", m.Name, formatName(*mojomValue.DeclData.ShortName))
+		m.Values = append(m.Values,
+			EnumValueTemplate{Name: name, Value: mojomValue.IntValue})
 	}
-	info.writeFunction = "Write" + typeSuffix
-	info.readFunction = "Read" + typeSuffix
-	info.bitSize = bitSize
-	return info
+	return m
 }
 
-func (t *translator) stringTypeEncodingInfo(mojomType mojom_types.StringType) (info *stringTypeEncodingInfo) {
-	info = new(stringTypeEncodingInfo)
-	info.nullable = mojomType.Nullable
-	return info
-}
-
-func (t *translator) handleTypeEncodingInfo(mojomType mojom_types.HandleType) (info *handleTypeEncodingInfo) {
-	info = new(handleTypeEncodingInfo)
-	info.nullable = mojomType.Nullable
-	switch mojomType.Kind {
-	case mojom_types.HandleType_Kind_Unspecified:
-		info.readFunction = "ReadHandle"
-	case mojom_types.HandleType_Kind_MessagePipe:
-		info.readFunction = "ReadMessagePipeHandle"
-	case mojom_types.HandleType_Kind_DataPipeConsumer:
-		info.readFunction = "ReadConsumerHandle"
-	case mojom_types.HandleType_Kind_DataPipeProducer:
-		info.readFunction = "ReadProducerHandle"
-	case mojom_types.HandleType_Kind_SharedBuffer:
-		info.readFunction = "ReadSharedBufferHandle"
-	}
-	return info
-}
-
-func (t *translator) arrayTypeEncodingInfo(mojomType mojom_types.ArrayType, level int) (info *arrayTypeEncodingInfo) {
-	info = new(arrayTypeEncodingInfo)
-	info.nullable = mojomType.Nullable
-	info.elementEncodingInfo = t.encodingInfoNested(mojomType.ElementType, level+1)
-	info.elementEncodingInfo.setIdentifier(fmt.Sprintf("elem%v", level))
-	return info
-}
-
-func (t *translator) mapTypeEncodingInfo(mojomType mojom_types.MapType, level int) (info *mapTypeEncodingInfo) {
-	info = new(mapTypeEncodingInfo)
-	info.nullable = mojomType.Nullable
-
-	keyEncodingInfo := new(arrayTypeEncodingInfo)
-	info.keyEncodingInfo = keyEncodingInfo
-	keyEncodingInfo.elementEncodingInfo = t.encodingInfoNested(mojomType.KeyType, level+1)
-	keyEncodingInfo.setIdentifier(fmt.Sprintf("keys%v", level))
-	keyEncodingInfo.setGoType(fmt.Sprintf("[]%v", keyEncodingInfo.elementEncodingInfo.GoType()))
-	keyEncodingInfo.elementEncodingInfo.setIdentifier(fmt.Sprintf("key%v", level))
-
-	valueEncodingInfo := new(arrayTypeEncodingInfo)
-	info.valueEncodingInfo = valueEncodingInfo
-	valueEncodingInfo.elementEncodingInfo = t.encodingInfoNested(mojomType.ValueType, level+1)
-	valueEncodingInfo.setIdentifier(fmt.Sprintf("values%v", level))
-	valueEncodingInfo.setGoType(fmt.Sprintf("[]%v", valueEncodingInfo.elementEncodingInfo.GoType()))
-	valueEncodingInfo.elementEncodingInfo.setIdentifier(fmt.Sprintf("value%v", level))
-
-	return info
-}
-
-func (t *translator) typeRefEncodingInfo(typeRef mojom_types.TypeReference) (info EncodingInfo) {
-	mojomType := t.GetUserDefinedType(*typeRef.TypeKey)
-	switch m := mojomType.(type) {
-	case *mojom_types.UserDefinedTypeStructType:
-		info = t.structTypeEncodingInfo(m.Value)
-	case *mojom_types.UserDefinedTypeUnionType:
-		info = t.unionTypeEncodingInfo(m.Value)
-	}
-	info.setNullable(typeRef.Nullable)
-	return info
-}
-
-func (t *translator) structTypeEncodingInfo(mojomType mojom_types.MojomStruct) (info *structTypeEncodingInfo) {
-	info = new(structTypeEncodingInfo)
-	return info
-}
-
-func (t *translator) unionTypeEncodingInfo(mojomType mojom_types.MojomUnion) (info *unionTypeEncodingInfo) {
-	info = new(unionTypeEncodingInfo)
-	return info
-}
+////////////////////////////////////////////////////////////////////////////////
 
 // Implements sort.Interface.
 type structFieldSerializationSorter []mojom_types.StructField

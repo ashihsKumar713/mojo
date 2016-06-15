@@ -230,3 +230,20 @@ if pointer == 0 {
 
 	check(t, expected, "FieldDecodingTmpl", encodingInfo)
 }
+
+func TestDecodingEnumFieldDecoding(t *testing.T) {
+	expected := `value, err := decoder.ReadInt32()
+if err != nil {
+	return err
+}
+s.EnumField = SomeEnum(value)`
+
+	encodingInfo := mockEncodingInfo{
+		isEnum:       true,
+		identifier:   "s.EnumField",
+		goType:       "SomeEnum",
+		readFunction: "ReadInt32",
+	}
+
+	check(t, expected, "FieldDecodingTmpl", encodingInfo)
+}

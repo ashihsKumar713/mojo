@@ -5,6 +5,7 @@
 package translator
 
 import (
+	"fmt"
 	"path/filepath"
 	"strings"
 	"unicode"
@@ -13,7 +14,6 @@ import (
 	"mojom/generated/mojom_types"
 )
 
-// TODO(azani): Test this method.
 func (t *translator) goTypeName(typeKey string) string {
 	if cachedType, ok := t.goTypeCache[typeKey]; ok {
 		return cachedType
@@ -24,6 +24,14 @@ func (t *translator) goTypeName(typeKey string) string {
 
 	// TODO(azani): Resolve conflicts somehow.
 	goType := formatName(shortName)
+
+	if e, ok := userDefinedType.(*mojom_types.UserDefinedTypeEnumType); ok {
+		if e.Value.DeclData.ContainerTypeKey != nil {
+			containerName := t.goTypeName(*e.Value.DeclData.ContainerTypeKey)
+			goType = fmt.Sprintf("%s_%s", containerName, goType)
+		}
+	}
+
 	t.goTypeCache[typeKey] = goType
 	return goType
 }

@@ -39,6 +39,10 @@ if err := encoder.WritePointer(); err != nil {
 if err := encoder.{{$info.WriteFunction}}({{$info.Identifier}}); err != nil {
 	return err
 }
+{{- else if $info.IsEnum -}}
+if err := encoder.WriteInt32(int32({{$info.Identifier}})); err != nil {
+	return err
+}
 {{- else if $info.IsHandle -}}
 {{- if $info.IsNullable -}}
 if err := encoder.WriteHandle(*({{$info.Identifier}})); err != nil {

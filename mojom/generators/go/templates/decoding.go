@@ -36,12 +36,16 @@ if pointer == 0 {
 const nonNullableFieldDecodingTmplText = `
 {{- define "NonNullableFieldDecodingTmpl" -}}
 {{- $info := . -}}
-{{- if $info.IsSimple -}}
+{{- if or $info.IsEnum $info.IsSimple -}}
 value, err := decoder.{{$info.ReadFunction}}()
 if err != nil {
 	return err
 }
+{{if $info.IsSimple -}}
 {{$info.Identifier}} = value
+{{- else -}}
+{{$info.Identifier}} = {{$info.GoType}}(value)
+{{- end -}}
 {{- else if $info.IsHandle -}}
 handle, err := decoder.{{$info.ReadFunction}}()
 if err != nil {
