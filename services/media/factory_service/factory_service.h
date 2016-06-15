@@ -24,13 +24,15 @@ class MediaFactoryService : public util::FactoryServiceBase,
 
   // MediaFactory implementation.
   void CreatePlayer(InterfaceHandle<SeekingReader> reader,
+                    InterfaceHandle<MediaRenderer> audio_renderer,
+                    InterfaceHandle<MediaRenderer> video_renderer,
                     InterfaceRequest<MediaPlayer> player) override;
 
   void CreateSource(InterfaceHandle<SeekingReader> reader,
                     Array<MediaTypeSetPtr> allowed_media_types,
                     InterfaceRequest<MediaSource> source) override;
 
-  void CreateSink(const String& destination_url,
+  void CreateSink(InterfaceHandle<MediaRenderer> renderer,
                   MediaTypePtr media_type,
                   InterfaceRequest<MediaSink> sink) override;
 

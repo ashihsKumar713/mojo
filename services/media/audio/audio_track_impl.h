@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/callback.h"
 #include "mojo/services/media/audio/interfaces/audio_track.mojom.h"
 #include "mojo/services/media/common/cpp/linear_transform.h"
+#include "mojo/services/media/core/interfaces/media_renderer.mojom.h"
 #include "services/media/audio/audio_pipe.h"
 #include "services/media/audio/fwd_decls.h"
 #include "services/media/common/timeline_control_site.h"
@@ -21,15 +22,17 @@ namespace mojo {
 namespace media {
 namespace audio {
 
-class AudioTrackImpl : public AudioTrack {
+class AudioTrackImpl : public AudioTrack, public MediaRenderer {
  public:
   // TODO(johngro): Find a better place for this constant.  It affects the
   // behavior of more than just the Audio Track implementation.
   static constexpr size_t PTS_FRACTIONAL_BITS = 12;
 
   ~AudioTrackImpl() override;
-  static AudioTrackImplPtr Create(InterfaceRequest<AudioTrack> iface,
-                                  AudioServerImpl* owner);
+  static AudioTrackImplPtr Create(
+      InterfaceRequest<AudioTrack> track_request,
+      InterfaceRequest<MediaRenderer> renderer_request,
+      AudioServerImpl* owner);
 
   // Shutdown the audio track, unlinking it from all outputs, closing
   // connections to all clients and removing it from its owner server's list.
@@ -54,16 +57,20 @@ class AudioTrackImpl : public AudioTrack {
  private:
   friend class AudioPipe;
 
-  AudioTrackImpl(InterfaceRequest<AudioTrack> track,
+  AudioTrackImpl(InterfaceRequest<AudioTrack> track_request,
+                 InterfaceRequest<MediaRenderer> renderer_request,
                  AudioServerImpl* owner);
 
   // Implementation of AudioTrack interface.
-  void Describe(const DescribeCallback& cbk) override;
-  void Configure(AudioTrackConfigurationPtr configuration,
-                 InterfaceRequest<MediaConsumer> req) override;
-  void GetTimelineControlSite(InterfaceRequest<MediaTimelineControlSite> req)
-      override;
   void SetGain(float db_gain) override;
+
+  // MediaRenderer implementation.
+  void GetSupportedMediaTypes(
+      const GetSupportedMediaTypesCallback& callback) override;
+  void SetMediaType(MediaTypePtr media_type) override;
+  void GetConsumer(InterfaceRequest<MediaConsumer> consumer_request) override;
+  void GetTimelineControlSite(
+      InterfaceRequest<MediaTimelineControlSite> control_site_request) override;
 
   // Methods called by our AudioPipe.
   //
@@ -77,7 +84,8 @@ class AudioTrackImpl : public AudioTrack {
 
   AudioTrackImplWeakPtr     weak_this_;
   AudioServerImpl*          owner_;
-  Binding<AudioTrack>       binding_;
+  Binding<AudioTrack>       track_binding_;
+  Binding<MediaRenderer>    renderer_binding_;
   AudioPipe                 pipe_;
   TimelineControlSite       timeline_control_site_;
   TimelineRate              frames_per_ns_;

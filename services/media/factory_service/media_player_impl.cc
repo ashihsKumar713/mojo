@@ -15,13 +15,18 @@ namespace media {
 // static
 std::shared_ptr<MediaPlayerImpl> MediaPlayerImpl::Create(
     InterfaceHandle<SeekingReader> reader,
+    InterfaceHandle<MediaRenderer> audio_renderer,
+    InterfaceHandle<MediaRenderer> video_renderer,
     InterfaceRequest<MediaPlayer> request,
     MediaFactoryService* owner) {
   return std::shared_ptr<MediaPlayerImpl>(
-      new MediaPlayerImpl(reader.Pass(), request.Pass(), owner));
+      new MediaPlayerImpl(reader.Pass(), audio_renderer.Pass(),
+                          video_renderer.Pass(), request.Pass(), owner));
 }
 
 MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
+                                 InterfaceHandle<MediaRenderer> audio_renderer,
+                                 InterfaceHandle<MediaRenderer> video_renderer,
                                  InterfaceRequest<MediaPlayer> request,
                                  MediaFactoryService* owner)
     : MediaFactoryService::Product<MediaPlayer>(this, request.Pass(), owner) {
@@ -48,6 +53,9 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
   timeline_control_site_->GetTimelineConsumer(GetProxy(&timeline_consumer_));
   HandleTimelineControlSiteStatusUpdates();
 
+  audio_renderer_ = audio_renderer.Pass();
+  video_renderer_ = video_renderer.Pass();
+
   demux_->Describe([this](mojo::Array<MediaTypePtr> stream_types) {
     // Populate streams_ and enable the streams we want.
     std::shared_ptr<CallbackJoiner> callback_joiner = CallbackJoiner::Create();
@@ -57,12 +65,13 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
       Stream& stream = *streams_.back();
       switch (stream_type->medium) {
         case MediaTypeMedium::AUDIO:
+          stream.renderer_ = audio_renderer_.Pass();
           PrepareStream(&stream, streams_.size() - 1, stream_type,
-                        "mojo:audio_server", callback_joiner->NewCallback());
+                        callback_joiner->NewCallback());
           break;
         case MediaTypeMedium::VIDEO:
-          // TODO(dalesat): Send video somewhere.
-          PrepareStream(&stream, streams_.size() - 1, stream_type, "nowhere",
+          stream.renderer_ = video_renderer_.Pass();
+          PrepareStream(&stream, streams_.size() - 1, stream_type,
                         callback_joiner->NewCallback());
           break;
         // TODO(dalesat): Enable other stream types.
@@ -193,7 +202,6 @@ void MediaPlayerImpl::Seek(int64_t position) {
 void MediaPlayerImpl::PrepareStream(Stream* stream,
                                     size_t index,
                                     const MediaTypePtr& input_media_type,
-                                    const String& url,
                                     const std::function<void()>& callback) {
   DCHECK(factory_);
 
@@ -220,9 +228,9 @@ void MediaPlayerImpl::PrepareStream(Stream* stream,
 
     callback_joiner->Spawn();
     stream->decoder_->GetOutputType(
-        [this, stream, url, callback_joiner](MediaTypePtr output_type) {
+        [this, stream, callback_joiner](MediaTypePtr output_type) {
           stream->decoder_->GetProducer(GetProxy(&stream->decoded_producer_));
-          CreateSink(stream, output_type, url, callback_joiner->NewCallback());
+          CreateSink(stream, output_type, callback_joiner->NewCallback());
           callback_joiner->Complete();
         });
 
@@ -232,19 +240,19 @@ void MediaPlayerImpl::PrepareStream(Stream* stream,
     // would work for compressed media as well (the sink would decode), but we
     // want to test the decoder.
     stream->decoded_producer_ = stream->encoded_producer_.Pass();
-    CreateSink(stream, input_media_type, url, callback);
+    CreateSink(stream, input_media_type, callback);
   }
 }
 
 void MediaPlayerImpl::CreateSink(Stream* stream,
                                  const MediaTypePtr& input_media_type,
-                                 const String& url,
                                  const std::function<void()>& callback) {
   DCHECK(input_media_type);
   DCHECK(stream->decoded_producer_);
   DCHECK(factory_);
 
-  factory_->CreateSink(url, input_media_type.Clone(), GetProxy(&stream->sink_));
+  factory_->CreateSink(stream->renderer_.Pass(), input_media_type.Clone(),
+                       GetProxy(&stream->sink_));
 
   MediaTimelineControlSitePtr timeline_control_site;
   stream->sink_->GetTimelineControlSite(GetProxy(&timeline_control_site));

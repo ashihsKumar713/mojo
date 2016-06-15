@@ -8,6 +8,7 @@ import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
 import 'package:mojo_services/mojo/media/media_demux.mojom.dart' as media_demux_mojom;
 import 'package:mojo_services/mojo/media/media_player.mojom.dart' as media_player_mojom;
+import 'package:mojo_services/mojo/media/media_renderer.mojom.dart' as media_renderer_mojom;
 import 'package:mojo_services/mojo/media/media_sink.mojom.dart' as media_sink_mojom;
 import 'package:mojo_services/mojo/media/media_source.mojom.dart' as media_source_mojom;
 import 'package:mojo_services/mojo/media/media_type_converter.mojom.dart' as media_type_converter_mojom;
@@ -19,15 +20,19 @@ import 'package:mojo_services/mojo/media/timeline_controller.mojom.dart' as time
 
 class _MediaFactoryCreatePlayerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(24, 0)
+    const bindings.StructDataHeader(40, 0)
   ];
   seeking_reader_mojom.SeekingReaderInterface reader = null;
+  media_renderer_mojom.MediaRendererInterface audioRenderer = null;
+  media_renderer_mojom.MediaRendererInterface videoRenderer = null;
   media_player_mojom.MediaPlayerInterfaceRequest player = null;
 
   _MediaFactoryCreatePlayerParams() : super(kVersions.last.size);
 
   _MediaFactoryCreatePlayerParams.init(
     seeking_reader_mojom.SeekingReaderInterface this.reader, 
+    media_renderer_mojom.MediaRendererInterface this.audioRenderer, 
+    media_renderer_mojom.MediaRendererInterface this.videoRenderer, 
     media_player_mojom.MediaPlayerInterfaceRequest this.player
   ) : super(kVersions.last.size);
 
@@ -47,7 +52,15 @@ class _MediaFactoryCreatePlayerParams extends bindings.Struct {
     }
     if (mainDataHeader.version >= 0) {
       
-      result.player = decoder0.decodeInterfaceRequest(16, false, media_player_mojom.MediaPlayerStub.newFromEndpoint);
+      result.audioRenderer = decoder0.decodeServiceInterface(16, true, media_renderer_mojom.MediaRendererProxy.newFromEndpoint);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.videoRenderer = decoder0.decodeServiceInterface(24, true, media_renderer_mojom.MediaRendererProxy.newFromEndpoint);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.player = decoder0.decodeInterfaceRequest(32, false, media_player_mojom.MediaPlayerStub.newFromEndpoint);
     }
     return result;
   }
@@ -59,8 +72,12 @@ class _MediaFactoryCreatePlayerParams extends bindings.Struct {
     try {
       fieldName = "reader";
       encoder0.encodeInterface(reader, 8, false);
+      fieldName = "audioRenderer";
+      encoder0.encodeInterface(audioRenderer, 16, true);
+      fieldName = "videoRenderer";
+      encoder0.encodeInterface(videoRenderer, 24, true);
       fieldName = "player";
-      encoder0.encodeInterfaceRequest(player, 16, false);
+      encoder0.encodeInterfaceRequest(player, 32, false);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -70,6 +87,8 @@ class _MediaFactoryCreatePlayerParams extends bindings.Struct {
   String toString() {
     return "_MediaFactoryCreatePlayerParams("
            "reader: $reader" ", "
+           "audioRenderer: $audioRenderer" ", "
+           "videoRenderer: $videoRenderer" ", "
            "player: $player" ")";
   }
 
@@ -174,14 +193,14 @@ class _MediaFactoryCreateSinkParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(32, 0)
   ];
-  String destinationUrl = null;
+  media_renderer_mojom.MediaRendererInterface renderer = null;
   media_types_mojom.MediaType mediaType = null;
   media_sink_mojom.MediaSinkInterfaceRequest sink = null;
 
   _MediaFactoryCreateSinkParams() : super(kVersions.last.size);
 
   _MediaFactoryCreateSinkParams.init(
-    String this.destinationUrl, 
+    media_renderer_mojom.MediaRendererInterface this.renderer, 
     media_types_mojom.MediaType this.mediaType, 
     media_sink_mojom.MediaSinkInterfaceRequest this.sink
   ) : super(kVersions.last.size);
@@ -198,7 +217,7 @@ class _MediaFactoryCreateSinkParams extends bindings.Struct {
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
-      result.destinationUrl = decoder0.decodeString(8, false);
+      result.renderer = decoder0.decodeServiceInterface(8, true, media_renderer_mojom.MediaRendererProxy.newFromEndpoint);
     }
     if (mainDataHeader.version >= 0) {
       
@@ -217,8 +236,8 @@ class _MediaFactoryCreateSinkParams extends bindings.Struct {
     const String structName = "_MediaFactoryCreateSinkParams";
     String fieldName;
     try {
-      fieldName = "destinationUrl";
-      encoder0.encodeString(destinationUrl, 8, false);
+      fieldName = "renderer";
+      encoder0.encodeInterface(renderer, 8, true);
       fieldName = "mediaType";
       encoder0.encodeStruct(mediaType, 16, false);
       fieldName = "sink";
@@ -231,7 +250,7 @@ class _MediaFactoryCreateSinkParams extends bindings.Struct {
 
   String toString() {
     return "_MediaFactoryCreateSinkParams("
-           "destinationUrl: $destinationUrl" ", "
+           "renderer: $renderer" ", "
            "mediaType: $mediaType" ", "
            "sink: $sink" ")";
   }
@@ -530,9 +549,9 @@ abstract class MediaFactory {
     s.connectToService(url, p, name);
     return p;
   }
-  void createPlayer(seeking_reader_mojom.SeekingReaderInterface reader, media_player_mojom.MediaPlayerInterfaceRequest player);
+  void createPlayer(seeking_reader_mojom.SeekingReaderInterface reader, media_renderer_mojom.MediaRendererInterface audioRenderer, media_renderer_mojom.MediaRendererInterface videoRenderer, media_player_mojom.MediaPlayerInterfaceRequest player);
   void createSource(seeking_reader_mojom.SeekingReaderInterface reader, List<media_types_mojom.MediaTypeSet> allowedMediaTypes, media_source_mojom.MediaSourceInterfaceRequest source);
-  void createSink(String destinationUrl, media_types_mojom.MediaType mediaType, media_sink_mojom.MediaSinkInterfaceRequest sink);
+  void createSink(media_renderer_mojom.MediaRendererInterface renderer, media_types_mojom.MediaType mediaType, media_sink_mojom.MediaSinkInterfaceRequest sink);
   void createDemux(seeking_reader_mojom.SeekingReaderInterface reader, media_demux_mojom.MediaDemuxInterfaceRequest demux);
   void createDecoder(media_types_mojom.MediaType inputMediaType, media_type_converter_mojom.MediaTypeConverterInterfaceRequest decoder);
   void createNetworkReader(String url, seeking_reader_mojom.SeekingReaderInterfaceRequest reader);
@@ -622,9 +641,9 @@ class MediaFactoryProxy
   }
 
 
-  void createPlayer(seeking_reader_mojom.SeekingReaderInterface reader, media_player_mojom.MediaPlayerInterfaceRequest player) {
+  void createPlayer(seeking_reader_mojom.SeekingReaderInterface reader, media_renderer_mojom.MediaRendererInterface audioRenderer, media_renderer_mojom.MediaRendererInterface videoRenderer, media_player_mojom.MediaPlayerInterfaceRequest player) {
     if (impl != null) {
-      impl.createPlayer(reader, player);
+      impl.createPlayer(reader, audioRenderer, videoRenderer, player);
       return;
     }
     if (!ctrl.isBound) {
@@ -633,6 +652,8 @@ class MediaFactoryProxy
     }
     var params = new _MediaFactoryCreatePlayerParams();
     params.reader = reader;
+    params.audioRenderer = audioRenderer;
+    params.videoRenderer = videoRenderer;
     params.player = player;
     ctrl.sendMessage(params,
         _mediaFactoryMethodCreatePlayerName);
@@ -653,9 +674,9 @@ class MediaFactoryProxy
     ctrl.sendMessage(params,
         _mediaFactoryMethodCreateSourceName);
   }
-  void createSink(String destinationUrl, media_types_mojom.MediaType mediaType, media_sink_mojom.MediaSinkInterfaceRequest sink) {
+  void createSink(media_renderer_mojom.MediaRendererInterface renderer, media_types_mojom.MediaType mediaType, media_sink_mojom.MediaSinkInterfaceRequest sink) {
     if (impl != null) {
-      impl.createSink(destinationUrl, mediaType, sink);
+      impl.createSink(renderer, mediaType, sink);
       return;
     }
     if (!ctrl.isBound) {
@@ -663,7 +684,7 @@ class MediaFactoryProxy
       return;
     }
     var params = new _MediaFactoryCreateSinkParams();
-    params.destinationUrl = destinationUrl;
+    params.renderer = renderer;
     params.mediaType = mediaType;
     params.sink = sink;
     ctrl.sendMessage(params,
@@ -766,7 +787,7 @@ class _MediaFactoryStubControl
       case _mediaFactoryMethodCreatePlayerName:
         var params = _MediaFactoryCreatePlayerParams.deserialize(
             message.payload);
-        _impl.createPlayer(params.reader, params.player);
+        _impl.createPlayer(params.reader, params.audioRenderer, params.videoRenderer, params.player);
         break;
       case _mediaFactoryMethodCreateSourceName:
         var params = _MediaFactoryCreateSourceParams.deserialize(
@@ -776,7 +797,7 @@ class _MediaFactoryStubControl
       case _mediaFactoryMethodCreateSinkName:
         var params = _MediaFactoryCreateSinkParams.deserialize(
             message.payload);
-        _impl.createSink(params.destinationUrl, params.mediaType, params.sink);
+        _impl.createSink(params.renderer, params.mediaType, params.sink);
         break;
       case _mediaFactoryMethodCreateDemuxName:
         var params = _MediaFactoryCreateDemuxParams.deserialize(
@@ -855,14 +876,14 @@ class MediaFactoryStub
   }
 
 
-  void createPlayer(seeking_reader_mojom.SeekingReaderInterface reader, media_player_mojom.MediaPlayerInterfaceRequest player) {
-    return impl.createPlayer(reader, player);
+  void createPlayer(seeking_reader_mojom.SeekingReaderInterface reader, media_renderer_mojom.MediaRendererInterface audioRenderer, media_renderer_mojom.MediaRendererInterface videoRenderer, media_player_mojom.MediaPlayerInterfaceRequest player) {
+    return impl.createPlayer(reader, audioRenderer, videoRenderer, player);
   }
   void createSource(seeking_reader_mojom.SeekingReaderInterface reader, List<media_types_mojom.MediaTypeSet> allowedMediaTypes, media_source_mojom.MediaSourceInterfaceRequest source) {
     return impl.createSource(reader, allowedMediaTypes, source);
   }
-  void createSink(String destinationUrl, media_types_mojom.MediaType mediaType, media_sink_mojom.MediaSinkInterfaceRequest sink) {
-    return impl.createSink(destinationUrl, mediaType, sink);
+  void createSink(media_renderer_mojom.MediaRendererInterface renderer, media_types_mojom.MediaType mediaType, media_sink_mojom.MediaSinkInterfaceRequest sink) {
+    return impl.createSink(renderer, mediaType, sink);
   }
   void createDemux(seeking_reader_mojom.SeekingReaderInterface reader, media_demux_mojom.MediaDemuxInterfaceRequest demux) {
     return impl.createDemux(reader, demux);

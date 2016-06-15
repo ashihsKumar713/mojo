@@ -12,22 +12,22 @@ namespace media {
 
 // static
 std::shared_ptr<MediaSinkImpl> MediaSinkImpl::Create(
-    const String& destination_url,
+    InterfaceHandle<MediaRenderer> renderer,
     MediaTypePtr media_type,
     InterfaceRequest<MediaSink> request,
     MediaFactoryService* owner) {
   return std::shared_ptr<MediaSinkImpl>(new MediaSinkImpl(
-      destination_url, media_type.Pass(), request.Pass(), owner));
+      renderer.Pass(), media_type.Pass(), request.Pass(), owner));
 }
 
-MediaSinkImpl::MediaSinkImpl(const String& destination_url,
+MediaSinkImpl::MediaSinkImpl(InterfaceHandle<MediaRenderer> renderer,
                              MediaTypePtr media_type,
                              InterfaceRequest<MediaSink> request,
                              MediaFactoryService* owner)
     : MediaFactoryService::Product<MediaSink>(this, request.Pass(), owner),
       consumer_(MojoConsumer::Create()),
-      producer_(MojoProducer::Create()) {
-  DCHECK(destination_url);
+      producer_(MojoProducer::Create()),
+      renderer_(MediaRendererPtr::Create(renderer.Pass())) {
   DCHECK(media_type);
 
   PartRef consumer_ref = graph_.Add(consumer_);
@@ -50,7 +50,7 @@ MediaSinkImpl::MediaSinkImpl(const String& destination_url,
       });
 
   // TODO(dalesat): Temporary, remove.
-  if (destination_url == "nowhere") {
+  if (!renderer_) {
     // Throwing away the content.
     graph_.ConnectParts(consumer_ref, producer_ref);
     graph_.Prepare();
@@ -58,28 +58,21 @@ MediaSinkImpl::MediaSinkImpl(const String& destination_url,
     return;
   }
 
-  RCHECK(destination_url == "mojo:audio_server");
-
   // TODO(dalesat): Once we have c++14, get rid of this shared pointer hack.
-  std::shared_ptr<StreamType> captured_stream_type(
-      media_type.To<std::unique_ptr<StreamType>>().release());
+  input_stream_type_ = media_type.To<std::unique_ptr<StreamType>>();
 
-  // An AudioTrackController knows how to talk to an audio track, interrogating
-  // it for supported stream types and configuring it for the chosen stream
-  // type.
-  controller_.reset(new AudioTrackController(destination_url, owner->shell()));
-
-  controller_->GetSupportedMediaTypes([this, consumer_ref, producer_ref,
-                                       captured_stream_type](
-      std::unique_ptr<std::vector<std::unique_ptr<StreamTypeSet>>>
-          supported_stream_types) {
+  renderer_->GetSupportedMediaTypes([this, consumer_ref, producer_ref](
+      Array<MediaTypeSetPtr> supported_media_types) {
+    std::unique_ptr<std::vector<std::unique_ptr<StreamTypeSet>>>
+        supported_stream_types = supported_media_types.To<std::unique_ptr<
+            std::vector<std::unique_ptr<media::StreamTypeSet>>>>();
     std::unique_ptr<StreamType> producer_stream_type;
 
     // Add transforms to the pipeline to convert from stream_type to a
     // type supported by the track.
     OutputRef out = consumer_ref.output();
     bool result =
-        BuildConversionPipeline(*captured_stream_type, *supported_stream_types,
+        BuildConversionPipeline(*input_stream_type_, *supported_stream_types,
                                 &graph_, &out, &producer_stream_type);
     if (!result) {
       // Failed to build conversion pipeline.
@@ -90,14 +83,13 @@ MediaSinkImpl::MediaSinkImpl(const String& destination_url,
 
     graph_.ConnectOutputToPart(out, producer_ref);
 
-    controller_->Configure(std::move(producer_stream_type),
-                           [this](MediaConsumerPtr consumer) {
-                             DCHECK(consumer);
-                             producer_->Connect(consumer.Pass(), [this]() {
-                               graph_.Prepare();
-                               ready_.Occur();
-                             });
-                           });
+    renderer_->SetMediaType(MediaType::From(std::move(producer_stream_type)));
+    MediaConsumerPtr consumer;
+    renderer_->GetConsumer(GetProxy(&consumer));
+    producer_->Connect(consumer.Pass(), [this]() {
+      graph_.Prepare();
+      ready_.Occur();
+    });
   });
 }
 
@@ -109,11 +101,41 @@ void MediaSinkImpl::GetConsumer(InterfaceRequest<MediaConsumer> consumer) {
 
 void MediaSinkImpl::GetTimelineControlSite(
     InterfaceRequest<MediaTimelineControlSite> req) {
-  if (!controller_) {
-    LOG(ERROR) << "GetTimelineControlSite not implemented for 'nowhere' case";
-    abort();
+  if (renderer_) {
+    renderer_->GetTimelineControlSite(req.Pass());
+    return;
   }
-  controller_->GetTimelineControlSite(req.Pass());
+
+  new NullTimelineControlSite(req.Pass());
+}
+
+MediaSinkImpl::NullTimelineControlSite::NullTimelineControlSite(
+    InterfaceRequest<MediaTimelineControlSite> control_site_request)
+    : control_site_binding_(this, control_site_request.Pass()),
+      consumer_binding_(this) {}
+
+MediaSinkImpl::NullTimelineControlSite::~NullTimelineControlSite() {}
+
+void MediaSinkImpl::NullTimelineControlSite::GetStatus(
+    uint64_t version_last_seen,
+    const GetStatusCallback& callback) {
+  DCHECK(get_status_callback_.is_null());
+  get_status_callback_ = callback;
+}
+
+void MediaSinkImpl::NullTimelineControlSite::GetTimelineConsumer(
+    InterfaceRequest<TimelineConsumer> timeline_consumer) {
+  consumer_binding_.Bind(timeline_consumer.Pass());
+}
+
+void MediaSinkImpl::NullTimelineControlSite::SetTimelineTransform(
+    int64_t subject_time,
+    uint32_t reference_delta,
+    uint32_t subject_delta,
+    int64_t effective_reference_time,
+    int64_t effective_subject_time,
+    const SetTimelineTransformCallback& callback) {
+  callback.Run(true);
 }
 
 }  // namespace media

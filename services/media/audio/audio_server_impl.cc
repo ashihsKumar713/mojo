@@ -58,8 +58,9 @@ void AudioServerImpl::Shutdown() {
   DoPacketCleanup();
 }
 
-void AudioServerImpl::CreateTrack(InterfaceRequest<AudioTrack> track) {
-  tracks_.insert(AudioTrackImpl::Create(track.Pass(), this));
+void AudioServerImpl::CreateTrack(InterfaceRequest<AudioTrack> track,
+    InterfaceRequest<MediaRenderer> renderer) {
+  tracks_.insert(AudioTrackImpl::Create(track.Pass(), renderer.Pass(), this));
 }
 
 void AudioServerImpl::DoPacketCleanup() {

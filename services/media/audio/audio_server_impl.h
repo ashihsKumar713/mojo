@@ -29,7 +29,8 @@ class AudioServerImpl : public AudioServer {
   void Initialize();
 
   // AudioServer
-  void CreateTrack(mojo::InterfaceRequest<AudioTrack> track) override;
+  void CreateTrack(InterfaceRequest<AudioTrack> track,
+      InterfaceRequest<MediaRenderer> renderer) override;
 
   // Called (indirectly) by AudioOutputs to schedule the callback for a
   // MediaPacked which was queued to an AudioTrack via. a media pipe.

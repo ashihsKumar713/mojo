@@ -13,8 +13,6 @@ group("factory_service") {
 
 mojo_native_application("media_factory") {
   sources = [
-    "audio_track_controller.cc",
-    "audio_track_controller.h",
     "factory_service.cc",
     "factory_service.h",
     "main.cc",

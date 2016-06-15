@@ -16,6 +16,7 @@
 #include "mojo/services/media/common/cpp/linear_transform.h"
 #include "mojo/services/media/common/cpp/local_time.h"
 #include "mojo/services/media/common/interfaces/timelines.mojom.h"
+#include "mojo/services/media/core/interfaces/media_renderer.mojom.h"
 
 namespace mojo {
 namespace media {
@@ -52,6 +53,7 @@ class PlayToneApp : public ApplicationImplBase {
 
   AudioServerPtr audio_server_;
   AudioTrackPtr audio_track_;
+  MediaRendererPtr media_renderer_;
   TimelineConsumerPtr timeline_consumer_;
   std::unique_ptr<CircularBufferMediaPipeAdapter> audio_pipe_;
 
@@ -66,6 +68,7 @@ void PlayToneApp::OnQuit() {
   timeline_consumer_.reset();
   audio_pipe_.reset();
   audio_track_.reset();
+  media_renderer_.reset();
   audio_server_.reset();
 }
 
@@ -76,17 +79,21 @@ void PlayToneApp::OnInitialize() {
     OnConnectionError("audio_server");
   });
 
-  audio_server_->CreateTrack(GetProxy(&audio_track_));
+  audio_server_->CreateTrack(
+      GetProxy(&audio_track_), GetProxy(&media_renderer_));
   audio_track_.set_connection_error_handler([this]() {
     OnConnectionError("audio_track");
   });
+  media_renderer_.set_connection_error_handler([this]() {
+    OnConnectionError("media_renderer");
+  });
 
   // Query the sink's format capabilities.
-  AudioTrackDescriptorPtr sink_desc;
-  auto desc_cbk = [&sink_desc](AudioTrackDescriptorPtr desc) {
-    sink_desc = desc.Pass();
+  Array<MediaTypeSetPtr> supported_media_types;
+  auto desc_cbk = [&supported_media_types](Array<MediaTypeSetPtr> desc) {
+    supported_media_types = desc.Pass();
   };
-  audio_track_->Describe(AudioTrack::DescribeCallback(desc_cbk));
+  media_renderer_->GetSupportedMediaTypes(desc_cbk);
 
   // TODO(johngro): this pattern is awkward.  We really don't want to be
   // calling WaitForIncomingResponse, even if we were able supply a timeout.
@@ -104,7 +111,7 @@ void PlayToneApp::OnInitialize() {
   //
   // For now, we just do the evil thing and block during init, but I sure do
   // wish there was something nicer we could do.
-  if (!audio_track_.WaitForIncomingResponse()) {
+  if (!media_renderer_.WaitForIncomingResponse()) {
     MOJO_LOG(ERROR)
       << "Failed to fetch sync capabilities; no response received.";
     Shutdown();
@@ -112,31 +119,30 @@ void PlayToneApp::OnInitialize() {
   }
 
   // TODO(johngro): do something useful with our capabilities description.
-  sink_desc.reset();
+  supported_media_types.reset();
 
   // Grab the timeline consumer interface for our audio renderer.
   MediaTimelineControlSitePtr timeline_control_site;
-  audio_track_->GetTimelineControlSite(GetProxy(&timeline_control_site));
+  media_renderer_->GetTimelineControlSite(GetProxy(&timeline_control_site));
   timeline_control_site->GetTimelineConsumer(GetProxy(&timeline_consumer_));
   timeline_consumer_.set_connection_error_handler(
       [this]() { OnConnectionError("timeline_consumer"); });
 
   // Configure our sink for 16-bit 48KHz mono.
-  AudioTrackConfigurationPtr cfg = AudioTrackConfiguration::New();
-
   AudioMediaTypeDetailsPtr pcm_cfg = AudioMediaTypeDetails::New();
   pcm_cfg->sample_format     = AudioSampleFormat::SIGNED_16;
   pcm_cfg->channels          = 1;
   pcm_cfg->frames_per_second = SAMP_FREQ;
 
-  cfg->media_type = MediaType::New();
-  cfg->media_type->medium = MediaTypeMedium::AUDIO;
-  cfg->media_type->details = MediaTypeDetails::New();
-  cfg->media_type->details->set_audio(pcm_cfg.Pass());
-  cfg->media_type->encoding = MediaType::kAudioEncodingLpcm;
+  MediaTypePtr media_type = MediaType::New();
+  media_type->medium = MediaTypeMedium::AUDIO;
+  media_type->details = MediaTypeDetails::New();
+  media_type->details->set_audio(pcm_cfg.Pass());
+  media_type->encoding = MediaType::kAudioEncodingLpcm;
 
+  media_renderer_->SetMediaType(media_type.Pass());
   MediaConsumerPtr pipe;
-  audio_track_->Configure(cfg.Pass(), GetProxy(&pipe));
+  media_renderer_->GetConsumer(GetProxy(&pipe));
 
   // Now that the configuration request is in-flight and we our media pipe
   // proxy, pass its interface to our circular buffer helper, set up our

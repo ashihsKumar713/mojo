@@ -28,6 +28,8 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
  public:
   static std::shared_ptr<MediaPlayerImpl> Create(
       InterfaceHandle<SeekingReader> reader,
+      InterfaceHandle<MediaRenderer> audio_renderer,
+      InterfaceHandle<MediaRenderer> video_renderer,
       InterfaceRequest<MediaPlayer> request,
       MediaFactoryService* owner);
 
@@ -63,9 +65,12 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
     // problems.
     MediaProducerPtr encoded_producer_;
     MediaProducerPtr decoded_producer_;
+    InterfaceHandle<MediaRenderer> renderer_;
   };
 
   MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
+                  InterfaceHandle<MediaRenderer> audio_renderer,
+                  InterfaceHandle<MediaRenderer> video_renderer,
                   InterfaceRequest<MediaPlayer> request,
                   MediaFactoryService* owner);
 
@@ -87,13 +92,11 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
   void PrepareStream(Stream* stream,
                      size_t index,
                      const MediaTypePtr& input_media_type,
-                     const String& url,
                      const std::function<void()>& callback);
 
   // Creates a sink for a stream.
   void CreateSink(Stream* stream,
                   const MediaTypePtr& input_media_type,
-                  const String& url,
                   const std::function<void()>& callback);
 
   // Handles a metadata update from the demux. When called with the default
@@ -124,6 +127,10 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
   CallbackJoiner set_transform_joiner_;
   MediaMetadataPtr metadata_;
   MojoPublisher<GetStatusCallback> status_publisher_;
+  // The following fields are just temporaries used to solve lambda capture
+  // problems.
+  InterfaceHandle<MediaRenderer> audio_renderer_;
+  InterfaceHandle<MediaRenderer> video_renderer_;
 };
 
 }  // namespace media

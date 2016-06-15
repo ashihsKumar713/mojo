@@ -21,6 +21,7 @@ mojo_native_application("media_test") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/utility",
     "//mojo/public/interfaces/application",
+    "//mojo/services/media/audio/interfaces",
     "//mojo/services/media/common/cpp",
     "//mojo/services/media/common/interfaces",
     "//mojo/services/media/control/interfaces",

@@ -16,6 +16,7 @@
 #include "mojo/services/media/common/cpp/circular_buffer_media_pipe_adapter.h"
 #include "mojo/services/media/common/cpp/linear_transform.h"
 #include "mojo/services/media/common/cpp/local_time.h"
+#include "mojo/services/media/core/interfaces/media_renderer.mojom.h"
 #include "mojo/services/network/interfaces/network_service.mojom.h"
 #include "mojo/services/network/interfaces/url_loader.mojom.h"
 
@@ -126,6 +127,7 @@ class PlayWAVApp : public ApplicationImplBase {
 
   AudioServerPtr               audio_server_;
   AudioTrackPtr                audio_track_;
+  MediaRendererPtr             media_renderer_;
   AudioPipePtr                 audio_pipe_;
   TimelineConsumerPtr          timeline_consumer_;
   AudioPacket                  audio_packet_;
@@ -197,6 +199,7 @@ void PlayWAVApp::OnQuit() {
   audio_pipe_.reset();
   timeline_consumer_.reset();
   audio_track_.reset();
+  media_renderer_.reset();
   audio_server_.reset();
 }
 
@@ -251,7 +254,8 @@ void PlayWAVApp::ProcessHTTPResponse(URLResponsePtr resp) {
 
   // Create the audio sink we will use to play this WAV file and start to
   // configure it.
-  audio_server_->CreateTrack(GetProxy(&audio_track_));
+  audio_server_->CreateTrack(
+      GetProxy(&audio_track_), GetProxy(&media_renderer_));
 
   // TODO(johngro): when there is some better diagnostic information made
   // available to us, make sure that we log it so we have some way to proceed
@@ -259,18 +263,9 @@ void PlayWAVApp::ProcessHTTPResponse(URLResponsePtr resp) {
   audio_track_.set_connection_error_handler([this]() {
     OnConnectionError("audio_track");
   });
-
-  LinearTransform::Ratio audio_rate(wav_info_.frame_rate, 1);
-  LinearTransform::Ratio local_rate(LocalDuration::period::num,
-                                    LocalDuration::period::den);
-  LinearTransform::Ratio tmp;
-  bool success = LinearTransform::Ratio::Compose(audio_rate, local_rate, &tmp);
-  MOJO_DCHECK(success);
-
-  AudioTrackConfigurationPtr cfg;
-  cfg = AudioTrackConfiguration::New();
-  cfg->audio_frame_ratio = tmp.numerator;
-  cfg->media_time_ratio  = tmp.denominator;
+  media_renderer_.set_connection_error_handler([this]() {
+    OnConnectionError("media_renderer");
+  });
 
   AudioMediaTypeDetailsPtr pcm_cfg = AudioMediaTypeDetails::New();
   pcm_cfg->sample_format = (wav_info_.bits_per_sample == 8)
@@ -279,19 +274,20 @@ void PlayWAVApp::ProcessHTTPResponse(URLResponsePtr resp) {
   pcm_cfg->channels = wav_info_.channel_count;
   pcm_cfg->frames_per_second = wav_info_.frame_rate;
 
-  cfg->media_type = MediaType::New();
-  cfg->media_type->medium = MediaTypeMedium::AUDIO;
-  cfg->media_type->details = MediaTypeDetails::New();
-  cfg->media_type->details->set_audio(pcm_cfg.Pass());
-  cfg->media_type->encoding = MediaType::kAudioEncodingLpcm;
+  MediaTypePtr media_type = MediaType::New();
+  media_type->medium = MediaTypeMedium::AUDIO;
+  media_type->details = MediaTypeDetails::New();
+  media_type->details->set_audio(pcm_cfg.Pass());
+  media_type->encoding = MediaType::kAudioEncodingLpcm;
 
   // Configure the track based on the WAV header information.
+  media_renderer_->SetMediaType(media_type.Pass());
   MediaConsumerPtr media_pipe;
-  audio_track_->Configure(cfg.Pass(), GetProxy(&media_pipe));
+  media_renderer_->GetConsumer(GetProxy(&media_pipe));
 
   // Grab the timeline consumer interface for our audio renderer.
   MediaTimelineControlSitePtr timeline_control_site;
-  audio_track_->GetTimelineControlSite(GetProxy(&timeline_control_site));
+  media_renderer_->GetTimelineControlSite(GetProxy(&timeline_control_site));
   timeline_control_site->GetTimelineConsumer(GetProxy(&timeline_consumer_));
   timeline_consumer_.set_connection_error_handler(
       [this]() { OnConnectionError("timeline_consumer"); });

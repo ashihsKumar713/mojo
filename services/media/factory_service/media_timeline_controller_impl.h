@@ -64,8 +64,6 @@ class MediaTimelineControllerImpl
     SiteState(MediaTimelineControllerImpl* parent,
               MediaTimelineControlSitePtr site);
 
-    SiteState(SiteState&& other);
-
     ~SiteState();
 
     void HandleStatusUpdates(
@@ -149,7 +147,7 @@ class MediaTimelineControllerImpl
   Binding<MediaTimelineControlSite> control_site_binding_;
   Binding<TimelineConsumer> consumer_binding_;
   MojoPublisher<GetStatusCallback> status_publisher_;
-  std::vector<SiteState> site_states_;
+  std::vector<std::unique_ptr<SiteState>> site_states_;
   TimelineFunction current_timeline_function_;
   bool end_of_stream_ = false;
   std::weak_ptr<TimelineTransition> pending_transition_;

@@ -44,9 +44,10 @@ MediaTimelineControllerImpl::~MediaTimelineControllerImpl() {
 
 void MediaTimelineControllerImpl::AddControlSite(
     InterfaceHandle<MediaTimelineControlSite> control_site) {
-  site_states_.emplace_back(
-      this, MediaTimelineControlSitePtr::Create(std::move(control_site)));
-  site_states_.back().HandleStatusUpdates();
+  site_states_.push_back(std::unique_ptr<SiteState>(new SiteState(
+      this, MediaTimelineControlSitePtr::Create(std::move(control_site)))));
+
+  site_states_.back()->HandleStatusUpdates();
 }
 
 void MediaTimelineControllerImpl::GetControlSite(
@@ -170,8 +171,8 @@ void MediaTimelineControllerImpl::SetTimelineTransform(
   pending_transition_ = transition;
 
   // Initiate the transition for each site.
-  for (const SiteState& site_state : site_states_) {
-    site_state.consumer_->SetTimelineTransform(
+  for (const std::unique_ptr<SiteState>& site_state : site_states_) {
+    site_state->consumer_->SetTimelineTransform(
         subject_time, reference_delta, subject_delta, effective_reference_time,
         effective_subject_time, transition->NewCallback());
   }
@@ -186,8 +187,8 @@ void MediaTimelineControllerImpl::SetTimelineTransform(
 
 void MediaTimelineControllerImpl::HandleSiteEndOfStreamChange() {
   bool end_of_stream = true;
-  for (const SiteState& site_state : site_states_) {
-    if (!site_state.end_of_stream_) {
+  for (const std::unique_ptr<SiteState>& site_state : site_states_) {
+    if (!site_state->end_of_stream_) {
       end_of_stream = false;
       break;
     }
@@ -205,11 +206,6 @@ MediaTimelineControllerImpl::SiteState::SiteState(
     : parent_(parent), site_(site.Pass()) {
   site_->GetTimelineConsumer(GetProxy(&consumer_));
 }
-
-MediaTimelineControllerImpl::SiteState::SiteState(SiteState&& other)
-    : parent_(other.parent_),
-      site_(other.site_.Pass()),
-      consumer_(other.consumer_.Pass()) {}
 
 MediaTimelineControllerImpl::SiteState::~SiteState() {}
 

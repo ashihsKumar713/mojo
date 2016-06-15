@@ -4,6 +4,8 @@
 
 #include "examples/media_test/media_test.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/services/media/audio/interfaces/audio_server.mojom.h"
+#include "mojo/services/media/audio/interfaces/audio_track.mojom.h"
 #include "mojo/services/media/common/cpp/timeline.h"
 #include "mojo/services/media/common/cpp/timeline_function.h"
 #include "mojo/services/media/control/interfaces/media_factory.mojom.h"
@@ -23,9 +25,17 @@ MediaTest::MediaTest(mojo::Shell* shell, const std::string& input_file_name) {
   MediaFactoryPtr factory;
   ConnectToService(shell, "mojo:media_factory", GetProxy(&factory));
 
+  AudioServerPtr audio_service;
+  ConnectToService(shell, "mojo:audio_server", GetProxy(&audio_service));
+  AudioTrackPtr audio_track;
+  MediaRendererPtr audio_renderer;
+  audio_service->CreateTrack(GetProxy(&audio_track), GetProxy(&audio_renderer));
+
   SeekingReaderPtr reader;
   factory->CreateNetworkReader(input_file_name, GetProxy(&reader));
-  factory->CreatePlayer(reader.Pass(), GetProxy(&media_player_));
+
+  factory->CreatePlayer(reader.Pass(), audio_renderer.Pass(), nullptr,
+                        GetProxy(&media_player_));
 
   HandleStatusUpdates();
 }

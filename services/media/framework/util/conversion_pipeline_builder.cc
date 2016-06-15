@@ -144,6 +144,36 @@ AddResult AddTransformsForCompressedAudio(
   return AddResult::kProgressed;
 }
 
+// Attempts to add transforms to the pipeline given an input compressed video
+// stream type with (in_type) and the set of output types we need to convert to
+// (out_type_sets). If the call succeeds, *out_type is set to the new output
+// type. Otherwise, *out_type is set to nullptr.
+AddResult AddTransformsForCompressedVideo(
+    const VideoStreamType& in_type,
+    const std::vector<std::unique_ptr<StreamTypeSet>>& out_type_sets,
+    Graph* graph,
+    OutputRef* output,
+    std::unique_ptr<StreamType>* out_type) {
+  DCHECK(out_type);
+  DCHECK(graph);
+
+  // TODO(dalesat): See if we already have a matching video type.
+
+  // Need to decode. Create a decoder and go from there.
+  std::shared_ptr<Decoder> decoder;
+  Result result = Decoder::Create(in_type, &decoder);
+  if (result != Result::kOk) {
+    // No decoder found.
+    *out_type = nullptr;
+    return AddResult::kFailed;
+  }
+
+  *output = graph->ConnectOutputToPart(*output, graph->Add(decoder)).output();
+  *out_type = decoder->output_stream_type();
+
+  return AddResult::kProgressed;
+}
+
 // Attempts to add transforms to the pipeline given an input LPCM stream type
 // (in_type) and the output lpcm stream type set for the type we need to
 // convert to (out_type_set). If the call succeeds, *out_type is set to the new
@@ -240,6 +270,14 @@ AddResult AddTransforms(
                                     output, out_type);
       } else {
         return AddTransformsForCompressedAudio(*in_type.audio(), out_type_sets,
+                                               graph, output, out_type);
+      }
+    case StreamType::Medium::kVideo:
+      if (in_type.encoding() == StreamType::kVideoEncodingUncompressed) {
+        *out_type = in_type.Clone();
+        return AddResult::kFinished;
+      } else {
+        return AddTransformsForCompressedVideo(*in_type.video(), out_type_sets,
                                                graph, output, out_type);
       }
     default:

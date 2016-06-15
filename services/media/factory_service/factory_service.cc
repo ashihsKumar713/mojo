@@ -30,9 +30,14 @@ bool MediaFactoryService::OnAcceptConnection(
   return true;
 }
 
-void MediaFactoryService::CreatePlayer(InterfaceHandle<SeekingReader> reader,
-                                       InterfaceRequest<MediaPlayer> player) {
-  AddProduct(MediaPlayerImpl::Create(reader.Pass(), player.Pass(), this));
+void MediaFactoryService::CreatePlayer(
+    InterfaceHandle<SeekingReader> reader,
+    InterfaceHandle<MediaRenderer> audio_renderer,
+    InterfaceHandle<MediaRenderer> video_renderer,
+    InterfaceRequest<MediaPlayer> player) {
+  AddProduct(MediaPlayerImpl::Create(reader.Pass(), audio_renderer.Pass(),
+                                     video_renderer.Pass(), player.Pass(),
+                                     this));
 }
 
 void MediaFactoryService::CreateSource(InterfaceHandle<SeekingReader> reader,
@@ -42,10 +47,10 @@ void MediaFactoryService::CreateSource(InterfaceHandle<SeekingReader> reader,
       MediaSourceImpl::Create(reader.Pass(), media_types, source.Pass(), this));
 }
 
-void MediaFactoryService::CreateSink(const String& destination_url,
+void MediaFactoryService::CreateSink(InterfaceHandle<MediaRenderer> renderer,
                                      MediaTypePtr media_type,
                                      InterfaceRequest<MediaSink> sink) {
-  AddProduct(MediaSinkImpl::Create(destination_url, media_type.Pass(),
+  AddProduct(MediaSinkImpl::Create(renderer.Pass(), media_type.Pass(),
                                    sink.Pass(), this));
 }
 

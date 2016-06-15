@@ -7,6 +7,7 @@ import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
 import 'package:mojo_services/mojo/media/audio_track.mojom.dart' as audio_track_mojom;
+import 'package:mojo_services/mojo/media/media_renderer.mojom.dart' as media_renderer_mojom;
 
 
 
@@ -15,11 +16,13 @@ class _AudioServerCreateTrackParams extends bindings.Struct {
     const bindings.StructDataHeader(16, 0)
   ];
   audio_track_mojom.AudioTrackInterfaceRequest track = null;
+  media_renderer_mojom.MediaRendererInterfaceRequest renderer = null;
 
   _AudioServerCreateTrackParams() : super(kVersions.last.size);
 
   _AudioServerCreateTrackParams.init(
-    audio_track_mojom.AudioTrackInterfaceRequest this.track
+    audio_track_mojom.AudioTrackInterfaceRequest this.track, 
+    media_renderer_mojom.MediaRendererInterfaceRequest this.renderer
   ) : super(kVersions.last.size);
 
   static _AudioServerCreateTrackParams deserialize(bindings.Message message) =>
@@ -36,6 +39,10 @@ class _AudioServerCreateTrackParams extends bindings.Struct {
       
       result.track = decoder0.decodeInterfaceRequest(8, false, audio_track_mojom.AudioTrackStub.newFromEndpoint);
     }
+    if (mainDataHeader.version >= 0) {
+      
+      result.renderer = decoder0.decodeInterfaceRequest(12, false, media_renderer_mojom.MediaRendererStub.newFromEndpoint);
+    }
     return result;
   }
 
@@ -46,6 +53,8 @@ class _AudioServerCreateTrackParams extends bindings.Struct {
     try {
       fieldName = "track";
       encoder0.encodeInterfaceRequest(track, 8, false);
+      fieldName = "renderer";
+      encoder0.encodeInterfaceRequest(renderer, 12, false);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -54,7 +63,8 @@ class _AudioServerCreateTrackParams extends bindings.Struct {
 
   String toString() {
     return "_AudioServerCreateTrackParams("
-           "track: $track" ")";
+           "track: $track" ", "
+           "renderer: $renderer" ")";
   }
 
   Map toJson() {
@@ -101,7 +111,7 @@ abstract class AudioServer {
     s.connectToService(url, p, name);
     return p;
   }
-  void createTrack(audio_track_mojom.AudioTrackInterfaceRequest track);
+  void createTrack(audio_track_mojom.AudioTrackInterfaceRequest track, media_renderer_mojom.MediaRendererInterfaceRequest renderer);
 }
 
 abstract class AudioServerInterface
@@ -187,9 +197,9 @@ class AudioServerProxy
   }
 
 
-  void createTrack(audio_track_mojom.AudioTrackInterfaceRequest track) {
+  void createTrack(audio_track_mojom.AudioTrackInterfaceRequest track, media_renderer_mojom.MediaRendererInterfaceRequest renderer) {
     if (impl != null) {
-      impl.createTrack(track);
+      impl.createTrack(track, renderer);
       return;
     }
     if (!ctrl.isBound) {
@@ -198,6 +208,7 @@ class AudioServerProxy
     }
     var params = new _AudioServerCreateTrackParams();
     params.track = track;
+    params.renderer = renderer;
     ctrl.sendMessage(params,
         _audioServerMethodCreateTrackName);
   }
@@ -239,7 +250,7 @@ class _AudioServerStubControl
       case _audioServerMethodCreateTrackName:
         var params = _AudioServerCreateTrackParams.deserialize(
             message.payload);
-        _impl.createTrack(params.track);
+        _impl.createTrack(params.track, params.renderer);
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
@@ -298,8 +309,8 @@ class AudioServerStub
   }
 
 
-  void createTrack(audio_track_mojom.AudioTrackInterfaceRequest track) {
-    return impl.createTrack(track);
+  void createTrack(audio_track_mojom.AudioTrackInterfaceRequest track, media_renderer_mojom.MediaRendererInterfaceRequest renderer) {
+    return impl.createTrack(track, renderer);
   }
 }
 
