@@ -29,14 +29,8 @@ class _RendererSetRootSceneParams extends bindings.Struct {
     geometry_mojom.Rect this.viewport
   ) : super(kVersions.last.size);
 
-  static _RendererSetRootSceneParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _RendererSetRootSceneParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _RendererSetRootSceneParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -44,24 +38,7 @@ class _RendererSetRootSceneParams extends bindings.Struct {
     }
     _RendererSetRootSceneParams result = new _RendererSetRootSceneParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -81,25 +58,17 @@ class _RendererSetRootSceneParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_RendererSetRootSceneParams";
+    String fieldName;
     try {
+      fieldName = "sceneToken";
       encoder0.encodeStruct(sceneToken, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "sceneToken of struct _RendererSetRootSceneParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "sceneVersion";
       encoder0.encodeUint32(sceneVersion, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "sceneVersion of struct _RendererSetRootSceneParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "viewport";
       encoder0.encodeStruct(viewport, 24, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "viewport of struct _RendererSetRootSceneParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -131,14 +100,8 @@ class _RendererClearRootSceneParams extends bindings.Struct {
   _RendererClearRootSceneParams.init(
   ) : super(kVersions.last.size);
 
-  static _RendererClearRootSceneParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _RendererClearRootSceneParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _RendererClearRootSceneParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -146,29 +109,19 @@ class _RendererClearRootSceneParams extends bindings.Struct {
     }
     _RendererClearRootSceneParams result = new _RendererClearRootSceneParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_RendererClearRootSceneParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -194,14 +147,8 @@ class _RendererGetSchedulerParams extends bindings.Struct {
     scheduling_mojom.FrameSchedulerInterfaceRequest this.scheduler
   ) : super(kVersions.last.size);
 
-  static _RendererGetSchedulerParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _RendererGetSchedulerParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _RendererGetSchedulerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -209,24 +156,7 @@ class _RendererGetSchedulerParams extends bindings.Struct {
     }
     _RendererGetSchedulerParams result = new _RendererGetSchedulerParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.scheduler = decoder0.decodeInterfaceRequest(8, false, scheduling_mojom.FrameSchedulerStub.newFromEndpoint);
@@ -236,11 +166,13 @@ class _RendererGetSchedulerParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_RendererGetSchedulerParams";
+    String fieldName;
     try {
+      fieldName = "scheduler";
       encoder0.encodeInterfaceRequest(scheduler, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "scheduler of struct _RendererGetSchedulerParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -269,14 +201,8 @@ class _RendererGetHitTesterParams extends bindings.Struct {
     hit_tests_mojom.HitTesterInterfaceRequest this.hitTester
   ) : super(kVersions.last.size);
 
-  static _RendererGetHitTesterParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _RendererGetHitTesterParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _RendererGetHitTesterParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -284,24 +210,7 @@ class _RendererGetHitTesterParams extends bindings.Struct {
     }
     _RendererGetHitTesterParams result = new _RendererGetHitTesterParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.hitTester = decoder0.decodeInterfaceRequest(8, false, hit_tests_mojom.HitTesterStub.newFromEndpoint);
@@ -311,11 +220,13 @@ class _RendererGetHitTesterParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_RendererGetHitTesterParams";
+    String fieldName;
     try {
+      fieldName = "hitTester";
       encoder0.encodeInterfaceRequest(hitTester, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "hitTester of struct _RendererGetHitTesterParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

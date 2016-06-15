@@ -249,14 +249,8 @@ class Timespec extends bindings.Struct {
     int this.nanoseconds
   ) : super(kVersions.last.size);
 
-  static Timespec deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static Timespec deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static Timespec decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -264,24 +258,7 @@ class Timespec extends bindings.Struct {
     }
     Timespec result = new Timespec();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.seconds = decoder0.decodeInt64(8);
@@ -295,18 +272,15 @@ class Timespec extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "Timespec";
+    String fieldName;
     try {
+      fieldName = "seconds";
       encoder0.encodeInt64(seconds, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "seconds of struct Timespec: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "nanoseconds";
       encoder0.encodeInt32(nanoseconds, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "nanoseconds of struct Timespec: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -340,14 +314,8 @@ class TimespecOrNow extends bindings.Struct {
     Timespec this.timespec
   ) : super(kVersions.last.size);
 
-  static TimespecOrNow deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static TimespecOrNow deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static TimespecOrNow decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -355,24 +323,7 @@ class TimespecOrNow extends bindings.Struct {
     }
     TimespecOrNow result = new TimespecOrNow();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.now = decoder0.decodeBool(8, 0);
@@ -387,18 +338,15 @@ class TimespecOrNow extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "TimespecOrNow";
+    String fieldName;
     try {
+      fieldName = "now";
       encoder0.encodeBool(now, 8, 0);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "now of struct TimespecOrNow: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "timespec";
       encoder0.encodeStruct(timespec, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "timespec of struct TimespecOrNow: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -436,14 +384,8 @@ class FileInformation extends bindings.Struct {
     Timespec this.mtime
   ) : super(kVersions.last.size);
 
-  static FileInformation deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FileInformation deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FileInformation decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -451,24 +393,7 @@ class FileInformation extends bindings.Struct {
     }
     FileInformation result = new FileInformation();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.type = FileType.decode(decoder0, 8);
@@ -496,32 +421,19 @@ class FileInformation extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FileInformation";
+    String fieldName;
     try {
+      fieldName = "type";
       encoder0.encodeEnum(type, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "type of struct FileInformation: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "size";
       encoder0.encodeInt64(size, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "size of struct FileInformation: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "atime";
       encoder0.encodeStruct(atime, 24, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "atime of struct FileInformation: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "mtime";
       encoder0.encodeStruct(mtime, 32, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "mtime of struct FileInformation: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -559,14 +471,8 @@ class DirectoryEntry extends bindings.Struct {
     String this.name
   ) : super(kVersions.last.size);
 
-  static DirectoryEntry deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static DirectoryEntry deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static DirectoryEntry decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -574,24 +480,7 @@ class DirectoryEntry extends bindings.Struct {
     }
     DirectoryEntry result = new DirectoryEntry();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.type = FileType.decode(decoder0, 8);
@@ -609,18 +498,15 @@ class DirectoryEntry extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "DirectoryEntry";
+    String fieldName;
     try {
+      fieldName = "type";
       encoder0.encodeEnum(type, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "type of struct DirectoryEntry: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "name";
       encoder0.encodeString(name, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "name of struct DirectoryEntry: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

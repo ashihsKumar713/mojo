@@ -35,14 +35,8 @@ class _ProcessSpawnParams extends bindings.Struct {
     ProcessControllerInterfaceRequest this.processController
   ) : super(kVersions.last.size);
 
-  static _ProcessSpawnParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ProcessSpawnParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ProcessSpawnParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -50,24 +44,7 @@ class _ProcessSpawnParams extends bindings.Struct {
     }
     _ProcessSpawnParams result = new _ProcessSpawnParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.path = decoder0.decodeUint8Array(8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
@@ -121,14 +98,12 @@ class _ProcessSpawnParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ProcessSpawnParams";
+    String fieldName;
     try {
+      fieldName = "path";
       encoder0.encodeUint8Array(path, 8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "path of struct _ProcessSpawnParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "argv";
       if (argv == null) {
         encoder0.encodeNullPointer(16, true);
       } else {
@@ -137,12 +112,7 @@ class _ProcessSpawnParams extends bindings.Struct {
           encoder1.encodeUint8Array(argv[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "argv of struct _ProcessSpawnParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "envp";
       if (envp == null) {
         encoder0.encodeNullPointer(24, true);
       } else {
@@ -151,37 +121,16 @@ class _ProcessSpawnParams extends bindings.Struct {
           encoder1.encodeUint8Array(envp[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "envp of struct _ProcessSpawnParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "stdinFile";
       encoder0.encodeInterface(stdinFile, 32, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "stdinFile of struct _ProcessSpawnParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "stdoutFile";
       encoder0.encodeInterface(stdoutFile, 40, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "stdoutFile of struct _ProcessSpawnParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "stderrFile";
       encoder0.encodeInterface(stderrFile, 48, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "stderrFile of struct _ProcessSpawnParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "processController";
       encoder0.encodeInterfaceRequest(processController, 56, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "processController of struct _ProcessSpawnParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -216,14 +165,8 @@ class ProcessSpawnResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static ProcessSpawnResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static ProcessSpawnResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static ProcessSpawnResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -231,24 +174,7 @@ class ProcessSpawnResponseParams extends bindings.Struct {
     }
     ProcessSpawnResponseParams result = new ProcessSpawnResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -262,11 +188,13 @@ class ProcessSpawnResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "ProcessSpawnResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct ProcessSpawnResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -304,14 +232,8 @@ class _ProcessSpawnWithTerminalParams extends bindings.Struct {
     ProcessControllerInterfaceRequest this.processController
   ) : super(kVersions.last.size);
 
-  static _ProcessSpawnWithTerminalParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ProcessSpawnWithTerminalParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ProcessSpawnWithTerminalParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -319,24 +241,7 @@ class _ProcessSpawnWithTerminalParams extends bindings.Struct {
     }
     _ProcessSpawnWithTerminalParams result = new _ProcessSpawnWithTerminalParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.path = decoder0.decodeUint8Array(8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
@@ -382,14 +287,12 @@ class _ProcessSpawnWithTerminalParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ProcessSpawnWithTerminalParams";
+    String fieldName;
     try {
+      fieldName = "path";
       encoder0.encodeUint8Array(path, 8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "path of struct _ProcessSpawnWithTerminalParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "argv";
       if (argv == null) {
         encoder0.encodeNullPointer(16, true);
       } else {
@@ -398,12 +301,7 @@ class _ProcessSpawnWithTerminalParams extends bindings.Struct {
           encoder1.encodeUint8Array(argv[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "argv of struct _ProcessSpawnWithTerminalParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "envp";
       if (envp == null) {
         encoder0.encodeNullPointer(24, true);
       } else {
@@ -412,23 +310,12 @@ class _ProcessSpawnWithTerminalParams extends bindings.Struct {
           encoder1.encodeUint8Array(envp[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "envp of struct _ProcessSpawnWithTerminalParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "terminalFile";
       encoder0.encodeInterface(terminalFile, 32, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "terminalFile of struct _ProcessSpawnWithTerminalParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "processController";
       encoder0.encodeInterfaceRequest(processController, 40, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "processController of struct _ProcessSpawnWithTerminalParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -461,14 +348,8 @@ class ProcessSpawnWithTerminalResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static ProcessSpawnWithTerminalResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static ProcessSpawnWithTerminalResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static ProcessSpawnWithTerminalResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -476,24 +357,7 @@ class ProcessSpawnWithTerminalResponseParams extends bindings.Struct {
     }
     ProcessSpawnWithTerminalResponseParams result = new ProcessSpawnWithTerminalResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -507,11 +371,13 @@ class ProcessSpawnWithTerminalResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "ProcessSpawnWithTerminalResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct ProcessSpawnWithTerminalResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -539,14 +405,8 @@ class _ProcessControllerWaitParams extends bindings.Struct {
   _ProcessControllerWaitParams.init(
   ) : super(kVersions.last.size);
 
-  static _ProcessControllerWaitParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ProcessControllerWaitParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ProcessControllerWaitParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -554,29 +414,19 @@ class _ProcessControllerWaitParams extends bindings.Struct {
     }
     _ProcessControllerWaitParams result = new _ProcessControllerWaitParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ProcessControllerWaitParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -604,14 +454,8 @@ class ProcessControllerWaitResponseParams extends bindings.Struct {
     int this.exitStatus
   ) : super(kVersions.last.size);
 
-  static ProcessControllerWaitResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static ProcessControllerWaitResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static ProcessControllerWaitResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -619,24 +463,7 @@ class ProcessControllerWaitResponseParams extends bindings.Struct {
     }
     ProcessControllerWaitResponseParams result = new ProcessControllerWaitResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -654,18 +481,15 @@ class ProcessControllerWaitResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "ProcessControllerWaitResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct ProcessControllerWaitResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "exitStatus";
       encoder0.encodeInt32(exitStatus, 12);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "exitStatus of struct ProcessControllerWaitResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -697,14 +521,8 @@ class _ProcessControllerKillParams extends bindings.Struct {
     int this.signal
   ) : super(kVersions.last.size);
 
-  static _ProcessControllerKillParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ProcessControllerKillParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ProcessControllerKillParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -712,24 +530,7 @@ class _ProcessControllerKillParams extends bindings.Struct {
     }
     _ProcessControllerKillParams result = new _ProcessControllerKillParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.signal = decoder0.decodeInt32(8);
@@ -739,11 +540,13 @@ class _ProcessControllerKillParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ProcessControllerKillParams";
+    String fieldName;
     try {
+      fieldName = "signal";
       encoder0.encodeInt32(signal, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "signal of struct _ProcessControllerKillParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -773,14 +576,8 @@ class ProcessControllerKillResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static ProcessControllerKillResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static ProcessControllerKillResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static ProcessControllerKillResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -788,24 +585,7 @@ class ProcessControllerKillResponseParams extends bindings.Struct {
     }
     ProcessControllerKillResponseParams result = new ProcessControllerKillResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -819,11 +599,13 @@ class ProcessControllerKillResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "ProcessControllerKillResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct ProcessControllerKillResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

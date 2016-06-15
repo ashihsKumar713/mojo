@@ -139,14 +139,8 @@ class CompletionData extends bindings.Struct {
     String this.label
   ) : super(kVersions.last.size);
 
-  static CompletionData deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static CompletionData deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static CompletionData decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -154,24 +148,7 @@ class CompletionData extends bindings.Struct {
     }
     CompletionData result = new CompletionData();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.id = decoder0.decodeInt64(8);
@@ -193,32 +170,19 @@ class CompletionData extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "CompletionData";
+    String fieldName;
     try {
+      fieldName = "id";
       encoder0.encodeInt64(id, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "id of struct CompletionData: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "position";
       encoder0.encodeInt32(position, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "position of struct CompletionData: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "text";
       encoder0.encodeString(text, 24, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "text of struct CompletionData: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "label";
       encoder0.encodeString(label, 32, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "label of struct CompletionData: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -258,14 +222,8 @@ class CorrectionData extends bindings.Struct {
     String this.newText
   ) : super(kVersions.last.size);
 
-  static CorrectionData deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static CorrectionData deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static CorrectionData decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -273,24 +231,7 @@ class CorrectionData extends bindings.Struct {
     }
     CorrectionData result = new CorrectionData();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.offset = decoder0.decodeInt32(8);
@@ -308,25 +249,17 @@ class CorrectionData extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "CorrectionData";
+    String fieldName;
     try {
+      fieldName = "offset";
       encoder0.encodeInt32(offset, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "offset of struct CorrectionData: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "oldText";
       encoder0.encodeString(oldText, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "oldText of struct CorrectionData: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "newText";
       encoder0.encodeString(newText, 24, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "newText of struct CorrectionData: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -360,14 +293,8 @@ class _KeyboardClientCommitCompletionParams extends bindings.Struct {
     CompletionData this.completion
   ) : super(kVersions.last.size);
 
-  static _KeyboardClientCommitCompletionParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _KeyboardClientCommitCompletionParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _KeyboardClientCommitCompletionParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -375,24 +302,7 @@ class _KeyboardClientCommitCompletionParams extends bindings.Struct {
     }
     _KeyboardClientCommitCompletionParams result = new _KeyboardClientCommitCompletionParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -403,11 +313,13 @@ class _KeyboardClientCommitCompletionParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_KeyboardClientCommitCompletionParams";
+    String fieldName;
     try {
+      fieldName = "completion";
       encoder0.encodeStruct(completion, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "completion of struct _KeyboardClientCommitCompletionParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -437,14 +349,8 @@ class _KeyboardClientCommitCorrectionParams extends bindings.Struct {
     CorrectionData this.correction
   ) : super(kVersions.last.size);
 
-  static _KeyboardClientCommitCorrectionParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _KeyboardClientCommitCorrectionParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _KeyboardClientCommitCorrectionParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -452,24 +358,7 @@ class _KeyboardClientCommitCorrectionParams extends bindings.Struct {
     }
     _KeyboardClientCommitCorrectionParams result = new _KeyboardClientCommitCorrectionParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -480,11 +369,13 @@ class _KeyboardClientCommitCorrectionParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_KeyboardClientCommitCorrectionParams";
+    String fieldName;
     try {
+      fieldName = "correction";
       encoder0.encodeStruct(correction, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "correction of struct _KeyboardClientCommitCorrectionParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -516,14 +407,8 @@ class _KeyboardClientCommitTextParams extends bindings.Struct {
     int this.newCursorPosition
   ) : super(kVersions.last.size);
 
-  static _KeyboardClientCommitTextParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _KeyboardClientCommitTextParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _KeyboardClientCommitTextParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -531,24 +416,7 @@ class _KeyboardClientCommitTextParams extends bindings.Struct {
     }
     _KeyboardClientCommitTextParams result = new _KeyboardClientCommitTextParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.text = decoder0.decodeString(8, false);
@@ -562,18 +430,15 @@ class _KeyboardClientCommitTextParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_KeyboardClientCommitTextParams";
+    String fieldName;
     try {
+      fieldName = "text";
       encoder0.encodeString(text, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "text of struct _KeyboardClientCommitTextParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "newCursorPosition";
       encoder0.encodeInt32(newCursorPosition, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "newCursorPosition of struct _KeyboardClientCommitTextParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -607,14 +472,8 @@ class _KeyboardClientDeleteSurroundingTextParams extends bindings.Struct {
     int this.afterLength
   ) : super(kVersions.last.size);
 
-  static _KeyboardClientDeleteSurroundingTextParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _KeyboardClientDeleteSurroundingTextParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _KeyboardClientDeleteSurroundingTextParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -622,24 +481,7 @@ class _KeyboardClientDeleteSurroundingTextParams extends bindings.Struct {
     }
     _KeyboardClientDeleteSurroundingTextParams result = new _KeyboardClientDeleteSurroundingTextParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.beforeLength = decoder0.decodeInt32(8);
@@ -653,18 +495,15 @@ class _KeyboardClientDeleteSurroundingTextParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_KeyboardClientDeleteSurroundingTextParams";
+    String fieldName;
     try {
+      fieldName = "beforeLength";
       encoder0.encodeInt32(beforeLength, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "beforeLength of struct _KeyboardClientDeleteSurroundingTextParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "afterLength";
       encoder0.encodeInt32(afterLength, 12);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "afterLength of struct _KeyboardClientDeleteSurroundingTextParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -698,14 +537,8 @@ class _KeyboardClientSetComposingRegionParams extends bindings.Struct {
     int this.end
   ) : super(kVersions.last.size);
 
-  static _KeyboardClientSetComposingRegionParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _KeyboardClientSetComposingRegionParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _KeyboardClientSetComposingRegionParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -713,24 +546,7 @@ class _KeyboardClientSetComposingRegionParams extends bindings.Struct {
     }
     _KeyboardClientSetComposingRegionParams result = new _KeyboardClientSetComposingRegionParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.start = decoder0.decodeInt32(8);
@@ -744,18 +560,15 @@ class _KeyboardClientSetComposingRegionParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_KeyboardClientSetComposingRegionParams";
+    String fieldName;
     try {
+      fieldName = "start";
       encoder0.encodeInt32(start, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "start of struct _KeyboardClientSetComposingRegionParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "end";
       encoder0.encodeInt32(end, 12);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "end of struct _KeyboardClientSetComposingRegionParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -789,14 +602,8 @@ class _KeyboardClientSetComposingTextParams extends bindings.Struct {
     int this.newCursorPosition
   ) : super(kVersions.last.size);
 
-  static _KeyboardClientSetComposingTextParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _KeyboardClientSetComposingTextParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _KeyboardClientSetComposingTextParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -804,24 +611,7 @@ class _KeyboardClientSetComposingTextParams extends bindings.Struct {
     }
     _KeyboardClientSetComposingTextParams result = new _KeyboardClientSetComposingTextParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.text = decoder0.decodeString(8, false);
@@ -835,18 +625,15 @@ class _KeyboardClientSetComposingTextParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_KeyboardClientSetComposingTextParams";
+    String fieldName;
     try {
+      fieldName = "text";
       encoder0.encodeString(text, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "text of struct _KeyboardClientSetComposingTextParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "newCursorPosition";
       encoder0.encodeInt32(newCursorPosition, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "newCursorPosition of struct _KeyboardClientSetComposingTextParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -880,14 +667,8 @@ class _KeyboardClientSetSelectionParams extends bindings.Struct {
     int this.end
   ) : super(kVersions.last.size);
 
-  static _KeyboardClientSetSelectionParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _KeyboardClientSetSelectionParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _KeyboardClientSetSelectionParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -895,24 +676,7 @@ class _KeyboardClientSetSelectionParams extends bindings.Struct {
     }
     _KeyboardClientSetSelectionParams result = new _KeyboardClientSetSelectionParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.start = decoder0.decodeInt32(8);
@@ -926,18 +690,15 @@ class _KeyboardClientSetSelectionParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_KeyboardClientSetSelectionParams";
+    String fieldName;
     try {
+      fieldName = "start";
       encoder0.encodeInt32(start, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "start of struct _KeyboardClientSetSelectionParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "end";
       encoder0.encodeInt32(end, 12);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "end of struct _KeyboardClientSetSelectionParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -969,14 +730,8 @@ class _KeyboardClientSubmitParams extends bindings.Struct {
     SubmitAction this.action
   ) : super(kVersions.last.size);
 
-  static _KeyboardClientSubmitParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _KeyboardClientSubmitParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _KeyboardClientSubmitParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -984,24 +739,7 @@ class _KeyboardClientSubmitParams extends bindings.Struct {
     }
     _KeyboardClientSubmitParams result = new _KeyboardClientSubmitParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.action = SubmitAction.decode(decoder0, 8);
@@ -1015,11 +753,13 @@ class _KeyboardClientSubmitParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_KeyboardClientSubmitParams";
+    String fieldName;
     try {
+      fieldName = "action";
       encoder0.encodeEnum(action, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "action of struct _KeyboardClientSubmitParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1051,14 +791,8 @@ class _KeyboardServiceShowParams extends bindings.Struct {
     KeyboardType this.type
   ) : super(kVersions.last.size);
 
-  static _KeyboardServiceShowParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _KeyboardServiceShowParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _KeyboardServiceShowParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1066,24 +800,7 @@ class _KeyboardServiceShowParams extends bindings.Struct {
     }
     _KeyboardServiceShowParams result = new _KeyboardServiceShowParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.client = decoder0.decodeServiceInterface(8, false, KeyboardClientProxy.newFromEndpoint);
@@ -1101,18 +818,15 @@ class _KeyboardServiceShowParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_KeyboardServiceShowParams";
+    String fieldName;
     try {
+      fieldName = "client";
       encoder0.encodeInterface(client, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "client of struct _KeyboardServiceShowParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "type";
       encoder0.encodeEnum(type, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "type of struct _KeyboardServiceShowParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1140,14 +854,8 @@ class _KeyboardServiceShowByRequestParams extends bindings.Struct {
   _KeyboardServiceShowByRequestParams.init(
   ) : super(kVersions.last.size);
 
-  static _KeyboardServiceShowByRequestParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _KeyboardServiceShowByRequestParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _KeyboardServiceShowByRequestParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1155,29 +863,19 @@ class _KeyboardServiceShowByRequestParams extends bindings.Struct {
     }
     _KeyboardServiceShowByRequestParams result = new _KeyboardServiceShowByRequestParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_KeyboardServiceShowByRequestParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -1201,14 +899,8 @@ class _KeyboardServiceHideParams extends bindings.Struct {
   _KeyboardServiceHideParams.init(
   ) : super(kVersions.last.size);
 
-  static _KeyboardServiceHideParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _KeyboardServiceHideParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _KeyboardServiceHideParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1216,29 +908,19 @@ class _KeyboardServiceHideParams extends bindings.Struct {
     }
     _KeyboardServiceHideParams result = new _KeyboardServiceHideParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_KeyboardServiceHideParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -1264,14 +946,8 @@ class _KeyboardServiceSetTextParams extends bindings.Struct {
     String this.text
   ) : super(kVersions.last.size);
 
-  static _KeyboardServiceSetTextParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _KeyboardServiceSetTextParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _KeyboardServiceSetTextParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1279,24 +955,7 @@ class _KeyboardServiceSetTextParams extends bindings.Struct {
     }
     _KeyboardServiceSetTextParams result = new _KeyboardServiceSetTextParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.text = decoder0.decodeString(8, false);
@@ -1306,11 +965,13 @@ class _KeyboardServiceSetTextParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_KeyboardServiceSetTextParams";
+    String fieldName;
     try {
+      fieldName = "text";
       encoder0.encodeString(text, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "text of struct _KeyboardServiceSetTextParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1342,14 +1003,8 @@ class _KeyboardServiceSetSelectionParams extends bindings.Struct {
     int this.end
   ) : super(kVersions.last.size);
 
-  static _KeyboardServiceSetSelectionParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _KeyboardServiceSetSelectionParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _KeyboardServiceSetSelectionParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1357,24 +1012,7 @@ class _KeyboardServiceSetSelectionParams extends bindings.Struct {
     }
     _KeyboardServiceSetSelectionParams result = new _KeyboardServiceSetSelectionParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.start = decoder0.decodeInt32(8);
@@ -1388,18 +1026,15 @@ class _KeyboardServiceSetSelectionParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_KeyboardServiceSetSelectionParams";
+    String fieldName;
     try {
+      fieldName = "start";
       encoder0.encodeInt32(start, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "start of struct _KeyboardServiceSetSelectionParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "end";
       encoder0.encodeInt32(end, 12);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "end of struct _KeyboardServiceSetSelectionParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1433,14 +1068,8 @@ class _KeyboardServiceFactoryCreateKeyboardServiceParams extends bindings.Struct
     KeyboardServiceInterfaceRequest this.serviceRequest
   ) : super(kVersions.last.size);
 
-  static _KeyboardServiceFactoryCreateKeyboardServiceParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _KeyboardServiceFactoryCreateKeyboardServiceParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _KeyboardServiceFactoryCreateKeyboardServiceParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1448,24 +1077,7 @@ class _KeyboardServiceFactoryCreateKeyboardServiceParams extends bindings.Struct
     }
     _KeyboardServiceFactoryCreateKeyboardServiceParams result = new _KeyboardServiceFactoryCreateKeyboardServiceParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.keyEventDispatcher = decoder0.decodeInterfaceRequest(8, false, native_viewport_event_dispatcher_mojom.NativeViewportEventDispatcherStub.newFromEndpoint);
@@ -1479,18 +1091,15 @@ class _KeyboardServiceFactoryCreateKeyboardServiceParams extends bindings.Struct
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_KeyboardServiceFactoryCreateKeyboardServiceParams";
+    String fieldName;
     try {
+      fieldName = "keyEventDispatcher";
       encoder0.encodeInterfaceRequest(keyEventDispatcher, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "keyEventDispatcher of struct _KeyboardServiceFactoryCreateKeyboardServiceParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "serviceRequest";
       encoder0.encodeInterfaceRequest(serviceRequest, 12, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "serviceRequest of struct _KeyboardServiceFactoryCreateKeyboardServiceParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

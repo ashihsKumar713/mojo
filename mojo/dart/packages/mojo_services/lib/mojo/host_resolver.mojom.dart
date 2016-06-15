@@ -25,14 +25,8 @@ class _HostResolverGetHostAddressesParams extends bindings.Struct {
     net_address_mojom.NetAddressFamily this.family
   ) : super(kVersions.last.size);
 
-  static _HostResolverGetHostAddressesParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _HostResolverGetHostAddressesParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _HostResolverGetHostAddressesParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -40,24 +34,7 @@ class _HostResolverGetHostAddressesParams extends bindings.Struct {
     }
     _HostResolverGetHostAddressesParams result = new _HostResolverGetHostAddressesParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.host = decoder0.decodeString(8, false);
@@ -75,18 +52,15 @@ class _HostResolverGetHostAddressesParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_HostResolverGetHostAddressesParams";
+    String fieldName;
     try {
+      fieldName = "host";
       encoder0.encodeString(host, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "host of struct _HostResolverGetHostAddressesParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "family";
       encoder0.encodeEnum(family, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "family of struct _HostResolverGetHostAddressesParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -120,14 +94,8 @@ class HostResolverGetHostAddressesResponseParams extends bindings.Struct {
     List<net_address_mojom.NetAddress> this.addresses
   ) : super(kVersions.last.size);
 
-  static HostResolverGetHostAddressesResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static HostResolverGetHostAddressesResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static HostResolverGetHostAddressesResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -135,24 +103,7 @@ class HostResolverGetHostAddressesResponseParams extends bindings.Struct {
     }
     HostResolverGetHostAddressesResponseParams result = new HostResolverGetHostAddressesResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -178,14 +129,12 @@ class HostResolverGetHostAddressesResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "HostResolverGetHostAddressesResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeStruct(result, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct HostResolverGetHostAddressesResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "addresses";
       if (addresses == null) {
         encoder0.encodeNullPointer(16, true);
       } else {
@@ -195,8 +144,7 @@ class HostResolverGetHostAddressesResponseParams extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "addresses of struct HostResolverGetHostAddressesResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

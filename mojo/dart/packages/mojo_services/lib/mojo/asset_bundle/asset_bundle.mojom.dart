@@ -21,14 +21,8 @@ class _AssetBundleGetAsStreamParams extends bindings.Struct {
     String this.assetName
   ) : super(kVersions.last.size);
 
-  static _AssetBundleGetAsStreamParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _AssetBundleGetAsStreamParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _AssetBundleGetAsStreamParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -36,24 +30,7 @@ class _AssetBundleGetAsStreamParams extends bindings.Struct {
     }
     _AssetBundleGetAsStreamParams result = new _AssetBundleGetAsStreamParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.assetName = decoder0.decodeString(8, false);
@@ -63,11 +40,13 @@ class _AssetBundleGetAsStreamParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_AssetBundleGetAsStreamParams";
+    String fieldName;
     try {
+      fieldName = "assetName";
       encoder0.encodeString(assetName, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "assetName of struct _AssetBundleGetAsStreamParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -97,14 +76,8 @@ class AssetBundleGetAsStreamResponseParams extends bindings.Struct {
     core.MojoDataPipeConsumer this.assetData
   ) : super(kVersions.last.size);
 
-  static AssetBundleGetAsStreamResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static AssetBundleGetAsStreamResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static AssetBundleGetAsStreamResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -112,24 +85,7 @@ class AssetBundleGetAsStreamResponseParams extends bindings.Struct {
     }
     AssetBundleGetAsStreamResponseParams result = new AssetBundleGetAsStreamResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.assetData = decoder0.decodeConsumerHandle(8, false);
@@ -139,11 +95,13 @@ class AssetBundleGetAsStreamResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "AssetBundleGetAsStreamResponseParams";
+    String fieldName;
     try {
+      fieldName = "assetData";
       encoder0.encodeConsumerHandle(assetData, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "assetData of struct AssetBundleGetAsStreamResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -174,14 +132,8 @@ class _AssetUnpackerUnpackZipStreamParams extends bindings.Struct {
     AssetBundleInterfaceRequest this.assetBundle
   ) : super(kVersions.last.size);
 
-  static _AssetUnpackerUnpackZipStreamParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _AssetUnpackerUnpackZipStreamParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _AssetUnpackerUnpackZipStreamParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -189,24 +141,7 @@ class _AssetUnpackerUnpackZipStreamParams extends bindings.Struct {
     }
     _AssetUnpackerUnpackZipStreamParams result = new _AssetUnpackerUnpackZipStreamParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.zippedAssets = decoder0.decodeConsumerHandle(8, false);
@@ -220,18 +155,15 @@ class _AssetUnpackerUnpackZipStreamParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_AssetUnpackerUnpackZipStreamParams";
+    String fieldName;
     try {
+      fieldName = "zippedAssets";
       encoder0.encodeConsumerHandle(zippedAssets, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "zippedAssets of struct _AssetUnpackerUnpackZipStreamParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "assetBundle";
       encoder0.encodeInterfaceRequest(assetBundle, 12, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "assetBundle of struct _AssetUnpackerUnpackZipStreamParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

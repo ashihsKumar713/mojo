@@ -25,14 +25,8 @@ class _ContentHandlerStartApplicationParams extends bindings.Struct {
     url_response_mojom.UrlResponse this.response
   ) : super(kVersions.last.size);
 
-  static _ContentHandlerStartApplicationParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ContentHandlerStartApplicationParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ContentHandlerStartApplicationParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -40,24 +34,7 @@ class _ContentHandlerStartApplicationParams extends bindings.Struct {
     }
     _ContentHandlerStartApplicationParams result = new _ContentHandlerStartApplicationParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.application = decoder0.decodeInterfaceRequest(8, false, application_mojom.ApplicationStub.newFromEndpoint);
@@ -72,18 +49,15 @@ class _ContentHandlerStartApplicationParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ContentHandlerStartApplicationParams";
+    String fieldName;
     try {
+      fieldName = "application";
       encoder0.encodeInterfaceRequest(application, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "application of struct _ContentHandlerStartApplicationParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "response";
       encoder0.encodeStruct(response, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "response of struct _ContentHandlerStartApplicationParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

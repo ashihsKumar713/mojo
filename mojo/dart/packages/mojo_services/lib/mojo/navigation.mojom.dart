@@ -83,14 +83,8 @@ class _NavigatorHostRequestNavigateParams extends bindings.Struct {
     url_request_mojom.UrlRequest this.request
   ) : super(kVersions.last.size);
 
-  static _NavigatorHostRequestNavigateParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NavigatorHostRequestNavigateParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NavigatorHostRequestNavigateParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -98,24 +92,7 @@ class _NavigatorHostRequestNavigateParams extends bindings.Struct {
     }
     _NavigatorHostRequestNavigateParams result = new _NavigatorHostRequestNavigateParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.target = Target.decode(decoder0, 8);
@@ -134,18 +111,15 @@ class _NavigatorHostRequestNavigateParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NavigatorHostRequestNavigateParams";
+    String fieldName;
     try {
+      fieldName = "target";
       encoder0.encodeEnum(target, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "target of struct _NavigatorHostRequestNavigateParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "request";
       encoder0.encodeStruct(request, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "request of struct _NavigatorHostRequestNavigateParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -175,14 +149,8 @@ class _NavigatorHostRequestNavigateHistoryParams extends bindings.Struct {
     int this.delta
   ) : super(kVersions.last.size);
 
-  static _NavigatorHostRequestNavigateHistoryParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NavigatorHostRequestNavigateHistoryParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NavigatorHostRequestNavigateHistoryParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -190,24 +158,7 @@ class _NavigatorHostRequestNavigateHistoryParams extends bindings.Struct {
     }
     _NavigatorHostRequestNavigateHistoryParams result = new _NavigatorHostRequestNavigateHistoryParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.delta = decoder0.decodeInt32(8);
@@ -217,11 +168,13 @@ class _NavigatorHostRequestNavigateHistoryParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NavigatorHostRequestNavigateHistoryParams";
+    String fieldName;
     try {
+      fieldName = "delta";
       encoder0.encodeInt32(delta, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "delta of struct _NavigatorHostRequestNavigateHistoryParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -251,14 +204,8 @@ class _NavigatorHostDidNavigateLocallyParams extends bindings.Struct {
     String this.url
   ) : super(kVersions.last.size);
 
-  static _NavigatorHostDidNavigateLocallyParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NavigatorHostDidNavigateLocallyParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NavigatorHostDidNavigateLocallyParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -266,24 +213,7 @@ class _NavigatorHostDidNavigateLocallyParams extends bindings.Struct {
     }
     _NavigatorHostDidNavigateLocallyParams result = new _NavigatorHostDidNavigateLocallyParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.url = decoder0.decodeString(8, false);
@@ -293,11 +223,13 @@ class _NavigatorHostDidNavigateLocallyParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NavigatorHostDidNavigateLocallyParams";
+    String fieldName;
     try {
+      fieldName = "url";
       encoder0.encodeString(url, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "url of struct _NavigatorHostDidNavigateLocallyParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

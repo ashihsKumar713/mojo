@@ -24,14 +24,8 @@ class _HttpConnectionSetSendBufferSizeParams extends bindings.Struct {
     int this.size
   ) : super(kVersions.last.size);
 
-  static _HttpConnectionSetSendBufferSizeParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _HttpConnectionSetSendBufferSizeParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _HttpConnectionSetSendBufferSizeParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -39,24 +33,7 @@ class _HttpConnectionSetSendBufferSizeParams extends bindings.Struct {
     }
     _HttpConnectionSetSendBufferSizeParams result = new _HttpConnectionSetSendBufferSizeParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.size = decoder0.decodeUint32(8);
@@ -66,11 +43,13 @@ class _HttpConnectionSetSendBufferSizeParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_HttpConnectionSetSendBufferSizeParams";
+    String fieldName;
     try {
+      fieldName = "size";
       encoder0.encodeUint32(size, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "size of struct _HttpConnectionSetSendBufferSizeParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -100,14 +79,8 @@ class HttpConnectionSetSendBufferSizeResponseParams extends bindings.Struct {
     network_error_mojom.NetworkError this.result
   ) : super(kVersions.last.size);
 
-  static HttpConnectionSetSendBufferSizeResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static HttpConnectionSetSendBufferSizeResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static HttpConnectionSetSendBufferSizeResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -115,24 +88,7 @@ class HttpConnectionSetSendBufferSizeResponseParams extends bindings.Struct {
     }
     HttpConnectionSetSendBufferSizeResponseParams result = new HttpConnectionSetSendBufferSizeResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -143,11 +99,13 @@ class HttpConnectionSetSendBufferSizeResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "HttpConnectionSetSendBufferSizeResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeStruct(result, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct HttpConnectionSetSendBufferSizeResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -177,14 +135,8 @@ class _HttpConnectionSetReceiveBufferSizeParams extends bindings.Struct {
     int this.size
   ) : super(kVersions.last.size);
 
-  static _HttpConnectionSetReceiveBufferSizeParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _HttpConnectionSetReceiveBufferSizeParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _HttpConnectionSetReceiveBufferSizeParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -192,24 +144,7 @@ class _HttpConnectionSetReceiveBufferSizeParams extends bindings.Struct {
     }
     _HttpConnectionSetReceiveBufferSizeParams result = new _HttpConnectionSetReceiveBufferSizeParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.size = decoder0.decodeUint32(8);
@@ -219,11 +154,13 @@ class _HttpConnectionSetReceiveBufferSizeParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_HttpConnectionSetReceiveBufferSizeParams";
+    String fieldName;
     try {
+      fieldName = "size";
       encoder0.encodeUint32(size, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "size of struct _HttpConnectionSetReceiveBufferSizeParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -253,14 +190,8 @@ class HttpConnectionSetReceiveBufferSizeResponseParams extends bindings.Struct {
     network_error_mojom.NetworkError this.result
   ) : super(kVersions.last.size);
 
-  static HttpConnectionSetReceiveBufferSizeResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static HttpConnectionSetReceiveBufferSizeResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static HttpConnectionSetReceiveBufferSizeResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -268,24 +199,7 @@ class HttpConnectionSetReceiveBufferSizeResponseParams extends bindings.Struct {
     }
     HttpConnectionSetReceiveBufferSizeResponseParams result = new HttpConnectionSetReceiveBufferSizeResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -296,11 +210,13 @@ class HttpConnectionSetReceiveBufferSizeResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "HttpConnectionSetReceiveBufferSizeResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeStruct(result, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct HttpConnectionSetReceiveBufferSizeResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -330,14 +246,8 @@ class _HttpConnectionDelegateOnReceivedRequestParams extends bindings.Struct {
     http_message_mojom.HttpRequest this.request
   ) : super(kVersions.last.size);
 
-  static _HttpConnectionDelegateOnReceivedRequestParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _HttpConnectionDelegateOnReceivedRequestParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _HttpConnectionDelegateOnReceivedRequestParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -345,24 +255,7 @@ class _HttpConnectionDelegateOnReceivedRequestParams extends bindings.Struct {
     }
     _HttpConnectionDelegateOnReceivedRequestParams result = new _HttpConnectionDelegateOnReceivedRequestParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -373,11 +266,13 @@ class _HttpConnectionDelegateOnReceivedRequestParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_HttpConnectionDelegateOnReceivedRequestParams";
+    String fieldName;
     try {
+      fieldName = "request";
       encoder0.encodeStruct(request, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "request of struct _HttpConnectionDelegateOnReceivedRequestParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -406,14 +301,8 @@ class HttpConnectionDelegateOnReceivedRequestResponseParams extends bindings.Str
     http_message_mojom.HttpResponse this.response
   ) : super(kVersions.last.size);
 
-  static HttpConnectionDelegateOnReceivedRequestResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static HttpConnectionDelegateOnReceivedRequestResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static HttpConnectionDelegateOnReceivedRequestResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -421,24 +310,7 @@ class HttpConnectionDelegateOnReceivedRequestResponseParams extends bindings.Str
     }
     HttpConnectionDelegateOnReceivedRequestResponseParams result = new HttpConnectionDelegateOnReceivedRequestResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -449,11 +321,13 @@ class HttpConnectionDelegateOnReceivedRequestResponseParams extends bindings.Str
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "HttpConnectionDelegateOnReceivedRequestResponseParams";
+    String fieldName;
     try {
+      fieldName = "response";
       encoder0.encodeStruct(response, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "response of struct HttpConnectionDelegateOnReceivedRequestResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -482,14 +356,8 @@ class _HttpConnectionDelegateOnReceivedWebSocketRequestParams extends bindings.S
     http_message_mojom.HttpRequest this.request
   ) : super(kVersions.last.size);
 
-  static _HttpConnectionDelegateOnReceivedWebSocketRequestParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _HttpConnectionDelegateOnReceivedWebSocketRequestParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _HttpConnectionDelegateOnReceivedWebSocketRequestParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -497,24 +365,7 @@ class _HttpConnectionDelegateOnReceivedWebSocketRequestParams extends bindings.S
     }
     _HttpConnectionDelegateOnReceivedWebSocketRequestParams result = new _HttpConnectionDelegateOnReceivedWebSocketRequestParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -525,11 +376,13 @@ class _HttpConnectionDelegateOnReceivedWebSocketRequestParams extends bindings.S
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_HttpConnectionDelegateOnReceivedWebSocketRequestParams";
+    String fieldName;
     try {
+      fieldName = "request";
       encoder0.encodeStruct(request, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "request of struct _HttpConnectionDelegateOnReceivedWebSocketRequestParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -562,14 +415,8 @@ class HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams extends bin
     web_socket_mojom.WebSocketClientInterface this.client
   ) : super(kVersions.last.size);
 
-  static HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -577,24 +424,7 @@ class HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams extends bin
     }
     HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams result = new HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.webSocket = decoder0.decodeInterfaceRequest(8, true, web_socket_mojom.WebSocketStub.newFromEndpoint);
@@ -612,25 +442,17 @@ class HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams extends bin
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams";
+    String fieldName;
     try {
+      fieldName = "webSocket";
       encoder0.encodeInterfaceRequest(webSocket, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "webSocket of struct HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "sendStream";
       encoder0.encodeConsumerHandle(sendStream, 12, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "sendStream of struct HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "client";
       encoder0.encodeInterface(client, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "client of struct HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

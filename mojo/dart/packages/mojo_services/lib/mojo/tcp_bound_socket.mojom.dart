@@ -25,14 +25,8 @@ class _TcpBoundSocketStartListeningParams extends bindings.Struct {
     tcp_server_socket_mojom.TcpServerSocketInterfaceRequest this.server
   ) : super(kVersions.last.size);
 
-  static _TcpBoundSocketStartListeningParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _TcpBoundSocketStartListeningParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _TcpBoundSocketStartListeningParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -40,24 +34,7 @@ class _TcpBoundSocketStartListeningParams extends bindings.Struct {
     }
     _TcpBoundSocketStartListeningParams result = new _TcpBoundSocketStartListeningParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.server = decoder0.decodeInterfaceRequest(8, false, tcp_server_socket_mojom.TcpServerSocketStub.newFromEndpoint);
@@ -67,11 +44,13 @@ class _TcpBoundSocketStartListeningParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_TcpBoundSocketStartListeningParams";
+    String fieldName;
     try {
+      fieldName = "server";
       encoder0.encodeInterfaceRequest(server, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "server of struct _TcpBoundSocketStartListeningParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -100,14 +79,8 @@ class TcpBoundSocketStartListeningResponseParams extends bindings.Struct {
     network_error_mojom.NetworkError this.result
   ) : super(kVersions.last.size);
 
-  static TcpBoundSocketStartListeningResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static TcpBoundSocketStartListeningResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static TcpBoundSocketStartListeningResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -115,24 +88,7 @@ class TcpBoundSocketStartListeningResponseParams extends bindings.Struct {
     }
     TcpBoundSocketStartListeningResponseParams result = new TcpBoundSocketStartListeningResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -143,11 +99,13 @@ class TcpBoundSocketStartListeningResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "TcpBoundSocketStartListeningResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeStruct(result, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct TcpBoundSocketStartListeningResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -183,14 +141,8 @@ class _TcpBoundSocketConnectParams extends bindings.Struct {
     tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest this.clientSocket
   ) : super(kVersions.last.size);
 
-  static _TcpBoundSocketConnectParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _TcpBoundSocketConnectParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _TcpBoundSocketConnectParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -198,24 +150,7 @@ class _TcpBoundSocketConnectParams extends bindings.Struct {
     }
     _TcpBoundSocketConnectParams result = new _TcpBoundSocketConnectParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -238,32 +173,19 @@ class _TcpBoundSocketConnectParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_TcpBoundSocketConnectParams";
+    String fieldName;
     try {
+      fieldName = "remoteAddress";
       encoder0.encodeStruct(remoteAddress, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "remoteAddress of struct _TcpBoundSocketConnectParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "sendStream";
       encoder0.encodeConsumerHandle(sendStream, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "sendStream of struct _TcpBoundSocketConnectParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "receiveStream";
       encoder0.encodeProducerHandle(receiveStream, 20, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "receiveStream of struct _TcpBoundSocketConnectParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "clientSocket";
       encoder0.encodeInterfaceRequest(clientSocket, 24, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "clientSocket of struct _TcpBoundSocketConnectParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -295,14 +217,8 @@ class TcpBoundSocketConnectResponseParams extends bindings.Struct {
     network_error_mojom.NetworkError this.result
   ) : super(kVersions.last.size);
 
-  static TcpBoundSocketConnectResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static TcpBoundSocketConnectResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static TcpBoundSocketConnectResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -310,24 +226,7 @@ class TcpBoundSocketConnectResponseParams extends bindings.Struct {
     }
     TcpBoundSocketConnectResponseParams result = new TcpBoundSocketConnectResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -338,11 +237,13 @@ class TcpBoundSocketConnectResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "TcpBoundSocketConnectResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeStruct(result, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct TcpBoundSocketConnectResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

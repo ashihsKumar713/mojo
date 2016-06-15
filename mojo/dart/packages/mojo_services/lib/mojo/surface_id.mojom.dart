@@ -21,14 +21,8 @@ class SurfaceId extends bindings.Struct {
     int this.idNamespace
   ) : super(kVersions.last.size);
 
-  static SurfaceId deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static SurfaceId deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static SurfaceId decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -36,24 +30,7 @@ class SurfaceId extends bindings.Struct {
     }
     SurfaceId result = new SurfaceId();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.local = decoder0.decodeUint32(8);
@@ -67,18 +44,15 @@ class SurfaceId extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "SurfaceId";
+    String fieldName;
     try {
+      fieldName = "local";
       encoder0.encodeUint32(local, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "local of struct SurfaceId: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "idNamespace";
       encoder0.encodeUint32(idNamespace, 12);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "idNamespace of struct SurfaceId: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

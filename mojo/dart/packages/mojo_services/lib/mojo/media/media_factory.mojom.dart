@@ -31,14 +31,8 @@ class _MediaFactoryCreatePlayerParams extends bindings.Struct {
     media_player_mojom.MediaPlayerInterfaceRequest this.player
   ) : super(kVersions.last.size);
 
-  static _MediaFactoryCreatePlayerParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MediaFactoryCreatePlayerParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MediaFactoryCreatePlayerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -46,24 +40,7 @@ class _MediaFactoryCreatePlayerParams extends bindings.Struct {
     }
     _MediaFactoryCreatePlayerParams result = new _MediaFactoryCreatePlayerParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.reader = decoder0.decodeServiceInterface(8, false, seeking_reader_mojom.SeekingReaderProxy.newFromEndpoint);
@@ -77,18 +54,15 @@ class _MediaFactoryCreatePlayerParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaFactoryCreatePlayerParams";
+    String fieldName;
     try {
+      fieldName = "reader";
       encoder0.encodeInterface(reader, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "reader of struct _MediaFactoryCreatePlayerParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "player";
       encoder0.encodeInterfaceRequest(player, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "player of struct _MediaFactoryCreatePlayerParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -122,14 +96,8 @@ class _MediaFactoryCreateSourceParams extends bindings.Struct {
     media_source_mojom.MediaSourceInterfaceRequest this.source
   ) : super(kVersions.last.size);
 
-  static _MediaFactoryCreateSourceParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MediaFactoryCreateSourceParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MediaFactoryCreateSourceParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -137,24 +105,7 @@ class _MediaFactoryCreateSourceParams extends bindings.Struct {
     }
     _MediaFactoryCreateSourceParams result = new _MediaFactoryCreateSourceParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.reader = decoder0.decodeServiceInterface(8, false, seeking_reader_mojom.SeekingReaderProxy.newFromEndpoint);
@@ -183,14 +134,12 @@ class _MediaFactoryCreateSourceParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaFactoryCreateSourceParams";
+    String fieldName;
     try {
+      fieldName = "reader";
       encoder0.encodeInterface(reader, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "reader of struct _MediaFactoryCreateSourceParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "allowedMediaTypes";
       if (allowedMediaTypes == null) {
         encoder0.encodeNullPointer(16, true);
       } else {
@@ -199,16 +148,10 @@ class _MediaFactoryCreateSourceParams extends bindings.Struct {
           encoder1.encodeStruct(allowedMediaTypes[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "allowedMediaTypes of struct _MediaFactoryCreateSourceParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "source";
       encoder0.encodeInterfaceRequest(source, 24, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "source of struct _MediaFactoryCreateSourceParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -243,14 +186,8 @@ class _MediaFactoryCreateSinkParams extends bindings.Struct {
     media_sink_mojom.MediaSinkInterfaceRequest this.sink
   ) : super(kVersions.last.size);
 
-  static _MediaFactoryCreateSinkParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MediaFactoryCreateSinkParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MediaFactoryCreateSinkParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -258,24 +195,7 @@ class _MediaFactoryCreateSinkParams extends bindings.Struct {
     }
     _MediaFactoryCreateSinkParams result = new _MediaFactoryCreateSinkParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.destinationUrl = decoder0.decodeString(8, false);
@@ -294,25 +214,17 @@ class _MediaFactoryCreateSinkParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaFactoryCreateSinkParams";
+    String fieldName;
     try {
+      fieldName = "destinationUrl";
       encoder0.encodeString(destinationUrl, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "destinationUrl of struct _MediaFactoryCreateSinkParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "mediaType";
       encoder0.encodeStruct(mediaType, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "mediaType of struct _MediaFactoryCreateSinkParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "sink";
       encoder0.encodeInterfaceRequest(sink, 24, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "sink of struct _MediaFactoryCreateSinkParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -345,14 +257,8 @@ class _MediaFactoryCreateDemuxParams extends bindings.Struct {
     media_demux_mojom.MediaDemuxInterfaceRequest this.demux
   ) : super(kVersions.last.size);
 
-  static _MediaFactoryCreateDemuxParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MediaFactoryCreateDemuxParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MediaFactoryCreateDemuxParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -360,24 +266,7 @@ class _MediaFactoryCreateDemuxParams extends bindings.Struct {
     }
     _MediaFactoryCreateDemuxParams result = new _MediaFactoryCreateDemuxParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.reader = decoder0.decodeServiceInterface(8, false, seeking_reader_mojom.SeekingReaderProxy.newFromEndpoint);
@@ -391,18 +280,15 @@ class _MediaFactoryCreateDemuxParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaFactoryCreateDemuxParams";
+    String fieldName;
     try {
+      fieldName = "reader";
       encoder0.encodeInterface(reader, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "reader of struct _MediaFactoryCreateDemuxParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "demux";
       encoder0.encodeInterfaceRequest(demux, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "demux of struct _MediaFactoryCreateDemuxParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -434,14 +320,8 @@ class _MediaFactoryCreateDecoderParams extends bindings.Struct {
     media_type_converter_mojom.MediaTypeConverterInterfaceRequest this.decoder
   ) : super(kVersions.last.size);
 
-  static _MediaFactoryCreateDecoderParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MediaFactoryCreateDecoderParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MediaFactoryCreateDecoderParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -449,24 +329,7 @@ class _MediaFactoryCreateDecoderParams extends bindings.Struct {
     }
     _MediaFactoryCreateDecoderParams result = new _MediaFactoryCreateDecoderParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -481,18 +344,15 @@ class _MediaFactoryCreateDecoderParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaFactoryCreateDecoderParams";
+    String fieldName;
     try {
+      fieldName = "inputMediaType";
       encoder0.encodeStruct(inputMediaType, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "inputMediaType of struct _MediaFactoryCreateDecoderParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "decoder";
       encoder0.encodeInterfaceRequest(decoder, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "decoder of struct _MediaFactoryCreateDecoderParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -524,14 +384,8 @@ class _MediaFactoryCreateNetworkReaderParams extends bindings.Struct {
     seeking_reader_mojom.SeekingReaderInterfaceRequest this.reader
   ) : super(kVersions.last.size);
 
-  static _MediaFactoryCreateNetworkReaderParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MediaFactoryCreateNetworkReaderParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MediaFactoryCreateNetworkReaderParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -539,24 +393,7 @@ class _MediaFactoryCreateNetworkReaderParams extends bindings.Struct {
     }
     _MediaFactoryCreateNetworkReaderParams result = new _MediaFactoryCreateNetworkReaderParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.url = decoder0.decodeString(8, false);
@@ -570,18 +407,15 @@ class _MediaFactoryCreateNetworkReaderParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaFactoryCreateNetworkReaderParams";
+    String fieldName;
     try {
+      fieldName = "url";
       encoder0.encodeString(url, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "url of struct _MediaFactoryCreateNetworkReaderParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "reader";
       encoder0.encodeInterfaceRequest(reader, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "reader of struct _MediaFactoryCreateNetworkReaderParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -611,14 +445,8 @@ class _MediaFactoryCreateTimelineControllerParams extends bindings.Struct {
     timeline_controller_mojom.MediaTimelineControllerInterfaceRequest this.timelineController
   ) : super(kVersions.last.size);
 
-  static _MediaFactoryCreateTimelineControllerParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MediaFactoryCreateTimelineControllerParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MediaFactoryCreateTimelineControllerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -626,24 +454,7 @@ class _MediaFactoryCreateTimelineControllerParams extends bindings.Struct {
     }
     _MediaFactoryCreateTimelineControllerParams result = new _MediaFactoryCreateTimelineControllerParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.timelineController = decoder0.decodeInterfaceRequest(8, false, timeline_controller_mojom.MediaTimelineControllerStub.newFromEndpoint);
@@ -653,11 +464,13 @@ class _MediaFactoryCreateTimelineControllerParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaFactoryCreateTimelineControllerParams";
+    String fieldName;
     try {
+      fieldName = "timelineController";
       encoder0.encodeInterfaceRequest(timelineController, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "timelineController of struct _MediaFactoryCreateTimelineControllerParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

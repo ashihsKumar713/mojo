@@ -32,14 +32,8 @@ class SceneUpdate extends bindings.Struct {
     Map<int, nodes_mojom.Node> this.nodes
   ) : super(kVersions.last.size);
 
-  static SceneUpdate deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static SceneUpdate deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static SceneUpdate decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -47,24 +41,7 @@ class SceneUpdate extends bindings.Struct {
     }
     SceneUpdate result = new SceneUpdate();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.clearResources = decoder0.decodeBool(8, 0);
@@ -137,21 +114,14 @@ class SceneUpdate extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "SceneUpdate";
+    String fieldName;
     try {
+      fieldName = "clearResources";
       encoder0.encodeBool(clearResources, 8, 0);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "clearResources of struct SceneUpdate: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "clearNodes";
       encoder0.encodeBool(clearNodes, 8, 1);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "clearNodes of struct SceneUpdate: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "resources";
       if (resources == null) {
         encoder0.encodeNullPointer(16, true);
       } else {
@@ -167,12 +137,7 @@ class SceneUpdate extends bindings.Struct {
           }
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "resources of struct SceneUpdate: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "nodes";
       if (nodes == null) {
         encoder0.encodeNullPointer(24, true);
       } else {
@@ -189,8 +154,7 @@ class SceneUpdate extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "nodes of struct SceneUpdate: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -224,14 +188,8 @@ class SceneMetadata extends bindings.Struct {
     int this.presentationTime
   ) : super(kVersions.last.size);
 
-  static SceneMetadata deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static SceneMetadata deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static SceneMetadata decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -239,24 +197,7 @@ class SceneMetadata extends bindings.Struct {
     }
     SceneMetadata result = new SceneMetadata();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.version = decoder0.decodeUint32(8);
@@ -270,18 +211,15 @@ class SceneMetadata extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "SceneMetadata";
+    String fieldName;
     try {
+      fieldName = "version";
       encoder0.encodeUint32(version, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "version of struct SceneMetadata: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "presentationTime";
       encoder0.encodeInt64(presentationTime, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "presentationTime of struct SceneMetadata: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -313,14 +251,8 @@ class _SceneSetListenerParams extends bindings.Struct {
     SceneListenerInterface this.listener
   ) : super(kVersions.last.size);
 
-  static _SceneSetListenerParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _SceneSetListenerParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _SceneSetListenerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -328,24 +260,7 @@ class _SceneSetListenerParams extends bindings.Struct {
     }
     _SceneSetListenerParams result = new _SceneSetListenerParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.listener = decoder0.decodeServiceInterface(8, true, SceneListenerProxy.newFromEndpoint);
@@ -355,11 +270,13 @@ class _SceneSetListenerParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_SceneSetListenerParams";
+    String fieldName;
     try {
+      fieldName = "listener";
       encoder0.encodeInterface(listener, 8, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "listener of struct _SceneSetListenerParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -388,14 +305,8 @@ class _SceneUpdateParams extends bindings.Struct {
     SceneUpdate this.update
   ) : super(kVersions.last.size);
 
-  static _SceneUpdateParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _SceneUpdateParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _SceneUpdateParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -403,24 +314,7 @@ class _SceneUpdateParams extends bindings.Struct {
     }
     _SceneUpdateParams result = new _SceneUpdateParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -431,11 +325,13 @@ class _SceneUpdateParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_SceneUpdateParams";
+    String fieldName;
     try {
+      fieldName = "update";
       encoder0.encodeStruct(update, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "update of struct _SceneUpdateParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -464,14 +360,8 @@ class _ScenePublishParams extends bindings.Struct {
     SceneMetadata this.metadata
   ) : super(kVersions.last.size);
 
-  static _ScenePublishParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ScenePublishParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ScenePublishParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -479,24 +369,7 @@ class _ScenePublishParams extends bindings.Struct {
     }
     _ScenePublishParams result = new _ScenePublishParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -507,11 +380,13 @@ class _ScenePublishParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ScenePublishParams";
+    String fieldName;
     try {
+      fieldName = "metadata";
       encoder0.encodeStruct(metadata, 8, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "metadata of struct _ScenePublishParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -541,14 +416,8 @@ class _SceneGetSchedulerParams extends bindings.Struct {
     scheduling_mojom.FrameSchedulerInterfaceRequest this.scheduler
   ) : super(kVersions.last.size);
 
-  static _SceneGetSchedulerParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _SceneGetSchedulerParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _SceneGetSchedulerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -556,24 +425,7 @@ class _SceneGetSchedulerParams extends bindings.Struct {
     }
     _SceneGetSchedulerParams result = new _SceneGetSchedulerParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.scheduler = decoder0.decodeInterfaceRequest(8, false, scheduling_mojom.FrameSchedulerStub.newFromEndpoint);
@@ -583,11 +435,13 @@ class _SceneGetSchedulerParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_SceneGetSchedulerParams";
+    String fieldName;
     try {
+      fieldName = "scheduler";
       encoder0.encodeInterfaceRequest(scheduler, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "scheduler of struct _SceneGetSchedulerParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -616,14 +470,8 @@ class _SceneListenerOnResourceUnavailableParams extends bindings.Struct {
     int this.resourceId
   ) : super(kVersions.last.size);
 
-  static _SceneListenerOnResourceUnavailableParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _SceneListenerOnResourceUnavailableParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _SceneListenerOnResourceUnavailableParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -631,24 +479,7 @@ class _SceneListenerOnResourceUnavailableParams extends bindings.Struct {
     }
     _SceneListenerOnResourceUnavailableParams result = new _SceneListenerOnResourceUnavailableParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.resourceId = decoder0.decodeUint32(8);
@@ -658,11 +489,13 @@ class _SceneListenerOnResourceUnavailableParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_SceneListenerOnResourceUnavailableParams";
+    String fieldName;
     try {
+      fieldName = "resourceId";
       encoder0.encodeUint32(resourceId, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "resourceId of struct _SceneListenerOnResourceUnavailableParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -690,14 +523,8 @@ class SceneListenerOnResourceUnavailableResponseParams extends bindings.Struct {
   SceneListenerOnResourceUnavailableResponseParams.init(
   ) : super(kVersions.last.size);
 
-  static SceneListenerOnResourceUnavailableResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static SceneListenerOnResourceUnavailableResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static SceneListenerOnResourceUnavailableResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -705,29 +532,19 @@ class SceneListenerOnResourceUnavailableResponseParams extends bindings.Struct {
     }
     SceneListenerOnResourceUnavailableResponseParams result = new SceneListenerOnResourceUnavailableResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "SceneListenerOnResourceUnavailableResponseParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {

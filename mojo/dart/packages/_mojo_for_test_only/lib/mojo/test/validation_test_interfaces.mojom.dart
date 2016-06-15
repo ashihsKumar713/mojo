@@ -99,14 +99,8 @@ class StructA extends bindings.Struct {
     int this.i
   ) : super(kVersions.last.size);
 
-  static StructA deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static StructA deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static StructA decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -114,24 +108,7 @@ class StructA extends bindings.Struct {
     }
     StructA result = new StructA();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.i = decoder0.decodeUint64(8);
@@ -141,11 +118,13 @@ class StructA extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "StructA";
+    String fieldName;
     try {
+      fieldName = "i";
       encoder0.encodeUint64(i, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "i of struct StructA: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -175,14 +154,8 @@ class StructB extends bindings.Struct {
     StructA this.structA
   ) : super(kVersions.last.size);
 
-  static StructB deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static StructB deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static StructB decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -190,24 +163,7 @@ class StructB extends bindings.Struct {
     }
     StructB result = new StructB();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -218,11 +174,13 @@ class StructB extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "StructB";
+    String fieldName;
     try {
+      fieldName = "structA";
       encoder0.encodeStruct(structA, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "structA of struct StructB: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -252,14 +210,8 @@ class StructC extends bindings.Struct {
     List<int> this.data
   ) : super(kVersions.last.size);
 
-  static StructC deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static StructC deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static StructC decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -267,24 +219,7 @@ class StructC extends bindings.Struct {
     }
     StructC result = new StructC();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.data = decoder0.decodeUint8Array(8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
@@ -294,11 +229,13 @@ class StructC extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "StructC";
+    String fieldName;
     try {
+      fieldName = "data";
       encoder0.encodeUint8Array(data, 8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "data of struct StructC: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -328,14 +265,8 @@ class StructD extends bindings.Struct {
     List<core.MojoMessagePipeEndpoint> this.messagePipes
   ) : super(kVersions.last.size);
 
-  static StructD deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static StructD deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static StructD decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -343,24 +274,7 @@ class StructD extends bindings.Struct {
     }
     StructD result = new StructD();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.messagePipes = decoder0.decodeMessagePipeHandleArray(8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
@@ -370,11 +284,13 @@ class StructD extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "StructD";
+    String fieldName;
     try {
+      fieldName = "messagePipes";
       encoder0.encodeMessagePipeHandleArray(messagePipes, 8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "messagePipes of struct StructD: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -405,14 +321,8 @@ class StructE extends bindings.Struct {
     core.MojoDataPipeConsumer this.dataPipeConsumer
   ) : super(kVersions.last.size);
 
-  static StructE deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static StructE deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static StructE decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -420,24 +330,7 @@ class StructE extends bindings.Struct {
     }
     StructE result = new StructE();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -452,18 +345,15 @@ class StructE extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "StructE";
+    String fieldName;
     try {
+      fieldName = "structD";
       encoder0.encodeStruct(structD, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "structD of struct StructE: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "dataPipeConsumer";
       encoder0.encodeConsumerHandle(dataPipeConsumer, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "dataPipeConsumer of struct StructE: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -493,14 +383,8 @@ class StructF extends bindings.Struct {
     List<int> this.fixedSizeArray
   ) : super(kVersions.last.size);
 
-  static StructF deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static StructF deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static StructF decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -508,24 +392,7 @@ class StructF extends bindings.Struct {
     }
     StructF result = new StructF();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.fixedSizeArray = decoder0.decodeUint8Array(8, bindings.kNothingNullable, 3);
@@ -535,11 +402,13 @@ class StructF extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "StructF";
+    String fieldName;
     try {
+      fieldName = "fixedSizeArray";
       encoder0.encodeUint8Array(fixedSizeArray, 8, bindings.kNothingNullable, 3);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "fixedSizeArray of struct StructF: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -577,14 +446,8 @@ class StructG extends bindings.Struct {
     String this.str
   ) : super(kVersions.last.size);
 
-  static StructG deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static StructG deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static StructG decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -592,24 +455,7 @@ class StructG extends bindings.Struct {
     }
     StructG result = new StructG();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.i = decoder0.decodeInt32(8);
@@ -632,32 +478,19 @@ class StructG extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "StructG";
+    String fieldName;
     try {
+      fieldName = "i";
       encoder0.encodeInt32(i, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "i of struct StructG: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "b";
       encoder0.encodeBool(b, 12, 0);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "b of struct StructG: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "structA";
       encoder0.encodeStruct(structA, 16, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "structA of struct StructG: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "str";
       encoder0.encodeString(str, 24, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "str of struct StructG: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -701,14 +534,8 @@ class StructH extends bindings.Struct {
     Map<int, UnionA> this.e
   ) : super(kVersions.last.size);
 
-  static StructH deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static StructH deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static StructH decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -716,24 +543,7 @@ class StructH extends bindings.Struct {
     }
     StructH result = new StructH();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.a = decoder0.decodeBool(8, 0);
@@ -802,28 +612,16 @@ class StructH extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "StructH";
+    String fieldName;
     try {
+      fieldName = "a";
       encoder0.encodeBool(a, 8, 0);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "a of struct StructH: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "b";
       encoder0.encodeUint8(b, 9);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "b of struct StructH: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "c";
       encoder0.encodeUnion(c, 16, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "c of struct StructH: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "d";
       if (d == null) {
         encoder0.encodeNullPointer(32, true);
       } else {
@@ -832,12 +630,7 @@ class StructH extends bindings.Struct {
           encoder1.encodeUnion(d[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kUnionSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "d of struct StructH: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "e";
       if (e == null) {
         encoder0.encodeNullPointer(40, true);
       } else {
@@ -854,8 +647,7 @@ class StructH extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "e of struct StructH: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -893,14 +685,8 @@ class BasicStruct extends bindings.Struct {
     int this.a
   ) : super(kVersions.last.size);
 
-  static BasicStruct deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static BasicStruct deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static BasicStruct decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -908,24 +694,7 @@ class BasicStruct extends bindings.Struct {
     }
     BasicStruct result = new BasicStruct();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.a = decoder0.decodeInt32(8);
@@ -935,11 +704,13 @@ class BasicStruct extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "BasicStruct";
+    String fieldName;
     try {
+      fieldName = "a";
       encoder0.encodeInt32(a, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "a of struct BasicStruct: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1033,14 +804,8 @@ class StructWithEnum extends bindings.Struct {
   StructWithEnum.init(
   ) : super(kVersions.last.size);
 
-  static StructWithEnum deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static StructWithEnum deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static StructWithEnum decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1048,29 +813,19 @@ class StructWithEnum extends bindings.Struct {
     }
     StructWithEnum result = new StructWithEnum();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "StructWithEnum";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -1096,14 +851,8 @@ class _BoundsCheckTestInterfaceMethod0Params extends bindings.Struct {
     int this.param0
   ) : super(kVersions.last.size);
 
-  static _BoundsCheckTestInterfaceMethod0Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _BoundsCheckTestInterfaceMethod0Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _BoundsCheckTestInterfaceMethod0Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1111,24 +860,7 @@ class _BoundsCheckTestInterfaceMethod0Params extends bindings.Struct {
     }
     _BoundsCheckTestInterfaceMethod0Params result = new _BoundsCheckTestInterfaceMethod0Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.param0 = decoder0.decodeUint8(8);
@@ -1138,11 +870,13 @@ class _BoundsCheckTestInterfaceMethod0Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_BoundsCheckTestInterfaceMethod0Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeUint8(param0, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _BoundsCheckTestInterfaceMethod0Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1172,14 +906,8 @@ class BoundsCheckTestInterfaceMethod0ResponseParams extends bindings.Struct {
     int this.param0
   ) : super(kVersions.last.size);
 
-  static BoundsCheckTestInterfaceMethod0ResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static BoundsCheckTestInterfaceMethod0ResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static BoundsCheckTestInterfaceMethod0ResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1187,24 +915,7 @@ class BoundsCheckTestInterfaceMethod0ResponseParams extends bindings.Struct {
     }
     BoundsCheckTestInterfaceMethod0ResponseParams result = new BoundsCheckTestInterfaceMethod0ResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.param0 = decoder0.decodeUint8(8);
@@ -1214,11 +925,13 @@ class BoundsCheckTestInterfaceMethod0ResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "BoundsCheckTestInterfaceMethod0ResponseParams";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeUint8(param0, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct BoundsCheckTestInterfaceMethod0ResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1248,14 +961,8 @@ class _BoundsCheckTestInterfaceMethod1Params extends bindings.Struct {
     int this.param0
   ) : super(kVersions.last.size);
 
-  static _BoundsCheckTestInterfaceMethod1Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _BoundsCheckTestInterfaceMethod1Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _BoundsCheckTestInterfaceMethod1Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1263,24 +970,7 @@ class _BoundsCheckTestInterfaceMethod1Params extends bindings.Struct {
     }
     _BoundsCheckTestInterfaceMethod1Params result = new _BoundsCheckTestInterfaceMethod1Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.param0 = decoder0.decodeUint8(8);
@@ -1290,11 +980,13 @@ class _BoundsCheckTestInterfaceMethod1Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_BoundsCheckTestInterfaceMethod1Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeUint8(param0, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _BoundsCheckTestInterfaceMethod1Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1324,14 +1016,8 @@ class _ConformanceTestInterfaceMethod0Params extends bindings.Struct {
     double this.param0
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod0Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod0Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod0Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1339,24 +1025,7 @@ class _ConformanceTestInterfaceMethod0Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod0Params result = new _ConformanceTestInterfaceMethod0Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.param0 = decoder0.decodeFloat(8);
@@ -1366,11 +1035,13 @@ class _ConformanceTestInterfaceMethod0Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod0Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeFloat(param0, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod0Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1400,14 +1071,8 @@ class _ConformanceTestInterfaceMethod1Params extends bindings.Struct {
     StructA this.param0
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod1Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod1Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod1Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1415,24 +1080,7 @@ class _ConformanceTestInterfaceMethod1Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod1Params result = new _ConformanceTestInterfaceMethod1Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -1443,11 +1091,13 @@ class _ConformanceTestInterfaceMethod1Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod1Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeStruct(param0, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod1Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1479,14 +1129,8 @@ class _ConformanceTestInterfaceMethod2Params extends bindings.Struct {
     StructA this.param1
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod2Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod2Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod2Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1494,24 +1138,7 @@ class _ConformanceTestInterfaceMethod2Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod2Params result = new _ConformanceTestInterfaceMethod2Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -1527,18 +1154,15 @@ class _ConformanceTestInterfaceMethod2Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod2Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeStruct(param0, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod2Params: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "param1";
       encoder0.encodeStruct(param1, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param1 of struct _ConformanceTestInterfaceMethod2Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1570,14 +1194,8 @@ class _ConformanceTestInterfaceMethod3Params extends bindings.Struct {
     List<bool> this.param0
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod3Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod3Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod3Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1585,24 +1203,7 @@ class _ConformanceTestInterfaceMethod3Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod3Params result = new _ConformanceTestInterfaceMethod3Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.param0 = decoder0.decodeBoolArray(8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
@@ -1612,11 +1213,13 @@ class _ConformanceTestInterfaceMethod3Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod3Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeBoolArray(param0, 8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod3Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1648,14 +1251,8 @@ class _ConformanceTestInterfaceMethod4Params extends bindings.Struct {
     List<int> this.param1
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod4Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod4Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod4Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1663,24 +1260,7 @@ class _ConformanceTestInterfaceMethod4Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod4Params result = new _ConformanceTestInterfaceMethod4Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -1695,18 +1275,15 @@ class _ConformanceTestInterfaceMethod4Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod4Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeStruct(param0, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod4Params: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "param1";
       encoder0.encodeUint8Array(param1, 16, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param1 of struct _ConformanceTestInterfaceMethod4Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1740,14 +1317,8 @@ class _ConformanceTestInterfaceMethod5Params extends bindings.Struct {
     core.MojoDataPipeProducer this.param1
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod5Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod5Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod5Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1755,24 +1326,7 @@ class _ConformanceTestInterfaceMethod5Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod5Params result = new _ConformanceTestInterfaceMethod5Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -1787,18 +1341,15 @@ class _ConformanceTestInterfaceMethod5Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod5Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeStruct(param0, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod5Params: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "param1";
       encoder0.encodeProducerHandle(param1, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param1 of struct _ConformanceTestInterfaceMethod5Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1828,14 +1379,8 @@ class _ConformanceTestInterfaceMethod6Params extends bindings.Struct {
     List<List<int>> this.param0
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod6Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod6Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod6Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1843,24 +1388,7 @@ class _ConformanceTestInterfaceMethod6Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod6Params result = new _ConformanceTestInterfaceMethod6Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -1878,7 +1406,10 @@ class _ConformanceTestInterfaceMethod6Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod6Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       if (param0 == null) {
         encoder0.encodeNullPointer(8, false);
       } else {
@@ -1888,8 +1419,7 @@ class _ConformanceTestInterfaceMethod6Params extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod6Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1921,14 +1451,8 @@ class _ConformanceTestInterfaceMethod7Params extends bindings.Struct {
     List<List<int>> this.param1
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod7Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod7Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod7Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1936,24 +1460,7 @@ class _ConformanceTestInterfaceMethod7Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod7Params result = new _ConformanceTestInterfaceMethod7Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -1976,14 +1483,12 @@ class _ConformanceTestInterfaceMethod7Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod7Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeStruct(param0, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod7Params: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "param1";
       if (param1 == null) {
         encoder0.encodeNullPointer(16, false);
       } else {
@@ -1993,8 +1498,7 @@ class _ConformanceTestInterfaceMethod7Params extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param1 of struct _ConformanceTestInterfaceMethod7Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2026,14 +1530,8 @@ class _ConformanceTestInterfaceMethod8Params extends bindings.Struct {
     List<List<String>> this.param0
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod8Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod8Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod8Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2041,24 +1539,7 @@ class _ConformanceTestInterfaceMethod8Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod8Params result = new _ConformanceTestInterfaceMethod8Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -2086,7 +1567,10 @@ class _ConformanceTestInterfaceMethod8Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod8Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       if (param0 == null) {
         encoder0.encodeNullPointer(8, false);
       } else {
@@ -2103,8 +1587,7 @@ class _ConformanceTestInterfaceMethod8Params extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod8Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2134,14 +1617,8 @@ class _ConformanceTestInterfaceMethod9Params extends bindings.Struct {
     List<List<core.MojoHandle>> this.param0
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod9Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod9Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod9Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2149,24 +1626,7 @@ class _ConformanceTestInterfaceMethod9Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod9Params result = new _ConformanceTestInterfaceMethod9Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -2186,7 +1646,10 @@ class _ConformanceTestInterfaceMethod9Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod9Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       if (param0 == null) {
         encoder0.encodeNullPointer(8, true);
       } else {
@@ -2196,8 +1659,7 @@ class _ConformanceTestInterfaceMethod9Params extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod9Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2226,14 +1688,8 @@ class _ConformanceTestInterfaceMethod10Params extends bindings.Struct {
     Map<String, int> this.param0
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod10Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod10Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod10Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2241,24 +1697,7 @@ class _ConformanceTestInterfaceMethod10Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod10Params result = new _ConformanceTestInterfaceMethod10Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -2291,7 +1730,10 @@ class _ConformanceTestInterfaceMethod10Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod10Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       if (param0 == null) {
         encoder0.encodeNullPointer(8, false);
       } else {
@@ -2308,8 +1750,7 @@ class _ConformanceTestInterfaceMethod10Params extends bindings.Struct {
         encoder1.encodeUint8Array(values0, bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod10Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2339,14 +1780,8 @@ class _ConformanceTestInterfaceMethod11Params extends bindings.Struct {
     StructG this.param0
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod11Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod11Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod11Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2354,24 +1789,7 @@ class _ConformanceTestInterfaceMethod11Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod11Params result = new _ConformanceTestInterfaceMethod11Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -2382,11 +1800,13 @@ class _ConformanceTestInterfaceMethod11Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod11Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeStruct(param0, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod11Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2416,14 +1836,8 @@ class _ConformanceTestInterfaceMethod12Params extends bindings.Struct {
     double this.param0
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod12Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod12Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod12Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2431,24 +1845,7 @@ class _ConformanceTestInterfaceMethod12Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod12Params result = new _ConformanceTestInterfaceMethod12Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.param0 = decoder0.decodeFloat(8);
@@ -2458,11 +1855,13 @@ class _ConformanceTestInterfaceMethod12Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod12Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeFloat(param0, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod12Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2492,14 +1891,8 @@ class ConformanceTestInterfaceMethod12ResponseParams extends bindings.Struct {
     double this.param0
   ) : super(kVersions.last.size);
 
-  static ConformanceTestInterfaceMethod12ResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static ConformanceTestInterfaceMethod12ResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static ConformanceTestInterfaceMethod12ResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2507,24 +1900,7 @@ class ConformanceTestInterfaceMethod12ResponseParams extends bindings.Struct {
     }
     ConformanceTestInterfaceMethod12ResponseParams result = new ConformanceTestInterfaceMethod12ResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.param0 = decoder0.decodeFloat(8);
@@ -2534,11 +1910,13 @@ class ConformanceTestInterfaceMethod12ResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "ConformanceTestInterfaceMethod12ResponseParams";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeFloat(param0, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct ConformanceTestInterfaceMethod12ResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2572,14 +1950,8 @@ class _ConformanceTestInterfaceMethod13Params extends bindings.Struct {
     InterfaceAInterface this.param2
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod13Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod13Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod13Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2587,24 +1959,7 @@ class _ConformanceTestInterfaceMethod13Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod13Params result = new _ConformanceTestInterfaceMethod13Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.param0 = decoder0.decodeServiceInterface(8, true, InterfaceAProxy.newFromEndpoint);
@@ -2622,25 +1977,17 @@ class _ConformanceTestInterfaceMethod13Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod13Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeInterface(param0, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod13Params: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "param1";
       encoder0.encodeUint32(param1, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param1 of struct _ConformanceTestInterfaceMethod13Params: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "param2";
       encoder0.encodeInterface(param2, 20, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param2 of struct _ConformanceTestInterfaceMethod13Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2671,14 +2018,8 @@ class _ConformanceTestInterfaceMethod14Params extends bindings.Struct {
     UnionA this.param0
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod14Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod14Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod14Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2686,24 +2027,7 @@ class _ConformanceTestInterfaceMethod14Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod14Params result = new _ConformanceTestInterfaceMethod14Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.param0 = UnionA.decode(decoder0, 8);
@@ -2717,11 +2041,13 @@ class _ConformanceTestInterfaceMethod14Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod14Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeUnion(param0, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod14Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2751,14 +2077,8 @@ class _ConformanceTestInterfaceMethod15Params extends bindings.Struct {
     StructH this.param0
   ) : super(kVersions.last.size);
 
-  static _ConformanceTestInterfaceMethod15Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ConformanceTestInterfaceMethod15Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ConformanceTestInterfaceMethod15Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2766,24 +2086,7 @@ class _ConformanceTestInterfaceMethod15Params extends bindings.Struct {
     }
     _ConformanceTestInterfaceMethod15Params result = new _ConformanceTestInterfaceMethod15Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -2794,11 +2097,13 @@ class _ConformanceTestInterfaceMethod15Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ConformanceTestInterfaceMethod15Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeStruct(param0, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _ConformanceTestInterfaceMethod15Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2828,14 +2133,8 @@ class _IntegrationTestInterfaceMethod0Params extends bindings.Struct {
     BasicStruct this.param0
   ) : super(kVersions.last.size);
 
-  static _IntegrationTestInterfaceMethod0Params deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _IntegrationTestInterfaceMethod0Params deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _IntegrationTestInterfaceMethod0Params decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2843,24 +2142,7 @@ class _IntegrationTestInterfaceMethod0Params extends bindings.Struct {
     }
     _IntegrationTestInterfaceMethod0Params result = new _IntegrationTestInterfaceMethod0Params();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -2871,11 +2153,13 @@ class _IntegrationTestInterfaceMethod0Params extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_IntegrationTestInterfaceMethod0Params";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeStruct(param0, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct _IntegrationTestInterfaceMethod0Params: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2905,14 +2189,8 @@ class IntegrationTestInterfaceMethod0ResponseParams extends bindings.Struct {
     List<int> this.param0
   ) : super(kVersions.last.size);
 
-  static IntegrationTestInterfaceMethod0ResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static IntegrationTestInterfaceMethod0ResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static IntegrationTestInterfaceMethod0ResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2920,24 +2198,7 @@ class IntegrationTestInterfaceMethod0ResponseParams extends bindings.Struct {
     }
     IntegrationTestInterfaceMethod0ResponseParams result = new IntegrationTestInterfaceMethod0ResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.param0 = decoder0.decodeUint8Array(8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
@@ -2947,11 +2208,13 @@ class IntegrationTestInterfaceMethod0ResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "IntegrationTestInterfaceMethod0ResponseParams";
+    String fieldName;
     try {
+      fieldName = "param0";
       encoder0.encodeUint8Array(param0, 8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "param0 of struct IntegrationTestInterfaceMethod0ResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

@@ -23,14 +23,8 @@ class Photo extends bindings.Struct {
     core.MojoDataPipeConsumer this.content
   ) : super(kVersions.last.size);
 
-  static Photo deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static Photo deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static Photo decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -38,24 +32,7 @@ class Photo extends bindings.Struct {
     }
     Photo result = new Photo();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.uniqueId = decoder0.decodeString(8, false);
@@ -69,18 +46,15 @@ class Photo extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "Photo";
+    String fieldName;
     try {
+      fieldName = "uniqueId";
       encoder0.encodeString(uniqueId, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "uniqueId of struct Photo: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "content";
       encoder0.encodeConsumerHandle(content, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "content of struct Photo: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -108,14 +82,8 @@ class _CameraRollServiceUpdateParams extends bindings.Struct {
   _CameraRollServiceUpdateParams.init(
   ) : super(kVersions.last.size);
 
-  static _CameraRollServiceUpdateParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _CameraRollServiceUpdateParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _CameraRollServiceUpdateParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -123,29 +91,19 @@ class _CameraRollServiceUpdateParams extends bindings.Struct {
     }
     _CameraRollServiceUpdateParams result = new _CameraRollServiceUpdateParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_CameraRollServiceUpdateParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -169,14 +127,8 @@ class _CameraRollServiceGetCountParams extends bindings.Struct {
   _CameraRollServiceGetCountParams.init(
   ) : super(kVersions.last.size);
 
-  static _CameraRollServiceGetCountParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _CameraRollServiceGetCountParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _CameraRollServiceGetCountParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -184,29 +136,19 @@ class _CameraRollServiceGetCountParams extends bindings.Struct {
     }
     _CameraRollServiceGetCountParams result = new _CameraRollServiceGetCountParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_CameraRollServiceGetCountParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -232,14 +174,8 @@ class CameraRollServiceGetCountResponseParams extends bindings.Struct {
     int this.numPhotos
   ) : super(kVersions.last.size);
 
-  static CameraRollServiceGetCountResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static CameraRollServiceGetCountResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static CameraRollServiceGetCountResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -247,24 +183,7 @@ class CameraRollServiceGetCountResponseParams extends bindings.Struct {
     }
     CameraRollServiceGetCountResponseParams result = new CameraRollServiceGetCountResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.numPhotos = decoder0.decodeUint32(8);
@@ -274,11 +193,13 @@ class CameraRollServiceGetCountResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "CameraRollServiceGetCountResponseParams";
+    String fieldName;
     try {
+      fieldName = "numPhotos";
       encoder0.encodeUint32(numPhotos, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "numPhotos of struct CameraRollServiceGetCountResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -308,14 +229,8 @@ class _CameraRollServiceGetPhotoParams extends bindings.Struct {
     int this.index
   ) : super(kVersions.last.size);
 
-  static _CameraRollServiceGetPhotoParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _CameraRollServiceGetPhotoParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _CameraRollServiceGetPhotoParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -323,24 +238,7 @@ class _CameraRollServiceGetPhotoParams extends bindings.Struct {
     }
     _CameraRollServiceGetPhotoParams result = new _CameraRollServiceGetPhotoParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.index = decoder0.decodeUint32(8);
@@ -350,11 +248,13 @@ class _CameraRollServiceGetPhotoParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_CameraRollServiceGetPhotoParams";
+    String fieldName;
     try {
+      fieldName = "index";
       encoder0.encodeUint32(index, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "index of struct _CameraRollServiceGetPhotoParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -384,14 +284,8 @@ class CameraRollServiceGetPhotoResponseParams extends bindings.Struct {
     Photo this.photo
   ) : super(kVersions.last.size);
 
-  static CameraRollServiceGetPhotoResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static CameraRollServiceGetPhotoResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static CameraRollServiceGetPhotoResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -399,24 +293,7 @@ class CameraRollServiceGetPhotoResponseParams extends bindings.Struct {
     }
     CameraRollServiceGetPhotoResponseParams result = new CameraRollServiceGetPhotoResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -427,11 +304,13 @@ class CameraRollServiceGetPhotoResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "CameraRollServiceGetPhotoResponseParams";
+    String fieldName;
     try {
+      fieldName = "photo";
       encoder0.encodeStruct(photo, 8, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "photo of struct CameraRollServiceGetPhotoResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -458,14 +337,8 @@ class _CameraServiceGetLatestFrameParams extends bindings.Struct {
   _CameraServiceGetLatestFrameParams.init(
   ) : super(kVersions.last.size);
 
-  static _CameraServiceGetLatestFrameParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _CameraServiceGetLatestFrameParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _CameraServiceGetLatestFrameParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -473,29 +346,19 @@ class _CameraServiceGetLatestFrameParams extends bindings.Struct {
     }
     _CameraServiceGetLatestFrameParams result = new _CameraServiceGetLatestFrameParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_CameraServiceGetLatestFrameParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -521,14 +384,8 @@ class CameraServiceGetLatestFrameResponseParams extends bindings.Struct {
     core.MojoDataPipeConsumer this.content
   ) : super(kVersions.last.size);
 
-  static CameraServiceGetLatestFrameResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static CameraServiceGetLatestFrameResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static CameraServiceGetLatestFrameResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -536,24 +393,7 @@ class CameraServiceGetLatestFrameResponseParams extends bindings.Struct {
     }
     CameraServiceGetLatestFrameResponseParams result = new CameraServiceGetLatestFrameResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.content = decoder0.decodeConsumerHandle(8, true);
@@ -563,11 +403,13 @@ class CameraServiceGetLatestFrameResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "CameraServiceGetLatestFrameResponseParams";
+    String fieldName;
     try {
+      fieldName = "content";
       encoder0.encodeConsumerHandle(content, 8, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "content of struct CameraServiceGetLatestFrameResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

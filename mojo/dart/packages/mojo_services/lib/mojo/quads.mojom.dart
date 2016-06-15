@@ -457,14 +457,8 @@ class Color extends bindings.Struct {
     int this.rgba
   ) : super(kVersions.last.size);
 
-  static Color deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static Color deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static Color decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -472,24 +466,7 @@ class Color extends bindings.Struct {
     }
     Color result = new Color();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.rgba = decoder0.decodeUint32(8);
@@ -499,11 +476,13 @@ class Color extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "Color";
+    String fieldName;
     try {
+      fieldName = "rgba";
       encoder0.encodeUint32(rgba, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "rgba of struct Color: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -531,14 +510,8 @@ class CheckerboardQuadState extends bindings.Struct {
   CheckerboardQuadState.init(
   ) : super(kVersions.last.size);
 
-  static CheckerboardQuadState deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static CheckerboardQuadState deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static CheckerboardQuadState decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -546,29 +519,19 @@ class CheckerboardQuadState extends bindings.Struct {
     }
     CheckerboardQuadState result = new CheckerboardQuadState();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "CheckerboardQuadState";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -592,14 +555,8 @@ class DebugBorderQuadState extends bindings.Struct {
   DebugBorderQuadState.init(
   ) : super(kVersions.last.size);
 
-  static DebugBorderQuadState deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static DebugBorderQuadState deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static DebugBorderQuadState decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -607,29 +564,19 @@ class DebugBorderQuadState extends bindings.Struct {
     }
     DebugBorderQuadState result = new DebugBorderQuadState();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "DebugBorderQuadState";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -653,14 +600,8 @@ class IoSurfaceContentQuadState extends bindings.Struct {
   IoSurfaceContentQuadState.init(
   ) : super(kVersions.last.size);
 
-  static IoSurfaceContentQuadState deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static IoSurfaceContentQuadState deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static IoSurfaceContentQuadState decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -668,29 +609,19 @@ class IoSurfaceContentQuadState extends bindings.Struct {
     }
     IoSurfaceContentQuadState result = new IoSurfaceContentQuadState();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "IoSurfaceContentQuadState";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -718,14 +649,8 @@ class RenderPassId extends bindings.Struct {
     int this.index
   ) : super(kVersions.last.size);
 
-  static RenderPassId deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static RenderPassId deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static RenderPassId decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -733,24 +658,7 @@ class RenderPassId extends bindings.Struct {
     }
     RenderPassId result = new RenderPassId();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.layerId = decoder0.decodeInt32(8);
@@ -764,18 +672,15 @@ class RenderPassId extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "RenderPassId";
+    String fieldName;
     try {
+      fieldName = "layerId";
       encoder0.encodeInt32(layerId, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "layerId of struct RenderPassId: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "index";
       encoder0.encodeInt32(index, 12);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "index of struct RenderPassId: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -815,14 +720,8 @@ class RenderPassQuadState extends bindings.Struct {
     geometry_mojom.PointF this.filtersScale
   ) : super(kVersions.last.size);
 
-  static RenderPassQuadState deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static RenderPassQuadState deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static RenderPassQuadState decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -830,24 +729,7 @@ class RenderPassQuadState extends bindings.Struct {
     }
     RenderPassQuadState result = new RenderPassQuadState();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -877,39 +759,21 @@ class RenderPassQuadState extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "RenderPassQuadState";
+    String fieldName;
     try {
+      fieldName = "renderPassId";
       encoder0.encodeStruct(renderPassId, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "renderPassId of struct RenderPassQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "maskResourceId";
       encoder0.encodeUint32(maskResourceId, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "maskResourceId of struct RenderPassQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "maskUvScale";
       encoder0.encodeStruct(maskUvScale, 24, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "maskUvScale of struct RenderPassQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "maskTextureSize";
       encoder0.encodeStruct(maskTextureSize, 32, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "maskTextureSize of struct RenderPassQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "filtersScale";
       encoder0.encodeStruct(filtersScale, 40, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "filtersScale of struct RenderPassQuadState: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -949,14 +813,8 @@ class SolidColorQuadState extends bindings.Struct {
     bool this.forceAntiAliasingOff
   ) : super(kVersions.last.size);
 
-  static SolidColorQuadState deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static SolidColorQuadState deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static SolidColorQuadState decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -964,24 +822,7 @@ class SolidColorQuadState extends bindings.Struct {
     }
     SolidColorQuadState result = new SolidColorQuadState();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -996,18 +837,15 @@ class SolidColorQuadState extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "SolidColorQuadState";
+    String fieldName;
     try {
+      fieldName = "color";
       encoder0.encodeStruct(color, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "color of struct SolidColorQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "forceAntiAliasingOff";
       encoder0.encodeBool(forceAntiAliasingOff, 16, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "forceAntiAliasingOff of struct SolidColorQuadState: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1039,14 +877,8 @@ class SurfaceQuadState extends bindings.Struct {
     surface_id_mojom.SurfaceId this.surface
   ) : super(kVersions.last.size);
 
-  static SurfaceQuadState deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static SurfaceQuadState deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static SurfaceQuadState decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1054,24 +886,7 @@ class SurfaceQuadState extends bindings.Struct {
     }
     SurfaceQuadState result = new SurfaceQuadState();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -1082,11 +897,13 @@ class SurfaceQuadState extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "SurfaceQuadState";
+    String fieldName;
     try {
+      fieldName = "surface";
       encoder0.encodeStruct(surface, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "surface of struct SurfaceQuadState: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1130,14 +947,8 @@ class TextureQuadState extends bindings.Struct {
     List<double> this.vertexOpacity
   ) : super(kVersions.last.size);
 
-  static TextureQuadState deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static TextureQuadState deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static TextureQuadState decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1145,24 +956,7 @@ class TextureQuadState extends bindings.Struct {
     }
     TextureQuadState result = new TextureQuadState();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.resourceId = decoder0.decodeUint32(8);
@@ -1203,60 +997,27 @@ class TextureQuadState extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "TextureQuadState";
+    String fieldName;
     try {
+      fieldName = "resourceId";
       encoder0.encodeUint32(resourceId, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "resourceId of struct TextureQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "premultipliedAlpha";
       encoder0.encodeBool(premultipliedAlpha, 12, 0);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "premultipliedAlpha of struct TextureQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "flipped";
       encoder0.encodeBool(flipped, 12, 1);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "flipped of struct TextureQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "nearestNeighbor";
       encoder0.encodeBool(nearestNeighbor, 12, 2);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "nearestNeighbor of struct TextureQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "uvTopLeft";
       encoder0.encodeStruct(uvTopLeft, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "uvTopLeft of struct TextureQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "uvBottomRight";
       encoder0.encodeStruct(uvBottomRight, 24, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "uvBottomRight of struct TextureQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "backgroundColor";
       encoder0.encodeStruct(backgroundColor, 32, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "backgroundColor of struct TextureQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "vertexOpacity";
       encoder0.encodeFloatArray(vertexOpacity, 40, bindings.kNothingNullable, 4);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "vertexOpacity of struct TextureQuadState: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1308,14 +1069,8 @@ class TileQuadState extends bindings.Struct {
     int this.resourceId
   ) : super(kVersions.last.size);
 
-  static TileQuadState deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static TileQuadState deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static TileQuadState decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1323,24 +1078,7 @@ class TileQuadState extends bindings.Struct {
     }
     TileQuadState result = new TileQuadState();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -1368,39 +1106,21 @@ class TileQuadState extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "TileQuadState";
+    String fieldName;
     try {
+      fieldName = "texCoordRect";
       encoder0.encodeStruct(texCoordRect, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "texCoordRect of struct TileQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "textureSize";
       encoder0.encodeStruct(textureSize, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "textureSize of struct TileQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "swizzleContents";
       encoder0.encodeBool(swizzleContents, 24, 0);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "swizzleContents of struct TileQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "nearestNeighbor";
       encoder0.encodeBool(nearestNeighbor, 24, 1);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "nearestNeighbor of struct TileQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "resourceId";
       encoder0.encodeUint32(resourceId, 28);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "resourceId of struct TileQuadState: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1436,14 +1156,8 @@ class StreamVideoQuadState extends bindings.Struct {
   StreamVideoQuadState.init(
   ) : super(kVersions.last.size);
 
-  static StreamVideoQuadState deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static StreamVideoQuadState deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static StreamVideoQuadState decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1451,29 +1165,19 @@ class StreamVideoQuadState extends bindings.Struct {
     }
     StreamVideoQuadState result = new StreamVideoQuadState();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "StreamVideoQuadState";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -1509,14 +1213,8 @@ class YuvVideoQuadState extends bindings.Struct {
     YuvColorSpace this.colorSpace
   ) : super(kVersions.last.size);
 
-  static YuvVideoQuadState deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static YuvVideoQuadState deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static YuvVideoQuadState decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1524,24 +1222,7 @@ class YuvVideoQuadState extends bindings.Struct {
     }
     YuvVideoQuadState result = new YuvVideoQuadState();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -1576,46 +1257,23 @@ class YuvVideoQuadState extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "YuvVideoQuadState";
+    String fieldName;
     try {
+      fieldName = "texCoordRect";
       encoder0.encodeStruct(texCoordRect, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "texCoordRect of struct YuvVideoQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "yPlaneResourceId";
       encoder0.encodeUint32(yPlaneResourceId, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "yPlaneResourceId of struct YuvVideoQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "uPlaneResourceId";
       encoder0.encodeUint32(uPlaneResourceId, 20);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "uPlaneResourceId of struct YuvVideoQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "vPlaneResourceId";
       encoder0.encodeUint32(vPlaneResourceId, 24);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "vPlaneResourceId of struct YuvVideoQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "aPlaneResourceId";
       encoder0.encodeUint32(aPlaneResourceId, 28);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "aPlaneResourceId of struct YuvVideoQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "colorSpace";
       encoder0.encodeEnum(colorSpace, 32);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "colorSpace of struct YuvVideoQuadState: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1685,14 +1343,8 @@ class Quad extends bindings.Struct {
     YuvVideoQuadState this.yuvVideoQuadState
   ) : super(kVersions.last.size);
 
-  static Quad deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static Quad deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static Quad decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1700,24 +1352,7 @@ class Quad extends bindings.Struct {
     }
     Quad result = new Quad();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.material = Material.decode(decoder0, 8);
@@ -1804,116 +1439,43 @@ class Quad extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "Quad";
+    String fieldName;
     try {
+      fieldName = "material";
       encoder0.encodeEnum(material, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "material of struct Quad: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "needsBlending";
       encoder0.encodeBool(needsBlending, 12, 0);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "needsBlending of struct Quad: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "rect";
       encoder0.encodeStruct(rect, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "rect of struct Quad: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "opaqueRect";
       encoder0.encodeStruct(opaqueRect, 24, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "opaqueRect of struct Quad: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "visibleRect";
       encoder0.encodeStruct(visibleRect, 32, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "visibleRect of struct Quad: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "sharedQuadStateIndex";
       encoder0.encodeUint32(sharedQuadStateIndex, 40);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "sharedQuadStateIndex of struct Quad: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "checkerboardQuadState";
       encoder0.encodeStruct(checkerboardQuadState, 48, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "checkerboardQuadState of struct Quad: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "debugBorderQuadState";
       encoder0.encodeStruct(debugBorderQuadState, 56, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "debugBorderQuadState of struct Quad: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "ioSurfaceQuadState";
       encoder0.encodeStruct(ioSurfaceQuadState, 64, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "ioSurfaceQuadState of struct Quad: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "renderPassQuadState";
       encoder0.encodeStruct(renderPassQuadState, 72, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "renderPassQuadState of struct Quad: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "solidColorQuadState";
       encoder0.encodeStruct(solidColorQuadState, 80, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "solidColorQuadState of struct Quad: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "surfaceQuadState";
       encoder0.encodeStruct(surfaceQuadState, 88, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "surfaceQuadState of struct Quad: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "textureQuadState";
       encoder0.encodeStruct(textureQuadState, 96, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "textureQuadState of struct Quad: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "tileQuadState";
       encoder0.encodeStruct(tileQuadState, 104, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "tileQuadState of struct Quad: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "streamVideoQuadState";
       encoder0.encodeStruct(streamVideoQuadState, 112, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "streamVideoQuadState of struct Quad: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "yuvVideoQuadState";
       encoder0.encodeStruct(yuvVideoQuadState, 120, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "yuvVideoQuadState of struct Quad: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1987,14 +1549,8 @@ class SharedQuadState extends bindings.Struct {
     int this.sortingContextId
   ) : super(kVersions.last.size);
 
-  static SharedQuadState deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static SharedQuadState deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static SharedQuadState decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2002,24 +1558,7 @@ class SharedQuadState extends bindings.Struct {
     }
     SharedQuadState result = new SharedQuadState();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -2065,60 +1604,27 @@ class SharedQuadState extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "SharedQuadState";
+    String fieldName;
     try {
+      fieldName = "contentToTargetTransform";
       encoder0.encodeStruct(contentToTargetTransform, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "contentToTargetTransform of struct SharedQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "contentBounds";
       encoder0.encodeStruct(contentBounds, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "contentBounds of struct SharedQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "visibleContentRect";
       encoder0.encodeStruct(visibleContentRect, 24, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "visibleContentRect of struct SharedQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "clipRect";
       encoder0.encodeStruct(clipRect, 32, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "clipRect of struct SharedQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "isClipped";
       encoder0.encodeBool(isClipped, 40, 0);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "isClipped of struct SharedQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "opacity";
       encoder0.encodeFloat(opacity, 44);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "opacity of struct SharedQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "blendMode";
       encoder0.encodeEnum(blendMode, 48);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "blendMode of struct SharedQuadState: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "sortingContextId";
       encoder0.encodeInt32(sortingContextId, 52);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "sortingContextId of struct SharedQuadState: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2174,14 +1680,8 @@ class Pass extends bindings.Struct {
     List<SharedQuadState> this.sharedQuadStates
   ) : super(kVersions.last.size);
 
-  static Pass deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static Pass deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static Pass decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2189,24 +1689,7 @@ class Pass extends bindings.Struct {
     }
     Pass result = new Pass();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.id = decoder0.decodeInt32(8);
@@ -2261,42 +1744,20 @@ class Pass extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "Pass";
+    String fieldName;
     try {
+      fieldName = "id";
       encoder0.encodeInt32(id, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "id of struct Pass: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "hasTransparentBackground";
       encoder0.encodeBool(hasTransparentBackground, 12, 0);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "hasTransparentBackground of struct Pass: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "outputRect";
       encoder0.encodeStruct(outputRect, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "outputRect of struct Pass: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "damageRect";
       encoder0.encodeStruct(damageRect, 24, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "damageRect of struct Pass: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "transformToRootTarget";
       encoder0.encodeStruct(transformToRootTarget, 32, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "transformToRootTarget of struct Pass: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "quads";
       if (quads == null) {
         encoder0.encodeNullPointer(40, false);
       } else {
@@ -2305,12 +1766,7 @@ class Pass extends bindings.Struct {
           encoder1.encodeStruct(quads[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "quads of struct Pass: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "sharedQuadStates";
       if (sharedQuadStates == null) {
         encoder0.encodeNullPointer(48, false);
       } else {
@@ -2320,8 +1776,7 @@ class Pass extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "sharedQuadStates of struct Pass: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

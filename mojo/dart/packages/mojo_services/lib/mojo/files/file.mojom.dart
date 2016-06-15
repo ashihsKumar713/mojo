@@ -20,14 +20,8 @@ class _FileCloseParams extends bindings.Struct {
   _FileCloseParams.init(
   ) : super(kVersions.last.size);
 
-  static _FileCloseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FileCloseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FileCloseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -35,29 +29,19 @@ class _FileCloseParams extends bindings.Struct {
     }
     _FileCloseParams result = new _FileCloseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FileCloseParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -83,14 +67,8 @@ class FileCloseResponseParams extends bindings.Struct {
     types_mojom.Error this.err
   ) : super(kVersions.last.size);
 
-  static FileCloseResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FileCloseResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FileCloseResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -98,24 +76,7 @@ class FileCloseResponseParams extends bindings.Struct {
     }
     FileCloseResponseParams result = new FileCloseResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.err = types_mojom.Error.decode(decoder0, 8);
@@ -129,11 +90,13 @@ class FileCloseResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FileCloseResponseParams";
+    String fieldName;
     try {
+      fieldName = "err";
       encoder0.encodeEnum(err, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "err of struct FileCloseResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -167,14 +130,8 @@ class _FileReadParams extends bindings.Struct {
     int this.offset
   ) : super(kVersions.last.size);
 
-  static _FileReadParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FileReadParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FileReadParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -182,24 +139,7 @@ class _FileReadParams extends bindings.Struct {
     }
     _FileReadParams result = new _FileReadParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.numBytesToRead = decoder0.decodeUint32(8);
@@ -221,25 +161,17 @@ class _FileReadParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FileReadParams";
+    String fieldName;
     try {
+      fieldName = "numBytesToRead";
       encoder0.encodeUint32(numBytesToRead, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "numBytesToRead of struct _FileReadParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "whence";
       encoder0.encodeEnum(whence, 12);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "whence of struct _FileReadParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "offset";
       encoder0.encodeInt64(offset, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "offset of struct _FileReadParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -275,14 +207,8 @@ class FileReadResponseParams extends bindings.Struct {
     List<int> this.bytesRead
   ) : super(kVersions.last.size);
 
-  static FileReadResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FileReadResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FileReadResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -290,24 +216,7 @@ class FileReadResponseParams extends bindings.Struct {
     }
     FileReadResponseParams result = new FileReadResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -325,18 +234,15 @@ class FileReadResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FileReadResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct FileReadResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "bytesRead";
       encoder0.encodeUint8Array(bytesRead, 16, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "bytesRead of struct FileReadResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -372,14 +278,8 @@ class _FileWriteParams extends bindings.Struct {
     types_mojom.Whence this.whence
   ) : super(kVersions.last.size);
 
-  static _FileWriteParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FileWriteParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FileWriteParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -387,24 +287,7 @@ class _FileWriteParams extends bindings.Struct {
     }
     _FileWriteParams result = new _FileWriteParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.bytesToWrite = decoder0.decodeUint8Array(8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
@@ -426,25 +309,17 @@ class _FileWriteParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FileWriteParams";
+    String fieldName;
     try {
+      fieldName = "bytesToWrite";
       encoder0.encodeUint8Array(bytesToWrite, 8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "bytesToWrite of struct _FileWriteParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "offset";
       encoder0.encodeInt64(offset, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "offset of struct _FileWriteParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "whence";
       encoder0.encodeEnum(whence, 24);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "whence of struct _FileWriteParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -480,14 +355,8 @@ class FileWriteResponseParams extends bindings.Struct {
     int this.numBytesWritten
   ) : super(kVersions.last.size);
 
-  static FileWriteResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FileWriteResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FileWriteResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -495,24 +364,7 @@ class FileWriteResponseParams extends bindings.Struct {
     }
     FileWriteResponseParams result = new FileWriteResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -530,18 +382,15 @@ class FileWriteResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FileWriteResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct FileWriteResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "numBytesWritten";
       encoder0.encodeUint32(numBytesWritten, 12);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "numBytesWritten of struct FileWriteResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -579,14 +428,8 @@ class _FileReadToStreamParams extends bindings.Struct {
     int this.numBytesToRead
   ) : super(kVersions.last.size);
 
-  static _FileReadToStreamParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FileReadToStreamParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FileReadToStreamParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -594,24 +437,7 @@ class _FileReadToStreamParams extends bindings.Struct {
     }
     _FileReadToStreamParams result = new _FileReadToStreamParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.source = decoder0.decodeProducerHandle(8, false);
@@ -637,32 +463,19 @@ class _FileReadToStreamParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FileReadToStreamParams";
+    String fieldName;
     try {
+      fieldName = "source";
       encoder0.encodeProducerHandle(source, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "source of struct _FileReadToStreamParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "whence";
       encoder0.encodeEnum(whence, 12);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "whence of struct _FileReadToStreamParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "offset";
       encoder0.encodeInt64(offset, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "offset of struct _FileReadToStreamParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "numBytesToRead";
       encoder0.encodeInt64(numBytesToRead, 24);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "numBytesToRead of struct _FileReadToStreamParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -694,14 +507,8 @@ class FileReadToStreamResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static FileReadToStreamResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FileReadToStreamResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FileReadToStreamResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -709,24 +516,7 @@ class FileReadToStreamResponseParams extends bindings.Struct {
     }
     FileReadToStreamResponseParams result = new FileReadToStreamResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -740,11 +530,13 @@ class FileReadToStreamResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FileReadToStreamResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct FileReadToStreamResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -778,14 +570,8 @@ class _FileWriteFromStreamParams extends bindings.Struct {
     int this.offset
   ) : super(kVersions.last.size);
 
-  static _FileWriteFromStreamParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FileWriteFromStreamParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FileWriteFromStreamParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -793,24 +579,7 @@ class _FileWriteFromStreamParams extends bindings.Struct {
     }
     _FileWriteFromStreamParams result = new _FileWriteFromStreamParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.sink = decoder0.decodeConsumerHandle(8, false);
@@ -832,25 +601,17 @@ class _FileWriteFromStreamParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FileWriteFromStreamParams";
+    String fieldName;
     try {
+      fieldName = "sink";
       encoder0.encodeConsumerHandle(sink, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "sink of struct _FileWriteFromStreamParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "whence";
       encoder0.encodeEnum(whence, 12);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "whence of struct _FileWriteFromStreamParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "offset";
       encoder0.encodeInt64(offset, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "offset of struct _FileWriteFromStreamParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -881,14 +642,8 @@ class FileWriteFromStreamResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static FileWriteFromStreamResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FileWriteFromStreamResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FileWriteFromStreamResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -896,24 +651,7 @@ class FileWriteFromStreamResponseParams extends bindings.Struct {
     }
     FileWriteFromStreamResponseParams result = new FileWriteFromStreamResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -927,11 +665,13 @@ class FileWriteFromStreamResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FileWriteFromStreamResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct FileWriteFromStreamResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -959,14 +699,8 @@ class _FileTellParams extends bindings.Struct {
   _FileTellParams.init(
   ) : super(kVersions.last.size);
 
-  static _FileTellParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FileTellParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FileTellParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -974,29 +708,19 @@ class _FileTellParams extends bindings.Struct {
     }
     _FileTellParams result = new _FileTellParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FileTellParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -1024,14 +748,8 @@ class FileTellResponseParams extends bindings.Struct {
     int this.position
   ) : super(kVersions.last.size);
 
-  static FileTellResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FileTellResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FileTellResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1039,24 +757,7 @@ class FileTellResponseParams extends bindings.Struct {
     }
     FileTellResponseParams result = new FileTellResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -1074,18 +775,15 @@ class FileTellResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FileTellResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct FileTellResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "position";
       encoder0.encodeInt64(position, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "position of struct FileTellResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1119,14 +817,8 @@ class _FileSeekParams extends bindings.Struct {
     types_mojom.Whence this.whence
   ) : super(kVersions.last.size);
 
-  static _FileSeekParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FileSeekParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FileSeekParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1134,24 +826,7 @@ class _FileSeekParams extends bindings.Struct {
     }
     _FileSeekParams result = new _FileSeekParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.offset = decoder0.decodeInt64(8);
@@ -1169,18 +844,15 @@ class _FileSeekParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FileSeekParams";
+    String fieldName;
     try {
+      fieldName = "offset";
       encoder0.encodeInt64(offset, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "offset of struct _FileSeekParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "whence";
       encoder0.encodeEnum(whence, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "whence of struct _FileSeekParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1214,14 +886,8 @@ class FileSeekResponseParams extends bindings.Struct {
     int this.position
   ) : super(kVersions.last.size);
 
-  static FileSeekResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FileSeekResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FileSeekResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1229,24 +895,7 @@ class FileSeekResponseParams extends bindings.Struct {
     }
     FileSeekResponseParams result = new FileSeekResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -1264,18 +913,15 @@ class FileSeekResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FileSeekResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct FileSeekResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "position";
       encoder0.encodeInt64(position, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "position of struct FileSeekResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1305,14 +951,8 @@ class _FileStatParams extends bindings.Struct {
   _FileStatParams.init(
   ) : super(kVersions.last.size);
 
-  static _FileStatParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FileStatParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FileStatParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1320,29 +960,19 @@ class _FileStatParams extends bindings.Struct {
     }
     _FileStatParams result = new _FileStatParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FileStatParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -1370,14 +1000,8 @@ class FileStatResponseParams extends bindings.Struct {
     types_mojom.FileInformation this.fileInformation
   ) : super(kVersions.last.size);
 
-  static FileStatResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FileStatResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FileStatResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1385,24 +1009,7 @@ class FileStatResponseParams extends bindings.Struct {
     }
     FileStatResponseParams result = new FileStatResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -1421,18 +1028,15 @@ class FileStatResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FileStatResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct FileStatResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "fileInformation";
       encoder0.encodeStruct(fileInformation, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "fileInformation of struct FileStatResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1464,14 +1068,8 @@ class _FileTruncateParams extends bindings.Struct {
     int this.size
   ) : super(kVersions.last.size);
 
-  static _FileTruncateParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FileTruncateParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FileTruncateParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1479,24 +1077,7 @@ class _FileTruncateParams extends bindings.Struct {
     }
     _FileTruncateParams result = new _FileTruncateParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.size = decoder0.decodeInt64(8);
@@ -1506,11 +1087,13 @@ class _FileTruncateParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FileTruncateParams";
+    String fieldName;
     try {
+      fieldName = "size";
       encoder0.encodeInt64(size, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "size of struct _FileTruncateParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1540,14 +1123,8 @@ class FileTruncateResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static FileTruncateResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FileTruncateResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FileTruncateResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1555,24 +1132,7 @@ class FileTruncateResponseParams extends bindings.Struct {
     }
     FileTruncateResponseParams result = new FileTruncateResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -1586,11 +1146,13 @@ class FileTruncateResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FileTruncateResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct FileTruncateResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1622,14 +1184,8 @@ class _FileTouchParams extends bindings.Struct {
     types_mojom.TimespecOrNow this.mtime
   ) : super(kVersions.last.size);
 
-  static _FileTouchParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FileTouchParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FileTouchParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1637,24 +1193,7 @@ class _FileTouchParams extends bindings.Struct {
     }
     _FileTouchParams result = new _FileTouchParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -1670,18 +1209,15 @@ class _FileTouchParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FileTouchParams";
+    String fieldName;
     try {
+      fieldName = "atime";
       encoder0.encodeStruct(atime, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "atime of struct _FileTouchParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "mtime";
       encoder0.encodeStruct(mtime, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "mtime of struct _FileTouchParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1713,14 +1249,8 @@ class FileTouchResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static FileTouchResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FileTouchResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FileTouchResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1728,24 +1258,7 @@ class FileTouchResponseParams extends bindings.Struct {
     }
     FileTouchResponseParams result = new FileTouchResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -1759,11 +1272,13 @@ class FileTouchResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FileTouchResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct FileTouchResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1793,14 +1308,8 @@ class _FileDupParams extends bindings.Struct {
     FileInterfaceRequest this.file
   ) : super(kVersions.last.size);
 
-  static _FileDupParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FileDupParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FileDupParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1808,24 +1317,7 @@ class _FileDupParams extends bindings.Struct {
     }
     _FileDupParams result = new _FileDupParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.file = decoder0.decodeInterfaceRequest(8, false, FileStub.newFromEndpoint);
@@ -1835,11 +1327,13 @@ class _FileDupParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FileDupParams";
+    String fieldName;
     try {
+      fieldName = "file";
       encoder0.encodeInterfaceRequest(file, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "file of struct _FileDupParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1868,14 +1362,8 @@ class FileDupResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static FileDupResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FileDupResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FileDupResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1883,24 +1371,7 @@ class FileDupResponseParams extends bindings.Struct {
     }
     FileDupResponseParams result = new FileDupResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -1914,11 +1385,13 @@ class FileDupResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FileDupResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct FileDupResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1950,14 +1423,8 @@ class _FileReopenParams extends bindings.Struct {
     int this.openFlags
   ) : super(kVersions.last.size);
 
-  static _FileReopenParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FileReopenParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FileReopenParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1965,24 +1432,7 @@ class _FileReopenParams extends bindings.Struct {
     }
     _FileReopenParams result = new _FileReopenParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.file = decoder0.decodeInterfaceRequest(8, false, FileStub.newFromEndpoint);
@@ -1996,18 +1446,15 @@ class _FileReopenParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FileReopenParams";
+    String fieldName;
     try {
+      fieldName = "file";
       encoder0.encodeInterfaceRequest(file, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "file of struct _FileReopenParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "openFlags";
       encoder0.encodeUint32(openFlags, 12);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "openFlags of struct _FileReopenParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2037,14 +1484,8 @@ class FileReopenResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static FileReopenResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FileReopenResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FileReopenResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2052,24 +1493,7 @@ class FileReopenResponseParams extends bindings.Struct {
     }
     FileReopenResponseParams result = new FileReopenResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -2083,11 +1507,13 @@ class FileReopenResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FileReopenResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct FileReopenResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2115,14 +1541,8 @@ class _FileAsBufferParams extends bindings.Struct {
   _FileAsBufferParams.init(
   ) : super(kVersions.last.size);
 
-  static _FileAsBufferParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FileAsBufferParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FileAsBufferParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2130,29 +1550,19 @@ class _FileAsBufferParams extends bindings.Struct {
     }
     _FileAsBufferParams result = new _FileAsBufferParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FileAsBufferParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -2180,14 +1590,8 @@ class FileAsBufferResponseParams extends bindings.Struct {
     core.MojoSharedBuffer this.buffer
   ) : super(kVersions.last.size);
 
-  static FileAsBufferResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FileAsBufferResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FileAsBufferResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2195,24 +1599,7 @@ class FileAsBufferResponseParams extends bindings.Struct {
     }
     FileAsBufferResponseParams result = new FileAsBufferResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -2230,18 +1617,15 @@ class FileAsBufferResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FileAsBufferResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct FileAsBufferResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "buffer";
       encoder0.encodeSharedBufferHandle(buffer, 12, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "buffer of struct FileAsBufferResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2273,14 +1657,8 @@ class _FileIoctlParams extends bindings.Struct {
     List<int> this.inValues
   ) : super(kVersions.last.size);
 
-  static _FileIoctlParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FileIoctlParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FileIoctlParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2288,24 +1666,7 @@ class _FileIoctlParams extends bindings.Struct {
     }
     _FileIoctlParams result = new _FileIoctlParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.request = decoder0.decodeUint32(8);
@@ -2319,18 +1680,15 @@ class _FileIoctlParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FileIoctlParams";
+    String fieldName;
     try {
+      fieldName = "request";
       encoder0.encodeUint32(request, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "request of struct _FileIoctlParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "inValues";
       encoder0.encodeUint32Array(inValues, 16, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "inValues of struct _FileIoctlParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -2364,14 +1722,8 @@ class FileIoctlResponseParams extends bindings.Struct {
     List<int> this.outValues
   ) : super(kVersions.last.size);
 
-  static FileIoctlResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FileIoctlResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FileIoctlResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -2379,24 +1731,7 @@ class FileIoctlResponseParams extends bindings.Struct {
     }
     FileIoctlResponseParams result = new FileIoctlResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -2414,18 +1749,15 @@ class FileIoctlResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FileIoctlResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct FileIoctlResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "outValues";
       encoder0.encodeUint32Array(outValues, 16, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "outValues of struct FileIoctlResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

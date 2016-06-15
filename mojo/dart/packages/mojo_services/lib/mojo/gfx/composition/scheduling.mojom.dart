@@ -27,14 +27,8 @@ class FrameInfo extends bindings.Struct {
     int this.presentationTime
   ) : super(kVersions.last.size);
 
-  static FrameInfo deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FrameInfo deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FrameInfo decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -42,24 +36,7 @@ class FrameInfo extends bindings.Struct {
     }
     FrameInfo result = new FrameInfo();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.frameTime = decoder0.decodeInt64(8);
@@ -81,32 +58,19 @@ class FrameInfo extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FrameInfo";
+    String fieldName;
     try {
+      fieldName = "frameTime";
       encoder0.encodeInt64(frameTime, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "frameTime of struct FrameInfo: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "frameInterval";
       encoder0.encodeUint64(frameInterval, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "frameInterval of struct FrameInfo: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "frameDeadline";
       encoder0.encodeInt64(frameDeadline, 24);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "frameDeadline of struct FrameInfo: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "presentationTime";
       encoder0.encodeInt64(presentationTime, 32);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "presentationTime of struct FrameInfo: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -140,14 +104,8 @@ class _FrameSchedulerScheduleFrameParams extends bindings.Struct {
   _FrameSchedulerScheduleFrameParams.init(
   ) : super(kVersions.last.size);
 
-  static _FrameSchedulerScheduleFrameParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FrameSchedulerScheduleFrameParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FrameSchedulerScheduleFrameParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -155,29 +113,19 @@ class _FrameSchedulerScheduleFrameParams extends bindings.Struct {
     }
     _FrameSchedulerScheduleFrameParams result = new _FrameSchedulerScheduleFrameParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FrameSchedulerScheduleFrameParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -203,14 +151,8 @@ class FrameSchedulerScheduleFrameResponseParams extends bindings.Struct {
     FrameInfo this.frameInfo
   ) : super(kVersions.last.size);
 
-  static FrameSchedulerScheduleFrameResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FrameSchedulerScheduleFrameResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FrameSchedulerScheduleFrameResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -218,24 +160,7 @@ class FrameSchedulerScheduleFrameResponseParams extends bindings.Struct {
     }
     FrameSchedulerScheduleFrameResponseParams result = new FrameSchedulerScheduleFrameResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -246,11 +171,13 @@ class FrameSchedulerScheduleFrameResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FrameSchedulerScheduleFrameResponseParams";
+    String fieldName;
     try {
+      fieldName = "frameInfo";
       encoder0.encodeStruct(frameInfo, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "frameInfo of struct FrameSchedulerScheduleFrameResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

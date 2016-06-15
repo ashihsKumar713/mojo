@@ -23,14 +23,8 @@ class PrevWordInfo extends bindings.Struct {
     bool this.isBeginningOfSentence
   ) : super(kVersions.last.size);
 
-  static PrevWordInfo deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static PrevWordInfo deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static PrevWordInfo decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -38,24 +32,7 @@ class PrevWordInfo extends bindings.Struct {
     }
     PrevWordInfo result = new PrevWordInfo();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.word = decoder0.decodeString(8, false);
@@ -69,18 +46,15 @@ class PrevWordInfo extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "PrevWordInfo";
+    String fieldName;
     try {
+      fieldName = "word";
       encoder0.encodeString(word, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "word of struct PrevWordInfo: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "isBeginningOfSentence";
       encoder0.encodeBool(isBeginningOfSentence, 16, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "isBeginningOfSentence of struct PrevWordInfo: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -114,14 +88,8 @@ class PredictionInfo extends bindings.Struct {
     String this.currentWord
   ) : super(kVersions.last.size);
 
-  static PredictionInfo deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static PredictionInfo deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static PredictionInfo decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -129,24 +97,7 @@ class PredictionInfo extends bindings.Struct {
     }
     PredictionInfo result = new PredictionInfo();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -169,7 +120,10 @@ class PredictionInfo extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "PredictionInfo";
+    String fieldName;
     try {
+      fieldName = "previousWords";
       if (previousWords == null) {
         encoder0.encodeNullPointer(8, false);
       } else {
@@ -178,16 +132,10 @@ class PredictionInfo extends bindings.Struct {
           encoder1.encodeStruct(previousWords[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "previousWords of struct PredictionInfo: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "currentWord";
       encoder0.encodeString(currentWord, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "currentWord of struct PredictionInfo: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -219,14 +167,8 @@ class _PredictionServiceGetPredictionListParams extends bindings.Struct {
     PredictionInfo this.predictionInfo
   ) : super(kVersions.last.size);
 
-  static _PredictionServiceGetPredictionListParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _PredictionServiceGetPredictionListParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _PredictionServiceGetPredictionListParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -234,24 +176,7 @@ class _PredictionServiceGetPredictionListParams extends bindings.Struct {
     }
     _PredictionServiceGetPredictionListParams result = new _PredictionServiceGetPredictionListParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -262,11 +187,13 @@ class _PredictionServiceGetPredictionListParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_PredictionServiceGetPredictionListParams";
+    String fieldName;
     try {
+      fieldName = "predictionInfo";
       encoder0.encodeStruct(predictionInfo, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "predictionInfo of struct _PredictionServiceGetPredictionListParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -296,14 +223,8 @@ class PredictionServiceGetPredictionListResponseParams extends bindings.Struct {
     List<String> this.predictionList
   ) : super(kVersions.last.size);
 
-  static PredictionServiceGetPredictionListResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static PredictionServiceGetPredictionListResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static PredictionServiceGetPredictionListResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -311,24 +232,7 @@ class PredictionServiceGetPredictionListResponseParams extends bindings.Struct {
     }
     PredictionServiceGetPredictionListResponseParams result = new PredictionServiceGetPredictionListResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -348,7 +252,10 @@ class PredictionServiceGetPredictionListResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "PredictionServiceGetPredictionListResponseParams";
+    String fieldName;
     try {
+      fieldName = "predictionList";
       if (predictionList == null) {
         encoder0.encodeNullPointer(8, true);
       } else {
@@ -358,8 +265,7 @@ class PredictionServiceGetPredictionListResponseParams extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "predictionList of struct PredictionServiceGetPredictionListResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

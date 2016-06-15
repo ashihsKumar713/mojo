@@ -23,14 +23,8 @@ class SceneResource extends bindings.Struct {
     scene_token_mojom.SceneToken this.sceneToken
   ) : super(kVersions.last.size);
 
-  static SceneResource deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static SceneResource deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static SceneResource decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -38,24 +32,7 @@ class SceneResource extends bindings.Struct {
     }
     SceneResource result = new SceneResource();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -66,11 +43,13 @@ class SceneResource extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "SceneResource";
+    String fieldName;
     try {
+      fieldName = "sceneToken";
       encoder0.encodeStruct(sceneToken, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "sceneToken of struct SceneResource: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -160,14 +139,8 @@ class MailboxTextureResource extends bindings.Struct {
     MailboxTextureCallbackInterface this.callback
   ) : super(kVersions.last.size);
 
-  static MailboxTextureResource deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static MailboxTextureResource deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static MailboxTextureResource decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -175,24 +148,7 @@ class MailboxTextureResource extends bindings.Struct {
     }
     MailboxTextureResource result = new MailboxTextureResource();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.mailboxName = decoder0.decodeUint8Array(8, bindings.kNothingNullable, 64);
@@ -223,39 +179,21 @@ class MailboxTextureResource extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "MailboxTextureResource";
+    String fieldName;
     try {
+      fieldName = "mailboxName";
       encoder0.encodeUint8Array(mailboxName, 8, bindings.kNothingNullable, 64);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "mailboxName of struct MailboxTextureResource: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "syncPoint";
       encoder0.encodeUint32(syncPoint, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "syncPoint of struct MailboxTextureResource: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "origin";
       encoder0.encodeEnum(origin, 20);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "origin of struct MailboxTextureResource: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "size";
       encoder0.encodeStruct(size, 24, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "size of struct MailboxTextureResource: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "callback";
       encoder0.encodeInterface(callback, 32, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "callback of struct MailboxTextureResource: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -286,14 +224,8 @@ class _MailboxTextureCallbackOnMailboxTextureReleasedParams extends bindings.Str
   _MailboxTextureCallbackOnMailboxTextureReleasedParams.init(
   ) : super(kVersions.last.size);
 
-  static _MailboxTextureCallbackOnMailboxTextureReleasedParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MailboxTextureCallbackOnMailboxTextureReleasedParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MailboxTextureCallbackOnMailboxTextureReleasedParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -301,29 +233,19 @@ class _MailboxTextureCallbackOnMailboxTextureReleasedParams extends bindings.Str
     }
     _MailboxTextureCallbackOnMailboxTextureReleasedParams result = new _MailboxTextureCallbackOnMailboxTextureReleasedParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MailboxTextureCallbackOnMailboxTextureReleasedParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {

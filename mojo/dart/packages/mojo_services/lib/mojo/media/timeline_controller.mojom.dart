@@ -24,14 +24,8 @@ class MediaTimelineControlSiteStatus extends bindings.Struct {
     bool this.endOfStream
   ) : super(kVersions.last.size);
 
-  static MediaTimelineControlSiteStatus deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static MediaTimelineControlSiteStatus deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static MediaTimelineControlSiteStatus decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -39,24 +33,7 @@ class MediaTimelineControlSiteStatus extends bindings.Struct {
     }
     MediaTimelineControlSiteStatus result = new MediaTimelineControlSiteStatus();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -71,18 +48,15 @@ class MediaTimelineControlSiteStatus extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "MediaTimelineControlSiteStatus";
+    String fieldName;
     try {
+      fieldName = "timelineTransform";
       encoder0.encodeStruct(timelineTransform, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "timelineTransform of struct MediaTimelineControlSiteStatus: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "endOfStream";
       encoder0.encodeBool(endOfStream, 16, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "endOfStream of struct MediaTimelineControlSiteStatus: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -114,14 +88,8 @@ class _MediaTimelineControllerAddControlSiteParams extends bindings.Struct {
     MediaTimelineControlSiteInterface this.controlSite
   ) : super(kVersions.last.size);
 
-  static _MediaTimelineControllerAddControlSiteParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MediaTimelineControllerAddControlSiteParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MediaTimelineControllerAddControlSiteParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -129,24 +97,7 @@ class _MediaTimelineControllerAddControlSiteParams extends bindings.Struct {
     }
     _MediaTimelineControllerAddControlSiteParams result = new _MediaTimelineControllerAddControlSiteParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.controlSite = decoder0.decodeServiceInterface(8, false, MediaTimelineControlSiteProxy.newFromEndpoint);
@@ -156,11 +107,13 @@ class _MediaTimelineControllerAddControlSiteParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaTimelineControllerAddControlSiteParams";
+    String fieldName;
     try {
+      fieldName = "controlSite";
       encoder0.encodeInterface(controlSite, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "controlSite of struct _MediaTimelineControllerAddControlSiteParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -189,14 +142,8 @@ class _MediaTimelineControllerGetControlSiteParams extends bindings.Struct {
     MediaTimelineControlSiteInterfaceRequest this.controlSite
   ) : super(kVersions.last.size);
 
-  static _MediaTimelineControllerGetControlSiteParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MediaTimelineControllerGetControlSiteParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MediaTimelineControllerGetControlSiteParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -204,24 +151,7 @@ class _MediaTimelineControllerGetControlSiteParams extends bindings.Struct {
     }
     _MediaTimelineControllerGetControlSiteParams result = new _MediaTimelineControllerGetControlSiteParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.controlSite = decoder0.decodeInterfaceRequest(8, false, MediaTimelineControlSiteStub.newFromEndpoint);
@@ -231,11 +161,13 @@ class _MediaTimelineControllerGetControlSiteParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaTimelineControllerGetControlSiteParams";
+    String fieldName;
     try {
+      fieldName = "controlSite";
       encoder0.encodeInterfaceRequest(controlSite, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "controlSite of struct _MediaTimelineControllerGetControlSiteParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -264,14 +196,8 @@ class _MediaTimelineControlSiteGetStatusParams extends bindings.Struct {
     int this.versionLastSeen
   ) : super(kVersions.last.size);
 
-  static _MediaTimelineControlSiteGetStatusParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MediaTimelineControlSiteGetStatusParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MediaTimelineControlSiteGetStatusParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -279,24 +205,7 @@ class _MediaTimelineControlSiteGetStatusParams extends bindings.Struct {
     }
     _MediaTimelineControlSiteGetStatusParams result = new _MediaTimelineControlSiteGetStatusParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.versionLastSeen = decoder0.decodeUint64(8);
@@ -306,11 +215,13 @@ class _MediaTimelineControlSiteGetStatusParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaTimelineControlSiteGetStatusParams";
+    String fieldName;
     try {
+      fieldName = "versionLastSeen";
       encoder0.encodeUint64(versionLastSeen, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "versionLastSeen of struct _MediaTimelineControlSiteGetStatusParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -342,14 +253,8 @@ class MediaTimelineControlSiteGetStatusResponseParams extends bindings.Struct {
     MediaTimelineControlSiteStatus this.status
   ) : super(kVersions.last.size);
 
-  static MediaTimelineControlSiteGetStatusResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static MediaTimelineControlSiteGetStatusResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static MediaTimelineControlSiteGetStatusResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -357,24 +262,7 @@ class MediaTimelineControlSiteGetStatusResponseParams extends bindings.Struct {
     }
     MediaTimelineControlSiteGetStatusResponseParams result = new MediaTimelineControlSiteGetStatusResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.version = decoder0.decodeUint64(8);
@@ -389,18 +277,15 @@ class MediaTimelineControlSiteGetStatusResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "MediaTimelineControlSiteGetStatusResponseParams";
+    String fieldName;
     try {
+      fieldName = "version";
       encoder0.encodeUint64(version, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "version of struct MediaTimelineControlSiteGetStatusResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "status";
       encoder0.encodeStruct(status, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "status of struct MediaTimelineControlSiteGetStatusResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -432,14 +317,8 @@ class _MediaTimelineControlSiteGetTimelineConsumerParams extends bindings.Struct
     timelines_mojom.TimelineConsumerInterfaceRequest this.timelineConsumer
   ) : super(kVersions.last.size);
 
-  static _MediaTimelineControlSiteGetTimelineConsumerParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MediaTimelineControlSiteGetTimelineConsumerParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MediaTimelineControlSiteGetTimelineConsumerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -447,24 +326,7 @@ class _MediaTimelineControlSiteGetTimelineConsumerParams extends bindings.Struct
     }
     _MediaTimelineControlSiteGetTimelineConsumerParams result = new _MediaTimelineControlSiteGetTimelineConsumerParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.timelineConsumer = decoder0.decodeInterfaceRequest(8, false, timelines_mojom.TimelineConsumerStub.newFromEndpoint);
@@ -474,11 +336,13 @@ class _MediaTimelineControlSiteGetTimelineConsumerParams extends bindings.Struct
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaTimelineControlSiteGetTimelineConsumerParams";
+    String fieldName;
     try {
+      fieldName = "timelineConsumer";
       encoder0.encodeInterfaceRequest(timelineConsumer, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "timelineConsumer of struct _MediaTimelineControlSiteGetTimelineConsumerParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

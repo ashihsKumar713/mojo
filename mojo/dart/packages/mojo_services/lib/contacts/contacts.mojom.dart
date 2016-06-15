@@ -23,14 +23,8 @@ class Contact extends bindings.Struct {
     String this.name
   ) : super(kVersions.last.size);
 
-  static Contact deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static Contact deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static Contact decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -38,24 +32,7 @@ class Contact extends bindings.Struct {
     }
     Contact result = new Contact();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.id = decoder0.decodeInt64(8);
@@ -69,18 +46,15 @@ class Contact extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "Contact";
+    String fieldName;
     try {
+      fieldName = "id";
       encoder0.encodeInt64(id, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "id of struct Contact: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "name";
       encoder0.encodeString(name, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "name of struct Contact: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -112,14 +86,8 @@ class _ContactsServiceGetCountParams extends bindings.Struct {
     String this.filter
   ) : super(kVersions.last.size);
 
-  static _ContactsServiceGetCountParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ContactsServiceGetCountParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ContactsServiceGetCountParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -127,24 +95,7 @@ class _ContactsServiceGetCountParams extends bindings.Struct {
     }
     _ContactsServiceGetCountParams result = new _ContactsServiceGetCountParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.filter = decoder0.decodeString(8, true);
@@ -154,11 +105,13 @@ class _ContactsServiceGetCountParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ContactsServiceGetCountParams";
+    String fieldName;
     try {
+      fieldName = "filter";
       encoder0.encodeString(filter, 8, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "filter of struct _ContactsServiceGetCountParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -188,14 +141,8 @@ class ContactsServiceGetCountResponseParams extends bindings.Struct {
     int this.count
   ) : super(kVersions.last.size);
 
-  static ContactsServiceGetCountResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static ContactsServiceGetCountResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static ContactsServiceGetCountResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -203,24 +150,7 @@ class ContactsServiceGetCountResponseParams extends bindings.Struct {
     }
     ContactsServiceGetCountResponseParams result = new ContactsServiceGetCountResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.count = decoder0.decodeUint64(8);
@@ -230,11 +160,13 @@ class ContactsServiceGetCountResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "ContactsServiceGetCountResponseParams";
+    String fieldName;
     try {
+      fieldName = "count";
       encoder0.encodeUint64(count, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "count of struct ContactsServiceGetCountResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -268,14 +200,8 @@ class _ContactsServiceGetParams extends bindings.Struct {
     int this.limit
   ) : super(kVersions.last.size);
 
-  static _ContactsServiceGetParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ContactsServiceGetParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ContactsServiceGetParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -283,24 +209,7 @@ class _ContactsServiceGetParams extends bindings.Struct {
     }
     _ContactsServiceGetParams result = new _ContactsServiceGetParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.filter = decoder0.decodeString(8, true);
@@ -318,25 +227,17 @@ class _ContactsServiceGetParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ContactsServiceGetParams";
+    String fieldName;
     try {
+      fieldName = "filter";
       encoder0.encodeString(filter, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "filter of struct _ContactsServiceGetParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "offset";
       encoder0.encodeUint32(offset, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "offset of struct _ContactsServiceGetParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "limit";
       encoder0.encodeUint32(limit, 20);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "limit of struct _ContactsServiceGetParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -370,14 +271,8 @@ class ContactsServiceGetResponseParams extends bindings.Struct {
     List<Contact> this.contacts
   ) : super(kVersions.last.size);
 
-  static ContactsServiceGetResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static ContactsServiceGetResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static ContactsServiceGetResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -385,24 +280,7 @@ class ContactsServiceGetResponseParams extends bindings.Struct {
     }
     ContactsServiceGetResponseParams result = new ContactsServiceGetResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -421,7 +299,10 @@ class ContactsServiceGetResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "ContactsServiceGetResponseParams";
+    String fieldName;
     try {
+      fieldName = "contacts";
       if (contacts == null) {
         encoder0.encodeNullPointer(8, false);
       } else {
@@ -431,8 +312,7 @@ class ContactsServiceGetResponseParams extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "contacts of struct ContactsServiceGetResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -462,14 +342,8 @@ class _ContactsServiceGetEmailsParams extends bindings.Struct {
     int this.id
   ) : super(kVersions.last.size);
 
-  static _ContactsServiceGetEmailsParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ContactsServiceGetEmailsParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ContactsServiceGetEmailsParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -477,24 +351,7 @@ class _ContactsServiceGetEmailsParams extends bindings.Struct {
     }
     _ContactsServiceGetEmailsParams result = new _ContactsServiceGetEmailsParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.id = decoder0.decodeInt64(8);
@@ -504,11 +361,13 @@ class _ContactsServiceGetEmailsParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ContactsServiceGetEmailsParams";
+    String fieldName;
     try {
+      fieldName = "id";
       encoder0.encodeInt64(id, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "id of struct _ContactsServiceGetEmailsParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -538,14 +397,8 @@ class ContactsServiceGetEmailsResponseParams extends bindings.Struct {
     List<String> this.emails
   ) : super(kVersions.last.size);
 
-  static ContactsServiceGetEmailsResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static ContactsServiceGetEmailsResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static ContactsServiceGetEmailsResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -553,24 +406,7 @@ class ContactsServiceGetEmailsResponseParams extends bindings.Struct {
     }
     ContactsServiceGetEmailsResponseParams result = new ContactsServiceGetEmailsResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -588,7 +424,10 @@ class ContactsServiceGetEmailsResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "ContactsServiceGetEmailsResponseParams";
+    String fieldName;
     try {
+      fieldName = "emails";
       if (emails == null) {
         encoder0.encodeNullPointer(8, false);
       } else {
@@ -598,8 +437,7 @@ class ContactsServiceGetEmailsResponseParams extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "emails of struct ContactsServiceGetEmailsResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -631,14 +469,8 @@ class _ContactsServiceGetPhotoParams extends bindings.Struct {
     bool this.highResolution
   ) : super(kVersions.last.size);
 
-  static _ContactsServiceGetPhotoParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _ContactsServiceGetPhotoParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _ContactsServiceGetPhotoParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -646,24 +478,7 @@ class _ContactsServiceGetPhotoParams extends bindings.Struct {
     }
     _ContactsServiceGetPhotoParams result = new _ContactsServiceGetPhotoParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.id = decoder0.decodeInt64(8);
@@ -677,18 +492,15 @@ class _ContactsServiceGetPhotoParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_ContactsServiceGetPhotoParams";
+    String fieldName;
     try {
+      fieldName = "id";
       encoder0.encodeInt64(id, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "id of struct _ContactsServiceGetPhotoParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "highResolution";
       encoder0.encodeBool(highResolution, 16, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "highResolution of struct _ContactsServiceGetPhotoParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -720,14 +532,8 @@ class ContactsServiceGetPhotoResponseParams extends bindings.Struct {
     String this.photoUrl
   ) : super(kVersions.last.size);
 
-  static ContactsServiceGetPhotoResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static ContactsServiceGetPhotoResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static ContactsServiceGetPhotoResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -735,24 +541,7 @@ class ContactsServiceGetPhotoResponseParams extends bindings.Struct {
     }
     ContactsServiceGetPhotoResponseParams result = new ContactsServiceGetPhotoResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.photoUrl = decoder0.decodeString(8, true);
@@ -762,11 +551,13 @@ class ContactsServiceGetPhotoResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "ContactsServiceGetPhotoResponseParams";
+    String fieldName;
     try {
+      fieldName = "photoUrl";
       encoder0.encodeString(photoUrl, 8, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "photoUrl of struct ContactsServiceGetPhotoResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

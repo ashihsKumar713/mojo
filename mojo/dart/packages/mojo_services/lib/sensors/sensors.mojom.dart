@@ -196,14 +196,8 @@ class SensorData extends bindings.Struct {
     List<double> this.values
   ) : super(kVersions.last.size);
 
-  static SensorData deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static SensorData deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static SensorData decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -211,24 +205,7 @@ class SensorData extends bindings.Struct {
     }
     SensorData result = new SensorData();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.accuracy = decoder0.decodeInt32(8);
@@ -246,25 +223,17 @@ class SensorData extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "SensorData";
+    String fieldName;
     try {
+      fieldName = "accuracy";
       encoder0.encodeInt32(accuracy, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "accuracy of struct SensorData: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "timeStamp";
       encoder0.encodeInt64(timeStamp, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "timeStamp of struct SensorData: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "values";
       encoder0.encodeFloatArray(values, 24, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "values of struct SensorData: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -298,14 +267,8 @@ class _SensorListenerOnAccuracyChangedParams extends bindings.Struct {
     int this.accuracy
   ) : super(kVersions.last.size);
 
-  static _SensorListenerOnAccuracyChangedParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _SensorListenerOnAccuracyChangedParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _SensorListenerOnAccuracyChangedParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -313,24 +276,7 @@ class _SensorListenerOnAccuracyChangedParams extends bindings.Struct {
     }
     _SensorListenerOnAccuracyChangedParams result = new _SensorListenerOnAccuracyChangedParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.accuracy = decoder0.decodeInt32(8);
@@ -340,11 +286,13 @@ class _SensorListenerOnAccuracyChangedParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_SensorListenerOnAccuracyChangedParams";
+    String fieldName;
     try {
+      fieldName = "accuracy";
       encoder0.encodeInt32(accuracy, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "accuracy of struct _SensorListenerOnAccuracyChangedParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -374,14 +322,8 @@ class _SensorListenerOnSensorChangedParams extends bindings.Struct {
     SensorData this.data
   ) : super(kVersions.last.size);
 
-  static _SensorListenerOnSensorChangedParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _SensorListenerOnSensorChangedParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _SensorListenerOnSensorChangedParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -389,24 +331,7 @@ class _SensorListenerOnSensorChangedParams extends bindings.Struct {
     }
     _SensorListenerOnSensorChangedParams result = new _SensorListenerOnSensorChangedParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -417,11 +342,13 @@ class _SensorListenerOnSensorChangedParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_SensorListenerOnSensorChangedParams";
+    String fieldName;
     try {
+      fieldName = "data";
       encoder0.encodeStruct(data, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "data of struct _SensorListenerOnSensorChangedParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -453,14 +380,8 @@ class _SensorServiceAddListenerParams extends bindings.Struct {
     SensorListenerInterface this.listener
   ) : super(kVersions.last.size);
 
-  static _SensorServiceAddListenerParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _SensorServiceAddListenerParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _SensorServiceAddListenerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -468,24 +389,7 @@ class _SensorServiceAddListenerParams extends bindings.Struct {
     }
     _SensorServiceAddListenerParams result = new _SensorServiceAddListenerParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.type = SensorType.decode(decoder0, 8);
@@ -503,18 +407,15 @@ class _SensorServiceAddListenerParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_SensorServiceAddListenerParams";
+    String fieldName;
     try {
+      fieldName = "type";
       encoder0.encodeEnum(type, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "type of struct _SensorServiceAddListenerParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "listener";
       encoder0.encodeInterface(listener, 12, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "listener of struct _SensorServiceAddListenerParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

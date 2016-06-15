@@ -60,14 +60,8 @@ class EchoArgs extends bindings.Struct {
     core.MojoDataPipeConsumer this.dataHandle
   ) : super(kVersions.last.size);
 
-  static EchoArgs deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static EchoArgs deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static EchoArgs decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -75,24 +69,7 @@ class EchoArgs extends bindings.Struct {
     }
     EchoArgs result = new EchoArgs();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.si64 = decoder0.decodeInt64(8);
@@ -180,119 +157,42 @@ class EchoArgs extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "EchoArgs";
+    String fieldName;
     try {
+      fieldName = "si64";
       encoder0.encodeInt64(si64, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "si64 of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "si32";
       encoder0.encodeInt32(si32, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "si32 of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "si16";
       encoder0.encodeInt16(si16, 20);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "si16 of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "si8";
       encoder0.encodeInt8(si8, 22);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "si8 of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "ui8";
       encoder0.encodeUint8(ui8, 23);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "ui8 of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "ui64";
       encoder0.encodeUint64(ui64, 24);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "ui64 of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "ui32";
       encoder0.encodeUint32(ui32, 32);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "ui32 of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "ui16";
       encoder0.encodeUint16(ui16, 36);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "ui16 of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "floatVal";
       encoder0.encodeFloat(floatVal, 40);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "floatVal of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "floatInf";
       encoder0.encodeFloat(floatInf, 44);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "floatInf of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "floatNan";
       encoder0.encodeFloat(floatNan, 48);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "floatNan of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "messageHandle";
       encoder0.encodeMessagePipeHandle(messageHandle, 52, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "messageHandle of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "doubleVal";
       encoder0.encodeDouble(doubleVal, 56);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "doubleVal of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "doubleInf";
       encoder0.encodeDouble(doubleInf, 64);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "doubleInf of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "doubleNan";
       encoder0.encodeDouble(doubleNan, 72);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "doubleNan of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "name";
       encoder0.encodeString(name, 80, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "name of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "stringArray";
       if (stringArray == null) {
         encoder0.encodeNullPointer(88, true);
       } else {
@@ -301,16 +201,10 @@ class EchoArgs extends bindings.Struct {
           encoder1.encodeString(stringArray[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "stringArray of struct EchoArgs: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "dataHandle";
       encoder0.encodeConsumerHandle(dataHandle, 96, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "dataHandle of struct EchoArgs: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -358,14 +252,8 @@ class EchoArgsList extends bindings.Struct {
     EchoArgs this.item
   ) : super(kVersions.last.size);
 
-  static EchoArgsList deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static EchoArgsList deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static EchoArgsList decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -373,24 +261,7 @@ class EchoArgsList extends bindings.Struct {
     }
     EchoArgsList result = new EchoArgsList();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -406,18 +277,15 @@ class EchoArgsList extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "EchoArgsList";
+    String fieldName;
     try {
+      fieldName = "next";
       encoder0.encodeStruct(next, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "next of struct EchoArgsList: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "item";
       encoder0.encodeStruct(item, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "item of struct EchoArgsList: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -445,14 +313,8 @@ class _CppSideStartTestParams extends bindings.Struct {
   _CppSideStartTestParams.init(
   ) : super(kVersions.last.size);
 
-  static _CppSideStartTestParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _CppSideStartTestParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _CppSideStartTestParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -460,29 +322,19 @@ class _CppSideStartTestParams extends bindings.Struct {
     }
     _CppSideStartTestParams result = new _CppSideStartTestParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_CppSideStartTestParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -506,14 +358,8 @@ class _CppSideTestFinishedParams extends bindings.Struct {
   _CppSideTestFinishedParams.init(
   ) : super(kVersions.last.size);
 
-  static _CppSideTestFinishedParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _CppSideTestFinishedParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _CppSideTestFinishedParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -521,29 +367,19 @@ class _CppSideTestFinishedParams extends bindings.Struct {
     }
     _CppSideTestFinishedParams result = new _CppSideTestFinishedParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_CppSideTestFinishedParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -567,14 +403,8 @@ class _CppSidePingResponseParams extends bindings.Struct {
   _CppSidePingResponseParams.init(
   ) : super(kVersions.last.size);
 
-  static _CppSidePingResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _CppSidePingResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _CppSidePingResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -582,29 +412,19 @@ class _CppSidePingResponseParams extends bindings.Struct {
     }
     _CppSidePingResponseParams result = new _CppSidePingResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_CppSidePingResponseParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -630,14 +450,8 @@ class _CppSideEchoResponseParams extends bindings.Struct {
     EchoArgsList this.list
   ) : super(kVersions.last.size);
 
-  static _CppSideEchoResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _CppSideEchoResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _CppSideEchoResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -645,24 +459,7 @@ class _CppSideEchoResponseParams extends bindings.Struct {
     }
     _CppSideEchoResponseParams result = new _CppSideEchoResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -673,11 +470,13 @@ class _CppSideEchoResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_CppSideEchoResponseParams";
+    String fieldName;
     try {
+      fieldName = "list";
       encoder0.encodeStruct(list, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "list of struct _CppSideEchoResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -706,14 +505,8 @@ class _DartSideSetClientParams extends bindings.Struct {
     CppSideInterface this.cppSide
   ) : super(kVersions.last.size);
 
-  static _DartSideSetClientParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _DartSideSetClientParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _DartSideSetClientParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -721,24 +514,7 @@ class _DartSideSetClientParams extends bindings.Struct {
     }
     _DartSideSetClientParams result = new _DartSideSetClientParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.cppSide = decoder0.decodeServiceInterface(8, false, CppSideProxy.newFromEndpoint);
@@ -748,11 +524,13 @@ class _DartSideSetClientParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_DartSideSetClientParams";
+    String fieldName;
     try {
+      fieldName = "cppSide";
       encoder0.encodeInterface(cppSide, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "cppSide of struct _DartSideSetClientParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -779,14 +557,8 @@ class _DartSidePingParams extends bindings.Struct {
   _DartSidePingParams.init(
   ) : super(kVersions.last.size);
 
-  static _DartSidePingParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _DartSidePingParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _DartSidePingParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -794,29 +566,19 @@ class _DartSidePingParams extends bindings.Struct {
     }
     _DartSidePingParams result = new _DartSidePingParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_DartSidePingParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -844,14 +606,8 @@ class _DartSideEchoParams extends bindings.Struct {
     EchoArgs this.arg
   ) : super(kVersions.last.size);
 
-  static _DartSideEchoParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _DartSideEchoParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _DartSideEchoParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -859,24 +615,7 @@ class _DartSideEchoParams extends bindings.Struct {
     }
     _DartSideEchoParams result = new _DartSideEchoParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.numIterations = decoder0.decodeInt32(8);
@@ -891,18 +630,15 @@ class _DartSideEchoParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_DartSideEchoParams";
+    String fieldName;
     try {
+      fieldName = "numIterations";
       encoder0.encodeInt32(numIterations, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "numIterations of struct _DartSideEchoParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "arg";
       encoder0.encodeStruct(arg, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "arg of struct _DartSideEchoParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

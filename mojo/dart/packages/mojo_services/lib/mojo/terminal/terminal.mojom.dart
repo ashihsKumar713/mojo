@@ -26,14 +26,8 @@ class _TerminalConnectParams extends bindings.Struct {
     bool this.force
   ) : super(kVersions.last.size);
 
-  static _TerminalConnectParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _TerminalConnectParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _TerminalConnectParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -41,24 +35,7 @@ class _TerminalConnectParams extends bindings.Struct {
     }
     _TerminalConnectParams result = new _TerminalConnectParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.terminalFile = decoder0.decodeInterfaceRequest(8, false, file_mojom.FileStub.newFromEndpoint);
@@ -72,18 +49,15 @@ class _TerminalConnectParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_TerminalConnectParams";
+    String fieldName;
     try {
+      fieldName = "terminalFile";
       encoder0.encodeInterfaceRequest(terminalFile, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "terminalFile of struct _TerminalConnectParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "force";
       encoder0.encodeBool(force, 12, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "force of struct _TerminalConnectParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -113,14 +87,8 @@ class TerminalConnectResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static TerminalConnectResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static TerminalConnectResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static TerminalConnectResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -128,24 +96,7 @@ class TerminalConnectResponseParams extends bindings.Struct {
     }
     TerminalConnectResponseParams result = new TerminalConnectResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -159,11 +110,13 @@ class TerminalConnectResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "TerminalConnectResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct TerminalConnectResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -195,14 +148,8 @@ class _TerminalConnectToClientParams extends bindings.Struct {
     bool this.force
   ) : super(kVersions.last.size);
 
-  static _TerminalConnectToClientParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _TerminalConnectToClientParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _TerminalConnectToClientParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -210,24 +157,7 @@ class _TerminalConnectToClientParams extends bindings.Struct {
     }
     _TerminalConnectToClientParams result = new _TerminalConnectToClientParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.terminalClient = decoder0.decodeServiceInterface(8, false, terminal_client_mojom.TerminalClientProxy.newFromEndpoint);
@@ -241,18 +171,15 @@ class _TerminalConnectToClientParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_TerminalConnectToClientParams";
+    String fieldName;
     try {
+      fieldName = "terminalClient";
       encoder0.encodeInterface(terminalClient, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "terminalClient of struct _TerminalConnectToClientParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "force";
       encoder0.encodeBool(force, 16, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "force of struct _TerminalConnectToClientParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -282,14 +209,8 @@ class TerminalConnectToClientResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static TerminalConnectToClientResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static TerminalConnectToClientResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static TerminalConnectToClientResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -297,24 +218,7 @@ class TerminalConnectToClientResponseParams extends bindings.Struct {
     }
     TerminalConnectToClientResponseParams result = new TerminalConnectToClientResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -328,11 +232,13 @@ class TerminalConnectToClientResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "TerminalConnectToClientResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct TerminalConnectToClientResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -360,14 +266,8 @@ class _TerminalGetSizeParams extends bindings.Struct {
   _TerminalGetSizeParams.init(
   ) : super(kVersions.last.size);
 
-  static _TerminalGetSizeParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _TerminalGetSizeParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _TerminalGetSizeParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -375,29 +275,19 @@ class _TerminalGetSizeParams extends bindings.Struct {
     }
     _TerminalGetSizeParams result = new _TerminalGetSizeParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_TerminalGetSizeParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -427,14 +317,8 @@ class TerminalGetSizeResponseParams extends bindings.Struct {
     int this.columns
   ) : super(kVersions.last.size);
 
-  static TerminalGetSizeResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static TerminalGetSizeResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static TerminalGetSizeResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -442,24 +326,7 @@ class TerminalGetSizeResponseParams extends bindings.Struct {
     }
     TerminalGetSizeResponseParams result = new TerminalGetSizeResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -481,25 +348,17 @@ class TerminalGetSizeResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "TerminalGetSizeResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct TerminalGetSizeResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "rows";
       encoder0.encodeUint32(rows, 12);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "rows of struct TerminalGetSizeResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "columns";
       encoder0.encodeUint32(columns, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "columns of struct TerminalGetSizeResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -537,14 +396,8 @@ class _TerminalSetSizeParams extends bindings.Struct {
     bool this.reset
   ) : super(kVersions.last.size);
 
-  static _TerminalSetSizeParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _TerminalSetSizeParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _TerminalSetSizeParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -552,24 +405,7 @@ class _TerminalSetSizeParams extends bindings.Struct {
     }
     _TerminalSetSizeParams result = new _TerminalSetSizeParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.rows = decoder0.decodeUint32(8);
@@ -587,25 +423,17 @@ class _TerminalSetSizeParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_TerminalSetSizeParams";
+    String fieldName;
     try {
+      fieldName = "rows";
       encoder0.encodeUint32(rows, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "rows of struct _TerminalSetSizeParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "columns";
       encoder0.encodeUint32(columns, 12);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "columns of struct _TerminalSetSizeParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "reset";
       encoder0.encodeBool(reset, 16, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "reset of struct _TerminalSetSizeParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -643,14 +471,8 @@ class TerminalSetSizeResponseParams extends bindings.Struct {
     int this.columns
   ) : super(kVersions.last.size);
 
-  static TerminalSetSizeResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static TerminalSetSizeResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static TerminalSetSizeResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -658,24 +480,7 @@ class TerminalSetSizeResponseParams extends bindings.Struct {
     }
     TerminalSetSizeResponseParams result = new TerminalSetSizeResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -697,25 +502,17 @@ class TerminalSetSizeResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "TerminalSetSizeResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct TerminalSetSizeResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "rows";
       encoder0.encodeUint32(rows, 12);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "rows of struct TerminalSetSizeResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "columns";
       encoder0.encodeUint32(columns, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "columns of struct TerminalSetSizeResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

@@ -24,14 +24,8 @@ class AudioTrackDescriptor extends bindings.Struct {
     List<media_types_mojom.MediaTypeSet> this.supportedMediaTypes
   ) : super(kVersions.last.size);
 
-  static AudioTrackDescriptor deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static AudioTrackDescriptor deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static AudioTrackDescriptor decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -39,24 +33,7 @@ class AudioTrackDescriptor extends bindings.Struct {
     }
     AudioTrackDescriptor result = new AudioTrackDescriptor();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -75,7 +52,10 @@ class AudioTrackDescriptor extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "AudioTrackDescriptor";
+    String fieldName;
     try {
+      fieldName = "supportedMediaTypes";
       if (supportedMediaTypes == null) {
         encoder0.encodeNullPointer(8, false);
       } else {
@@ -85,8 +65,7 @@ class AudioTrackDescriptor extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "supportedMediaTypes of struct AudioTrackDescriptor: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -120,14 +99,8 @@ class AudioTrackConfiguration extends bindings.Struct {
     int this.mediaTimeRatio
   ) : super(kVersions.last.size);
 
-  static AudioTrackConfiguration deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static AudioTrackConfiguration deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static AudioTrackConfiguration decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -135,24 +108,7 @@ class AudioTrackConfiguration extends bindings.Struct {
     }
     AudioTrackConfiguration result = new AudioTrackConfiguration();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -171,25 +127,17 @@ class AudioTrackConfiguration extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "AudioTrackConfiguration";
+    String fieldName;
     try {
+      fieldName = "mediaType";
       encoder0.encodeStruct(mediaType, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "mediaType of struct AudioTrackConfiguration: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "audioFrameRatio";
       encoder0.encodeUint32(audioFrameRatio, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "audioFrameRatio of struct AudioTrackConfiguration: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "mediaTimeRatio";
       encoder0.encodeUint32(mediaTimeRatio, 20);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "mediaTimeRatio of struct AudioTrackConfiguration: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -221,14 +169,8 @@ class _AudioTrackDescribeParams extends bindings.Struct {
   _AudioTrackDescribeParams.init(
   ) : super(kVersions.last.size);
 
-  static _AudioTrackDescribeParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _AudioTrackDescribeParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _AudioTrackDescribeParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -236,29 +178,19 @@ class _AudioTrackDescribeParams extends bindings.Struct {
     }
     _AudioTrackDescribeParams result = new _AudioTrackDescribeParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_AudioTrackDescribeParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -284,14 +216,8 @@ class AudioTrackDescribeResponseParams extends bindings.Struct {
     AudioTrackDescriptor this.descriptor
   ) : super(kVersions.last.size);
 
-  static AudioTrackDescribeResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static AudioTrackDescribeResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static AudioTrackDescribeResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -299,24 +225,7 @@ class AudioTrackDescribeResponseParams extends bindings.Struct {
     }
     AudioTrackDescribeResponseParams result = new AudioTrackDescribeResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -327,11 +236,13 @@ class AudioTrackDescribeResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "AudioTrackDescribeResponseParams";
+    String fieldName;
     try {
+      fieldName = "descriptor";
       encoder0.encodeStruct(descriptor, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "descriptor of struct AudioTrackDescribeResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -363,14 +274,8 @@ class _AudioTrackConfigureParams extends bindings.Struct {
     media_transport_mojom.MediaConsumerInterfaceRequest this.pipe
   ) : super(kVersions.last.size);
 
-  static _AudioTrackConfigureParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _AudioTrackConfigureParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _AudioTrackConfigureParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -378,24 +283,7 @@ class _AudioTrackConfigureParams extends bindings.Struct {
     }
     _AudioTrackConfigureParams result = new _AudioTrackConfigureParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -410,18 +298,15 @@ class _AudioTrackConfigureParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_AudioTrackConfigureParams";
+    String fieldName;
     try {
+      fieldName = "configuration";
       encoder0.encodeStruct(configuration, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "configuration of struct _AudioTrackConfigureParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "pipe";
       encoder0.encodeInterfaceRequest(pipe, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "pipe of struct _AudioTrackConfigureParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -451,14 +336,8 @@ class _AudioTrackGetTimelineControlSiteParams extends bindings.Struct {
     timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest this.timelineControlSite
   ) : super(kVersions.last.size);
 
-  static _AudioTrackGetTimelineControlSiteParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _AudioTrackGetTimelineControlSiteParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _AudioTrackGetTimelineControlSiteParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -466,24 +345,7 @@ class _AudioTrackGetTimelineControlSiteParams extends bindings.Struct {
     }
     _AudioTrackGetTimelineControlSiteParams result = new _AudioTrackGetTimelineControlSiteParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.timelineControlSite = decoder0.decodeInterfaceRequest(8, false, timeline_controller_mojom.MediaTimelineControlSiteStub.newFromEndpoint);
@@ -493,11 +355,13 @@ class _AudioTrackGetTimelineControlSiteParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_AudioTrackGetTimelineControlSiteParams";
+    String fieldName;
     try {
+      fieldName = "timelineControlSite";
       encoder0.encodeInterfaceRequest(timelineControlSite, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "timelineControlSite of struct _AudioTrackGetTimelineControlSiteParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -526,14 +390,8 @@ class _AudioTrackSetGainParams extends bindings.Struct {
     double this.dbGain
   ) : super(kVersions.last.size);
 
-  static _AudioTrackSetGainParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _AudioTrackSetGainParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _AudioTrackSetGainParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -541,24 +399,7 @@ class _AudioTrackSetGainParams extends bindings.Struct {
     }
     _AudioTrackSetGainParams result = new _AudioTrackSetGainParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.dbGain = decoder0.decodeFloat(8);
@@ -568,11 +409,13 @@ class _AudioTrackSetGainParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_AudioTrackSetGainParams";
+    String fieldName;
     try {
+      fieldName = "dbGain";
       encoder0.encodeFloat(dbGain, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "dbGain of struct _AudioTrackSetGainParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

@@ -22,14 +22,8 @@ class _UrlResponseDiskCacheGetParams extends bindings.Struct {
     String this.url
   ) : super(kVersions.last.size);
 
-  static _UrlResponseDiskCacheGetParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UrlResponseDiskCacheGetParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UrlResponseDiskCacheGetParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -37,24 +31,7 @@ class _UrlResponseDiskCacheGetParams extends bindings.Struct {
     }
     _UrlResponseDiskCacheGetParams result = new _UrlResponseDiskCacheGetParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.url = decoder0.decodeString(8, false);
@@ -64,11 +41,13 @@ class _UrlResponseDiskCacheGetParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UrlResponseDiskCacheGetParams";
+    String fieldName;
     try {
+      fieldName = "url";
       encoder0.encodeString(url, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "url of struct _UrlResponseDiskCacheGetParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -102,14 +81,8 @@ class UrlResponseDiskCacheGetResponseParams extends bindings.Struct {
     List<int> this.cacheDirPath
   ) : super(kVersions.last.size);
 
-  static UrlResponseDiskCacheGetResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static UrlResponseDiskCacheGetResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static UrlResponseDiskCacheGetResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -117,24 +90,7 @@ class UrlResponseDiskCacheGetResponseParams extends bindings.Struct {
     }
     UrlResponseDiskCacheGetResponseParams result = new UrlResponseDiskCacheGetResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -153,25 +109,17 @@ class UrlResponseDiskCacheGetResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "UrlResponseDiskCacheGetResponseParams";
+    String fieldName;
     try {
+      fieldName = "response";
       encoder0.encodeStruct(response, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "response of struct UrlResponseDiskCacheGetResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "filePath";
       encoder0.encodeUint8Array(filePath, 16, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "filePath of struct UrlResponseDiskCacheGetResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "cacheDirPath";
       encoder0.encodeUint8Array(cacheDirPath, 24, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "cacheDirPath of struct UrlResponseDiskCacheGetResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -202,14 +150,8 @@ class _UrlResponseDiskCacheValidateParams extends bindings.Struct {
     String this.url
   ) : super(kVersions.last.size);
 
-  static _UrlResponseDiskCacheValidateParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UrlResponseDiskCacheValidateParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UrlResponseDiskCacheValidateParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -217,24 +159,7 @@ class _UrlResponseDiskCacheValidateParams extends bindings.Struct {
     }
     _UrlResponseDiskCacheValidateParams result = new _UrlResponseDiskCacheValidateParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.url = decoder0.decodeString(8, false);
@@ -244,11 +169,13 @@ class _UrlResponseDiskCacheValidateParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UrlResponseDiskCacheValidateParams";
+    String fieldName;
     try {
+      fieldName = "url";
       encoder0.encodeString(url, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "url of struct _UrlResponseDiskCacheValidateParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -278,14 +205,8 @@ class _UrlResponseDiskCacheUpdateParams extends bindings.Struct {
     url_response_mojom.UrlResponse this.response
   ) : super(kVersions.last.size);
 
-  static _UrlResponseDiskCacheUpdateParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UrlResponseDiskCacheUpdateParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UrlResponseDiskCacheUpdateParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -293,24 +214,7 @@ class _UrlResponseDiskCacheUpdateParams extends bindings.Struct {
     }
     _UrlResponseDiskCacheUpdateParams result = new _UrlResponseDiskCacheUpdateParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -321,11 +225,13 @@ class _UrlResponseDiskCacheUpdateParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UrlResponseDiskCacheUpdateParams";
+    String fieldName;
     try {
+      fieldName = "response";
       encoder0.encodeStruct(response, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "response of struct _UrlResponseDiskCacheUpdateParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -354,14 +260,8 @@ class _UrlResponseDiskCacheUpdateAndGetParams extends bindings.Struct {
     url_response_mojom.UrlResponse this.response
   ) : super(kVersions.last.size);
 
-  static _UrlResponseDiskCacheUpdateAndGetParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UrlResponseDiskCacheUpdateAndGetParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UrlResponseDiskCacheUpdateAndGetParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -369,24 +269,7 @@ class _UrlResponseDiskCacheUpdateAndGetParams extends bindings.Struct {
     }
     _UrlResponseDiskCacheUpdateAndGetParams result = new _UrlResponseDiskCacheUpdateAndGetParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -397,11 +280,13 @@ class _UrlResponseDiskCacheUpdateAndGetParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UrlResponseDiskCacheUpdateAndGetParams";
+    String fieldName;
     try {
+      fieldName = "response";
       encoder0.encodeStruct(response, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "response of struct _UrlResponseDiskCacheUpdateAndGetParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -432,14 +317,8 @@ class UrlResponseDiskCacheUpdateAndGetResponseParams extends bindings.Struct {
     List<int> this.cacheDirPath
   ) : super(kVersions.last.size);
 
-  static UrlResponseDiskCacheUpdateAndGetResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static UrlResponseDiskCacheUpdateAndGetResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static UrlResponseDiskCacheUpdateAndGetResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -447,24 +326,7 @@ class UrlResponseDiskCacheUpdateAndGetResponseParams extends bindings.Struct {
     }
     UrlResponseDiskCacheUpdateAndGetResponseParams result = new UrlResponseDiskCacheUpdateAndGetResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.filePath = decoder0.decodeUint8Array(8, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
@@ -478,18 +340,15 @@ class UrlResponseDiskCacheUpdateAndGetResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "UrlResponseDiskCacheUpdateAndGetResponseParams";
+    String fieldName;
     try {
+      fieldName = "filePath";
       encoder0.encodeUint8Array(filePath, 8, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "filePath of struct UrlResponseDiskCacheUpdateAndGetResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "cacheDirPath";
       encoder0.encodeUint8Array(cacheDirPath, 16, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "cacheDirPath of struct UrlResponseDiskCacheUpdateAndGetResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -521,14 +380,8 @@ class _UrlResponseDiskCacheUpdateAndGetExtractedParams extends bindings.Struct {
     url_response_mojom.UrlResponse this.response
   ) : super(kVersions.last.size);
 
-  static _UrlResponseDiskCacheUpdateAndGetExtractedParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UrlResponseDiskCacheUpdateAndGetExtractedParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UrlResponseDiskCacheUpdateAndGetExtractedParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -536,24 +389,7 @@ class _UrlResponseDiskCacheUpdateAndGetExtractedParams extends bindings.Struct {
     }
     _UrlResponseDiskCacheUpdateAndGetExtractedParams result = new _UrlResponseDiskCacheUpdateAndGetExtractedParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -564,11 +400,13 @@ class _UrlResponseDiskCacheUpdateAndGetExtractedParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UrlResponseDiskCacheUpdateAndGetExtractedParams";
+    String fieldName;
     try {
+      fieldName = "response";
       encoder0.encodeStruct(response, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "response of struct _UrlResponseDiskCacheUpdateAndGetExtractedParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -599,14 +437,8 @@ class UrlResponseDiskCacheUpdateAndGetExtractedResponseParams extends bindings.S
     List<int> this.cacheDirPath
   ) : super(kVersions.last.size);
 
-  static UrlResponseDiskCacheUpdateAndGetExtractedResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static UrlResponseDiskCacheUpdateAndGetExtractedResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static UrlResponseDiskCacheUpdateAndGetExtractedResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -614,24 +446,7 @@ class UrlResponseDiskCacheUpdateAndGetExtractedResponseParams extends bindings.S
     }
     UrlResponseDiskCacheUpdateAndGetExtractedResponseParams result = new UrlResponseDiskCacheUpdateAndGetExtractedResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.extractedDirPath = decoder0.decodeUint8Array(8, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
@@ -645,18 +460,15 @@ class UrlResponseDiskCacheUpdateAndGetExtractedResponseParams extends bindings.S
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "UrlResponseDiskCacheUpdateAndGetExtractedResponseParams";
+    String fieldName;
     try {
+      fieldName = "extractedDirPath";
       encoder0.encodeUint8Array(extractedDirPath, 8, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "extractedDirPath of struct UrlResponseDiskCacheUpdateAndGetExtractedResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "cacheDirPath";
       encoder0.encodeUint8Array(cacheDirPath, 16, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "cacheDirPath of struct UrlResponseDiskCacheUpdateAndGetExtractedResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

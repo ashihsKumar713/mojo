@@ -43,14 +43,8 @@ class Location extends bindings.Struct {
     double this.accuracy
   ) : super(kVersions.last.size);
 
-  static Location deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static Location deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static Location decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -58,24 +52,7 @@ class Location extends bindings.Struct {
     }
     Location result = new Location();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.time = decoder0.decodeUint64(8);
@@ -133,95 +110,37 @@ class Location extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "Location";
+    String fieldName;
     try {
+      fieldName = "time";
       encoder0.encodeUint64(time, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "time of struct Location: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "hasElapsedRealTimeNanos";
       encoder0.encodeBool(hasElapsedRealTimeNanos, 16, 0);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "hasElapsedRealTimeNanos of struct Location: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "hasAltitude";
       encoder0.encodeBool(hasAltitude, 16, 1);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "hasAltitude of struct Location: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "hasSpeed";
       encoder0.encodeBool(hasSpeed, 16, 2);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "hasSpeed of struct Location: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "hasBearing";
       encoder0.encodeBool(hasBearing, 16, 3);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "hasBearing of struct Location: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "hasAccuracy";
       encoder0.encodeBool(hasAccuracy, 16, 4);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "hasAccuracy of struct Location: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "speed";
       encoder0.encodeFloat(speed, 20);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "speed of struct Location: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "elapsedRealTimeNanos";
       encoder0.encodeUint64(elapsedRealTimeNanos, 24);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "elapsedRealTimeNanos of struct Location: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "latitude";
       encoder0.encodeDouble(latitude, 32);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "latitude of struct Location: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "longitude";
       encoder0.encodeDouble(longitude, 40);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "longitude of struct Location: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "altitude";
       encoder0.encodeDouble(altitude, 48);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "altitude of struct Location: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "bearing";
       encoder0.encodeFloat(bearing, 56);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "bearing of struct Location: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "accuracy";
       encoder0.encodeFloat(accuracy, 60);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "accuracy of struct Location: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

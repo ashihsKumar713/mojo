@@ -23,14 +23,8 @@ class _TraceProviderStartTracingParams extends bindings.Struct {
     TraceRecorderInterface this.recorder
   ) : super(kVersions.last.size);
 
-  static _TraceProviderStartTracingParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _TraceProviderStartTracingParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _TraceProviderStartTracingParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -38,24 +32,7 @@ class _TraceProviderStartTracingParams extends bindings.Struct {
     }
     _TraceProviderStartTracingParams result = new _TraceProviderStartTracingParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.categories = decoder0.decodeString(8, false);
@@ -69,18 +46,15 @@ class _TraceProviderStartTracingParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_TraceProviderStartTracingParams";
+    String fieldName;
     try {
+      fieldName = "categories";
       encoder0.encodeString(categories, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "categories of struct _TraceProviderStartTracingParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "recorder";
       encoder0.encodeInterface(recorder, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "recorder of struct _TraceProviderStartTracingParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -108,14 +82,8 @@ class _TraceProviderStopTracingParams extends bindings.Struct {
   _TraceProviderStopTracingParams.init(
   ) : super(kVersions.last.size);
 
-  static _TraceProviderStopTracingParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _TraceProviderStopTracingParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _TraceProviderStopTracingParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -123,29 +91,19 @@ class _TraceProviderStopTracingParams extends bindings.Struct {
     }
     _TraceProviderStopTracingParams result = new _TraceProviderStopTracingParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_TraceProviderStopTracingParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -171,14 +129,8 @@ class _TraceRecorderRecordParams extends bindings.Struct {
     String this.json
   ) : super(kVersions.last.size);
 
-  static _TraceRecorderRecordParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _TraceRecorderRecordParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _TraceRecorderRecordParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -186,24 +138,7 @@ class _TraceRecorderRecordParams extends bindings.Struct {
     }
     _TraceRecorderRecordParams result = new _TraceRecorderRecordParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.json = decoder0.decodeString(8, false);
@@ -213,11 +148,13 @@ class _TraceRecorderRecordParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_TraceRecorderRecordParams";
+    String fieldName;
     try {
+      fieldName = "json";
       encoder0.encodeString(json, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "json of struct _TraceRecorderRecordParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -249,14 +186,8 @@ class _TraceCollectorStartParams extends bindings.Struct {
     String this.categories
   ) : super(kVersions.last.size);
 
-  static _TraceCollectorStartParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _TraceCollectorStartParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _TraceCollectorStartParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -264,24 +195,7 @@ class _TraceCollectorStartParams extends bindings.Struct {
     }
     _TraceCollectorStartParams result = new _TraceCollectorStartParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.stream = decoder0.decodeProducerHandle(8, false);
@@ -295,18 +209,15 @@ class _TraceCollectorStartParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_TraceCollectorStartParams";
+    String fieldName;
     try {
+      fieldName = "stream";
       encoder0.encodeProducerHandle(stream, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "stream of struct _TraceCollectorStartParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "categories";
       encoder0.encodeString(categories, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "categories of struct _TraceCollectorStartParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -334,14 +245,8 @@ class _TraceCollectorStopAndFlushParams extends bindings.Struct {
   _TraceCollectorStopAndFlushParams.init(
   ) : super(kVersions.last.size);
 
-  static _TraceCollectorStopAndFlushParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _TraceCollectorStopAndFlushParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _TraceCollectorStopAndFlushParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -349,29 +254,19 @@ class _TraceCollectorStopAndFlushParams extends bindings.Struct {
     }
     _TraceCollectorStopAndFlushParams result = new _TraceCollectorStopAndFlushParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_TraceCollectorStopAndFlushParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {

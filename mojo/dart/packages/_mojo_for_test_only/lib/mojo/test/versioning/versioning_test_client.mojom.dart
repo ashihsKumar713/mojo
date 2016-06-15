@@ -82,14 +82,8 @@ class Employee extends bindings.Struct {
     Department this.department
   ) : super(kVersions.last.size);
 
-  static Employee deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static Employee deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static Employee decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -97,24 +91,7 @@ class Employee extends bindings.Struct {
     }
     Employee result = new Employee();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.employeeId = decoder0.decodeUint64(8);
@@ -136,25 +113,17 @@ class Employee extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "Employee";
+    String fieldName;
     try {
+      fieldName = "employeeId";
       encoder0.encodeUint64(employeeId, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "employeeId of struct Employee: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "name";
       encoder0.encodeString(name, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "name of struct Employee: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "department";
       encoder0.encodeEnum(department, 24);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "department of struct Employee: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -188,14 +157,8 @@ class _HumanResourceDatabaseAddEmployeeParams extends bindings.Struct {
     Employee this.employee
   ) : super(kVersions.last.size);
 
-  static _HumanResourceDatabaseAddEmployeeParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _HumanResourceDatabaseAddEmployeeParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _HumanResourceDatabaseAddEmployeeParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -203,24 +166,7 @@ class _HumanResourceDatabaseAddEmployeeParams extends bindings.Struct {
     }
     _HumanResourceDatabaseAddEmployeeParams result = new _HumanResourceDatabaseAddEmployeeParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -231,11 +177,13 @@ class _HumanResourceDatabaseAddEmployeeParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_HumanResourceDatabaseAddEmployeeParams";
+    String fieldName;
     try {
+      fieldName = "employee";
       encoder0.encodeStruct(employee, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "employee of struct _HumanResourceDatabaseAddEmployeeParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -265,14 +213,8 @@ class HumanResourceDatabaseAddEmployeeResponseParams extends bindings.Struct {
     bool this.success
   ) : super(kVersions.last.size);
 
-  static HumanResourceDatabaseAddEmployeeResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static HumanResourceDatabaseAddEmployeeResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static HumanResourceDatabaseAddEmployeeResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -280,24 +222,7 @@ class HumanResourceDatabaseAddEmployeeResponseParams extends bindings.Struct {
     }
     HumanResourceDatabaseAddEmployeeResponseParams result = new HumanResourceDatabaseAddEmployeeResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.success = decoder0.decodeBool(8, 0);
@@ -307,11 +232,13 @@ class HumanResourceDatabaseAddEmployeeResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "HumanResourceDatabaseAddEmployeeResponseParams";
+    String fieldName;
     try {
+      fieldName = "success";
       encoder0.encodeBool(success, 8, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "success of struct HumanResourceDatabaseAddEmployeeResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -344,14 +271,8 @@ class _HumanResourceDatabaseQueryEmployeeParams extends bindings.Struct {
     bool this.retrieveFingerPrint
   ) : super(kVersions.last.size);
 
-  static _HumanResourceDatabaseQueryEmployeeParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _HumanResourceDatabaseQueryEmployeeParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _HumanResourceDatabaseQueryEmployeeParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -359,24 +280,7 @@ class _HumanResourceDatabaseQueryEmployeeParams extends bindings.Struct {
     }
     _HumanResourceDatabaseQueryEmployeeParams result = new _HumanResourceDatabaseQueryEmployeeParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.id = decoder0.decodeUint64(8);
@@ -390,18 +294,15 @@ class _HumanResourceDatabaseQueryEmployeeParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_HumanResourceDatabaseQueryEmployeeParams";
+    String fieldName;
     try {
+      fieldName = "id";
       encoder0.encodeUint64(id, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "id of struct _HumanResourceDatabaseQueryEmployeeParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "retrieveFingerPrint";
       encoder0.encodeBool(retrieveFingerPrint, 16, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "retrieveFingerPrint of struct _HumanResourceDatabaseQueryEmployeeParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -436,14 +337,8 @@ class HumanResourceDatabaseQueryEmployeeResponseParams extends bindings.Struct {
     List<int> this.fingerPrint
   ) : super(kVersions.last.size);
 
-  static HumanResourceDatabaseQueryEmployeeResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static HumanResourceDatabaseQueryEmployeeResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static HumanResourceDatabaseQueryEmployeeResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -451,24 +346,7 @@ class HumanResourceDatabaseQueryEmployeeResponseParams extends bindings.Struct {
     }
     HumanResourceDatabaseQueryEmployeeResponseParams result = new HumanResourceDatabaseQueryEmployeeResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -483,18 +361,15 @@ class HumanResourceDatabaseQueryEmployeeResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "HumanResourceDatabaseQueryEmployeeResponseParams";
+    String fieldName;
     try {
+      fieldName = "employee";
       encoder0.encodeStruct(employee, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "employee of struct HumanResourceDatabaseQueryEmployeeResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "fingerPrint";
       encoder0.encodeUint8Array(fingerPrint, 16, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "fingerPrint of struct HumanResourceDatabaseQueryEmployeeResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -528,14 +403,8 @@ class _HumanResourceDatabaseAttachFingerPrintParams extends bindings.Struct {
     List<int> this.fingerPrint
   ) : super(kVersions.last.size);
 
-  static _HumanResourceDatabaseAttachFingerPrintParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _HumanResourceDatabaseAttachFingerPrintParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _HumanResourceDatabaseAttachFingerPrintParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -543,24 +412,7 @@ class _HumanResourceDatabaseAttachFingerPrintParams extends bindings.Struct {
     }
     _HumanResourceDatabaseAttachFingerPrintParams result = new _HumanResourceDatabaseAttachFingerPrintParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.id = decoder0.decodeUint64(8);
@@ -574,18 +426,15 @@ class _HumanResourceDatabaseAttachFingerPrintParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_HumanResourceDatabaseAttachFingerPrintParams";
+    String fieldName;
     try {
+      fieldName = "id";
       encoder0.encodeUint64(id, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "id of struct _HumanResourceDatabaseAttachFingerPrintParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "fingerPrint";
       encoder0.encodeUint8Array(fingerPrint, 16, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "fingerPrint of struct _HumanResourceDatabaseAttachFingerPrintParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -617,14 +466,8 @@ class HumanResourceDatabaseAttachFingerPrintResponseParams extends bindings.Stru
     bool this.success
   ) : super(kVersions.last.size);
 
-  static HumanResourceDatabaseAttachFingerPrintResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static HumanResourceDatabaseAttachFingerPrintResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static HumanResourceDatabaseAttachFingerPrintResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -632,24 +475,7 @@ class HumanResourceDatabaseAttachFingerPrintResponseParams extends bindings.Stru
     }
     HumanResourceDatabaseAttachFingerPrintResponseParams result = new HumanResourceDatabaseAttachFingerPrintResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.success = decoder0.decodeBool(8, 0);
@@ -659,11 +485,13 @@ class HumanResourceDatabaseAttachFingerPrintResponseParams extends bindings.Stru
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "HumanResourceDatabaseAttachFingerPrintResponseParams";
+    String fieldName;
     try {
+      fieldName = "success";
       encoder0.encodeBool(success, 8, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "success of struct HumanResourceDatabaseAttachFingerPrintResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -691,14 +519,8 @@ class _HumanResourceDatabaseListEmployeeIdsParams extends bindings.Struct {
   _HumanResourceDatabaseListEmployeeIdsParams.init(
   ) : super(kVersions.last.size);
 
-  static _HumanResourceDatabaseListEmployeeIdsParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _HumanResourceDatabaseListEmployeeIdsParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _HumanResourceDatabaseListEmployeeIdsParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -706,29 +528,19 @@ class _HumanResourceDatabaseListEmployeeIdsParams extends bindings.Struct {
     }
     _HumanResourceDatabaseListEmployeeIdsParams result = new _HumanResourceDatabaseListEmployeeIdsParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_HumanResourceDatabaseListEmployeeIdsParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -754,14 +566,8 @@ class HumanResourceDatabaseListEmployeeIdsResponseParams extends bindings.Struct
     List<int> this.ids
   ) : super(kVersions.last.size);
 
-  static HumanResourceDatabaseListEmployeeIdsResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static HumanResourceDatabaseListEmployeeIdsResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static HumanResourceDatabaseListEmployeeIdsResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -769,24 +575,7 @@ class HumanResourceDatabaseListEmployeeIdsResponseParams extends bindings.Struct
     }
     HumanResourceDatabaseListEmployeeIdsResponseParams result = new HumanResourceDatabaseListEmployeeIdsResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.ids = decoder0.decodeUint64Array(8, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
@@ -796,11 +585,13 @@ class HumanResourceDatabaseListEmployeeIdsResponseParams extends bindings.Struct
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "HumanResourceDatabaseListEmployeeIdsResponseParams";
+    String fieldName;
     try {
+      fieldName = "ids";
       encoder0.encodeUint64Array(ids, 8, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "ids of struct HumanResourceDatabaseListEmployeeIdsResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

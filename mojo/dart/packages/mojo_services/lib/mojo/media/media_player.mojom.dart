@@ -27,14 +27,8 @@ class MediaPlayerStatus extends bindings.Struct {
     media_metadata_mojom.MediaMetadata this.metadata
   ) : super(kVersions.last.size);
 
-  static MediaPlayerStatus deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static MediaPlayerStatus deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static MediaPlayerStatus decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -42,24 +36,7 @@ class MediaPlayerStatus extends bindings.Struct {
     }
     MediaPlayerStatus result = new MediaPlayerStatus();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -79,25 +56,17 @@ class MediaPlayerStatus extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "MediaPlayerStatus";
+    String fieldName;
     try {
+      fieldName = "timelineTransform";
       encoder0.encodeStruct(timelineTransform, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "timelineTransform of struct MediaPlayerStatus: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "endOfStream";
       encoder0.encodeBool(endOfStream, 16, 0);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "endOfStream of struct MediaPlayerStatus: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "metadata";
       encoder0.encodeStruct(metadata, 24, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "metadata of struct MediaPlayerStatus: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -129,14 +98,8 @@ class _MediaPlayerPlayParams extends bindings.Struct {
   _MediaPlayerPlayParams.init(
   ) : super(kVersions.last.size);
 
-  static _MediaPlayerPlayParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MediaPlayerPlayParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MediaPlayerPlayParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -144,29 +107,19 @@ class _MediaPlayerPlayParams extends bindings.Struct {
     }
     _MediaPlayerPlayParams result = new _MediaPlayerPlayParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaPlayerPlayParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -190,14 +143,8 @@ class _MediaPlayerPauseParams extends bindings.Struct {
   _MediaPlayerPauseParams.init(
   ) : super(kVersions.last.size);
 
-  static _MediaPlayerPauseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MediaPlayerPauseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MediaPlayerPauseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -205,29 +152,19 @@ class _MediaPlayerPauseParams extends bindings.Struct {
     }
     _MediaPlayerPauseParams result = new _MediaPlayerPauseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaPlayerPauseParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -253,14 +190,8 @@ class _MediaPlayerSeekParams extends bindings.Struct {
     int this.position
   ) : super(kVersions.last.size);
 
-  static _MediaPlayerSeekParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MediaPlayerSeekParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MediaPlayerSeekParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -268,24 +199,7 @@ class _MediaPlayerSeekParams extends bindings.Struct {
     }
     _MediaPlayerSeekParams result = new _MediaPlayerSeekParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.position = decoder0.decodeInt64(8);
@@ -295,11 +209,13 @@ class _MediaPlayerSeekParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaPlayerSeekParams";
+    String fieldName;
     try {
+      fieldName = "position";
       encoder0.encodeInt64(position, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "position of struct _MediaPlayerSeekParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -329,14 +245,8 @@ class _MediaPlayerGetStatusParams extends bindings.Struct {
     int this.versionLastSeen
   ) : super(kVersions.last.size);
 
-  static _MediaPlayerGetStatusParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _MediaPlayerGetStatusParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _MediaPlayerGetStatusParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -344,24 +254,7 @@ class _MediaPlayerGetStatusParams extends bindings.Struct {
     }
     _MediaPlayerGetStatusParams result = new _MediaPlayerGetStatusParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.versionLastSeen = decoder0.decodeUint64(8);
@@ -371,11 +264,13 @@ class _MediaPlayerGetStatusParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaPlayerGetStatusParams";
+    String fieldName;
     try {
+      fieldName = "versionLastSeen";
       encoder0.encodeUint64(versionLastSeen, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "versionLastSeen of struct _MediaPlayerGetStatusParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -407,14 +302,8 @@ class MediaPlayerGetStatusResponseParams extends bindings.Struct {
     MediaPlayerStatus this.status
   ) : super(kVersions.last.size);
 
-  static MediaPlayerGetStatusResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static MediaPlayerGetStatusResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static MediaPlayerGetStatusResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -422,24 +311,7 @@ class MediaPlayerGetStatusResponseParams extends bindings.Struct {
     }
     MediaPlayerGetStatusResponseParams result = new MediaPlayerGetStatusResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.version = decoder0.decodeUint64(8);
@@ -454,18 +326,15 @@ class MediaPlayerGetStatusResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "MediaPlayerGetStatusResponseParams";
+    String fieldName;
     try {
+      fieldName = "version";
       encoder0.encodeUint64(version, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "version of struct MediaPlayerGetStatusResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "status";
       encoder0.encodeStruct(status, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "status of struct MediaPlayerGetStatusResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

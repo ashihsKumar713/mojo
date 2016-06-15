@@ -31,14 +31,8 @@ class FlogDescription extends bindings.Struct {
     bool this.open
   ) : super(kVersions.last.size);
 
-  static FlogDescription deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FlogDescription deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FlogDescription decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -46,24 +40,7 @@ class FlogDescription extends bindings.Struct {
     }
     FlogDescription result = new FlogDescription();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.label = decoder0.decodeString(8, false);
@@ -93,46 +70,23 @@ class FlogDescription extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FlogDescription";
+    String fieldName;
     try {
+      fieldName = "label";
       encoder0.encodeString(label, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "label of struct FlogDescription: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "logId";
       encoder0.encodeUint32(logId, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "logId of struct FlogDescription: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "entryCount";
       encoder0.encodeUint32(entryCount, 20);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "entryCount of struct FlogDescription: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "startTimeUs";
       encoder0.encodeInt64(startTimeUs, 24);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "startTimeUs of struct FlogDescription: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "stopTimeUs";
       encoder0.encodeInt64(stopTimeUs, 32);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "stopTimeUs of struct FlogDescription: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "open";
       encoder0.encodeBool(open, 40, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "open of struct FlogDescription: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -178,14 +132,8 @@ class FlogEntry extends bindings.Struct {
     FlogEntryDetails this.details
   ) : super(kVersions.last.size);
 
-  static FlogEntry deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FlogEntry deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FlogEntry decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -193,24 +141,7 @@ class FlogEntry extends bindings.Struct {
     }
     FlogEntry result = new FlogEntry();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.timeUs = decoder0.decodeInt64(8);
@@ -232,32 +163,19 @@ class FlogEntry extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FlogEntry";
+    String fieldName;
     try {
+      fieldName = "timeUs";
       encoder0.encodeInt64(timeUs, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "timeUs of struct FlogEntry: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "logId";
       encoder0.encodeUint32(logId, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "logId of struct FlogEntry: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "channelId";
       encoder0.encodeUint32(channelId, 20);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "channelId of struct FlogEntry: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "details";
       encoder0.encodeUnion(details, 24, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "details of struct FlogEntry: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -293,14 +211,8 @@ class FlogChannelCreationEntryDetails extends bindings.Struct {
     String this.typeName
   ) : super(kVersions.last.size);
 
-  static FlogChannelCreationEntryDetails deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FlogChannelCreationEntryDetails deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FlogChannelCreationEntryDetails decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -308,24 +220,7 @@ class FlogChannelCreationEntryDetails extends bindings.Struct {
     }
     FlogChannelCreationEntryDetails result = new FlogChannelCreationEntryDetails();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.typeName = decoder0.decodeString(8, false);
@@ -335,11 +230,13 @@ class FlogChannelCreationEntryDetails extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FlogChannelCreationEntryDetails";
+    String fieldName;
     try {
+      fieldName = "typeName";
       encoder0.encodeString(typeName, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "typeName of struct FlogChannelCreationEntryDetails: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -369,14 +266,8 @@ class FlogChannelMessageEntryDetails extends bindings.Struct {
     List<int> this.data
   ) : super(kVersions.last.size);
 
-  static FlogChannelMessageEntryDetails deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FlogChannelMessageEntryDetails deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FlogChannelMessageEntryDetails decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -384,24 +275,7 @@ class FlogChannelMessageEntryDetails extends bindings.Struct {
     }
     FlogChannelMessageEntryDetails result = new FlogChannelMessageEntryDetails();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.data = decoder0.decodeUint8Array(8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
@@ -411,11 +285,13 @@ class FlogChannelMessageEntryDetails extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FlogChannelMessageEntryDetails";
+    String fieldName;
     try {
+      fieldName = "data";
       encoder0.encodeUint8Array(data, 8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "data of struct FlogChannelMessageEntryDetails: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -447,14 +323,8 @@ class _FlogServiceCreateLoggerParams extends bindings.Struct {
     String this.label
   ) : super(kVersions.last.size);
 
-  static _FlogServiceCreateLoggerParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FlogServiceCreateLoggerParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FlogServiceCreateLoggerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -462,24 +332,7 @@ class _FlogServiceCreateLoggerParams extends bindings.Struct {
     }
     _FlogServiceCreateLoggerParams result = new _FlogServiceCreateLoggerParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.logger = decoder0.decodeInterfaceRequest(8, false, FlogLoggerStub.newFromEndpoint);
@@ -493,18 +346,15 @@ class _FlogServiceCreateLoggerParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FlogServiceCreateLoggerParams";
+    String fieldName;
     try {
+      fieldName = "logger";
       encoder0.encodeInterfaceRequest(logger, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "logger of struct _FlogServiceCreateLoggerParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "label";
       encoder0.encodeString(label, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "label of struct _FlogServiceCreateLoggerParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -532,14 +382,8 @@ class _FlogServiceGetLogDescriptionsParams extends bindings.Struct {
   _FlogServiceGetLogDescriptionsParams.init(
   ) : super(kVersions.last.size);
 
-  static _FlogServiceGetLogDescriptionsParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FlogServiceGetLogDescriptionsParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FlogServiceGetLogDescriptionsParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -547,29 +391,19 @@ class _FlogServiceGetLogDescriptionsParams extends bindings.Struct {
     }
     _FlogServiceGetLogDescriptionsParams result = new _FlogServiceGetLogDescriptionsParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FlogServiceGetLogDescriptionsParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -595,14 +429,8 @@ class FlogServiceGetLogDescriptionsResponseParams extends bindings.Struct {
     List<FlogDescription> this.descriptions
   ) : super(kVersions.last.size);
 
-  static FlogServiceGetLogDescriptionsResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FlogServiceGetLogDescriptionsResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FlogServiceGetLogDescriptionsResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -610,24 +438,7 @@ class FlogServiceGetLogDescriptionsResponseParams extends bindings.Struct {
     }
     FlogServiceGetLogDescriptionsResponseParams result = new FlogServiceGetLogDescriptionsResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -646,7 +457,10 @@ class FlogServiceGetLogDescriptionsResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FlogServiceGetLogDescriptionsResponseParams";
+    String fieldName;
     try {
+      fieldName = "descriptions";
       if (descriptions == null) {
         encoder0.encodeNullPointer(8, false);
       } else {
@@ -656,8 +470,7 @@ class FlogServiceGetLogDescriptionsResponseParams extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "descriptions of struct FlogServiceGetLogDescriptionsResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -689,14 +502,8 @@ class _FlogServiceCreateReaderParams extends bindings.Struct {
     int this.logId
   ) : super(kVersions.last.size);
 
-  static _FlogServiceCreateReaderParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FlogServiceCreateReaderParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FlogServiceCreateReaderParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -704,24 +511,7 @@ class _FlogServiceCreateReaderParams extends bindings.Struct {
     }
     _FlogServiceCreateReaderParams result = new _FlogServiceCreateReaderParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.reader = decoder0.decodeInterfaceRequest(8, false, FlogReaderStub.newFromEndpoint);
@@ -735,18 +525,15 @@ class _FlogServiceCreateReaderParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FlogServiceCreateReaderParams";
+    String fieldName;
     try {
+      fieldName = "reader";
       encoder0.encodeInterfaceRequest(reader, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "reader of struct _FlogServiceCreateReaderParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "logId";
       encoder0.encodeUint32(logId, 12);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "logId of struct _FlogServiceCreateReaderParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -780,14 +567,8 @@ class _FlogLoggerLogChannelCreationParams extends bindings.Struct {
     String this.typeName
   ) : super(kVersions.last.size);
 
-  static _FlogLoggerLogChannelCreationParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FlogLoggerLogChannelCreationParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FlogLoggerLogChannelCreationParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -795,24 +576,7 @@ class _FlogLoggerLogChannelCreationParams extends bindings.Struct {
     }
     _FlogLoggerLogChannelCreationParams result = new _FlogLoggerLogChannelCreationParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.timeUs = decoder0.decodeInt64(8);
@@ -830,25 +594,17 @@ class _FlogLoggerLogChannelCreationParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FlogLoggerLogChannelCreationParams";
+    String fieldName;
     try {
+      fieldName = "timeUs";
       encoder0.encodeInt64(timeUs, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "timeUs of struct _FlogLoggerLogChannelCreationParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "channelId";
       encoder0.encodeUint32(channelId, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "channelId of struct _FlogLoggerLogChannelCreationParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "typeName";
       encoder0.encodeString(typeName, 24, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "typeName of struct _FlogLoggerLogChannelCreationParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -886,14 +642,8 @@ class _FlogLoggerLogChannelMessageParams extends bindings.Struct {
     List<int> this.data
   ) : super(kVersions.last.size);
 
-  static _FlogLoggerLogChannelMessageParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FlogLoggerLogChannelMessageParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FlogLoggerLogChannelMessageParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -901,24 +651,7 @@ class _FlogLoggerLogChannelMessageParams extends bindings.Struct {
     }
     _FlogLoggerLogChannelMessageParams result = new _FlogLoggerLogChannelMessageParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.timeUs = decoder0.decodeInt64(8);
@@ -936,25 +669,17 @@ class _FlogLoggerLogChannelMessageParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FlogLoggerLogChannelMessageParams";
+    String fieldName;
     try {
+      fieldName = "timeUs";
       encoder0.encodeInt64(timeUs, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "timeUs of struct _FlogLoggerLogChannelMessageParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "channelId";
       encoder0.encodeUint32(channelId, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "channelId of struct _FlogLoggerLogChannelMessageParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "data";
       encoder0.encodeUint8Array(data, 24, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "data of struct _FlogLoggerLogChannelMessageParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -990,14 +715,8 @@ class _FlogLoggerLogChannelDeletionParams extends bindings.Struct {
     int this.channelId
   ) : super(kVersions.last.size);
 
-  static _FlogLoggerLogChannelDeletionParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FlogLoggerLogChannelDeletionParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FlogLoggerLogChannelDeletionParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1005,24 +724,7 @@ class _FlogLoggerLogChannelDeletionParams extends bindings.Struct {
     }
     _FlogLoggerLogChannelDeletionParams result = new _FlogLoggerLogChannelDeletionParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.timeUs = decoder0.decodeInt64(8);
@@ -1036,18 +738,15 @@ class _FlogLoggerLogChannelDeletionParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FlogLoggerLogChannelDeletionParams";
+    String fieldName;
     try {
+      fieldName = "timeUs";
       encoder0.encodeInt64(timeUs, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "timeUs of struct _FlogLoggerLogChannelDeletionParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "channelId";
       encoder0.encodeUint32(channelId, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "channelId of struct _FlogLoggerLogChannelDeletionParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1081,14 +780,8 @@ class _FlogReaderGetEntriesParams extends bindings.Struct {
     int this.maxCount
   ) : super(kVersions.last.size);
 
-  static _FlogReaderGetEntriesParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _FlogReaderGetEntriesParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _FlogReaderGetEntriesParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1096,24 +789,7 @@ class _FlogReaderGetEntriesParams extends bindings.Struct {
     }
     _FlogReaderGetEntriesParams result = new _FlogReaderGetEntriesParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.startIndex = decoder0.decodeUint32(8);
@@ -1127,18 +803,15 @@ class _FlogReaderGetEntriesParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FlogReaderGetEntriesParams";
+    String fieldName;
     try {
+      fieldName = "startIndex";
       encoder0.encodeUint32(startIndex, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "startIndex of struct _FlogReaderGetEntriesParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "maxCount";
       encoder0.encodeUint32(maxCount, 12);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "maxCount of struct _FlogReaderGetEntriesParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1174,14 +847,8 @@ class FlogReaderGetEntriesResponseParams extends bindings.Struct {
     bool this.open
   ) : super(kVersions.last.size);
 
-  static FlogReaderGetEntriesResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static FlogReaderGetEntriesResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static FlogReaderGetEntriesResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1189,24 +856,7 @@ class FlogReaderGetEntriesResponseParams extends bindings.Struct {
     }
     FlogReaderGetEntriesResponseParams result = new FlogReaderGetEntriesResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -1233,7 +883,10 @@ class FlogReaderGetEntriesResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FlogReaderGetEntriesResponseParams";
+    String fieldName;
     try {
+      fieldName = "entries";
       if (entries == null) {
         encoder0.encodeNullPointer(8, false);
       } else {
@@ -1242,23 +895,12 @@ class FlogReaderGetEntriesResponseParams extends bindings.Struct {
           encoder1.encodeStruct(entries[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "entries of struct FlogReaderGetEntriesResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "entryCount";
       encoder0.encodeUint32(entryCount, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "entryCount of struct FlogReaderGetEntriesResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "open";
       encoder0.encodeBool(open, 20, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "open of struct FlogReaderGetEntriesResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

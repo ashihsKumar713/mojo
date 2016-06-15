@@ -32,14 +32,8 @@ class MojomFile extends bindings.Struct {
     String this.serializedRuntimeTypeInfo
   ) : super(kVersions.last.size);
 
-  static MojomFile deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static MojomFile deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static MojomFile decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -47,24 +41,7 @@ class MojomFile extends bindings.Struct {
     }
     MojomFile result = new MojomFile();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.fileName = decoder0.decodeString(8, false);
@@ -120,28 +97,16 @@ class MojomFile extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "MojomFile";
+    String fieldName;
     try {
+      fieldName = "fileName";
       encoder0.encodeString(fileName, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "fileName of struct MojomFile: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "specifiedFileName";
       encoder0.encodeString(specifiedFileName, 16, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "specifiedFileName of struct MojomFile: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "moduleNamespace";
       encoder0.encodeString(moduleNamespace, 24, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "moduleNamespace of struct MojomFile: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "attributes";
       if (attributes == null) {
         encoder0.encodeNullPointer(32, true);
       } else {
@@ -150,12 +115,7 @@ class MojomFile extends bindings.Struct {
           encoder1.encodeStruct(attributes[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "attributes of struct MojomFile: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "imports";
       if (imports == null) {
         encoder0.encodeNullPointer(40, true);
       } else {
@@ -164,23 +124,12 @@ class MojomFile extends bindings.Struct {
           encoder1.encodeString(imports[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "imports of struct MojomFile: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "declaredMojomObjects";
       encoder0.encodeStruct(declaredMojomObjects, 48, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "declaredMojomObjects of struct MojomFile: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "serializedRuntimeTypeInfo";
       encoder0.encodeString(serializedRuntimeTypeInfo, 56, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "serializedRuntimeTypeInfo of struct MojomFile: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -226,14 +175,8 @@ class MojomFileGraph extends bindings.Struct {
     Map<String, mojom_types_mojom.DeclaredConstant> this.resolvedConstants
   ) : super(kVersions.last.size);
 
-  static MojomFileGraph deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static MojomFileGraph deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static MojomFileGraph decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -241,24 +184,7 @@ class MojomFileGraph extends bindings.Struct {
     }
     MojomFileGraph result = new MojomFileGraph();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -375,7 +301,10 @@ class MojomFileGraph extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "MojomFileGraph";
+    String fieldName;
     try {
+      fieldName = "files";
       if (files == null) {
         encoder0.encodeNullPointer(8, false);
       } else {
@@ -397,12 +326,7 @@ class MojomFileGraph extends bindings.Struct {
           }
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "files of struct MojomFileGraph: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "resolvedTypes";
       if (resolvedTypes == null) {
         encoder0.encodeNullPointer(16, false);
       } else {
@@ -424,12 +348,7 @@ class MojomFileGraph extends bindings.Struct {
           }
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "resolvedTypes of struct MojomFileGraph: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "resolvedConstants";
       if (resolvedConstants == null) {
         encoder0.encodeNullPointer(24, false);
       } else {
@@ -452,8 +371,7 @@ class MojomFileGraph extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "resolvedConstants of struct MojomFileGraph: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -499,14 +417,8 @@ class KeysByType extends bindings.Struct {
     List<String> this.embeddedConstants
   ) : super(kVersions.last.size);
 
-  static KeysByType deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static KeysByType deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static KeysByType decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -514,24 +426,7 @@ class KeysByType extends bindings.Struct {
     }
     KeysByType result = new KeysByType();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -635,7 +530,10 @@ class KeysByType extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "KeysByType";
+    String fieldName;
     try {
+      fieldName = "interfaces";
       if (interfaces == null) {
         encoder0.encodeNullPointer(8, true);
       } else {
@@ -644,12 +542,7 @@ class KeysByType extends bindings.Struct {
           encoder1.encodeString(interfaces[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "interfaces of struct KeysByType: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "structs";
       if (structs == null) {
         encoder0.encodeNullPointer(16, true);
       } else {
@@ -658,12 +551,7 @@ class KeysByType extends bindings.Struct {
           encoder1.encodeString(structs[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "structs of struct KeysByType: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "unions";
       if (unions == null) {
         encoder0.encodeNullPointer(24, true);
       } else {
@@ -672,12 +560,7 @@ class KeysByType extends bindings.Struct {
           encoder1.encodeString(unions[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "unions of struct KeysByType: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "topLevelEnums";
       if (topLevelEnums == null) {
         encoder0.encodeNullPointer(32, true);
       } else {
@@ -686,12 +569,7 @@ class KeysByType extends bindings.Struct {
           encoder1.encodeString(topLevelEnums[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "topLevelEnums of struct KeysByType: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "embeddedEnums";
       if (embeddedEnums == null) {
         encoder0.encodeNullPointer(40, true);
       } else {
@@ -700,12 +578,7 @@ class KeysByType extends bindings.Struct {
           encoder1.encodeString(embeddedEnums[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "embeddedEnums of struct KeysByType: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "topLevelConstants";
       if (topLevelConstants == null) {
         encoder0.encodeNullPointer(48, true);
       } else {
@@ -714,12 +587,7 @@ class KeysByType extends bindings.Struct {
           encoder1.encodeString(topLevelConstants[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "topLevelConstants of struct KeysByType: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "embeddedConstants";
       if (embeddedConstants == null) {
         encoder0.encodeNullPointer(56, true);
       } else {
@@ -729,8 +597,7 @@ class KeysByType extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "embeddedConstants of struct KeysByType: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

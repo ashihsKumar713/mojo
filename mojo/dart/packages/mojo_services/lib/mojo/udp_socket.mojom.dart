@@ -21,14 +21,8 @@ class _UdpSocketAllowAddressReuseParams extends bindings.Struct {
   _UdpSocketAllowAddressReuseParams.init(
   ) : super(kVersions.last.size);
 
-  static _UdpSocketAllowAddressReuseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UdpSocketAllowAddressReuseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UdpSocketAllowAddressReuseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -36,29 +30,19 @@ class _UdpSocketAllowAddressReuseParams extends bindings.Struct {
     }
     _UdpSocketAllowAddressReuseParams result = new _UdpSocketAllowAddressReuseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UdpSocketAllowAddressReuseParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -84,14 +68,8 @@ class UdpSocketAllowAddressReuseResponseParams extends bindings.Struct {
     network_error_mojom.NetworkError this.result
   ) : super(kVersions.last.size);
 
-  static UdpSocketAllowAddressReuseResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static UdpSocketAllowAddressReuseResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static UdpSocketAllowAddressReuseResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -99,24 +77,7 @@ class UdpSocketAllowAddressReuseResponseParams extends bindings.Struct {
     }
     UdpSocketAllowAddressReuseResponseParams result = new UdpSocketAllowAddressReuseResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -127,11 +88,13 @@ class UdpSocketAllowAddressReuseResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "UdpSocketAllowAddressReuseResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeStruct(result, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct UdpSocketAllowAddressReuseResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -161,14 +124,8 @@ class _UdpSocketBindParams extends bindings.Struct {
     net_address_mojom.NetAddress this.addr
   ) : super(kVersions.last.size);
 
-  static _UdpSocketBindParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UdpSocketBindParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UdpSocketBindParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -176,24 +133,7 @@ class _UdpSocketBindParams extends bindings.Struct {
     }
     _UdpSocketBindParams result = new _UdpSocketBindParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -204,11 +144,13 @@ class _UdpSocketBindParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UdpSocketBindParams";
+    String fieldName;
     try {
+      fieldName = "addr";
       encoder0.encodeStruct(addr, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "addr of struct _UdpSocketBindParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -242,14 +184,8 @@ class UdpSocketBindResponseParams extends bindings.Struct {
     UdpSocketReceiverInterfaceRequest this.receiver
   ) : super(kVersions.last.size);
 
-  static UdpSocketBindResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static UdpSocketBindResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static UdpSocketBindResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -257,24 +193,7 @@ class UdpSocketBindResponseParams extends bindings.Struct {
     }
     UdpSocketBindResponseParams result = new UdpSocketBindResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -294,25 +213,17 @@ class UdpSocketBindResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "UdpSocketBindResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeStruct(result, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct UdpSocketBindResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "boundAddr";
       encoder0.encodeStruct(boundAddr, 16, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "boundAddr of struct UdpSocketBindResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "receiver";
       encoder0.encodeInterfaceRequest(receiver, 24, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "receiver of struct UdpSocketBindResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -343,14 +254,8 @@ class _UdpSocketConnectParams extends bindings.Struct {
     net_address_mojom.NetAddress this.remoteAddr
   ) : super(kVersions.last.size);
 
-  static _UdpSocketConnectParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UdpSocketConnectParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UdpSocketConnectParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -358,24 +263,7 @@ class _UdpSocketConnectParams extends bindings.Struct {
     }
     _UdpSocketConnectParams result = new _UdpSocketConnectParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -386,11 +274,13 @@ class _UdpSocketConnectParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UdpSocketConnectParams";
+    String fieldName;
     try {
+      fieldName = "remoteAddr";
       encoder0.encodeStruct(remoteAddr, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "remoteAddr of struct _UdpSocketConnectParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -424,14 +314,8 @@ class UdpSocketConnectResponseParams extends bindings.Struct {
     UdpSocketReceiverInterfaceRequest this.receiver
   ) : super(kVersions.last.size);
 
-  static UdpSocketConnectResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static UdpSocketConnectResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static UdpSocketConnectResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -439,24 +323,7 @@ class UdpSocketConnectResponseParams extends bindings.Struct {
     }
     UdpSocketConnectResponseParams result = new UdpSocketConnectResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -476,25 +343,17 @@ class UdpSocketConnectResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "UdpSocketConnectResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeStruct(result, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct UdpSocketConnectResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "localAddr";
       encoder0.encodeStruct(localAddr, 16, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "localAddr of struct UdpSocketConnectResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "receiver";
       encoder0.encodeInterfaceRequest(receiver, 24, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "receiver of struct UdpSocketConnectResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -525,14 +384,8 @@ class _UdpSocketSetSendBufferSizeParams extends bindings.Struct {
     int this.size
   ) : super(kVersions.last.size);
 
-  static _UdpSocketSetSendBufferSizeParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UdpSocketSetSendBufferSizeParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UdpSocketSetSendBufferSizeParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -540,24 +393,7 @@ class _UdpSocketSetSendBufferSizeParams extends bindings.Struct {
     }
     _UdpSocketSetSendBufferSizeParams result = new _UdpSocketSetSendBufferSizeParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.size = decoder0.decodeUint32(8);
@@ -567,11 +403,13 @@ class _UdpSocketSetSendBufferSizeParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UdpSocketSetSendBufferSizeParams";
+    String fieldName;
     try {
+      fieldName = "size";
       encoder0.encodeUint32(size, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "size of struct _UdpSocketSetSendBufferSizeParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -601,14 +439,8 @@ class UdpSocketSetSendBufferSizeResponseParams extends bindings.Struct {
     network_error_mojom.NetworkError this.result
   ) : super(kVersions.last.size);
 
-  static UdpSocketSetSendBufferSizeResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static UdpSocketSetSendBufferSizeResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static UdpSocketSetSendBufferSizeResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -616,24 +448,7 @@ class UdpSocketSetSendBufferSizeResponseParams extends bindings.Struct {
     }
     UdpSocketSetSendBufferSizeResponseParams result = new UdpSocketSetSendBufferSizeResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -644,11 +459,13 @@ class UdpSocketSetSendBufferSizeResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "UdpSocketSetSendBufferSizeResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeStruct(result, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct UdpSocketSetSendBufferSizeResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -678,14 +495,8 @@ class _UdpSocketSetReceiveBufferSizeParams extends bindings.Struct {
     int this.size
   ) : super(kVersions.last.size);
 
-  static _UdpSocketSetReceiveBufferSizeParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UdpSocketSetReceiveBufferSizeParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UdpSocketSetReceiveBufferSizeParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -693,24 +504,7 @@ class _UdpSocketSetReceiveBufferSizeParams extends bindings.Struct {
     }
     _UdpSocketSetReceiveBufferSizeParams result = new _UdpSocketSetReceiveBufferSizeParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.size = decoder0.decodeUint32(8);
@@ -720,11 +514,13 @@ class _UdpSocketSetReceiveBufferSizeParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UdpSocketSetReceiveBufferSizeParams";
+    String fieldName;
     try {
+      fieldName = "size";
       encoder0.encodeUint32(size, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "size of struct _UdpSocketSetReceiveBufferSizeParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -754,14 +550,8 @@ class UdpSocketSetReceiveBufferSizeResponseParams extends bindings.Struct {
     network_error_mojom.NetworkError this.result
   ) : super(kVersions.last.size);
 
-  static UdpSocketSetReceiveBufferSizeResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static UdpSocketSetReceiveBufferSizeResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static UdpSocketSetReceiveBufferSizeResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -769,24 +559,7 @@ class UdpSocketSetReceiveBufferSizeResponseParams extends bindings.Struct {
     }
     UdpSocketSetReceiveBufferSizeResponseParams result = new UdpSocketSetReceiveBufferSizeResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -797,11 +570,13 @@ class UdpSocketSetReceiveBufferSizeResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "UdpSocketSetReceiveBufferSizeResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeStruct(result, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct UdpSocketSetReceiveBufferSizeResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -831,14 +606,8 @@ class _UdpSocketNegotiateMaxPendingSendRequestsParams extends bindings.Struct {
     int this.requestedSize
   ) : super(kVersions.last.size);
 
-  static _UdpSocketNegotiateMaxPendingSendRequestsParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UdpSocketNegotiateMaxPendingSendRequestsParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UdpSocketNegotiateMaxPendingSendRequestsParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -846,24 +615,7 @@ class _UdpSocketNegotiateMaxPendingSendRequestsParams extends bindings.Struct {
     }
     _UdpSocketNegotiateMaxPendingSendRequestsParams result = new _UdpSocketNegotiateMaxPendingSendRequestsParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.requestedSize = decoder0.decodeUint32(8);
@@ -873,11 +625,13 @@ class _UdpSocketNegotiateMaxPendingSendRequestsParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UdpSocketNegotiateMaxPendingSendRequestsParams";
+    String fieldName;
     try {
+      fieldName = "requestedSize";
       encoder0.encodeUint32(requestedSize, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "requestedSize of struct _UdpSocketNegotiateMaxPendingSendRequestsParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -907,14 +661,8 @@ class UdpSocketNegotiateMaxPendingSendRequestsResponseParams extends bindings.St
     int this.actualSize
   ) : super(kVersions.last.size);
 
-  static UdpSocketNegotiateMaxPendingSendRequestsResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static UdpSocketNegotiateMaxPendingSendRequestsResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static UdpSocketNegotiateMaxPendingSendRequestsResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -922,24 +670,7 @@ class UdpSocketNegotiateMaxPendingSendRequestsResponseParams extends bindings.St
     }
     UdpSocketNegotiateMaxPendingSendRequestsResponseParams result = new UdpSocketNegotiateMaxPendingSendRequestsResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.actualSize = decoder0.decodeUint32(8);
@@ -949,11 +680,13 @@ class UdpSocketNegotiateMaxPendingSendRequestsResponseParams extends bindings.St
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "UdpSocketNegotiateMaxPendingSendRequestsResponseParams";
+    String fieldName;
     try {
+      fieldName = "actualSize";
       encoder0.encodeUint32(actualSize, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "actualSize of struct UdpSocketNegotiateMaxPendingSendRequestsResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -983,14 +716,8 @@ class _UdpSocketReceiveMoreParams extends bindings.Struct {
     int this.datagramNumber
   ) : super(kVersions.last.size);
 
-  static _UdpSocketReceiveMoreParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UdpSocketReceiveMoreParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UdpSocketReceiveMoreParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -998,24 +725,7 @@ class _UdpSocketReceiveMoreParams extends bindings.Struct {
     }
     _UdpSocketReceiveMoreParams result = new _UdpSocketReceiveMoreParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.datagramNumber = decoder0.decodeUint32(8);
@@ -1025,11 +735,13 @@ class _UdpSocketReceiveMoreParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UdpSocketReceiveMoreParams";
+    String fieldName;
     try {
+      fieldName = "datagramNumber";
       encoder0.encodeUint32(datagramNumber, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "datagramNumber of struct _UdpSocketReceiveMoreParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1061,14 +773,8 @@ class _UdpSocketSendToParams extends bindings.Struct {
     List<int> this.data
   ) : super(kVersions.last.size);
 
-  static _UdpSocketSendToParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UdpSocketSendToParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UdpSocketSendToParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1076,24 +782,7 @@ class _UdpSocketSendToParams extends bindings.Struct {
     }
     _UdpSocketSendToParams result = new _UdpSocketSendToParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -1108,18 +797,15 @@ class _UdpSocketSendToParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UdpSocketSendToParams";
+    String fieldName;
     try {
+      fieldName = "destAddr";
       encoder0.encodeStruct(destAddr, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "destAddr of struct _UdpSocketSendToParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "data";
       encoder0.encodeUint8Array(data, 16, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "data of struct _UdpSocketSendToParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1151,14 +837,8 @@ class UdpSocketSendToResponseParams extends bindings.Struct {
     network_error_mojom.NetworkError this.result
   ) : super(kVersions.last.size);
 
-  static UdpSocketSendToResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static UdpSocketSendToResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static UdpSocketSendToResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1166,24 +846,7 @@ class UdpSocketSendToResponseParams extends bindings.Struct {
     }
     UdpSocketSendToResponseParams result = new UdpSocketSendToResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -1194,11 +857,13 @@ class UdpSocketSendToResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "UdpSocketSendToResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeStruct(result, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct UdpSocketSendToResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1232,14 +897,8 @@ class _UdpSocketReceiverOnReceivedParams extends bindings.Struct {
     List<int> this.data
   ) : super(kVersions.last.size);
 
-  static _UdpSocketReceiverOnReceivedParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UdpSocketReceiverOnReceivedParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UdpSocketReceiverOnReceivedParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1247,24 +906,7 @@ class _UdpSocketReceiverOnReceivedParams extends bindings.Struct {
     }
     _UdpSocketReceiverOnReceivedParams result = new _UdpSocketReceiverOnReceivedParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -1284,25 +926,17 @@ class _UdpSocketReceiverOnReceivedParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UdpSocketReceiverOnReceivedParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeStruct(result, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct _UdpSocketReceiverOnReceivedParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "srcAddr";
       encoder0.encodeStruct(srcAddr, 16, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "srcAddr of struct _UdpSocketReceiverOnReceivedParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "data";
       encoder0.encodeUint8Array(data, 24, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "data of struct _UdpSocketReceiverOnReceivedParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

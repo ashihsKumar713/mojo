@@ -21,14 +21,8 @@ class _IcuDataMapParams extends bindings.Struct {
     String this.sha1hash
   ) : super(kVersions.last.size);
 
-  static _IcuDataMapParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _IcuDataMapParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _IcuDataMapParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -36,24 +30,7 @@ class _IcuDataMapParams extends bindings.Struct {
     }
     _IcuDataMapParams result = new _IcuDataMapParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.sha1hash = decoder0.decodeString(8, false);
@@ -63,11 +40,13 @@ class _IcuDataMapParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_IcuDataMapParams";
+    String fieldName;
     try {
+      fieldName = "sha1hash";
       encoder0.encodeString(sha1hash, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "sha1hash of struct _IcuDataMapParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -97,14 +76,8 @@ class IcuDataMapResponseParams extends bindings.Struct {
     core.MojoSharedBuffer this.icuData
   ) : super(kVersions.last.size);
 
-  static IcuDataMapResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static IcuDataMapResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static IcuDataMapResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -112,24 +85,7 @@ class IcuDataMapResponseParams extends bindings.Struct {
     }
     IcuDataMapResponseParams result = new IcuDataMapResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.icuData = decoder0.decodeSharedBufferHandle(8, true);
@@ -139,11 +95,13 @@ class IcuDataMapResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "IcuDataMapResponseParams";
+    String fieldName;
     try {
+      fieldName = "icuData";
       encoder0.encodeSharedBufferHandle(icuData, 8, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "icuData of struct IcuDataMapResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

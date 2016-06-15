@@ -21,14 +21,8 @@ class _DirectoryReadParams extends bindings.Struct {
   _DirectoryReadParams.init(
   ) : super(kVersions.last.size);
 
-  static _DirectoryReadParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _DirectoryReadParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _DirectoryReadParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -36,29 +30,19 @@ class _DirectoryReadParams extends bindings.Struct {
     }
     _DirectoryReadParams result = new _DirectoryReadParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_DirectoryReadParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -86,14 +70,8 @@ class DirectoryReadResponseParams extends bindings.Struct {
     List<types_mojom.DirectoryEntry> this.directoryContents
   ) : super(kVersions.last.size);
 
-  static DirectoryReadResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static DirectoryReadResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static DirectoryReadResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -101,24 +79,7 @@ class DirectoryReadResponseParams extends bindings.Struct {
     }
     DirectoryReadResponseParams result = new DirectoryReadResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -147,14 +108,12 @@ class DirectoryReadResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "DirectoryReadResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct DirectoryReadResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "directoryContents";
       if (directoryContents == null) {
         encoder0.encodeNullPointer(16, true);
       } else {
@@ -164,8 +123,7 @@ class DirectoryReadResponseParams extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "directoryContents of struct DirectoryReadResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -195,14 +153,8 @@ class _DirectoryStatParams extends bindings.Struct {
   _DirectoryStatParams.init(
   ) : super(kVersions.last.size);
 
-  static _DirectoryStatParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _DirectoryStatParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _DirectoryStatParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -210,29 +162,19 @@ class _DirectoryStatParams extends bindings.Struct {
     }
     _DirectoryStatParams result = new _DirectoryStatParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_DirectoryStatParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -260,14 +202,8 @@ class DirectoryStatResponseParams extends bindings.Struct {
     types_mojom.FileInformation this.fileInformation
   ) : super(kVersions.last.size);
 
-  static DirectoryStatResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static DirectoryStatResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static DirectoryStatResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -275,24 +211,7 @@ class DirectoryStatResponseParams extends bindings.Struct {
     }
     DirectoryStatResponseParams result = new DirectoryStatResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -311,18 +230,15 @@ class DirectoryStatResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "DirectoryStatResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct DirectoryStatResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "fileInformation";
       encoder0.encodeStruct(fileInformation, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "fileInformation of struct DirectoryStatResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -356,14 +272,8 @@ class _DirectoryTouchParams extends bindings.Struct {
     types_mojom.TimespecOrNow this.mtime
   ) : super(kVersions.last.size);
 
-  static _DirectoryTouchParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _DirectoryTouchParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _DirectoryTouchParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -371,24 +281,7 @@ class _DirectoryTouchParams extends bindings.Struct {
     }
     _DirectoryTouchParams result = new _DirectoryTouchParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -404,18 +297,15 @@ class _DirectoryTouchParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_DirectoryTouchParams";
+    String fieldName;
     try {
+      fieldName = "atime";
       encoder0.encodeStruct(atime, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "atime of struct _DirectoryTouchParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "mtime";
       encoder0.encodeStruct(mtime, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "mtime of struct _DirectoryTouchParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -447,14 +337,8 @@ class DirectoryTouchResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static DirectoryTouchResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static DirectoryTouchResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static DirectoryTouchResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -462,24 +346,7 @@ class DirectoryTouchResponseParams extends bindings.Struct {
     }
     DirectoryTouchResponseParams result = new DirectoryTouchResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -493,11 +360,13 @@ class DirectoryTouchResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "DirectoryTouchResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct DirectoryTouchResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -531,14 +400,8 @@ class _DirectoryOpenFileParams extends bindings.Struct {
     int this.openFlags
   ) : super(kVersions.last.size);
 
-  static _DirectoryOpenFileParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _DirectoryOpenFileParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _DirectoryOpenFileParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -546,24 +409,7 @@ class _DirectoryOpenFileParams extends bindings.Struct {
     }
     _DirectoryOpenFileParams result = new _DirectoryOpenFileParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.path = decoder0.decodeString(8, false);
@@ -581,25 +427,17 @@ class _DirectoryOpenFileParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_DirectoryOpenFileParams";
+    String fieldName;
     try {
+      fieldName = "path";
       encoder0.encodeString(path, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "path of struct _DirectoryOpenFileParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "file";
       encoder0.encodeInterfaceRequest(file, 16, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "file of struct _DirectoryOpenFileParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "openFlags";
       encoder0.encodeUint32(openFlags, 20);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "openFlags of struct _DirectoryOpenFileParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -630,14 +468,8 @@ class DirectoryOpenFileResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static DirectoryOpenFileResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static DirectoryOpenFileResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static DirectoryOpenFileResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -645,24 +477,7 @@ class DirectoryOpenFileResponseParams extends bindings.Struct {
     }
     DirectoryOpenFileResponseParams result = new DirectoryOpenFileResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -676,11 +491,13 @@ class DirectoryOpenFileResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "DirectoryOpenFileResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct DirectoryOpenFileResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -714,14 +531,8 @@ class _DirectoryOpenDirectoryParams extends bindings.Struct {
     int this.openFlags
   ) : super(kVersions.last.size);
 
-  static _DirectoryOpenDirectoryParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _DirectoryOpenDirectoryParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _DirectoryOpenDirectoryParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -729,24 +540,7 @@ class _DirectoryOpenDirectoryParams extends bindings.Struct {
     }
     _DirectoryOpenDirectoryParams result = new _DirectoryOpenDirectoryParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.path = decoder0.decodeString(8, false);
@@ -764,25 +558,17 @@ class _DirectoryOpenDirectoryParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_DirectoryOpenDirectoryParams";
+    String fieldName;
     try {
+      fieldName = "path";
       encoder0.encodeString(path, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "path of struct _DirectoryOpenDirectoryParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "directory";
       encoder0.encodeInterfaceRequest(directory, 16, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "directory of struct _DirectoryOpenDirectoryParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "openFlags";
       encoder0.encodeUint32(openFlags, 20);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "openFlags of struct _DirectoryOpenDirectoryParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -813,14 +599,8 @@ class DirectoryOpenDirectoryResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static DirectoryOpenDirectoryResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static DirectoryOpenDirectoryResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static DirectoryOpenDirectoryResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -828,24 +608,7 @@ class DirectoryOpenDirectoryResponseParams extends bindings.Struct {
     }
     DirectoryOpenDirectoryResponseParams result = new DirectoryOpenDirectoryResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -859,11 +622,13 @@ class DirectoryOpenDirectoryResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "DirectoryOpenDirectoryResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct DirectoryOpenDirectoryResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -895,14 +660,8 @@ class _DirectoryRenameParams extends bindings.Struct {
     String this.newPath
   ) : super(kVersions.last.size);
 
-  static _DirectoryRenameParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _DirectoryRenameParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _DirectoryRenameParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -910,24 +669,7 @@ class _DirectoryRenameParams extends bindings.Struct {
     }
     _DirectoryRenameParams result = new _DirectoryRenameParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.path = decoder0.decodeString(8, false);
@@ -941,18 +683,15 @@ class _DirectoryRenameParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_DirectoryRenameParams";
+    String fieldName;
     try {
+      fieldName = "path";
       encoder0.encodeString(path, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "path of struct _DirectoryRenameParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "newPath";
       encoder0.encodeString(newPath, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "newPath of struct _DirectoryRenameParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -984,14 +723,8 @@ class DirectoryRenameResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static DirectoryRenameResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static DirectoryRenameResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static DirectoryRenameResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -999,24 +732,7 @@ class DirectoryRenameResponseParams extends bindings.Struct {
     }
     DirectoryRenameResponseParams result = new DirectoryRenameResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -1030,11 +746,13 @@ class DirectoryRenameResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "DirectoryRenameResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct DirectoryRenameResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1066,14 +784,8 @@ class _DirectoryDeleteParams extends bindings.Struct {
     int this.deleteFlags
   ) : super(kVersions.last.size);
 
-  static _DirectoryDeleteParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _DirectoryDeleteParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _DirectoryDeleteParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1081,24 +793,7 @@ class _DirectoryDeleteParams extends bindings.Struct {
     }
     _DirectoryDeleteParams result = new _DirectoryDeleteParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.path = decoder0.decodeString(8, false);
@@ -1112,18 +807,15 @@ class _DirectoryDeleteParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_DirectoryDeleteParams";
+    String fieldName;
     try {
+      fieldName = "path";
       encoder0.encodeString(path, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "path of struct _DirectoryDeleteParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "deleteFlags";
       encoder0.encodeUint32(deleteFlags, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "deleteFlags of struct _DirectoryDeleteParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -1155,14 +847,8 @@ class DirectoryDeleteResponseParams extends bindings.Struct {
     types_mojom.Error this.error
   ) : super(kVersions.last.size);
 
-  static DirectoryDeleteResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static DirectoryDeleteResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static DirectoryDeleteResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -1170,24 +856,7 @@ class DirectoryDeleteResponseParams extends bindings.Struct {
     }
     DirectoryDeleteResponseParams result = new DirectoryDeleteResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.error = types_mojom.Error.decode(decoder0, 8);
@@ -1201,11 +870,13 @@ class DirectoryDeleteResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "DirectoryDeleteResponseParams";
+    String fieldName;
     try {
+      fieldName = "error";
       encoder0.encodeEnum(error, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct DirectoryDeleteResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

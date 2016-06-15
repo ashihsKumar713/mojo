@@ -124,14 +124,8 @@ class UtteranceCandidate extends bindings.Struct {
     double this.confidenceScore
   ) : super(kVersions.last.size);
 
-  static UtteranceCandidate deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static UtteranceCandidate deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static UtteranceCandidate decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -139,24 +133,7 @@ class UtteranceCandidate extends bindings.Struct {
     }
     UtteranceCandidate result = new UtteranceCandidate();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.text = decoder0.decodeString(8, false);
@@ -170,18 +147,15 @@ class UtteranceCandidate extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "UtteranceCandidate";
+    String fieldName;
     try {
+      fieldName = "text";
       encoder0.encodeString(text, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "text of struct UtteranceCandidate: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "confidenceScore";
       encoder0.encodeFloat(confidenceScore, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "confidenceScore of struct UtteranceCandidate: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -213,14 +187,8 @@ class _SpeechRecognizerListenerOnRecognizerErrorParams extends bindings.Struct {
     Error this.errorCode
   ) : super(kVersions.last.size);
 
-  static _SpeechRecognizerListenerOnRecognizerErrorParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _SpeechRecognizerListenerOnRecognizerErrorParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _SpeechRecognizerListenerOnRecognizerErrorParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -228,24 +196,7 @@ class _SpeechRecognizerListenerOnRecognizerErrorParams extends bindings.Struct {
     }
     _SpeechRecognizerListenerOnRecognizerErrorParams result = new _SpeechRecognizerListenerOnRecognizerErrorParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.errorCode = Error.decode(decoder0, 8);
@@ -259,11 +210,13 @@ class _SpeechRecognizerListenerOnRecognizerErrorParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_SpeechRecognizerListenerOnRecognizerErrorParams";
+    String fieldName;
     try {
+      fieldName = "errorCode";
       encoder0.encodeEnum(errorCode, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "errorCode of struct _SpeechRecognizerListenerOnRecognizerErrorParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -295,14 +248,8 @@ class _SpeechRecognizerListenerOnResultsParams extends bindings.Struct {
     bool this.complete
   ) : super(kVersions.last.size);
 
-  static _SpeechRecognizerListenerOnResultsParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _SpeechRecognizerListenerOnResultsParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _SpeechRecognizerListenerOnResultsParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -310,24 +257,7 @@ class _SpeechRecognizerListenerOnResultsParams extends bindings.Struct {
     }
     _SpeechRecognizerListenerOnResultsParams result = new _SpeechRecognizerListenerOnResultsParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -350,7 +280,10 @@ class _SpeechRecognizerListenerOnResultsParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_SpeechRecognizerListenerOnResultsParams";
+    String fieldName;
     try {
+      fieldName = "results";
       if (results == null) {
         encoder0.encodeNullPointer(8, false);
       } else {
@@ -359,16 +292,10 @@ class _SpeechRecognizerListenerOnResultsParams extends bindings.Struct {
           encoder1.encodeStruct(results[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "results of struct _SpeechRecognizerListenerOnResultsParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "complete";
       encoder0.encodeBool(complete, 16, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "complete of struct _SpeechRecognizerListenerOnResultsParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -400,14 +327,8 @@ class _SpeechRecognizerListenerOnSoundLevelChangedParams extends bindings.Struct
     double this.rmsDb
   ) : super(kVersions.last.size);
 
-  static _SpeechRecognizerListenerOnSoundLevelChangedParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _SpeechRecognizerListenerOnSoundLevelChangedParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _SpeechRecognizerListenerOnSoundLevelChangedParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -415,24 +336,7 @@ class _SpeechRecognizerListenerOnSoundLevelChangedParams extends bindings.Struct
     }
     _SpeechRecognizerListenerOnSoundLevelChangedParams result = new _SpeechRecognizerListenerOnSoundLevelChangedParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.rmsDb = decoder0.decodeFloat(8);
@@ -442,11 +346,13 @@ class _SpeechRecognizerListenerOnSoundLevelChangedParams extends bindings.Struct
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_SpeechRecognizerListenerOnSoundLevelChangedParams";
+    String fieldName;
     try {
+      fieldName = "rmsDb";
       encoder0.encodeFloat(rmsDb, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "rmsDb of struct _SpeechRecognizerListenerOnSoundLevelChangedParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -476,14 +382,8 @@ class _SpeechRecognizerServiceListenParams extends bindings.Struct {
     SpeechRecognizerListenerInterface this.listener
   ) : super(kVersions.last.size);
 
-  static _SpeechRecognizerServiceListenParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _SpeechRecognizerServiceListenParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _SpeechRecognizerServiceListenParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -491,24 +391,7 @@ class _SpeechRecognizerServiceListenParams extends bindings.Struct {
     }
     _SpeechRecognizerServiceListenParams result = new _SpeechRecognizerServiceListenParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.listener = decoder0.decodeServiceInterface(8, false, SpeechRecognizerListenerProxy.newFromEndpoint);
@@ -518,11 +401,13 @@ class _SpeechRecognizerServiceListenParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_SpeechRecognizerServiceListenParams";
+    String fieldName;
     try {
+      fieldName = "listener";
       encoder0.encodeInterface(listener, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "listener of struct _SpeechRecognizerServiceListenParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -549,14 +434,8 @@ class _SpeechRecognizerServiceStopListeningParams extends bindings.Struct {
   _SpeechRecognizerServiceStopListeningParams.init(
   ) : super(kVersions.last.size);
 
-  static _SpeechRecognizerServiceStopListeningParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _SpeechRecognizerServiceStopListeningParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _SpeechRecognizerServiceStopListeningParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -564,29 +443,19 @@ class _SpeechRecognizerServiceStopListeningParams extends bindings.Struct {
     }
     _SpeechRecognizerServiceStopListeningParams result = new _SpeechRecognizerServiceStopListeningParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_SpeechRecognizerServiceStopListeningParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {

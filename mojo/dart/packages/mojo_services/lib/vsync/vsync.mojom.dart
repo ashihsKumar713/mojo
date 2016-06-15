@@ -19,14 +19,8 @@ class _VSyncProviderAwaitVSyncParams extends bindings.Struct {
   _VSyncProviderAwaitVSyncParams.init(
   ) : super(kVersions.last.size);
 
-  static _VSyncProviderAwaitVSyncParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _VSyncProviderAwaitVSyncParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _VSyncProviderAwaitVSyncParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -34,29 +28,19 @@ class _VSyncProviderAwaitVSyncParams extends bindings.Struct {
     }
     _VSyncProviderAwaitVSyncParams result = new _VSyncProviderAwaitVSyncParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_VSyncProviderAwaitVSyncParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -82,14 +66,8 @@ class VSyncProviderAwaitVSyncResponseParams extends bindings.Struct {
     int this.timeStamp
   ) : super(kVersions.last.size);
 
-  static VSyncProviderAwaitVSyncResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static VSyncProviderAwaitVSyncResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static VSyncProviderAwaitVSyncResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -97,24 +75,7 @@ class VSyncProviderAwaitVSyncResponseParams extends bindings.Struct {
     }
     VSyncProviderAwaitVSyncResponseParams result = new VSyncProviderAwaitVSyncResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.timeStamp = decoder0.decodeInt64(8);
@@ -124,11 +85,13 @@ class VSyncProviderAwaitVSyncResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "VSyncProviderAwaitVSyncResponseParams";
+    String fieldName;
     try {
+      fieldName = "timeStamp";
       encoder0.encodeInt64(timeStamp, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "timeStamp of struct VSyncProviderAwaitVSyncResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

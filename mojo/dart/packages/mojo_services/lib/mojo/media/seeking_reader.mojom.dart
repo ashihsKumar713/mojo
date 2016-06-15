@@ -20,14 +20,8 @@ class _SeekingReaderDescribeParams extends bindings.Struct {
   _SeekingReaderDescribeParams.init(
   ) : super(kVersions.last.size);
 
-  static _SeekingReaderDescribeParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _SeekingReaderDescribeParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _SeekingReaderDescribeParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -35,29 +29,19 @@ class _SeekingReaderDescribeParams extends bindings.Struct {
     }
     _SeekingReaderDescribeParams result = new _SeekingReaderDescribeParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_SeekingReaderDescribeParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -87,14 +71,8 @@ class SeekingReaderDescribeResponseParams extends bindings.Struct {
     int this.size
   ) : super(kVersions.last.size);
 
-  static SeekingReaderDescribeResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static SeekingReaderDescribeResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static SeekingReaderDescribeResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -102,24 +80,7 @@ class SeekingReaderDescribeResponseParams extends bindings.Struct {
     }
     SeekingReaderDescribeResponseParams result = new SeekingReaderDescribeResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.result = media_common_mojom.MediaResult.decode(decoder0, 8);
@@ -141,25 +102,17 @@ class SeekingReaderDescribeResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "SeekingReaderDescribeResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeEnum(result, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct SeekingReaderDescribeResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "canSeek";
       encoder0.encodeBool(canSeek, 12, 0);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "canSeek of struct SeekingReaderDescribeResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "size";
       encoder0.encodeUint64(size, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "size of struct SeekingReaderDescribeResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -193,14 +146,8 @@ class _SeekingReaderReadAtParams extends bindings.Struct {
     int this.position
   ) : super(kVersions.last.size);
 
-  static _SeekingReaderReadAtParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _SeekingReaderReadAtParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _SeekingReaderReadAtParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -208,24 +155,7 @@ class _SeekingReaderReadAtParams extends bindings.Struct {
     }
     _SeekingReaderReadAtParams result = new _SeekingReaderReadAtParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.position = decoder0.decodeUint64(8);
@@ -235,11 +165,13 @@ class _SeekingReaderReadAtParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_SeekingReaderReadAtParams";
+    String fieldName;
     try {
+      fieldName = "position";
       encoder0.encodeUint64(position, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "position of struct _SeekingReaderReadAtParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -271,14 +203,8 @@ class SeekingReaderReadAtResponseParams extends bindings.Struct {
     core.MojoDataPipeConsumer this.dataPipe
   ) : super(kVersions.last.size);
 
-  static SeekingReaderReadAtResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static SeekingReaderReadAtResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static SeekingReaderReadAtResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -286,24 +212,7 @@ class SeekingReaderReadAtResponseParams extends bindings.Struct {
     }
     SeekingReaderReadAtResponseParams result = new SeekingReaderReadAtResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
         result.result = media_common_mojom.MediaResult.decode(decoder0, 8);
@@ -321,18 +230,15 @@ class SeekingReaderReadAtResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "SeekingReaderReadAtResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeEnum(result, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct SeekingReaderReadAtResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "dataPipe";
       encoder0.encodeConsumerHandle(dataPipe, 12, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "dataPipe of struct SeekingReaderReadAtResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

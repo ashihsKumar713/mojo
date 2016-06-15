@@ -27,14 +27,8 @@ class HttpRequest extends bindings.Struct {
     core.MojoDataPipeConsumer this.body
   ) : super(kVersions.last.size);
 
-  static HttpRequest deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static HttpRequest deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static HttpRequest decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -42,24 +36,7 @@ class HttpRequest extends bindings.Struct {
     }
     HttpRequest result = new HttpRequest();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.method = decoder0.decodeString(8, false);
@@ -92,21 +69,14 @@ class HttpRequest extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "HttpRequest";
+    String fieldName;
     try {
+      fieldName = "method";
       encoder0.encodeString(method, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "method of struct HttpRequest: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "url";
       encoder0.encodeString(url, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "url of struct HttpRequest: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "headers";
       if (headers == null) {
         encoder0.encodeNullPointer(24, true);
       } else {
@@ -115,16 +85,10 @@ class HttpRequest extends bindings.Struct {
           encoder1.encodeStruct(headers[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "headers of struct HttpRequest: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "body";
       encoder0.encodeConsumerHandle(body, 32, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "body of struct HttpRequest: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -160,14 +124,8 @@ class HttpResponse extends bindings.Struct {
     List<http_header_mojom.HttpHeader> this.headers
   ) : super(kVersions.last.size);
 
-  static HttpResponse deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static HttpResponse deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static HttpResponse decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -175,24 +133,7 @@ class HttpResponse extends bindings.Struct {
     }
     HttpResponse result = new HttpResponse();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.statusCode = decoder0.decodeUint32(8);
@@ -221,21 +162,14 @@ class HttpResponse extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "HttpResponse";
+    String fieldName;
     try {
+      fieldName = "statusCode";
       encoder0.encodeUint32(statusCode, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "statusCode of struct HttpResponse: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "body";
       encoder0.encodeConsumerHandle(body, 12, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "body of struct HttpResponse: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "headers";
       if (headers == null) {
         encoder0.encodeNullPointer(16, true);
       } else {
@@ -245,8 +179,7 @@ class HttpResponse extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "headers of struct HttpResponse: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

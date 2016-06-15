@@ -32,14 +32,8 @@ class _NetworkServiceCreateUrlLoaderParams extends bindings.Struct {
     url_loader_mojom.UrlLoaderInterfaceRequest this.loader
   ) : super(kVersions.last.size);
 
-  static _NetworkServiceCreateUrlLoaderParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NetworkServiceCreateUrlLoaderParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NetworkServiceCreateUrlLoaderParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -47,24 +41,7 @@ class _NetworkServiceCreateUrlLoaderParams extends bindings.Struct {
     }
     _NetworkServiceCreateUrlLoaderParams result = new _NetworkServiceCreateUrlLoaderParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.loader = decoder0.decodeInterfaceRequest(8, false, url_loader_mojom.UrlLoaderStub.newFromEndpoint);
@@ -74,11 +51,13 @@ class _NetworkServiceCreateUrlLoaderParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NetworkServiceCreateUrlLoaderParams";
+    String fieldName;
     try {
+      fieldName = "loader";
       encoder0.encodeInterfaceRequest(loader, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "loader of struct _NetworkServiceCreateUrlLoaderParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -107,14 +86,8 @@ class _NetworkServiceGetCookieStoreParams extends bindings.Struct {
     cookie_store_mojom.CookieStoreInterfaceRequest this.cookieStore
   ) : super(kVersions.last.size);
 
-  static _NetworkServiceGetCookieStoreParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NetworkServiceGetCookieStoreParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NetworkServiceGetCookieStoreParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -122,24 +95,7 @@ class _NetworkServiceGetCookieStoreParams extends bindings.Struct {
     }
     _NetworkServiceGetCookieStoreParams result = new _NetworkServiceGetCookieStoreParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.cookieStore = decoder0.decodeInterfaceRequest(8, false, cookie_store_mojom.CookieStoreStub.newFromEndpoint);
@@ -149,11 +105,13 @@ class _NetworkServiceGetCookieStoreParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NetworkServiceGetCookieStoreParams";
+    String fieldName;
     try {
+      fieldName = "cookieStore";
       encoder0.encodeInterfaceRequest(cookieStore, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "cookieStore of struct _NetworkServiceGetCookieStoreParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -182,14 +140,8 @@ class _NetworkServiceCreateWebSocketParams extends bindings.Struct {
     web_socket_mojom.WebSocketInterfaceRequest this.socket
   ) : super(kVersions.last.size);
 
-  static _NetworkServiceCreateWebSocketParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NetworkServiceCreateWebSocketParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NetworkServiceCreateWebSocketParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -197,24 +149,7 @@ class _NetworkServiceCreateWebSocketParams extends bindings.Struct {
     }
     _NetworkServiceCreateWebSocketParams result = new _NetworkServiceCreateWebSocketParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.socket = decoder0.decodeInterfaceRequest(8, false, web_socket_mojom.WebSocketStub.newFromEndpoint);
@@ -224,11 +159,13 @@ class _NetworkServiceCreateWebSocketParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NetworkServiceCreateWebSocketParams";
+    String fieldName;
     try {
+      fieldName = "socket";
       encoder0.encodeInterfaceRequest(socket, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "socket of struct _NetworkServiceCreateWebSocketParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -259,14 +196,8 @@ class _NetworkServiceCreateTcpBoundSocketParams extends bindings.Struct {
     tcp_bound_socket_mojom.TcpBoundSocketInterfaceRequest this.boundSocket
   ) : super(kVersions.last.size);
 
-  static _NetworkServiceCreateTcpBoundSocketParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NetworkServiceCreateTcpBoundSocketParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NetworkServiceCreateTcpBoundSocketParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -274,24 +205,7 @@ class _NetworkServiceCreateTcpBoundSocketParams extends bindings.Struct {
     }
     _NetworkServiceCreateTcpBoundSocketParams result = new _NetworkServiceCreateTcpBoundSocketParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -306,18 +220,15 @@ class _NetworkServiceCreateTcpBoundSocketParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NetworkServiceCreateTcpBoundSocketParams";
+    String fieldName;
     try {
+      fieldName = "localAddress";
       encoder0.encodeStruct(localAddress, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "localAddress of struct _NetworkServiceCreateTcpBoundSocketParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "boundSocket";
       encoder0.encodeInterfaceRequest(boundSocket, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "boundSocket of struct _NetworkServiceCreateTcpBoundSocketParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -349,14 +260,8 @@ class NetworkServiceCreateTcpBoundSocketResponseParams extends bindings.Struct {
     net_address_mojom.NetAddress this.boundTo
   ) : super(kVersions.last.size);
 
-  static NetworkServiceCreateTcpBoundSocketResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static NetworkServiceCreateTcpBoundSocketResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static NetworkServiceCreateTcpBoundSocketResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -364,24 +269,7 @@ class NetworkServiceCreateTcpBoundSocketResponseParams extends bindings.Struct {
     }
     NetworkServiceCreateTcpBoundSocketResponseParams result = new NetworkServiceCreateTcpBoundSocketResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -397,18 +285,15 @@ class NetworkServiceCreateTcpBoundSocketResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "NetworkServiceCreateTcpBoundSocketResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeStruct(result, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct NetworkServiceCreateTcpBoundSocketResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "boundTo";
       encoder0.encodeStruct(boundTo, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "boundTo of struct NetworkServiceCreateTcpBoundSocketResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -446,14 +331,8 @@ class _NetworkServiceCreateTcpConnectedSocketParams extends bindings.Struct {
     tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest this.clientSocket
   ) : super(kVersions.last.size);
 
-  static _NetworkServiceCreateTcpConnectedSocketParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NetworkServiceCreateTcpConnectedSocketParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NetworkServiceCreateTcpConnectedSocketParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -461,24 +340,7 @@ class _NetworkServiceCreateTcpConnectedSocketParams extends bindings.Struct {
     }
     _NetworkServiceCreateTcpConnectedSocketParams result = new _NetworkServiceCreateTcpConnectedSocketParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -501,32 +363,19 @@ class _NetworkServiceCreateTcpConnectedSocketParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NetworkServiceCreateTcpConnectedSocketParams";
+    String fieldName;
     try {
+      fieldName = "remoteAddress";
       encoder0.encodeStruct(remoteAddress, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "remoteAddress of struct _NetworkServiceCreateTcpConnectedSocketParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "sendStream";
       encoder0.encodeConsumerHandle(sendStream, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "sendStream of struct _NetworkServiceCreateTcpConnectedSocketParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "receiveStream";
       encoder0.encodeProducerHandle(receiveStream, 20, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "receiveStream of struct _NetworkServiceCreateTcpConnectedSocketParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "clientSocket";
       encoder0.encodeInterfaceRequest(clientSocket, 24, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "clientSocket of struct _NetworkServiceCreateTcpConnectedSocketParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -560,14 +409,8 @@ class NetworkServiceCreateTcpConnectedSocketResponseParams extends bindings.Stru
     net_address_mojom.NetAddress this.localAddress
   ) : super(kVersions.last.size);
 
-  static NetworkServiceCreateTcpConnectedSocketResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static NetworkServiceCreateTcpConnectedSocketResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static NetworkServiceCreateTcpConnectedSocketResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -575,24 +418,7 @@ class NetworkServiceCreateTcpConnectedSocketResponseParams extends bindings.Stru
     }
     NetworkServiceCreateTcpConnectedSocketResponseParams result = new NetworkServiceCreateTcpConnectedSocketResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -608,18 +434,15 @@ class NetworkServiceCreateTcpConnectedSocketResponseParams extends bindings.Stru
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "NetworkServiceCreateTcpConnectedSocketResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeStruct(result, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct NetworkServiceCreateTcpConnectedSocketResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "localAddress";
       encoder0.encodeStruct(localAddress, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "localAddress of struct NetworkServiceCreateTcpConnectedSocketResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -651,14 +474,8 @@ class _NetworkServiceCreateUdpSocketParams extends bindings.Struct {
     udp_socket_mojom.UdpSocketInterfaceRequest this.socket
   ) : super(kVersions.last.size);
 
-  static _NetworkServiceCreateUdpSocketParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NetworkServiceCreateUdpSocketParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NetworkServiceCreateUdpSocketParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -666,24 +483,7 @@ class _NetworkServiceCreateUdpSocketParams extends bindings.Struct {
     }
     _NetworkServiceCreateUdpSocketParams result = new _NetworkServiceCreateUdpSocketParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.socket = decoder0.decodeInterfaceRequest(8, false, udp_socket_mojom.UdpSocketStub.newFromEndpoint);
@@ -693,11 +493,13 @@ class _NetworkServiceCreateUdpSocketParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NetworkServiceCreateUdpSocketParams";
+    String fieldName;
     try {
+      fieldName = "socket";
       encoder0.encodeInterfaceRequest(socket, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "socket of struct _NetworkServiceCreateUdpSocketParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -728,14 +530,8 @@ class _NetworkServiceCreateHttpServerParams extends bindings.Struct {
     http_server_mojom.HttpServerDelegateInterface this.delegate
   ) : super(kVersions.last.size);
 
-  static _NetworkServiceCreateHttpServerParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NetworkServiceCreateHttpServerParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NetworkServiceCreateHttpServerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -743,24 +539,7 @@ class _NetworkServiceCreateHttpServerParams extends bindings.Struct {
     }
     _NetworkServiceCreateHttpServerParams result = new _NetworkServiceCreateHttpServerParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -775,18 +554,15 @@ class _NetworkServiceCreateHttpServerParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NetworkServiceCreateHttpServerParams";
+    String fieldName;
     try {
+      fieldName = "localAddress";
       encoder0.encodeStruct(localAddress, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "localAddress of struct _NetworkServiceCreateHttpServerParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "delegate";
       encoder0.encodeInterface(delegate, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "delegate of struct _NetworkServiceCreateHttpServerParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -818,14 +594,8 @@ class NetworkServiceCreateHttpServerResponseParams extends bindings.Struct {
     net_address_mojom.NetAddress this.boundTo
   ) : super(kVersions.last.size);
 
-  static NetworkServiceCreateHttpServerResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static NetworkServiceCreateHttpServerResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static NetworkServiceCreateHttpServerResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -833,24 +603,7 @@ class NetworkServiceCreateHttpServerResponseParams extends bindings.Struct {
     }
     NetworkServiceCreateHttpServerResponseParams result = new NetworkServiceCreateHttpServerResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -866,18 +619,15 @@ class NetworkServiceCreateHttpServerResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "NetworkServiceCreateHttpServerResponseParams";
+    String fieldName;
     try {
+      fieldName = "result";
       encoder0.encodeStruct(result, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "result of struct NetworkServiceCreateHttpServerResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "boundTo";
       encoder0.encodeStruct(boundTo, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "boundTo of struct NetworkServiceCreateHttpServerResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -909,14 +659,8 @@ class _NetworkServiceRegisterUrlLoaderInterceptorParams extends bindings.Struct 
     url_loader_interceptor_mojom.UrlLoaderInterceptorFactoryInterface this.factory
   ) : super(kVersions.last.size);
 
-  static _NetworkServiceRegisterUrlLoaderInterceptorParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NetworkServiceRegisterUrlLoaderInterceptorParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NetworkServiceRegisterUrlLoaderInterceptorParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -924,24 +668,7 @@ class _NetworkServiceRegisterUrlLoaderInterceptorParams extends bindings.Struct 
     }
     _NetworkServiceRegisterUrlLoaderInterceptorParams result = new _NetworkServiceRegisterUrlLoaderInterceptorParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.factory = decoder0.decodeServiceInterface(8, false, url_loader_interceptor_mojom.UrlLoaderInterceptorFactoryProxy.newFromEndpoint);
@@ -951,11 +678,13 @@ class _NetworkServiceRegisterUrlLoaderInterceptorParams extends bindings.Struct 
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NetworkServiceRegisterUrlLoaderInterceptorParams";
+    String fieldName;
     try {
+      fieldName = "factory";
       encoder0.encodeInterface(factory, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "factory of struct _NetworkServiceRegisterUrlLoaderInterceptorParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -984,14 +713,8 @@ class _NetworkServiceCreateHostResolverParams extends bindings.Struct {
     host_resolver_mojom.HostResolverInterfaceRequest this.hostResolver
   ) : super(kVersions.last.size);
 
-  static _NetworkServiceCreateHostResolverParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NetworkServiceCreateHostResolverParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NetworkServiceCreateHostResolverParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -999,24 +722,7 @@ class _NetworkServiceCreateHostResolverParams extends bindings.Struct {
     }
     _NetworkServiceCreateHostResolverParams result = new _NetworkServiceCreateHostResolverParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.hostResolver = decoder0.decodeInterfaceRequest(8, false, host_resolver_mojom.HostResolverStub.newFromEndpoint);
@@ -1026,11 +732,13 @@ class _NetworkServiceCreateHostResolverParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NetworkServiceCreateHostResolverParams";
+    String fieldName;
     try {
+      fieldName = "hostResolver";
       encoder0.encodeInterfaceRequest(hostResolver, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "hostResolver of struct _NetworkServiceCreateHostResolverParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

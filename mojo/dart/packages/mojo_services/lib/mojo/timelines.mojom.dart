@@ -28,14 +28,8 @@ class TimelineTransform extends bindings.Struct {
     int this.subjectDelta
   ) : super(kVersions.last.size);
 
-  static TimelineTransform deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static TimelineTransform deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static TimelineTransform decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -43,24 +37,7 @@ class TimelineTransform extends bindings.Struct {
     }
     TimelineTransform result = new TimelineTransform();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.referenceTime = decoder0.decodeInt64(8);
@@ -82,32 +59,19 @@ class TimelineTransform extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "TimelineTransform";
+    String fieldName;
     try {
+      fieldName = "referenceTime";
       encoder0.encodeInt64(referenceTime, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "referenceTime of struct TimelineTransform: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "subjectTime";
       encoder0.encodeInt64(subjectTime, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "subjectTime of struct TimelineTransform: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "referenceDelta";
       encoder0.encodeUint32(referenceDelta, 24);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "referenceDelta of struct TimelineTransform: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "subjectDelta";
       encoder0.encodeUint32(subjectDelta, 28);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "subjectDelta of struct TimelineTransform: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -151,14 +115,8 @@ class _TimelineConsumerSetTimelineTransformParams extends bindings.Struct {
     int this.effectiveSubjectTime
   ) : super(kVersions.last.size);
 
-  static _TimelineConsumerSetTimelineTransformParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _TimelineConsumerSetTimelineTransformParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _TimelineConsumerSetTimelineTransformParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -166,24 +124,7 @@ class _TimelineConsumerSetTimelineTransformParams extends bindings.Struct {
     }
     _TimelineConsumerSetTimelineTransformParams result = new _TimelineConsumerSetTimelineTransformParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.subjectTime = decoder0.decodeInt64(8);
@@ -209,39 +150,21 @@ class _TimelineConsumerSetTimelineTransformParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_TimelineConsumerSetTimelineTransformParams";
+    String fieldName;
     try {
+      fieldName = "subjectTime";
       encoder0.encodeInt64(subjectTime, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "subjectTime of struct _TimelineConsumerSetTimelineTransformParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "referenceDelta";
       encoder0.encodeUint32(referenceDelta, 16);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "referenceDelta of struct _TimelineConsumerSetTimelineTransformParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "subjectDelta";
       encoder0.encodeUint32(subjectDelta, 20);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "subjectDelta of struct _TimelineConsumerSetTimelineTransformParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "effectiveReferenceTime";
       encoder0.encodeInt64(effectiveReferenceTime, 24);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "effectiveReferenceTime of struct _TimelineConsumerSetTimelineTransformParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "effectiveSubjectTime";
       encoder0.encodeInt64(effectiveSubjectTime, 32);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "effectiveSubjectTime of struct _TimelineConsumerSetTimelineTransformParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -279,14 +202,8 @@ class TimelineConsumerSetTimelineTransformResponseParams extends bindings.Struct
     bool this.completed
   ) : super(kVersions.last.size);
 
-  static TimelineConsumerSetTimelineTransformResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static TimelineConsumerSetTimelineTransformResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static TimelineConsumerSetTimelineTransformResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -294,24 +211,7 @@ class TimelineConsumerSetTimelineTransformResponseParams extends bindings.Struct
     }
     TimelineConsumerSetTimelineTransformResponseParams result = new TimelineConsumerSetTimelineTransformResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.completed = decoder0.decodeBool(8, 0);
@@ -321,11 +221,13 @@ class TimelineConsumerSetTimelineTransformResponseParams extends bindings.Struct
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "TimelineConsumerSetTimelineTransformResponseParams";
+    String fieldName;
     try {
+      fieldName = "completed";
       encoder0.encodeBool(completed, 8, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "completed of struct TimelineConsumerSetTimelineTransformResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

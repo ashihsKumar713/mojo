@@ -29,14 +29,8 @@ class _WebSocketConnectParams extends bindings.Struct {
     WebSocketClientInterface this.client
   ) : super(kVersions.last.size);
 
-  static _WebSocketConnectParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _WebSocketConnectParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _WebSocketConnectParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -44,24 +38,7 @@ class _WebSocketConnectParams extends bindings.Struct {
     }
     _WebSocketConnectParams result = new _WebSocketConnectParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.url = decoder0.decodeString(8, false);
@@ -95,14 +72,12 @@ class _WebSocketConnectParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_WebSocketConnectParams";
+    String fieldName;
     try {
+      fieldName = "url";
       encoder0.encodeString(url, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "url of struct _WebSocketConnectParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "protocols";
       if (protocols == null) {
         encoder0.encodeNullPointer(16, false);
       } else {
@@ -111,30 +86,14 @@ class _WebSocketConnectParams extends bindings.Struct {
           encoder1.encodeString(protocols[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "protocols of struct _WebSocketConnectParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "origin";
       encoder0.encodeString(origin, 24, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "origin of struct _WebSocketConnectParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "sendStream";
       encoder0.encodeConsumerHandle(sendStream, 32, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "sendStream of struct _WebSocketConnectParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "client";
       encoder0.encodeInterface(client, 36, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "client of struct _WebSocketConnectParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -171,14 +130,8 @@ class _WebSocketSendParams extends bindings.Struct {
     int this.numBytes
   ) : super(kVersions.last.size);
 
-  static _WebSocketSendParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _WebSocketSendParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _WebSocketSendParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -186,24 +139,7 @@ class _WebSocketSendParams extends bindings.Struct {
     }
     _WebSocketSendParams result = new _WebSocketSendParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.fin = decoder0.decodeBool(8, 0);
@@ -225,25 +161,17 @@ class _WebSocketSendParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_WebSocketSendParams";
+    String fieldName;
     try {
+      fieldName = "fin";
       encoder0.encodeBool(fin, 8, 0);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "fin of struct _WebSocketSendParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "type";
       encoder0.encodeEnum(type, 12);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "type of struct _WebSocketSendParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "numBytes";
       encoder0.encodeUint32(numBytes, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "numBytes of struct _WebSocketSendParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -277,14 +205,8 @@ class _WebSocketFlowControlParams extends bindings.Struct {
     int this.quota
   ) : super(kVersions.last.size);
 
-  static _WebSocketFlowControlParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _WebSocketFlowControlParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _WebSocketFlowControlParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -292,24 +214,7 @@ class _WebSocketFlowControlParams extends bindings.Struct {
     }
     _WebSocketFlowControlParams result = new _WebSocketFlowControlParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.quota = decoder0.decodeInt64(8);
@@ -319,11 +224,13 @@ class _WebSocketFlowControlParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_WebSocketFlowControlParams";
+    String fieldName;
     try {
+      fieldName = "quota";
       encoder0.encodeInt64(quota, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "quota of struct _WebSocketFlowControlParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -355,14 +262,8 @@ class _WebSocketCloseParams extends bindings.Struct {
     String this.reason
   ) : super(kVersions.last.size);
 
-  static _WebSocketCloseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _WebSocketCloseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _WebSocketCloseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -370,24 +271,7 @@ class _WebSocketCloseParams extends bindings.Struct {
     }
     _WebSocketCloseParams result = new _WebSocketCloseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.code = decoder0.decodeUint16(8);
@@ -401,18 +285,15 @@ class _WebSocketCloseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_WebSocketCloseParams";
+    String fieldName;
     try {
+      fieldName = "code";
       encoder0.encodeUint16(code, 8);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "code of struct _WebSocketCloseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "reason";
       encoder0.encodeString(reason, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "reason of struct _WebSocketCloseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -448,14 +329,8 @@ class _WebSocketClientDidConnectParams extends bindings.Struct {
     core.MojoDataPipeConsumer this.receiveStream
   ) : super(kVersions.last.size);
 
-  static _WebSocketClientDidConnectParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _WebSocketClientDidConnectParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _WebSocketClientDidConnectParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -463,24 +338,7 @@ class _WebSocketClientDidConnectParams extends bindings.Struct {
     }
     _WebSocketClientDidConnectParams result = new _WebSocketClientDidConnectParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.selectedSubprotocol = decoder0.decodeString(8, false);
@@ -498,25 +356,17 @@ class _WebSocketClientDidConnectParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_WebSocketClientDidConnectParams";
+    String fieldName;
     try {
+      fieldName = "selectedSubprotocol";
       encoder0.encodeString(selectedSubprotocol, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "selectedSubprotocol of struct _WebSocketClientDidConnectParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "extensions";
       encoder0.encodeString(extensions, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "extensions of struct _WebSocketClientDidConnectParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "receiveStream";
       encoder0.encodeConsumerHandle(receiveStream, 24, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "receiveStream of struct _WebSocketClientDidConnectParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -551,14 +401,8 @@ class _WebSocketClientDidReceiveDataParams extends bindings.Struct {
     int this.numBytes
   ) : super(kVersions.last.size);
 
-  static _WebSocketClientDidReceiveDataParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _WebSocketClientDidReceiveDataParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _WebSocketClientDidReceiveDataParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -566,24 +410,7 @@ class _WebSocketClientDidReceiveDataParams extends bindings.Struct {
     }
     _WebSocketClientDidReceiveDataParams result = new _WebSocketClientDidReceiveDataParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.fin = decoder0.decodeBool(8, 0);
@@ -605,25 +432,17 @@ class _WebSocketClientDidReceiveDataParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_WebSocketClientDidReceiveDataParams";
+    String fieldName;
     try {
+      fieldName = "fin";
       encoder0.encodeBool(fin, 8, 0);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "fin of struct _WebSocketClientDidReceiveDataParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "type";
       encoder0.encodeEnum(type, 12);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "type of struct _WebSocketClientDidReceiveDataParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "numBytes";
       encoder0.encodeUint32(numBytes, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "numBytes of struct _WebSocketClientDidReceiveDataParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -657,14 +476,8 @@ class _WebSocketClientDidReceiveFlowControlParams extends bindings.Struct {
     int this.quota
   ) : super(kVersions.last.size);
 
-  static _WebSocketClientDidReceiveFlowControlParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _WebSocketClientDidReceiveFlowControlParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _WebSocketClientDidReceiveFlowControlParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -672,24 +485,7 @@ class _WebSocketClientDidReceiveFlowControlParams extends bindings.Struct {
     }
     _WebSocketClientDidReceiveFlowControlParams result = new _WebSocketClientDidReceiveFlowControlParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.quota = decoder0.decodeInt64(8);
@@ -699,11 +495,13 @@ class _WebSocketClientDidReceiveFlowControlParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_WebSocketClientDidReceiveFlowControlParams";
+    String fieldName;
     try {
+      fieldName = "quota";
       encoder0.encodeInt64(quota, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "quota of struct _WebSocketClientDidReceiveFlowControlParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -733,14 +531,8 @@ class _WebSocketClientDidFailParams extends bindings.Struct {
     String this.message
   ) : super(kVersions.last.size);
 
-  static _WebSocketClientDidFailParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _WebSocketClientDidFailParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _WebSocketClientDidFailParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -748,24 +540,7 @@ class _WebSocketClientDidFailParams extends bindings.Struct {
     }
     _WebSocketClientDidFailParams result = new _WebSocketClientDidFailParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.message = decoder0.decodeString(8, false);
@@ -775,11 +550,13 @@ class _WebSocketClientDidFailParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_WebSocketClientDidFailParams";
+    String fieldName;
     try {
+      fieldName = "message";
       encoder0.encodeString(message, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "message of struct _WebSocketClientDidFailParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -813,14 +590,8 @@ class _WebSocketClientDidCloseParams extends bindings.Struct {
     String this.reason
   ) : super(kVersions.last.size);
 
-  static _WebSocketClientDidCloseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _WebSocketClientDidCloseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _WebSocketClientDidCloseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -828,24 +599,7 @@ class _WebSocketClientDidCloseParams extends bindings.Struct {
     }
     _WebSocketClientDidCloseParams result = new _WebSocketClientDidCloseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.wasClean = decoder0.decodeBool(8, 0);
@@ -863,25 +617,17 @@ class _WebSocketClientDidCloseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_WebSocketClientDidCloseParams";
+    String fieldName;
     try {
+      fieldName = "wasClean";
       encoder0.encodeBool(wasClean, 8, 0);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "wasClean of struct _WebSocketClientDidCloseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "code";
       encoder0.encodeUint16(code, 10);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "code of struct _WebSocketClientDidCloseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "reason";
       encoder0.encodeString(reason, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "reason of struct _WebSocketClientDidCloseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

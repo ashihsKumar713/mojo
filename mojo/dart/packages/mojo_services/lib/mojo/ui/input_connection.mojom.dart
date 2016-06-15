@@ -22,14 +22,8 @@ class _InputConnectionSetListenerParams extends bindings.Struct {
     InputListenerInterface this.listener
   ) : super(kVersions.last.size);
 
-  static _InputConnectionSetListenerParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _InputConnectionSetListenerParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _InputConnectionSetListenerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -37,24 +31,7 @@ class _InputConnectionSetListenerParams extends bindings.Struct {
     }
     _InputConnectionSetListenerParams result = new _InputConnectionSetListenerParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.listener = decoder0.decodeServiceInterface(8, true, InputListenerProxy.newFromEndpoint);
@@ -64,11 +41,13 @@ class _InputConnectionSetListenerParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_InputConnectionSetListenerParams";
+    String fieldName;
     try {
+      fieldName = "listener";
       encoder0.encodeInterface(listener, 8, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "listener of struct _InputConnectionSetListenerParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -97,14 +76,8 @@ class _InputListenerOnEventParams extends bindings.Struct {
     input_events_mojom.Event this.event
   ) : super(kVersions.last.size);
 
-  static _InputListenerOnEventParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _InputListenerOnEventParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _InputListenerOnEventParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -112,24 +85,7 @@ class _InputListenerOnEventParams extends bindings.Struct {
     }
     _InputListenerOnEventParams result = new _InputListenerOnEventParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -140,11 +96,13 @@ class _InputListenerOnEventParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_InputListenerOnEventParams";
+    String fieldName;
     try {
+      fieldName = "event";
       encoder0.encodeStruct(event, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "event of struct _InputListenerOnEventParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -174,14 +132,8 @@ class InputListenerOnEventResponseParams extends bindings.Struct {
     bool this.consumed
   ) : super(kVersions.last.size);
 
-  static InputListenerOnEventResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static InputListenerOnEventResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static InputListenerOnEventResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -189,24 +141,7 @@ class InputListenerOnEventResponseParams extends bindings.Struct {
     }
     InputListenerOnEventResponseParams result = new InputListenerOnEventResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.consumed = decoder0.decodeBool(8, 0);
@@ -216,11 +151,13 @@ class InputListenerOnEventResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "InputListenerOnEventResponseParams";
+    String fieldName;
     try {
+      fieldName = "consumed";
       encoder0.encodeBool(consumed, 8, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "consumed of struct InputListenerOnEventResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

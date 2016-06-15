@@ -22,14 +22,8 @@ class ViewProperties extends bindings.Struct {
     ViewLayout this.viewLayout
   ) : super(kVersions.last.size);
 
-  static ViewProperties deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static ViewProperties deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static ViewProperties decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -37,24 +31,7 @@ class ViewProperties extends bindings.Struct {
     }
     ViewProperties result = new ViewProperties();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -70,18 +47,15 @@ class ViewProperties extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "ViewProperties";
+    String fieldName;
     try {
+      fieldName = "displayMetrics";
       encoder0.encodeStruct(displayMetrics, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "displayMetrics of struct ViewProperties: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "viewLayout";
       encoder0.encodeStruct(viewLayout, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "viewLayout of struct ViewProperties: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -113,14 +87,8 @@ class DisplayMetrics extends bindings.Struct {
     double this.devicePixelRatio
   ) : super(kVersions.last.size);
 
-  static DisplayMetrics deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static DisplayMetrics deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static DisplayMetrics decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -128,24 +96,7 @@ class DisplayMetrics extends bindings.Struct {
     }
     DisplayMetrics result = new DisplayMetrics();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.devicePixelRatio = decoder0.decodeFloat(8);
@@ -155,11 +106,13 @@ class DisplayMetrics extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "DisplayMetrics";
+    String fieldName;
     try {
+      fieldName = "devicePixelRatio";
       encoder0.encodeFloat(devicePixelRatio, 8);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "devicePixelRatio of struct DisplayMetrics: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -189,14 +142,8 @@ class ViewLayout extends bindings.Struct {
     geometry_mojom.Size this.size
   ) : super(kVersions.last.size);
 
-  static ViewLayout deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static ViewLayout deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static ViewLayout decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -204,24 +151,7 @@ class ViewLayout extends bindings.Struct {
     }
     ViewLayout result = new ViewLayout();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -232,11 +162,13 @@ class ViewLayout extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "ViewLayout";
+    String fieldName;
     try {
+      fieldName = "size";
       encoder0.encodeStruct(size, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "size of struct ViewLayout: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

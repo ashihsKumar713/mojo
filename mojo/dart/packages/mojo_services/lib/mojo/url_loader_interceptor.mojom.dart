@@ -25,14 +25,8 @@ class UrlLoaderInterceptorResponse extends bindings.Struct {
     url_response_mojom.UrlResponse this.response
   ) : super(kVersions.last.size);
 
-  static UrlLoaderInterceptorResponse deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static UrlLoaderInterceptorResponse deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static UrlLoaderInterceptorResponse decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -40,24 +34,7 @@ class UrlLoaderInterceptorResponse extends bindings.Struct {
     }
     UrlLoaderInterceptorResponse result = new UrlLoaderInterceptorResponse();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -73,18 +50,15 @@ class UrlLoaderInterceptorResponse extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "UrlLoaderInterceptorResponse";
+    String fieldName;
     try {
+      fieldName = "request";
       encoder0.encodeStruct(request, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "request of struct UrlLoaderInterceptorResponse: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "response";
       encoder0.encodeStruct(response, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "response of struct UrlLoaderInterceptorResponse: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -114,14 +88,8 @@ class _UrlLoaderInterceptorFactoryCreateParams extends bindings.Struct {
     UrlLoaderInterceptorInterfaceRequest this.interceptor
   ) : super(kVersions.last.size);
 
-  static _UrlLoaderInterceptorFactoryCreateParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UrlLoaderInterceptorFactoryCreateParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UrlLoaderInterceptorFactoryCreateParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -129,24 +97,7 @@ class _UrlLoaderInterceptorFactoryCreateParams extends bindings.Struct {
     }
     _UrlLoaderInterceptorFactoryCreateParams result = new _UrlLoaderInterceptorFactoryCreateParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.interceptor = decoder0.decodeInterfaceRequest(8, false, UrlLoaderInterceptorStub.newFromEndpoint);
@@ -156,11 +107,13 @@ class _UrlLoaderInterceptorFactoryCreateParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UrlLoaderInterceptorFactoryCreateParams";
+    String fieldName;
     try {
+      fieldName = "interceptor";
       encoder0.encodeInterfaceRequest(interceptor, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "interceptor of struct _UrlLoaderInterceptorFactoryCreateParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -189,14 +142,8 @@ class _UrlLoaderInterceptorInterceptRequestParams extends bindings.Struct {
     url_request_mojom.UrlRequest this.request
   ) : super(kVersions.last.size);
 
-  static _UrlLoaderInterceptorInterceptRequestParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UrlLoaderInterceptorInterceptRequestParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UrlLoaderInterceptorInterceptRequestParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -204,24 +151,7 @@ class _UrlLoaderInterceptorInterceptRequestParams extends bindings.Struct {
     }
     _UrlLoaderInterceptorInterceptRequestParams result = new _UrlLoaderInterceptorInterceptRequestParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -232,11 +162,13 @@ class _UrlLoaderInterceptorInterceptRequestParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UrlLoaderInterceptorInterceptRequestParams";
+    String fieldName;
     try {
+      fieldName = "request";
       encoder0.encodeStruct(request, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "request of struct _UrlLoaderInterceptorInterceptRequestParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -265,14 +197,8 @@ class UrlLoaderInterceptorInterceptRequestResponseParams extends bindings.Struct
     UrlLoaderInterceptorResponse this.response
   ) : super(kVersions.last.size);
 
-  static UrlLoaderInterceptorInterceptRequestResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static UrlLoaderInterceptorInterceptRequestResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static UrlLoaderInterceptorInterceptRequestResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -280,24 +206,7 @@ class UrlLoaderInterceptorInterceptRequestResponseParams extends bindings.Struct
     }
     UrlLoaderInterceptorInterceptRequestResponseParams result = new UrlLoaderInterceptorInterceptRequestResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -308,11 +217,13 @@ class UrlLoaderInterceptorInterceptRequestResponseParams extends bindings.Struct
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "UrlLoaderInterceptorInterceptRequestResponseParams";
+    String fieldName;
     try {
+      fieldName = "response";
       encoder0.encodeStruct(response, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "response of struct UrlLoaderInterceptorInterceptRequestResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -339,14 +250,8 @@ class _UrlLoaderInterceptorInterceptFollowRedirectParams extends bindings.Struct
   _UrlLoaderInterceptorInterceptFollowRedirectParams.init(
   ) : super(kVersions.last.size);
 
-  static _UrlLoaderInterceptorInterceptFollowRedirectParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UrlLoaderInterceptorInterceptFollowRedirectParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UrlLoaderInterceptorInterceptFollowRedirectParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -354,29 +259,19 @@ class _UrlLoaderInterceptorInterceptFollowRedirectParams extends bindings.Struct
     }
     _UrlLoaderInterceptorInterceptFollowRedirectParams result = new _UrlLoaderInterceptorInterceptFollowRedirectParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UrlLoaderInterceptorInterceptFollowRedirectParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -402,14 +297,8 @@ class UrlLoaderInterceptorInterceptFollowRedirectResponseParams extends bindings
     UrlLoaderInterceptorResponse this.response
   ) : super(kVersions.last.size);
 
-  static UrlLoaderInterceptorInterceptFollowRedirectResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static UrlLoaderInterceptorInterceptFollowRedirectResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static UrlLoaderInterceptorInterceptFollowRedirectResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -417,24 +306,7 @@ class UrlLoaderInterceptorInterceptFollowRedirectResponseParams extends bindings
     }
     UrlLoaderInterceptorInterceptFollowRedirectResponseParams result = new UrlLoaderInterceptorInterceptFollowRedirectResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -445,11 +317,13 @@ class UrlLoaderInterceptorInterceptFollowRedirectResponseParams extends bindings
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "UrlLoaderInterceptorInterceptFollowRedirectResponseParams";
+    String fieldName;
     try {
+      fieldName = "response";
       encoder0.encodeStruct(response, 8, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "response of struct UrlLoaderInterceptorInterceptFollowRedirectResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -478,14 +352,8 @@ class _UrlLoaderInterceptorInterceptResponseParams extends bindings.Struct {
     url_response_mojom.UrlResponse this.response
   ) : super(kVersions.last.size);
 
-  static _UrlLoaderInterceptorInterceptResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _UrlLoaderInterceptorInterceptResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _UrlLoaderInterceptorInterceptResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -493,24 +361,7 @@ class _UrlLoaderInterceptorInterceptResponseParams extends bindings.Struct {
     }
     _UrlLoaderInterceptorInterceptResponseParams result = new _UrlLoaderInterceptorInterceptResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -521,11 +372,13 @@ class _UrlLoaderInterceptorInterceptResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_UrlLoaderInterceptorInterceptResponseParams";
+    String fieldName;
     try {
+      fieldName = "response";
       encoder0.encodeStruct(response, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "response of struct _UrlLoaderInterceptorInterceptResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -554,14 +407,8 @@ class UrlLoaderInterceptorInterceptResponseResponseParams extends bindings.Struc
     UrlLoaderInterceptorResponse this.response
   ) : super(kVersions.last.size);
 
-  static UrlLoaderInterceptorInterceptResponseResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static UrlLoaderInterceptorInterceptResponseResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static UrlLoaderInterceptorInterceptResponseResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -569,24 +416,7 @@ class UrlLoaderInterceptorInterceptResponseResponseParams extends bindings.Struc
     }
     UrlLoaderInterceptorInterceptResponseResponseParams result = new UrlLoaderInterceptorInterceptResponseResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, true);
@@ -597,11 +427,13 @@ class UrlLoaderInterceptorInterceptResponseResponseParams extends bindings.Struc
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "UrlLoaderInterceptorInterceptResponseResponseParams";
+    String fieldName;
     try {
+      fieldName = "response";
       encoder0.encodeStruct(response, 8, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "response of struct UrlLoaderInterceptorInterceptResponseResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

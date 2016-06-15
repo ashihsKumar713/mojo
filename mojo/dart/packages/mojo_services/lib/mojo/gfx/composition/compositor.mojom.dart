@@ -28,14 +28,8 @@ class _CompositorCreateSceneParams extends bindings.Struct {
     String this.label
   ) : super(kVersions.last.size);
 
-  static _CompositorCreateSceneParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _CompositorCreateSceneParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _CompositorCreateSceneParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -43,24 +37,7 @@ class _CompositorCreateSceneParams extends bindings.Struct {
     }
     _CompositorCreateSceneParams result = new _CompositorCreateSceneParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.scene = decoder0.decodeInterfaceRequest(8, false, scenes_mojom.SceneStub.newFromEndpoint);
@@ -74,18 +51,15 @@ class _CompositorCreateSceneParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_CompositorCreateSceneParams";
+    String fieldName;
     try {
+      fieldName = "scene";
       encoder0.encodeInterfaceRequest(scene, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "scene of struct _CompositorCreateSceneParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "label";
       encoder0.encodeString(label, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "label of struct _CompositorCreateSceneParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -115,14 +89,8 @@ class CompositorCreateSceneResponseParams extends bindings.Struct {
     scene_token_mojom.SceneToken this.sceneToken
   ) : super(kVersions.last.size);
 
-  static CompositorCreateSceneResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static CompositorCreateSceneResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static CompositorCreateSceneResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -130,24 +98,7 @@ class CompositorCreateSceneResponseParams extends bindings.Struct {
     }
     CompositorCreateSceneResponseParams result = new CompositorCreateSceneResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -158,11 +109,13 @@ class CompositorCreateSceneResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "CompositorCreateSceneResponseParams";
+    String fieldName;
     try {
+      fieldName = "sceneToken";
       encoder0.encodeStruct(sceneToken, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "sceneToken of struct CompositorCreateSceneResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -196,14 +149,8 @@ class _CompositorCreateRendererParams extends bindings.Struct {
     String this.label
   ) : super(kVersions.last.size);
 
-  static _CompositorCreateRendererParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _CompositorCreateRendererParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _CompositorCreateRendererParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -211,24 +158,7 @@ class _CompositorCreateRendererParams extends bindings.Struct {
     }
     _CompositorCreateRendererParams result = new _CompositorCreateRendererParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.contextProvider = decoder0.decodeServiceInterface(8, false, context_provider_mojom.ContextProviderProxy.newFromEndpoint);
@@ -246,25 +176,17 @@ class _CompositorCreateRendererParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_CompositorCreateRendererParams";
+    String fieldName;
     try {
+      fieldName = "contextProvider";
       encoder0.encodeInterface(contextProvider, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "contextProvider of struct _CompositorCreateRendererParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "renderer";
       encoder0.encodeInterfaceRequest(renderer, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "renderer of struct _CompositorCreateRendererParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "label";
       encoder0.encodeString(label, 24, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "label of struct _CompositorCreateRendererParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

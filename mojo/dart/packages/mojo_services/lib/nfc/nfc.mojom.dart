@@ -21,14 +21,8 @@ class NfcData extends bindings.Struct {
     List<int> this.data
   ) : super(kVersions.last.size);
 
-  static NfcData deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static NfcData deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static NfcData decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -36,24 +30,7 @@ class NfcData extends bindings.Struct {
     }
     NfcData result = new NfcData();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.data = decoder0.decodeUint8Array(8, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
@@ -63,11 +40,13 @@ class NfcData extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "NfcData";
+    String fieldName;
     try {
+      fieldName = "data";
       encoder0.encodeUint8Array(data, 8, bindings.kArrayNullable, bindings.kUnspecifiedArrayLength);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "data of struct NfcData: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -95,14 +74,8 @@ class _NfcTransmissionCancelParams extends bindings.Struct {
   _NfcTransmissionCancelParams.init(
   ) : super(kVersions.last.size);
 
-  static _NfcTransmissionCancelParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NfcTransmissionCancelParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NfcTransmissionCancelParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -110,29 +83,19 @@ class _NfcTransmissionCancelParams extends bindings.Struct {
     }
     _NfcTransmissionCancelParams result = new _NfcTransmissionCancelParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NfcTransmissionCancelParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -158,14 +121,8 @@ class _NfcReceiverOnReceivedNfcDataParams extends bindings.Struct {
     NfcData this.nfcData
   ) : super(kVersions.last.size);
 
-  static _NfcReceiverOnReceivedNfcDataParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NfcReceiverOnReceivedNfcDataParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NfcReceiverOnReceivedNfcDataParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -173,24 +130,7 @@ class _NfcReceiverOnReceivedNfcDataParams extends bindings.Struct {
     }
     _NfcReceiverOnReceivedNfcDataParams result = new _NfcReceiverOnReceivedNfcDataParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -201,11 +141,13 @@ class _NfcReceiverOnReceivedNfcDataParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NfcReceiverOnReceivedNfcDataParams";
+    String fieldName;
     try {
+      fieldName = "nfcData";
       encoder0.encodeStruct(nfcData, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "nfcData of struct _NfcReceiverOnReceivedNfcDataParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -237,14 +179,8 @@ class _NfcTransmitOnNextConnectionParams extends bindings.Struct {
     NfcTransmissionInterfaceRequest this.transmission
   ) : super(kVersions.last.size);
 
-  static _NfcTransmitOnNextConnectionParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NfcTransmitOnNextConnectionParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NfcTransmitOnNextConnectionParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -252,24 +188,7 @@ class _NfcTransmitOnNextConnectionParams extends bindings.Struct {
     }
     _NfcTransmitOnNextConnectionParams result = new _NfcTransmitOnNextConnectionParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(8, false);
@@ -284,18 +203,15 @@ class _NfcTransmitOnNextConnectionParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NfcTransmitOnNextConnectionParams";
+    String fieldName;
     try {
+      fieldName = "nfcData";
       encoder0.encodeStruct(nfcData, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "nfcData of struct _NfcTransmitOnNextConnectionParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "transmission";
       encoder0.encodeInterfaceRequest(transmission, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "transmission of struct _NfcTransmitOnNextConnectionParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -325,14 +241,8 @@ class NfcTransmitOnNextConnectionResponseParams extends bindings.Struct {
     bool this.success
   ) : super(kVersions.last.size);
 
-  static NfcTransmitOnNextConnectionResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static NfcTransmitOnNextConnectionResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static NfcTransmitOnNextConnectionResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -340,24 +250,7 @@ class NfcTransmitOnNextConnectionResponseParams extends bindings.Struct {
     }
     NfcTransmitOnNextConnectionResponseParams result = new NfcTransmitOnNextConnectionResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.success = decoder0.decodeBool(8, 0);
@@ -367,11 +260,13 @@ class NfcTransmitOnNextConnectionResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "NfcTransmitOnNextConnectionResponseParams";
+    String fieldName;
     try {
+      fieldName = "success";
       encoder0.encodeBool(success, 8, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "success of struct NfcTransmitOnNextConnectionResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -399,14 +294,8 @@ class _NfcRegisterParams extends bindings.Struct {
   _NfcRegisterParams.init(
   ) : super(kVersions.last.size);
 
-  static _NfcRegisterParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NfcRegisterParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NfcRegisterParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -414,29 +303,19 @@ class _NfcRegisterParams extends bindings.Struct {
     }
     _NfcRegisterParams result = new _NfcRegisterParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NfcRegisterParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -460,14 +339,8 @@ class _NfcUnregisterParams extends bindings.Struct {
   _NfcUnregisterParams.init(
   ) : super(kVersions.last.size);
 
-  static _NfcUnregisterParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _NfcUnregisterParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _NfcUnregisterParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -475,29 +348,19 @@ class _NfcUnregisterParams extends bindings.Struct {
     }
     _NfcUnregisterParams result = new _NfcUnregisterParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_NfcUnregisterParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {

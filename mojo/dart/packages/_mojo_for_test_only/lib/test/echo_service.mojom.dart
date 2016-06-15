@@ -26,14 +26,8 @@ class _EchoServiceEchoStringParams extends bindings.Struct {
     String this.value
   ) : super(kVersions.last.size);
 
-  static _EchoServiceEchoStringParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _EchoServiceEchoStringParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _EchoServiceEchoStringParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -41,24 +35,7 @@ class _EchoServiceEchoStringParams extends bindings.Struct {
     }
     _EchoServiceEchoStringParams result = new _EchoServiceEchoStringParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.value = decoder0.decodeString(8, true);
@@ -68,11 +45,13 @@ class _EchoServiceEchoStringParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_EchoServiceEchoStringParams";
+    String fieldName;
     try {
+      fieldName = "value";
       encoder0.encodeString(value, 8, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "value of struct _EchoServiceEchoStringParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -102,14 +81,8 @@ class EchoServiceEchoStringResponseParams extends bindings.Struct {
     String this.value
   ) : super(kVersions.last.size);
 
-  static EchoServiceEchoStringResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static EchoServiceEchoStringResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static EchoServiceEchoStringResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -117,24 +90,7 @@ class EchoServiceEchoStringResponseParams extends bindings.Struct {
     }
     EchoServiceEchoStringResponseParams result = new EchoServiceEchoStringResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.value = decoder0.decodeString(8, true);
@@ -144,11 +100,13 @@ class EchoServiceEchoStringResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "EchoServiceEchoStringResponseParams";
+    String fieldName;
     try {
+      fieldName = "value";
       encoder0.encodeString(value, 8, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "value of struct EchoServiceEchoStringResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -180,14 +138,8 @@ class _EchoServiceDelayedEchoStringParams extends bindings.Struct {
     int this.millis
   ) : super(kVersions.last.size);
 
-  static _EchoServiceDelayedEchoStringParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _EchoServiceDelayedEchoStringParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _EchoServiceDelayedEchoStringParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -195,24 +147,7 @@ class _EchoServiceDelayedEchoStringParams extends bindings.Struct {
     }
     _EchoServiceDelayedEchoStringParams result = new _EchoServiceDelayedEchoStringParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.value = decoder0.decodeString(8, true);
@@ -226,18 +161,15 @@ class _EchoServiceDelayedEchoStringParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_EchoServiceDelayedEchoStringParams";
+    String fieldName;
     try {
+      fieldName = "value";
       encoder0.encodeString(value, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "value of struct _EchoServiceDelayedEchoStringParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "millis";
       encoder0.encodeInt32(millis, 16);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "millis of struct _EchoServiceDelayedEchoStringParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -269,14 +201,8 @@ class EchoServiceDelayedEchoStringResponseParams extends bindings.Struct {
     String this.value
   ) : super(kVersions.last.size);
 
-  static EchoServiceDelayedEchoStringResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static EchoServiceDelayedEchoStringResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static EchoServiceDelayedEchoStringResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -284,24 +210,7 @@ class EchoServiceDelayedEchoStringResponseParams extends bindings.Struct {
     }
     EchoServiceDelayedEchoStringResponseParams result = new EchoServiceDelayedEchoStringResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.value = decoder0.decodeString(8, true);
@@ -311,11 +220,13 @@ class EchoServiceDelayedEchoStringResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "EchoServiceDelayedEchoStringResponseParams";
+    String fieldName;
     try {
+      fieldName = "value";
       encoder0.encodeString(value, 8, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "value of struct EchoServiceDelayedEchoStringResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -343,14 +254,8 @@ class _EchoServiceSwapParams extends bindings.Struct {
   _EchoServiceSwapParams.init(
   ) : super(kVersions.last.size);
 
-  static _EchoServiceSwapParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _EchoServiceSwapParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _EchoServiceSwapParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -358,29 +263,19 @@ class _EchoServiceSwapParams extends bindings.Struct {
     }
     _EchoServiceSwapParams result = new _EchoServiceSwapParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_EchoServiceSwapParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {
@@ -404,14 +299,8 @@ class _EchoServiceQuitParams extends bindings.Struct {
   _EchoServiceQuitParams.init(
   ) : super(kVersions.last.size);
 
-  static _EchoServiceQuitParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _EchoServiceQuitParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _EchoServiceQuitParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -419,29 +308,19 @@ class _EchoServiceQuitParams extends bindings.Struct {
     }
     _EchoServiceQuitParams result = new _EchoServiceQuitParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_EchoServiceQuitParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
   }
 
   String toString() {

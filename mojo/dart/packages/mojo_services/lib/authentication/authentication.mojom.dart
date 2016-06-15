@@ -21,14 +21,8 @@ class _AuthenticationServiceSelectAccountParams extends bindings.Struct {
     bool this.returnLastSelected
   ) : super(kVersions.last.size);
 
-  static _AuthenticationServiceSelectAccountParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _AuthenticationServiceSelectAccountParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _AuthenticationServiceSelectAccountParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -36,24 +30,7 @@ class _AuthenticationServiceSelectAccountParams extends bindings.Struct {
     }
     _AuthenticationServiceSelectAccountParams result = new _AuthenticationServiceSelectAccountParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.returnLastSelected = decoder0.decodeBool(8, 0);
@@ -63,11 +40,13 @@ class _AuthenticationServiceSelectAccountParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_AuthenticationServiceSelectAccountParams";
+    String fieldName;
     try {
+      fieldName = "returnLastSelected";
       encoder0.encodeBool(returnLastSelected, 8, 0);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "returnLastSelected of struct _AuthenticationServiceSelectAccountParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -99,14 +78,8 @@ class AuthenticationServiceSelectAccountResponseParams extends bindings.Struct {
     String this.error
   ) : super(kVersions.last.size);
 
-  static AuthenticationServiceSelectAccountResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static AuthenticationServiceSelectAccountResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static AuthenticationServiceSelectAccountResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -114,24 +87,7 @@ class AuthenticationServiceSelectAccountResponseParams extends bindings.Struct {
     }
     AuthenticationServiceSelectAccountResponseParams result = new AuthenticationServiceSelectAccountResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.username = decoder0.decodeString(8, true);
@@ -145,18 +101,15 @@ class AuthenticationServiceSelectAccountResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "AuthenticationServiceSelectAccountResponseParams";
+    String fieldName;
     try {
+      fieldName = "username";
       encoder0.encodeString(username, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "username of struct AuthenticationServiceSelectAccountResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "error";
       encoder0.encodeString(error, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct AuthenticationServiceSelectAccountResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -190,14 +143,8 @@ class _AuthenticationServiceGetOAuth2TokenParams extends bindings.Struct {
     List<String> this.scopes
   ) : super(kVersions.last.size);
 
-  static _AuthenticationServiceGetOAuth2TokenParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _AuthenticationServiceGetOAuth2TokenParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _AuthenticationServiceGetOAuth2TokenParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -205,24 +152,7 @@ class _AuthenticationServiceGetOAuth2TokenParams extends bindings.Struct {
     }
     _AuthenticationServiceGetOAuth2TokenParams result = new _AuthenticationServiceGetOAuth2TokenParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.username = decoder0.decodeString(8, false);
@@ -244,14 +174,12 @@ class _AuthenticationServiceGetOAuth2TokenParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_AuthenticationServiceGetOAuth2TokenParams";
+    String fieldName;
     try {
+      fieldName = "username";
       encoder0.encodeString(username, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "username of struct _AuthenticationServiceGetOAuth2TokenParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "scopes";
       if (scopes == null) {
         encoder0.encodeNullPointer(16, false);
       } else {
@@ -261,8 +189,7 @@ class _AuthenticationServiceGetOAuth2TokenParams extends bindings.Struct {
         }
       }
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "scopes of struct _AuthenticationServiceGetOAuth2TokenParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -296,14 +223,8 @@ class AuthenticationServiceGetOAuth2TokenResponseParams extends bindings.Struct 
     String this.error
   ) : super(kVersions.last.size);
 
-  static AuthenticationServiceGetOAuth2TokenResponseParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static AuthenticationServiceGetOAuth2TokenResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static AuthenticationServiceGetOAuth2TokenResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -311,24 +232,7 @@ class AuthenticationServiceGetOAuth2TokenResponseParams extends bindings.Struct 
     }
     AuthenticationServiceGetOAuth2TokenResponseParams result = new AuthenticationServiceGetOAuth2TokenResponseParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.token = decoder0.decodeString(8, true);
@@ -342,18 +246,15 @@ class AuthenticationServiceGetOAuth2TokenResponseParams extends bindings.Struct 
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "AuthenticationServiceGetOAuth2TokenResponseParams";
+    String fieldName;
     try {
+      fieldName = "token";
       encoder0.encodeString(token, 8, true);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "token of struct AuthenticationServiceGetOAuth2TokenResponseParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "error";
       encoder0.encodeString(error, 16, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "error of struct AuthenticationServiceGetOAuth2TokenResponseParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
@@ -385,14 +286,8 @@ class _AuthenticationServiceClearOAuth2TokenParams extends bindings.Struct {
     String this.token
   ) : super(kVersions.last.size);
 
-  static _AuthenticationServiceClearOAuth2TokenParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _AuthenticationServiceClearOAuth2TokenParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _AuthenticationServiceClearOAuth2TokenParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -400,24 +295,7 @@ class _AuthenticationServiceClearOAuth2TokenParams extends bindings.Struct {
     }
     _AuthenticationServiceClearOAuth2TokenParams result = new _AuthenticationServiceClearOAuth2TokenParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.token = decoder0.decodeString(8, false);
@@ -427,11 +305,13 @@ class _AuthenticationServiceClearOAuth2TokenParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_AuthenticationServiceClearOAuth2TokenParams";
+    String fieldName;
     try {
+      fieldName = "token";
       encoder0.encodeString(token, 8, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "token of struct _AuthenticationServiceClearOAuth2TokenParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

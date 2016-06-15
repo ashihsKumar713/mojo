@@ -24,14 +24,8 @@ class _HttpServerDelegateOnConnectedParams extends bindings.Struct {
     http_connection_mojom.HttpConnectionDelegateInterfaceRequest this.delegate
   ) : super(kVersions.last.size);
 
-  static _HttpServerDelegateOnConnectedParams deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static _HttpServerDelegateOnConnectedParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static _HttpServerDelegateOnConnectedParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -39,24 +33,7 @@ class _HttpServerDelegateOnConnectedParams extends bindings.Struct {
     }
     _HttpServerDelegateOnConnectedParams result = new _HttpServerDelegateOnConnectedParams();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.connection = decoder0.decodeServiceInterface(8, false, http_connection_mojom.HttpConnectionProxy.newFromEndpoint);
@@ -70,18 +47,15 @@ class _HttpServerDelegateOnConnectedParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_HttpServerDelegateOnConnectedParams";
+    String fieldName;
     try {
+      fieldName = "connection";
       encoder0.encodeInterface(connection, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "connection of struct _HttpServerDelegateOnConnectedParams: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "delegate";
       encoder0.encodeInterfaceRequest(delegate, 16, false);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "delegate of struct _HttpServerDelegateOnConnectedParams: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }

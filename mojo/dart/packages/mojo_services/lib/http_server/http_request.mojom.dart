@@ -26,14 +26,8 @@ class HttpRequest extends bindings.Struct {
     core.MojoDataPipeConsumer this.body
   ) : super(kVersions.last.size);
 
-  static HttpRequest deserialize(bindings.Message message) {
-    var decoder = new bindings.Decoder(message);
-    var result = decode(decoder);
-    if (decoder.excessHandles != null) {
-      decoder.excessHandles.forEach((h) => h.close());
-    }
-    return result;
-  }
+  static HttpRequest deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
 
   static HttpRequest decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
@@ -41,24 +35,7 @@ class HttpRequest extends bindings.Struct {
     }
     HttpRequest result = new HttpRequest();
 
-    var mainDataHeader = decoder0.decodeStructDataHeader();
-    if (mainDataHeader.version <= kVersions.last.version) {
-      // Scan in reverse order to optimize for more recent versions.
-      for (int i = kVersions.length - 1; i >= 0; --i) {
-        if (mainDataHeader.version >= kVersions[i].version) {
-          if (mainDataHeader.size == kVersions[i].size) {
-            // Found a match.
-            break;
-          }
-          throw new bindings.MojoCodecError(
-              'Header size doesn\'t correspond to known version size.');
-        }
-      }
-    } else if (mainDataHeader.size < kVersions.last.size) {
-      throw new bindings.MojoCodecError(
-        'Message newer than the last known version cannot be shorter than '
-        'required by the last known version.');
-    }
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
       result.relativeUrl = decoder0.decodeString(8, false);
@@ -113,21 +90,14 @@ class HttpRequest extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "HttpRequest";
+    String fieldName;
     try {
+      fieldName = "relativeUrl";
       encoder0.encodeString(relativeUrl, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "relativeUrl of struct HttpRequest: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "method";
       encoder0.encodeString(method, 16, false);
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "method of struct HttpRequest: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "headers";
       if (headers == null) {
         encoder0.encodeNullPointer(24, true);
       } else {
@@ -149,16 +119,10 @@ class HttpRequest extends bindings.Struct {
           }
         }
       }
-    } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "headers of struct HttpRequest: $e";
-      rethrow;
-    }
-    try {
+      fieldName = "body";
       encoder0.encodeConsumerHandle(body, 32, true);
     } on bindings.MojoCodecError catch(e) {
-      e.message = "Error encountered while encoding field "
-          "body of struct HttpRequest: $e";
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
     }
   }
