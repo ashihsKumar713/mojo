@@ -33,7 +33,7 @@ text/html,mojo:html_viewer,application/javascript,mojo:js_content_handler
 _MOJO_DEBUGGER_PORT = 7777
 _LAUNCHER = 'mojo:launcher'
 
-_DEBUGGER_URL = 'https://core.mojoapps.io/debugger.mojo'
+_DEBUGGER_URL = 'mojo:debugger'
 
 
 def _configure_debugger(shell):
