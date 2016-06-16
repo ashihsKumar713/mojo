@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(vardhan): The generated names for type tables may need to be reworked
+// to keep within C's identifier-length limit.
+
 package cgen
 
 import (
@@ -12,11 +15,12 @@ import (
 )
 
 type StructPointerTableEntry struct {
-	ElemTable string
-	Offset    uint32
-	Nullable  bool
-	ElemType  string
-	KeepGoing bool
+	ElemTable  string
+	Offset     uint32
+	MinVersion uint32
+	ElemType   string
+	Nullable   bool
+	KeepGoing  bool
 }
 
 type UnionPointerTableEntry struct {
@@ -153,9 +157,9 @@ func (table *TypeTableTemplate) makeMapPointerTable(prefix string, f mojom_types
 	// The key array has offset 0.
 	// The value array has offset 8.
 	structTable.Entries = append(structTable.Entries,
-		table.makeStructPointerTableEntry(fmt.Sprintf("%s_%d", prefix, 0), 0, f.KeyType))
+		table.makeStructPointerTableEntry(fmt.Sprintf("%s_%d", prefix, 0), 0, 0, f.KeyType))
 	structTable.Entries = append(structTable.Entries,
-		table.makeStructPointerTableEntry(fmt.Sprintf("%s_%d", prefix, 8), 8, f.ValueType))
+		table.makeStructPointerTableEntry(fmt.Sprintf("%s_%d", prefix, 8), 8, 0, f.ValueType))
 	structTable.Entries[1].KeepGoing = false
 
 	table.Structs = append(table.Structs, structTable)
@@ -198,15 +202,16 @@ func (table *TypeTableTemplate) isPointerOrHandle(typ mojom_types.Type) bool {
 // but won't insert it into the `table`; it is the caller's responsibility to
 // insert it. However, this operation is NOT totally immutable, since it may
 // create type tables for sub types of |fieldType| (e.g. if fieldType is a map).
-func (table *TypeTableTemplate) makeStructPointerTableEntry(prefix string, offset uint32, fieldType mojom_types.Type) StructPointerTableEntry {
+func (table *TypeTableTemplate) makeStructPointerTableEntry(prefix string, offset uint32, minVersion uint32, fieldType mojom_types.Type) StructPointerTableEntry {
 	elemTableName := fmt.Sprintf("%s_%d", prefix, offset)
 	elemTable, elemType, nullable := table.makeTableForType(elemTableName, fieldType)
 	return StructPointerTableEntry{
-		ElemTable: elemTable,
-		Offset:    offset,
-		Nullable:  nullable,
-		ElemType:  elemType,
-		KeepGoing: true,
+		ElemTable:  elemTable,
+		Offset:     offset,
+		MinVersion: minVersion,
+		ElemType:   elemType,
+		Nullable:   nullable,
+		KeepGoing:  true,
 	}
 }
 
@@ -219,7 +224,8 @@ func (table *TypeTableTemplate) insertStructPointerTable(s mojom_types.MojomStru
 	}
 	for _, field := range s.Fields {
 		if table.isPointerOrHandle(field.Type) {
-			structTable.Entries = append(structTable.Entries, table.makeStructPointerTableEntry(structTablePrefix, uint32(field.Offset), field.Type))
+			structTable.Entries = append(structTable.Entries, table.makeStructPointerTableEntry(
+				structTablePrefix, uint32(field.Offset), field.MinVersion, field.Type))
 		}
 	}
 	if len(structTable.Entries) > 0 {

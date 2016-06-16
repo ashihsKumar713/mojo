@@ -18,12 +18,13 @@ const GenerateHeaderFile = `
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "mojo/public/c/bindings/mojom/array.h"
-#include "mojo/public/c/bindings/mojom/buffer.h"
-#include "mojo/public/c/bindings/mojom/map.h"
-#include "mojo/public/c/bindings/mojom/string.h"
-#include "mojo/public/c/bindings/mojom/table.h"
-#include "mojo/public/c/bindings/mojom/types.h"
+#include "mojo/public/c/bindings/array.h"
+#include "mojo/public/c/bindings/buffer.h"
+#include "mojo/public/c/bindings/interface.h"
+#include "mojo/public/c/bindings/lib/type_table.h"
+#include "mojo/public/c/bindings/map.h"
+#include "mojo/public/c/bindings/string.h"
+#include "mojo/public/c/bindings/validation.h"
 #include "mojo/public/c/system/handle.h"
 
 // Imports.

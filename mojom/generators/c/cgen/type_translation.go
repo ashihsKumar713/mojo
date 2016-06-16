@@ -83,13 +83,13 @@ func isReservedKeyword(keyword string) bool {
 	return found
 }
 
-// Translates: import "file.mojom" -> #include 'rel/path/file.mojom.c.h'
+// Translates: import "file.mojom" -> #include 'rel/path/file.mojom-c.h'
 func mojomToCFilePath(srcRootPath string, mojomImport string) string {
 	rel_import, err := filepath.Rel(srcRootPath, mojomImport)
 	if err != nil {
 		log.Fatalf("Cannot determine relative path for '%s'", mojomImport)
 	}
-	return rel_import + ".c.h"
+	return rel_import + "-c.h"
 }
 
 // Given an interface + method name, return a name-mangled name in C.
@@ -145,7 +145,7 @@ func mojomToCType(t mojom_types.Type, fileGraph *mojom_files.MojomFileGraph) str
 	case *mojom_types.TypeTypeReference:
 		typ_ref := t.Interface().(mojom_types.TypeReference)
 		if typ_ref.IsInterfaceRequest {
-			return "MojoInterfaceRequestHandle"
+			return "MojoHandle"
 		}
 		resolved_type := fileGraph.ResolvedTypes[*typ_ref.TypeKey]
 		return userDefinedTypeToCType(&resolved_type)
@@ -170,17 +170,17 @@ func mojomToCLiteral(value mojom_types.LiteralValue) string {
 	case *mojom_types.LiteralValueInt16Value:
 		return strconv.FormatInt(int64(val.(int16)), 10)
 	case *mojom_types.LiteralValueInt32Value:
-		return strconv.FormatInt(int64(val.(int32)), 10)
+		return strconv.FormatInt(int64(val.(int32)), 10) + "l"
 	case *mojom_types.LiteralValueInt64Value:
-		return strconv.FormatInt(int64(val.(int64)), 10)
+		return strconv.FormatInt(int64(val.(int64)), 10) + "ll"
 	case *mojom_types.LiteralValueUint8Value:
 		return strconv.FormatUint(uint64(val.(uint8)), 10)
 	case *mojom_types.LiteralValueUint16Value:
 		return strconv.FormatUint(uint64(val.(uint16)), 10)
 	case *mojom_types.LiteralValueUint32Value:
-		return strconv.FormatUint(uint64(val.(uint32)), 10)
+		return strconv.FormatUint(uint64(val.(uint32)), 10) + "ul"
 	case *mojom_types.LiteralValueUint64Value:
-		return strconv.FormatUint(uint64(val.(uint64)), 10)
+		return strconv.FormatUint(uint64(val.(uint64)), 10) + "ull"
 	case *mojom_types.LiteralValueStringValue:
 		// TODO(vardhan): Do we have to do any string escaping here?
 		return "\"" + val.(string) + "\""
