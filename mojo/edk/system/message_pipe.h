@@ -108,6 +108,10 @@ class MessagePipe final : public ChannelEndpointClient {
   void RemoveAwakable(unsigned port,
                       Awakable* awakable,
                       HandleSignalsState* signals_state);
+  void RemoveAwakableWithContext(unsigned port,
+                                 Awakable* awakable,
+                                 uint64_t context,
+                                 HandleSignalsState* signals_state);
   void StartSerialize(unsigned port,
                       Channel* channel,
                       size_t* max_size,

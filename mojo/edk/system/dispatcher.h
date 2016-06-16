@@ -196,6 +196,12 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
   // If |signals_state| is non-null, on *failure* |*signals_state| will be set
   // to the current handle signals state (on success, it is left untouched).
   //
+  // Any awakable that's added must either eventually be removed (using
+  // |RemoveAwakable()| or |RemoveAwakableWithContext()|, below). If an
+  // awakable's |Awake()| is called (by this dispatcher) and it returns false,
+  // that is equivalent to |RemoveAwakableWithContext()| being called for that
+  // awakable and the context passed to |Awake()|.
+  //
   // Returns:
   //  - |MOJO_RESULT_OK| if the awakable was added;
   //  - |MOJO_RESULT_ALREADY_EXISTS| if |signals| is already satisfied (if
@@ -214,11 +220,17 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
                                       MojoHandleSignals signals,
                                       uint64_t context,
                                       HandleSignalsState* signals_state);
-  // Removes an awakable from this dispatcher. (It is valid to call this
-  // multiple times for the same |awakable| on the same object, so long as
-  // |AddAwakable()| was called at most once.) If |signals_state| is non-null,
-  // |*signals_state| will be set to the current handle signals state.
+  // Removes an awakable from this dispatcher. This will remove all instances of
+  // |awakable|, regardless of context. (It is valid to call this multiple times
+  // for the same |awakable| on the same object.) If |signals_state| is
+  // non-null, |*signals_state| will be set to the current handle signals state.
   void RemoveAwakable(Awakable* awakable, HandleSignalsState* signals_state);
+  // Like |RemoveAwakable()|, but only removes "instances" with the given
+  // context. (This may also be called multiple times, and there may be multiple
+  // instances with the same context.)
+  void RemoveAwakableWithContext(Awakable* awakable,
+                                 uint64_t context,
+                                 HandleSignalsState* signals_state);
 
   // A dispatcher must be put into a special state in order to be sent across a
   // message pipe. Outside of tests, only |HandleTableAccess| is allowed to do
@@ -397,6 +409,10 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
   virtual void RemoveAwakableImplNoLock(Awakable* awakable,
                                         HandleSignalsState* signals_state)
       MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
+  virtual void RemoveAwakableWithContextImplNoLock(
+      Awakable* awakable,
+      uint64_t context,
+      HandleSignalsState* signals_state) MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
   // These implement the API used to serialize dispatchers to a |Channel|
   // (described below). They will only be called on a dispatcher that's attached

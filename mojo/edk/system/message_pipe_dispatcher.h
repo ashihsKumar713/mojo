@@ -103,6 +103,10 @@ class MessagePipeDispatcher final : public Dispatcher {
                                    HandleSignalsState* signals_state) override;
   void RemoveAwakableImplNoLock(Awakable* awakable,
                                 HandleSignalsState* signals_state) override;
+  void RemoveAwakableWithContextImplNoLock(
+      Awakable* awakable,
+      uint64_t context,
+      HandleSignalsState* signals_state) override;
   void StartSerializeImplNoLock(Channel* channel,
                                 size_t* max_size,
                                 size_t* max_platform_handles) override

@@ -121,6 +121,9 @@ class DataPipe final : public ChannelEndpointClient {
                                  HandleSignalsState* signals_state);
   void ProducerRemoveAwakable(Awakable* awakable,
                               HandleSignalsState* signals_state);
+  void ProducerRemoveAwakableWithContext(Awakable* awakable,
+                                         uint64_t context,
+                                         HandleSignalsState* signals_state);
   void ProducerStartSerialize(Channel* channel,
                               size_t* max_size,
                               size_t* max_platform_handles);
@@ -156,6 +159,9 @@ class DataPipe final : public ChannelEndpointClient {
                                  HandleSignalsState* signals_state);
   void ConsumerRemoveAwakable(Awakable* awakable,
                               HandleSignalsState* signals_state);
+  void ConsumerRemoveAwakableWithContext(Awakable* awakable,
+                                         uint64_t context,
+                                         HandleSignalsState* signals_state);
   void ConsumerStartSerialize(Channel* channel,
                               size_t* max_size,
                               size_t* max_platform_handles);

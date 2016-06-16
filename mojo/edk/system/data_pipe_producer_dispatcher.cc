@@ -185,6 +185,15 @@ void DataPipeProducerDispatcher::RemoveAwakableImplNoLock(
   data_pipe_->ProducerRemoveAwakable(awakable, signals_state);
 }
 
+void DataPipeProducerDispatcher::RemoveAwakableWithContextImplNoLock(
+    Awakable* awakable,
+    uint64_t context,
+    HandleSignalsState* signals_state) {
+  mutex().AssertHeld();
+  data_pipe_->ProducerRemoveAwakableWithContext(awakable, context,
+                                                signals_state);
+}
+
 void DataPipeProducerDispatcher::StartSerializeImplNoLock(
     Channel* channel,
     size_t* max_size,

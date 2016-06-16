@@ -37,6 +37,10 @@ class SimpleDispatcher : public Dispatcher {
                                    HandleSignalsState* signals_state) override;
   void RemoveAwakableImplNoLock(Awakable* awakable,
                                 HandleSignalsState* signals_state) override;
+  void RemoveAwakableWithContextImplNoLock(
+      Awakable* awakable,
+      uint64_t context,
+      HandleSignalsState* signals_state) override;
 
  private:
   AwakableList awakable_list_ MOJO_GUARDED_BY(mutex());

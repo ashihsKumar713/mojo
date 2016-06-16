@@ -285,6 +285,44 @@ TEST(AwakableListTest, MultipleAwakables) {
   EXPECT_EQ(10u, context4);
 }
 
+TEST(AwakableListTest, RemoveWithContext) {
+  MojoResult result;
+  uint64_t context;
+
+  {
+    AwakableList awakable_list;
+    test::SimpleWaiterThread thread(&result, &context);
+    awakable_list.Add(thread.waiter(), MOJO_HANDLE_SIGNAL_READABLE, 1);
+    awakable_list.Add(thread.waiter(), MOJO_HANDLE_SIGNAL_READABLE, 2);
+    thread.Start();
+    awakable_list.RemoveWithContext(thread.waiter(), 2);
+    awakable_list.AwakeForStateChange(HandleSignalsState(
+        MOJO_HANDLE_SIGNAL_READABLE,
+        MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
+    awakable_list.RemoveWithContext(thread.waiter(), 1);
+    // Double-remove okay:
+    awakable_list.RemoveWithContext(thread.waiter(), 1);
+  }  // Join |thread|.
+  EXPECT_EQ(MOJO_RESULT_OK, result);
+  EXPECT_EQ(1u, context);
+
+  // Try the same thing, but remove "1" before the awake instead.
+  {
+    AwakableList awakable_list;
+    test::SimpleWaiterThread thread(&result, &context);
+    awakable_list.Add(thread.waiter(), MOJO_HANDLE_SIGNAL_READABLE, 1);
+    awakable_list.Add(thread.waiter(), MOJO_HANDLE_SIGNAL_READABLE, 2);
+    thread.Start();
+    awakable_list.RemoveWithContext(thread.waiter(), 1);
+    awakable_list.AwakeForStateChange(HandleSignalsState(
+        MOJO_HANDLE_SIGNAL_READABLE,
+        MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
+    awakable_list.RemoveWithContext(thread.waiter(), 2);
+  }  // Join |thread|.
+  EXPECT_EQ(MOJO_RESULT_OK, result);
+  EXPECT_EQ(2u, context);
+}
+
 class KeepAwakable : public Awakable {
  public:
   KeepAwakable() : awake_count(0) {}

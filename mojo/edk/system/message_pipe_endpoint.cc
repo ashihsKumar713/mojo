@@ -45,6 +45,15 @@ void MessagePipeEndpoint::RemoveAwakable(Awakable* /*awakable*/,
     *signals_state = HandleSignalsState();
 }
 
+void MessagePipeEndpoint::RemoveAwakableWithContext(
+    Awakable* /*awakable*/,
+    uint64_t /*context*/,
+    HandleSignalsState* signals_state) {
+  NOTREACHED();
+  if (signals_state)
+    *signals_state = HandleSignalsState();
+}
+
 void MessagePipeEndpoint::Attach(ChannelEndpoint* /*channel_endpoint*/) {
   NOTREACHED();
 }

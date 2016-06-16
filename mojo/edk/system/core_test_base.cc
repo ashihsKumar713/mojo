@@ -195,6 +195,16 @@ class MockDispatcher : public Dispatcher {
       *signals_state = HandleSignalsState();
   }
 
+  void RemoveAwakableWithContextImplNoLock(
+      Awakable* /*awakable*/,
+      uint64_t /*context*/,
+      HandleSignalsState* signals_state) override {
+    info_->IncrementRemoveAwakableWithContextCallCount();
+    mutex().AssertHeld();
+    if (signals_state)
+      *signals_state = HandleSignalsState();
+  }
+
   void CancelAllStateNoLock() override {
     info_->IncrementCancelAllStateCallCount();
     mutex().AssertHeld();
@@ -340,6 +350,12 @@ unsigned CoreTestBase_MockHandleInfo::GetRemoveAwakableCallCount() const {
   return remove_awakable_call_count_;
 }
 
+unsigned CoreTestBase_MockHandleInfo::GetRemoveAwakableWithContextCallCount()
+    const {
+  MutexLocker locker(&mutex_);
+  return remove_awakable_with_context_call_count_;
+}
+
 unsigned CoreTestBase_MockHandleInfo::GetCancelAllStateCallCount() const {
   MutexLocker locker(&mutex_);
   return cancel_all_awakables_call_count_;
@@ -438,6 +454,12 @@ void CoreTestBase_MockHandleInfo::IncrementAddAwakableCallCount() {
 void CoreTestBase_MockHandleInfo::IncrementRemoveAwakableCallCount() {
   MutexLocker locker(&mutex_);
   remove_awakable_call_count_++;
+}
+
+void CoreTestBase_MockHandleInfo::
+    IncrementRemoveAwakableWithContextCallCount() {
+  MutexLocker locker(&mutex_);
+  remove_awakable_with_context_call_count_++;
 }
 
 void CoreTestBase_MockHandleInfo::IncrementCancelAllStateCallCount() {

@@ -432,6 +432,17 @@ void DataPipe::ProducerRemoveAwakable(Awakable* awakable,
     *signals_state = impl_->ProducerGetHandleSignalsState();
 }
 
+void DataPipe::ProducerRemoveAwakableWithContext(
+    Awakable* awakable,
+    uint64_t context,
+    HandleSignalsState* signals_state) {
+  MutexLocker locker(&mutex_);
+  DCHECK(has_local_producer_no_lock());
+  producer_awakable_list_->RemoveWithContext(awakable, context);
+  if (signals_state)
+    *signals_state = impl_->ProducerGetHandleSignalsState();
+}
+
 void DataPipe::ProducerStartSerialize(Channel* channel,
                                       size_t* max_size,
                                       size_t* max_platform_handles) {
@@ -650,6 +661,17 @@ void DataPipe::ConsumerRemoveAwakable(Awakable* awakable,
   MutexLocker locker(&mutex_);
   DCHECK(has_local_consumer_no_lock());
   consumer_awakable_list_->Remove(awakable);
+  if (signals_state)
+    *signals_state = impl_->ConsumerGetHandleSignalsState();
+}
+
+void DataPipe::ConsumerRemoveAwakableWithContext(
+    Awakable* awakable,
+    uint64_t context,
+    HandleSignalsState* signals_state) {
+  MutexLocker locker(&mutex_);
+  DCHECK(has_local_consumer_no_lock());
+  consumer_awakable_list_->RemoveWithContext(awakable, context);
   if (signals_state)
     *signals_state = impl_->ConsumerGetHandleSignalsState();
 }

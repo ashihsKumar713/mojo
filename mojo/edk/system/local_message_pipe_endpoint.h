@@ -44,6 +44,9 @@ class LocalMessagePipeEndpoint final : public MessagePipeEndpoint {
                          HandleSignalsState* signals_state) override;
   void RemoveAwakable(Awakable* awakable,
                       HandleSignalsState* signals_state) override;
+  void RemoveAwakableWithContext(Awakable* awakable,
+                                 uint64_t context,
+                                 HandleSignalsState* signals_state) override;
 
   // This is only to be used by |MessagePipe|:
   MessageInTransitQueue* message_queue() { return &message_queue_; }

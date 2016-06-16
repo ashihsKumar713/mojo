@@ -72,6 +72,9 @@ class MessagePipeEndpoint {
                                  HandleSignalsState* signals_state);
   virtual void RemoveAwakable(Awakable* awakable,
                               HandleSignalsState* signals_state);
+  virtual void RemoveAwakableWithContext(Awakable* awakable,
+                                         uint64_t context,
+                                         HandleSignalsState* signals_state);
 
   // Implementations must override these if they represent a proxy endpoint. An
   // implementation for a local endpoint needs not override these methods, since

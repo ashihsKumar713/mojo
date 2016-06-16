@@ -34,6 +34,7 @@ class AwakableList {
   void CancelAll();
   void Add(Awakable* awakable, MojoHandleSignals signals, uint64_t context);
   void Remove(Awakable* awakable);
+  void RemoveWithContext(Awakable* awakable, uint64_t context);
 
  private:
   struct AwakeInfo {

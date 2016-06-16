@@ -60,5 +60,15 @@ void SimpleDispatcher::RemoveAwakableImplNoLock(
     *signals_state = GetHandleSignalsStateImplNoLock();
 }
 
+void SimpleDispatcher::RemoveAwakableWithContextImplNoLock(
+    Awakable* awakable,
+    uint64_t context,
+    HandleSignalsState* signals_state) {
+  mutex().AssertHeld();
+  awakable_list_.RemoveWithContext(awakable, context);
+  if (signals_state)
+    *signals_state = GetHandleSignalsStateImplNoLock();
+}
+
 }  // namespace system
 }  // namespace mojo

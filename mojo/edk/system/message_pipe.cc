@@ -215,6 +215,18 @@ void MessagePipe::RemoveAwakable(unsigned port,
   endpoints_[port]->RemoveAwakable(awakable, signals_state);
 }
 
+void MessagePipe::RemoveAwakableWithContext(unsigned port,
+                                            Awakable* awakable,
+                                            uint64_t context,
+                                            HandleSignalsState* signals_state) {
+  DCHECK(port == 0 || port == 1);
+
+  MutexLocker locker(&mutex_);
+  DCHECK(endpoints_[port]);
+
+  endpoints_[port]->RemoveAwakableWithContext(awakable, context, signals_state);
+}
+
 void MessagePipe::StartSerialize(unsigned /*port*/,
                                  Channel* channel,
                                  size_t* max_size,

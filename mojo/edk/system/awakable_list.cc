@@ -70,5 +70,20 @@ void AwakableList::Remove(Awakable* awakable) {
   awakables_.erase(last, awakables_.end());
 }
 
+void AwakableList::RemoveWithContext(Awakable* awakable, uint64_t context) {
+  // We allow a thread to wait on the same handle multiple times simultaneously,
+  // so we need to scan the entire list and remove all occurrences of |waiter|.
+  auto last = awakables_.end();
+  for (AwakeInfoList::iterator it = awakables_.begin(); it != last;) {
+    if (it->awakable == awakable && it->context == context) {
+      --last;
+      std::swap(*it, *last);
+    } else {
+      ++it;
+    }
+  }
+  awakables_.erase(last, awakables_.end());
+}
+
 }  // namespace system
 }  // namespace mojo

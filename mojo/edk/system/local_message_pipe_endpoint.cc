@@ -183,5 +183,15 @@ void LocalMessagePipeEndpoint::RemoveAwakable(
     *signals_state = GetHandleSignalsState();
 }
 
+void LocalMessagePipeEndpoint::RemoveAwakableWithContext(
+    Awakable* awakable,
+    uint64_t context,
+    HandleSignalsState* signals_state) {
+  DCHECK(is_open_);
+  awakable_list_.RemoveWithContext(awakable, context);
+  if (signals_state)
+    *signals_state = GetHandleSignalsState();
+}
+
 }  // namespace system
 }  // namespace mojo

@@ -218,6 +218,15 @@ void MessagePipeDispatcher::RemoveAwakableImplNoLock(
   message_pipe_->RemoveAwakable(port_, awakable, signals_state);
 }
 
+void MessagePipeDispatcher::RemoveAwakableWithContextImplNoLock(
+    Awakable* awakable,
+    uint64_t context,
+    HandleSignalsState* signals_state) {
+  mutex().AssertHeld();
+  message_pipe_->RemoveAwakableWithContext(port_, awakable, context,
+                                           signals_state);
+}
+
 void MessagePipeDispatcher::StartSerializeImplNoLock(
     Channel* channel,
     size_t* max_size,
