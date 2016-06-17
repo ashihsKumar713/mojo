@@ -30,7 +30,8 @@ class AwakableList {
   AwakableList();
   ~AwakableList();
 
-  void AwakeForStateChange(const HandleSignalsState& state);
+  void OnStateChange(const HandleSignalsState& old_state,
+                     const HandleSignalsState& new_state);
   void CancelAll();
   void Add(Awakable* awakable, MojoHandleSignals signals, uint64_t context);
   void Remove(Awakable* awakable);

@@ -275,11 +275,11 @@ class DataPipe final : public ChannelEndpointClient {
   bool OnReadMessage(unsigned port, MessageInTransit* message) override;
   void OnDetachFromChannel(unsigned port) override;
 
-  void AwakeProducerAwakablesForStateChangeNoLock(
-      const HandleSignalsState& new_producer_state)
+  void OnProducerMaybeStateChange(const HandleSignalsState& old_producer_state,
+                                  const HandleSignalsState& new_producer_state)
       MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
-  void AwakeConsumerAwakablesForStateChangeNoLock(
-      const HandleSignalsState& new_consumer_state)
+  void OnConsumerMaybeStateChange(const HandleSignalsState& old_consumer_state,
+                                  const HandleSignalsState& new_consumer_state)
       MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
   void SetProducerClosed();

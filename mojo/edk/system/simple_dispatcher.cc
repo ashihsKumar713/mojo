@@ -9,15 +9,15 @@
 namespace mojo {
 namespace system {
 
-SimpleDispatcher::SimpleDispatcher() {
-}
+SimpleDispatcher::SimpleDispatcher() {}
 
-SimpleDispatcher::~SimpleDispatcher() {
-}
+SimpleDispatcher::~SimpleDispatcher() {}
 
-void SimpleDispatcher::HandleSignalsStateChangedNoLock() {
+void SimpleDispatcher::OnHandleSignalsStateChangeNoLock(
+    const HandleSignalsState& old_state,
+    const HandleSignalsState& new_state) {
   mutex().AssertHeld();
-  awakable_list_.AwakeForStateChange(GetHandleSignalsStateImplNoLock());
+  awakable_list_.OnStateChange(old_state, new_state);
 }
 
 void SimpleDispatcher::CancelAllStateNoLock() {

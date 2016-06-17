@@ -73,9 +73,13 @@ TEST(AwakableListTest, BasicAwakeSatisfied) {
     test::SimpleWaiterThread thread(&result, &context);
     awakable_list.Add(thread.waiter(), MOJO_HANDLE_SIGNAL_READABLE, 1);
     thread.Start();
-    awakable_list.AwakeForStateChange(HandleSignalsState(
-        MOJO_HANDLE_SIGNAL_READABLE,
-        MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
+    awakable_list.OnStateChange(
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_NONE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE),
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_READABLE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
     awakable_list.Remove(thread.waiter());
   }  // Join |thread|.
   EXPECT_EQ(MOJO_RESULT_OK, result);
@@ -86,9 +90,13 @@ TEST(AwakableListTest, BasicAwakeSatisfied) {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread(&result, &context);
     awakable_list.Add(thread.waiter(), MOJO_HANDLE_SIGNAL_WRITABLE, 2);
-    awakable_list.AwakeForStateChange(HandleSignalsState(
-        MOJO_HANDLE_SIGNAL_WRITABLE,
-        MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
+    awakable_list.OnStateChange(
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_NONE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE),
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_WRITABLE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
     awakable_list.Remove(thread.waiter());
     // Double-remove okay:
     awakable_list.Remove(thread.waiter());
@@ -104,9 +112,13 @@ TEST(AwakableListTest, BasicAwakeSatisfied) {
     awakable_list.Add(thread.waiter(), MOJO_HANDLE_SIGNAL_READABLE, 3);
     thread.Start();
     ThreadSleep(2 * test::EpsilonTimeout());
-    awakable_list.AwakeForStateChange(HandleSignalsState(
-        MOJO_HANDLE_SIGNAL_READABLE,
-        MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
+    awakable_list.OnStateChange(
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_NONE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE),
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_READABLE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
     awakable_list.Remove(thread.waiter());
   }  // Join |thread|.
   EXPECT_EQ(MOJO_RESULT_OK, result);
@@ -123,8 +135,12 @@ TEST(AwakableListTest, BasicAwakeUnsatisfiable) {
     test::SimpleWaiterThread thread(&result, &context);
     awakable_list.Add(thread.waiter(), MOJO_HANDLE_SIGNAL_READABLE, 1);
     thread.Start();
-    awakable_list.AwakeForStateChange(HandleSignalsState(
-        MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE));
+    awakable_list.OnStateChange(
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_NONE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE),
+        HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE,
+                           MOJO_HANDLE_SIGNAL_WRITABLE));
     awakable_list.Remove(thread.waiter());
   }  // Join |thread|.
   EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION, result);
@@ -135,8 +151,12 @@ TEST(AwakableListTest, BasicAwakeUnsatisfiable) {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread(&result, &context);
     awakable_list.Add(thread.waiter(), MOJO_HANDLE_SIGNAL_WRITABLE, 2);
-    awakable_list.AwakeForStateChange(HandleSignalsState(
-        MOJO_HANDLE_SIGNAL_READABLE, MOJO_HANDLE_SIGNAL_READABLE));
+    awakable_list.OnStateChange(
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_NONE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE),
+        HandleSignalsState(MOJO_HANDLE_SIGNAL_READABLE,
+                           MOJO_HANDLE_SIGNAL_READABLE));
     awakable_list.Remove(thread.waiter());
     thread.Start();
   }  // Join |thread|.
@@ -150,8 +170,12 @@ TEST(AwakableListTest, BasicAwakeUnsatisfiable) {
     awakable_list.Add(thread.waiter(), MOJO_HANDLE_SIGNAL_READABLE, 3);
     thread.Start();
     ThreadSleep(2 * test::EpsilonTimeout());
-    awakable_list.AwakeForStateChange(HandleSignalsState(
-        MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE));
+    awakable_list.OnStateChange(
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_NONE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE),
+        HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE,
+                           MOJO_HANDLE_SIGNAL_WRITABLE));
     awakable_list.Remove(thread.waiter());
     // Double-remove okay:
     awakable_list.Remove(thread.waiter());
@@ -197,9 +221,13 @@ TEST(AwakableListTest, MultipleAwakables) {
     awakable_list.Add(thread2.waiter(), MOJO_HANDLE_SIGNAL_WRITABLE, 4);
     thread2.Start();
     ThreadSleep(2 * test::EpsilonTimeout());
-    awakable_list.AwakeForStateChange(HandleSignalsState(
-        MOJO_HANDLE_SIGNAL_READABLE,
-        MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
+    awakable_list.OnStateChange(
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_NONE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE),
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_READABLE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
     awakable_list.Remove(thread1.waiter());
     awakable_list.CancelAll();
   }  // Join threads.
@@ -218,8 +246,12 @@ TEST(AwakableListTest, MultipleAwakables) {
     awakable_list.Add(thread2.waiter(), MOJO_HANDLE_SIGNAL_WRITABLE, 6);
     thread2.Start();
     ThreadSleep(2 * test::EpsilonTimeout());
-    awakable_list.AwakeForStateChange(HandleSignalsState(
-        MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_READABLE));
+    awakable_list.OnStateChange(
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_NONE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE),
+        HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE,
+                           MOJO_HANDLE_SIGNAL_READABLE));
     awakable_list.Remove(thread2.waiter());
     awakable_list.CancelAll();
   }  // Join threads.
@@ -238,9 +270,13 @@ TEST(AwakableListTest, MultipleAwakables) {
     ThreadSleep(1 * test::EpsilonTimeout());
 
     // Should do nothing.
-    awakable_list.AwakeForStateChange(HandleSignalsState(
-        MOJO_HANDLE_SIGNAL_NONE,
-        MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
+    awakable_list.OnStateChange(
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_NONE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE),
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_NONE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
 
     test::SimpleWaiterThread thread2(&result2, &context2);
     awakable_list.Add(thread2.waiter(), MOJO_HANDLE_SIGNAL_WRITABLE, 8);
@@ -249,9 +285,13 @@ TEST(AwakableListTest, MultipleAwakables) {
     ThreadSleep(1 * test::EpsilonTimeout());
 
     // Awake #1.
-    awakable_list.AwakeForStateChange(HandleSignalsState(
-        MOJO_HANDLE_SIGNAL_READABLE,
-        MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
+    awakable_list.OnStateChange(
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_NONE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE),
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_READABLE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
     awakable_list.Remove(thread1.waiter());
 
     ThreadSleep(1 * test::EpsilonTimeout());
@@ -267,8 +307,12 @@ TEST(AwakableListTest, MultipleAwakables) {
     ThreadSleep(1 * test::EpsilonTimeout());
 
     // Awake #2 and #3 for unsatisfiability.
-    awakable_list.AwakeForStateChange(HandleSignalsState(
-        MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_READABLE));
+    awakable_list.OnStateChange(
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_NONE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE),
+        HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE,
+                           MOJO_HANDLE_SIGNAL_READABLE));
     awakable_list.Remove(thread2.waiter());
     awakable_list.Remove(thread3.waiter());
 
@@ -296,9 +340,13 @@ TEST(AwakableListTest, RemoveWithContext) {
     awakable_list.Add(thread.waiter(), MOJO_HANDLE_SIGNAL_READABLE, 2);
     thread.Start();
     awakable_list.RemoveWithContext(thread.waiter(), 2);
-    awakable_list.AwakeForStateChange(HandleSignalsState(
-        MOJO_HANDLE_SIGNAL_READABLE,
-        MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
+    awakable_list.OnStateChange(
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_NONE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE),
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_READABLE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
     awakable_list.RemoveWithContext(thread.waiter(), 1);
     // Double-remove okay:
     awakable_list.RemoveWithContext(thread.waiter(), 1);
@@ -314,9 +362,13 @@ TEST(AwakableListTest, RemoveWithContext) {
     awakable_list.Add(thread.waiter(), MOJO_HANDLE_SIGNAL_READABLE, 2);
     thread.Start();
     awakable_list.RemoveWithContext(thread.waiter(), 1);
-    awakable_list.AwakeForStateChange(HandleSignalsState(
-        MOJO_HANDLE_SIGNAL_READABLE,
-        MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
+    awakable_list.OnStateChange(
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_NONE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE),
+        HandleSignalsState(
+            MOJO_HANDLE_SIGNAL_READABLE,
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
     awakable_list.RemoveWithContext(thread.waiter(), 2);
   }  // Join |thread|.
   EXPECT_EQ(MOJO_RESULT_OK, result);
@@ -358,18 +410,21 @@ TEST(AwakableListTest, KeepAwakablesReturningTrue) {
   RemoveAwakable remove1;
   RemoveAwakable remove2;
 
-  HandleSignalsState hss(MOJO_HANDLE_SIGNAL_WRITABLE,
-                         MOJO_HANDLE_SIGNAL_WRITABLE);
-
   AwakableList remove_all;
   remove_all.Add(&remove0, MOJO_HANDLE_SIGNAL_WRITABLE, 0);
   remove_all.Add(&remove1, MOJO_HANDLE_SIGNAL_WRITABLE, 0);
 
-  remove_all.AwakeForStateChange(hss);
+  remove_all.OnStateChange(
+      HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE),
+      HandleSignalsState(MOJO_HANDLE_SIGNAL_WRITABLE,
+                         MOJO_HANDLE_SIGNAL_WRITABLE));
   EXPECT_EQ(remove0.awake_count, 1);
   EXPECT_EQ(remove1.awake_count, 1);
 
-  remove_all.AwakeForStateChange(hss);
+  remove_all.OnStateChange(
+      HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE),
+      HandleSignalsState(MOJO_HANDLE_SIGNAL_WRITABLE,
+                         MOJO_HANDLE_SIGNAL_WRITABLE));
   EXPECT_EQ(remove0.awake_count, 1);
   EXPECT_EQ(remove1.awake_count, 1);
 
@@ -378,12 +433,18 @@ TEST(AwakableListTest, KeepAwakablesReturningTrue) {
   remove_first.Add(&keep0, MOJO_HANDLE_SIGNAL_WRITABLE, 0);
   remove_first.Add(&keep1, MOJO_HANDLE_SIGNAL_WRITABLE, 0);
 
-  remove_first.AwakeForStateChange(hss);
+  remove_first.OnStateChange(
+      HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE),
+      HandleSignalsState(MOJO_HANDLE_SIGNAL_WRITABLE,
+                         MOJO_HANDLE_SIGNAL_WRITABLE));
   EXPECT_EQ(keep0.awake_count, 1);
   EXPECT_EQ(keep1.awake_count, 1);
   EXPECT_EQ(remove2.awake_count, 1);
 
-  remove_first.AwakeForStateChange(hss);
+  remove_first.OnStateChange(
+      HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE),
+      HandleSignalsState(MOJO_HANDLE_SIGNAL_WRITABLE,
+                         MOJO_HANDLE_SIGNAL_WRITABLE));
   EXPECT_EQ(keep0.awake_count, 2);
   EXPECT_EQ(keep1.awake_count, 2);
   EXPECT_EQ(remove2.awake_count, 1);

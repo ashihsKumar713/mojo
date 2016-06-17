@@ -20,15 +20,17 @@ AwakableList::~AwakableList() {
   DCHECK(awakables_.empty());
 }
 
-void AwakableList::AwakeForStateChange(const HandleSignalsState& state) {
+void AwakableList::OnStateChange(const HandleSignalsState& old_state,
+                                 const HandleSignalsState& new_state) {
   // Instead of deleting elements in-place, swap them with the last element and
   // erase the elements from the end.
   auto last = awakables_.end();
   for (AwakeInfoList::iterator it = awakables_.begin(); it != last;) {
     bool keep = true;
-    if (state.satisfies(it->signals))
+    if (new_state.satisfies(it->signals) && !old_state.satisfies(it->signals))
       keep = it->awakable->Awake(MOJO_RESULT_OK, it->context);
-    else if (!state.can_satisfy(it->signals))
+    else if (!new_state.can_satisfy(it->signals) &&
+             old_state.can_satisfy(it->signals))
       keep = it->awakable->Awake(MOJO_RESULT_FAILED_PRECONDITION, it->context);
 
     if (!keep) {

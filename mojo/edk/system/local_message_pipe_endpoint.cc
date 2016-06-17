@@ -39,7 +39,7 @@ bool LocalMessagePipeEndpoint::OnPeerClose() {
   HandleSignalsState new_state = GetHandleSignalsState();
 
   if (!new_state.equals(old_state))
-    awakable_list_.AwakeForStateChange(new_state);
+    awakable_list_.OnStateChange(old_state, new_state);
 
   return true;
 }
@@ -49,10 +49,12 @@ void LocalMessagePipeEndpoint::EnqueueMessage(
   DCHECK(is_open_);
   DCHECK(is_peer_open_);
 
-  bool was_empty = message_queue_.IsEmpty();
+  HandleSignalsState old_state = GetHandleSignalsState();
   message_queue_.AddMessage(std::move(message));
-  if (was_empty)
-    awakable_list_.AwakeForStateChange(GetHandleSignalsState());
+  HandleSignalsState new_state = GetHandleSignalsState();
+
+  if (!new_state.equals(old_state))
+    awakable_list_.OnStateChange(old_state, new_state);
 }
 
 void LocalMessagePipeEndpoint::Close() {
@@ -115,14 +117,12 @@ MojoResult LocalMessagePipeEndpoint::ReadMessage(
   message = nullptr;
 
   if (enough_space || (flags & MOJO_READ_MESSAGE_FLAG_MAY_DISCARD)) {
+    HandleSignalsState old_state = GetHandleSignalsState();
     message_queue_.DiscardMessage();
+    HandleSignalsState new_state = GetHandleSignalsState();
 
-    // Now it's empty, thus no longer readable.
-    if (message_queue_.IsEmpty()) {
-      // It's currently not possible to wait for non-readability, but we should
-      // do the state change anyway.
-      awakable_list_.AwakeForStateChange(GetHandleSignalsState());
-    }
+    if (!new_state.equals(old_state))
+      awakable_list_.OnStateChange(old_state, new_state);
   }
 
   if (!enough_space)
