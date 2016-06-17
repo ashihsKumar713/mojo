@@ -62,7 +62,7 @@ class CommandBufferClientImpl::SyncClientImpl
   mojo::CommandBufferStatePtr WaitForProgress() {
     if (!binding_.WaitForIncomingMethodCall())
       return mojo::CommandBufferStatePtr();
-    return command_buffer_state_.Pass();
+    return std::move(command_buffer_state_);
   }
 
   gpu::Capabilities GetCapabilities() {
@@ -74,10 +74,10 @@ class CommandBufferClientImpl::SyncClientImpl
   void DidInitialize(bool success,
                      mojo::GpuCapabilitiesPtr capabilities) override {
     initialized_successfully_ = success;
-    capabilities_ = capabilities.Pass();
+    capabilities_ = std::move(capabilities);
   }
   void DidMakeProgress(mojo::CommandBufferStatePtr state) override {
-    command_buffer_state_ = state.Pass();
+    command_buffer_state_ = std::move(state);
   }
 
   bool initialized_successfully_;
@@ -125,7 +125,7 @@ CommandBufferClientImpl::CommandBufferClientImpl(
       next_transfer_buffer_id_(0),
       async_waiter_(async_waiter) {
   command_buffer_.Bind(mojo::InterfaceHandle<mojo::CommandBuffer>(
-                           command_buffer_handle.Pass(), 0u),
+                           std::move(command_buffer_handle), 0u),
                        async_waiter);
   command_buffer_.set_connection_error_handler(
       [this]() { DidLoseContext(gpu::error::kUnknown); });
@@ -157,7 +157,7 @@ bool CommandBufferClientImpl::Initialize() {
   observer_binding_.Bind(GetProxy(&observer_ptr), async_waiter_);
   command_buffer_->Initialize(std::move(sync_client),
                               std::move(sync_point_client),
-                              std::move(observer_ptr), duped.Pass());
+                              std::move(observer_ptr), std::move(duped));
 
   // Wait for DidInitialize to come on the sync client pipe.
   if (!sync_client_impl_->WaitForInitialization()) {
@@ -227,12 +227,12 @@ scoped_refptr<gpu::Buffer> CommandBufferClientImpl::CreateTransferBuffer(
 
   *id = ++next_transfer_buffer_id_;
 
-  command_buffer_->RegisterTransferBuffer(
-      *id, duped.Pass(), static_cast<uint32_t>(size));
+  command_buffer_->RegisterTransferBuffer(*id, std::move(duped),
+                                          static_cast<uint32_t>(size));
 
   scoped_ptr<gpu::BufferBacking> backing(
-      new MojoBufferBacking(handle.Pass(), memory, size));
-  scoped_refptr<gpu::Buffer> buffer(new gpu::Buffer(backing.Pass()));
+      new MojoBufferBacking(std::move(handle), memory, size));
+  scoped_refptr<gpu::Buffer> buffer(new gpu::Buffer(std::move(backing)));
   return buffer;
 }
 
