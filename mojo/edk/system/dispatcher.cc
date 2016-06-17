@@ -112,8 +112,7 @@ MojoResult Dispatcher::Close() {
   return MOJO_RESULT_OK;
 }
 
-MojoResult Dispatcher::DuplicateDispatcher(
-    util::RefPtr<Dispatcher>* new_dispatcher) {
+MojoResult Dispatcher::DuplicateDispatcher(RefPtr<Dispatcher>* new_dispatcher) {
   MutexLocker locker(&mutex_);
   if (is_closed_)
     return MOJO_RESULT_INVALID_ARGUMENT;
@@ -281,10 +280,10 @@ MojoResult Dispatcher::MapBuffer(
 // virtual, but we prefer to have a separate "impl" methods for consistency.)
 MojoResult Dispatcher::WaitSetAdd(
     UserPointer<const MojoWaitSetAddOptions> options,
-    Handle&& handle,
+    RefPtr<Dispatcher>&& dispatcher,
     MojoHandleSignals signals,
     uint64_t cookie) {
-  return WaitSetAddImpl(options, std::move(handle), signals, cookie);
+  return WaitSetAddImpl(options, std::move(dispatcher), signals, cookie);
 }
 
 MojoResult Dispatcher::WaitSetRemove(uint64_t cookie) {
@@ -383,7 +382,7 @@ void Dispatcher::CloseImplNoLock() {
 }
 
 MojoResult Dispatcher::DuplicateDispatcherImplNoLock(
-    util::RefPtr<Dispatcher>* new_dispatcher) {
+    RefPtr<Dispatcher>* new_dispatcher) {
   mutex_.AssertHeld();
   DCHECK(!is_closed_);
   // By default, this is not supported. However, this should only be reachable
@@ -538,7 +537,7 @@ MojoResult Dispatcher::MapBufferImplNoLock(
 // |mutex_| and check |is_closed_|.
 MojoResult Dispatcher::WaitSetAddImpl(
     UserPointer<const MojoWaitSetAddOptions> /*options*/,
-    Handle&& /*handle*/,
+    RefPtr<Dispatcher>&& /*dispatcher*/,
     MojoHandleSignals /*signals*/,
     uint64_t /*cookie*/) {
   // See note above.

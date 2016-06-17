@@ -171,7 +171,7 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
 
   // |EntrypointClass::WAIT_SET|:
   MojoResult WaitSetAdd(UserPointer<const MojoWaitSetAddOptions> options,
-                        Handle&& handle,
+                        util::RefPtr<Dispatcher>&& dispatcher,
                         MojoHandleSignals signals,
                         uint64_t cookie);
   MojoResult WaitSetRemove(uint64_t cookie);
@@ -390,7 +390,7 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
   // |MOJO_RESULT_INVALID_ARGUMENT| if it is true).
   virtual MojoResult WaitSetAddImpl(
       UserPointer<const MojoWaitSetAddOptions> options,
-      Handle&& handle,
+      util::RefPtr<Dispatcher>&& dispatcher,
       MojoHandleSignals signals,
       uint64_t cookie);
   virtual MojoResult WaitSetRemoveImpl(uint64_t cookie);
