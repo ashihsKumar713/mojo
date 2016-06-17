@@ -42,6 +42,7 @@ func init() {
 	initStructTemplates()
 	initUnionTemplates()
 	initEnumTemplates()
+	initInterfaceTemplates()
 }
 
 const goFileTemplate = `

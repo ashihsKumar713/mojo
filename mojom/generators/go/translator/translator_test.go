@@ -196,3 +196,58 @@ func TestTranslateNestedMojomEnum(t *testing.T) {
 	checkEq(t, "Foo_SomeEnum_Beta", m.Values[1].Name)
 	checkEq(t, int32(20), m.Values[1].Value)
 }
+
+func TestTranslateMojomInterface(t *testing.T) {
+	interfaceTypeKey := "interfaceTypeKey"
+	interfaceName := "some_interface"
+
+	mojomInterface := mojom_types.MojomInterface{
+		DeclData: &mojom_types.DeclarationData{ShortName: &interfaceName},
+	}
+
+	graph := mojom_files.MojomFileGraph{}
+	graph.ResolvedTypes = map[string]mojom_types.UserDefinedType{
+		interfaceTypeKey: &mojom_types.UserDefinedTypeInterfaceType{mojomInterface},
+	}
+
+	translator := NewTranslator(&graph)
+
+	m := translator.translateMojomInterface(interfaceTypeKey)
+
+	checkEq(t, "SomeInterface", m.Name)
+	checkEq(t, "someInterface", m.PrivateName)
+}
+
+func TestTranslateMojomMethod(t *testing.T) {
+	params := mojom_types.MojomStruct{
+		VersionInfo: &[]mojom_types.StructVersion{mojom_types.StructVersion{
+			VersionNumber: 10,
+			NumBytes:      16,
+		}},
+	}
+
+	responseParams := mojom_types.MojomStruct{
+		VersionInfo: &[]mojom_types.StructVersion{mojom_types.StructVersion{
+			VersionNumber: 10,
+			NumBytes:      16,
+		}},
+	}
+
+	interfaceName := "someInterface"
+	interfaceTemplate := InterfaceTemplate{PrivateName: interfaceName}
+	methodName := "some_method"
+	mojomMethod := mojom_types.MojomMethod{
+		DeclData:       &mojom_types.DeclarationData{ShortName: &methodName},
+		Parameters:     params,
+		ResponseParams: &responseParams,
+	}
+
+	translator := NewTranslator(nil)
+
+	m := translator.translateMojomMethod(mojomMethod, &interfaceTemplate)
+
+	checkEq(t, "SomeMethod", m.MethodName)
+	checkEq(t, "someInterface_SomeMethod", m.FullName)
+	checkEq(t, "someInterface_SomeMethod_Params", m.Params.Name)
+	checkEq(t, "someInterface_SomeMethod_ResponseParams", m.ResponseParams.Name)
+}

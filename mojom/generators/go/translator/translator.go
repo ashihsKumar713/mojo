@@ -72,26 +72,33 @@ func (t *translator) GetUserDefinedType(typeKey string) (mojomType mojom_types.U
 func (t *translator) translateMojomStruct(typeKey string) (m *StructTemplate) {
 	m = new(StructTemplate)
 	u := t.GetUserDefinedType(typeKey)
-	s, ok := u.Interface().(mojom_types.MojomStruct)
+	mojomStruct, ok := u.Interface().(mojom_types.MojomStruct)
 	if !ok {
 		log.Panicf("%s is not a struct.", userDefinedTypeShortName(u))
 	}
+	m = t.translateMojomStructObject(mojomStruct)
 	m.Name = t.goTypeName(typeKey)
 	m.PrivateName = privateName(m.Name)
-	if s.VersionInfo == nil || len(*s.VersionInfo) == 0 {
+
+	return m
+}
+
+func (t *translator) translateMojomStructObject(mojomStruct mojom_types.MojomStruct) (m *StructTemplate) {
+	m = new(StructTemplate)
+	if mojomStruct.VersionInfo == nil || len(*mojomStruct.VersionInfo) == 0 {
 		log.Fatalln(m.Name, "does not have any version_info!")
 	}
-	curVersion := (*s.VersionInfo)[len(*s.VersionInfo)-1]
+	curVersion := (*mojomStruct.VersionInfo)[len(*mojomStruct.VersionInfo)-1]
 	m.CurVersionSize = curVersion.NumBytes
 	m.CurVersionNumber = curVersion.VersionNumber
 
-	sorter := structFieldSerializationSorter(s.Fields)
+	sorter := structFieldSerializationSorter(mojomStruct.Fields)
 	sort.Sort(sorter)
 	for _, field := range sorter {
 		m.Fields = append(m.Fields, t.translateStructField(&field))
 	}
 
-	for _, version := range *s.VersionInfo {
+	for _, version := range *mojomStruct.VersionInfo {
 		m.Versions = append(m.Versions, structVersion{
 			NumBytes: version.NumBytes,
 			Version:  version.VersionNumber,
@@ -153,6 +160,36 @@ func (t *translator) translateMojomEnum(typeKey string) (m *EnumTemplate) {
 		m.Values = append(m.Values,
 			EnumValueTemplate{Name: name, Value: mojomValue.IntValue})
 	}
+	return m
+}
+
+func (t *translator) translateMojomInterface(typeKey string) (m *InterfaceTemplate) {
+	m = new(InterfaceTemplate)
+	i := t.GetUserDefinedType(typeKey)
+	mojomInterface, ok := i.Interface().(mojom_types.MojomInterface)
+	if !ok {
+		log.Panicf("%s is not an interface.", userDefinedTypeShortName(i))
+	}
+
+	m.Name = t.goTypeName(typeKey)
+	m.PrivateName = privateName(m.Name)
+
+	for _, mojomMethod := range mojomInterface.Methods {
+		m.Methods = append(m.Methods, *t.translateMojomMethod(mojomMethod, m))
+	}
+
+	return m
+}
+
+func (t *translator) translateMojomMethod(mojomMethod mojom_types.MojomMethod, interfaceTemplate *InterfaceTemplate) (m *MethodTemplate) {
+	m = new(MethodTemplate)
+	m.Interface = interfaceTemplate
+	m.MethodName = formatName(*mojomMethod.DeclData.ShortName)
+	m.FullName = fmt.Sprintf("%s_%s", interfaceTemplate.PrivateName, m.MethodName)
+	m.Params = *t.translateMojomStructObject(mojomMethod.Parameters)
+	m.Params.Name = fmt.Sprintf("%s_Params", m.FullName)
+	m.ResponseParams = t.translateMojomStructObject(*mojomMethod.ResponseParams)
+	m.ResponseParams.Name = fmt.Sprintf("%s_ResponseParams", m.FullName)
 	return m
 }
 

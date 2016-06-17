@@ -118,6 +118,39 @@ type EnumValueTemplate struct {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+type InterfaceTemplate struct {
+	// Name is the name of the interface.
+	Name string
+
+	// PrivateName is identical to Name with the first letter lower cased.
+	PrivateName string
+
+	// Methods contains the list of methods of the interface.
+	Methods []MethodTemplate
+}
+
+type MethodTemplate struct {
+	// MethodName is the name of the method.
+	MethodName string
+
+	// FullName is a composite of the interface name and the method name.
+	FullName string
+
+	// Ordinal of the method.
+	Ordinal uint32
+
+	// Params of the method.
+	Params StructTemplate
+
+	// ResponseParams of the method.
+	ResponseParams *StructTemplate
+
+	// Interface is the interface that contains this method.
+	Interface *InterfaceTemplate
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 // EncodingInfo describes the information necessary to encode a field.
 type EncodingInfo interface {
 	// IsSimple returns true if the field is a numeric type, boolean or string.

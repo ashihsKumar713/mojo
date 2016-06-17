@@ -7,6 +7,7 @@ package templates
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"strings"
 	"testing"
 
@@ -16,12 +17,12 @@ import (
 func check(t *testing.T, expected string, template string, input interface{}) {
 	buffer := &bytes.Buffer{}
 	if err := goFileTmpl.ExecuteTemplate(buffer, template, input); err != nil {
-		panic(err)
+		t.Fatalf("Template execution error(%s):%s\n", template, err)
 	}
 
 	expected, err := gofmt.FormatFragment(expected)
 	if err != nil {
-		panic(err)
+		log.Panicf("Formatting error (expected): %s\n", err)
 	}
 
 	src := buffer.String()
