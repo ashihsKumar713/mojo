@@ -21,14 +21,14 @@ class MojoPublisher {
   // or Updated. The callback runner calls a single callback using current
   // information.
   void SetCallbackRunner(const CallbackRunner& callback_runner) {
-    DCHECK(callback_runner);
+    MOJO_DCHECK(callback_runner);
     callback_runner_ = callback_runner;
   }
 
   // Handles a get request from the client. This method should be called from
   // the mojo 'get' method (e.g. MediaPlayer::GetStatus).
   void Get(uint64_t version_last_seen, const TCallback& callback) {
-    DCHECK(callback_runner_);
+    MOJO_DCHECK(callback_runner_);
 
     if (version_last_seen < version_) {
       callback_runner_(callback, version_);
@@ -41,7 +41,7 @@ class MojoPublisher {
   // should be called whenever the published information should be sent to
   // subscribing clients.
   void SendUpdates() {
-    DCHECK(callback_runner_);
+    MOJO_DCHECK(callback_runner_);
 
     ++version_;
 

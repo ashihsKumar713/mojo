@@ -31,7 +31,7 @@ struct TimelineTransform {
   int64 subject_time = 0;
 
   // The change in the reference timeline corresponding to subject_delta.
-  // Cannnot be zero.
+  // Cannot be zero.
   uint32 reference_delta = 1;
 
   // The change in the subject timeline corresponding to reference_delta.

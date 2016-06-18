@@ -169,6 +169,91 @@ class FlogEntry extends bindings.Struct {
 }
 
 
+class FlogMojoLoggerMessageEntryDetails extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(32, 0)
+  ];
+  int logLevel = 0;
+  int sourceLine = 0;
+  String message = null;
+  String sourceFile = null;
+
+  FlogMojoLoggerMessageEntryDetails() : super(kVersions.last.size);
+
+  FlogMojoLoggerMessageEntryDetails.init(
+    int this.logLevel, 
+    int this.sourceLine, 
+    String this.message, 
+    String this.sourceFile
+  ) : super(kVersions.last.size);
+
+  static FlogMojoLoggerMessageEntryDetails deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
+
+  static FlogMojoLoggerMessageEntryDetails decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    FlogMojoLoggerMessageEntryDetails result = new FlogMojoLoggerMessageEntryDetails();
+
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    if (mainDataHeader.version >= 0) {
+      
+      result.logLevel = decoder0.decodeInt32(8);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.sourceLine = decoder0.decodeUint32(12);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.message = decoder0.decodeString(16, true);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.sourceFile = decoder0.decodeString(24, true);
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "FlogMojoLoggerMessageEntryDetails";
+    String fieldName;
+    try {
+      fieldName = "logLevel";
+      encoder0.encodeInt32(logLevel, 8);
+      fieldName = "sourceLine";
+      encoder0.encodeUint32(sourceLine, 12);
+      fieldName = "message";
+      encoder0.encodeString(message, 16, true);
+      fieldName = "sourceFile";
+      encoder0.encodeString(sourceFile, 24, true);
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "FlogMojoLoggerMessageEntryDetails("
+           "logLevel: $logLevel" ", "
+           "sourceLine: $sourceLine" ", "
+           "message: $message" ", "
+           "sourceFile: $sourceFile" ")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    map["logLevel"] = logLevel;
+    map["sourceLine"] = sourceLine;
+    map["message"] = message;
+    map["sourceFile"] = sourceFile;
+    return map;
+  }
+}
+
+
 class FlogChannelCreationEntryDetails extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
@@ -566,6 +651,101 @@ class _FlogServiceCreateReaderParams extends bindings.Struct {
 }
 
 
+class _FlogLoggerLogMojoLoggerMessageParams extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(40, 0)
+  ];
+  int timeUs = 0;
+  int logLevel = 0;
+  int sourceLine = 0;
+  String message = null;
+  String sourceFile = null;
+
+  _FlogLoggerLogMojoLoggerMessageParams() : super(kVersions.last.size);
+
+  _FlogLoggerLogMojoLoggerMessageParams.init(
+    int this.timeUs, 
+    int this.logLevel, 
+    int this.sourceLine, 
+    String this.message, 
+    String this.sourceFile
+  ) : super(kVersions.last.size);
+
+  static _FlogLoggerLogMojoLoggerMessageParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
+
+  static _FlogLoggerLogMojoLoggerMessageParams decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    _FlogLoggerLogMojoLoggerMessageParams result = new _FlogLoggerLogMojoLoggerMessageParams();
+
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    if (mainDataHeader.version >= 0) {
+      
+      result.timeUs = decoder0.decodeInt64(8);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.logLevel = decoder0.decodeInt32(16);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.sourceLine = decoder0.decodeUint32(20);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.message = decoder0.decodeString(24, true);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.sourceFile = decoder0.decodeString(32, true);
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FlogLoggerLogMojoLoggerMessageParams";
+    String fieldName;
+    try {
+      fieldName = "timeUs";
+      encoder0.encodeInt64(timeUs, 8);
+      fieldName = "logLevel";
+      encoder0.encodeInt32(logLevel, 16);
+      fieldName = "sourceLine";
+      encoder0.encodeUint32(sourceLine, 20);
+      fieldName = "message";
+      encoder0.encodeString(message, 24, true);
+      fieldName = "sourceFile";
+      encoder0.encodeString(sourceFile, 32, true);
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "_FlogLoggerLogMojoLoggerMessageParams("
+           "timeUs: $timeUs" ", "
+           "logLevel: $logLevel" ", "
+           "sourceLine: $sourceLine" ", "
+           "message: $message" ", "
+           "sourceFile: $sourceFile" ")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    map["timeUs"] = timeUs;
+    map["logLevel"] = logLevel;
+    map["sourceLine"] = sourceLine;
+    map["message"] = message;
+    map["sourceFile"] = sourceFile;
+    return map;
+  }
+}
+
+
 class _FlogLoggerLogChannelCreationParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(32, 0)
@@ -919,6 +1099,7 @@ class FlogReaderGetEntriesResponseParams extends bindings.Struct {
 
 
 enum FlogEntryDetailsTag {
+  mojoLoggerMessage,
   channelCreation,
   channelMessage,
   channelDeletion,
@@ -927,21 +1108,34 @@ enum FlogEntryDetailsTag {
 
 class FlogEntryDetails extends bindings.Union {
   static final _tagToInt = const {
-    FlogEntryDetailsTag.channelCreation: 0,
-    FlogEntryDetailsTag.channelMessage: 1,
-    FlogEntryDetailsTag.channelDeletion: 2,
+    FlogEntryDetailsTag.mojoLoggerMessage: 0,
+    FlogEntryDetailsTag.channelCreation: 1,
+    FlogEntryDetailsTag.channelMessage: 2,
+    FlogEntryDetailsTag.channelDeletion: 3,
   };
 
   static final _intToTag = const {
-    0: FlogEntryDetailsTag.channelCreation,
-    1: FlogEntryDetailsTag.channelMessage,
-    2: FlogEntryDetailsTag.channelDeletion,
+    0: FlogEntryDetailsTag.mojoLoggerMessage,
+    1: FlogEntryDetailsTag.channelCreation,
+    2: FlogEntryDetailsTag.channelMessage,
+    3: FlogEntryDetailsTag.channelDeletion,
   };
 
   var _data;
   FlogEntryDetailsTag _tag = FlogEntryDetailsTag.unknown;
 
   FlogEntryDetailsTag get tag => _tag;
+  FlogMojoLoggerMessageEntryDetails get mojoLoggerMessage {
+    if (_tag != FlogEntryDetailsTag.mojoLoggerMessage) {
+      throw new bindings.UnsetUnionTagError(_tag, FlogEntryDetailsTag.mojoLoggerMessage);
+    }
+    return _data;
+  }
+
+  set mojoLoggerMessage(FlogMojoLoggerMessageEntryDetails value) {
+    _tag = FlogEntryDetailsTag.mojoLoggerMessage;
+    _data = value;
+  }
   FlogChannelCreationEntryDetails get channelCreation {
     if (_tag != FlogEntryDetailsTag.channelCreation) {
       throw new bindings.UnsetUnionTagError(_tag, FlogEntryDetailsTag.channelCreation);
@@ -986,6 +1180,11 @@ class FlogEntryDetails extends bindings.Union {
     
     FlogEntryDetailsTag tag = _intToTag[decoder0.decodeUint32(offset + 4)];
     switch (tag) {
+      case FlogEntryDetailsTag.mojoLoggerMessage:
+        
+        var decoder1 = decoder0.decodePointer(offset + 8, false);
+        result.mojoLoggerMessage = FlogMojoLoggerMessageEntryDetails.decode(decoder1);
+        break;
       case FlogEntryDetailsTag.channelCreation:
         
         var decoder1 = decoder0.decodePointer(offset + 8, false);
@@ -1013,6 +1212,9 @@ class FlogEntryDetails extends bindings.Union {
     encoder0.encodeUint32(16, offset);
     encoder0.encodeUint32(_tagToInt[_tag], offset + 4);
     switch (_tag) {
+      case FlogEntryDetailsTag.mojoLoggerMessage:
+        encoder0.encodeStruct(mojoLoggerMessage, offset + 8, false);
+        break;
       case FlogEntryDetailsTag.channelCreation:
         encoder0.encodeStruct(channelCreation, offset + 8, false);
         break;
@@ -1030,6 +1232,9 @@ class FlogEntryDetails extends bindings.Union {
   String toString() {
     String result = "FlogEntryDetails(";
     switch (_tag) {
+      case FlogEntryDetailsTag.mojoLoggerMessage:
+        result += "mojoLoggerMessage";
+        break;
       case FlogEntryDetailsTag.channelCreation:
         result += "channelCreation";
         break;
@@ -1372,9 +1577,10 @@ class FlogServiceStub
   }
 }
 
-const int _flogLoggerMethodLogChannelCreationName = 0;
-const int _flogLoggerMethodLogChannelMessageName = 1;
-const int _flogLoggerMethodLogChannelDeletionName = 2;
+const int _flogLoggerMethodLogMojoLoggerMessageName = 0;
+const int _flogLoggerMethodLogChannelCreationName = 1;
+const int _flogLoggerMethodLogChannelMessageName = 2;
+const int _flogLoggerMethodLogChannelDeletionName = 3;
 
 class _FlogLoggerServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
@@ -1412,6 +1618,7 @@ abstract class FlogLogger {
     s.connectToService(url, p, name);
     return p;
   }
+  void logMojoLoggerMessage(int timeUs, int logLevel, String message, String sourceFile, int sourceLine);
   void logChannelCreation(int timeUs, int channelId, String typeName);
   void logChannelMessage(int timeUs, int channelId, List<int> data);
   void logChannelDeletion(int timeUs, int channelId);
@@ -1500,6 +1707,24 @@ class FlogLoggerProxy
   }
 
 
+  void logMojoLoggerMessage(int timeUs, int logLevel, String message, String sourceFile, int sourceLine) {
+    if (impl != null) {
+      impl.logMojoLoggerMessage(timeUs, logLevel, message, sourceFile, sourceLine);
+      return;
+    }
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _FlogLoggerLogMojoLoggerMessageParams();
+    params.timeUs = timeUs;
+    params.logLevel = logLevel;
+    params.message = message;
+    params.sourceFile = sourceFile;
+    params.sourceLine = sourceLine;
+    ctrl.sendMessage(params,
+        _flogLoggerMethodLogMojoLoggerMessageName);
+  }
   void logChannelCreation(int timeUs, int channelId, String typeName) {
     if (impl != null) {
       impl.logChannelCreation(timeUs, channelId, typeName);
@@ -1582,6 +1807,11 @@ class _FlogLoggerStubControl
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
+      case _flogLoggerMethodLogMojoLoggerMessageName:
+        var params = _FlogLoggerLogMojoLoggerMessageParams.deserialize(
+            message.payload);
+        _impl.logMojoLoggerMessage(params.timeUs, params.logLevel, params.message, params.sourceFile, params.sourceLine);
+        break;
       case _flogLoggerMethodLogChannelCreationName:
         var params = _FlogLoggerLogChannelCreationParams.deserialize(
             message.payload);
@@ -1654,6 +1884,9 @@ class FlogLoggerStub
   }
 
 
+  void logMojoLoggerMessage(int timeUs, int logLevel, String message, String sourceFile, int sourceLine) {
+    return impl.logMojoLoggerMessage(timeUs, logLevel, message, sourceFile, sourceLine);
+  }
   void logChannelCreation(int timeUs, int channelId, String typeName) {
     return impl.logChannelCreation(timeUs, channelId, typeName);
   }

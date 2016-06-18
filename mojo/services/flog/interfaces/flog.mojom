@@ -20,6 +20,14 @@ interface FlogService {
 
 // A logger that logs messages regarding multiple channels.
 interface FlogLogger {
+  // Logs a MojoLogger-style message.
+  LogMojoLoggerMessage(
+      int64 time_us,
+      int32 log_level,
+      string? message,
+      string? source_file,
+      uint32 source_line);
+
   // Logs the creation of a channel.
   LogChannelCreation(int64 time_us, uint32 channel_id, string type_name);
 
@@ -52,7 +60,10 @@ struct FlogDescription {
 };
 
 // Log entry produced by |FlogReader|. Entry type is determined by interrogating
-// the |details| field.
+// the |details| field. FlogEntry and its subordinates duplicate the semantics
+// of FlogLogger. This approach keeps producers simple (they don't have to
+// create a bunch of structs and unions to log a message) and allows consumers
+// to pull entries rather than having to implement FlogLogger.
 struct FlogEntry {
   int64 time_us;
   uint32 log_id;
@@ -61,10 +72,17 @@ struct FlogEntry {
 };
 
 union FlogEntryDetails {
+  FlogMojoLoggerMessageEntryDetails mojo_logger_message;
   FlogChannelCreationEntryDetails channel_creation;
   FlogChannelMessageEntryDetails channel_message;
   FlogChannelDeletionEntryDetails channel_deletion;
-  // TODO(dalesat): Add details for text/file/line entry
+};
+
+struct FlogMojoLoggerMessageEntryDetails {
+  int32 log_level;
+  string? message;
+  string? source_file;
+  uint32 source_line;
 };
 
 struct FlogChannelCreationEntryDetails {

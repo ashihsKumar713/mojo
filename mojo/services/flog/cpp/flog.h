@@ -8,6 +8,7 @@
 #include <atomic>
 #include <memory>
 
+#include "mojo/public/c/environment/logger.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/bindings/array.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -65,7 +66,7 @@ namespace flog {
 
 #if defined(NDEBUG)
 
-#define FLOG_INITIALIZE(app_or_logger, label) ((void)0)
+#define FLOG_INITIALIZE(shell, label) ((void)0)
 #define FLOG_DESTROY() ((void)0)
 #define FLOG_CHANNEL(channel_type, channel_name)
 #define FLOG_CHANNEL_DECL(channel_type, channel_name)
@@ -74,8 +75,7 @@ namespace flog {
 
 #else
 
-#define FLOG_INITIALIZE(app_or_logger, label) \
-  mojo::flog::Flog::Initialize(app_or_logger, label)
+#define FLOG_INITIALIZE(shell, label) mojo::flog::Flog::Initialize(shell, label)
 
 #define FLOG_DESTROY() mojo::flog::Flog::Destroy()
 
@@ -95,20 +95,7 @@ namespace flog {
 // Thread-safe logger for all channels in a given process.
 class Flog {
  public:
-  static void Initialize(Shell* shell, const std::string& label) {
-    MOJO_DCHECK(!logger_);
-    FlogServicePtr flog_service;
-    FlogLoggerPtr flog_logger;
-    ConnectToService(shell, "mojo:flog", GetProxy(&flog_service));
-    flog_service->CreateLogger(GetProxy(&flog_logger), label);
-    logger_ = flog_logger.Pass();
-  }
-
-  // Sets the flog logger singleton.
-  static void Initialize(FlogLoggerPtr flog_logger) {
-    MOJO_DCHECK(!logger_);
-    logger_ = flog_logger.Pass();
-  }
+  static void Initialize(Shell* shell, const std::string& label);
 
   // Deletes the flog logger singleton.
   static void Destroy() {
@@ -121,40 +108,37 @@ class Flog {
 
   // Logs the creation of a channel.
   static void LogChannelCreation(uint32_t channel_id,
-                                 const char* channel_type_name) {
-    if (!logger_) {
-      return;
-    }
-
-    logger_->LogChannelCreation(GetTimeTicksNow(), channel_id,
-                                channel_type_name);
-  }
+                                 const char* channel_type_name);
 
   // Logs a channel message.
-  static void LogChannelMessage(uint32_t channel_id, Message* message) {
-    if (!logger_) {
-      return;
-    }
-
-    Array<uint8_t> array = Array<uint8_t>::New(message->data_num_bytes());
-    memcpy(array.data(), message->data(), message->data_num_bytes());
-    logger_->LogChannelMessage(GetTimeTicksNow(), channel_id, array.Pass());
-  }
+  static void LogChannelMessage(uint32_t channel_id, Message* message);
 
   // Logs the deletion of a channel.
-  static void LogChannelDeletion(uint32_t channel_id) {
-    if (!logger_) {
-      return;
-    }
-
-    logger_->LogChannelDeletion(GetTimeTicksNow(), channel_id);
-  }
+  static void LogChannelDeletion(uint32_t channel_id);
 
   // TODO(dalesat): Add method for text/file/line
 
  private:
+  static const MojoLogger kMojoLogger;
+
+  // Logs a message string for MojoLogger support.
+  static void LogMojoLoggerMessage(MojoLogLevel log_level,
+                                   const char* source_file,
+                                   uint32_t source_line,
+                                   const char* message);
+
+  // Gets the minimum MojoLogLevel for MojoLogger support.
+  static MojoLogLevel GetMinimumMojoLogLevel();
+
+  // Sets the minimum MojoLogLevel for MojoLogger support.
+  static void SetMinimumMojoLogLevel(MojoLogLevel level);
+
+  // Gets the current time in microseconds since epoch.
+  static uint64_t GetTime();
+
   static std::atomic_ulong last_allocated_channel_id_;
   static FlogLoggerPtr logger_;
+  static const MojoLogger* fallback_logger_;
 };
 
 // Channel backing a FlogProxy.
@@ -184,7 +168,7 @@ class FlogProxy : public T::Proxy_ {
     return std::unique_ptr<FlogProxy<T>>(new FlogProxy<T>());
   }
 
-  FlogChannel* channel() {
+  FlogChannel* flog_channel() {
     return reinterpret_cast<FlogChannel*>(this->receiver_);
   }
 

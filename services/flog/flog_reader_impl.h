@@ -60,9 +60,15 @@ class FlogReaderImpl : public FlogServiceImpl::Product<FlogReader>,
   FlogEntryPtr CreateEntry(int64_t time_us, uint32_t channel_id);
 
   // FlogLogger implementation (called by stub_).
+  void LogMojoLoggerMessage(int64_t time_us,
+                            int32_t log_level,
+                            const String& message,
+                            const String& source_file,
+                            uint32_t source_line) override;
+
   void LogChannelCreation(int64_t time_us,
                           uint32_t channel_id,
-                          const mojo::String& type_name) override;
+                          const String& type_name) override;
 
   void LogChannelMessage(int64_t time_us,
                          uint32_t channel_id,
