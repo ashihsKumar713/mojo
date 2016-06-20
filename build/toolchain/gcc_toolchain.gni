@@ -275,15 +275,22 @@ template("gcc_toolchain") {
       target_os = target_os
       target_cpu = target_cpu
 
-      forward_variables_from(invoker,
-                             [
-                               "is_clang",
-                               "is_pnacl",
-                               "is_component_build",
-                               "is_nacl_glibc",
-                               "use_gold",
-                               "symbol_level",
-                             ])
+      forward_variables_from(invoker, [ "use_gold" ])
+      if (defined(invoker.is_clang)) {
+        is_clang = invoker.is_clang
+      }
+      if (defined(invoker.is_pnacl)) {
+        is_pnacl = invoker.is_pnacl
+      }
+      if (defined(invoker.is_component_build)) {
+        is_component_build = invoker.is_component_build
+      }
+      if (defined(invoker.is_nacl_glibc)) {
+        is_nacl_glibc = invoker.is_nacl_glibc
+      }
+      if (defined(invoker.symbol_level)) {
+        symbol_level = invoker.symbol_level
+      }
     }
 
     forward_variables_from(invoker, [ "deps" ])

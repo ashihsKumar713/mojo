@@ -38,15 +38,23 @@ template("nacl_toolchain") {
                              "cc",
                              "cxx",
                              "deps",
-                             "is_clang",
-                             "is_pnacl",
-                             "is_nacl_glibc",
                              "ld",
                              "link_outputs",
                              "postlink",
-                             "symbol_level",
                              "toolchain_cpu",
                            ])
+    if (defined(invoker.is_clang)) {
+      is_clang = invoker.is_clang
+    }
+    if (defined(invoker.is_pnacl)) {
+      is_pnacl = invoker.is_pnacl
+    }
+    if (defined(invoker.is_nacl_glibc)) {
+      is_nacl_glibc = invoker.is_nacl_glibc
+    }
+    if (defined(invoker.symbol_level)) {
+      symbol_level = invoker.symbol_level
+    }
 
     # We do not suport component builds with the NaCl toolchains.
     is_component_build = false

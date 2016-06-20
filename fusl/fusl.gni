@@ -9,10 +9,12 @@ template("fusl_source_set") {
     # We want to control all our flags when building against fusl for
     # now, so clear out configs to start.
     configs = []
+    if (defined(invoker.configs)) {
+      configs += invoker.configs
+    }
 
     forward_variables_from(invoker,
                            [
-                             "configs",
                              "deps",
                              "sources",
                            ])

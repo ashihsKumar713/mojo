@@ -23,7 +23,7 @@ vars = {
   'v8_revision': '3f036fc0ba4ca4483fe77822f8605c277d37ee24',
   'base_revision': '9e74307b276b2f9988005c0e97e85ee222586f79',
   'angle_revision': '46ccef1992a8ede16a596c3dd73cff13c047267d',
-  'buildtools_revision': '222bd42ce39d1bd8f08fe089b066f49c469e1cdf',
+  'buildtools_revision': '3780bc523aad1d68a5bd00e05c453a80b2ba0b35',
   'dart_revision': 'f64c907557646699fada4acb7e9a82346a369993',
   'dart_root_certificates_revision': 'aed07942ce98507d2be28cbd29e879525410c7fc',
   'dart_observatory_packages_revision': 'cf90eb9077177d3d6b3fd5e8289477c2385c026a',
