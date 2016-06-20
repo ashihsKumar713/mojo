@@ -21,7 +21,7 @@ class PayloadAllocator {
   virtual void* AllocatePayloadBuffer(size_t size) = 0;
 
   // Releases a buffer previously allocated via AllocatePayloadBuffer.
-  virtual void ReleasePayloadBuffer(size_t size, void* buffer) = 0;
+  virtual void ReleasePayloadBuffer(void* buffer) = 0;
 };
 
 }  // namespace media

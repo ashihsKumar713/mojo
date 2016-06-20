@@ -20,7 +20,7 @@ class MojoAllocator : public SharedMediaBufferAllocator,
   // PayloadAllocator implementation.
   void* AllocatePayloadBuffer(size_t size) override;
 
-  void ReleasePayloadBuffer(size_t size, void* buffer) override;
+  void ReleasePayloadBuffer(void* buffer) override;
 };
 
 }  // namespace media

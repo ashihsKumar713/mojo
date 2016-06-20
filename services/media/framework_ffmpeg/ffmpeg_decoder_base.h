@@ -57,7 +57,7 @@ class FfmpegDecoderBase : public Decoder {
 
       if (size_ != 0) {
         DCHECK(buffer_ != nullptr);
-        allocator_->ReleasePayloadBuffer(size_, buffer_);
+        allocator_->ReleasePayloadBuffer(buffer_);
         return;
       }
 

@@ -32,7 +32,7 @@ class PacketImpl : public Packet {
     // payload() and handling deallocation themselves, so allocator_ can be
     // nullptr even when payload() is not.
     if (payload() != nullptr && allocator_ != nullptr) {
-      allocator_->ReleasePayloadBuffer(size(), payload());
+      allocator_->ReleasePayloadBuffer(payload());
     }
     delete this;
   }

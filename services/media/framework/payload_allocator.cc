@@ -19,7 +19,7 @@ class DefaultAllocator : public PayloadAllocator {
   // PayloadAllocator implementation.
   void* AllocatePayloadBuffer(size_t size) override;
 
-  void ReleasePayloadBuffer(size_t size, void* buffer) override;
+  void ReleasePayloadBuffer(void* buffer) override;
 };
 
 void* DefaultAllocator::AllocatePayloadBuffer(size_t size) {
@@ -27,8 +27,7 @@ void* DefaultAllocator::AllocatePayloadBuffer(size_t size) {
   return std::malloc(static_cast<size_t>(size));
 }
 
-void DefaultAllocator::ReleasePayloadBuffer(size_t size, void* buffer) {
-  DCHECK(size > 0);
+void DefaultAllocator::ReleasePayloadBuffer(void* buffer) {
   DCHECK(buffer);
   std::free(buffer);
 }

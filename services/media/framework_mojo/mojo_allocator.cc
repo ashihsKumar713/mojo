@@ -13,8 +13,8 @@ void* MojoAllocator::AllocatePayloadBuffer(size_t size) {
   return AllocateRegion(size);
 }
 
-void MojoAllocator::ReleasePayloadBuffer(size_t size, void* buffer) {
-  ReleaseRegion(size, buffer);
+void MojoAllocator::ReleasePayloadBuffer(void* buffer) {
+  ReleaseRegion(buffer);
 }
 
 }  // namespace media

@@ -36,9 +36,9 @@ class SharedMediaBufferAllocator : public MappedSharedBuffer {
 
   // Releases a region of the buffer previously allocated by calling
   // AllocateRegionByOffset.
-  void ReleaseRegionByOffset(uint64_t size, uint64_t offset) {
+  void ReleaseRegionByOffset(uint64_t offset) {
     std::lock_guard<std::mutex> lock(lock_);
-    fifo_allocator_.ReleaseRegion(size, offset);
+    fifo_allocator_.ReleaseRegion(offset);
   }
 
   // Allocates a region of the buffer returning a pointer. If the requested
@@ -49,8 +49,8 @@ class SharedMediaBufferAllocator : public MappedSharedBuffer {
 
   // Releases a region of the buffer previously allocated by calling
   // AllocateRegion.
-  void ReleaseRegion(uint64_t size, void* ptr) {
-    ReleaseRegionByOffset(size, OffsetFromPtr(ptr));
+  void ReleaseRegion(void* ptr) {
+    ReleaseRegionByOffset(OffsetFromPtr(ptr));
   }
 
  protected:
