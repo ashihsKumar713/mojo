@@ -24,6 +24,12 @@ mojo_sdk_source_set("cpp") {
     "timeline_function.h",
     "timeline_rate.cc",
     "timeline_rate.h",
+    "video_converter.cc",
+    "video_converter.h",
+    "video_packet_layout.cc",
+    "video_packet_layout.h",
+    "video_renderer.cc",
+    "video_renderer.h",
   ]
 
   if (is_posix) {
@@ -39,6 +45,7 @@ mojo_sdk_source_set("cpp") {
     "$mojo_sdk_root/mojo/public/cpp/environment",
     "$mojo_sdk_root/mojo/public/cpp/utility",
     "$mojo_sdk_root/mojo/services/media/common/interfaces",
+    "$mojo_sdk_root/mojo/services/media/core/interfaces",
   ]
 }
 # Look for unit tests in services/media/common/test
