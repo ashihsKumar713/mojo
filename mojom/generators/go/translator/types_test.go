@@ -90,3 +90,38 @@ func TestTranslateReferenceType(t *testing.T) {
 	typeRef := &mojom_types.TypeTypeReference{mojom_types.TypeReference{TypeKey: &typeKey}}
 	checkEq(t, shortName, translator.translateType(typeRef))
 }
+
+func TestTranslateInterfaceType(t *testing.T) {
+	fileGraph := mojom_files.MojomFileGraph{}
+	shortName := "FooBar"
+	typeKey := "typeKey"
+	i := mojom_types.MojomInterface{
+		DeclData: &mojom_types.DeclarationData{ShortName: &shortName},
+	}
+	fileGraph.ResolvedTypes = map[string]mojom_types.UserDefinedType{}
+	fileGraph.ResolvedTypes[typeKey] = &mojom_types.UserDefinedTypeInterfaceType{i}
+
+	typeRef := &mojom_types.TypeTypeReference{mojom_types.TypeReference{TypeKey: &typeKey}}
+
+	translator := NewTranslator(&fileGraph)
+	checkEq(t, "FooBar_Pointer", translator.translateType(typeRef))
+}
+
+func TestTranslateInterfaceRequestType(t *testing.T) {
+	fileGraph := mojom_files.MojomFileGraph{}
+	shortName := "FooBar"
+	typeKey := "typeKey"
+	i := mojom_types.MojomInterface{
+		DeclData: &mojom_types.DeclarationData{ShortName: &shortName},
+	}
+	fileGraph.ResolvedTypes = map[string]mojom_types.UserDefinedType{}
+	fileGraph.ResolvedTypes[typeKey] = &mojom_types.UserDefinedTypeInterfaceType{i}
+
+	typeRef := &mojom_types.TypeTypeReference{mojom_types.TypeReference{
+		TypeKey:            &typeKey,
+		IsInterfaceRequest: true,
+	}}
+
+	translator := NewTranslator(&fileGraph)
+	checkEq(t, "FooBar_Proxy", translator.translateType(typeRef))
+}

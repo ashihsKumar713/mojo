@@ -12,6 +12,14 @@ const interfaceTmplText = `
 {{- define "Interface" -}}
 {{$interface := . -}}
 {{ template "InterfaceDecl" $interface }}
+
+{{- range $method := $interface.Methods -}}
+{{ template "Method" $method }}
+{{- end -}}
+
+{{- if $interface.ServiceName -}}
+{{ template "ServiceDecl" $interface }}
+{{- end -}}
 {{- end -}}
 `
 
@@ -84,6 +92,18 @@ func New{{$interface.Name}}Proxy(p {{$interface.Name}}_Pointer, waiter bindings.
 func (p *{{$interface.Name}}_Proxy) Close_Proxy() {
 	p.router.Close()
 }
+{{- end -}}
+`
+
+const methodTmplText = `
+{{- define "Method" -}}
+{{- $method := . -}}
+
+{{ template "MethodParams" $method }}
+
+{{ template "MethodSignature" $method }}
+
+{{ template "MethodFunction" $method }}
 {{- end -}}
 `
 
@@ -184,12 +204,34 @@ func (p *{{$method.Interface.Name}}_Proxy) {{ template "MethodSignature" $method
 {{- end -}}
 `
 
+const serviceDeclTmplText = `
+{{- define "ServiceDecl" -}}
+{{- $interface := . -}}
+const {{$interface.PrivateName}}_Name string = "{{$interface.ServiceName}}"
+
+func (r *{{$interface.Name}}_Request) Name() string {
+	return {{$interface.PrivateName}}_Name
+}
+
+func (p *{{$interface.Name}}_Pointer) Name() string {
+	return {{$interface.PrivateName}}_Name
+}
+
+func (f *{{$interface.Name}}_ServiceFactory) Name() string {
+	return {{$interface.PrivateName}}_Name
+}
+{{- end -}}
+`
+
 func initInterfaceTemplates() {
+	template.Must(goFileTmpl.Parse(interfaceTmplText))
 	template.Must(goFileTmpl.Parse(interfaceDeclTmplText))
 	template.Must(goFileTmpl.Parse(interfaceInterfaceDeclTmplText))
 	template.Must(goFileTmpl.Parse(interfaceOtherDeclTmplText))
+	template.Must(goFileTmpl.Parse(serviceDeclTmplText))
 	template.Must(goFileTmpl.Parse(methodOrdinalsTmplText))
 	template.Must(goFileTmpl.Parse(methodParamsTmplText))
 	template.Must(goFileTmpl.Parse(methodSignatureTmplText))
 	template.Must(goFileTmpl.Parse(methodFuncTmplText))
+	template.Must(goFileTmpl.Parse(methodTmplText))
 }

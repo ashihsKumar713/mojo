@@ -67,5 +67,9 @@ import (
 {{- range $enum := $fileTmpl.Enums}}
 	{{ template "Enum" $enum }}
 {{- end}}
+
+{{- range $interface := $fileTmpl.Interfaces}}
+	{{ template "Interface" $interface }}
+{{- end}}
 {{- end -}}
 `

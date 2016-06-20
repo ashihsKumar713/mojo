@@ -12,6 +12,7 @@ type TmplFile struct {
 	Structs     []*StructTemplate
 	Unions      []*UnionTemplate
 	Enums       []*EnumTemplate
+	Interfaces  []*InterfaceTemplate
 }
 
 type Import struct {
@@ -124,6 +125,9 @@ type InterfaceTemplate struct {
 
 	// PrivateName is identical to Name with the first letter lower cased.
 	PrivateName string
+
+	// ServiceName is the service name of the interface.
+	ServiceName *string
 
 	// Methods contains the list of methods of the interface.
 	Methods []MethodTemplate

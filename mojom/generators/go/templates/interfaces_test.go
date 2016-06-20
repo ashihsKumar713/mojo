@@ -64,3 +64,28 @@ const someInterface_SecondMethod_Ordinal uint32 = 21
 
 	check(t, expected, "MethodOrdinals", i)
 }
+
+func TestServiceName(t *testing.T) {
+	expected := `const someInterface_Name string = "SomeService"
+
+func (r *SomeInterface_Request) Name() string {
+	return someInterface_Name
+}
+
+func (p *SomeInterface_Pointer) Name() string {
+	return someInterface_Name
+}
+
+func (f *SomeInterface_ServiceFactory) Name() string {
+	return someInterface_Name
+}`
+
+	serviceName := "SomeService"
+	i := translator.InterfaceTemplate{
+		Name:        "SomeInterface",
+		PrivateName: "someInterface",
+		ServiceName: &serviceName,
+	}
+
+	check(t, expected, "ServiceDecl", i)
+}

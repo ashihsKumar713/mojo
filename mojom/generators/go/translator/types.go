@@ -121,7 +121,18 @@ func (t *translator) translateMapType(mojomType mojom_types.MapType) (goType str
 }
 
 func (t *translator) translateTypeReference(typeRef mojom_types.TypeReference) (goType string) {
-	// TODO(azani): Handle interface requests.
 	// TOOD(azani): Handle imported types.
-	return t.goTypeName(*typeRef.TypeKey)
+	typeKey := *typeRef.TypeKey
+	userDefinedType := t.fileGraph.ResolvedTypes[typeKey]
+	typeName := t.goTypeName(*typeRef.TypeKey)
+
+	if _, ok := userDefinedType.(*mojom_types.UserDefinedTypeInterfaceType); ok {
+		if typeRef.IsInterfaceRequest {
+			return fmt.Sprintf("%s_Proxy", typeName)
+		} else {
+			return fmt.Sprintf("%s_Pointer", typeName)
+		}
+	}
+
+	return typeName
 }

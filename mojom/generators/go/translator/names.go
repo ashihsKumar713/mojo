@@ -42,19 +42,23 @@ func fileNameToPackageName(fileName string) string {
 	return base[:len(base)-len(ext)]
 }
 
-// userDefinedTypeShortName extracts the ShortName from a user-defined type.
-func userDefinedTypeShortName(userDefinedType mojom_types.UserDefinedType) string {
+func userDefinedTypeDeclData(userDefinedType mojom_types.UserDefinedType) *mojom_types.DeclarationData {
 	switch u := userDefinedType.(type) {
 	case *mojom_types.UserDefinedTypeEnumType:
-		return *u.Value.DeclData.ShortName
+		return u.Value.DeclData
 	case *mojom_types.UserDefinedTypeStructType:
-		return *u.Value.DeclData.ShortName
+		return u.Value.DeclData
 	case *mojom_types.UserDefinedTypeUnionType:
-		return *u.Value.DeclData.ShortName
+		return u.Value.DeclData
 	case *mojom_types.UserDefinedTypeInterfaceType:
-		return *u.Value.DeclData.ShortName
+		return u.Value.DeclData
 	}
 	panic("Non-handled mojom UserDefinedType. This should never happen.")
+}
+
+// userDefinedTypeShortName extracts the ShortName from a user-defined type.
+func userDefinedTypeShortName(userDefinedType mojom_types.UserDefinedType) string {
+	return *userDefinedTypeDeclData(userDefinedType).ShortName
 }
 
 // privateName accepts a string and returns that same string with the first rune

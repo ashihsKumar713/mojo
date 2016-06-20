@@ -57,6 +57,11 @@ func (t *translator) TranslateMojomFile(fileName string) (tmplFile *TmplFile) {
 		tmplFile.Enums[i+topLevelEnumsNum] = t.translateMojomEnum(typeKey)
 	}
 
+	tmplFile.Interfaces = make([]*InterfaceTemplate, len(*file.DeclaredMojomObjects.Interfaces))
+	for i, typeKey := range *file.DeclaredMojomObjects.Interfaces {
+		tmplFile.Interfaces[i] = t.translateMojomInterface(typeKey)
+	}
+
 	tmplFile.Imports = []Import{
 		Import{PackagePath: "mojo/public/go/bindings", PackageName: "bindings"},
 		Import{PackagePath: "fmt", PackageName: "fmt"},
@@ -173,6 +178,7 @@ func (t *translator) translateMojomInterface(typeKey string) (m *InterfaceTempla
 
 	m.Name = t.goTypeName(typeKey)
 	m.PrivateName = privateName(m.Name)
+	m.ServiceName = mojomInterface.ServiceName
 
 	for _, mojomMethod := range mojomInterface.Methods {
 		m.Methods = append(m.Methods, *t.translateMojomMethod(mojomMethod, m))
