@@ -24,7 +24,7 @@ SimpleWaiterThread::~SimpleWaiterThread() {
 }
 
 void SimpleWaiterThread::Run() {
-  *result_ = waiter_.Wait(MOJO_DEADLINE_INDEFINITE, context_);
+  *result_ = waiter_.Wait(MOJO_DEADLINE_INDEFINITE, context_, nullptr);
 }
 
 WaiterThread::WaiterThread(RefPtr<Dispatcher>&& dispatcher,
@@ -64,7 +64,7 @@ void WaiterThread::Run() {
     return;
 
   *did_wait_out_ = true;
-  *result_out_ = waiter_.Wait(deadline_, context_out_);
+  *result_out_ = waiter_.Wait(deadline_, context_out_, nullptr);
   dispatcher_->RemoveAwakable(&waiter_, signals_state_out_);
 }
 

@@ -36,7 +36,8 @@ MojoResult WaitIfNecessary(MessagePipe* mp,
                                                       : add_result;
   }
 
-  MojoResult wait_result = waiter.Wait(MOJO_DEADLINE_INDEFINITE, nullptr);
+  MojoResult wait_result =
+      waiter.Wait(MOJO_DEADLINE_INDEFINITE, nullptr, nullptr);
   mp->RemoveAwakable(0, &waiter, signals_state);
   return wait_result;
 }

@@ -295,7 +295,8 @@ class RemoteDataPipeImplTestHelper : public DataPipeImplTestHelper {
       transport.End();
     }
     uint64_t context = 0;
-    ASSERT_EQ(MOJO_RESULT_OK, waiter.Wait(test::ActionTimeout(), &context));
+    ASSERT_EQ(MOJO_RESULT_OK,
+              waiter.Wait(test::ActionTimeout(), &context, nullptr));
     EXPECT_EQ(987u, context);
     HandleSignalsState hss = HandleSignalsState();
     message_pipe(dest_i)->RemoveAwakable(0, &waiter, &hss);
@@ -687,7 +688,8 @@ TYPED_TEST(DataPipeImplTest, SimpleReadWrite) {
 
   // Wait.
   context = 0;
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::ActionTimeout(), &context));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            waiter.Wait(test::ActionTimeout(), &context, nullptr));
   EXPECT_EQ(123u, context);
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
@@ -835,7 +837,7 @@ TYPED_TEST(DataPipeImplTest, BasicProducerWaiting) {
             this->ProducerAddAwakable(&pwaiter, MOJO_HANDLE_SIGNAL_WRITABLE,
                                       false, 56, nullptr));
   // And it shouldn't be writable yet.
-  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, pwaiter.Wait(0, nullptr));
+  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, pwaiter.Wait(0, nullptr, nullptr));
   hss = HandleSignalsState();
   this->ProducerRemoveAwakable(&pwaiter, &hss);
   EXPECT_EQ(0u, hss.satisfied_signals);
@@ -845,7 +847,8 @@ TYPED_TEST(DataPipeImplTest, BasicProducerWaiting) {
 
   // Wait for data to become available to the consumer.
   context = 0;
-  EXPECT_EQ(MOJO_RESULT_OK, cwaiter.Wait(test::TinyTimeout(), &context));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            cwaiter.Wait(test::TinyTimeout(), &context, nullptr));
   EXPECT_EQ(1234u, context);
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&cwaiter, &hss);
@@ -872,7 +875,7 @@ TYPED_TEST(DataPipeImplTest, BasicProducerWaiting) {
             this->ProducerAddAwakable(&pwaiter, MOJO_HANDLE_SIGNAL_WRITABLE,
                                       false, 56, nullptr));
   // And it still shouldn't be writable yet.
-  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, pwaiter.Wait(0, nullptr));
+  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, pwaiter.Wait(0, nullptr, nullptr));
   hss = HandleSignalsState();
   this->ProducerRemoveAwakable(&pwaiter, &hss);
   EXPECT_EQ(0u, hss.satisfied_signals);
@@ -899,7 +902,8 @@ TYPED_TEST(DataPipeImplTest, BasicProducerWaiting) {
 
   // Waiting should now succeed.
   context = 0;
-  EXPECT_EQ(MOJO_RESULT_OK, pwaiter.Wait(test::TinyTimeout(), &context));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            pwaiter.Wait(test::TinyTimeout(), &context, nullptr));
   EXPECT_EQ(78u, context);
   hss = HandleSignalsState();
   this->ProducerRemoveAwakable(&pwaiter, &hss);
@@ -945,7 +949,8 @@ TYPED_TEST(DataPipeImplTest, BasicProducerWaiting) {
 
   // Waiting should succeed.
   context = 0;
-  EXPECT_EQ(MOJO_RESULT_OK, pwaiter.Wait(test::TinyTimeout(), &context));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            pwaiter.Wait(test::TinyTimeout(), &context, nullptr));
   EXPECT_EQ(90u, context);
   hss = HandleSignalsState();
   this->ProducerRemoveAwakable(&pwaiter, &hss);
@@ -975,7 +980,7 @@ TYPED_TEST(DataPipeImplTest, BasicProducerWaiting) {
   // It should now be never-writable.
   context = 0;
   EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
-            pwaiter.Wait(test::TinyTimeout(), &context));
+            pwaiter.Wait(test::TinyTimeout(), &context, nullptr));
   EXPECT_EQ(12u, context);
   hss = HandleSignalsState();
   this->ProducerRemoveAwakable(&pwaiter, &hss);
@@ -1010,7 +1015,8 @@ TYPED_TEST(DataPipeImplTest, PeerClosedProducerWaiting) {
 
   // It should be signaled.
   context = 0;
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), &context));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            waiter.Wait(test::TinyTimeout(), &context, nullptr));
   EXPECT_EQ(12u, context);
   hss = HandleSignalsState();
   this->ProducerRemoveAwakable(&waiter, &hss);
@@ -1045,7 +1051,8 @@ TYPED_TEST(DataPipeImplTest, PeerClosedConsumerWaiting) {
 
   // It should be signaled.
   context = 0;
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), &context));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            waiter.Wait(test::TinyTimeout(), &context, nullptr));
   EXPECT_EQ(12u, context);
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
@@ -1096,7 +1103,8 @@ TYPED_TEST(DataPipeImplTest, BasicConsumerWaiting) {
 
   // Wait for readability (needed for remote cases).
   context = 0;
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), &context));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            waiter.Wait(test::TinyTimeout(), &context, nullptr));
   EXPECT_EQ(34u, context);
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
@@ -1174,7 +1182,8 @@ TYPED_TEST(DataPipeImplTest, BasicConsumerWaiting) {
 
   // Waiting should now succeed.
   context = 0;
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), &context));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            waiter.Wait(test::TinyTimeout(), &context, nullptr));
   EXPECT_EQ(90u, context);
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
@@ -1209,7 +1218,8 @@ TYPED_TEST(DataPipeImplTest, BasicConsumerWaiting) {
 
   // Wait for the peer closed signal.
   context = 0;
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), &context));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            waiter.Wait(test::TinyTimeout(), &context, nullptr));
   EXPECT_EQ(12u, context);
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
@@ -1282,7 +1292,8 @@ TYPED_TEST(DataPipeImplTest, ConsumerWaitingTwoPhase) {
 
   // Wait for readability (needed for remote cases).
   context = 0;
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), &context));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            waiter.Wait(test::TinyTimeout(), &context, nullptr));
   EXPECT_EQ(12u, context);
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
@@ -1343,7 +1354,7 @@ TYPED_TEST(DataPipeImplTest, ConsumerWaitingTwoPhase) {
   // Should be never-readable.
   context = 0;
   EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
-            waiter.Wait(test::TinyTimeout(), &context));
+            waiter.Wait(test::TinyTimeout(), &context, nullptr));
   EXPECT_EQ(56u, context);
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
@@ -1393,7 +1404,7 @@ TYPED_TEST(DataPipeImplTest, BasicTwoPhaseWaiting) {
   ASSERT_EQ(MOJO_RESULT_OK,
             this->ProducerAddAwakable(&pwaiter, MOJO_HANDLE_SIGNAL_WRITABLE,
                                       false, 1, nullptr));
-  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, pwaiter.Wait(0, nullptr));
+  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, pwaiter.Wait(0, nullptr, nullptr));
   hss = HandleSignalsState();
   this->ProducerRemoveAwakable(&pwaiter, &hss);
   EXPECT_EQ(0u, hss.satisfied_signals);
@@ -1424,7 +1435,8 @@ TYPED_TEST(DataPipeImplTest, BasicTwoPhaseWaiting) {
             hss.satisfiable_signals);
 
   // It should become readable.
-  EXPECT_EQ(MOJO_RESULT_OK, cwaiter.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            cwaiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&cwaiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_READ_THRESHOLD,
@@ -1484,7 +1496,7 @@ TYPED_TEST(DataPipeImplTest, BasicTwoPhaseWaiting) {
   ASSERT_EQ(MOJO_RESULT_OK,
             this->ConsumerAddAwakable(&cwaiter, MOJO_HANDLE_SIGNAL_READABLE,
                                       false, 7, nullptr));
-  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, cwaiter.Wait(0, nullptr));
+  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, cwaiter.Wait(0, nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&cwaiter, &hss);
   EXPECT_EQ(0u, hss.satisfied_signals);
@@ -1562,7 +1574,7 @@ TYPED_TEST(DataPipeImplTest, AllOrNone) {
   // available at once (except that in current implementations, with reasonable
   // limits, it will). Eventually, we'll be able to wait for a specified amount
   // of data to become available.
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_READ_THRESHOLD,
@@ -1675,7 +1687,7 @@ TYPED_TEST(DataPipeImplTest, AllOrNone) {
   this->ProducerClose();
 
   // Wait.
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED |
@@ -1767,7 +1779,7 @@ TYPED_TEST(DataPipeImplTest, WrapAround) {
 
   // Wait for data.
   // TODO(vtl): (See corresponding TODO in AllOrNone.)
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_READ_THRESHOLD,
@@ -1981,7 +1993,7 @@ TYPED_TEST(DataPipeImplTest, TwoPhaseWriteReadCloseConsumer) {
 
   // Wait for data.
   // TODO(vtl): (See corresponding TODO in AllOrNone.)
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_READ_THRESHOLD,
@@ -2009,7 +2021,7 @@ TYPED_TEST(DataPipeImplTest, TwoPhaseWriteReadCloseConsumer) {
   this->ConsumerClose();
 
   // Wait for producer to know that the consumer is closed.
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ProducerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_PEER_CLOSED, hss.satisfied_signals);
@@ -2101,7 +2113,7 @@ TYPED_TEST(DataPipeImplTest, WriteCloseProducerReadNoData) {
 
   // Wait. (Note that once the consumer knows that the producer is closed, it
   // must also know about all the data that was sent.)
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED |
@@ -2182,7 +2194,7 @@ TYPED_TEST(DataPipeImplTest, WriteReadCloseProducerWaitNoData) {
   EXPECT_EQ(kTestDataSize, num_bytes);
 
   // Wait.
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_READ_THRESHOLD,
@@ -2211,7 +2223,7 @@ TYPED_TEST(DataPipeImplTest, WriteReadCloseProducerWaitNoData) {
 
   // Wait.
   EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
-            waiter.Wait(test::TinyTimeout(), nullptr));
+            waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_PEER_CLOSED, hss.satisfied_signals);
@@ -2253,7 +2265,7 @@ TYPED_TEST(DataPipeImplTest, BeginReadCloseProducerWaitEndReadNoData) {
   EXPECT_EQ(kTestDataSize, num_bytes);
 
   // Wait.
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_READ_THRESHOLD,
@@ -2281,7 +2293,7 @@ TYPED_TEST(DataPipeImplTest, BeginReadCloseProducerWaitEndReadNoData) {
   this->ProducerClose();
 
   // Wait for producer close to be detected.
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_PEER_CLOSED, hss.satisfied_signals);
@@ -2300,7 +2312,7 @@ TYPED_TEST(DataPipeImplTest, BeginReadCloseProducerWaitEndReadNoData) {
 
   // Wait.
   EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
-            waiter.Wait(test::TinyTimeout(), nullptr));
+            waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_PEER_CLOSED, hss.satisfied_signals);
@@ -2352,7 +2364,8 @@ TYPED_TEST(DataPipeImplTest, BeginWriteCloseConsumerWaitEndWrite) {
   // Note: If we didn't wait for the consumer close to be detected before
   // completing the two-phase write, wait might succeed (in the remote cases).
   // This is because the first |Awake()| "wins".
-  EXPECT_EQ(MOJO_RESULT_OK, waiter1.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            waiter1.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ProducerRemoveAwakable(&waiter1, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_PEER_CLOSED, hss.satisfied_signals);
@@ -2363,7 +2376,7 @@ TYPED_TEST(DataPipeImplTest, BeginWriteCloseConsumerWaitEndWrite) {
 
   // Wait.
   EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
-            waiter2.Wait(test::TinyTimeout(), nullptr));
+            waiter2.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ProducerRemoveAwakable(&waiter2, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_PEER_CLOSED, hss.satisfied_signals);
@@ -2466,7 +2479,7 @@ TYPED_TEST(DataPipeImplTest, TwoPhaseMoreInvalidArguments) {
 
   // Wait for data.
   // TODO(vtl): (See corresponding TODO in AllOrNone.)
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_READ_THRESHOLD,
@@ -2663,7 +2676,7 @@ TYPED_TEST(DataPipeImplTest, WriteThreshold) {
   ASSERT_EQ(MOJO_RESULT_OK, this->ProducerAddAwakable(
                                 &waiter, MOJO_HANDLE_SIGNAL_WRITE_THRESHOLD,
                                 false, 0, nullptr));
-  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr));
+  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr, nullptr));
   hss = HandleSignalsState();
   this->ProducerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_WRITABLE, hss.satisfied_signals);
@@ -2678,7 +2691,8 @@ TYPED_TEST(DataPipeImplTest, WriteThreshold) {
                                 false, 0, nullptr));
 
   // Wait for the consumer to be readable.
-  EXPECT_EQ(MOJO_RESULT_OK, read_waiter.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            read_waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   this->ConsumerRemoveAwakable(&read_waiter, nullptr);
 
   // Read a byte.
@@ -2691,7 +2705,7 @@ TYPED_TEST(DataPipeImplTest, WriteThreshold) {
   EXPECT_EQ(kTestData[0], read_byte);
 
   // Wait; should get the write threshold signal.
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ProducerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_WRITE_THRESHOLD,
@@ -2713,7 +2727,7 @@ TYPED_TEST(DataPipeImplTest, WriteThreshold) {
   ASSERT_EQ(MOJO_RESULT_OK, this->ProducerAddAwakable(
                                 &waiter, MOJO_HANDLE_SIGNAL_WRITE_THRESHOLD,
                                 false, 0, nullptr));
-  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr));
+  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr, nullptr));
   this->ProducerRemoveAwakable(&waiter, nullptr);
 
   // Set the write threshold to 0 (which means the element size, 1).
@@ -2727,7 +2741,7 @@ TYPED_TEST(DataPipeImplTest, WriteThreshold) {
   ASSERT_EQ(MOJO_RESULT_OK, this->ProducerAddAwakable(
                                 &waiter, MOJO_HANDLE_SIGNAL_WRITE_THRESHOLD,
                                 false, 0, nullptr));
-  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr));
+  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr, nullptr));
   this->ProducerRemoveAwakable(&waiter, nullptr);
 
   // Add a waiter.
@@ -2741,7 +2755,7 @@ TYPED_TEST(DataPipeImplTest, WriteThreshold) {
 
   // Wait; the condition should now never be satisfiable.
   EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
-            waiter.Wait(test::TinyTimeout(), nullptr));
+            waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ProducerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_PEER_CLOSED, hss.satisfied_signals);
@@ -2775,7 +2789,7 @@ TYPED_TEST(DataPipeImplTest, ReadThreshold) {
             this->ConsumerAddAwakable(
                 &waiter, MOJO_HANDLE_SIGNAL_READ_THRESHOLD, false, 0, nullptr));
   // Trivial wait: it shouldn't have the read threshold signal.
-  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr));
+  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(0u, hss.satisfied_signals);
@@ -2799,7 +2813,7 @@ TYPED_TEST(DataPipeImplTest, ReadThreshold) {
   EXPECT_EQ(kTestDataSize, num_bytes);
 
   // Wait for the read threshold signal.
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_READ_THRESHOLD,
@@ -2847,7 +2861,7 @@ TYPED_TEST(DataPipeImplTest, ReadThreshold) {
   EXPECT_EQ(kTestDataSize, num_bytes);
 
   // Wait for the read threshold signal.
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_READ_THRESHOLD,
@@ -2871,7 +2885,7 @@ TYPED_TEST(DataPipeImplTest, ReadThreshold) {
             this->ConsumerAddAwakable(
                 &waiter, MOJO_HANDLE_SIGNAL_READ_THRESHOLD, false, 0, nullptr));
   // Trivial wait: it shouldn't have the read threshold signal.
-  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr));
+  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE, hss.satisfied_signals);
@@ -2885,7 +2899,7 @@ TYPED_TEST(DataPipeImplTest, ReadThreshold) {
             this->ConsumerAddAwakable(
                 &waiter, MOJO_HANDLE_SIGNAL_READ_THRESHOLD, false, 0, nullptr));
   // Trivial wait: it shouldn't have the read threshold signal.
-  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr));
+  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE, hss.satisfied_signals);
@@ -2904,7 +2918,7 @@ TYPED_TEST(DataPipeImplTest, ReadThreshold) {
 
   // Wait; the current read threshold becomes never satisfiable.
   EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
-            waiter.Wait(test::TinyTimeout(), nullptr));
+            waiter.Wait(test::TinyTimeout(), nullptr, nullptr));
   hss = HandleSignalsState();
   this->ConsumerRemoveAwakable(&waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,

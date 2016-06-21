@@ -72,7 +72,7 @@ TEST_F(ChannelTest, ShutdownAfterAttach) {
 
   // ... since this |Wait()| should fail once the channel is shut down.
   EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
-            waiter.Wait(MOJO_DEADLINE_INDEFINITE, nullptr));
+            waiter.Wait(MOJO_DEADLINE_INDEFINITE, nullptr, nullptr));
   HandleSignalsState hss;
   mp->RemoveAwakable(0, &waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_PEER_CLOSED, hss.satisfied_signals);

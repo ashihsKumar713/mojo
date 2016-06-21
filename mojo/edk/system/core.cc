@@ -803,7 +803,7 @@ MojoResult Core::WaitManyInternal(const MojoHandle* handles,
   if (result == MOJO_RESULT_ALREADY_EXISTS)
     result = MOJO_RESULT_OK;  // The i-th one is already "triggered".
   else if (result == MOJO_RESULT_OK)
-    result = waiter.Wait(deadline, result_index);
+    result = waiter.Wait(deadline, result_index, nullptr);
 
   // Make sure no other dispatchers try to wake |waiter| for the current
   // |Wait()|/|WaitMany()| call. (Only after doing this can |waiter| be

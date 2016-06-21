@@ -352,7 +352,7 @@ TEST(MessagePipeTest, BasicWaiting) {
   ASSERT_EQ(MOJO_RESULT_OK,
             mp->AddAwakable(0, &waiter, MOJO_HANDLE_SIGNAL_READABLE, false, 1,
                             nullptr));
-  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr));
+  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr, nullptr));
   hss = HandleSignalsState();
   mp->RemoveAwakable(0, &waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_WRITABLE, hss.satisfied_signals);
@@ -363,7 +363,7 @@ TEST(MessagePipeTest, BasicWaiting) {
   ASSERT_EQ(MOJO_RESULT_OK,
             mp->AddAwakable(0, &waiter, MOJO_HANDLE_SIGNAL_PEER_CLOSED, false,
                             2, nullptr));
-  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr));
+  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, waiter.Wait(0, nullptr, nullptr));
   hss = HandleSignalsState();
   mp->RemoveAwakable(0, &waiter, &hss);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_WRITABLE, hss.satisfied_signals);

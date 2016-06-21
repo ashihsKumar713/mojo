@@ -147,7 +147,8 @@ TEST_F(RemoteDataPipeImplTest, Sanity) {
             message_pipe(0)->WriteMessage(0, UserPointer<const void>(kHello),
                                           sizeof(kHello), nullptr,
                                           MOJO_WRITE_MESSAGE_FLAG_NONE));
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::ActionTimeout(), &context));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            waiter.Wait(test::ActionTimeout(), &context, nullptr));
   EXPECT_EQ(123u, context);
   hss = HandleSignalsState();
   message_pipe(1)->RemoveAwakable(0, &waiter, &hss);
@@ -212,7 +213,8 @@ TEST_F(RemoteDataPipeImplTest, SendConsumerWithClosedProducer) {
     EXPECT_TRUE(consumer_handle.dispatcher->HasOneRef());
     consumer_handle.reset();
   }
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::ActionTimeout(), &context));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            waiter.Wait(test::ActionTimeout(), &context, nullptr));
   EXPECT_EQ(123u, context);
   hss = HandleSignalsState();
   message_pipe(1)->RemoveAwakable(0, &waiter, &hss);
@@ -247,7 +249,8 @@ TEST_F(RemoteDataPipeImplTest, SendConsumerWithClosedProducer) {
       consumer->AddAwakable(&waiter, MOJO_HANDLE_SIGNAL_READABLE, 456, &hss);
   if (result == MOJO_RESULT_OK) {
     context = 0;
-    EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::ActionTimeout(), &context));
+    EXPECT_EQ(MOJO_RESULT_OK,
+              waiter.Wait(test::ActionTimeout(), &context, nullptr));
     EXPECT_EQ(456u, context);
     consumer->RemoveAwakable(&waiter, &hss);
   } else {
@@ -277,7 +280,7 @@ TEST_F(RemoteDataPipeImplTest, SendConsumerWithClosedProducer) {
   if (result == MOJO_RESULT_OK) {
     context = 0;
     EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
-              waiter.Wait(test::ActionTimeout(), &context));
+              waiter.Wait(test::ActionTimeout(), &context, nullptr));
     EXPECT_EQ(789u, context);
     consumer->RemoveAwakable(&waiter, &hss);
   } else {
@@ -335,7 +338,8 @@ TEST_F(RemoteDataPipeImplTest, SendConsumerDuringTwoPhaseWrite) {
     EXPECT_TRUE(consumer_handle.dispatcher->HasOneRef());
     consumer_handle.reset();
   }
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::ActionTimeout(), &context));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            waiter.Wait(test::ActionTimeout(), &context, nullptr));
   EXPECT_EQ(123u, context);
   hss = HandleSignalsState();
   message_pipe(1)->RemoveAwakable(0, &waiter, &hss);
@@ -378,7 +382,8 @@ TEST_F(RemoteDataPipeImplTest, SendConsumerDuringTwoPhaseWrite) {
       consumer->AddAwakable(&waiter, MOJO_HANDLE_SIGNAL_READABLE, 456, &hss);
   if (result == MOJO_RESULT_OK) {
     context = 0;
-    EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::ActionTimeout(), &context));
+    EXPECT_EQ(MOJO_RESULT_OK,
+              waiter.Wait(test::ActionTimeout(), &context, nullptr));
     EXPECT_EQ(456u, context);
     consumer->RemoveAwakable(&waiter, &hss);
   } else {
@@ -462,7 +467,8 @@ TEST_F(RemoteDataPipeImplTest, SendConsumerDuringSecondTwoPhaseWrite) {
     EXPECT_TRUE(consumer_handle.dispatcher->HasOneRef());
     consumer_handle.reset();
   }
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::ActionTimeout(), &context));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            waiter.Wait(test::ActionTimeout(), &context, nullptr));
   EXPECT_EQ(123u, context);
   hss = HandleSignalsState();
   message_pipe(1)->RemoveAwakable(0, &waiter, &hss);
@@ -505,7 +511,8 @@ TEST_F(RemoteDataPipeImplTest, SendConsumerDuringSecondTwoPhaseWrite) {
       consumer->AddAwakable(&waiter, MOJO_HANDLE_SIGNAL_PEER_CLOSED, 456, &hss);
   if (result == MOJO_RESULT_OK) {
     context = 0;
-    EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::ActionTimeout(), &context));
+    EXPECT_EQ(MOJO_RESULT_OK,
+              waiter.Wait(test::ActionTimeout(), &context, nullptr));
     EXPECT_EQ(456u, context);
     consumer->RemoveAwakable(&waiter, &hss);
   } else {

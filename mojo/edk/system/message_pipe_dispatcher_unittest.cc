@@ -81,7 +81,8 @@ TEST(MessagePipeDispatcherTest, Basic) {
               d1->WriteMessage(UserPointer<const void>(buffer), kBufferSize,
                                nullptr, MOJO_WRITE_MESSAGE_FLAG_NONE));
     stopwatch.Start();
-    EXPECT_EQ(MOJO_RESULT_OK, w.Wait(MOJO_DEADLINE_INDEFINITE, &context));
+    EXPECT_EQ(MOJO_RESULT_OK,
+              w.Wait(MOJO_DEADLINE_INDEFINITE, &context, nullptr));
     EXPECT_EQ(1u, context);
     EXPECT_LT(stopwatch.Elapsed(), test::EpsilonTimeout());
     hss = HandleSignalsState();
@@ -119,7 +120,7 @@ TEST(MessagePipeDispatcherTest, Basic) {
     ASSERT_EQ(MOJO_RESULT_OK,
               d0->AddAwakable(&w, MOJO_HANDLE_SIGNAL_READABLE, 3, nullptr));
     stopwatch.Start();
-    EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, w.Wait(0, nullptr));
+    EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED, w.Wait(0, nullptr, nullptr));
     EXPECT_LT(stopwatch.Elapsed(), test::EpsilonTimeout());
     hss = HandleSignalsState();
     d0->RemoveAwakable(&w, &hss);
@@ -134,7 +135,7 @@ TEST(MessagePipeDispatcherTest, Basic) {
               d0->AddAwakable(&w, MOJO_HANDLE_SIGNAL_READABLE, 3, nullptr));
     stopwatch.Start();
     EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED,
-              w.Wait(2 * test::EpsilonTimeout(), nullptr));
+              w.Wait(2 * test::EpsilonTimeout(), nullptr, nullptr));
     MojoDeadline elapsed = stopwatch.Elapsed();
     EXPECT_GT(elapsed, (2 - 1) * test::EpsilonTimeout());
     EXPECT_LT(elapsed, (2 + 1) * test::EpsilonTimeout());
@@ -154,7 +155,7 @@ TEST(MessagePipeDispatcherTest, Basic) {
     EXPECT_EQ(MOJO_RESULT_OK, d1->Close());
 
     // It should be signaled.
-    EXPECT_EQ(MOJO_RESULT_OK, w.Wait(test::TinyTimeout(), &context));
+    EXPECT_EQ(MOJO_RESULT_OK, w.Wait(test::TinyTimeout(), &context, nullptr));
     EXPECT_EQ(12u, context);
     hss = HandleSignalsState();
     d0->RemoveAwakable(&w, &hss);
@@ -606,7 +607,8 @@ class ReaderThread : public test::SimpleTestThread {
           << "result: " << result;
       if (result == MOJO_RESULT_OK) {
         // Actually need to wait.
-        EXPECT_EQ(MOJO_RESULT_OK, w.Wait(MOJO_DEADLINE_INDEFINITE, nullptr));
+        EXPECT_EQ(MOJO_RESULT_OK,
+                  w.Wait(MOJO_DEADLINE_INDEFINITE, nullptr, nullptr));
         read_dispatcher_->RemoveAwakable(&w, &hss);
       }
       // We may not actually be readable, since we're racing with other threads.

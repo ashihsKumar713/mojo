@@ -62,7 +62,8 @@ void TestWriteReadMessage(MessagePipeDispatcher* write_mp,
                                    MOJO_WRITE_MESSAGE_FLAG_NONE));
 
   // Wait for it to arrive.
-  EXPECT_EQ(MOJO_RESULT_OK, waiter.Wait(test::ActionTimeout(), nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            waiter.Wait(test::ActionTimeout(), nullptr, nullptr));
   read_mp->RemoveAwakable(&waiter, nullptr);
 
   // Read the message from the read end.
@@ -109,7 +110,8 @@ RefPtr<MessagePipeDispatcher> SendMessagePipeDispatcher(
   mp_handle_to_send.reset();
 
   // Wait for it to arrive.
-  CHECK_EQ(waiter.Wait(test::ActionTimeout(), nullptr), MOJO_RESULT_OK);
+  CHECK_EQ(waiter.Wait(test::ActionTimeout(), nullptr, nullptr),
+           MOJO_RESULT_OK);
   read_mp->RemoveAwakable(&waiter, nullptr);
 
   // Read the message from the read end.
