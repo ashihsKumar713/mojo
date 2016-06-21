@@ -44,7 +44,7 @@ void DictionaryService::CreatDictFromEmbeddedDataIfNotExist(
   dic_file.close();
 }
 
-latinime::Dictionary* const DictionaryService::OpenDictionary(
+latinime::Dictionary* DictionaryService::OpenDictionary(
     const std::string path,
     const int start_offset,
     const int size,

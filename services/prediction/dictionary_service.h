@@ -31,10 +31,10 @@ class DictionaryService {
  private:
   void CreatDictFromEmbeddedDataIfNotExist(const std::string path);
 
-  latinime::Dictionary* const OpenDictionary(const std::string path,
-                                             const int start_offset,
-                                             const int size,
-                                             const bool is_updatable);
+  latinime::Dictionary* OpenDictionary(const std::string path,
+                                       const int start_offset,
+                                       const int size,
+                                       const bool is_updatable);
 
   latinime::PrevWordsInfo ProcessPrevWord(
       mojo::Array<PrevWordInfoPtr>& prev_words);
