@@ -157,18 +157,15 @@ MojoResult LocalMessagePipeEndpoint::AddAwakable(
   DCHECK(is_open_);
 
   HandleSignalsState state = GetHandleSignalsState();
+  if (signals_state)
+    *signals_state = state;
   if (state.satisfies(signals)) {
     if (force)
       awakable_list_.Add(awakable, signals, context);
-    if (signals_state)
-      *signals_state = state;
     return MOJO_RESULT_ALREADY_EXISTS;
   }
-  if (!state.can_satisfy(signals)) {
-    if (signals_state)
-      *signals_state = state;
+  if (!state.can_satisfy(signals))
     return MOJO_RESULT_FAILED_PRECONDITION;
-  }
 
   awakable_list_.Add(awakable, signals, context);
   return MOJO_RESULT_OK;

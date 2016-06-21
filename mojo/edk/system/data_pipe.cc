@@ -400,18 +400,15 @@ MojoResult DataPipe::ProducerAddAwakable(Awakable* awakable,
   DCHECK(has_local_producer_no_lock());
 
   HandleSignalsState producer_state = impl_->ProducerGetHandleSignalsState();
+  if (signals_state)
+    *signals_state = producer_state;
   if (producer_state.satisfies(signals)) {
     if (force)
       producer_awakable_list_->Add(awakable, signals, context);
-    if (signals_state)
-      *signals_state = producer_state;
     return MOJO_RESULT_ALREADY_EXISTS;
   }
-  if (!producer_state.can_satisfy(signals)) {
-    if (signals_state)
-      *signals_state = producer_state;
+  if (!producer_state.can_satisfy(signals))
     return MOJO_RESULT_FAILED_PRECONDITION;
-  }
 
   producer_awakable_list_->Add(awakable, signals, context);
   return MOJO_RESULT_OK;
@@ -623,18 +620,15 @@ MojoResult DataPipe::ConsumerAddAwakable(Awakable* awakable,
   DCHECK(has_local_consumer_no_lock());
 
   HandleSignalsState consumer_state = impl_->ConsumerGetHandleSignalsState();
+  if (signals_state)
+    *signals_state = consumer_state;
   if (consumer_state.satisfies(signals)) {
     if (force)
       consumer_awakable_list_->Add(awakable, signals, context);
-    if (signals_state)
-      *signals_state = consumer_state;
     return MOJO_RESULT_ALREADY_EXISTS;
   }
-  if (!consumer_state.can_satisfy(signals)) {
-    if (signals_state)
-      *signals_state = consumer_state;
+  if (!consumer_state.can_satisfy(signals))
     return MOJO_RESULT_FAILED_PRECONDITION;
-  }
 
   consumer_awakable_list_->Add(awakable, signals, context);
   return MOJO_RESULT_OK;

@@ -193,8 +193,8 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
   // also be woken up when it becomes impossible for the object to ever satisfy
   // |signals| with a suitable error status.
   //
-  // If |signals_state| is non-null, on *failure* |*signals_state| will be set
-  // to the current handle signals state (on success, it is left untouched).
+  // If |signals_state| is non-null, |*signals_state| will be set to the current
+  // handle signals state.
   //
   // Any awakable that's added must either eventually be removed (using
   // |RemoveAwakable()| or |RemoveAwakableWithContext()|, below). If an
@@ -214,8 +214,7 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
                          uint64_t context,
                          HandleSignalsState* signals_state);
   // Like |AddAwakable()|, but in the |MOJO_RESULT_ALREADY_EXISTS| case still
-  // adds the awakable (|MOJO_RESULT_ALREADY_EXISTS| will still be returned and
-  // |*signals_state| will still be set if |signals_state| is non-null).
+  // adds the awakable (|MOJO_RESULT_ALREADY_EXISTS| will still be returned).
   MojoResult AddAwakableUnconditional(Awakable* awakable,
                                       MojoHandleSignals signals,
                                       uint64_t context,
