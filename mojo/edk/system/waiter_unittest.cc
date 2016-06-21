@@ -105,7 +105,8 @@ TEST(WaiterTest, Basic) {
   {
     WaitingThread thread(10 * test::EpsilonTimeout());
     thread.Start();
-    thread.waiter()->Awake(MOJO_RESULT_OK, 1);
+    thread.waiter()->Awake(1, Awakable::AwakeReason::SATISFIED,
+                           HandleSignalsState());
     thread.WaitUntilDone(&result, &context, &elapsed);
     EXPECT_EQ(MOJO_RESULT_OK, result);
     EXPECT_EQ(1u, context);
@@ -115,7 +116,8 @@ TEST(WaiterTest, Basic) {
   // Awake before after thread start.
   {
     WaitingThread thread(10 * test::EpsilonTimeout());
-    thread.waiter()->Awake(MOJO_RESULT_CANCELLED, 2);
+    thread.waiter()->Awake(2, Awakable::AwakeReason::CANCELLED,
+                           HandleSignalsState());
     thread.Start();
     thread.WaitUntilDone(&result, &context, &elapsed);
     EXPECT_EQ(MOJO_RESULT_CANCELLED, result);
@@ -128,9 +130,10 @@ TEST(WaiterTest, Basic) {
     WaitingThread thread(10 * test::EpsilonTimeout());
     thread.Start();
     ThreadSleep(2 * test::EpsilonTimeout());
-    thread.waiter()->Awake(1, 3);
+    thread.waiter()->Awake(3, Awakable::AwakeReason::SATISFIED,
+                           HandleSignalsState());
     thread.WaitUntilDone(&result, &context, &elapsed);
-    EXPECT_EQ(1u, result);
+    EXPECT_EQ(MOJO_RESULT_OK, result);
     EXPECT_EQ(3u, context);
     EXPECT_GT(elapsed, (2 - 1) * test::EpsilonTimeout());
     EXPECT_LT(elapsed, (2 + 1) * test::EpsilonTimeout());
@@ -141,9 +144,10 @@ TEST(WaiterTest, Basic) {
     WaitingThread thread(10 * test::EpsilonTimeout());
     thread.Start();
     ThreadSleep(5 * test::EpsilonTimeout());
-    thread.waiter()->Awake(2, 4);
+    thread.waiter()->Awake(4, Awakable::AwakeReason::UNSATISFIABLE,
+                           HandleSignalsState());
     thread.WaitUntilDone(&result, &context, &elapsed);
-    EXPECT_EQ(2u, result);
+    EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION, result);
     EXPECT_EQ(4u, context);
     EXPECT_GT(elapsed, (5 - 1) * test::EpsilonTimeout());
     EXPECT_LT(elapsed, (5 + 1) * test::EpsilonTimeout());
@@ -166,7 +170,8 @@ TEST(WaiterTest, Basic) {
   {
     WaitingThread thread(MOJO_DEADLINE_INDEFINITE);
     thread.Start();
-    thread.waiter()->Awake(MOJO_RESULT_OK, 5);
+    thread.waiter()->Awake(5, Awakable::AwakeReason::SATISFIED,
+                           HandleSignalsState());
     thread.WaitUntilDone(&result, &context, &elapsed);
     EXPECT_EQ(MOJO_RESULT_OK, result);
     EXPECT_EQ(5u, context);
@@ -176,7 +181,8 @@ TEST(WaiterTest, Basic) {
   // Awake before after thread start.
   {
     WaitingThread thread(MOJO_DEADLINE_INDEFINITE);
-    thread.waiter()->Awake(MOJO_RESULT_CANCELLED, 6);
+    thread.waiter()->Awake(6, Awakable::AwakeReason::CANCELLED,
+                           HandleSignalsState());
     thread.Start();
     thread.WaitUntilDone(&result, &context, &elapsed);
     EXPECT_EQ(MOJO_RESULT_CANCELLED, result);
@@ -189,9 +195,10 @@ TEST(WaiterTest, Basic) {
     WaitingThread thread(MOJO_DEADLINE_INDEFINITE);
     thread.Start();
     ThreadSleep(2 * test::EpsilonTimeout());
-    thread.waiter()->Awake(1, 7);
+    thread.waiter()->Awake(7, Awakable::AwakeReason::UNSATISFIABLE,
+                           HandleSignalsState());
     thread.WaitUntilDone(&result, &context, &elapsed);
-    EXPECT_EQ(1u, result);
+    EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION, result);
     EXPECT_EQ(7u, context);
     EXPECT_GT(elapsed, (2 - 1) * test::EpsilonTimeout());
     EXPECT_LT(elapsed, (2 + 1) * test::EpsilonTimeout());
@@ -202,9 +209,10 @@ TEST(WaiterTest, Basic) {
     WaitingThread thread(MOJO_DEADLINE_INDEFINITE);
     thread.Start();
     ThreadSleep(5 * test::EpsilonTimeout());
-    thread.waiter()->Awake(2, 8);
+    thread.waiter()->Awake(8, Awakable::AwakeReason::CANCELLED,
+                           HandleSignalsState());
     thread.WaitUntilDone(&result, &context, &elapsed);
-    EXPECT_EQ(2u, result);
+    EXPECT_EQ(MOJO_RESULT_CANCELLED, result);
     EXPECT_EQ(8u, context);
     EXPECT_GT(elapsed, (5 - 1) * test::EpsilonTimeout());
     EXPECT_LT(elapsed, (5 + 1) * test::EpsilonTimeout());
@@ -253,8 +261,10 @@ TEST(WaiterTest, MultipleAwakes) {
   {
     WaitingThread thread(MOJO_DEADLINE_INDEFINITE);
     thread.Start();
-    thread.waiter()->Awake(MOJO_RESULT_OK, 1);
-    thread.waiter()->Awake(1, 2);
+    thread.waiter()->Awake(1, Awakable::AwakeReason::SATISFIED,
+                           HandleSignalsState());
+    thread.waiter()->Awake(2, Awakable::AwakeReason::UNSATISFIABLE,
+                           HandleSignalsState());
     thread.WaitUntilDone(&result, &context, &elapsed);
     EXPECT_EQ(MOJO_RESULT_OK, result);
     EXPECT_EQ(1u, context);
@@ -263,11 +273,13 @@ TEST(WaiterTest, MultipleAwakes) {
 
   {
     WaitingThread thread(MOJO_DEADLINE_INDEFINITE);
-    thread.waiter()->Awake(1, 3);
+    thread.waiter()->Awake(3, Awakable::AwakeReason::UNSATISFIABLE,
+                           HandleSignalsState());
     thread.Start();
-    thread.waiter()->Awake(MOJO_RESULT_OK, 4);
+    thread.waiter()->Awake(4, Awakable::AwakeReason::SATISFIED,
+                           HandleSignalsState());
     thread.WaitUntilDone(&result, &context, &elapsed);
-    EXPECT_EQ(1u, result);
+    EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION, result);
     EXPECT_EQ(3u, context);
     EXPECT_LT(elapsed, test::EpsilonTimeout());
   }
@@ -275,11 +287,13 @@ TEST(WaiterTest, MultipleAwakes) {
   {
     WaitingThread thread(MOJO_DEADLINE_INDEFINITE);
     thread.Start();
-    thread.waiter()->Awake(10, 5);
+    thread.waiter()->Awake(5, Awakable::AwakeReason::CANCELLED,
+                           HandleSignalsState());
     ThreadSleep(2 * test::EpsilonTimeout());
-    thread.waiter()->Awake(20, 6);
+    thread.waiter()->Awake(6, Awakable::AwakeReason::UNSATISFIABLE,
+                           HandleSignalsState());
     thread.WaitUntilDone(&result, &context, &elapsed);
-    EXPECT_EQ(10u, result);
+    EXPECT_EQ(MOJO_RESULT_CANCELLED, result);
     EXPECT_EQ(5u, context);
     EXPECT_LT(elapsed, test::EpsilonTimeout());
   }
@@ -288,9 +302,11 @@ TEST(WaiterTest, MultipleAwakes) {
     WaitingThread thread(10 * test::EpsilonTimeout());
     thread.Start();
     ThreadSleep(1 * test::EpsilonTimeout());
-    thread.waiter()->Awake(MOJO_RESULT_FAILED_PRECONDITION, 7);
+    thread.waiter()->Awake(7, Awakable::AwakeReason::UNSATISFIABLE,
+                           HandleSignalsState());
     ThreadSleep(2 * test::EpsilonTimeout());
-    thread.waiter()->Awake(MOJO_RESULT_OK, 8);
+    thread.waiter()->Awake(8, Awakable::AwakeReason::SATISFIED,
+                           HandleSignalsState());
     thread.WaitUntilDone(&result, &context, &elapsed);
     EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION, result);
     EXPECT_EQ(7u, context);

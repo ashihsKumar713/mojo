@@ -1953,8 +1953,9 @@ TEST_F(CoreTest, AsyncWait) {
                                               }));
   EXPECT_EQ(1u, info.GetAddedAwakableSize());
 
-  EXPECT_FALSE(info.GetAddedAwakableAt(0)->Awake(MOJO_RESULT_BUSY, 0));
-  EXPECT_EQ(MOJO_RESULT_BUSY, waiter.result);
+  EXPECT_FALSE(info.GetAddedAwakableAt(0)->Awake(
+      0, Awakable::AwakeReason::UNSATISFIABLE, HandleSignalsState()));
+  EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION, waiter.result);
 
   EXPECT_EQ(MOJO_RESULT_OK, core()->Close(h));
 }

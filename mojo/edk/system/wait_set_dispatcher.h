@@ -113,7 +113,9 @@ class WaitSetDispatcher final : public Dispatcher, public Awakable {
                              UserPointer<uint32_t> max_results) override;
 
   // |Awakable| implementation:
-  bool Awake(MojoResult result, uint64_t context) override;
+  bool Awake(uint64_t context,
+             AwakeReason reason,
+             const HandleSignalsState& signals_state) override;
 
   void AddPossiblyTriggeredNoLock(Entry* entry,
                                   Entry::TriggerState new_trigger_state)

@@ -13,8 +13,7 @@
 namespace mojo {
 namespace system {
 
-AwakableList::AwakableList() {
-}
+AwakableList::AwakableList() {}
 
 AwakableList::~AwakableList() {
   DCHECK(awakables_.empty());
@@ -27,11 +26,14 @@ void AwakableList::OnStateChange(const HandleSignalsState& old_state,
   auto last = awakables_.end();
   for (AwakeInfoList::iterator it = awakables_.begin(); it != last;) {
     bool keep = true;
-    if (new_state.satisfies(it->signals) && !old_state.satisfies(it->signals))
-      keep = it->awakable->Awake(MOJO_RESULT_OK, it->context);
-    else if (!new_state.can_satisfy(it->signals) &&
-             old_state.can_satisfy(it->signals))
-      keep = it->awakable->Awake(MOJO_RESULT_FAILED_PRECONDITION, it->context);
+    if (new_state.satisfies(it->signals) && !old_state.satisfies(it->signals)) {
+      keep = it->awakable->Awake(it->context, Awakable::AwakeReason::SATISFIED,
+                                 new_state);
+    } else if (!new_state.can_satisfy(it->signals) &&
+               old_state.can_satisfy(it->signals)) {
+      keep = it->awakable->Awake(
+          it->context, Awakable::AwakeReason::UNSATISFIABLE, new_state);
+    }
 
     if (!keep) {
       --last;
@@ -46,7 +48,8 @@ void AwakableList::OnStateChange(const HandleSignalsState& old_state,
 void AwakableList::CancelAll() {
   for (AwakeInfoList::iterator it = awakables_.begin(); it != awakables_.end();
        ++it) {
-    it->awakable->Awake(MOJO_RESULT_CANCELLED, it->context);
+    it->awakable->Awake(it->context, Awakable::AwakeReason::CANCELLED,
+                        HandleSignalsState());
   }
   awakables_.clear();
 }

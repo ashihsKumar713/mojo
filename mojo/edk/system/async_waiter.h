@@ -25,7 +25,9 @@ class AsyncWaiter final : public Awakable {
 
  private:
   // |Awakable| implementation:
-  bool Awake(MojoResult result, uint64_t context) override;
+  bool Awake(uint64_t context,
+             AwakeReason reason,
+             const HandleSignalsState& signals_state) override;
 
   AwakeCallback callback_;
 

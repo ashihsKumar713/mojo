@@ -91,14 +91,16 @@ MojoResult Waiter::Wait(MojoDeadline deadline, uint64_t* context) {
   return awake_result_;
 }
 
-bool Waiter::Awake(MojoResult result, uint64_t context) {
+bool Waiter::Awake(uint64_t context,
+                   AwakeReason reason,
+                   const HandleSignalsState& signals_state) {
   MutexLocker locker(&mutex_);
 
   if (awoken_)
     return true;
 
   awoken_ = true;
-  awake_result_ = result;
+  awake_result_ = MojoResultForAwakeReason(reason);
   awake_context_ = context;
   cv_.Signal();
   // |cv_.Wait()|/|cv_.WaitWithTimeout()| will return after |mutex_| is

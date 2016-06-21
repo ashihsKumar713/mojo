@@ -57,9 +57,10 @@ class Waiter final : public Awakable {
   //     pipe is closed).
   MojoResult Wait(MojoDeadline deadline, uint64_t* context);
 
-  // Wake the waiter up with the given result and context (or no-op if it's been
-  // woken up already).
-  bool Awake(MojoResult result, uint64_t context) override;
+  // |Awakable| implementation:
+  bool Awake(uint64_t context,
+             AwakeReason reason,
+             const HandleSignalsState& signals_state) override;
 
  private:
   util::CondVar cv_;  // Associated to |mutex_|.

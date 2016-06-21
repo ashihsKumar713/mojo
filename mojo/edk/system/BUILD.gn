@@ -14,6 +14,7 @@ mojo_edk_source_set("system") {
   sources = [
     "async_waiter.cc",
     "async_waiter.h",
+    "awakable.cc",
     "awakable.h",
     "awakable_list.cc",
     "awakable_list.h",

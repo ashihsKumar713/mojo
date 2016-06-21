@@ -11,8 +11,10 @@ AsyncWaiter::AsyncWaiter(const AwakeCallback& callback) : callback_(callback) {}
 
 AsyncWaiter::~AsyncWaiter() {}
 
-bool AsyncWaiter::Awake(MojoResult result, uint64_t /*context*/) {
-  callback_(result);
+bool AsyncWaiter::Awake(uint64_t /*context*/,
+                        AwakeReason reason,
+                        const HandleSignalsState& /*signals_state*/) {
+  callback_(MojoResultForAwakeReason(reason));
   delete this;
   return false;
 }

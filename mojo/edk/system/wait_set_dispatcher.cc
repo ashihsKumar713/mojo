@@ -261,7 +261,9 @@ MojoResult WaitSetDispatcher::WaitSetWaitImpl(
   return MOJO_RESULT_UNIMPLEMENTED;
 }
 
-bool WaitSetDispatcher::Awake(MojoResult result, uint64_t context) {
+bool WaitSetDispatcher::Awake(uint64_t context,
+                              AwakeReason reason,
+                              const HandleSignalsState& signals_state) {
   MutexLocker locker(&mutex());
 
   if (is_closed_no_lock()) {
@@ -277,25 +279,14 @@ bool WaitSetDispatcher::Awake(MojoResult result, uint64_t context) {
   auto it = entries_.find(context);
   DCHECK(it != entries_.end());
   const auto& entry = it->second;
-  switch (result) {
-    case MOJO_RESULT_OK:
+  switch (reason) {
+    case AwakeReason::SATISFIED:
       if (entry->trigger_state == Entry::TriggerState::NOT_TRIGGERED) {
         AddPossiblyTriggeredNoLock(entry.get(),
                                    Entry::TriggerState::POSSIBLY_SATISFIED);
       }
       return true;
-    case MOJO_RESULT_CANCELLED:
-      if (entry->trigger_state == Entry::TriggerState::NOT_TRIGGERED) {
-        AddPossiblyTriggeredNoLock(entry.get(), Entry::TriggerState::CLOSED);
-      } else {
-        // We should only ever get at most one "closed".
-        DCHECK_NE(static_cast<int>(entry->trigger_state),
-                  static_cast<int>(Entry::TriggerState::CLOSED));
-        entry->trigger_state = Entry::TriggerState::CLOSED;
-      }
-      entry->dispatcher = nullptr;
-      return false;
-    case MOJO_RESULT_FAILED_PRECONDITION:
+    case AwakeReason::UNSATISFIABLE:
       // Never satisfiable.
       if (entry->trigger_state == Entry::TriggerState::NOT_TRIGGERED) {
         AddPossiblyTriggeredNoLock(entry.get(),
@@ -313,9 +304,17 @@ bool WaitSetDispatcher::Awake(MojoResult result, uint64_t context) {
       // Due to some action on some other thread, it may become satisfiable
       // again, so continue to be awoken.
       return true;
-    default:
-      NOTREACHED();
-      break;
+    case AwakeReason::CANCELLED:
+      if (entry->trigger_state == Entry::TriggerState::NOT_TRIGGERED) {
+        AddPossiblyTriggeredNoLock(entry.get(), Entry::TriggerState::CLOSED);
+      } else {
+        // We should only ever get at most one "closed".
+        DCHECK_NE(static_cast<int>(entry->trigger_state),
+                  static_cast<int>(Entry::TriggerState::CLOSED));
+        entry->trigger_state = Entry::TriggerState::CLOSED;
+      }
+      entry->dispatcher = nullptr;
+      return false;
   }
   return false;
 }

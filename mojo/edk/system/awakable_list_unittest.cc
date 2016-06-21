@@ -379,7 +379,9 @@ class KeepAwakable : public Awakable {
  public:
   KeepAwakable() : awake_count(0) {}
 
-  bool Awake(MojoResult result, uint64_t context) override {
+  bool Awake(uint64_t context,
+             AwakeReason reason,
+             const HandleSignalsState& signals_state) override {
     awake_count++;
     return true;
   }
@@ -393,7 +395,9 @@ class RemoveAwakable : public Awakable {
  public:
   RemoveAwakable() : awake_count(0) {}
 
-  bool Awake(MojoResult result, uint64_t context) override {
+  bool Awake(uint64_t /*context*/,
+             AwakeReason /*reason*/,
+             const HandleSignalsState& /*signals_state*/) override {
     awake_count++;
     return false;
   }

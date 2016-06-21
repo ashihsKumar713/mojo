@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "mojo/edk/system/handle_signals_state.h"
 #include "mojo/public/c/system/result.h"
 
 namespace mojo {
@@ -16,13 +17,23 @@ namespace system {
 // implementation that blocks while waiting to be awoken.
 class Awakable {
  public:
+  enum class AwakeReason { SATISFIED, UNSATISFIABLE, CANCELLED };
+
+  // Helper function that translates:
+  //   - |AwakeReason::SATISFIED| -> |MOJO_RESULT_OK|,
+  //   - |AwakeReason::UNSATISFIABLE| -> |MOJO_RESULT_FAILED_PRECONDITION|, and
+  //   - |AwakeReason::CANCELLED| -> |MOJO_RESULT_CANCELLED|.
+  static MojoResult MojoResultForAwakeReason(AwakeReason reason);
+
   // |Awake()| must satisfy the following contract:
   //   - It must be thread-safe.
   //   - Since it is called with a mutex held, it must not call anything that
   //     takes "non-terminal" locks, i.e., those which are always safe to take.
   //   - It should return false if it must not be called again for the same
   //     reason (e.g., for the same call to |AwakableList::Add()|).
-  virtual bool Awake(MojoResult result, uint64_t context) = 0;
+  virtual bool Awake(uint64_t context,
+                     AwakeReason reason,
+                     const HandleSignalsState& signals_state) = 0;
 
  protected:
   Awakable() {}
