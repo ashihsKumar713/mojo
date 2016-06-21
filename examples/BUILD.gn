@@ -18,6 +18,7 @@ group("portable_examples") {
     "//examples/dart",
     "//examples/echo",
     "//examples/echo_terminal",
+    "//examples/flog_viewer",
     "//examples/forwarding_content_handler",
     "//examples/hello_mojo",
     "//examples/http_handler",

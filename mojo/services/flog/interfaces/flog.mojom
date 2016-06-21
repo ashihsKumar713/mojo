@@ -36,8 +36,6 @@ interface FlogLogger {
 
   // Logs the deletion of a channel.
   LogChannelDeletion(int64 time_us, uint32 channel_id);
-
-  // TODO(dalesat): Add a method for logging text/file/line
 };
 
 // A reader that reads messages from one or more logs.
