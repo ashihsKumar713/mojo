@@ -83,7 +83,7 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
     callback_joiner->WhenJoined([this]() {
       // The enabled streams are prepared.
       factory_.reset();
-      state_ = State::kPaused;
+      state_ = State::kFlushed;
       Update();
     });
   });
@@ -92,91 +92,168 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
 MediaPlayerImpl::~MediaPlayerImpl() {}
 
 void MediaPlayerImpl::Update() {
+  // This method is called whenever we might want to take action based on the
+  // current state and recent events. The current state is in |state_|. Recent
+  // events are recorded in |target_state_|, which indicates what state we'd
+  // like to transition to, |target_position_|, which can indicate a position
+  // we'd like to stream to, and |end_of_stream_| which tells us we've reached
+  // end of stream.
+  //
+  // The states are as follows:
+  //
+  // |kWaiting| - Indicates that we've done something asynchronous, and no
+  //              further action should be taken by the state machine until that
+  //              something completes (at which point the callback will change
+  //              the state and call |Update|).
+  // |kFlushed| - Indicates that presentation time is not progressing and that
+  //              the pipeline is not primed with packets. This is the initial
+  //              state and the state we transition to in preparation for
+  //              seeking. A seek is currently only done when when the pipeline
+  //              is clear of packets.
+  // |kPrimed| -  Indicates that presentation time is not progressing and that
+  //              the pipeline is primed with packets. We transition to this
+  //              state when the client calls |Pause|, either from |kFlushed| or
+  //              |kPlaying| state.
+  // |kPlaying| - Indicates that presentation time is progressing and there are
+  //              packets in the pipeline. We transition to this state when the
+  //              client calls |Play|. If we're in |kFlushed| when |Play| is
+  //              called, we transition through |kPrimed| state.
+  //
+  // The while loop that surrounds all the logic below is there because, after
+  // taking some action and transitioning to a new state, we may want to check
+  // to see if there's more to do in the new state. You'll also notice that
+  // the callback lambdas generally call |Update|.
   while (true) {
     switch (state_) {
-      case State::kPaused:
+      case State::kFlushed:
+        // Presentation time is not progressing, and the pipeline is clear of
+        // packets.
         if (target_position_ != kUnspecifiedTime) {
-          WhenPausedAndSeeking();
-          break;
+          // We want to seek. Enter |kWaiting| state until the operation is
+          // complete.
+          state_ = State::kWaiting;
+          demux_->Seek(target_position_, [this]() {
+            transform_subject_time_ = target_position_;
+            target_position_ = kUnspecifiedTime;
+            state_ = State::kFlushed;
+            // Back in |kFlushed|. Call |Update| to see if there's further
+            // action to be taken.
+            Update();
+          });
+
+          // Done for now. We're in kWaiting, and the callback will call Update
+          // when the Seek call is complete.
+          return;
+        }
+
+        if (target_state_ == State::kPlaying ||
+            target_state_ == State::kPrimed) {
+          // We want to transition to |kPrimed| or to |kPlaying|, for which
+          // |kPrimed| is a prerequisite. We enter |kWaiting| state, issue the
+          // |Prime| request and transition to |kPrimed| when the operation is
+          // complete.
+          state_ = State::kWaiting;
+          demux_->Prime([this]() {
+            state_ = State::kPrimed;
+            // Now we're in |kPrimed|. Call |Update| to see if there's further
+            // action to be taken.
+            Update();
+          });
+
+          // Done for now. We're in |kWaiting|, and the callback will call
+          // |Update| when the prime is complete.
+          return;
+        }
+
+        // No interesting events to respond to. Done for now.
+        return;
+
+      case State::kPrimed:
+        // Presentation time is not progressing, and the pipeline is primed with
+        // packets.
+        if (target_position_ != kUnspecifiedTime ||
+            target_state_ == State::kFlushed) {
+          // Either we want to seek or just want to transition to |kFlushed|.
+          // We transition to |kWaiting|, issue the |Flush| request and
+          // transition to |kFlushed| when the operation is complete.
+          state_ = State::kWaiting;
+          demux_->Flush([this]() {
+            state_ = State::kFlushed;
+            // Now we're in |kFlushed|. Call |Update| to see if there's further
+            // action to be taken.
+            Update();
+          });
+
+          // Done for now. We're in |kWaiting|, and the callback will call
+          // |Update| when the flush is complete.
+          return;
         }
 
         if (target_state_ == State::kPlaying) {
-          if (!flushed_) {
-            SetTimelineTransform(1, 1);
-            state_ = State::kWaiting;
-            break;
-          }
-
-          flushed_ = false;
+          // We want to transition to |kPlaying|. Enter |kWaiting|, start the
+          // presentation timeline and transition to |kPlaying| when the
+          // operation completes.
           state_ = State::kWaiting;
-          demux_->Prime([this]() {
-            SetTimelineTransform(1, 1);
-            state_ = State::kWaiting;
-            Update();
-          });
+          timeline_consumer_->SetTimelineTransform(
+              transform_subject_time_, 1, 1,
+              Timeline::local_now() + kMinimumLeadTime, kUnspecifiedTime,
+              [this](bool completed) {
+                state_ = State::kPlaying;
+                // Now we're in |kPlaying|. Call |Update| to see if there's
+                // further
+                // action to be taken.
+                Update();
+              });
+
+          transform_subject_time_ = kUnspecifiedTime;
+          return;
         }
+
+        // No interesting events to respond to. Done for now.
         return;
 
       case State::kPlaying:
+        // Presentation time is progressing, and packets are moving through
+        // the pipeline.
         if (target_position_ != kUnspecifiedTime ||
-            target_state_ == State::kPaused) {
-          SetTimelineTransform(1, 0);
+            target_state_ == State::kFlushed ||
+            target_state_ == State::kPrimed) {
+          // Either we want to seek or we want to stop playback. In either case,
+          // we need to enter |kWaiting|, stop the presentation timeline and
+          // transition to |kPrimed| when the operation completes.
           state_ = State::kWaiting;
-          break;
+          timeline_consumer_->SetTimelineTransform(
+              transform_subject_time_, 1, 0,
+              Timeline::local_now() + kMinimumLeadTime, kUnspecifiedTime,
+              [this](bool completed) {
+                state_ = State::kPrimed;
+                // Now we're in |kPrimed|. Call |Update| to see if there's
+                // further
+                // action to be taken.
+                Update();
+              });
+
+          transform_subject_time_ = kUnspecifiedTime;
+          return;
         }
 
         if (end_of_stream_) {
-          target_state_ = State::kPaused;
-          state_ = State::kPaused;
+          // We've reached end of stream. The presentation timeline stops by
+          // itself, so we just need to transition to |kPrimed|.
+          target_state_ = State::kPrimed;
+          state_ = State::kPrimed;
+          // Loop around to check if there's more work to do.
           break;
         }
+
+        // No interesting events to respond to. Done for now.
         return;
 
       case State::kWaiting:
+        // Waiting for some async operation. Nothing to do until it completes.
         return;
     }
   }
-}
-
-void MediaPlayerImpl::WhenPausedAndSeeking() {
-  if (!flushed_) {
-    state_ = State::kWaiting;
-    demux_->Flush([this]() {
-      flushed_ = true;
-      WhenFlushedAndSeeking();
-    });
-  } else {
-    WhenFlushedAndSeeking();
-  }
-}
-
-void MediaPlayerImpl::WhenFlushedAndSeeking() {
-  state_ = State::kWaiting;
-  DCHECK(target_position_ != kUnspecifiedTime);
-  demux_->Seek(target_position_, [this]() {
-    transform_subject_time_ = target_position_;
-    target_position_ = kUnspecifiedTime;
-    state_ = State::kPaused;
-    Update();
-  });
-}
-
-void MediaPlayerImpl::SetTimelineTransform(uint32_t reference_delta,
-                                           uint32_t subject_delta) {
-  timeline_consumer_->SetTimelineTransform(
-      transform_subject_time_, reference_delta, subject_delta,
-      Timeline::local_now() + kMinimumLeadTime, kUnspecifiedTime,
-      [this, subject_delta](bool completed) {
-        RCHECK(state_ == State::kWaiting);
-
-        if (subject_delta == 0) {
-          state_ = State::kPaused;
-        } else {
-          state_ = State::kPlaying;
-        }
-
-        Update();
-      });
 }
 
 void MediaPlayerImpl::GetStatus(uint64_t version_last_seen,
@@ -190,7 +267,7 @@ void MediaPlayerImpl::Play() {
 }
 
 void MediaPlayerImpl::Pause() {
-  target_state_ = State::kPaused;
+  target_state_ = State::kPrimed;
   Update();
 }
 

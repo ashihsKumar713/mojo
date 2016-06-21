@@ -51,8 +51,9 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
   // Internal state.
   enum class State {
     kWaiting,  // Waiting for some work to complete.
-    kPaused,
-    kPlaying,
+    kFlushed,  // Paused with no data in the pipeline.
+    kPrimed,   // Paused with data in the pipeline.
+    kPlaying,  // Time is progressing.
   };
 
   struct Stream {
@@ -76,17 +77,6 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
 
   // Takes action based on current state.
   void Update();
-
-  // Handles seeking in paused state.
-  void WhenPausedAndSeeking();
-
-  // Handles seeking in paused state with flushed pipeline.
-  void WhenFlushedAndSeeking();
-
-  // Sets the timeline transform. transform_subject_time_ is used for the
-  // subject_time, and the effective_reference_time is now plus
-  // kMinimumLeadTime.
-  void SetTimelineTransform(uint32_t reference_delta, uint32_t subject_delta);
 
   // Prepares a stream.
   void PrepareStream(Stream* stream,
@@ -117,16 +107,33 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
   MediaTimelineControlSitePtr timeline_control_site_;
   TimelineConsumerPtr timeline_consumer_;
   std::vector<std::unique_ptr<Stream>> streams_;
+
+  // The state we're currently in.
   State state_ = State::kWaiting;
-  State target_state_ = State::kPaused;
-  bool flushed_ = true;
+
+  // The state we trying to transition to, either because the client has called
+  // |Play| or |Pause| or because we've hit end-of-stream.
+  State target_state_ = State::kFlushed;
+
+  // Whether we're currently at end-of-stream.
   bool end_of_stream_ = false;
+
+  // The position we want to seek to (because the client called Seek) or
+  // kUnspecifiedTime, which indicates there's no desire to seek.
   int64_t target_position_ = kUnspecifiedTime;
+
+  // The subject time to be used for SetTimelineTransform. The value is
+  // kUnspecifiedTime if there's no need to seek or the position we want to
+  // seek to if there is.
   int64_t transform_subject_time_ = kUnspecifiedTime;
+
+  // A function that translates local time into presentation time in ns.
   TimelineFunction timeline_function_;
+
   CallbackJoiner set_transform_joiner_;
   MediaMetadataPtr metadata_;
   MojoPublisher<GetStatusCallback> status_publisher_;
+
   // The following fields are just temporaries used to solve lambda capture
   // problems.
   InterfaceHandle<MediaRenderer> audio_renderer_;
