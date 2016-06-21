@@ -22,9 +22,12 @@ void VideoRenderer::Bind(InterfaceRequest<MediaRenderer> renderer_request) {
   renderer_binding_.Bind(renderer_request.Pass());
 }
 
+Size VideoRenderer::GetSize() {
+  return converter_.GetSize();
+}
+
 void VideoRenderer::GetRgbaFrame(uint8_t* rgba_buffer,
-                                 size_t width,
-                                 size_t height,
+                                 const Size& rgba_buffer_size,
                                  int64_t reference_time) {
   MaybeApplyPendingTimelineChange(reference_time);
   MaybePublishEndOfStream();
@@ -33,11 +36,8 @@ void VideoRenderer::GetRgbaFrame(uint8_t* rgba_buffer,
 
   // Discard empty and old packets. We keep one packet around even if it's old,
   // so we can show an old frame instead of no frame when we starve.
-  while (!packet_queue_.empty() &&
-         (!packet_queue_.front().packet_->payload ||
-          packet_queue_.front().packet_->payload->length == 0 ||
-          (packet_queue_.size() > 1 &&
-           packet_queue_.front().packet_->pts < presentation_time))) {
+  while (packet_queue_.size() > 1 &&
+         packet_queue_.front().packet_->pts < presentation_time) {
     // TODO(dalesat): Add hysteresis.
     packet_queue_.pop();
   }
@@ -45,11 +45,12 @@ void VideoRenderer::GetRgbaFrame(uint8_t* rgba_buffer,
   // TODO(dalesat): Detect starvation.
 
   if (packet_queue_.empty()) {
-    memset(rgba_buffer, 0, width * height * 4);
+    memset(rgba_buffer, 0,
+           rgba_buffer_size.width * rgba_buffer_size.height * 4);
   } else {
     const MediaPacketPtr& packet = packet_queue_.front().packet_;
     converter_.ConvertFrame(
-        rgba_buffer, width, height,
+        rgba_buffer, rgba_buffer_size.width, rgba_buffer_size.height,
         shared_buffer_.PtrFromOffset(packet->payload->offset),
         packet->payload->length);
   }
@@ -102,8 +103,13 @@ void VideoRenderer::SendPacket(MediaPacketPtr packet,
                                const SendPacketCallback& callback) {
   MOJO_DCHECK(packet);
   if (packet->end_of_stream) {
-    MOJO_DLOG(INFO) << "END_OF_STREAM";
     end_of_stream_pts_ = packet->pts;
+  }
+
+  // Discard empty packets so they don't confuse the selection logic.
+  if (!packet->payload || packet->payload->length == 0) {
+    callback.Run(MediaConsumer::SendResult::CONSUMED);
+    return;
   }
 
   packet_queue_.emplace(packet.Pass(), callback);

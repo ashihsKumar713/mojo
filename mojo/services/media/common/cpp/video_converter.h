@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "mojo/services/geometry/interfaces/geometry.mojom.h"
 #include "mojo/services/media/common/cpp/video_packet_layout.h"
 
 namespace mojo {
@@ -21,6 +22,9 @@ class VideoConverter {
   // Sets the media type of the frames to be converted. 8-bit interleaved
   // RGBA output is assumed.
   void SetMediaType(const MediaTypePtr& media_type);
+
+  // Get the size of the video.
+  Size GetSize();
 
   // Converts the frame in the payload into the provided RGBA buffer.
   void ConvertFrame(uint8_t* rgba_buffer,

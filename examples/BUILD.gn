@@ -42,6 +42,7 @@ group("examples") {
     "//examples/moterm_example_app",
     "//examples/shadows",
     "//examples/ui/jank",
+    "//examples/ui/motown_video",
     "//examples/ui/noodles",
     "//examples/ui/png_viewer",
     "//examples/ui/shapes",

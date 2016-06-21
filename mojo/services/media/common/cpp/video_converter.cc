@@ -80,6 +80,18 @@ void VideoConverter::SetMediaType(const MediaTypePtr& media_type) {
   media_type_set_ = true;
 }
 
+Size VideoConverter::GetSize() {
+  Size size;
+  if (media_type_set_) {
+    size.width = layout_.width();
+    size.height = layout_.height();
+  } else {
+    size.width = 0;
+    size.height = 0;
+  }
+  return size;
+}
+
 void VideoConverter::ConvertFrame(uint8_t* rgba_buffer,
                                   uint32_t view_width,
                                   uint32_t view_height,

@@ -44,6 +44,7 @@ mojo_sdk_source_set("cpp") {
   deps = [
     "$mojo_sdk_root/mojo/public/cpp/environment",
     "$mojo_sdk_root/mojo/public/cpp/utility",
+    "$mojo_sdk_root/mojo/services/geometry/interfaces",
     "$mojo_sdk_root/mojo/services/media/common/interfaces",
     "$mojo_sdk_root/mojo/services/media/core/interfaces",
   ]

@@ -9,6 +9,7 @@
 #include <queue>
 
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/services/geometry/interfaces/geometry.mojom.h"
 #include "mojo/services/media/common/cpp/mapped_shared_buffer.h"
 #include "mojo/services/media/common/cpp/timeline_function.h"
 #include "mojo/services/media/common/cpp/video_converter.h"
@@ -30,11 +31,12 @@ class VideoRenderer : public MediaRenderer,
 
   void Bind(InterfaceRequest<MediaRenderer> renderer_request);
 
+  // Get the size of the video to be rendered.
+  Size GetSize();
+
   // Gets an RGBA video frame corresponding to the specified reference time.
-  // |width| and |height| refer to |rgba_buffer|.
   void GetRgbaFrame(uint8_t* rgba_buffer,
-                    size_t width,
-                    size_t height,
+                    const Size& rgba_buffer_size,
                     int64_t reference_time);
 
  private:
