@@ -35,53 +35,28 @@ class FfmpegDecoderBase : public Decoder {
                        PacketPtr* output) override;
 
  protected:
-  // Used to control deallocation of buffers.
-  class AvBufferContext {
+  class DecoderPacket : public Packet {
    public:
-    AvBufferContext(size_t size, PayloadAllocator* allocator)
-        : size_(size), allocator_(allocator) {
-      DCHECK(allocator_);
-      if (size_ == 0) {
-        buffer_ = nullptr;
-      } else {
-        buffer_ =
-            static_cast<uint8_t*>(allocator_->AllocatePayloadBuffer(size_));
-      }
+    static PacketPtr Create(int64_t pts, AVBufferRef* av_buffer_ref) {
+      return PacketPtr(new DecoderPacket(pts, av_buffer_ref));
     }
 
-    ~AvBufferContext() {
-      if (allocator_ == nullptr) {
-        // Previously released.
-        return;
-      }
+   protected:
+    ~DecoderPacket() override;
 
-      if (size_ != 0) {
-        DCHECK(buffer_ != nullptr);
-        allocator_->ReleasePayloadBuffer(buffer_);
-        return;
-      }
-
-      DCHECK(buffer_ == nullptr);
-    }
-
-    uint8_t* buffer() { return buffer_; }
-
-    size_t size() { return size_; }
-
-    // Releases ownership of the buffer.
-    uint8_t* Release() {
-      DCHECK(allocator_) << "AvBufferContext released twice";
-      uint8_t* result = buffer_;
-      buffer_ = nullptr;
-      size_ = 0;
-      allocator_ = nullptr;
-      return result;
-    }
+    void Release() override;
 
    private:
-    uint8_t* buffer_;
-    size_t size_;
-    PayloadAllocator* allocator_;
+    DecoderPacket(int64_t pts, AVBufferRef* av_buffer_ref)
+        : Packet(pts,
+                 false,
+                 static_cast<size_t>(av_buffer_ref->size),
+                 av_buffer_ref->data),
+          av_buffer_ref_(av_buffer_ref) {
+      DCHECK(av_buffer_ref->size >= 0);
+    }
+
+    AVBufferRef* av_buffer_ref_;
   };
 
   // Decodes from av_packet into av_frame_ptr. The result indicates how many

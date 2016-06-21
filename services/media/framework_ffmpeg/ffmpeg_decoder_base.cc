@@ -93,5 +93,13 @@ bool FfmpegDecoderBase::UnprepareInputPacket(const PacketPtr& input,
   return true;
 }
 
+FfmpegDecoderBase::DecoderPacket::~DecoderPacket() {
+  av_buffer_unref(&av_buffer_ref_);
+}
+
+void FfmpegDecoderBase::DecoderPacket::Release() {
+  delete this;
+}
+
 }  // namespace media
 }  // namespace mojo

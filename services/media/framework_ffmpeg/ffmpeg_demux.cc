@@ -295,6 +295,9 @@ PacketPtr FfmpegDemuxImpl::PullPacket(size_t* stream_index_out) {
   *stream_index_out = static_cast<size_t>(av_packet->stream_index);
   // TODO(dalesat): What if the packet has no PTS or duration?
   next_pts_ = av_packet->pts + av_packet->duration;
+  // TODO(dalesat): Implement packet side data.
+  DCHECK(av_packet->side_data == nullptr) << "side data not implemented";
+  DCHECK(av_packet->side_data_elems == 0);
 
   return DemuxPacket::Create(std::move(av_packet));
 }

@@ -5,6 +5,8 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "mojo/services/media/common/cpp/timeline.h"
+#include "mojo/services/media/common/cpp/timeline_rate.h"
 #include "services/media/framework_ffmpeg/ffmpeg_formatting.h"
 #include "services/media/framework_ffmpeg/ffmpeg_video_decoder.h"
 extern "C" {
@@ -21,6 +23,19 @@ FfmpegVideoDecoder::FfmpegVideoDecoder(AvCodecContextPtr av_codec_context)
   context()->opaque = this;
   context()->get_buffer2 = AllocateBufferForAvFrame;
   context()->refcounted_frames = 1;
+
+  // Turn on multi-proc decoding by allowing the decoder to use three threads
+  // (the calling thread and the two specified here). FF_THREAD_FRAME means
+  // that threads are assigned an entire frame.
+  // TODO(dalesat): Consider using FF_THREAD_SLICE.
+  context()->thread_count = 2;
+  context()->thread_type = FF_THREAD_FRAME;
+
+  // Determine the frame rate in frames per nanosecond so we can translate pts
+  // values from frame index to nanoseconds.
+  frame_rate_in_frames_per_ns_ =
+      TimelineRate(context()->time_base.den,
+                   Timeline::ns_from_seconds(context()->time_base.num));
 }
 
 FfmpegVideoDecoder::~FfmpegVideoDecoder() {}
@@ -63,16 +78,11 @@ PacketPtr FfmpegVideoDecoder::CreateOutputPacket(const AVFrame& av_frame,
                                                  PayloadAllocator* allocator) {
   DCHECK(allocator);
 
-  // Recover the pts deposited in Decode.
-  next_pts_ = av_frame.reordered_opaque;
+  // Recover the pts deposited in Decode and divide it by frames per nanosecond
+  // to get the pts in nanoseconds.
+  next_pts_ = av_frame.reordered_opaque / frame_rate_in_frames_per_ns_;
 
-  AvBufferContext* av_buffer_context =
-      reinterpret_cast<AvBufferContext*>(av_buffer_get_opaque(av_frame.buf[0]));
-
-  return Packet::Create(
-      next_pts_,
-      false,  // The base class is responsible for end-of-stream.
-      av_buffer_context->size(), av_buffer_context->Release(), allocator);
+  return DecoderPacket::Create(next_pts_, av_buffer_ref(av_frame.buf[0]));
 }
 
 PacketPtr FfmpegVideoDecoder::CreateOutputEndOfStreamPacket() {
@@ -121,9 +131,8 @@ int FfmpegVideoDecoder::AllocateBufferForAvFrame(
       PixelFormatFromAVPixelFormat(av_codec_context->pix_fmt))
       .BuildFrameLayout(coded_size, &frame_layout);
 
-  AvBufferContext* av_buffer_context =
-      new AvBufferContext(frame_layout.size, self->allocator_);
-  uint8_t* buffer = av_buffer_context->buffer();
+  uint8_t* buffer = static_cast<uint8_t*>(
+      self->allocator_->AllocatePayloadBuffer(frame_layout.size));
 
   // TODO(dalesat): For investigation purposes only...remove one day.
   if (self->first_frame_) {
@@ -168,24 +177,19 @@ int FfmpegVideoDecoder::AllocateBufferForAvFrame(
   av_frame->reordered_opaque = av_codec_context->reordered_opaque;
 
   DCHECK(av_frame->data[0] == buffer);
-  av_frame->buf[0] =
-      av_buffer_create(buffer, av_buffer_context->size(),
-                       ReleaseBufferForAvFrame, av_buffer_context,
-                       0);  // flags
+  av_frame->buf[0] = av_buffer_create(buffer, frame_layout.size,
+                                      ReleaseBufferForAvFrame, self->allocator_,
+                                      0);  // flags
 
   return 0;
 }
 
 void FfmpegVideoDecoder::ReleaseBufferForAvFrame(void* opaque,
                                                  uint8_t* buffer) {
-  AvBufferContext* av_buffer_context =
-      reinterpret_cast<AvBufferContext*>(opaque);
-  DCHECK(av_buffer_context);
-  // Either this buffer has already been released to someone else's ownership,
-  // or it's the same as the buffer parameter.
-  DCHECK(av_buffer_context->buffer() == nullptr ||
-         av_buffer_context->buffer() == buffer);
-  delete av_buffer_context;
+  DCHECK(opaque);
+  DCHECK(buffer);
+  PayloadAllocator* allocator = reinterpret_cast<PayloadAllocator*>(opaque);
+  allocator->ReleasePayloadBuffer(buffer);
 }
 
 }  // namespace media

@@ -122,6 +122,11 @@ void MediaTimelineControllerImpl::SetTimelineTransform(
   int64_t new_reference_time;
   int64_t new_subject_time;
 
+  if (subject_time != kUnspecifiedTime) {
+    new_subject_time = subject_time;
+    end_of_stream_ = false;
+  }
+
   if (effective_subject_time != kUnspecifiedTime) {
     // Infer new_reference_time from effective_subject_time.
     new_reference_time =
@@ -130,8 +135,6 @@ void MediaTimelineControllerImpl::SetTimelineTransform(
     // Figure out what the subject_time will be after this transition.
     if (subject_time == kUnspecifiedTime) {
       new_subject_time = effective_subject_time;
-    } else {
-      new_subject_time = subject_time;
     }
   } else {
     if (effective_reference_time == kUnspecifiedTime) {
@@ -145,8 +148,6 @@ void MediaTimelineControllerImpl::SetTimelineTransform(
     // Figure out what the subject_time will be after this transition.
     if (subject_time == kUnspecifiedTime) {
       new_subject_time = current_timeline_function_(effective_reference_time);
-    } else {
-      new_subject_time = subject_time;
     }
   }
 
@@ -172,6 +173,7 @@ void MediaTimelineControllerImpl::SetTimelineTransform(
 
   // Initiate the transition for each site.
   for (const std::unique_ptr<SiteState>& site_state : site_states_) {
+    site_state->end_of_stream_ = false;
     site_state->consumer_->SetTimelineTransform(
         subject_time, reference_delta, subject_delta, effective_reference_time,
         effective_subject_time, transition->NewCallback());

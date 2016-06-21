@@ -5,6 +5,7 @@
 #ifndef SERVICES_MEDIA_FRAMEWORK_FFMPEG_FFMPEG_VIDEO_DECODER_H_
 #define SERVICES_MEDIA_FRAMEWORK_FFMPEG_FFMPEG_VIDEO_DECODER_H_
 
+#include "mojo/services/media/common/cpp/timeline_rate.h"
 #include "services/media/framework_ffmpeg/ffmpeg_decoder_base.h"
 
 namespace mojo {
@@ -55,6 +56,7 @@ class FfmpegVideoDecoder : public FfmpegDecoderBase {
   bool first_frame_ = true;
   AVColorSpace colorspace_;
   Extent coded_size_;
+  TimelineRate frame_rate_in_frames_per_ns_;
 };
 
 }  // namespace media

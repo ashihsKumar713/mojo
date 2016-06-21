@@ -29,14 +29,14 @@ void MojoProducer::PrimeConnection(const PrimeConnectionCallback& callback) {
 
   if (consumer_.is_bound()) {
     base::AutoLock lock(lock_);
-    max_pushes_outstanding_ = 3;  // TODO(dalesat): Made up!
+    max_pushes_outstanding_ = 4;  // TODO(dalesat): Made up!
     demand = current_pushes_outstanding_ < max_pushes_outstanding_
                  ? Demand::kPositive
                  : Demand::kNegative;
   } else {
     demand = Demand::kNeutral;
     if (!mojo_allocator_.initialized()) {
-      mojo_allocator_.InitNew(2048 * 1024);  // TODO(dalesat): Made up!
+      mojo_allocator_.InitNew(4096 * 1024);  // TODO(dalesat): Made up!
     }
   }
 
@@ -116,7 +116,7 @@ void MojoProducer::Connect(InterfaceHandle<MediaConsumer> consumer,
   consumer_ = MediaConsumerPtr::Create(std::move(consumer));
 
   if (!mojo_allocator_.initialized()) {
-    mojo_allocator_.InitNew(2048 * 1024);  // TODO(dalesat): Made up!
+    mojo_allocator_.InitNew(4096 * 1024);  // TODO(dalesat): Made up!
   }
 
   consumer_->SetBuffer(mojo_allocator_.GetDuplicateHandle(),

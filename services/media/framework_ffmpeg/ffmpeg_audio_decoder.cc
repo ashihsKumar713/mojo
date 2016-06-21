@@ -77,12 +77,6 @@ PacketPtr FfmpegAudioDecoder::CreateOutputPacket(const AVFrame& av_frame,
     next_pts_ = pts;
   }
 
-  uint64_t payload_size;
-  void* payload_buffer;
-
-  AvBufferContext* av_buffer_context =
-      reinterpret_cast<AvBufferContext*>(av_buffer_get_opaque(av_frame.buf[0]));
-
   if (lpcm_util_) {
     // We need to interleave. The non-interleaved frames are in a buffer that
     // was allocated from the default allocator. That buffer will get released
@@ -90,24 +84,22 @@ PacketPtr FfmpegAudioDecoder::CreateOutputPacket(const AVFrame& av_frame,
     // interleaved frames, which we get from the provided allocator.
     DCHECK(stream_type_);
     DCHECK(stream_type_->audio());
-    payload_size = stream_type_->audio()->min_buffer_size(av_frame.nb_samples);
-    payload_buffer = allocator->AllocatePayloadBuffer(payload_size);
+    uint64_t payload_size =
+        stream_type_->audio()->min_buffer_size(av_frame.nb_samples);
+    void* payload_buffer = allocator->AllocatePayloadBuffer(payload_size);
 
-    lpcm_util_->Interleave(av_buffer_context->buffer(),
-                           av_buffer_context->size(), payload_buffer,
-                           av_frame.nb_samples);
+    lpcm_util_->Interleave(av_frame.buf[0]->data, av_frame.buf[0]->size,
+                           payload_buffer, av_frame.nb_samples);
+
+    return Packet::Create(
+        pts,
+        false,  // The base class is responsible for end-of-stream.
+        payload_size, payload_buffer, allocator);
   } else {
     // We don't need to interleave. The interleaved frames are in a buffer that
-    // was allocated from the correct allocator. We take ownership of the buffer
-    // by calling Release here so that ReleaseBufferForAvFrame won't release it.
-    payload_size = av_buffer_context->size();
-    payload_buffer = av_buffer_context->Release();
+    // was allocated from the correct allocator.
+    return DecoderPacket::Create(pts, av_buffer_ref(av_frame.buf[0]));
   }
-
-  return Packet::Create(
-      pts,
-      false,  // The base class is responsible for end-of-stream.
-      payload_size, payload_buffer, allocator);
 }
 
 PacketPtr FfmpegAudioDecoder::CreateOutputEndOfStreamPacket() {
@@ -137,9 +129,8 @@ int FfmpegAudioDecoder::AllocateBufferForAvFrame(
     return buffer_size;
   }
 
-  AvBufferContext* av_buffer_context =
-      new AvBufferContext(buffer_size, self->allocator_);
-  uint8_t* buffer = av_buffer_context->buffer();
+  uint8_t* buffer = static_cast<uint8_t*>(
+      self->allocator_->AllocatePayloadBuffer(buffer_size));
 
   if (!av_sample_fmt_is_planar(av_sample_format)) {
     // Samples are interleaved. There's just one buffer.
@@ -181,23 +172,19 @@ int FfmpegAudioDecoder::AllocateBufferForAvFrame(
     }
   }
 
-  av_frame->buf[0] = av_buffer_create(
-      buffer, buffer_size, ReleaseBufferForAvFrame, av_buffer_context,
-      0);  // flags
+  av_frame->buf[0] = av_buffer_create(buffer, buffer_size,
+                                      ReleaseBufferForAvFrame, self->allocator_,
+                                      0);  // flags
 
   return 0;
 }
 
 void FfmpegAudioDecoder::ReleaseBufferForAvFrame(void* opaque,
                                                  uint8_t* buffer) {
-  AvBufferContext* av_buffer_context =
-      reinterpret_cast<AvBufferContext*>(opaque);
-  DCHECK(av_buffer_context);
-  // Either this buffer has already been released to someone else's ownership,
-  // or it's the same as the buffer parameter.
-  DCHECK(av_buffer_context->buffer() == nullptr ||
-         av_buffer_context->buffer() == buffer);
-  delete av_buffer_context;
+  DCHECK(opaque);
+  DCHECK(buffer);
+  PayloadAllocator* allocator = reinterpret_cast<PayloadAllocator*>(opaque);
+  allocator->ReleasePayloadBuffer(buffer);
 }
 
 }  // namespace media
