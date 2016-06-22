@@ -40,32 +40,6 @@ class MediaSinkImpl : public MediaFactoryService::Product<MediaSink>,
       InterfaceRequest<MediaTimelineControlSite> req) override;
 
  private:
-  class NullTimelineControlSite : public MediaTimelineControlSite,
-                                  public TimelineConsumer {
-   public:
-    NullTimelineControlSite(
-        InterfaceRequest<MediaTimelineControlSite> control_site_request);
-
-    ~NullTimelineControlSite() override;
-
-    // MediaTimelineControlSite implementation.
-    void GetStatus(uint64_t version_last_seen,
-                   const GetStatusCallback& callback) override;
-
-    void GetTimelineConsumer(
-        InterfaceRequest<TimelineConsumer> timeline_consumer) override;
-
-    // TimelineConsumer implementation.
-    void SetTimelineTransform(
-        TimelineTransformPtr timeline_transform,
-        const SetTimelineTransformCallback& callback) override;
-
-   private:
-    Binding<MediaTimelineControlSite> control_site_binding_;
-    Binding<TimelineConsumer> consumer_binding_;
-    GetStatusCallback get_status_callback_;
-  };
-
   MediaSinkImpl(InterfaceHandle<MediaRenderer> renderer,
                 MediaTypePtr media_type,
                 InterfaceRequest<MediaSink> request,

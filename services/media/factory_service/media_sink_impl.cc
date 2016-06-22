@@ -28,6 +28,7 @@ MediaSinkImpl::MediaSinkImpl(InterfaceHandle<MediaRenderer> renderer,
       consumer_(MojoConsumer::Create()),
       producer_(MojoProducer::Create()),
       renderer_(MediaRendererPtr::Create(renderer.Pass())) {
+  DCHECK(renderer_);
   DCHECK(media_type);
 
   PartRef consumer_ref = graph_.Add(consumer_);
@@ -48,15 +49,6 @@ MediaSinkImpl::MediaSinkImpl(InterfaceHandle<MediaRenderer> renderer,
           producer_->FlushConnection(callback);
         });
       });
-
-  // TODO(dalesat): Temporary, remove.
-  if (!renderer_) {
-    // Throwing away the content.
-    graph_.ConnectParts(consumer_ref, producer_ref);
-    graph_.Prepare();
-    ready_.Occur();
-    return;
-  }
 
   // TODO(dalesat): Once we have c++14, get rid of this shared pointer hack.
   input_stream_type_ = media_type.To<std::unique_ptr<StreamType>>();
@@ -101,37 +93,8 @@ void MediaSinkImpl::GetConsumer(InterfaceRequest<MediaConsumer> consumer) {
 
 void MediaSinkImpl::GetTimelineControlSite(
     InterfaceRequest<MediaTimelineControlSite> req) {
-  if (renderer_) {
-    renderer_->GetTimelineControlSite(req.Pass());
-    return;
-  }
-
-  new NullTimelineControlSite(req.Pass());
-}
-
-MediaSinkImpl::NullTimelineControlSite::NullTimelineControlSite(
-    InterfaceRequest<MediaTimelineControlSite> control_site_request)
-    : control_site_binding_(this, control_site_request.Pass()),
-      consumer_binding_(this) {}
-
-MediaSinkImpl::NullTimelineControlSite::~NullTimelineControlSite() {}
-
-void MediaSinkImpl::NullTimelineControlSite::GetStatus(
-    uint64_t version_last_seen,
-    const GetStatusCallback& callback) {
-  DCHECK(get_status_callback_.is_null());
-  get_status_callback_ = callback;
-}
-
-void MediaSinkImpl::NullTimelineControlSite::GetTimelineConsumer(
-    InterfaceRequest<TimelineConsumer> timeline_consumer) {
-  consumer_binding_.Bind(timeline_consumer.Pass());
-}
-
-void MediaSinkImpl::NullTimelineControlSite::SetTimelineTransform(
-    TimelineTransformPtr timeline_transform,
-    const SetTimelineTransformCallback& callback) {
-  callback.Run(true);
+  DCHECK(renderer_);
+  renderer_->GetTimelineControlSite(req.Pass());
 }
 
 }  // namespace media

@@ -65,14 +65,18 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
       Stream& stream = *streams_.back();
       switch (stream_type->medium) {
         case MediaTypeMedium::AUDIO:
-          stream.renderer_ = audio_renderer_.Pass();
-          PrepareStream(&stream, streams_.size() - 1, stream_type,
-                        callback_joiner->NewCallback());
+          if (audio_renderer_) {
+            stream.renderer_ = audio_renderer_.Pass();
+            PrepareStream(&stream, streams_.size() - 1, stream_type,
+                          callback_joiner->NewCallback());
+          }
           break;
         case MediaTypeMedium::VIDEO:
-          stream.renderer_ = video_renderer_.Pass();
-          PrepareStream(&stream, streams_.size() - 1, stream_type,
-                        callback_joiner->NewCallback());
+          if (video_renderer_) {
+            stream.renderer_ = video_renderer_.Pass();
+            PrepareStream(&stream, streams_.size() - 1, stream_type,
+                          callback_joiner->NewCallback());
+          }
           break;
         // TODO(dalesat): Enable other stream types.
         default:
