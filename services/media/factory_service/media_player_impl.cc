@@ -195,17 +195,15 @@ void MediaPlayerImpl::Update() {
           // operation completes.
           state_ = State::kWaiting;
           timeline_consumer_->SetTimelineTransform(
-              transform_subject_time_, 1, 1,
-              Timeline::local_now() + kMinimumLeadTime, kUnspecifiedTime,
-              [this](bool completed) {
+              CreateTimelineTransform(1.0f), [this](bool completed) {
                 state_ = State::kPlaying;
                 // Now we're in |kPlaying|. Call |Update| to see if there's
-                // further
-                // action to be taken.
+                // further action to be taken.
                 Update();
               });
 
-          transform_subject_time_ = kUnspecifiedTime;
+          // Done for now. We're in |kWaiting|, and the callback will call
+          // |Update| when the flush is complete.
           return;
         }
 
@@ -223,17 +221,15 @@ void MediaPlayerImpl::Update() {
           // transition to |kPrimed| when the operation completes.
           state_ = State::kWaiting;
           timeline_consumer_->SetTimelineTransform(
-              transform_subject_time_, 1, 0,
-              Timeline::local_now() + kMinimumLeadTime, kUnspecifiedTime,
-              [this](bool completed) {
+              CreateTimelineTransform(0.0f), [this](bool completed) {
                 state_ = State::kPrimed;
                 // Now we're in |kPrimed|. Call |Update| to see if there's
-                // further
-                // action to be taken.
+                // further action to be taken.
                 Update();
               });
 
-          transform_subject_time_ = kUnspecifiedTime;
+          // Done for now. We're in |kWaiting|, and the callback will call
+          // |Update| when the flush is complete.
           return;
         }
 
@@ -254,6 +250,20 @@ void MediaPlayerImpl::Update() {
         return;
     }
   }
+}
+
+TimelineTransformPtr MediaPlayerImpl::CreateTimelineTransform(float rate) {
+  TimelineTransformPtr result = TimelineTransform::New();
+  result->reference_time = Timeline::local_now() + kMinimumLeadTime;
+  result->subject_time = transform_subject_time_;
+
+  TimelineRate timeline_rate(rate);
+  result->reference_delta = timeline_rate.reference_delta();
+  result->subject_delta = timeline_rate.subject_delta();
+
+  transform_subject_time_ = kUnspecifiedTime;
+
+  return result.Pass();
 }
 
 void MediaPlayerImpl::GetStatus(uint64_t version_last_seen,

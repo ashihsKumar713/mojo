@@ -74,25 +74,16 @@ void MediaTimelineControllerImpl::GetTimelineConsumer(
 }
 
 void MediaTimelineControllerImpl::SetTimelineTransform(
-    int64_t subject_time,
-    uint32_t reference_delta,
-    uint32_t subject_delta,
-    int64_t effective_reference_time,
-    int64_t effective_subject_time,
+    TimelineTransformPtr timeline_transform,
     const SetTimelineTransformCallback& callback) {
-  // At most one effective time may be specified.
-  RCHECK(effective_subject_time == kUnspecifiedTime ||
-         effective_reference_time == kUnspecifiedTime);
-  // effective_subject_time can only be specified if we're progressing.
-  RCHECK(effective_subject_time == kUnspecifiedTime ||
-         current_timeline_function_.subject_delta() != 0u);
-  RCHECK(reference_delta != 0);
+  RCHECK(timeline_transform);
+  RCHECK(timeline_transform->reference_delta != 0);
 
-  // There can only be once SetTimelineTransform transition pending at any
+  // There can only be one SetTimelineTransform transition pending at any
   // moment, so a new SetTimelineTransform call that arrives before a previous
   // one completes cancels the previous one. This causes some problems for us,
-  // because some sites may complete the previous transition while other may
-  // not.
+  // because some sites may have completed the previous transition while other
+  // may not.
   //
   // We start by noticing that there's an incomplete previous transition, and
   // we 'cancel' it, meaning we call its callback with a false complete
@@ -100,16 +91,9 @@ void MediaTimelineControllerImpl::SetTimelineTransform(
   //
   // If we're cancelling a previous transition, we need to take steps to make
   // sure the sites will end up in the right state regardless of whether they
-  // completed the previous transition. We do two things:
-  //
-  // 1) If subject_time isn't specified, we infer it here and supply the
-  //    inferred value to the sites, so there's no disagreement about its
-  //    value.
-  // 2) If the effective_subject_time is specified rather than the
-  //    effective_reference_time, we infer effective_reference_time and send
-  //    it to the sites instead of effective_subject_time, so there's no
-  //    disagreement about effective time and so that no sites reject the
-  //    transition due to having a zero subject_delta.
+  // completed the previous transition. Specifically, if subject_time isn't
+  // specified, we infer it here and supply the inferred value to the sites,
+  // so there's no disagreement about its value.
 
   std::shared_ptr<TimelineTransition> pending_transition =
       pending_transition_.lock();
@@ -118,65 +102,53 @@ void MediaTimelineControllerImpl::SetTimelineTransform(
     pending_transition->Cancel();
   }
 
-  // These will be recorded as part of the new TimelineFunction.
-  int64_t new_reference_time;
-  int64_t new_subject_time;
-
-  if (subject_time != kUnspecifiedTime) {
-    new_subject_time = subject_time;
+  if (timeline_transform->subject_time != kUnspecifiedTime) {
+    // We're seeking, so we may not be at end-of-stream anymore. The control
+    // sites will signal end-of-stream again if we are.
     end_of_stream_ = false;
   }
 
-  if (effective_subject_time != kUnspecifiedTime) {
-    // Infer new_reference_time from effective_subject_time.
-    new_reference_time =
-        current_timeline_function_.ApplyInverse(effective_subject_time);
+  // These will be recorded as part of the new TimelineFunction.
+  int64_t reference_time =
+      timeline_transform->reference_time == kUnspecifiedTime
+          ? (Timeline::local_now() + kDefaultLeadTime)
+          : timeline_transform->reference_time;
+  int64_t subject_time = timeline_transform->subject_time;
 
-    // Figure out what the subject_time will be after this transition.
-    if (subject_time == kUnspecifiedTime) {
-      new_subject_time = effective_subject_time;
-    }
-  } else {
-    if (effective_reference_time == kUnspecifiedTime) {
-      // Neither effective time was specified. Effective time is now.
-      effective_reference_time = Timeline::local_now() + kDefaultLeadTime;
-    }
+  // Determine the actual subject time, inferring it if it wasn't specified.
+  int64_t actual_subject_time =
+      subject_time == kUnspecifiedTime
+          ? current_timeline_function_(reference_time)
+          : subject_time;
 
-    // new_reference_time is just effective_reference_time.
-    new_reference_time = effective_reference_time;
-
-    // Figure out what the subject_time will be after this transition.
-    if (subject_time == kUnspecifiedTime) {
-      new_subject_time = current_timeline_function_(effective_reference_time);
-    }
+  if (pending_transition && subject_time == kUnspecifiedTime) {
+    // We're cancelling a pending transition, which may have already completed
+    // at one or more of the control sites. We don't want the sites to have to
+    // infer the subject_time, because we can't be sure what subject_time a
+    // site will infer.
+    subject_time = actual_subject_time;
   }
 
-  if (pending_transition) {
-    // This transition cancels a previous one. Use effective_reference_time
-    // rather than effective_subject_time, because we can't be sure what
-    // effective_subject_time will mean to the sites.
-    effective_reference_time = new_reference_time;
-    effective_subject_time = kUnspecifiedTime;
-
-    // We don't want the sites to have to infer the subject_time, because we
-    // can't be sure what subject_time a site will infer.
-    subject_time = new_subject_time;
-  }
-
-  // Recording the new pending transition.
+  // Record the new pending transition.
   std::shared_ptr<TimelineTransition> transition =
       std::shared_ptr<TimelineTransition>(
-          new TimelineTransition(new_reference_time, new_subject_time,
-                                 reference_delta, subject_delta, callback));
+          new TimelineTransition(reference_time, actual_subject_time,
+                                 timeline_transform->reference_delta,
+                                 timeline_transform->subject_delta, callback));
 
   pending_transition_ = transition;
+
+  TimelineTransform transform_to_send;
+  transform_to_send.reference_time = reference_time;
+  transform_to_send.subject_time = subject_time;
+  transform_to_send.reference_delta = timeline_transform->reference_delta;
+  transform_to_send.subject_delta = timeline_transform->subject_delta;
 
   // Initiate the transition for each site.
   for (const std::unique_ptr<SiteState>& site_state : site_states_) {
     site_state->end_of_stream_ = false;
-    site_state->consumer_->SetTimelineTransform(
-        subject_time, reference_delta, subject_delta, effective_reference_time,
-        effective_subject_time, transition->NewCallback());
+    site_state->consumer_->SetTimelineTransform(transform_to_send.Clone(),
+                                                transition->NewCallback());
   }
 
   // If and when this transition is complete, adopt the new TimelineFunction

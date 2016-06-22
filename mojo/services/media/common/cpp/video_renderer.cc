@@ -141,53 +141,32 @@ void VideoRenderer::GetTimelineConsumer(
 }
 
 void VideoRenderer::SetTimelineTransform(
-    int64_t subject_time,
-    uint32_t reference_delta,
-    uint32_t subject_delta,
-    int64_t effective_reference_time,
-    int64_t effective_subject_time,
+    TimelineTransformPtr timeline_transform,
     const SetTimelineTransformCallback& callback) {
-  // At most one of the effective times must be specified.
-  MOJO_DCHECK(effective_reference_time == kUnspecifiedTime ||
-              effective_subject_time == kUnspecifiedTime);
-  // effective_subject_time can only be used if we're progressing already.
-  MOJO_DCHECK(effective_subject_time == kUnspecifiedTime ||
-              current_timeline_function_.subject_delta() != 0);
-  MOJO_DCHECK(reference_delta != 0);
+  MOJO_DCHECK(timeline_transform);
+  MOJO_DCHECK(timeline_transform->reference_delta != 0);
 
-  if (subject_time != kUnspecifiedTime &&
+  if (timeline_transform->subject_time != kUnspecifiedTime &&
       end_of_stream_pts_ != kUnspecifiedTime) {
     end_of_stream_pts_ = kUnspecifiedTime;
     end_of_stream_published_ = false;
   }
 
-  if (effective_subject_time != kUnspecifiedTime) {
-    // Infer effective_reference_time from effective_subject_time.
-    effective_reference_time =
-        current_timeline_function_.ApplyInverse(effective_subject_time);
-
-    if (subject_time == kUnspecifiedTime) {
-      // Infer subject_time from effective_subject_time.
-      subject_time = effective_subject_time;
-    }
-  } else {
-    if (effective_reference_time == kUnspecifiedTime) {
-      // Neither effective time was specified. Effective time is now.
-      effective_reference_time = Timeline::local_now();
-    }
-
-    if (subject_time == kUnspecifiedTime) {
-      // Infer subject_time from effective_reference_time.
-      subject_time = current_timeline_function_(effective_reference_time);
-    }
-  }
+  int64_t reference_time =
+      timeline_transform->reference_time == kUnspecifiedTime
+          ? Timeline::local_now()
+          : timeline_transform->reference_time;
+  int64_t subject_time = timeline_transform->subject_time == kUnspecifiedTime
+                             ? current_timeline_function_(reference_time)
+                             : timeline_transform->subject_time;
 
   // Eject any previous pending change.
   ClearPendingTimelineFunction(false);
 
   // Queue up the new pending change.
   pending_timeline_function_ = TimelineFunction(
-      effective_reference_time, subject_time, reference_delta, subject_delta);
+      reference_time, subject_time, timeline_transform->reference_delta,
+      timeline_transform->subject_delta);
 
   set_timeline_transform_callback_ = callback;
 }

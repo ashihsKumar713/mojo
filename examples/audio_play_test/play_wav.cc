@@ -497,9 +497,13 @@ void PlayWAVApp::OnNeedsData(MediaResult res) {
   }
 
   if (!clock_started_ && (audio_pipe_->AboveHiWater() || !payload_len_)) {
-    timeline_consumer_->SetTimelineTransform(
-        kUnspecifiedTime, 1, 1, kUnspecifiedTime, kUnspecifiedTime,
-        [](bool completed) {});
+    TimelineTransformPtr timeline_transform = TimelineTransform::New();
+    timeline_transform->reference_time = kUnspecifiedTime;
+    timeline_transform->subject_time = kUnspecifiedTime;
+    timeline_transform->reference_delta = 1;
+    timeline_transform->subject_delta = 1;
+    timeline_consumer_->SetTimelineTransform(timeline_transform.Pass(),
+                                             [](bool completed) {});
     clock_started_ = true;
   }
 }

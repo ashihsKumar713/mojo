@@ -49,11 +49,7 @@ class MediaTimelineControllerImpl
 
   // TimelineConsumer implementation.
   void SetTimelineTransform(
-      int64_t subject_time,
-      uint32_t reference_delta,
-      uint32_t subject_delta,
-      int64_t effective_reference_time,
-      int64_t effective_subject_time,
+      TimelineTransformPtr timeline_transform,
       const SetTimelineTransformCallback& callback) override;
 
  private:

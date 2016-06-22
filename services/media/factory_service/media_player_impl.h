@@ -78,6 +78,9 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
   // Takes action based on current state.
   void Update();
 
+  // Creates a TimelineTransform for the specified rate.
+  TimelineTransformPtr CreateTimelineTransform(float rate);
+
   // Prepares a stream.
   void PrepareStream(Stream* stream,
                      size_t index,

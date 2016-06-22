@@ -212,8 +212,13 @@ void PlayToneApp::GenerateToneCbk(MediaResult res) {
   if (!clock_started_) {
     MOJO_LOG(INFO) << "Setting rate 1/1";
 
+    TimelineTransformPtr timeline_transform = TimelineTransform::New();
+    timeline_transform->reference_time = kUnspecifiedTime;
+    timeline_transform->subject_time = kUnspecifiedTime;
+    timeline_transform->reference_delta = 1;
+    timeline_transform->subject_delta = 1;
     timeline_consumer_->SetTimelineTransform(
-        kUnspecifiedTime, 1, 1, kUnspecifiedTime, kUnspecifiedTime,
+        timeline_transform.Pass(),
         [](bool completed) {});
     clock_started_ = true;
   }
