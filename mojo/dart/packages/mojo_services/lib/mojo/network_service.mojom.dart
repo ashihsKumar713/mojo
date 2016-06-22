@@ -852,52 +852,28 @@ class _NetworkServiceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _networkServiceMethodCreateTcpBoundSocketName:
-        var r = NetworkServiceCreateTcpBoundSocketResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = NetworkServiceCreateTcpBoundSocketResponseParams.deserialize(
+              message.payload);
+          callback(r.result , r.boundTo );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result , r.boundTo );
         break;
       case _networkServiceMethodCreateTcpConnectedSocketName:
-        var r = NetworkServiceCreateTcpConnectedSocketResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = NetworkServiceCreateTcpConnectedSocketResponseParams.deserialize(
+              message.payload);
+          callback(r.result , r.localAddress );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result , r.localAddress );
         break;
       case _networkServiceMethodCreateHttpServerName:
-        var r = NetworkServiceCreateHttpServerResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = NetworkServiceCreateHttpServerResponseParams.deserialize(
+              message.payload);
+          callback(r.result , r.boundTo );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result , r.boundTo );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -986,14 +962,14 @@ class NetworkServiceProxy
   }
   void createTcpBoundSocket(net_address_mojom.NetAddress localAddress,tcp_bound_socket_mojom.TcpBoundSocketInterfaceRequest boundSocket,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo)) {
     if (impl != null) {
-      impl.createTcpBoundSocket(localAddress,boundSocket,callback);
+      impl.createTcpBoundSocket(localAddress,boundSocket,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _NetworkServiceCreateTcpBoundSocketParams();
     params.localAddress = localAddress;
     params.boundSocket = boundSocket;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1012,7 +988,7 @@ class NetworkServiceProxy
   }
   void createTcpConnectedSocket(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddress)) {
     if (impl != null) {
-      impl.createTcpConnectedSocket(remoteAddress,sendStream,receiveStream,clientSocket,callback);
+      impl.createTcpConnectedSocket(remoteAddress,sendStream,receiveStream,clientSocket,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _NetworkServiceCreateTcpConnectedSocketParams();
@@ -1021,7 +997,7 @@ class NetworkServiceProxy
     params.receiveStream = receiveStream;
     params.clientSocket = clientSocket;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1054,14 +1030,14 @@ class NetworkServiceProxy
   }
   void createHttpServer(net_address_mojom.NetAddress localAddress,http_server_mojom.HttpServerDelegateInterface delegate,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundTo)) {
     if (impl != null) {
-      impl.createHttpServer(localAddress,delegate,callback);
+      impl.createHttpServer(localAddress,delegate,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _NetworkServiceCreateHttpServerParams();
     params.localAddress = localAddress;
     params.delegate = delegate;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

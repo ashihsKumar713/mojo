@@ -767,52 +767,28 @@ class _ServiceDescriptionProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _serviceDescriptionMethodGetTopLevelInterfaceName:
-        var r = ServiceDescriptionGetTopLevelInterfaceResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ServiceDescriptionGetTopLevelInterfaceResponseParams.deserialize(
+              message.payload);
+          callback(r.mojomInterface );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.mojomInterface );
         break;
       case _serviceDescriptionMethodGetTypeDefinitionName:
-        var r = ServiceDescriptionGetTypeDefinitionResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ServiceDescriptionGetTypeDefinitionResponseParams.deserialize(
+              message.payload);
+          callback(r.type );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.type );
         break;
       case _serviceDescriptionMethodGetAllTypeDefinitionsName:
-        var r = ServiceDescriptionGetAllTypeDefinitionsResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ServiceDescriptionGetAllTypeDefinitionsResponseParams.deserialize(
+              message.payload);
+          callback(r.definitions );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.definitions );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -859,12 +835,12 @@ class ServiceDescriptionProxy
 
   void getTopLevelInterface(void callback(mojom_types_mojom.MojomInterface mojomInterface)) {
     if (impl != null) {
-      impl.getTopLevelInterface(callback);
+      impl.getTopLevelInterface(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ServiceDescriptionGetTopLevelInterfaceParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -883,13 +859,13 @@ class ServiceDescriptionProxy
   }
   void getTypeDefinition(String typeKey,void callback(mojom_types_mojom.UserDefinedType type)) {
     if (impl != null) {
-      impl.getTypeDefinition(typeKey,callback);
+      impl.getTypeDefinition(typeKey,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ServiceDescriptionGetTypeDefinitionParams();
     params.typeKey = typeKey;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -908,12 +884,12 @@ class ServiceDescriptionProxy
   }
   void getAllTypeDefinitions(void callback(Map<String, mojom_types_mojom.UserDefinedType> definitions)) {
     if (impl != null) {
-      impl.getAllTypeDefinitions(callback);
+      impl.getAllTypeDefinitions(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ServiceDescriptionGetAllTypeDefinitionsParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

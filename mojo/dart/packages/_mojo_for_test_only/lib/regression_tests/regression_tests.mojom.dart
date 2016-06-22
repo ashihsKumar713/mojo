@@ -1664,36 +1664,20 @@ class _CheckMethodWithEmptyResponseProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _checkMethodWithEmptyResponseMethodWithoutParameterAndEmptyResponseName:
-        var r = CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParams.deserialize(
+              message.payload);
+          callback();
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback();
         break;
       case _checkMethodWithEmptyResponseMethodWithParameterAndEmptyResponseName:
-        var r = CheckMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = CheckMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParams.deserialize(
+              message.payload);
+          callback();
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1740,12 +1724,12 @@ class CheckMethodWithEmptyResponseProxy
 
   void withoutParameterAndEmptyResponse(void callback()) {
     if (impl != null) {
-      impl.withoutParameterAndEmptyResponse(callback);
+      impl.withoutParameterAndEmptyResponse(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1764,13 +1748,13 @@ class CheckMethodWithEmptyResponseProxy
   }
   void withParameterAndEmptyResponse(bool b,void callback()) {
     if (impl != null) {
-      impl.withParameterAndEmptyResponse(b,callback);
+      impl.withParameterAndEmptyResponse(b,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _CheckMethodWithEmptyResponseWithParameterAndEmptyResponseParams();
     params.b = b;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1999,20 +1983,12 @@ class _CheckNameCollisionProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _checkNameCollisionMethodWithNameCollisionName:
-        var r = CheckNameCollisionWithNameCollisionResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = CheckNameCollisionWithNameCollisionResponseParams.deserialize(
+              message.payload);
+          callback(r.message , r.response );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.message , r.response );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -2059,14 +2035,14 @@ class CheckNameCollisionProxy
 
   void withNameCollision(bool message,bool response,void callback(bool message, bool response)) {
     if (impl != null) {
-      impl.withNameCollision(message,response,callback);
+      impl.withNameCollision(message,response,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _CheckNameCollisionWithNameCollisionParams();
     params.message = message;
     params.response = response;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -2757,20 +2733,12 @@ class _Regression551ProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _regression551MethodGetName:
-        var r = Regression551GetResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = Regression551GetResponseParams.deserialize(
+              message.payload);
+          callback(r.result );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -2817,13 +2785,13 @@ class Regression551Proxy
 
   void get(List<String> keyPrefixes,void callback(int result)) {
     if (impl != null) {
-      impl.get(keyPrefixes,callback);
+      impl.get(keyPrefixes,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _Regression551GetParams();
     params.keyPrefixes = keyPrefixes;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -3036,20 +3004,12 @@ class _ServiceNameProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _serviceNameMethodServiceNameName:
-        var r = ServiceNameServiceNameResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ServiceNameServiceNameResponseParams.deserialize(
+              message.payload);
+          callback(r.serviceName_ );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.serviceName_ );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -3096,12 +3056,12 @@ class ServiceNameProxy
 
   void serviceName_(void callback(String serviceName_)) {
     if (impl != null) {
-      impl.serviceName_(callback);
+      impl.serviceName_(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ServiceNameServiceNameParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

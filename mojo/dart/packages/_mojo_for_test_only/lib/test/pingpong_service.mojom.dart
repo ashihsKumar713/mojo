@@ -664,36 +664,20 @@ class _PingPongServiceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _pingPongServiceMethodPingTargetUrlName:
-        var r = PingPongServicePingTargetUrlResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = PingPongServicePingTargetUrlResponseParams.deserialize(
+              message.payload);
+          callback(r.ok );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.ok );
         break;
       case _pingPongServiceMethodPingTargetServiceName:
-        var r = PingPongServicePingTargetServiceResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = PingPongServicePingTargetServiceResponseParams.deserialize(
+              message.payload);
+          callback(r.ok );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.ok );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -768,14 +752,14 @@ class PingPongServiceProxy
   }
   void pingTargetUrl(String url,int count,void callback(bool ok)) {
     if (impl != null) {
-      impl.pingTargetUrl(url,count,callback);
+      impl.pingTargetUrl(url,count,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _PingPongServicePingTargetUrlParams();
     params.url = url;
     params.count = count;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -794,14 +778,14 @@ class PingPongServiceProxy
   }
   void pingTargetService(PingPongServiceInterface service,int count,void callback(bool ok)) {
     if (impl != null) {
-      impl.pingTargetService(service,count,callback);
+      impl.pingTargetService(service,count,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _PingPongServicePingTargetServiceParams();
     params.service = service;
     params.count = count;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

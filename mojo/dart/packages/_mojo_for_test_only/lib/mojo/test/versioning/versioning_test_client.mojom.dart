@@ -698,68 +698,36 @@ class _HumanResourceDatabaseProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _humanResourceDatabaseMethodAddEmployeeName:
-        var r = HumanResourceDatabaseAddEmployeeResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = HumanResourceDatabaseAddEmployeeResponseParams.deserialize(
+              message.payload);
+          callback(r.success );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.success );
         break;
       case _humanResourceDatabaseMethodQueryEmployeeName:
-        var r = HumanResourceDatabaseQueryEmployeeResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = HumanResourceDatabaseQueryEmployeeResponseParams.deserialize(
+              message.payload);
+          callback(r.employee , r.fingerPrint );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.employee , r.fingerPrint );
         break;
       case _humanResourceDatabaseMethodAttachFingerPrintName:
-        var r = HumanResourceDatabaseAttachFingerPrintResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = HumanResourceDatabaseAttachFingerPrintResponseParams.deserialize(
+              message.payload);
+          callback(r.success );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.success );
         break;
       case _humanResourceDatabaseMethodListEmployeeIdsName:
-        var r = HumanResourceDatabaseListEmployeeIdsResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = HumanResourceDatabaseListEmployeeIdsResponseParams.deserialize(
+              message.payload);
+          callback(r.ids );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.ids );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -806,13 +774,13 @@ class HumanResourceDatabaseProxy
 
   void addEmployee(Employee employee,void callback(bool success)) {
     if (impl != null) {
-      impl.addEmployee(employee,callback);
+      impl.addEmployee(employee,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _HumanResourceDatabaseAddEmployeeParams();
     params.employee = employee;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -831,14 +799,14 @@ class HumanResourceDatabaseProxy
   }
   void queryEmployee(int id,bool retrieveFingerPrint,void callback(Employee employee, List<int> fingerPrint)) {
     if (impl != null) {
-      impl.queryEmployee(id,retrieveFingerPrint,callback);
+      impl.queryEmployee(id,retrieveFingerPrint,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _HumanResourceDatabaseQueryEmployeeParams();
     params.id = id;
     params.retrieveFingerPrint = retrieveFingerPrint;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -857,14 +825,14 @@ class HumanResourceDatabaseProxy
   }
   void attachFingerPrint(int id,List<int> fingerPrint,void callback(bool success)) {
     if (impl != null) {
-      impl.attachFingerPrint(id,fingerPrint,callback);
+      impl.attachFingerPrint(id,fingerPrint,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _HumanResourceDatabaseAttachFingerPrintParams();
     params.id = id;
     params.fingerPrint = fingerPrint;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -883,12 +851,12 @@ class HumanResourceDatabaseProxy
   }
   void listEmployeeIds(void callback(List<int> ids)) {
     if (impl != null) {
-      impl.listEmployeeIds(callback);
+      impl.listEmployeeIds(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _HumanResourceDatabaseListEmployeeIdsParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

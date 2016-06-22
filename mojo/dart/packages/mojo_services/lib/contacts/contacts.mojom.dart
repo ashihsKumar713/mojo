@@ -662,68 +662,36 @@ class _ContactsServiceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _contactsServiceMethodGetCountName:
-        var r = ContactsServiceGetCountResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ContactsServiceGetCountResponseParams.deserialize(
+              message.payload);
+          callback(r.count );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.count );
         break;
       case _contactsServiceMethodGetName:
-        var r = ContactsServiceGetResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ContactsServiceGetResponseParams.deserialize(
+              message.payload);
+          callback(r.contacts );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.contacts );
         break;
       case _contactsServiceMethodGetEmailsName:
-        var r = ContactsServiceGetEmailsResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ContactsServiceGetEmailsResponseParams.deserialize(
+              message.payload);
+          callback(r.emails );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.emails );
         break;
       case _contactsServiceMethodGetPhotoName:
-        var r = ContactsServiceGetPhotoResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ContactsServiceGetPhotoResponseParams.deserialize(
+              message.payload);
+          callback(r.photoUrl );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.photoUrl );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -770,13 +738,13 @@ class ContactsServiceProxy
 
   void getCount(String filter,void callback(int count)) {
     if (impl != null) {
-      impl.getCount(filter,callback);
+      impl.getCount(filter,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ContactsServiceGetCountParams();
     params.filter = filter;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -795,7 +763,7 @@ class ContactsServiceProxy
   }
   void get(String filter,int offset,int limit,void callback(List<Contact> contacts)) {
     if (impl != null) {
-      impl.get(filter,offset,limit,callback);
+      impl.get(filter,offset,limit,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ContactsServiceGetParams();
@@ -803,7 +771,7 @@ class ContactsServiceProxy
     params.offset = offset;
     params.limit = limit;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -822,13 +790,13 @@ class ContactsServiceProxy
   }
   void getEmails(int id,void callback(List<String> emails)) {
     if (impl != null) {
-      impl.getEmails(id,callback);
+      impl.getEmails(id,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ContactsServiceGetEmailsParams();
     params.id = id;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -847,14 +815,14 @@ class ContactsServiceProxy
   }
   void getPhoto(int id,bool highResolution,void callback(String photoUrl)) {
     if (impl != null) {
-      impl.getPhoto(id,highResolution,callback);
+      impl.getPhoto(id,highResolution,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ContactsServiceGetPhotoParams();
     params.id = id;
     params.highResolution = highResolution;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

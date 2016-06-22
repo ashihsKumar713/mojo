@@ -974,100 +974,52 @@ class _MediaSourceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaSourceMethodGetStreamsName:
-        var r = MediaSourceGetStreamsResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = MediaSourceGetStreamsResponseParams.deserialize(
+              message.payload);
+          callback(r.streams );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.streams );
         break;
       case _mediaSourceMethodGetStatusName:
-        var r = MediaSourceGetStatusResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = MediaSourceGetStatusResponseParams.deserialize(
+              message.payload);
+          callback(r.version , r.status );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.version , r.status );
         break;
       case _mediaSourceMethodPrepareName:
-        var r = MediaSourcePrepareResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = MediaSourcePrepareResponseParams.deserialize(
+              message.payload);
+          callback();
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback();
         break;
       case _mediaSourceMethodPrimeName:
-        var r = MediaSourcePrimeResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = MediaSourcePrimeResponseParams.deserialize(
+              message.payload);
+          callback();
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback();
         break;
       case _mediaSourceMethodFlushName:
-        var r = MediaSourceFlushResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = MediaSourceFlushResponseParams.deserialize(
+              message.payload);
+          callback();
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback();
         break;
       case _mediaSourceMethodSeekName:
-        var r = MediaSourceSeekResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = MediaSourceSeekResponseParams.deserialize(
+              message.payload);
+          callback();
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1114,12 +1066,12 @@ class MediaSourceProxy
 
   void getStreams(void callback(List<MediaSourceStreamDescriptor> streams)) {
     if (impl != null) {
-      impl.getStreams(callback);
+      impl.getStreams(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _MediaSourceGetStreamsParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1168,13 +1120,13 @@ class MediaSourceProxy
   }
   void getStatus(int versionLastSeen,void callback(int version, MediaSourceStatus status)) {
     if (impl != null) {
-      impl.getStatus(versionLastSeen,callback);
+      impl.getStatus(versionLastSeen,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _MediaSourceGetStatusParams();
     params.versionLastSeen = versionLastSeen;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1193,12 +1145,12 @@ class MediaSourceProxy
   }
   void prepare(void callback()) {
     if (impl != null) {
-      impl.prepare(callback);
+      impl.prepare(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _MediaSourcePrepareParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1217,12 +1169,12 @@ class MediaSourceProxy
   }
   void prime(void callback()) {
     if (impl != null) {
-      impl.prime(callback);
+      impl.prime(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _MediaSourcePrimeParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1241,12 +1193,12 @@ class MediaSourceProxy
   }
   void flush(void callback()) {
     if (impl != null) {
-      impl.flush(callback);
+      impl.flush(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _MediaSourceFlushParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1265,13 +1217,13 @@ class MediaSourceProxy
   }
   void seek(int position,void callback()) {
     if (impl != null) {
-      impl.seek(position,callback);
+      impl.seek(position,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _MediaSourceSeekParams();
     params.position = position;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

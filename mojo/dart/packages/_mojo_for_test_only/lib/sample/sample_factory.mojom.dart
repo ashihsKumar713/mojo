@@ -906,20 +906,12 @@ class _NamedObjectProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _namedObjectMethodGetNameName:
-        var r = NamedObjectGetNameResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = NamedObjectGetNameResponseParams.deserialize(
+              message.payload);
+          callback(r.name );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.name );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -980,12 +972,12 @@ class NamedObjectProxy
   }
   void getName(void callback(String name)) {
     if (impl != null) {
-      impl.getName(callback);
+      impl.getName(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _NamedObjectGetNameParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1212,68 +1204,36 @@ class _FactoryProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _factoryMethodDoStuffName:
-        var r = FactoryDoStuffResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FactoryDoStuffResponseParams.deserialize(
+              message.payload);
+          callback(r.response , r.text );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.response , r.text );
         break;
       case _factoryMethodDoStuff2Name:
-        var r = FactoryDoStuff2ResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FactoryDoStuff2ResponseParams.deserialize(
+              message.payload);
+          callback(r.text );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.text );
         break;
       case _factoryMethodRequestImportedInterfaceName:
-        var r = FactoryRequestImportedInterfaceResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FactoryRequestImportedInterfaceResponseParams.deserialize(
+              message.payload);
+          callback(r.obj );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.obj );
         break;
       case _factoryMethodTakeImportedInterfaceName:
-        var r = FactoryTakeImportedInterfaceResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FactoryTakeImportedInterfaceResponseParams.deserialize(
+              message.payload);
+          callback(r.obj );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.obj );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1320,14 +1280,14 @@ class FactoryProxy
 
   void doStuff(Request request,core.MojoMessagePipeEndpoint pipe,void callback(Response response, String text)) {
     if (impl != null) {
-      impl.doStuff(request,pipe,callback);
+      impl.doStuff(request,pipe,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FactoryDoStuffParams();
     params.request = request;
     params.pipe = pipe;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1346,13 +1306,13 @@ class FactoryProxy
   }
   void doStuff2(core.MojoDataPipeConsumer pipe,void callback(String text)) {
     if (impl != null) {
-      impl.doStuff2(pipe,callback);
+      impl.doStuff2(pipe,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FactoryDoStuff2Params();
     params.pipe = pipe;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1385,13 +1345,13 @@ class FactoryProxy
   }
   void requestImportedInterface(sample_import_mojom.ImportedInterfaceInterfaceRequest obj,void callback(sample_import_mojom.ImportedInterfaceInterfaceRequest obj)) {
     if (impl != null) {
-      impl.requestImportedInterface(obj,callback);
+      impl.requestImportedInterface(obj,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FactoryRequestImportedInterfaceParams();
     params.obj = obj;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1410,13 +1370,13 @@ class FactoryProxy
   }
   void takeImportedInterface(sample_import_mojom.ImportedInterfaceInterface obj,void callback(sample_import_mojom.ImportedInterfaceInterface obj)) {
     if (impl != null) {
-      impl.takeImportedInterface(obj,callback);
+      impl.takeImportedInterface(obj,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FactoryTakeImportedInterfaceParams();
     params.obj = obj;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

@@ -340,36 +340,20 @@ class _SeekingReaderProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _seekingReaderMethodDescribeName:
-        var r = SeekingReaderDescribeResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = SeekingReaderDescribeResponseParams.deserialize(
+              message.payload);
+          callback(r.result , r.size , r.canSeek );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result , r.size , r.canSeek );
         break;
       case _seekingReaderMethodReadAtName:
-        var r = SeekingReaderReadAtResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = SeekingReaderReadAtResponseParams.deserialize(
+              message.payload);
+          callback(r.result , r.dataPipe );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result , r.dataPipe );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -416,12 +400,12 @@ class SeekingReaderProxy
 
   void describe(void callback(media_common_mojom.MediaResult result, int size, bool canSeek)) {
     if (impl != null) {
-      impl.describe(callback);
+      impl.describe(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _SeekingReaderDescribeParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -440,13 +424,13 @@ class SeekingReaderProxy
   }
   void readAt(int position,void callback(media_common_mojom.MediaResult result, core.MojoDataPipeConsumer dataPipe)) {
     if (impl != null) {
-      impl.readAt(position,callback);
+      impl.readAt(position,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _SeekingReaderReadAtParams();
     params.position = position;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

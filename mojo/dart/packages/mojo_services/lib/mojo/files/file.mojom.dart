@@ -1884,228 +1884,116 @@ class _FileProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _fileMethodCloseName:
-        var r = FileCloseResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FileCloseResponseParams.deserialize(
+              message.payload);
+          callback(r.err );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.err );
         break;
       case _fileMethodReadName:
-        var r = FileReadResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FileReadResponseParams.deserialize(
+              message.payload);
+          callback(r.error , r.bytesRead );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error , r.bytesRead );
         break;
       case _fileMethodWriteName:
-        var r = FileWriteResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FileWriteResponseParams.deserialize(
+              message.payload);
+          callback(r.error , r.numBytesWritten );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error , r.numBytesWritten );
         break;
       case _fileMethodReadToStreamName:
-        var r = FileReadToStreamResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FileReadToStreamResponseParams.deserialize(
+              message.payload);
+          callback(r.error );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error );
         break;
       case _fileMethodWriteFromStreamName:
-        var r = FileWriteFromStreamResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FileWriteFromStreamResponseParams.deserialize(
+              message.payload);
+          callback(r.error );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error );
         break;
       case _fileMethodTellName:
-        var r = FileTellResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FileTellResponseParams.deserialize(
+              message.payload);
+          callback(r.error , r.position );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error , r.position );
         break;
       case _fileMethodSeekName:
-        var r = FileSeekResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FileSeekResponseParams.deserialize(
+              message.payload);
+          callback(r.error , r.position );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error , r.position );
         break;
       case _fileMethodStatName:
-        var r = FileStatResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FileStatResponseParams.deserialize(
+              message.payload);
+          callback(r.error , r.fileInformation );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error , r.fileInformation );
         break;
       case _fileMethodTruncateName:
-        var r = FileTruncateResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FileTruncateResponseParams.deserialize(
+              message.payload);
+          callback(r.error );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error );
         break;
       case _fileMethodTouchName:
-        var r = FileTouchResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FileTouchResponseParams.deserialize(
+              message.payload);
+          callback(r.error );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error );
         break;
       case _fileMethodDupName:
-        var r = FileDupResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FileDupResponseParams.deserialize(
+              message.payload);
+          callback(r.error );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error );
         break;
       case _fileMethodReopenName:
-        var r = FileReopenResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FileReopenResponseParams.deserialize(
+              message.payload);
+          callback(r.error );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error );
         break;
       case _fileMethodAsBufferName:
-        var r = FileAsBufferResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FileAsBufferResponseParams.deserialize(
+              message.payload);
+          callback(r.error , r.buffer );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error , r.buffer );
         break;
       case _fileMethodIoctlName:
-        var r = FileIoctlResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FileIoctlResponseParams.deserialize(
+              message.payload);
+          callback(r.error , r.outValues );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error , r.outValues );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -2152,12 +2040,12 @@ class FileProxy
 
   void close_(void callback(types_mojom.Error err)) {
     if (impl != null) {
-      impl.close_(callback);
+      impl.close_(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FileCloseParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -2176,7 +2064,7 @@ class FileProxy
   }
   void read(int numBytesToRead,int offset,types_mojom.Whence whence,void callback(types_mojom.Error error, List<int> bytesRead)) {
     if (impl != null) {
-      impl.read(numBytesToRead,offset,whence,callback);
+      impl.read(numBytesToRead,offset,whence,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FileReadParams();
@@ -2184,7 +2072,7 @@ class FileProxy
     params.offset = offset;
     params.whence = whence;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -2203,7 +2091,7 @@ class FileProxy
   }
   void write(List<int> bytesToWrite,int offset,types_mojom.Whence whence,void callback(types_mojom.Error error, int numBytesWritten)) {
     if (impl != null) {
-      impl.write(bytesToWrite,offset,whence,callback);
+      impl.write(bytesToWrite,offset,whence,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FileWriteParams();
@@ -2211,7 +2099,7 @@ class FileProxy
     params.offset = offset;
     params.whence = whence;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -2230,7 +2118,7 @@ class FileProxy
   }
   void readToStream(core.MojoDataPipeProducer source,int offset,types_mojom.Whence whence,int numBytesToRead,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      impl.readToStream(source,offset,whence,numBytesToRead,callback);
+      impl.readToStream(source,offset,whence,numBytesToRead,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FileReadToStreamParams();
@@ -2239,7 +2127,7 @@ class FileProxy
     params.whence = whence;
     params.numBytesToRead = numBytesToRead;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -2258,7 +2146,7 @@ class FileProxy
   }
   void writeFromStream(core.MojoDataPipeConsumer sink,int offset,types_mojom.Whence whence,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      impl.writeFromStream(sink,offset,whence,callback);
+      impl.writeFromStream(sink,offset,whence,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FileWriteFromStreamParams();
@@ -2266,7 +2154,7 @@ class FileProxy
     params.offset = offset;
     params.whence = whence;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -2285,12 +2173,12 @@ class FileProxy
   }
   void tell(void callback(types_mojom.Error error, int position)) {
     if (impl != null) {
-      impl.tell(callback);
+      impl.tell(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FileTellParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -2309,14 +2197,14 @@ class FileProxy
   }
   void seek(int offset,types_mojom.Whence whence,void callback(types_mojom.Error error, int position)) {
     if (impl != null) {
-      impl.seek(offset,whence,callback);
+      impl.seek(offset,whence,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FileSeekParams();
     params.offset = offset;
     params.whence = whence;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -2335,12 +2223,12 @@ class FileProxy
   }
   void stat(void callback(types_mojom.Error error, types_mojom.FileInformation fileInformation)) {
     if (impl != null) {
-      impl.stat(callback);
+      impl.stat(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FileStatParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -2359,13 +2247,13 @@ class FileProxy
   }
   void truncate(int size,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      impl.truncate(size,callback);
+      impl.truncate(size,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FileTruncateParams();
     params.size = size;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -2384,14 +2272,14 @@ class FileProxy
   }
   void touch(types_mojom.TimespecOrNow atime,types_mojom.TimespecOrNow mtime,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      impl.touch(atime,mtime,callback);
+      impl.touch(atime,mtime,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FileTouchParams();
     params.atime = atime;
     params.mtime = mtime;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -2410,13 +2298,13 @@ class FileProxy
   }
   void dup(FileInterfaceRequest file,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      impl.dup(file,callback);
+      impl.dup(file,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FileDupParams();
     params.file = file;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -2435,14 +2323,14 @@ class FileProxy
   }
   void reopen(FileInterfaceRequest file,int openFlags,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      impl.reopen(file,openFlags,callback);
+      impl.reopen(file,openFlags,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FileReopenParams();
     params.file = file;
     params.openFlags = openFlags;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -2461,12 +2349,12 @@ class FileProxy
   }
   void asBuffer(void callback(types_mojom.Error error, core.MojoSharedBuffer buffer)) {
     if (impl != null) {
-      impl.asBuffer(callback);
+      impl.asBuffer(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FileAsBufferParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -2485,14 +2373,14 @@ class FileProxy
   }
   void ioctl(int request,List<int> inValues,void callback(types_mojom.Error error, List<int> outValues)) {
     if (impl != null) {
-      impl.ioctl(request,inValues,callback);
+      impl.ioctl(request,inValues,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FileIoctlParams();
     params.request = request;
     params.inValues = inValues;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

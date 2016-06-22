@@ -577,52 +577,28 @@ class _UrlResponseDiskCacheProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _urlResponseDiskCacheMethodGetName:
-        var r = UrlResponseDiskCacheGetResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UrlResponseDiskCacheGetResponseParams.deserialize(
+              message.payload);
+          callback(r.response , r.filePath , r.cacheDirPath );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.response , r.filePath , r.cacheDirPath );
         break;
       case _urlResponseDiskCacheMethodUpdateAndGetName:
-        var r = UrlResponseDiskCacheUpdateAndGetResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UrlResponseDiskCacheUpdateAndGetResponseParams.deserialize(
+              message.payload);
+          callback(r.filePath , r.cacheDirPath );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.filePath , r.cacheDirPath );
         break;
       case _urlResponseDiskCacheMethodUpdateAndGetExtractedName:
-        var r = UrlResponseDiskCacheUpdateAndGetExtractedResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UrlResponseDiskCacheUpdateAndGetExtractedResponseParams.deserialize(
+              message.payload);
+          callback(r.extractedDirPath , r.cacheDirPath );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.extractedDirPath , r.cacheDirPath );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -669,13 +645,13 @@ class UrlResponseDiskCacheProxy
 
   void get(String url,void callback(url_response_mojom.UrlResponse response, List<int> filePath, List<int> cacheDirPath)) {
     if (impl != null) {
-      impl.get(url,callback);
+      impl.get(url,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UrlResponseDiskCacheGetParams();
     params.url = url;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -722,13 +698,13 @@ class UrlResponseDiskCacheProxy
   }
   void updateAndGet(url_response_mojom.UrlResponse response,void callback(List<int> filePath, List<int> cacheDirPath)) {
     if (impl != null) {
-      impl.updateAndGet(response,callback);
+      impl.updateAndGet(response,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UrlResponseDiskCacheUpdateAndGetParams();
     params.response = response;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -747,13 +723,13 @@ class UrlResponseDiskCacheProxy
   }
   void updateAndGetExtracted(url_response_mojom.UrlResponse response,void callback(List<int> extractedDirPath, List<int> cacheDirPath)) {
     if (impl != null) {
-      impl.updateAndGetExtracted(response,callback);
+      impl.updateAndGetExtracted(response,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UrlResponseDiskCacheUpdateAndGetExtractedParams();
     params.response = response;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

@@ -1053,116 +1053,60 @@ class _UdpSocketProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _udpSocketMethodAllowAddressReuseName:
-        var r = UdpSocketAllowAddressReuseResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UdpSocketAllowAddressReuseResponseParams.deserialize(
+              message.payload);
+          callback(r.result );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result );
         break;
       case _udpSocketMethodBindName:
-        var r = UdpSocketBindResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UdpSocketBindResponseParams.deserialize(
+              message.payload);
+          callback(r.result , r.boundAddr , r.receiver );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result , r.boundAddr , r.receiver );
         break;
       case _udpSocketMethodConnectName:
-        var r = UdpSocketConnectResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UdpSocketConnectResponseParams.deserialize(
+              message.payload);
+          callback(r.result , r.localAddr , r.receiver );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result , r.localAddr , r.receiver );
         break;
       case _udpSocketMethodSetSendBufferSizeName:
-        var r = UdpSocketSetSendBufferSizeResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UdpSocketSetSendBufferSizeResponseParams.deserialize(
+              message.payload);
+          callback(r.result );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result );
         break;
       case _udpSocketMethodSetReceiveBufferSizeName:
-        var r = UdpSocketSetReceiveBufferSizeResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UdpSocketSetReceiveBufferSizeResponseParams.deserialize(
+              message.payload);
+          callback(r.result );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result );
         break;
       case _udpSocketMethodNegotiateMaxPendingSendRequestsName:
-        var r = UdpSocketNegotiateMaxPendingSendRequestsResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UdpSocketNegotiateMaxPendingSendRequestsResponseParams.deserialize(
+              message.payload);
+          callback(r.actualSize );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.actualSize );
         break;
       case _udpSocketMethodSendToName:
-        var r = UdpSocketSendToResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UdpSocketSendToResponseParams.deserialize(
+              message.payload);
+          callback(r.result );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1209,12 +1153,12 @@ class UdpSocketProxy
 
   void allowAddressReuse(void callback(network_error_mojom.NetworkError result)) {
     if (impl != null) {
-      impl.allowAddressReuse(callback);
+      impl.allowAddressReuse(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UdpSocketAllowAddressReuseParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1233,13 +1177,13 @@ class UdpSocketProxy
   }
   void bind(net_address_mojom.NetAddress addr,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress boundAddr, UdpSocketReceiverInterfaceRequest receiver)) {
     if (impl != null) {
-      impl.bind(addr,callback);
+      impl.bind(addr,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UdpSocketBindParams();
     params.addr = addr;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1258,13 +1202,13 @@ class UdpSocketProxy
   }
   void connect(net_address_mojom.NetAddress remoteAddr,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress localAddr, UdpSocketReceiverInterfaceRequest receiver)) {
     if (impl != null) {
-      impl.connect(remoteAddr,callback);
+      impl.connect(remoteAddr,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UdpSocketConnectParams();
     params.remoteAddr = remoteAddr;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1283,13 +1227,13 @@ class UdpSocketProxy
   }
   void setSendBufferSize(int size,void callback(network_error_mojom.NetworkError result)) {
     if (impl != null) {
-      impl.setSendBufferSize(size,callback);
+      impl.setSendBufferSize(size,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UdpSocketSetSendBufferSizeParams();
     params.size = size;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1308,13 +1252,13 @@ class UdpSocketProxy
   }
   void setReceiveBufferSize(int size,void callback(network_error_mojom.NetworkError result)) {
     if (impl != null) {
-      impl.setReceiveBufferSize(size,callback);
+      impl.setReceiveBufferSize(size,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UdpSocketSetReceiveBufferSizeParams();
     params.size = size;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1333,13 +1277,13 @@ class UdpSocketProxy
   }
   void negotiateMaxPendingSendRequests(int requestedSize,void callback(int actualSize)) {
     if (impl != null) {
-      impl.negotiateMaxPendingSendRequests(requestedSize,callback);
+      impl.negotiateMaxPendingSendRequests(requestedSize,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UdpSocketNegotiateMaxPendingSendRequestsParams();
     params.requestedSize = requestedSize;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1372,14 +1316,14 @@ class UdpSocketProxy
   }
   void sendTo(net_address_mojom.NetAddress destAddr,List<int> data,void callback(network_error_mojom.NetworkError result)) {
     if (impl != null) {
-      impl.sendTo(destAddr,data,callback);
+      impl.sendTo(destAddr,data,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UdpSocketSendToParams();
     params.destAddr = destAddr;
     params.data = data;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

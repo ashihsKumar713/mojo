@@ -344,36 +344,20 @@ class _TcpBoundSocketProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _tcpBoundSocketMethodStartListeningName:
-        var r = TcpBoundSocketStartListeningResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = TcpBoundSocketStartListeningResponseParams.deserialize(
+              message.payload);
+          callback(r.result );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result );
         break;
       case _tcpBoundSocketMethodConnectName:
-        var r = TcpBoundSocketConnectResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = TcpBoundSocketConnectResponseParams.deserialize(
+              message.payload);
+          callback(r.result );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -420,13 +404,13 @@ class TcpBoundSocketProxy
 
   void startListening(tcp_server_socket_mojom.TcpServerSocketInterfaceRequest server,void callback(network_error_mojom.NetworkError result)) {
     if (impl != null) {
-      impl.startListening(server,callback);
+      impl.startListening(server,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _TcpBoundSocketStartListeningParams();
     params.server = server;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -445,7 +429,7 @@ class TcpBoundSocketProxy
   }
   void connect(net_address_mojom.NetAddress remoteAddress,core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,void callback(network_error_mojom.NetworkError result)) {
     if (impl != null) {
-      impl.connect(remoteAddress,sendStream,receiveStream,clientSocket,callback);
+      impl.connect(remoteAddress,sendStream,receiveStream,clientSocket,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _TcpBoundSocketConnectParams();
@@ -454,7 +438,7 @@ class TcpBoundSocketProxy
     params.receiveStream = receiveStream;
     params.clientSocket = clientSocket;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

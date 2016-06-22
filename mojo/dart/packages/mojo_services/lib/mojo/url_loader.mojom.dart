@@ -474,52 +474,28 @@ class _UrlLoaderProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _urlLoaderMethodStartName:
-        var r = UrlLoaderStartResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UrlLoaderStartResponseParams.deserialize(
+              message.payload);
+          callback(r.response );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.response );
         break;
       case _urlLoaderMethodFollowRedirectName:
-        var r = UrlLoaderFollowRedirectResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UrlLoaderFollowRedirectResponseParams.deserialize(
+              message.payload);
+          callback(r.response );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.response );
         break;
       case _urlLoaderMethodQueryStatusName:
-        var r = UrlLoaderQueryStatusResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UrlLoaderQueryStatusResponseParams.deserialize(
+              message.payload);
+          callback(r.status );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.status );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -566,13 +542,13 @@ class UrlLoaderProxy
 
   void start(url_request_mojom.UrlRequest request,void callback(url_response_mojom.UrlResponse response)) {
     if (impl != null) {
-      impl.start(request,callback);
+      impl.start(request,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UrlLoaderStartParams();
     params.request = request;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -591,12 +567,12 @@ class UrlLoaderProxy
   }
   void followRedirect(void callback(url_response_mojom.UrlResponse response)) {
     if (impl != null) {
-      impl.followRedirect(callback);
+      impl.followRedirect(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UrlLoaderFollowRedirectParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -615,12 +591,12 @@ class UrlLoaderProxy
   }
   void queryStatus(void callback(UrlLoaderStatus status)) {
     if (impl != null) {
-      impl.queryStatus(callback);
+      impl.queryStatus(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UrlLoaderQueryStatusParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

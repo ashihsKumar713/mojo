@@ -422,36 +422,20 @@ class _HttpServerProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _httpServerMethodSetHandlerName:
-        var r = HttpServerSetHandlerResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = HttpServerSetHandlerResponseParams.deserialize(
+              message.payload);
+          callback(r.success );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.success );
         break;
       case _httpServerMethodGetPortName:
-        var r = HttpServerGetPortResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = HttpServerGetPortResponseParams.deserialize(
+              message.payload);
+          callback(r.port );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.port );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -498,14 +482,14 @@ class HttpServerProxy
 
   void setHandler(String pattern,HttpHandlerInterface handler,void callback(bool success)) {
     if (impl != null) {
-      impl.setHandler(pattern,handler,callback);
+      impl.setHandler(pattern,handler,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _HttpServerSetHandlerParams();
     params.pattern = pattern;
     params.handler = handler;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -524,12 +508,12 @@ class HttpServerProxy
   }
   void getPort(void callback(int port)) {
     if (impl != null) {
-      impl.getPort(callback);
+      impl.getPort(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _HttpServerGetPortParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -760,20 +744,12 @@ class _HttpHandlerProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _httpHandlerMethodHandleRequestName:
-        var r = HttpHandlerHandleRequestResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = HttpHandlerHandleRequestResponseParams.deserialize(
+              message.payload);
+          callback(r.response );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.response );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -820,13 +796,13 @@ class HttpHandlerProxy
 
   void handleRequest(http_request_mojom.HttpRequest request,void callback(http_response_mojom.HttpResponse response)) {
     if (impl != null) {
-      impl.handleRequest(request,callback);
+      impl.handleRequest(request,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _HttpHandlerHandleRequestParams();
     params.request = request;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

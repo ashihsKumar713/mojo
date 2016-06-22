@@ -1781,52 +1781,28 @@ class _PathServiceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _pathServiceMethodGetAppDataDirName:
-        var r = PathServiceGetAppDataDirResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = PathServiceGetAppDataDirResponseParams.deserialize(
+              message.payload);
+          callback(r.path );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.path );
         break;
       case _pathServiceMethodGetFilesDirName:
-        var r = PathServiceGetFilesDirResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = PathServiceGetFilesDirResponseParams.deserialize(
+              message.payload);
+          callback(r.path );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.path );
         break;
       case _pathServiceMethodGetCacheDirName:
-        var r = PathServiceGetCacheDirResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = PathServiceGetCacheDirResponseParams.deserialize(
+              message.payload);
+          callback(r.path );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.path );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1873,12 +1849,12 @@ class PathServiceProxy
 
   void getAppDataDir(void callback(String path)) {
     if (impl != null) {
-      impl.getAppDataDir(callback);
+      impl.getAppDataDir(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _PathServiceGetAppDataDirParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1897,12 +1873,12 @@ class PathServiceProxy
   }
   void getFilesDir(void callback(String path)) {
     if (impl != null) {
-      impl.getFilesDir(callback);
+      impl.getFilesDir(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _PathServiceGetFilesDirParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1921,12 +1897,12 @@ class PathServiceProxy
   }
   void getCacheDir(void callback(String path)) {
     if (impl != null) {
-      impl.getCacheDir(callback);
+      impl.getCacheDir(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _PathServiceGetCacheDirParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

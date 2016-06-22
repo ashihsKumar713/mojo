@@ -4998,20 +4998,12 @@ class _SomeInterfaceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _someInterfaceMethodSomeMethodName:
-        var r = SomeInterfaceSomeMethodResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = SomeInterfaceSomeMethodResponseParams.deserialize(
+              message.payload);
+          callback(r.otherPair );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.otherPair );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -5058,13 +5050,13 @@ class SomeInterfaceProxy
 
   void someMethod(RectPair pair,void callback(RectPair otherPair)) {
     if (impl != null) {
-      impl.someMethod(pair,callback);
+      impl.someMethod(pair,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _SomeInterfaceSomeMethodParams();
     params.pair = pair;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

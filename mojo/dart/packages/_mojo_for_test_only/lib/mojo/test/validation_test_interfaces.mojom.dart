@@ -3057,20 +3057,12 @@ class _BoundsCheckTestInterfaceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _boundsCheckTestInterfaceMethodMethod0Name:
-        var r = BoundsCheckTestInterfaceMethod0ResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = BoundsCheckTestInterfaceMethod0ResponseParams.deserialize(
+              message.payload);
+          callback(r.param0 );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.param0 );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -3117,13 +3109,13 @@ class BoundsCheckTestInterfaceProxy
 
   void method0(int param0,void callback(int param0)) {
     if (impl != null) {
-      impl.method0(param0,callback);
+      impl.method0(param0,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _BoundsCheckTestInterfaceMethod0Params();
     params.param0 = param0;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -3388,20 +3380,12 @@ class _ConformanceTestInterfaceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _conformanceTestInterfaceMethodMethod12Name:
-        var r = ConformanceTestInterfaceMethod12ResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ConformanceTestInterfaceMethod12ResponseParams.deserialize(
+              message.payload);
+          callback(r.param0 );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.param0 );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -3620,13 +3604,13 @@ class ConformanceTestInterfaceProxy
   }
   void method12(double param0,void callback(double param0)) {
     if (impl != null) {
-      impl.method12(param0,callback);
+      impl.method12(param0,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ConformanceTestInterfaceMethod12Params();
     params.param0 = param0;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -4003,20 +3987,12 @@ class _IntegrationTestInterfaceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _integrationTestInterfaceMethodMethod0Name:
-        var r = IntegrationTestInterfaceMethod0ResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = IntegrationTestInterfaceMethod0ResponseParams.deserialize(
+              message.payload);
+          callback(r.param0 );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.param0 );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -4063,13 +4039,13 @@ class IntegrationTestInterfaceProxy
 
   void method0(BasicStruct param0,void callback(List<int> param0)) {
     if (impl != null) {
-      impl.method0(param0,callback);
+      impl.method0(param0,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _IntegrationTestInterfaceMethod0Params();
     params.param0 = param0;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

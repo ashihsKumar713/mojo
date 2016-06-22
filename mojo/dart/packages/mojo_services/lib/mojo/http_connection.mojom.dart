@@ -554,36 +554,20 @@ class _HttpConnectionProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _httpConnectionMethodSetSendBufferSizeName:
-        var r = HttpConnectionSetSendBufferSizeResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = HttpConnectionSetSendBufferSizeResponseParams.deserialize(
+              message.payload);
+          callback(r.result );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result );
         break;
       case _httpConnectionMethodSetReceiveBufferSizeName:
-        var r = HttpConnectionSetReceiveBufferSizeResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = HttpConnectionSetReceiveBufferSizeResponseParams.deserialize(
+              message.payload);
+          callback(r.result );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -630,13 +614,13 @@ class HttpConnectionProxy
 
   void setSendBufferSize(int size,void callback(network_error_mojom.NetworkError result)) {
     if (impl != null) {
-      impl.setSendBufferSize(size,callback);
+      impl.setSendBufferSize(size,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _HttpConnectionSetSendBufferSizeParams();
     params.size = size;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -655,13 +639,13 @@ class HttpConnectionProxy
   }
   void setReceiveBufferSize(int size,void callback(network_error_mojom.NetworkError result)) {
     if (impl != null) {
-      impl.setReceiveBufferSize(size,callback);
+      impl.setReceiveBufferSize(size,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _HttpConnectionSetReceiveBufferSizeParams();
     params.size = size;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -896,36 +880,20 @@ class _HttpConnectionDelegateProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _httpConnectionDelegateMethodOnReceivedRequestName:
-        var r = HttpConnectionDelegateOnReceivedRequestResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = HttpConnectionDelegateOnReceivedRequestResponseParams.deserialize(
+              message.payload);
+          callback(r.response );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.response );
         break;
       case _httpConnectionDelegateMethodOnReceivedWebSocketRequestName:
-        var r = HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams.deserialize(
+              message.payload);
+          callback(r.webSocket , r.sendStream , r.client );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.webSocket , r.sendStream , r.client );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -972,13 +940,13 @@ class HttpConnectionDelegateProxy
 
   void onReceivedRequest(http_message_mojom.HttpRequest request,void callback(http_message_mojom.HttpResponse response)) {
     if (impl != null) {
-      impl.onReceivedRequest(request,callback);
+      impl.onReceivedRequest(request,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _HttpConnectionDelegateOnReceivedRequestParams();
     params.request = request;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -997,13 +965,13 @@ class HttpConnectionDelegateProxy
   }
   void onReceivedWebSocketRequest(http_message_mojom.HttpRequest request,void callback(web_socket_mojom.WebSocketInterfaceRequest webSocket, core.MojoDataPipeConsumer sendStream, web_socket_mojom.WebSocketClientInterface client)) {
     if (impl != null) {
-      impl.onReceivedWebSocketRequest(request,callback);
+      impl.onReceivedWebSocketRequest(request,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _HttpConnectionDelegateOnReceivedWebSocketRequestParams();
     params.request = request;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

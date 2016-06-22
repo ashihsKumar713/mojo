@@ -262,20 +262,12 @@ class _AssetBundleProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _assetBundleMethodGetAsStreamName:
-        var r = AssetBundleGetAsStreamResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = AssetBundleGetAsStreamResponseParams.deserialize(
+              message.payload);
+          callback(r.assetData );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.assetData );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -322,13 +314,13 @@ class AssetBundleProxy
 
   void getAsStream(String assetName,void callback(core.MojoDataPipeConsumer assetData)) {
     if (impl != null) {
-      impl.getAsStream(assetName,callback);
+      impl.getAsStream(assetName,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _AssetBundleGetAsStreamParams();
     params.assetName = assetName;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

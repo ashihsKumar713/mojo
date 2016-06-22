@@ -714,20 +714,12 @@ class _ViewAssociateProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewAssociateMethodConnectName:
-        var r = ViewAssociateConnectResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ViewAssociateConnectResponseParams.deserialize(
+              message.payload);
+          callback(r.info );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.info );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -774,13 +766,13 @@ class ViewAssociateProxy
 
   void connect(ViewInspectorInterface inspector,void callback(ViewAssociateInfo info)) {
     if (impl != null) {
-      impl.connect(inspector,callback);
+      impl.connect(inspector,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ViewAssociateConnectParams();
     params.inspector = inspector;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1259,36 +1251,20 @@ class _ViewInspectorProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewInspectorMethodGetHitTesterName:
-        var r = ViewInspectorGetHitTesterResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ViewInspectorGetHitTesterResponseParams.deserialize(
+              message.payload);
+          callback(r.rendererChanged );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.rendererChanged );
         break;
       case _viewInspectorMethodResolveScenesName:
-        var r = ViewInspectorResolveScenesResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ViewInspectorResolveScenesResponseParams.deserialize(
+              message.payload);
+          callback(r.viewTokens );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.viewTokens );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1335,14 +1311,14 @@ class ViewInspectorProxy
 
   void getHitTester(view_tree_token_mojom.ViewTreeToken viewTreeToken,hit_tests_mojom.HitTesterInterfaceRequest hitTester,void callback(bool rendererChanged)) {
     if (impl != null) {
-      impl.getHitTester(viewTreeToken,hitTester,callback);
+      impl.getHitTester(viewTreeToken,hitTester,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ViewInspectorGetHitTesterParams();
     params.viewTreeToken = viewTreeToken;
     params.hitTester = hitTester;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1361,13 +1337,13 @@ class ViewInspectorProxy
   }
   void resolveScenes(List<scene_token_mojom.SceneToken> sceneTokens,void callback(List<view_token_mojom.ViewToken> viewTokens)) {
     if (impl != null) {
-      impl.resolveScenes(sceneTokens,callback);
+      impl.resolveScenes(sceneTokens,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ViewInspectorResolveScenesParams();
     params.sceneTokens = sceneTokens;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

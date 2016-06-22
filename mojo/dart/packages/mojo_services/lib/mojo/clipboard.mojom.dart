@@ -647,52 +647,28 @@ class _ClipboardProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _clipboardMethodGetSequenceNumberName:
-        var r = ClipboardGetSequenceNumberResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ClipboardGetSequenceNumberResponseParams.deserialize(
+              message.payload);
+          callback(r.sequence );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.sequence );
         break;
       case _clipboardMethodGetAvailableMimeTypesName:
-        var r = ClipboardGetAvailableMimeTypesResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ClipboardGetAvailableMimeTypesResponseParams.deserialize(
+              message.payload);
+          callback(r.types );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.types );
         break;
       case _clipboardMethodReadMimeTypeName:
-        var r = ClipboardReadMimeTypeResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ClipboardReadMimeTypeResponseParams.deserialize(
+              message.payload);
+          callback(r.data );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.data );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -739,13 +715,13 @@ class ClipboardProxy
 
   void getSequenceNumber(ClipboardType clipboardType,void callback(int sequence)) {
     if (impl != null) {
-      impl.getSequenceNumber(clipboardType,callback);
+      impl.getSequenceNumber(clipboardType,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ClipboardGetSequenceNumberParams();
     params.clipboardType = clipboardType;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -764,13 +740,13 @@ class ClipboardProxy
   }
   void getAvailableMimeTypes(ClipboardType clipboardTypes,void callback(List<String> types)) {
     if (impl != null) {
-      impl.getAvailableMimeTypes(clipboardTypes,callback);
+      impl.getAvailableMimeTypes(clipboardTypes,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ClipboardGetAvailableMimeTypesParams();
     params.clipboardTypes = clipboardTypes;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -789,14 +765,14 @@ class ClipboardProxy
   }
   void readMimeType(ClipboardType clipboardType,String mimeType,void callback(List<int> data)) {
     if (impl != null) {
-      impl.readMimeType(clipboardType,mimeType,callback);
+      impl.readMimeType(clipboardType,mimeType,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ClipboardReadMimeTypeParams();
     params.clipboardType = clipboardType;
     params.mimeType = mimeType;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

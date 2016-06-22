@@ -936,20 +936,12 @@ class _NfcProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _nfcMethodTransmitOnNextConnectionName:
-        var r = NfcTransmitOnNextConnectionResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = NfcTransmitOnNextConnectionResponseParams.deserialize(
+              message.payload);
+          callback(r.success );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.success );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -996,14 +988,14 @@ class NfcProxy
 
   void transmitOnNextConnection(NfcData nfcData,NfcTransmissionInterfaceRequest transmission,void callback(bool success)) {
     if (impl != null) {
-      impl.transmitOnNextConnection(nfcData,transmission,callback);
+      impl.transmitOnNextConnection(nfcData,transmission,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _NfcTransmitOnNextConnectionParams();
     params.nfcData = nfcData;
     params.transmission = transmission;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

@@ -442,20 +442,12 @@ class _MediaPlayerProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaPlayerMethodGetStatusName:
-        var r = MediaPlayerGetStatusResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = MediaPlayerGetStatusResponseParams.deserialize(
+              message.payload);
+          callback(r.version , r.status );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.version , r.status );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -542,13 +534,13 @@ class MediaPlayerProxy
   }
   void getStatus(int versionLastSeen,void callback(int version, MediaPlayerStatus status)) {
     if (impl != null) {
-      impl.getStatus(versionLastSeen,callback);
+      impl.getStatus(versionLastSeen,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _MediaPlayerGetStatusParams();
     params.versionLastSeen = versionLastSeen;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

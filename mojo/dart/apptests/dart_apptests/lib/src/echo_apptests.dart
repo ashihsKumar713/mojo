@@ -455,6 +455,46 @@ echoApptests(Application application, String url) {
       await echo.close();
     });
 
+    test('DontCare', () async {
+      var echo = EchoService.connectToService(application, "mojo:dart_echo");
+
+      echo.ctrl.errorFuture.then((e) {
+        fail("echo: $e");
+      });
+
+      // This should silently succeed.
+      echo.echoString("foo", null);
+
+      // Sending with a callback should still succeed.
+      var c = new Completer();
+      echo.echoString("foo", (String value) {
+        c.complete(value);
+      });
+      expect(await echo.responseOrError(c.future), equals("foo"));
+
+      await echo.close();
+    });
+
+    test('DontCareMock', () async {
+      var echo = new EchoServiceInterface.fromMock(new EchoServiceMock());
+
+      echo.ctrl.errorFuture.then((e) {
+        fail("echo: $e");
+      });
+
+      // This should silently succeed.
+      echo.echoString("foo", null);
+
+      // Sending with a callback should still succeed.
+      var c = new Completer();
+      echo.echoString("foo", (String value) {
+        c.complete(value);
+      });
+      expect(await echo.responseOrError(c.future), equals("foo"));
+
+      await echo.close();
+    });
+
     test('Right Zone', () async {
       var echo = EchoService.connectToService(application, "mojo:dart_echo");
 

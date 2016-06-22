@@ -245,20 +245,12 @@ class _HostResolverProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _hostResolverMethodGetHostAddressesName:
-        var r = HostResolverGetHostAddressesResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = HostResolverGetHostAddressesResponseParams.deserialize(
+              message.payload);
+          callback(r.result , r.addresses );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result , r.addresses );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -305,14 +297,14 @@ class HostResolverProxy
 
   void getHostAddresses(String host,net_address_mojom.NetAddressFamily family,void callback(network_error_mojom.NetworkError result, List<net_address_mojom.NetAddress> addresses)) {
     if (impl != null) {
-      impl.getHostAddresses(host,family,callback);
+      impl.getHostAddresses(host,family,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _HostResolverGetHostAddressesParams();
     params.host = host;
     params.family = family;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

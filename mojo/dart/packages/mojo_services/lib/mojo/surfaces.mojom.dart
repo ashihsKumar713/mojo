@@ -1307,36 +1307,20 @@ class _SurfaceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _surfaceMethodGetIdNamespaceName:
-        var r = SurfaceGetIdNamespaceResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = SurfaceGetIdNamespaceResponseParams.deserialize(
+              message.payload);
+          callback(r.idNamespace );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.idNamespace );
         break;
       case _surfaceMethodSubmitFrameName:
-        var r = SurfaceSubmitFrameResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = SurfaceSubmitFrameResponseParams.deserialize(
+              message.payload);
+          callback();
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1383,12 +1367,12 @@ class SurfaceProxy
 
   void getIdNamespace(void callback(int idNamespace)) {
     if (impl != null) {
-      impl.getIdNamespace(callback);
+      impl.getIdNamespace(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _SurfaceGetIdNamespaceParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1435,14 +1419,14 @@ class SurfaceProxy
   }
   void submitFrame(int idLocal,Frame frame,void callback()) {
     if (impl != null) {
-      impl.submitFrame(idLocal,frame,callback);
+      impl.submitFrame(idLocal,frame,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _SurfaceSubmitFrameParams();
     params.idLocal = idLocal;
     params.frame = frame;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

@@ -1438,20 +1438,12 @@ class _ServiceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _serviceMethodFrobinateName:
-        var r = ServiceFrobinateResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ServiceFrobinateResponseParams.deserialize(
+              message.payload);
+          callback(r.result );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1498,7 +1490,7 @@ class ServiceProxy
 
   void frobinate(Foo foo,ServiceBazOptions baz,PortInterface port,void callback(int result)) {
     if (impl != null) {
-      impl.frobinate(foo,baz,port,callback);
+      impl.frobinate(foo,baz,port,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ServiceFrobinateParams();
@@ -1506,7 +1498,7 @@ class ServiceProxy
     params.baz = baz;
     params.port = port;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

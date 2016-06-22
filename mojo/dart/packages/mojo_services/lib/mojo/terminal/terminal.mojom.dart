@@ -621,68 +621,36 @@ class _TerminalProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _terminalMethodConnectName:
-        var r = TerminalConnectResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = TerminalConnectResponseParams.deserialize(
+              message.payload);
+          callback(r.error );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error );
         break;
       case _terminalMethodConnectToClientName:
-        var r = TerminalConnectToClientResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = TerminalConnectToClientResponseParams.deserialize(
+              message.payload);
+          callback(r.error );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error );
         break;
       case _terminalMethodGetSizeName:
-        var r = TerminalGetSizeResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = TerminalGetSizeResponseParams.deserialize(
+              message.payload);
+          callback(r.error , r.rows , r.columns );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error , r.rows , r.columns );
         break;
       case _terminalMethodSetSizeName:
-        var r = TerminalSetSizeResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = TerminalSetSizeResponseParams.deserialize(
+              message.payload);
+          callback(r.error , r.rows , r.columns );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error , r.rows , r.columns );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -729,14 +697,14 @@ class TerminalProxy
 
   void connect(file_mojom.FileInterfaceRequest terminalFile,bool force,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      impl.connect(terminalFile,force,callback);
+      impl.connect(terminalFile,force,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _TerminalConnectParams();
     params.terminalFile = terminalFile;
     params.force = force;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -755,14 +723,14 @@ class TerminalProxy
   }
   void connectToClient(terminal_client_mojom.TerminalClientInterface terminalClient,bool force,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      impl.connectToClient(terminalClient,force,callback);
+      impl.connectToClient(terminalClient,force,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _TerminalConnectToClientParams();
     params.terminalClient = terminalClient;
     params.force = force;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -781,12 +749,12 @@ class TerminalProxy
   }
   void getSize(void callback(types_mojom.Error error, int rows, int columns)) {
     if (impl != null) {
-      impl.getSize(callback);
+      impl.getSize(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _TerminalGetSizeParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -805,7 +773,7 @@ class TerminalProxy
   }
   void setSize(int rows,int columns,bool reset,void callback(types_mojom.Error error, int rows, int columns)) {
     if (impl != null) {
-      impl.setSize(rows,columns,reset,callback);
+      impl.setSize(rows,columns,reset,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _TerminalSetSizeParams();
@@ -813,7 +781,7 @@ class TerminalProxy
     params.columns = columns;
     params.reset = reset;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

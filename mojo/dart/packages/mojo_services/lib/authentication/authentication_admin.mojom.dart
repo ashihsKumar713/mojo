@@ -494,52 +494,28 @@ class _AuthenticationAdminServiceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _authenticationAdminServiceMethodGetOAuth2DeviceCodeName:
-        var r = AuthenticationAdminServiceGetOAuth2DeviceCodeResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = AuthenticationAdminServiceGetOAuth2DeviceCodeResponseParams.deserialize(
+              message.payload);
+          callback(r.verificationUrl , r.deviceCode , r.userCode , r.error );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.verificationUrl , r.deviceCode , r.userCode , r.error );
         break;
       case _authenticationAdminServiceMethodAddAccountName:
-        var r = AuthenticationAdminServiceAddAccountResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = AuthenticationAdminServiceAddAccountResponseParams.deserialize(
+              message.payload);
+          callback(r.username , r.error );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.username , r.error );
         break;
       case _authenticationAdminServiceMethodGetAllUsersName:
-        var r = AuthenticationAdminServiceGetAllUsersResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = AuthenticationAdminServiceGetAllUsersResponseParams.deserialize(
+              message.payload);
+          callback(r.usernames , r.error );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.usernames , r.error );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -586,13 +562,13 @@ class AuthenticationAdminServiceProxy
 
   void getOAuth2DeviceCode(List<String> scopes,void callback(String verificationUrl, String deviceCode, String userCode, String error)) {
     if (impl != null) {
-      impl.getOAuth2DeviceCode(scopes,callback);
+      impl.getOAuth2DeviceCode(scopes,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _AuthenticationAdminServiceGetOAuth2DeviceCodeParams();
     params.scopes = scopes;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -611,13 +587,13 @@ class AuthenticationAdminServiceProxy
   }
   void addAccount(String deviceCode,void callback(String username, String error)) {
     if (impl != null) {
-      impl.addAccount(deviceCode,callback);
+      impl.addAccount(deviceCode,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _AuthenticationAdminServiceAddAccountParams();
     params.deviceCode = deviceCode;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -636,12 +612,12 @@ class AuthenticationAdminServiceProxy
   }
   void getAllUsers(void callback(List<String> usernames, String error)) {
     if (impl != null) {
-      impl.getAllUsers(callback);
+      impl.getAllUsers(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _AuthenticationAdminServiceGetAllUsersParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

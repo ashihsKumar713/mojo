@@ -453,20 +453,12 @@ class _ViewTreeProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewTreeMethodGetTokenName:
-        var r = ViewTreeGetTokenResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ViewTreeGetTokenResponseParams.deserialize(
+              message.payload);
+          callback(r.token );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.token );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -513,12 +505,12 @@ class ViewTreeProxy
 
   void getToken(void callback(view_tree_token_mojom.ViewTreeToken token)) {
     if (impl != null) {
-      impl.getToken(callback);
+      impl.getToken(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ViewTreeGetTokenParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -795,20 +787,12 @@ class _ViewTreeListenerProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _viewTreeListenerMethodOnRendererDiedName:
-        var r = ViewTreeListenerOnRendererDiedResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ViewTreeListenerOnRendererDiedResponseParams.deserialize(
+              message.payload);
+          callback();
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -855,12 +839,12 @@ class ViewTreeListenerProxy
 
   void onRendererDied(void callback()) {
     if (impl != null) {
-      impl.onRendererDied(callback);
+      impl.onRendererDied(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ViewTreeListenerOnRendererDiedParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

@@ -1337,20 +1337,12 @@ class _FlogServiceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _flogServiceMethodGetLogDescriptionsName:
-        var r = FlogServiceGetLogDescriptionsResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FlogServiceGetLogDescriptionsResponseParams.deserialize(
+              message.payload);
+          callback(r.descriptions );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.descriptions );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1412,12 +1404,12 @@ class FlogServiceProxy
   }
   void getLogDescriptions(void callback(List<FlogDescription> descriptions)) {
     if (impl != null) {
-      impl.getLogDescriptions(callback);
+      impl.getLogDescriptions(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FlogServiceGetLogDescriptionsParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1980,20 +1972,12 @@ class _FlogReaderProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _flogReaderMethodGetEntriesName:
-        var r = FlogReaderGetEntriesResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FlogReaderGetEntriesResponseParams.deserialize(
+              message.payload);
+          callback(r.entries );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.entries );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -2040,14 +2024,14 @@ class FlogReaderProxy
 
   void getEntries(int startIndex,int maxCount,void callback(List<FlogEntry> entries)) {
     if (impl != null) {
-      impl.getEntries(startIndex,maxCount,callback);
+      impl.getEntries(startIndex,maxCount,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FlogReaderGetEntriesParams();
     params.startIndex = startIndex;
     params.maxCount = maxCount;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

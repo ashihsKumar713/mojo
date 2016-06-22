@@ -419,52 +419,28 @@ class _CalculatorProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _calculatorMethodClearName:
-        var r = CalculatorClearResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = CalculatorClearResponseParams.deserialize(
+              message.payload);
+          callback(r.value );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.value );
         break;
       case _calculatorMethodAddName:
-        var r = CalculatorAddResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = CalculatorAddResponseParams.deserialize(
+              message.payload);
+          callback(r.value );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.value );
         break;
       case _calculatorMethodMultiplyName:
-        var r = CalculatorMultiplyResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = CalculatorMultiplyResponseParams.deserialize(
+              message.payload);
+          callback(r.value );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.value );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -511,12 +487,12 @@ class CalculatorProxy
 
   void clear(void callback(double value)) {
     if (impl != null) {
-      impl.clear(callback);
+      impl.clear(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _CalculatorClearParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -535,13 +511,13 @@ class CalculatorProxy
   }
   void add(double value,void callback(double value)) {
     if (impl != null) {
-      impl.add(value,callback);
+      impl.add(value,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _CalculatorAddParams();
     params.value = value;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -560,13 +536,13 @@ class CalculatorProxy
   }
   void multiply(double value,void callback(double value)) {
     if (impl != null) {
-      impl.multiply(value,callback);
+      impl.multiply(value,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _CalculatorMultiplyParams();
     params.value = value;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

@@ -214,20 +214,12 @@ class _FilesProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _filesMethodOpenFileSystemName:
-        var r = FilesOpenFileSystemResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = FilesOpenFileSystemResponseParams.deserialize(
+              message.payload);
+          callback(r.error );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.error );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -274,14 +266,14 @@ class FilesProxy
 
   void openFileSystem(String fileSystem,directory_mojom.DirectoryInterfaceRequest directory,void callback(types_mojom.Error error)) {
     if (impl != null) {
-      impl.openFileSystem(fileSystem,directory,callback);
+      impl.openFileSystem(fileSystem,directory,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _FilesOpenFileSystemParams();
     params.fileSystem = fileSystem;
     params.directory = directory;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

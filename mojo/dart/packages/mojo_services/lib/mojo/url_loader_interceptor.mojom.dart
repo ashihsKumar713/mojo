@@ -775,52 +775,28 @@ class _UrlLoaderInterceptorProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _urlLoaderInterceptorMethodInterceptRequestName:
-        var r = UrlLoaderInterceptorInterceptRequestResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UrlLoaderInterceptorInterceptRequestResponseParams.deserialize(
+              message.payload);
+          callback(r.response );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.response );
         break;
       case _urlLoaderInterceptorMethodInterceptFollowRedirectName:
-        var r = UrlLoaderInterceptorInterceptFollowRedirectResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UrlLoaderInterceptorInterceptFollowRedirectResponseParams.deserialize(
+              message.payload);
+          callback(r.response );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.response );
         break;
       case _urlLoaderInterceptorMethodInterceptResponseName:
-        var r = UrlLoaderInterceptorInterceptResponseResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = UrlLoaderInterceptorInterceptResponseResponseParams.deserialize(
+              message.payload);
+          callback(r.response );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.response );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -867,13 +843,13 @@ class UrlLoaderInterceptorProxy
 
   void interceptRequest(url_request_mojom.UrlRequest request,void callback(UrlLoaderInterceptorResponse response)) {
     if (impl != null) {
-      impl.interceptRequest(request,callback);
+      impl.interceptRequest(request,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UrlLoaderInterceptorInterceptRequestParams();
     params.request = request;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -892,12 +868,12 @@ class UrlLoaderInterceptorProxy
   }
   void interceptFollowRedirect(void callback(UrlLoaderInterceptorResponse response)) {
     if (impl != null) {
-      impl.interceptFollowRedirect(callback);
+      impl.interceptFollowRedirect(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UrlLoaderInterceptorInterceptFollowRedirectParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -916,13 +892,13 @@ class UrlLoaderInterceptorProxy
   }
   void interceptResponse(url_response_mojom.UrlResponse response,void callback(UrlLoaderInterceptorResponse response)) {
     if (impl != null) {
-      impl.interceptResponse(response,callback);
+      impl.interceptResponse(response,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _UrlLoaderInterceptorInterceptResponseParams();
     params.response = response;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

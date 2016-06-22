@@ -232,20 +232,12 @@ class _TcpServerSocketProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _tcpServerSocketMethodAcceptName:
-        var r = TcpServerSocketAcceptResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = TcpServerSocketAcceptResponseParams.deserialize(
+              message.payload);
+          callback(r.result , r.remoteAddress );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.result , r.remoteAddress );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -292,7 +284,7 @@ class TcpServerSocketProxy
 
   void accept(core.MojoDataPipeConsumer sendStream,core.MojoDataPipeProducer receiveStream,tcp_connected_socket_mojom.TcpConnectedSocketInterfaceRequest clientSocket,void callback(network_error_mojom.NetworkError result, net_address_mojom.NetAddress remoteAddress)) {
     if (impl != null) {
-      impl.accept(sendStream,receiveStream,clientSocket,callback);
+      impl.accept(sendStream,receiveStream,clientSocket,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _TcpServerSocketAcceptParams();
@@ -300,7 +292,7 @@ class TcpServerSocketProxy
     params.receiveStream = receiveStream;
     params.clientSocket = clientSocket;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

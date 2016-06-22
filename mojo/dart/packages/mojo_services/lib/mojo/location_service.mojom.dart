@@ -272,20 +272,12 @@ class _LocationServiceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _locationServiceMethodGetNextLocationName:
-        var r = LocationServiceGetNextLocationResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = LocationServiceGetNextLocationResponseParams.deserialize(
+              message.payload);
+          callback(r.location );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.location );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -332,13 +324,13 @@ class LocationServiceProxy
 
   void getNextLocation(LocationServiceUpdatePriority priority,void callback(location_mojom.Location location)) {
     if (impl != null) {
-      impl.getNextLocation(priority,callback);
+      impl.getNextLocation(priority,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _LocationServiceGetNextLocationParams();
     params.priority = priority;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

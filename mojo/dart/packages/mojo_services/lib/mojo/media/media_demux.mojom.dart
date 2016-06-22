@@ -684,84 +684,44 @@ class _MediaDemuxProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _mediaDemuxMethodDescribeName:
-        var r = MediaDemuxDescribeResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = MediaDemuxDescribeResponseParams.deserialize(
+              message.payload);
+          callback(r.streamTypes );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.streamTypes );
         break;
       case _mediaDemuxMethodGetMetadataName:
-        var r = MediaDemuxGetMetadataResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = MediaDemuxGetMetadataResponseParams.deserialize(
+              message.payload);
+          callback(r.version , r.metadata );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.version , r.metadata );
         break;
       case _mediaDemuxMethodPrimeName:
-        var r = MediaDemuxPrimeResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = MediaDemuxPrimeResponseParams.deserialize(
+              message.payload);
+          callback();
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback();
         break;
       case _mediaDemuxMethodFlushName:
-        var r = MediaDemuxFlushResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = MediaDemuxFlushResponseParams.deserialize(
+              message.payload);
+          callback();
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback();
         break;
       case _mediaDemuxMethodSeekName:
-        var r = MediaDemuxSeekResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = MediaDemuxSeekResponseParams.deserialize(
+              message.payload);
+          callback();
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback();
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -808,12 +768,12 @@ class MediaDemuxProxy
 
   void describe(void callback(List<media_types_mojom.MediaType> streamTypes)) {
     if (impl != null) {
-      impl.describe(callback);
+      impl.describe(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _MediaDemuxDescribeParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -847,13 +807,13 @@ class MediaDemuxProxy
   }
   void getMetadata(int versionLastSeen,void callback(int version, media_metadata_mojom.MediaMetadata metadata)) {
     if (impl != null) {
-      impl.getMetadata(versionLastSeen,callback);
+      impl.getMetadata(versionLastSeen,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _MediaDemuxGetMetadataParams();
     params.versionLastSeen = versionLastSeen;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -872,12 +832,12 @@ class MediaDemuxProxy
   }
   void prime(void callback()) {
     if (impl != null) {
-      impl.prime(callback);
+      impl.prime(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _MediaDemuxPrimeParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -896,12 +856,12 @@ class MediaDemuxProxy
   }
   void flush(void callback()) {
     if (impl != null) {
-      impl.flush(callback);
+      impl.flush(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _MediaDemuxFlushParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -920,13 +880,13 @@ class MediaDemuxProxy
   }
   void seek(int position,void callback()) {
     if (impl != null) {
-      impl.seek(position,callback);
+      impl.seek(position,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _MediaDemuxSeekParams();
     params.position = position;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

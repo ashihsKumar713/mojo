@@ -1134,84 +1134,44 @@ class _ProviderProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _providerMethodEchoStringName:
-        var r = ProviderEchoStringResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ProviderEchoStringResponseParams.deserialize(
+              message.payload);
+          callback(r.a );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.a );
         break;
       case _providerMethodEchoStringsName:
-        var r = ProviderEchoStringsResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ProviderEchoStringsResponseParams.deserialize(
+              message.payload);
+          callback(r.a , r.b );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.a , r.b );
         break;
       case _providerMethodEchoMessagePipeHandleName:
-        var r = ProviderEchoMessagePipeHandleResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ProviderEchoMessagePipeHandleResponseParams.deserialize(
+              message.payload);
+          callback(r.a );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.a );
         break;
       case _providerMethodEchoEnumName:
-        var r = ProviderEchoEnumResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ProviderEchoEnumResponseParams.deserialize(
+              message.payload);
+          callback(r.a );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.a );
         break;
       case _providerMethodEchoIntName:
-        var r = ProviderEchoIntResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = ProviderEchoIntResponseParams.deserialize(
+              message.payload);
+          callback(r.a );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.a );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1258,13 +1218,13 @@ class ProviderProxy
 
   void echoString(String a,void callback(String a)) {
     if (impl != null) {
-      impl.echoString(a,callback);
+      impl.echoString(a,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ProviderEchoStringParams();
     params.a = a;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1283,14 +1243,14 @@ class ProviderProxy
   }
   void echoStrings(String a,String b,void callback(String a, String b)) {
     if (impl != null) {
-      impl.echoStrings(a,b,callback);
+      impl.echoStrings(a,b,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ProviderEchoStringsParams();
     params.a = a;
     params.b = b;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1309,13 +1269,13 @@ class ProviderProxy
   }
   void echoMessagePipeHandle(core.MojoMessagePipeEndpoint a,void callback(core.MojoMessagePipeEndpoint a)) {
     if (impl != null) {
-      impl.echoMessagePipeHandle(a,callback);
+      impl.echoMessagePipeHandle(a,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ProviderEchoMessagePipeHandleParams();
     params.a = a;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1334,13 +1294,13 @@ class ProviderProxy
   }
   void echoEnum(Enum a,void callback(Enum a)) {
     if (impl != null) {
-      impl.echoEnum(a,callback);
+      impl.echoEnum(a,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ProviderEchoEnumParams();
     params.a = a;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1359,13 +1319,13 @@ class ProviderProxy
   }
   void echoInt(int a,void callback(int a)) {
     if (impl != null) {
-      impl.echoInt(a,callback);
+      impl.echoInt(a,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _ProviderEchoIntParams();
     params.a = a;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1661,20 +1621,12 @@ class _IntegerAccessorProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _integerAccessorMethodGetIntegerName:
-        var r = IntegerAccessorGetIntegerResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = IntegerAccessorGetIntegerResponseParams.deserialize(
+              message.payload);
+          callback(r.data , r.type );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.data , r.type );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -1721,12 +1673,12 @@ class IntegerAccessorProxy
 
   void getInteger(void callback(int data, Enum type)) {
     if (impl != null) {
-      impl.getInteger(callback);
+      impl.getInteger(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _IntegerAccessorGetIntegerParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -1965,20 +1917,12 @@ class _SampleInterfaceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _sampleInterfaceMethodSampleMethod1Name:
-        var r = SampleInterfaceSampleMethod1ResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = SampleInterfaceSampleMethod1ResponseParams.deserialize(
+              message.payload);
+          callback(r.out1 , r.out2 );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.out1 , r.out2 );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -2025,14 +1969,14 @@ class SampleInterfaceProxy
 
   void sampleMethod1(int in1,String in2,void callback(String out1, Enum out2)) {
     if (impl != null) {
-      impl.sampleMethod1(in1,in2,callback);
+      impl.sampleMethod1(in1,in2,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _SampleInterfaceSampleMethod1Params();
     params.in1 = in1;
     params.in2 = in2;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

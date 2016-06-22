@@ -511,36 +511,20 @@ class _CameraRollServiceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _cameraRollServiceMethodGetCountName:
-        var r = CameraRollServiceGetCountResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = CameraRollServiceGetCountResponseParams.deserialize(
+              message.payload);
+          callback(r.numPhotos );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.numPhotos );
         break;
       case _cameraRollServiceMethodGetPhotoName:
-        var r = CameraRollServiceGetPhotoResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = CameraRollServiceGetPhotoResponseParams.deserialize(
+              message.payload);
+          callback(r.photo );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.photo );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -600,12 +584,12 @@ class CameraRollServiceProxy
   }
   void getCount(void callback(int numPhotos)) {
     if (impl != null) {
-      impl.getCount(callback);
+      impl.getCount(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _CameraRollServiceGetCountParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -624,13 +608,13 @@ class CameraRollServiceProxy
   }
   void getPhoto(int index,void callback(Photo photo)) {
     if (impl != null) {
-      impl.getPhoto(index,callback);
+      impl.getPhoto(index,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _CameraRollServiceGetPhotoParams();
     params.index = index;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -867,20 +851,12 @@ class _CameraServiceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _cameraServiceMethodGetLatestFrameName:
-        var r = CameraServiceGetLatestFrameResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = CameraServiceGetLatestFrameResponseParams.deserialize(
+              message.payload);
+          callback(r.content );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.content );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -927,12 +903,12 @@ class CameraServiceProxy
 
   void getLatestFrame(void callback(core.MojoDataPipeConsumer content)) {
     if (impl != null) {
-      impl.getLatestFrame(callback);
+      impl.getLatestFrame(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _CameraServiceGetLatestFrameParams();
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

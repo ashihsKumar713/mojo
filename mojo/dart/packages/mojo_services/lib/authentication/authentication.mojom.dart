@@ -414,36 +414,20 @@ class _AuthenticationServiceProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _authenticationServiceMethodSelectAccountName:
-        var r = AuthenticationServiceSelectAccountResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = AuthenticationServiceSelectAccountResponseParams.deserialize(
+              message.payload);
+          callback(r.username , r.error );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.username , r.error );
         break;
       case _authenticationServiceMethodGetOAuth2TokenName:
-        var r = AuthenticationServiceGetOAuth2TokenResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = AuthenticationServiceGetOAuth2TokenResponseParams.deserialize(
+              message.payload);
+          callback(r.token , r.error );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.token , r.error );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -490,13 +474,13 @@ class AuthenticationServiceProxy
 
   void selectAccount(bool returnLastSelected,void callback(String username, String error)) {
     if (impl != null) {
-      impl.selectAccount(returnLastSelected,callback);
+      impl.selectAccount(returnLastSelected,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _AuthenticationServiceSelectAccountParams();
     params.returnLastSelected = returnLastSelected;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
@@ -515,14 +499,14 @@ class AuthenticationServiceProxy
   }
   void getOAuth2Token(String username,List<String> scopes,void callback(String token, String error)) {
     if (impl != null) {
-      impl.getOAuth2Token(username,scopes,callback);
+      impl.getOAuth2Token(username,scopes,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _AuthenticationServiceGetOAuth2TokenParams();
     params.username = username;
     params.scopes = scopes;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;

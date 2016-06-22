@@ -288,20 +288,12 @@ class _CompositorProxyControl
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
       case _compositorMethodCreateSceneName:
-        var r = CompositorCreateSceneResponseParams.deserialize(
-            message.payload);
-        if (!message.header.hasRequestId) {
-          proxyError("Expected a message with a valid request Id.");
-          return;
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = CompositorCreateSceneResponseParams.deserialize(
+              message.payload);
+          callback(r.sceneToken );
         }
-        Function callback = callbackMap[message.header.requestId];
-        if (callback == null) {
-          proxyError(
-              "Message had unknown request Id: ${message.header.requestId}");
-          return;
-        }
-        callbackMap.remove(message.header.requestId);
-        callback(r.sceneToken );
         break;
       default:
         proxyError("Unexpected message type: ${message.header.type}");
@@ -348,14 +340,14 @@ class CompositorProxy
 
   void createScene(scenes_mojom.SceneInterfaceRequest scene,String label,void callback(scene_token_mojom.SceneToken sceneToken)) {
     if (impl != null) {
-      impl.createScene(scene,label,callback);
+      impl.createScene(scene,label,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
     var params = new _CompositorCreateSceneParams();
     params.scene = scene;
     params.label = label;
     Function zonedCallback;
-    if (identical(Zone.current, Zone.ROOT)) {
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
