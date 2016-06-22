@@ -15,8 +15,10 @@ const fieldEncodingTmplText = `
 if {{$info.Identifier}} == nil {
 {{- if $info.IsPointer -}}
 	encoder.WriteNullPointer()
-{{- else if $info.IsHandle -}}
+{{- else if or $info.IsInterfaceRequest $info.IsHandle -}}
 	encoder.WriteInvalidHandle()
+{{- else if $info.IsInterface -}}
+	encoder.WriteInvalidInterface()
 {{- end -}}
 } else {
 	{{ template "NonNullableFieldEncodingTmpl" $info }}
@@ -69,6 +71,10 @@ if {{$info.Identifier}} == nil {
 	if err := {{$info.Identifier}}.Encode(encoder); err != nil {
 		return err
 	}
+}
+{{- else if $info.IsInterface -}}
+if err := encoder.{{$info.WriteFunction}}({{$info.Identifier}}.PassMessagePipe()); err != nil {
+	return err
 }
 {{- else if $info.IsArray -}}
 {{ $elInfo := $info.ElementEncodingInfo -}}

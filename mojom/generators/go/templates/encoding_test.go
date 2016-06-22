@@ -21,6 +21,8 @@ type mockEncodingInfo struct {
 	isStruct            bool
 	isUnion             bool
 	isEnum              bool
+	isInterface         bool
+	isInterfaceRequest  bool
 	elementEncodingInfo *mockEncodingInfo
 	keyEncodingInfo     *mockEncodingInfo
 	valueEncodingInfo   *mockEncodingInfo
@@ -40,6 +42,8 @@ func (m mockEncodingInfo) IsNullable() bool                             { return
 func (m mockEncodingInfo) IsStruct() bool                               { return m.isStruct }
 func (m mockEncodingInfo) IsUnion() bool                                { return m.isUnion }
 func (m mockEncodingInfo) IsEnum() bool                                 { return m.isEnum }
+func (m mockEncodingInfo) IsInterface() bool                            { return m.isInterface }
+func (m mockEncodingInfo) IsInterfaceRequest() bool                     { return m.isInterfaceRequest }
 func (m mockEncodingInfo) ElementEncodingInfo() translator.EncodingInfo { return m.elementEncodingInfo }
 func (m mockEncodingInfo) KeyEncodingInfo() translator.EncodingInfo     { return m.keyEncodingInfo }
 func (m mockEncodingInfo) ValueEncodingInfo() translator.EncodingInfo   { return m.valueEncodingInfo }
@@ -387,6 +391,74 @@ func TestEncodingEnumFieldEncoding(t *testing.T) {
 	encodingInfo := mockEncodingInfo{
 		isEnum:     true,
 		identifier: "s.EnumField",
+	}
+
+	check(t, expected, "FieldEncodingTmpl", encodingInfo)
+}
+
+func TestEncodingInterfaceFieldEncoding(t *testing.T) {
+	expected := `if err := encoder.WriteInterface(s.IntField.PassMessagePipe()); err != nil {
+	return err
+}`
+
+	encodingInfo := mockEncodingInfo{
+		isInterface:   true,
+		identifier:    "s.IntField",
+		writeFunction: "WriteInterface",
+	}
+
+	check(t, expected, "FieldEncodingTmpl", encodingInfo)
+}
+
+func TestEncodingNullableInterfaceFieldEncoding(t *testing.T) {
+	expected := `if s.IntField == nil {
+	encoder.WriteInvalidInterface()
+} else {
+	if err := encoder.WriteInterface(s.IntField.PassMessagePipe()); err != nil {
+		return err
+	}
+}`
+
+	encodingInfo := mockEncodingInfo{
+		isInterface:   true,
+		isNullable:    true,
+		identifier:    "s.IntField",
+		writeFunction: "WriteInterface",
+	}
+
+	check(t, expected, "FieldEncodingTmpl", encodingInfo)
+}
+
+func TestEncodingInterfaceRequestFieldEncoding(t *testing.T) {
+	expected := `if err := encoder.WriteHandle(s.IntField.PassMessagePipe()); err != nil {
+	return err
+}`
+
+	encodingInfo := mockEncodingInfo{
+		isInterface:        true,
+		isInterfaceRequest: true,
+		identifier:         "s.IntField",
+		writeFunction:      "WriteHandle",
+	}
+
+	check(t, expected, "FieldEncodingTmpl", encodingInfo)
+}
+
+func TestEncodingNullableInterfaceRequestFieldEncoding(t *testing.T) {
+	expected := `if s.IntField == nil {
+	encoder.WriteInvalidHandle()
+} else {
+	if err := encoder.WriteHandle(s.IntField.PassMessagePipe()); err != nil {
+		return err
+	}
+}`
+
+	encodingInfo := mockEncodingInfo{
+		isInterface:        true,
+		isInterfaceRequest: true,
+		isNullable:         true,
+		identifier:         "s.IntField",
+		writeFunction:      "WriteHandle",
 	}
 
 	check(t, expected, "FieldEncodingTmpl", encodingInfo)

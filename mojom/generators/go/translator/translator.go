@@ -36,27 +36,42 @@ func (t *translator) TranslateMojomFile(fileName string) (tmplFile *TmplFile) {
 
 	tmplFile.PackageName = fileNameToPackageName(fileName)
 
+	if file.DeclaredMojomObjects.Structs == nil {
+		file.DeclaredMojomObjects.Structs = &[]string{}
+	}
 	tmplFile.Structs = make([]*StructTemplate, len(*file.DeclaredMojomObjects.Structs))
 	for i, typeKey := range *file.DeclaredMojomObjects.Structs {
 		tmplFile.Structs[i] = t.translateMojomStruct(typeKey)
 	}
 
+	if file.DeclaredMojomObjects.Unions == nil {
+		file.DeclaredMojomObjects.Unions = &[]string{}
+	}
 	tmplFile.Unions = make([]*UnionTemplate, len(*file.DeclaredMojomObjects.Unions))
 	for i, typeKey := range *file.DeclaredMojomObjects.Unions {
 		tmplFile.Unions[i] = t.translateMojomUnion(typeKey)
 	}
 
+	if file.DeclaredMojomObjects.TopLevelEnums == nil {
+		file.DeclaredMojomObjects.TopLevelEnums = &[]string{}
+	}
+	if file.DeclaredMojomObjects.EmbeddedEnums == nil {
+		file.DeclaredMojomObjects.EmbeddedEnums = &[]string{}
+	}
 	topLevelEnumsNum := len(*file.DeclaredMojomObjects.TopLevelEnums)
-	enumNum := len(*file.DeclaredMojomObjects.EmbeddedEnums) + topLevelEnumsNum
+	embeddedEnumsNum := len(*file.DeclaredMojomObjects.EmbeddedEnums)
+	enumNum := embeddedEnumsNum + topLevelEnumsNum
 	tmplFile.Enums = make([]*EnumTemplate, enumNum)
 	for i, typeKey := range *file.DeclaredMojomObjects.TopLevelEnums {
 		tmplFile.Enums[i] = t.translateMojomEnum(typeKey)
 	}
-
 	for i, typeKey := range *file.DeclaredMojomObjects.EmbeddedEnums {
 		tmplFile.Enums[i+topLevelEnumsNum] = t.translateMojomEnum(typeKey)
 	}
 
+	if file.DeclaredMojomObjects.Interfaces == nil {
+		file.DeclaredMojomObjects.Interfaces = &[]string{}
+	}
 	tmplFile.Interfaces = make([]*InterfaceTemplate, len(*file.DeclaredMojomObjects.Interfaces))
 	for i, typeKey := range *file.DeclaredMojomObjects.Interfaces {
 		tmplFile.Interfaces[i] = t.translateMojomInterface(typeKey)
@@ -194,8 +209,12 @@ func (t *translator) translateMojomMethod(mojomMethod mojom_types.MojomMethod, i
 	m.FullName = fmt.Sprintf("%s_%s", interfaceTemplate.PrivateName, m.MethodName)
 	m.Params = *t.translateMojomStructObject(mojomMethod.Parameters)
 	m.Params.Name = fmt.Sprintf("%s_Params", m.FullName)
-	m.ResponseParams = t.translateMojomStructObject(*mojomMethod.ResponseParams)
-	m.ResponseParams.Name = fmt.Sprintf("%s_ResponseParams", m.FullName)
+	m.Params.PrivateName = privateName(m.Params.Name)
+	if mojomMethod.ResponseParams != nil {
+		m.ResponseParams = t.translateMojomStructObject(*mojomMethod.ResponseParams)
+		m.ResponseParams.Name = fmt.Sprintf("%s_ResponseParams", m.FullName)
+		m.ResponseParams.PrivateName = privateName(m.ResponseParams.Name)
+	}
 	return m
 }
 

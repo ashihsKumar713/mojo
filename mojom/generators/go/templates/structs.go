@@ -98,4 +98,5 @@ func initStructTemplates() {
 	template.Must(goFileTmpl.Parse(structDeclTmplText))
 	template.Must(goFileTmpl.Parse(structVersions))
 	template.Must(goFileTmpl.Parse(structDecodingTmplText))
+	template.Must(goFileTmpl.Parse(structTmplText))
 }

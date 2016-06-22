@@ -6,6 +6,7 @@ package templates
 
 import (
 	"bytes"
+	"io/ioutil"
 	"text/template"
 
 	"mojom/generators/go/gofmt"
@@ -23,9 +24,11 @@ func ExecuteTemplates(tmplFile *translator.TmplFile) string {
 		panic(err)
 	}
 
-	src, err := gofmt.FormatGoFile(buffer.String())
+	unformatted := buffer.String()
+	src, err := gofmt.FormatGoFile(unformatted)
 
 	if err != nil {
+		ioutil.WriteFile("/tmp/unformatted.go", buffer.Bytes(), 0666)
 		panic(err)
 	}
 	return src

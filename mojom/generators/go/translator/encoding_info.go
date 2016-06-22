@@ -140,33 +140,21 @@ func (t *translator) mapTypeEncodingInfo(mojomType mojom_types.MapType, level in
 
 func (t *translator) typeRefEncodingInfo(typeRef mojom_types.TypeReference) (info EncodingInfo) {
 	mojomType := t.GetUserDefinedType(*typeRef.TypeKey)
-	switch m := mojomType.(type) {
+	switch mojomType.(type) {
 	default:
 		panic("Unsupported type. This should never happen.")
 	case *mojom_types.UserDefinedTypeStructType:
-		info = t.structTypeEncodingInfo(m.Value)
+		info = new(structTypeEncodingInfo)
 	case *mojom_types.UserDefinedTypeUnionType:
-		info = t.unionTypeEncodingInfo(m.Value)
+		info = new(unionTypeEncodingInfo)
 	case *mojom_types.UserDefinedTypeEnumType:
-		info = t.enumTypeEncodingInfo(m.Value)
+		info = new(enumTypeEncodingInfo)
+	case *mojom_types.UserDefinedTypeInterfaceType:
+		info = new(interfaceTypeEncodingInfo)
+		info.(*interfaceTypeEncodingInfo).interfaceRequest = typeRef.IsInterfaceRequest
 	}
 	if typeRef.Nullable {
 		info.setNullable(true)
 	}
-	return info
-}
-
-func (t *translator) structTypeEncodingInfo(mojomType mojom_types.MojomStruct) (info *structTypeEncodingInfo) {
-	info = new(structTypeEncodingInfo)
-	return info
-}
-
-func (t *translator) unionTypeEncodingInfo(mojomType mojom_types.MojomUnion) (info *unionTypeEncodingInfo) {
-	info = new(unionTypeEncodingInfo)
-	return info
-}
-
-func (t *translator) enumTypeEncodingInfo(mojomType mojom_types.MojomEnum) (info *enumTypeEncodingInfo) {
-	info = new(enumTypeEncodingInfo)
 	return info
 }

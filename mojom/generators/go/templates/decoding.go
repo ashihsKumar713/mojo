@@ -8,6 +8,15 @@ import (
 	"text/template"
 )
 
+const ampersandIfNullable = `
+{{- define "AmpersandIfNullable" -}}
+{{- $info := . -}}
+{{- if $info.IsNullable -}}
+&
+{{- end -}}
+{{- end -}}
+`
+
 const fieldDecodingTmplText = `
 {{- define "FieldDecodingTmpl" -}}
 {{- $info := . -}}
@@ -88,6 +97,25 @@ if {{$info.Identifier}} == nil {
 {{- if $info.IsPointer}}
 decoder.Finish()
 {{- end -}}
+{{- else if $info.IsInterface -}}
+handle, err := decoder.{{$info.ReadFunction}}()
+if err != nil {
+	return err
+}
+if handle.IsValid() {
+	handleOwner := bindings.NewMessagePipeHandleOwner(handle)
+{{- if $info.IsInterfaceRequest}}
+	{{$info.Identifier}} = {{template "AmpersandIfNullable" $info}}{{$info.GoType}}_Request{handleOwner}
+{{- else}}
+	{{$info.Identifier}} = {{template "AmpersandIfNullable" $info}}{{$info.GoType}}_Pointer{handleOwner}
+{{- end -}}
+} else {
+{{- if $info.IsNullable}}
+	{{$info.Identifier}} = nil
+{{- else}}
+	return &bindings.ValidationError{bindings.UnexpectedInvalidHandle, "unexpected invalid handle"}
+{{- end -}}
+}
 {{- else if $info.IsArray -}}
 {{ $elInfo := $info.ElementEncodingInfo -}}
 len0, err := decoder.StartArray({{$elInfo.BitSize}})
@@ -137,4 +165,5 @@ for i := 0; i < len({{$keyInfo.Identifier}}); i++ {
 func initDecodingTemplates() {
 	template.Must(goFileTmpl.Parse(nonNullableFieldDecodingTmplText))
 	template.Must(goFileTmpl.Parse(fieldDecodingTmplText))
+	template.Must(goFileTmpl.Parse(ampersandIfNullable))
 }

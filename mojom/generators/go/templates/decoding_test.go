@@ -247,3 +247,72 @@ s.EnumField = SomeEnum(value)`
 
 	check(t, expected, "FieldDecodingTmpl", encodingInfo)
 }
+
+func TestDecodingNullableInterfaceFieldDecoding(t *testing.T) {
+	expected := `handle, err := decoder.ReadInterface()
+if err != nil {
+	return err
+}
+if handle.IsValid() {
+	handleOwner := bindings.NewMessagePipeHandleOwner(handle)
+	s.IntField = SomeInterface_Pointer{handleOwner}
+} else {
+	return &bindings.ValidationError{bindings.UnexpectedInvalidHandle, "unexpected invalid handle"}
+}`
+
+	encodingInfo := mockEncodingInfo{
+		isInterface:  true,
+		identifier:   "s.IntField",
+		readFunction: "ReadInterface",
+		goType:       "SomeInterface",
+	}
+
+	check(t, expected, "FieldDecodingTmpl", encodingInfo)
+}
+
+func TestDecodingInterfaceRequestFieldDecoding(t *testing.T) {
+	expected := `handle, err := decoder.ReadMessagePipeHandle()
+if err != nil {
+	return err
+}
+if handle.IsValid() {
+	handleOwner := bindings.NewMessagePipeHandleOwner(handle)
+	s.IntField = SomeInterface_Request{handleOwner}
+} else {
+	return &bindings.ValidationError{bindings.UnexpectedInvalidHandle, "unexpected invalid handle"}
+}`
+
+	encodingInfo := mockEncodingInfo{
+		isInterface:        true,
+		isInterfaceRequest: true,
+		identifier:         "s.IntField",
+		readFunction:       "ReadMessagePipeHandle",
+		goType:             "SomeInterface",
+	}
+
+	check(t, expected, "FieldDecodingTmpl", encodingInfo)
+}
+
+func TestDecodingNullableInterfaceRequestFieldDecoding(t *testing.T) {
+	expected := `handle, err := decoder.ReadMessagePipeHandle()
+if err != nil {
+	return err
+}
+if handle.IsValid() {
+	handleOwner := bindings.NewMessagePipeHandleOwner(handle)
+	s.IntField = &SomeInterface_Request{handleOwner}
+} else {
+	s.IntField = nil
+}`
+
+	encodingInfo := mockEncodingInfo{
+		isInterface:        true,
+		isInterfaceRequest: true,
+		isNullable:         true,
+		identifier:         "s.IntField",
+		readFunction:       "ReadMessagePipeHandle",
+		goType:             "SomeInterface",
+	}
+
+	check(t, expected, "FieldDecodingTmpl", encodingInfo)
+}

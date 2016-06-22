@@ -13,13 +13,13 @@ const interfaceTmplText = `
 {{$interface := . -}}
 {{ template "InterfaceDecl" $interface }}
 
-{{- range $method := $interface.Methods -}}
+{{- range $method := $interface.Methods}}
 {{ template "Method" $method }}
-{{- end -}}
+{{- end}}
 
-{{- if $interface.ServiceName -}}
+{{- if $interface.ServiceName}}
 {{ template "ServiceDecl" $interface }}
-{{- end -}}
+{{- end}}
 {{- end -}}
 `
 
@@ -101,8 +101,6 @@ const methodTmplText = `
 
 {{ template "MethodParams" $method }}
 
-{{ template "MethodSignature" $method }}
-
 {{ template "MethodFunction" $method }}
 {{- end -}}
 `
@@ -121,7 +119,7 @@ const methodParamsTmplText = `
 {{- $interface := . -}}
 {{ template "Struct" $interface.Params }}
 
-{{- if $interface.ResponseParams -}}
+{{- if $interface.ResponseParams}}
 {{ template "Struct" $interface.ResponseParams }}
 {{- end -}}
 {{- end -}}
@@ -148,9 +146,9 @@ const methodFuncTmplText = `
 {{- define "MethodFunction" -}}
 {{- $method := . -}}
 func (p *{{$method.Interface.Name}}_Proxy) {{ template "MethodSignature" $method }} {
-	payload := &{{$method.Params}}{
+	payload := &{{$method.Params.Name}}{
 {{range $param := $method.Params.Fields -}}
-		{{$param.Name}},
+		in{{$param.Name}},
 {{end}}
 	}
 
@@ -167,7 +165,7 @@ func (p *{{$method.Interface.Name}}_Proxy) {{ template "MethodSignature" $method
 		p.Close_Proxy()
 		return
 	}
-{{- if $method.ResponseParams}}
+{{if $method.ResponseParams}}
 	readResult := <-p.router.AcceptWithResponse(message)
 	if err = readResult.Error; err != nil {
 		p.Close_Proxy()
@@ -198,7 +196,7 @@ func (p *{{$method.Interface.Name}}_Proxy) {{ template "MethodSignature" $method
 		p.Close_Proxy()
 		return
 	}
-{{end -}}
+{{end}}
 	return
 }
 {{- end -}}

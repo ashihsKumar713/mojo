@@ -175,6 +175,12 @@ type EncodingInfo interface {
 	// IsEnum returns true if the field is an enum.
 	IsEnum() bool
 
+	// IsInterface returns true if the field is an interface or interface request.
+	IsInterface() bool
+
+	// IsInterfaceRequest returns true if the field is an interface request.
+	IsInterfaceRequest() bool
+
 	// IsArray returns true if the field is an array.
 	IsArray() bool
 
@@ -255,6 +261,14 @@ func (b *baseEncodingInfo) IsEnum() bool {
 	return false
 }
 
+func (b *baseEncodingInfo) IsInterface() bool {
+	return false
+}
+
+func (b *baseEncodingInfo) IsInterfaceRequest() bool {
+	return false
+}
+
 func (b *baseEncodingInfo) IsArray() bool {
 	return false
 }
@@ -294,18 +308,24 @@ func (b *baseEncodingInfo) setGoType(goType string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// basePointerEncodingInfo implements the EncodingInfo for pointer types.
-type basePointerEncodingInfo struct {
+type baseNullableEncodingInfo struct {
 	baseEncodingInfo
 	nullable bool
 }
 
-func (b *basePointerEncodingInfo) IsNullable() bool {
+func (b *baseNullableEncodingInfo) IsNullable() bool {
 	return b.nullable
 }
 
-func (b *basePointerEncodingInfo) setNullable(nullable bool) {
+func (b *baseNullableEncodingInfo) setNullable(nullable bool) {
 	b.nullable = nullable
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// basePointerEncodingInfo implements the EncodingInfo for pointer types.
+type basePointerEncodingInfo struct {
+	baseNullableEncodingInfo
 }
 
 func (b *basePointerEncodingInfo) IsPointer() bool {
@@ -364,17 +384,12 @@ func (t *stringTypeEncodingInfo) ReadFunction() string {
 ////////////////////////////////////////////////////////////////////////////////
 
 type handleTypeEncodingInfo struct {
-	baseEncodingInfo
-	nullable     bool
+	baseNullableEncodingInfo
 	readFunction string
 }
 
 func (t *handleTypeEncodingInfo) IsHandle() bool {
 	return true
-}
-
-func (t *handleTypeEncodingInfo) IsNullable() bool {
-	return t.nullable
 }
 
 func (t *handleTypeEncodingInfo) BitSize() uint32 {
@@ -465,9 +480,8 @@ func (t *structTypeEncodingInfo) ReadFunction() string {
 
 // unionTypeEncodingInfo is the EncodingInfo for a union.
 type unionTypeEncodingInfo struct {
-	baseEncodingInfo
+	baseNullableEncodingInfo
 	nestedUnion bool
-	nullable    bool
 }
 
 func (t *unionTypeEncodingInfo) BitSize() uint32 {
@@ -483,14 +497,6 @@ func (t *unionTypeEncodingInfo) IsUnion() bool {
 
 func (t *unionTypeEncodingInfo) IsPointer() bool {
 	return t.nestedUnion
-}
-
-func (b *unionTypeEncodingInfo) IsNullable() bool {
-	return b.nullable
-}
-
-func (b *unionTypeEncodingInfo) setNullable(nullable bool) {
-	b.nullable = nullable
 }
 
 func (t *unionTypeEncodingInfo) WriteFunction() string {
@@ -522,4 +528,43 @@ func (t *enumTypeEncodingInfo) WriteFunction() string {
 
 func (t *enumTypeEncodingInfo) ReadFunction() string {
 	return "ReadInt32"
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+type interfaceTypeEncodingInfo struct {
+	baseNullableEncodingInfo
+	interfaceRequest bool
+}
+
+func (t *interfaceTypeEncodingInfo) IsInterface() bool {
+	return true
+}
+
+func (t *interfaceTypeEncodingInfo) IsInterfaceRequest() bool {
+	return t.interfaceRequest
+}
+
+func (t *interfaceTypeEncodingInfo) BitSize() uint32 {
+	if t.interfaceRequest {
+		return uint32(32)
+	} else {
+		return uint32(64)
+	}
+}
+
+func (t *interfaceTypeEncodingInfo) WriteFunction() string {
+	if t.interfaceRequest {
+		return "WriteHandle"
+	} else {
+		return "WriteInterface"
+	}
+}
+
+func (t *interfaceTypeEncodingInfo) ReadFunction() string {
+	if t.interfaceRequest {
+		return "ReadMessagePipeHandle"
+	} else {
+		return "ReadInterface"
+	}
 }
