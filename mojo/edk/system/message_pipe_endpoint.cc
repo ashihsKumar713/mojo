@@ -28,9 +28,9 @@ HandleSignalsState MessagePipeEndpoint::GetHandleSignalsState() const {
 }
 
 MojoResult MessagePipeEndpoint::AddAwakable(Awakable* /*awakable*/,
-                                            MojoHandleSignals /*signals*/,
-                                            bool /*force*/,
                                             uint64_t /*context*/,
+                                            bool /*force*/,
+                                            MojoHandleSignals /*signals*/,
                                             HandleSignalsState* signals_state) {
   NOTREACHED();
   if (signals_state)
@@ -38,17 +38,10 @@ MojoResult MessagePipeEndpoint::AddAwakable(Awakable* /*awakable*/,
   return MOJO_RESULT_INTERNAL;
 }
 
-void MessagePipeEndpoint::RemoveAwakable(Awakable* /*awakable*/,
+void MessagePipeEndpoint::RemoveAwakable(bool /*match_context*/,
+                                         Awakable* /*awakable*/,
+                                         uint64_t /*context*/,
                                          HandleSignalsState* signals_state) {
-  NOTREACHED();
-  if (signals_state)
-    *signals_state = HandleSignalsState();
-}
-
-void MessagePipeEndpoint::RemoveAwakableWithContext(
-    Awakable* /*awakable*/,
-    uint64_t /*context*/,
-    HandleSignalsState* signals_state) {
   NOTREACHED();
   if (signals_state)
     *signals_state = HandleSignalsState();

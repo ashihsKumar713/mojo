@@ -38,15 +38,14 @@ class LocalMessagePipeEndpoint final : public MessagePipeEndpoint {
                          MojoReadMessageFlags flags) override;
   HandleSignalsState GetHandleSignalsState() const override;
   MojoResult AddAwakable(Awakable* awakable,
-                         MojoHandleSignals signals,
-                         bool force,
                          uint64_t context,
+                         bool force,
+                         MojoHandleSignals signals,
                          HandleSignalsState* signals_state) override;
-  void RemoveAwakable(Awakable* awakable,
+  void RemoveAwakable(bool match_context,
+                      Awakable* awakable,
+                      uint64_t context,
                       HandleSignalsState* signals_state) override;
-  void RemoveAwakableWithContext(Awakable* awakable,
-                                 uint64_t context,
-                                 HandleSignalsState* signals_state) override;
 
   // This is only to be used by |MessagePipe|:
   MessageInTransitQueue* message_queue() { return &message_queue_; }

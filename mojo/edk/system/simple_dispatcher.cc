@@ -27,9 +27,9 @@ void SimpleDispatcher::CancelAllStateNoLock() {
 
 MojoResult SimpleDispatcher::AddAwakableImplNoLock(
     Awakable* awakable,
-    MojoHandleSignals signals,
-    bool force,
     uint64_t context,
+    bool force,
+    MojoHandleSignals signals,
     HandleSignalsState* signals_state) {
   mutex().AssertHeld();
 
@@ -38,31 +38,26 @@ MojoResult SimpleDispatcher::AddAwakableImplNoLock(
     *signals_state = state;
   if (state.satisfies(signals)) {
     if (force)
-      awakable_list_.Add(awakable, signals, context);
+      awakable_list_.Add(awakable, context, signals);
     return MOJO_RESULT_ALREADY_EXISTS;
   }
-  if (!state.can_satisfy(signals))
+  if (!state.can_satisfy(signals)) {
+    if (force)
+      awakable_list_.Add(awakable, context, signals);
     return MOJO_RESULT_FAILED_PRECONDITION;
+  }
 
-  awakable_list_.Add(awakable, signals, context);
+  awakable_list_.Add(awakable, context, signals);
   return MOJO_RESULT_OK;
 }
 
 void SimpleDispatcher::RemoveAwakableImplNoLock(
-    Awakable* awakable,
-    HandleSignalsState* signals_state) {
-  mutex().AssertHeld();
-  awakable_list_.Remove(awakable);
-  if (signals_state)
-    *signals_state = GetHandleSignalsStateImplNoLock();
-}
-
-void SimpleDispatcher::RemoveAwakableWithContextImplNoLock(
+    bool match_context,
     Awakable* awakable,
     uint64_t context,
     HandleSignalsState* signals_state) {
   mutex().AssertHeld();
-  awakable_list_.RemoveWithContext(awakable, context);
+  awakable_list_.Remove(match_context, awakable, context);
   if (signals_state)
     *signals_state = GetHandleSignalsStateImplNoLock();
 }

@@ -115,15 +115,14 @@ class DataPipe final : public ChannelEndpointClient {
   MojoResult ProducerEndWriteData(uint32_t num_bytes_written);
   HandleSignalsState ProducerGetHandleSignalsState();
   MojoResult ProducerAddAwakable(Awakable* awakable,
-                                 MojoHandleSignals signals,
-                                 bool force,
                                  uint64_t context,
+                                 bool force,
+                                 MojoHandleSignals signals,
                                  HandleSignalsState* signals_state);
-  void ProducerRemoveAwakable(Awakable* awakable,
+  void ProducerRemoveAwakable(bool match_context,
+                              Awakable* awakable,
+                              uint64_t context,
                               HandleSignalsState* signals_state);
-  void ProducerRemoveAwakableWithContext(Awakable* awakable,
-                                         uint64_t context,
-                                         HandleSignalsState* signals_state);
   void ProducerStartSerialize(Channel* channel,
                               size_t* max_size,
                               size_t* max_platform_handles);
@@ -153,15 +152,14 @@ class DataPipe final : public ChannelEndpointClient {
   MojoResult ConsumerEndReadData(uint32_t num_bytes_read);
   HandleSignalsState ConsumerGetHandleSignalsState();
   MojoResult ConsumerAddAwakable(Awakable* awakable,
-                                 MojoHandleSignals signals,
-                                 bool force,
                                  uint64_t context,
+                                 bool force,
+                                 MojoHandleSignals signals,
                                  HandleSignalsState* signals_state);
-  void ConsumerRemoveAwakable(Awakable* awakable,
+  void ConsumerRemoveAwakable(bool match_context,
+                              Awakable* awakable,
+                              uint64_t context,
                               HandleSignalsState* signals_state);
-  void ConsumerRemoveAwakableWithContext(Awakable* awakable,
-                                         uint64_t context,
-                                         HandleSignalsState* signals_state);
   void ConsumerStartSerialize(Channel* channel,
                               size_t* max_size,
                               size_t* max_platform_handles);

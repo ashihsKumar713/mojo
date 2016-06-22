@@ -66,15 +66,14 @@ class MessagePipeEndpoint {
                                  MojoReadMessageFlags flags);
   virtual HandleSignalsState GetHandleSignalsState() const;
   virtual MojoResult AddAwakable(Awakable* awakable,
-                                 MojoHandleSignals signals,
-                                 bool force,
                                  uint64_t context,
+                                 bool force,
+                                 MojoHandleSignals signals,
                                  HandleSignalsState* signals_state);
-  virtual void RemoveAwakable(Awakable* awakable,
+  virtual void RemoveAwakable(bool match_context,
+                              Awakable* awakable,
+                              uint64_t context,
                               HandleSignalsState* signals_state);
-  virtual void RemoveAwakableWithContext(Awakable* awakable,
-                                         uint64_t context,
-                                         HandleSignalsState* signals_state);
 
   // Implementations must override these if they represent a proxy endpoint. An
   // implementation for a local endpoint needs not override these methods, since

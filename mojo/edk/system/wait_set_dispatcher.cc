@@ -124,8 +124,7 @@ void WaitSetDispatcher::CloseImplNoLock() {
   for (auto& p : entries) {
     const auto& entry = p.second;
     if (entry->dispatcher)
-      entry->dispatcher->RemoveAwakableWithContext(this, entry->cookie,
-                                                   nullptr);
+      entry->dispatcher->RemoveAwakable(true, this, entry->cookie, nullptr);
   }
 
   // The caller of |CloseImplNoLock()| expects |mutex()| to be locked, so we
@@ -170,8 +169,8 @@ MojoResult WaitSetDispatcher::WaitSetAddImpl(
   }
 
   HandleSignalsState signals_state;
-  MojoResult result = dispatcher->AddAwakableUnconditional(
-      this, signals, cookie, &signals_state);
+  MojoResult result =
+      dispatcher->AddAwakable(this, cookie, true, signals, &signals_state);
 
   // Can't use |MutexLocker|, since we need to do some work outside the lock
   // in some code paths.
@@ -188,7 +187,7 @@ MojoResult WaitSetDispatcher::WaitSetAddImpl(
     mutex().Unlock();
     if (result == MOJO_RESULT_OK || result == MOJO_RESULT_ALREADY_EXISTS) {
       // We have to remove ourself from the target dispatcher's awakable list.
-      dispatcher->RemoveAwakableWithContext(this, cookie, nullptr);
+      dispatcher->RemoveAwakable(true, this, cookie, nullptr);
     }
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
@@ -243,7 +242,7 @@ MojoResult WaitSetDispatcher::WaitSetRemoveImpl(uint64_t cookie) {
   }
 
   if (dispatcher)
-    dispatcher->RemoveAwakableWithContext(this, cookie, nullptr);
+    dispatcher->RemoveAwakable(true, this, cookie, nullptr);
   return MOJO_RESULT_OK;
 }
 
@@ -271,8 +270,8 @@ bool WaitSetDispatcher::Awake(uint64_t context,
     // |CloseImplNoLock()| (after that, we will have been removed from all the
     // awakable lists, so |Awake()| should no longer be called). We may as well
     // return false here, which will automatically remove ourselves from the
-    // awakable list (|CloseImplNoLock()| will call
-    // |RemoveAwakableWithContext()| anyway, but that's OK).
+    // awakable list (|CloseImplNoLock()| will call |RemoveAwakable()| anyway,
+    // but that's OK).
     return false;
   }
 

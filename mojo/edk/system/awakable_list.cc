@@ -55,32 +55,20 @@ void AwakableList::CancelAll() {
 }
 
 void AwakableList::Add(Awakable* awakable,
-                       MojoHandleSignals signals,
-                       uint64_t context) {
+                       uint64_t context,
+                       MojoHandleSignals signals) {
   awakables_.push_back(AwakeInfo(awakable, signals, context));
 }
 
-void AwakableList::Remove(Awakable* awakable) {
+void AwakableList::Remove(bool match_context,
+                          Awakable* awakable,
+                          uint64_t context) {
   // We allow a thread to wait on the same handle multiple times simultaneously,
   // so we need to scan the entire list and remove all occurrences of |waiter|.
   auto last = awakables_.end();
   for (AwakeInfoList::iterator it = awakables_.begin(); it != last;) {
-    if (it->awakable == awakable) {
-      --last;
-      std::swap(*it, *last);
-    } else {
-      ++it;
-    }
-  }
-  awakables_.erase(last, awakables_.end());
-}
-
-void AwakableList::RemoveWithContext(Awakable* awakable, uint64_t context) {
-  // We allow a thread to wait on the same handle multiple times simultaneously,
-  // so we need to scan the entire list and remove all occurrences of |waiter|.
-  auto last = awakables_.end();
-  for (AwakeInfoList::iterator it = awakables_.begin(); it != last;) {
-    if (it->awakable == awakable && it->context == context) {
+    if (it->awakable == awakable &&
+        (!match_context || it->context == context)) {
       --last;
       std::swap(*it, *last);
     } else {

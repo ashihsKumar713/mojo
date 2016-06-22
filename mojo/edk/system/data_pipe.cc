@@ -392,9 +392,9 @@ HandleSignalsState DataPipe::ProducerGetHandleSignalsState() {
 }
 
 MojoResult DataPipe::ProducerAddAwakable(Awakable* awakable,
-                                         MojoHandleSignals signals,
-                                         bool force,
                                          uint64_t context,
+                                         bool force,
+                                         MojoHandleSignals signals,
                                          HandleSignalsState* signals_state) {
   MutexLocker locker(&mutex_);
   DCHECK(has_local_producer_no_lock());
@@ -404,32 +404,26 @@ MojoResult DataPipe::ProducerAddAwakable(Awakable* awakable,
     *signals_state = producer_state;
   if (producer_state.satisfies(signals)) {
     if (force)
-      producer_awakable_list_->Add(awakable, signals, context);
+      producer_awakable_list_->Add(awakable, context, signals);
     return MOJO_RESULT_ALREADY_EXISTS;
   }
-  if (!producer_state.can_satisfy(signals))
+  if (!producer_state.can_satisfy(signals)) {
+    if (force)
+      producer_awakable_list_->Add(awakable, context, signals);
     return MOJO_RESULT_FAILED_PRECONDITION;
+  }
 
-  producer_awakable_list_->Add(awakable, signals, context);
+  producer_awakable_list_->Add(awakable, context, signals);
   return MOJO_RESULT_OK;
 }
 
-void DataPipe::ProducerRemoveAwakable(Awakable* awakable,
+void DataPipe::ProducerRemoveAwakable(bool match_context,
+                                      Awakable* awakable,
+                                      uint64_t context,
                                       HandleSignalsState* signals_state) {
   MutexLocker locker(&mutex_);
   DCHECK(has_local_producer_no_lock());
-  producer_awakable_list_->Remove(awakable);
-  if (signals_state)
-    *signals_state = impl_->ProducerGetHandleSignalsState();
-}
-
-void DataPipe::ProducerRemoveAwakableWithContext(
-    Awakable* awakable,
-    uint64_t context,
-    HandleSignalsState* signals_state) {
-  MutexLocker locker(&mutex_);
-  DCHECK(has_local_producer_no_lock());
-  producer_awakable_list_->RemoveWithContext(awakable, context);
+  producer_awakable_list_->Remove(match_context, awakable, context);
   if (signals_state)
     *signals_state = impl_->ProducerGetHandleSignalsState();
 }
@@ -612,9 +606,9 @@ HandleSignalsState DataPipe::ConsumerGetHandleSignalsState() {
 }
 
 MojoResult DataPipe::ConsumerAddAwakable(Awakable* awakable,
-                                         MojoHandleSignals signals,
-                                         bool force,
                                          uint64_t context,
+                                         bool force,
+                                         MojoHandleSignals signals,
                                          HandleSignalsState* signals_state) {
   MutexLocker locker(&mutex_);
   DCHECK(has_local_consumer_no_lock());
@@ -624,32 +618,26 @@ MojoResult DataPipe::ConsumerAddAwakable(Awakable* awakable,
     *signals_state = consumer_state;
   if (consumer_state.satisfies(signals)) {
     if (force)
-      consumer_awakable_list_->Add(awakable, signals, context);
+      consumer_awakable_list_->Add(awakable, context, signals);
     return MOJO_RESULT_ALREADY_EXISTS;
   }
-  if (!consumer_state.can_satisfy(signals))
+  if (!consumer_state.can_satisfy(signals)) {
+    if (force)
+      consumer_awakable_list_->Add(awakable, context, signals);
     return MOJO_RESULT_FAILED_PRECONDITION;
+  }
 
-  consumer_awakable_list_->Add(awakable, signals, context);
+  consumer_awakable_list_->Add(awakable, context, signals);
   return MOJO_RESULT_OK;
 }
 
-void DataPipe::ConsumerRemoveAwakable(Awakable* awakable,
+void DataPipe::ConsumerRemoveAwakable(bool match_context,
+                                      Awakable* awakable,
+                                      uint64_t context,
                                       HandleSignalsState* signals_state) {
   MutexLocker locker(&mutex_);
   DCHECK(has_local_consumer_no_lock());
-  consumer_awakable_list_->Remove(awakable);
-  if (signals_state)
-    *signals_state = impl_->ConsumerGetHandleSignalsState();
-}
-
-void DataPipe::ConsumerRemoveAwakableWithContext(
-    Awakable* awakable,
-    uint64_t context,
-    HandleSignalsState* signals_state) {
-  MutexLocker locker(&mutex_);
-  DCHECK(has_local_consumer_no_lock());
-  consumer_awakable_list_->RemoveWithContext(awakable, context);
+  consumer_awakable_list_->Remove(match_context, awakable, context);
   if (signals_state)
     *signals_state = impl_->ConsumerGetHandleSignalsState();
 }

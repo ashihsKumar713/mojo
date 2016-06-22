@@ -81,7 +81,6 @@ class CoreTestBase_MockHandleInfo {
   unsigned GetMapBufferCallCount() const;
   unsigned GetAddAwakableCallCount() const;
   unsigned GetRemoveAwakableCallCount() const;
-  unsigned GetRemoveAwakableWithContextCallCount() const;
   unsigned GetCancelAllStateCallCount() const;
 
   size_t GetAddedAwakableSize() const;
@@ -105,7 +104,6 @@ class CoreTestBase_MockHandleInfo {
   void IncrementMapBufferCallCount();
   void IncrementAddAwakableCallCount();
   void IncrementRemoveAwakableCallCount();
-  void IncrementRemoveAwakableWithContextCallCount();
   void IncrementCancelAllStateCallCount();
 
   void AllowAddAwakable(bool alllow);
@@ -131,7 +129,6 @@ class CoreTestBase_MockHandleInfo {
   unsigned map_buffer_call_count_ MOJO_GUARDED_BY(mutex_) = 0;
   unsigned add_awakable_call_count_ MOJO_GUARDED_BY(mutex_) = 0;
   unsigned remove_awakable_call_count_ MOJO_GUARDED_BY(mutex_) = 0;
-  unsigned remove_awakable_with_context_call_count_ MOJO_GUARDED_BY(mutex_) = 0;
   unsigned cancel_all_awakables_call_count_ MOJO_GUARDED_BY(mutex_) = 0;
 
   bool add_awakable_allowed_ MOJO_GUARDED_BY(mutex_) = false;

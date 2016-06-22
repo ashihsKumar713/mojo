@@ -147,7 +147,7 @@ MojoResult Core::AsyncWait(MojoHandle handle,
     return result;
 
   std::unique_ptr<AsyncWaiter> waiter(new AsyncWaiter(callback));
-  result = dispatcher->AddAwakable(waiter.get(), signals, 0, nullptr);
+  result = dispatcher->AddAwakable(waiter.get(), 0, false, signals, nullptr);
   if (result == MOJO_RESULT_OK)
     ignore_result(waiter.release());
   return result;
@@ -752,8 +752,6 @@ MojoResult Core::UnmapBuffer(UserPointer<void> buffer) {
 
 // Note: We allow |handles| to repeat the same handle multiple times, since
 // different flags may be specified.
-// TODO(vtl): This incurs a performance cost in |Remove()|. Analyze this
-// more carefully and address it if necessary.
 MojoResult Core::WaitManyInternal(const MojoHandle* handles,
                                   const MojoHandleSignals* signals,
                                   uint32_t num_handles,
@@ -792,7 +790,8 @@ MojoResult Core::WaitManyInternal(const MojoHandle* handles,
   MojoResult result = MOJO_RESULT_OK;
   for (i = 0; i < num_handles; i++) {
     result = dispatchers[i]->AddAwakable(
-        &waiter, signals[i], i, signals_states ? &signals_states[i] : nullptr);
+        &waiter, i, false, signals[i],
+        signals_states ? &signals_states[i] : nullptr);
     if (result != MOJO_RESULT_OK) {
       *result_index = i;
       break;
@@ -810,7 +809,7 @@ MojoResult Core::WaitManyInternal(const MojoHandle* handles,
   // destroyed, but this would still be required if the waiter were in TLS.)
   for (i = 0; i < num_added; i++) {
     dispatchers[i]->RemoveAwakable(
-        &waiter, signals_states ? &signals_states[i] : nullptr);
+        false, &waiter, 0, signals_states ? &signals_states[i] : nullptr);
   }
   if (signals_states) {
     for (; i < num_handles; i++)

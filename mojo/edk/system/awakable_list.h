@@ -33,9 +33,13 @@ class AwakableList {
   void OnStateChange(const HandleSignalsState& old_state,
                      const HandleSignalsState& new_state);
   void CancelAll();
-  void Add(Awakable* awakable, MojoHandleSignals signals, uint64_t context);
-  void Remove(Awakable* awakable);
-  void RemoveWithContext(Awakable* awakable, uint64_t context);
+
+  // Adds an awakable, identified by its pointer and its context.
+  void Add(Awakable* awakable, uint64_t context, MojoHandleSignals signals);
+
+  // Removes all awakables matching the given pointer and, if |match_context| is
+  // true, the given context.
+  void Remove(bool match_context, Awakable* awakable, uint64_t context);
 
  private:
   struct AwakeInfo {

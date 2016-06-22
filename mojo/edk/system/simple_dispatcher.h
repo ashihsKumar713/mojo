@@ -33,16 +33,14 @@ class SimpleDispatcher : public Dispatcher {
   // |Dispatcher| protected methods:
   void CancelAllStateNoLock() override;
   MojoResult AddAwakableImplNoLock(Awakable* awakable,
-                                   MojoHandleSignals signals,
-                                   bool force,
                                    uint64_t context,
+                                   bool force,
+                                   MojoHandleSignals signals,
                                    HandleSignalsState* signals_state) override;
-  void RemoveAwakableImplNoLock(Awakable* awakable,
+  void RemoveAwakableImplNoLock(bool match_context,
+                                Awakable* awakable,
+                                uint64_t context,
                                 HandleSignalsState* signals_state) override;
-  void RemoveAwakableWithContextImplNoLock(
-      Awakable* awakable,
-      uint64_t context,
-      HandleSignalsState* signals_state) override;
 
  private:
   AwakableList awakable_list_ MOJO_GUARDED_BY(mutex());

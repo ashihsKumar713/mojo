@@ -68,16 +68,14 @@ class DataPipeProducerDispatcher final : public Dispatcher {
   MojoResult EndWriteDataImplNoLock(uint32_t num_bytes_written) override;
   HandleSignalsState GetHandleSignalsStateImplNoLock() const override;
   MojoResult AddAwakableImplNoLock(Awakable* awakable,
-                                   MojoHandleSignals signals,
-                                   bool force,
                                    uint64_t context,
+                                   bool force,
+                                   MojoHandleSignals signals,
                                    HandleSignalsState* signals_state) override;
-  void RemoveAwakableImplNoLock(Awakable* awakable,
+  void RemoveAwakableImplNoLock(bool match_context,
+                                Awakable* awakable,
+                                uint64_t context,
                                 HandleSignalsState* signals_state) override;
-  void RemoveAwakableWithContextImplNoLock(
-      Awakable* awakable,
-      uint64_t context,
-      HandleSignalsState* signals_state) override;
   void StartSerializeImplNoLock(Channel* channel,
                                 size_t* max_size,
                                 size_t* max_platform_handles) override

@@ -306,8 +306,9 @@ HandleSignalsState Dispatcher::GetHandleSignalsState() const {
 }
 
 MojoResult Dispatcher::AddAwakable(Awakable* awakable,
-                                   MojoHandleSignals signals,
                                    uint64_t context,
+                                   bool force,
+                                   MojoHandleSignals signals,
                                    HandleSignalsState* signals_state) {
   MutexLocker locker(&mutex_);
   if (is_closed_) {
@@ -316,26 +317,13 @@ MojoResult Dispatcher::AddAwakable(Awakable* awakable,
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
-  return AddAwakableImplNoLock(awakable, signals, false, context,
+  return AddAwakableImplNoLock(awakable, context, force, signals,
                                signals_state);
 }
 
-MojoResult Dispatcher::AddAwakableUnconditional(
-    Awakable* awakable,
-    MojoHandleSignals signals,
-    uint64_t context,
-    HandleSignalsState* signals_state) {
-  MutexLocker locker(&mutex_);
-  if (is_closed_) {
-    if (signals_state)
-      *signals_state = HandleSignalsState();
-    return MOJO_RESULT_INVALID_ARGUMENT;
-  }
-
-  return AddAwakableImplNoLock(awakable, signals, true, context, signals_state);
-}
-
-void Dispatcher::RemoveAwakable(Awakable* awakable,
+void Dispatcher::RemoveAwakable(bool match_context,
+                                Awakable* awakable,
+                                uint64_t context,
                                 HandleSignalsState* signals_state) {
   MutexLocker locker(&mutex_);
   if (is_closed_) {
@@ -344,20 +332,7 @@ void Dispatcher::RemoveAwakable(Awakable* awakable,
     return;
   }
 
-  RemoveAwakableImplNoLock(awakable, signals_state);
-}
-
-void Dispatcher::RemoveAwakableWithContext(Awakable* awakable,
-                                           uint64_t context,
-                                           HandleSignalsState* signals_state) {
-  MutexLocker locker(&mutex_);
-  if (is_closed_) {
-    if (signals_state)
-      *signals_state = HandleSignalsState();
-    return;
-  }
-
-  RemoveAwakableWithContextImplNoLock(awakable, context, signals_state);
+  RemoveAwakableImplNoLock(match_context, awakable, context, signals_state);
 }
 
 Dispatcher::Dispatcher() : is_closed_(false) {}
@@ -568,9 +543,9 @@ HandleSignalsState Dispatcher::GetHandleSignalsStateImplNoLock() const {
 
 MojoResult Dispatcher::AddAwakableImplNoLock(
     Awakable* /*awakable*/,
-    MojoHandleSignals /*signals*/,
-    bool /*force*/,
     uint64_t /*context*/,
+    bool /*force*/,
+    MojoHandleSignals /*signals*/,
     HandleSignalsState* signals_state) {
   mutex_.AssertHeld();
   DCHECK(!is_closed_);
@@ -581,20 +556,10 @@ MojoResult Dispatcher::AddAwakableImplNoLock(
   return MOJO_RESULT_FAILED_PRECONDITION;
 }
 
-void Dispatcher::RemoveAwakableImplNoLock(Awakable* /*awakable*/,
+void Dispatcher::RemoveAwakableImplNoLock(bool /*match_context*/,
+                                          Awakable* /*awakable*/,
+                                          uint64_t /*context*/,
                                           HandleSignalsState* signals_state) {
-  mutex_.AssertHeld();
-  DCHECK(!is_closed_);
-  // By default, waiting isn't supported. Only dispatchers that can be waited on
-  // will do something nontrivial.
-  if (signals_state)
-    *signals_state = HandleSignalsState();
-}
-
-void Dispatcher::RemoveAwakableWithContextImplNoLock(
-    Awakable* /*awakable*/,
-    uint64_t /*context*/,
-    HandleSignalsState* signals_state) {
   mutex_.AssertHeld();
   DCHECK(!is_closed_);
   // By default, waiting isn't supported. Only dispatchers that can be waited on
