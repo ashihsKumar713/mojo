@@ -286,9 +286,9 @@ void PlayWAVApp::ProcessHTTPResponse(URLResponsePtr resp) {
   media_renderer_->GetConsumer(GetProxy(&media_pipe));
 
   // Grab the timeline consumer interface for our audio renderer.
-  MediaTimelineControlSitePtr timeline_control_site;
-  media_renderer_->GetTimelineControlSite(GetProxy(&timeline_control_site));
-  timeline_control_site->GetTimelineConsumer(GetProxy(&timeline_consumer_));
+  MediaTimelineControlPointPtr timeline_control_point;
+  media_renderer_->GetTimelineControlPoint(GetProxy(&timeline_control_point));
+  timeline_control_point->GetTimelineConsumer(GetProxy(&timeline_consumer_));
   timeline_consumer_.set_connection_error_handler(
       [this]() { OnConnectionError("timeline_consumer"); });
 

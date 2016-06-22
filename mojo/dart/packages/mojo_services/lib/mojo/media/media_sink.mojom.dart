@@ -65,42 +65,42 @@ class _MediaSinkGetConsumerParams extends bindings.Struct {
 }
 
 
-class _MediaSinkGetTimelineControlSiteParams extends bindings.Struct {
+class _MediaSinkGetTimelineControlPointParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite = null;
+  timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest timelineControlPoint = null;
 
-  _MediaSinkGetTimelineControlSiteParams() : super(kVersions.last.size);
+  _MediaSinkGetTimelineControlPointParams() : super(kVersions.last.size);
 
-  _MediaSinkGetTimelineControlSiteParams.init(
-    timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest this.timelineControlSite
+  _MediaSinkGetTimelineControlPointParams.init(
+    timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest this.timelineControlPoint
   ) : super(kVersions.last.size);
 
-  static _MediaSinkGetTimelineControlSiteParams deserialize(bindings.Message message) =>
+  static _MediaSinkGetTimelineControlPointParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaSinkGetTimelineControlSiteParams decode(bindings.Decoder decoder0) {
+  static _MediaSinkGetTimelineControlPointParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaSinkGetTimelineControlSiteParams result = new _MediaSinkGetTimelineControlSiteParams();
+    _MediaSinkGetTimelineControlPointParams result = new _MediaSinkGetTimelineControlPointParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
-      result.timelineControlSite = decoder0.decodeInterfaceRequest(8, false, timeline_controller_mojom.MediaTimelineControlSiteStub.newFromEndpoint);
+      result.timelineControlPoint = decoder0.decodeInterfaceRequest(8, false, timeline_controller_mojom.MediaTimelineControlPointStub.newFromEndpoint);
     }
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaSinkGetTimelineControlSiteParams";
+    const String structName = "_MediaSinkGetTimelineControlPointParams";
     String fieldName;
     try {
-      fieldName = "timelineControlSite";
-      encoder0.encodeInterfaceRequest(timelineControlSite, 8, false);
+      fieldName = "timelineControlPoint";
+      encoder0.encodeInterfaceRequest(timelineControlPoint, 8, false);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -108,8 +108,8 @@ class _MediaSinkGetTimelineControlSiteParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaSinkGetTimelineControlSiteParams("
-           "timelineControlSite: $timelineControlSite" ")";
+    return "_MediaSinkGetTimelineControlPointParams("
+           "timelineControlPoint: $timelineControlPoint" ")";
   }
 
   Map toJson() {
@@ -119,7 +119,7 @@ class _MediaSinkGetTimelineControlSiteParams extends bindings.Struct {
 }
 
 const int _mediaSinkMethodGetConsumerName = 0;
-const int _mediaSinkMethodGetTimelineControlSiteName = 1;
+const int _mediaSinkMethodGetTimelineControlPointName = 1;
 
 class _MediaSinkServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
@@ -158,7 +158,7 @@ abstract class MediaSink {
     return p;
   }
   void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer);
-  void getTimelineControlSite(timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite);
+  void getTimelineControlPoint(timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest timelineControlPoint);
 }
 
 abstract class MediaSinkInterface
@@ -258,19 +258,19 @@ class MediaSinkProxy
     ctrl.sendMessage(params,
         _mediaSinkMethodGetConsumerName);
   }
-  void getTimelineControlSite(timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite) {
+  void getTimelineControlPoint(timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest timelineControlPoint) {
     if (impl != null) {
-      impl.getTimelineControlSite(timelineControlSite);
+      impl.getTimelineControlPoint(timelineControlPoint);
       return;
     }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
     }
-    var params = new _MediaSinkGetTimelineControlSiteParams();
-    params.timelineControlSite = timelineControlSite;
+    var params = new _MediaSinkGetTimelineControlPointParams();
+    params.timelineControlPoint = timelineControlPoint;
     ctrl.sendMessage(params,
-        _mediaSinkMethodGetTimelineControlSiteName);
+        _mediaSinkMethodGetTimelineControlPointName);
   }
 }
 
@@ -312,10 +312,10 @@ class _MediaSinkStubControl
             message.payload);
         _impl.getConsumer(params.consumer);
         break;
-      case _mediaSinkMethodGetTimelineControlSiteName:
-        var params = _MediaSinkGetTimelineControlSiteParams.deserialize(
+      case _mediaSinkMethodGetTimelineControlPointName:
+        var params = _MediaSinkGetTimelineControlPointParams.deserialize(
             message.payload);
-        _impl.getTimelineControlSite(params.timelineControlSite);
+        _impl.getTimelineControlPoint(params.timelineControlPoint);
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
@@ -377,8 +377,8 @@ class MediaSinkStub
   void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
     return impl.getConsumer(consumer);
   }
-  void getTimelineControlSite(timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite) {
-    return impl.getTimelineControlSite(timelineControlSite);
+  void getTimelineControlPoint(timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest timelineControlPoint) {
+    return impl.getTimelineControlPoint(timelineControlPoint);
   }
 }
 

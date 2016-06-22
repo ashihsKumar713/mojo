@@ -22,7 +22,7 @@ namespace media {
 // Implements MediaRenderer for an app that wants to show video.
 class VideoRenderer : public MediaRenderer,
                       public MediaConsumer,
-                      public MediaTimelineControlSite,
+                      public MediaTimelineControlPoint,
                       public TimelineConsumer {
  public:
   VideoRenderer();
@@ -58,8 +58,8 @@ class VideoRenderer : public MediaRenderer,
 
   void GetConsumer(InterfaceRequest<MediaConsumer> consumer_request) override;
 
-  void GetTimelineControlSite(
-      InterfaceRequest<MediaTimelineControlSite> control_site_request) override;
+  void GetTimelineControlPoint(InterfaceRequest<MediaTimelineControlPoint>
+                                   control_point_request) override;
 
   // MediaConsumer implementation.
   void SetBuffer(ScopedSharedBufferHandle buffer,
@@ -72,7 +72,7 @@ class VideoRenderer : public MediaRenderer,
 
   void Flush(const FlushCallback& callback) override;
 
-  // MediaTimelineControlSite implementation.
+  // MediaTimelineControlPoint implementation.
   void GetStatus(uint64_t version_last_seen,
                  const GetStatusCallback& callback) override;
 
@@ -102,7 +102,7 @@ class VideoRenderer : public MediaRenderer,
 
   Binding<MediaRenderer> renderer_binding_;
   Binding<MediaConsumer> consumer_binding_;
-  Binding<MediaTimelineControlSite> control_site_binding_;
+  Binding<MediaTimelineControlPoint> control_point_binding_;
   Binding<TimelineConsumer> timeline_consumer_binding_;
   MappedSharedBuffer shared_buffer_;
   std::queue<PacketAndCallback> packet_queue_;

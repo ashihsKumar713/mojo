@@ -6,7 +6,7 @@
 #include "base/logging.h"
 #include "base/message_loop/message_loop.h"
 #include "mojo/services/media/common/cpp/timeline.h"
-#include "services/media/common/timeline_control_site.h"
+#include "services/media/common/timeline_control_point.h"
 
 namespace mojo {
 namespace media {
@@ -20,8 +20,8 @@ namespace media {
     return;                                                       \
   }
 
-TimelineControlSite::TimelineControlSite()
-    : control_site_binding_(this), consumer_binding_(this) {
+TimelineControlPoint::TimelineControlPoint()
+    : control_point_binding_(this), consumer_binding_(this) {
   task_runner_ = base::MessageLoop::current()->task_runner();
   DCHECK(task_runner_);
 
@@ -30,10 +30,10 @@ TimelineControlSite::TimelineControlSite()
 
   status_publisher_.SetCallbackRunner(
       [this](const GetStatusCallback& callback, uint64_t version) {
-        MediaTimelineControlSiteStatusPtr status;
+        MediaTimelineControlPointStatusPtr status;
         {
           base::AutoLock lock(lock_);
-          status = MediaTimelineControlSiteStatus::New();
+          status = MediaTimelineControlPointStatus::New();
           status->timeline_transform =
               TimelineTransform::From(current_timeline_function_);
           status->end_of_stream = ReachedEndOfStreamUnsafe();
@@ -42,20 +42,20 @@ TimelineControlSite::TimelineControlSite()
       });
 }
 
-TimelineControlSite::~TimelineControlSite() {}
+TimelineControlPoint::~TimelineControlPoint() {}
 
-void TimelineControlSite::Bind(
-    InterfaceRequest<MediaTimelineControlSite> request) {
-  if (control_site_binding_.is_bound()) {
-    control_site_binding_.Close();
+void TimelineControlPoint::Bind(
+    InterfaceRequest<MediaTimelineControlPoint> request) {
+  if (control_point_binding_.is_bound()) {
+    control_point_binding_.Close();
   }
 
-  control_site_binding_.Bind(request.Pass());
+  control_point_binding_.Bind(request.Pass());
 }
 
-void TimelineControlSite::Reset() {
-  if (control_site_binding_.is_bound()) {
-    control_site_binding_.Close();
+void TimelineControlPoint::Reset() {
+  if (control_point_binding_.is_bound()) {
+    control_point_binding_.Close();
   }
 
   if (consumer_binding_.is_bound()) {
@@ -72,7 +72,7 @@ void TimelineControlSite::Reset() {
   status_publisher_.SendUpdates();
 }
 
-void TimelineControlSite::SnapshotCurrentFunction(int64_t reference_time,
+void TimelineControlPoint::SnapshotCurrentFunction(int64_t reference_time,
                                                   TimelineFunction* out,
                                                   uint32_t* generation) {
   DCHECK(out);
@@ -91,7 +91,7 @@ void TimelineControlSite::SnapshotCurrentFunction(int64_t reference_time,
   }
 }
 
-void TimelineControlSite::SetEndOfStreamPts(int64_t end_of_stream_pts) {
+void TimelineControlPoint::SetEndOfStreamPts(int64_t end_of_stream_pts) {
   base::AutoLock lock(lock_);
   if (end_of_stream_pts_ != end_of_stream_pts) {
     end_of_stream_pts_ = end_of_stream_pts;
@@ -99,7 +99,7 @@ void TimelineControlSite::SetEndOfStreamPts(int64_t end_of_stream_pts) {
   }
 }
 
-bool TimelineControlSite::ReachedEndOfStreamUnsafe() {
+bool TimelineControlPoint::ReachedEndOfStreamUnsafe() {
   lock_.AssertAcquired();
 
   return end_of_stream_pts_ != kUnspecifiedTime &&
@@ -107,12 +107,12 @@ bool TimelineControlSite::ReachedEndOfStreamUnsafe() {
              end_of_stream_pts_;
 }
 
-void TimelineControlSite::GetStatus(uint64_t version_last_seen,
+void TimelineControlPoint::GetStatus(uint64_t version_last_seen,
                                     const GetStatusCallback& callback) {
   status_publisher_.Get(version_last_seen, callback);
 }
 
-void TimelineControlSite::GetTimelineConsumer(
+void TimelineControlPoint::GetTimelineConsumer(
     InterfaceRequest<TimelineConsumer> timeline_consumer) {
   if (consumer_binding_.is_bound()) {
     consumer_binding_.Close();
@@ -121,7 +121,7 @@ void TimelineControlSite::GetTimelineConsumer(
   consumer_binding_.Bind(timeline_consumer.Pass());
 }
 
-void TimelineControlSite::SetTimelineTransform(
+void TimelineControlPoint::SetTimelineTransform(
     TimelineTransformPtr timeline_transform,
     const SetTimelineTransformCallback& callback) {
   base::AutoLock lock(lock_);
@@ -154,7 +154,7 @@ void TimelineControlSite::SetTimelineTransform(
   set_timeline_transform_callback_ = callback;
 }
 
-void TimelineControlSite::ApplyPendingChangesUnsafe(int64_t reference_time) {
+void TimelineControlPoint::ApplyPendingChangesUnsafe(int64_t reference_time) {
   lock_.AssertAcquired();
 
   if (!TimelineFunctionPendingUnsafe() ||
@@ -172,27 +172,27 @@ void TimelineControlSite::ApplyPendingChangesUnsafe(int64_t reference_time) {
                             base::Unretained(&status_publisher_)));
 }
 
-void TimelineControlSite::ClearPendingTimelineFunctionUnsafe(bool completed) {
+void TimelineControlPoint::ClearPendingTimelineFunctionUnsafe(bool completed) {
   lock_.AssertAcquired();
 
   pending_timeline_function_ =
       TimelineFunction(kUnspecifiedTime, kUnspecifiedTime, 1, 0);
   if (!set_timeline_transform_callback_.is_null()) {
     task_runner_->PostTask(
-        FROM_HERE, base::Bind(&TimelineControlSite::RunCallback,
+        FROM_HERE, base::Bind(&TimelineControlPoint::RunCallback,
                               set_timeline_transform_callback_, completed));
     set_timeline_transform_callback_.reset();
   }
 }
 
-void TimelineControlSite::ResetUnsafe() {
+void TimelineControlPoint::ResetUnsafe() {
   lock_.AssertAcquired();
-  task_runner_->PostTask(FROM_HERE, base::Bind(&TimelineControlSite::Reset,
+  task_runner_->PostTask(FROM_HERE, base::Bind(&TimelineControlPoint::Reset,
                                                base::Unretained(this)));
 }
 
 // static
-void TimelineControlSite::RunCallback(SetTimelineTransformCallback callback,
+void TimelineControlPoint::RunCallback(SetTimelineTransformCallback callback,
                                       bool completed) {
   callback.Run(completed);
 }

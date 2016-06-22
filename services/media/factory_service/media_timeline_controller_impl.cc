@@ -25,12 +25,12 @@ MediaTimelineControllerImpl::MediaTimelineControllerImpl(
     : MediaFactoryService::Product<MediaTimelineController>(this,
                                                             request.Pass(),
                                                             owner),
-      control_site_binding_(this),
+      control_point_binding_(this),
       consumer_binding_(this) {
   status_publisher_.SetCallbackRunner(
       [this](const GetStatusCallback& callback, uint64_t version) {
-        MediaTimelineControlSiteStatusPtr status =
-            MediaTimelineControlSiteStatus::New();
+        MediaTimelineControlPointStatusPtr status =
+            MediaTimelineControlPointStatus::New();
         status->timeline_transform =
             mojo::TimelineTransform::From(current_timeline_function_);
         status->end_of_stream = end_of_stream_;
@@ -42,21 +42,22 @@ MediaTimelineControllerImpl::~MediaTimelineControllerImpl() {
   status_publisher_.SendUpdates();
 }
 
-void MediaTimelineControllerImpl::AddControlSite(
-    InterfaceHandle<MediaTimelineControlSite> control_site) {
-  site_states_.push_back(std::unique_ptr<SiteState>(new SiteState(
-      this, MediaTimelineControlSitePtr::Create(std::move(control_site)))));
+void MediaTimelineControllerImpl::AddControlPoint(
+    InterfaceHandle<MediaTimelineControlPoint> control_point) {
+  control_point_states_.push_back(std::unique_ptr<ControlPointState>(
+      new ControlPointState(this, MediaTimelineControlPointPtr::Create(
+                                      std::move(control_point)))));
 
-  site_states_.back()->HandleStatusUpdates();
+  control_point_states_.back()->HandleStatusUpdates();
 }
 
-void MediaTimelineControllerImpl::GetControlSite(
-    InterfaceRequest<MediaTimelineControlSite> control_site) {
-  if (control_site_binding_.is_bound()) {
-    control_site_binding_.Close();
+void MediaTimelineControllerImpl::GetControlPoint(
+    InterfaceRequest<MediaTimelineControlPoint> control_point) {
+  if (control_point_binding_.is_bound()) {
+    control_point_binding_.Close();
   }
 
-  control_site_binding_.Bind(control_site.Pass());
+  control_point_binding_.Bind(control_point.Pass());
 }
 
 void MediaTimelineControllerImpl::GetStatus(uint64_t version_last_seen,
@@ -82,18 +83,18 @@ void MediaTimelineControllerImpl::SetTimelineTransform(
   // There can only be one SetTimelineTransform transition pending at any
   // moment, so a new SetTimelineTransform call that arrives before a previous
   // one completes cancels the previous one. This causes some problems for us,
-  // because some sites may have completed the previous transition while other
-  // may not.
+  // because some control points may complete the previous transition while
+  // others may not.
   //
   // We start by noticing that there's an incomplete previous transition, and
   // we 'cancel' it, meaning we call its callback with a false complete
   // parameter.
   //
   // If we're cancelling a previous transition, we need to take steps to make
-  // sure the sites will end up in the right state regardless of whether they
-  // completed the previous transition. Specifically, if subject_time isn't
-  // specified, we infer it here and supply the inferred value to the sites,
-  // so there's no disagreement about its value.
+  // sure the control points will end up in the right state regardless of
+  // whether they completed the previous transition. Specifically, if
+  // subject_time isn't specified, we infer it here and supply the inferred
+  // value to the control points, so there's no disagreement about its value.
 
   std::shared_ptr<TimelineTransition> pending_transition =
       pending_transition_.lock();
@@ -116,10 +117,9 @@ void MediaTimelineControllerImpl::SetTimelineTransform(
   int64_t subject_time = timeline_transform->subject_time;
 
   // Determine the actual subject time, inferring it if it wasn't specified.
-  int64_t actual_subject_time =
-      subject_time == kUnspecifiedTime
-          ? current_timeline_function_(reference_time)
-          : subject_time;
+  int64_t actual_subject_time = subject_time == kUnspecifiedTime
+                                    ? current_timeline_function_(reference_time)
+                                    : subject_time;
 
   if (pending_transition && subject_time == kUnspecifiedTime) {
     // We're cancelling a pending transition, which may have already completed
@@ -144,11 +144,12 @@ void MediaTimelineControllerImpl::SetTimelineTransform(
   transform_to_send.reference_delta = timeline_transform->reference_delta;
   transform_to_send.subject_delta = timeline_transform->subject_delta;
 
-  // Initiate the transition for each site.
-  for (const std::unique_ptr<SiteState>& site_state : site_states_) {
-    site_state->end_of_stream_ = false;
-    site_state->consumer_->SetTimelineTransform(transform_to_send.Clone(),
-                                                transition->NewCallback());
+  // Initiate the transition for each control point.
+  for (const std::unique_ptr<ControlPointState>& control_point_state :
+       control_point_states_) {
+    control_point_state->end_of_stream_ = false;
+    control_point_state->consumer_->SetTimelineTransform(
+        transform_to_send.Clone(), transition->NewCallback());
   }
 
   // If and when this transition is complete, adopt the new TimelineFunction
@@ -159,10 +160,11 @@ void MediaTimelineControllerImpl::SetTimelineTransform(
   });
 }
 
-void MediaTimelineControllerImpl::HandleSiteEndOfStreamChange() {
+void MediaTimelineControllerImpl::HandleControlPointEndOfStreamChange() {
   bool end_of_stream = true;
-  for (const std::unique_ptr<SiteState>& site_state : site_states_) {
-    if (!site_state->end_of_stream_) {
+  for (const std::unique_ptr<ControlPointState>& control_point_state :
+       control_point_states_) {
+    if (!control_point_state->end_of_stream_) {
       end_of_stream = false;
       break;
     }
@@ -174,30 +176,31 @@ void MediaTimelineControllerImpl::HandleSiteEndOfStreamChange() {
   }
 }
 
-MediaTimelineControllerImpl::SiteState::SiteState(
+MediaTimelineControllerImpl::ControlPointState::ControlPointState(
     MediaTimelineControllerImpl* parent,
-    MediaTimelineControlSitePtr site)
-    : parent_(parent), site_(site.Pass()) {
-  site_->GetTimelineConsumer(GetProxy(&consumer_));
+    MediaTimelineControlPointPtr point)
+    : parent_(parent), control_point_(point.Pass()) {
+  control_point_->GetTimelineConsumer(GetProxy(&consumer_));
 }
 
-MediaTimelineControllerImpl::SiteState::~SiteState() {}
+MediaTimelineControllerImpl::ControlPointState::~ControlPointState() {}
 
-void MediaTimelineControllerImpl::SiteState::HandleStatusUpdates(
+void MediaTimelineControllerImpl::ControlPointState::HandleStatusUpdates(
     uint64_t version,
-    MediaTimelineControlSiteStatusPtr status) {
+    MediaTimelineControlPointStatusPtr status) {
   if (status) {
     // Respond to any end-of-stream changes.
     if (end_of_stream_ != status->end_of_stream) {
       end_of_stream_ = status->end_of_stream;
-      parent_->HandleSiteEndOfStreamChange();
+      parent_->HandleControlPointEndOfStreamChange();
     }
   }
 
-  site_->GetStatus(version, [this](uint64_t version,
-                                   MediaTimelineControlSiteStatusPtr status) {
-    HandleStatusUpdates(version, status.Pass());
-  });
+  control_point_->GetStatus(
+      version,
+      [this](uint64_t version, MediaTimelineControlPointStatusPtr status) {
+        HandleStatusUpdates(version, status.Pass());
+      });
 }
 
 MediaTimelineControllerImpl::TimelineTransition::TimelineTransition(

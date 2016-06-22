@@ -90,7 +90,7 @@ void AudioTrackImpl::Shutdown() {
   // for the service to destroy us.  Run some DCHECK sanity checks and get out.
   if (!renderer_binding_.is_bound()) {
     DCHECK(!pipe_.IsInitialized());
-    DCHECK(!timeline_control_site_.is_bound());
+    DCHECK(!timeline_control_point_.is_bound());
     DCHECK(!outputs_.size());
     return;
   }
@@ -102,7 +102,7 @@ void AudioTrackImpl::Shutdown() {
   // reset all of our internal state and close any other client connections in
   // the process.
   pipe_.Reset();
-  timeline_control_site_.Reset();
+  timeline_control_point_.Reset();
   outputs_.clear();
 
   DCHECK(owner_);
@@ -269,9 +269,9 @@ void AudioTrackImpl::GetConsumer(
   }
 }
 
-void AudioTrackImpl::GetTimelineControlSite(
-    InterfaceRequest<MediaTimelineControlSite> req) {
-  timeline_control_site_.Bind(req.Pass());
+void AudioTrackImpl::GetTimelineControlPoint(
+    InterfaceRequest<MediaTimelineControlPoint> req) {
+  timeline_control_point_.Bind(req.Pass());
 }
 
 void AudioTrackImpl::SetGain(float db_gain) {
@@ -315,10 +315,10 @@ void AudioTrackImpl::RemoveOutput(AudioTrackToOutputLinkPtr link) {
 void AudioTrackImpl::SnapshotRateTrans(LinearTransform* out,
                                        uint32_t* generation) {
   TimelineFunction timeline_function;
-  timeline_control_site_.SnapshotCurrentFunction(
+  timeline_control_point_.SnapshotCurrentFunction(
       Timeline::local_now(), &timeline_function, generation);
 
-  // The control site works in ns units. We want the rate in frames per
+  // The control point works in ns units. We want the rate in frames per
   // nanosecond, so we convert here.
   TimelineRate rate_in_frames_per_ns =
       timeline_function.rate() * frames_per_ns_;
@@ -337,7 +337,7 @@ void AudioTrackImpl::OnPacketReceived(AudioPipe::AudioPacketRefPtr packet) {
   }
 
   if (packet->state()->packet()->end_of_stream) {
-    timeline_control_site_.SetEndOfStreamPts(
+    timeline_control_point_.SetEndOfStreamPts(
         (packet->state()->packet()->pts + packet->frame_count()) /
             frames_per_ns_);
   }

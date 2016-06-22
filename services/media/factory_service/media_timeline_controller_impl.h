@@ -24,7 +24,7 @@ namespace media {
 class MediaTimelineControllerImpl
     : public MediaFactoryService::Product<MediaTimelineController>,
       public MediaTimelineController,
-      public MediaTimelineControlSite,
+      public MediaTimelineControlPoint,
       public TimelineConsumer {
  public:
   static std::shared_ptr<MediaTimelineControllerImpl> Create(
@@ -34,13 +34,13 @@ class MediaTimelineControllerImpl
   ~MediaTimelineControllerImpl() override;
 
   // MediaTimelineController implementation.
-  void AddControlSite(
-      InterfaceHandle<MediaTimelineControlSite> control_site) override;
+  void AddControlPoint(
+      InterfaceHandle<MediaTimelineControlPoint> control_point) override;
 
-  void GetControlSite(
-      InterfaceRequest<MediaTimelineControlSite> control_site) override;
+  void GetControlPoint(
+      InterfaceRequest<MediaTimelineControlPoint> control_point) override;
 
-  // MediaTimelineControlSite implementation.
+  // MediaTimelineControlPoint implementation.
   void GetStatus(uint64_t version_last_seen,
                  const GetStatusCallback& callback) override;
 
@@ -55,19 +55,19 @@ class MediaTimelineControllerImpl
  private:
   static constexpr int64_t kDefaultLeadTime = Timeline::ns_from_ms(30);
 
-  // Relationship to subordinate control site.
-  struct SiteState {
-    SiteState(MediaTimelineControllerImpl* parent,
-              MediaTimelineControlSitePtr site);
+  // Relationship to subordinate control point.
+  struct ControlPointState {
+    ControlPointState(MediaTimelineControllerImpl* parent,
+                      MediaTimelineControlPointPtr control_point);
 
-    ~SiteState();
+    ~ControlPointState();
 
     void HandleStatusUpdates(
-        uint64_t version = MediaTimelineControlSite::kInitialStatus,
-        MediaTimelineControlSiteStatusPtr status = nullptr);
+        uint64_t version = MediaTimelineControlPoint::kInitialStatus,
+        MediaTimelineControlPointStatusPtr status = nullptr);
 
     MediaTimelineControllerImpl* parent_;
-    MediaTimelineControlSitePtr site_;
+    MediaTimelineControlPointPtr control_point_;
     TimelineConsumerPtr consumer_;
     bool end_of_stream_ = false;
   };
@@ -83,8 +83,9 @@ class MediaTimelineControllerImpl
 
     ~TimelineTransition();
 
-    // Calls returns a new callback for a child (site) transition. THIS METHOD
-    // WILL ONLY WORK IF THERE IS ALREADY A SHARED POINTER TO THIS OBJECT.
+    // Calls returns a new callback for a child (control point) transition. THIS
+    // METHOD WILL ONLY WORK IF THERE IS ALREADY A SHARED POINTER TO THIS
+    // OBJECT.
     std::function<void(bool)> NewCallback() {
       callback_joiner_.Spawn();
 
@@ -94,7 +95,8 @@ class MediaTimelineControllerImpl
       return [this_ptr](bool completed) {
         DCHECK(this_ptr);
         if (!completed && !this_ptr->cancelled_) {
-          LOG(WARNING) << "A site transition was cancelled unexpectedly.";
+          LOG(WARNING)
+              << "A control point transition was cancelled unexpectedly.";
         }
         this_ptr->callback_joiner_.Complete();
       };
@@ -137,13 +139,13 @@ class MediaTimelineControllerImpl
   MediaTimelineControllerImpl(InterfaceRequest<MediaTimelineController> request,
                               MediaFactoryService* owner);
 
-  // Takes action when a site changes its end-of-stream value.
-  void HandleSiteEndOfStreamChange();
+  // Takes action when a control point changes its end-of-stream value.
+  void HandleControlPointEndOfStreamChange();
 
-  Binding<MediaTimelineControlSite> control_site_binding_;
+  Binding<MediaTimelineControlPoint> control_point_binding_;
   Binding<TimelineConsumer> consumer_binding_;
   MojoPublisher<GetStatusCallback> status_publisher_;
-  std::vector<std::unique_ptr<SiteState>> site_states_;
+  std::vector<std::unique_ptr<ControlPointState>> control_point_states_;
   TimelineFunction current_timeline_function_;
   bool end_of_stream_ = false;
   std::weak_ptr<TimelineTransition> pending_transition_;

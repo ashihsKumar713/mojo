@@ -49,9 +49,9 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
   HandleDemuxMetadataUpdates();
 
   factory_->CreateTimelineController(GetProxy(&timeline_controller_));
-  timeline_controller_->GetControlSite(GetProxy(&timeline_control_site_));
-  timeline_control_site_->GetTimelineConsumer(GetProxy(&timeline_consumer_));
-  HandleTimelineControlSiteStatusUpdates();
+  timeline_controller_->GetControlPoint(GetProxy(&timeline_control_point_));
+  timeline_control_point_->GetTimelineConsumer(GetProxy(&timeline_consumer_));
+  HandleTimelineControlPointStatusUpdates();
 
   audio_renderer_ = audio_renderer.Pass();
   video_renderer_ = video_renderer.Pass();
@@ -345,10 +345,10 @@ void MediaPlayerImpl::CreateSink(Stream* stream,
   factory_->CreateSink(stream->renderer_.Pass(), input_media_type.Clone(),
                        GetProxy(&stream->sink_));
 
-  MediaTimelineControlSitePtr timeline_control_site;
-  stream->sink_->GetTimelineControlSite(GetProxy(&timeline_control_site));
+  MediaTimelineControlPointPtr timeline_control_point;
+  stream->sink_->GetTimelineControlPoint(GetProxy(&timeline_control_point));
 
-  timeline_controller_->AddControlSite(timeline_control_site.Pass());
+  timeline_controller_->AddControlPoint(timeline_control_point.Pass());
 
   MediaConsumerPtr consumer;
   stream->sink_->GetConsumer(GetProxy(&consumer));
@@ -373,9 +373,9 @@ void MediaPlayerImpl::HandleDemuxMetadataUpdates(uint64_t version,
                       });
 }
 
-void MediaPlayerImpl::HandleTimelineControlSiteStatusUpdates(
+void MediaPlayerImpl::HandleTimelineControlPointStatusUpdates(
     uint64_t version,
-    MediaTimelineControlSiteStatusPtr status) {
+    MediaTimelineControlPointStatusPtr status) {
   if (status) {
     timeline_function_ = status->timeline_transform.To<TimelineFunction>();
     end_of_stream_ = status->end_of_stream;
@@ -383,10 +383,10 @@ void MediaPlayerImpl::HandleTimelineControlSiteStatusUpdates(
     Update();
   }
 
-  timeline_control_site_->GetStatus(
+  timeline_control_point_->GetStatus(
       version,
-      [this](uint64_t version, MediaTimelineControlSiteStatusPtr status) {
-        HandleTimelineControlSiteStatusUpdates(version, status.Pass());
+      [this](uint64_t version, MediaTimelineControlPointStatusPtr status) {
+        HandleTimelineControlPointStatusUpdates(version, status.Pass());
       });
 }
 

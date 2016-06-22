@@ -36,8 +36,8 @@ class MediaSinkImpl : public MediaFactoryService::Product<MediaSink>,
   // MediaSink implementation.
   void GetConsumer(InterfaceRequest<MediaConsumer> consumer) override;
 
-  void GetTimelineControlSite(
-      InterfaceRequest<MediaTimelineControlSite> req) override;
+  void GetTimelineControlPoint(
+      InterfaceRequest<MediaTimelineControlPoint> req) override;
 
  private:
   MediaSinkImpl(InterfaceHandle<MediaRenderer> renderer,

@@ -10,28 +10,28 @@ import 'package:mojo_services/mojo/timelines.mojom.dart' as timelines_mojom;
 
 
 
-class MediaTimelineControlSiteStatus extends bindings.Struct {
+class MediaTimelineControlPointStatus extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(24, 0)
   ];
   timelines_mojom.TimelineTransform timelineTransform = null;
   bool endOfStream = false;
 
-  MediaTimelineControlSiteStatus() : super(kVersions.last.size);
+  MediaTimelineControlPointStatus() : super(kVersions.last.size);
 
-  MediaTimelineControlSiteStatus.init(
+  MediaTimelineControlPointStatus.init(
     timelines_mojom.TimelineTransform this.timelineTransform, 
     bool this.endOfStream
   ) : super(kVersions.last.size);
 
-  static MediaTimelineControlSiteStatus deserialize(bindings.Message message) =>
+  static MediaTimelineControlPointStatus deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static MediaTimelineControlSiteStatus decode(bindings.Decoder decoder0) {
+  static MediaTimelineControlPointStatus decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    MediaTimelineControlSiteStatus result = new MediaTimelineControlSiteStatus();
+    MediaTimelineControlPointStatus result = new MediaTimelineControlPointStatus();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
@@ -48,7 +48,7 @@ class MediaTimelineControlSiteStatus extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaTimelineControlSiteStatus";
+    const String structName = "MediaTimelineControlPointStatus";
     String fieldName;
     try {
       fieldName = "timelineTransform";
@@ -62,7 +62,7 @@ class MediaTimelineControlSiteStatus extends bindings.Struct {
   }
 
   String toString() {
-    return "MediaTimelineControlSiteStatus("
+    return "MediaTimelineControlPointStatus("
            "timelineTransform: $timelineTransform" ", "
            "endOfStream: $endOfStream" ")";
   }
@@ -76,42 +76,42 @@ class MediaTimelineControlSiteStatus extends bindings.Struct {
 }
 
 
-class _MediaTimelineControllerAddControlSiteParams extends bindings.Struct {
+class _MediaTimelineControllerAddControlPointParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  MediaTimelineControlSiteInterface controlSite = null;
+  MediaTimelineControlPointInterface controlPoint = null;
 
-  _MediaTimelineControllerAddControlSiteParams() : super(kVersions.last.size);
+  _MediaTimelineControllerAddControlPointParams() : super(kVersions.last.size);
 
-  _MediaTimelineControllerAddControlSiteParams.init(
-    MediaTimelineControlSiteInterface this.controlSite
+  _MediaTimelineControllerAddControlPointParams.init(
+    MediaTimelineControlPointInterface this.controlPoint
   ) : super(kVersions.last.size);
 
-  static _MediaTimelineControllerAddControlSiteParams deserialize(bindings.Message message) =>
+  static _MediaTimelineControllerAddControlPointParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaTimelineControllerAddControlSiteParams decode(bindings.Decoder decoder0) {
+  static _MediaTimelineControllerAddControlPointParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaTimelineControllerAddControlSiteParams result = new _MediaTimelineControllerAddControlSiteParams();
+    _MediaTimelineControllerAddControlPointParams result = new _MediaTimelineControllerAddControlPointParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
-      result.controlSite = decoder0.decodeServiceInterface(8, false, MediaTimelineControlSiteProxy.newFromEndpoint);
+      result.controlPoint = decoder0.decodeServiceInterface(8, false, MediaTimelineControlPointProxy.newFromEndpoint);
     }
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaTimelineControllerAddControlSiteParams";
+    const String structName = "_MediaTimelineControllerAddControlPointParams";
     String fieldName;
     try {
-      fieldName = "controlSite";
-      encoder0.encodeInterface(controlSite, 8, false);
+      fieldName = "controlPoint";
+      encoder0.encodeInterface(controlPoint, 8, false);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -119,8 +119,8 @@ class _MediaTimelineControllerAddControlSiteParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaTimelineControllerAddControlSiteParams("
-           "controlSite: $controlSite" ")";
+    return "_MediaTimelineControllerAddControlPointParams("
+           "controlPoint: $controlPoint" ")";
   }
 
   Map toJson() {
@@ -130,42 +130,42 @@ class _MediaTimelineControllerAddControlSiteParams extends bindings.Struct {
 }
 
 
-class _MediaTimelineControllerGetControlSiteParams extends bindings.Struct {
+class _MediaTimelineControllerGetControlPointParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  MediaTimelineControlSiteInterfaceRequest controlSite = null;
+  MediaTimelineControlPointInterfaceRequest controlPoint = null;
 
-  _MediaTimelineControllerGetControlSiteParams() : super(kVersions.last.size);
+  _MediaTimelineControllerGetControlPointParams() : super(kVersions.last.size);
 
-  _MediaTimelineControllerGetControlSiteParams.init(
-    MediaTimelineControlSiteInterfaceRequest this.controlSite
+  _MediaTimelineControllerGetControlPointParams.init(
+    MediaTimelineControlPointInterfaceRequest this.controlPoint
   ) : super(kVersions.last.size);
 
-  static _MediaTimelineControllerGetControlSiteParams deserialize(bindings.Message message) =>
+  static _MediaTimelineControllerGetControlPointParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaTimelineControllerGetControlSiteParams decode(bindings.Decoder decoder0) {
+  static _MediaTimelineControllerGetControlPointParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaTimelineControllerGetControlSiteParams result = new _MediaTimelineControllerGetControlSiteParams();
+    _MediaTimelineControllerGetControlPointParams result = new _MediaTimelineControllerGetControlPointParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
-      result.controlSite = decoder0.decodeInterfaceRequest(8, false, MediaTimelineControlSiteStub.newFromEndpoint);
+      result.controlPoint = decoder0.decodeInterfaceRequest(8, false, MediaTimelineControlPointStub.newFromEndpoint);
     }
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaTimelineControllerGetControlSiteParams";
+    const String structName = "_MediaTimelineControllerGetControlPointParams";
     String fieldName;
     try {
-      fieldName = "controlSite";
-      encoder0.encodeInterfaceRequest(controlSite, 8, false);
+      fieldName = "controlPoint";
+      encoder0.encodeInterfaceRequest(controlPoint, 8, false);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -173,8 +173,8 @@ class _MediaTimelineControllerGetControlSiteParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaTimelineControllerGetControlSiteParams("
-           "controlSite: $controlSite" ")";
+    return "_MediaTimelineControllerGetControlPointParams("
+           "controlPoint: $controlPoint" ")";
   }
 
   Map toJson() {
@@ -184,26 +184,26 @@ class _MediaTimelineControllerGetControlSiteParams extends bindings.Struct {
 }
 
 
-class _MediaTimelineControlSiteGetStatusParams extends bindings.Struct {
+class _MediaTimelineControlPointGetStatusParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
   int versionLastSeen = 0;
 
-  _MediaTimelineControlSiteGetStatusParams() : super(kVersions.last.size);
+  _MediaTimelineControlPointGetStatusParams() : super(kVersions.last.size);
 
-  _MediaTimelineControlSiteGetStatusParams.init(
+  _MediaTimelineControlPointGetStatusParams.init(
     int this.versionLastSeen
   ) : super(kVersions.last.size);
 
-  static _MediaTimelineControlSiteGetStatusParams deserialize(bindings.Message message) =>
+  static _MediaTimelineControlPointGetStatusParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaTimelineControlSiteGetStatusParams decode(bindings.Decoder decoder0) {
+  static _MediaTimelineControlPointGetStatusParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaTimelineControlSiteGetStatusParams result = new _MediaTimelineControlSiteGetStatusParams();
+    _MediaTimelineControlPointGetStatusParams result = new _MediaTimelineControlPointGetStatusParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
@@ -215,7 +215,7 @@ class _MediaTimelineControlSiteGetStatusParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaTimelineControlSiteGetStatusParams";
+    const String structName = "_MediaTimelineControlPointGetStatusParams";
     String fieldName;
     try {
       fieldName = "versionLastSeen";
@@ -227,7 +227,7 @@ class _MediaTimelineControlSiteGetStatusParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaTimelineControlSiteGetStatusParams("
+    return "_MediaTimelineControlPointGetStatusParams("
            "versionLastSeen: $versionLastSeen" ")";
   }
 
@@ -239,28 +239,28 @@ class _MediaTimelineControlSiteGetStatusParams extends bindings.Struct {
 }
 
 
-class MediaTimelineControlSiteGetStatusResponseParams extends bindings.Struct {
+class MediaTimelineControlPointGetStatusResponseParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(24, 0)
   ];
   int version = 0;
-  MediaTimelineControlSiteStatus status = null;
+  MediaTimelineControlPointStatus status = null;
 
-  MediaTimelineControlSiteGetStatusResponseParams() : super(kVersions.last.size);
+  MediaTimelineControlPointGetStatusResponseParams() : super(kVersions.last.size);
 
-  MediaTimelineControlSiteGetStatusResponseParams.init(
+  MediaTimelineControlPointGetStatusResponseParams.init(
     int this.version, 
-    MediaTimelineControlSiteStatus this.status
+    MediaTimelineControlPointStatus this.status
   ) : super(kVersions.last.size);
 
-  static MediaTimelineControlSiteGetStatusResponseParams deserialize(bindings.Message message) =>
+  static MediaTimelineControlPointGetStatusResponseParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static MediaTimelineControlSiteGetStatusResponseParams decode(bindings.Decoder decoder0) {
+  static MediaTimelineControlPointGetStatusResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    MediaTimelineControlSiteGetStatusResponseParams result = new MediaTimelineControlSiteGetStatusResponseParams();
+    MediaTimelineControlPointGetStatusResponseParams result = new MediaTimelineControlPointGetStatusResponseParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
@@ -270,14 +270,14 @@ class MediaTimelineControlSiteGetStatusResponseParams extends bindings.Struct {
     if (mainDataHeader.version >= 0) {
       
       var decoder1 = decoder0.decodePointer(16, false);
-      result.status = MediaTimelineControlSiteStatus.decode(decoder1);
+      result.status = MediaTimelineControlPointStatus.decode(decoder1);
     }
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaTimelineControlSiteGetStatusResponseParams";
+    const String structName = "MediaTimelineControlPointGetStatusResponseParams";
     String fieldName;
     try {
       fieldName = "version";
@@ -291,7 +291,7 @@ class MediaTimelineControlSiteGetStatusResponseParams extends bindings.Struct {
   }
 
   String toString() {
-    return "MediaTimelineControlSiteGetStatusResponseParams("
+    return "MediaTimelineControlPointGetStatusResponseParams("
            "version: $version" ", "
            "status: $status" ")";
   }
@@ -305,26 +305,26 @@ class MediaTimelineControlSiteGetStatusResponseParams extends bindings.Struct {
 }
 
 
-class _MediaTimelineControlSiteGetTimelineConsumerParams extends bindings.Struct {
+class _MediaTimelineControlPointGetTimelineConsumerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
   timelines_mojom.TimelineConsumerInterfaceRequest timelineConsumer = null;
 
-  _MediaTimelineControlSiteGetTimelineConsumerParams() : super(kVersions.last.size);
+  _MediaTimelineControlPointGetTimelineConsumerParams() : super(kVersions.last.size);
 
-  _MediaTimelineControlSiteGetTimelineConsumerParams.init(
+  _MediaTimelineControlPointGetTimelineConsumerParams.init(
     timelines_mojom.TimelineConsumerInterfaceRequest this.timelineConsumer
   ) : super(kVersions.last.size);
 
-  static _MediaTimelineControlSiteGetTimelineConsumerParams deserialize(bindings.Message message) =>
+  static _MediaTimelineControlPointGetTimelineConsumerParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaTimelineControlSiteGetTimelineConsumerParams decode(bindings.Decoder decoder0) {
+  static _MediaTimelineControlPointGetTimelineConsumerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaTimelineControlSiteGetTimelineConsumerParams result = new _MediaTimelineControlSiteGetTimelineConsumerParams();
+    _MediaTimelineControlPointGetTimelineConsumerParams result = new _MediaTimelineControlPointGetTimelineConsumerParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
@@ -336,7 +336,7 @@ class _MediaTimelineControlSiteGetTimelineConsumerParams extends bindings.Struct
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaTimelineControlSiteGetTimelineConsumerParams";
+    const String structName = "_MediaTimelineControlPointGetTimelineConsumerParams";
     String fieldName;
     try {
       fieldName = "timelineConsumer";
@@ -348,7 +348,7 @@ class _MediaTimelineControlSiteGetTimelineConsumerParams extends bindings.Struct
   }
 
   String toString() {
-    return "_MediaTimelineControlSiteGetTimelineConsumerParams("
+    return "_MediaTimelineControlPointGetTimelineConsumerParams("
            "timelineConsumer: $timelineConsumer" ")";
   }
 
@@ -358,8 +358,8 @@ class _MediaTimelineControlSiteGetTimelineConsumerParams extends bindings.Struct
   }
 }
 
-const int _mediaTimelineControllerMethodAddControlSiteName = 0;
-const int _mediaTimelineControllerMethodGetControlSiteName = 1;
+const int _mediaTimelineControllerMethodAddControlPointName = 0;
+const int _mediaTimelineControllerMethodGetControlPointName = 1;
 
 class _MediaTimelineControllerServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
@@ -397,8 +397,8 @@ abstract class MediaTimelineController {
     s.connectToService(url, p, name);
     return p;
   }
-  void addControlSite(MediaTimelineControlSiteInterface controlSite);
-  void getControlSite(MediaTimelineControlSiteInterfaceRequest controlSite);
+  void addControlPoint(MediaTimelineControlPointInterface controlPoint);
+  void getControlPoint(MediaTimelineControlPointInterfaceRequest controlPoint);
 }
 
 abstract class MediaTimelineControllerInterface
@@ -484,33 +484,33 @@ class MediaTimelineControllerProxy
   }
 
 
-  void addControlSite(MediaTimelineControlSiteInterface controlSite) {
+  void addControlPoint(MediaTimelineControlPointInterface controlPoint) {
     if (impl != null) {
-      impl.addControlSite(controlSite);
+      impl.addControlPoint(controlPoint);
       return;
     }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
     }
-    var params = new _MediaTimelineControllerAddControlSiteParams();
-    params.controlSite = controlSite;
+    var params = new _MediaTimelineControllerAddControlPointParams();
+    params.controlPoint = controlPoint;
     ctrl.sendMessage(params,
-        _mediaTimelineControllerMethodAddControlSiteName);
+        _mediaTimelineControllerMethodAddControlPointName);
   }
-  void getControlSite(MediaTimelineControlSiteInterfaceRequest controlSite) {
+  void getControlPoint(MediaTimelineControlPointInterfaceRequest controlPoint) {
     if (impl != null) {
-      impl.getControlSite(controlSite);
+      impl.getControlPoint(controlPoint);
       return;
     }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
     }
-    var params = new _MediaTimelineControllerGetControlSiteParams();
-    params.controlSite = controlSite;
+    var params = new _MediaTimelineControllerGetControlPointParams();
+    params.controlPoint = controlPoint;
     ctrl.sendMessage(params,
-        _mediaTimelineControllerMethodGetControlSiteName);
+        _mediaTimelineControllerMethodGetControlPointName);
   }
 }
 
@@ -547,15 +547,15 @@ class _MediaTimelineControllerStubControl
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
-      case _mediaTimelineControllerMethodAddControlSiteName:
-        var params = _MediaTimelineControllerAddControlSiteParams.deserialize(
+      case _mediaTimelineControllerMethodAddControlPointName:
+        var params = _MediaTimelineControllerAddControlPointParams.deserialize(
             message.payload);
-        _impl.addControlSite(params.controlSite);
+        _impl.addControlPoint(params.controlPoint);
         break;
-      case _mediaTimelineControllerMethodGetControlSiteName:
-        var params = _MediaTimelineControllerGetControlSiteParams.deserialize(
+      case _mediaTimelineControllerMethodGetControlPointName:
+        var params = _MediaTimelineControllerGetControlPointParams.deserialize(
             message.payload);
-        _impl.getControlSite(params.controlSite);
+        _impl.getControlPoint(params.controlPoint);
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
@@ -614,18 +614,18 @@ class MediaTimelineControllerStub
   }
 
 
-  void addControlSite(MediaTimelineControlSiteInterface controlSite) {
-    return impl.addControlSite(controlSite);
+  void addControlPoint(MediaTimelineControlPointInterface controlPoint) {
+    return impl.addControlPoint(controlPoint);
   }
-  void getControlSite(MediaTimelineControlSiteInterfaceRequest controlSite) {
-    return impl.getControlSite(controlSite);
+  void getControlPoint(MediaTimelineControlPointInterfaceRequest controlPoint) {
+    return impl.getControlPoint(controlPoint);
   }
 }
 
-const int _mediaTimelineControlSiteMethodGetStatusName = 0;
-const int _mediaTimelineControlSiteMethodGetTimelineConsumerName = 1;
+const int _mediaTimelineControlPointMethodGetStatusName = 0;
+const int _mediaTimelineControlPointMethodGetTimelineConsumerName = 1;
 
-class _MediaTimelineControlSiteServiceDescription implements service_describer.ServiceDescription {
+class _MediaTimelineControlPointServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
     responder(null);
   }
@@ -639,21 +639,21 @@ class _MediaTimelineControlSiteServiceDescription implements service_describer.S
   }
 }
 
-abstract class MediaTimelineControlSite {
+abstract class MediaTimelineControlPoint {
   static const String serviceName = null;
 
   static service_describer.ServiceDescription _cachedServiceDescription;
   static service_describer.ServiceDescription get serviceDescription {
     if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _MediaTimelineControlSiteServiceDescription();
+      _cachedServiceDescription = new _MediaTimelineControlPointServiceDescription();
     }
     return _cachedServiceDescription;
   }
 
-  static MediaTimelineControlSiteProxy connectToService(
+  static MediaTimelineControlPointProxy connectToService(
       bindings.ServiceConnector s, String url, [String serviceName]) {
-    MediaTimelineControlSiteProxy p = new MediaTimelineControlSiteProxy.unbound();
-    String name = serviceName ?? MediaTimelineControlSite.serviceName;
+    MediaTimelineControlPointProxy p = new MediaTimelineControlPointProxy.unbound();
+    String name = serviceName ?? MediaTimelineControlPoint.serviceName;
     if ((name == null) || name.isEmpty) {
       throw new core.MojoApiError(
           "If an interface has no ServiceName, then one must be provided.");
@@ -661,53 +661,53 @@ abstract class MediaTimelineControlSite {
     s.connectToService(url, p, name);
     return p;
   }
-  void getStatus(int versionLastSeen,void callback(int version, MediaTimelineControlSiteStatus status));
+  void getStatus(int versionLastSeen,void callback(int version, MediaTimelineControlPointStatus status));
   void getTimelineConsumer(timelines_mojom.TimelineConsumerInterfaceRequest timelineConsumer);
   static const int kInitialStatus = 0;
 }
 
-abstract class MediaTimelineControlSiteInterface
-    implements bindings.MojoInterface<MediaTimelineControlSite>,
-               MediaTimelineControlSite {
-  factory MediaTimelineControlSiteInterface([MediaTimelineControlSite impl]) =>
-      new MediaTimelineControlSiteStub.unbound(impl);
+abstract class MediaTimelineControlPointInterface
+    implements bindings.MojoInterface<MediaTimelineControlPoint>,
+               MediaTimelineControlPoint {
+  factory MediaTimelineControlPointInterface([MediaTimelineControlPoint impl]) =>
+      new MediaTimelineControlPointStub.unbound(impl);
 
-  factory MediaTimelineControlSiteInterface.fromEndpoint(
+  factory MediaTimelineControlPointInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
-      [MediaTimelineControlSite impl]) =>
-      new MediaTimelineControlSiteStub.fromEndpoint(endpoint, impl);
+      [MediaTimelineControlPoint impl]) =>
+      new MediaTimelineControlPointStub.fromEndpoint(endpoint, impl);
 
-  factory MediaTimelineControlSiteInterface.fromMock(
-      MediaTimelineControlSite mock) =>
-      new MediaTimelineControlSiteProxy.fromMock(mock);
+  factory MediaTimelineControlPointInterface.fromMock(
+      MediaTimelineControlPoint mock) =>
+      new MediaTimelineControlPointProxy.fromMock(mock);
 }
 
-abstract class MediaTimelineControlSiteInterfaceRequest
-    implements bindings.MojoInterface<MediaTimelineControlSite>,
-               MediaTimelineControlSite {
-  factory MediaTimelineControlSiteInterfaceRequest() =>
-      new MediaTimelineControlSiteProxy.unbound();
+abstract class MediaTimelineControlPointInterfaceRequest
+    implements bindings.MojoInterface<MediaTimelineControlPoint>,
+               MediaTimelineControlPoint {
+  factory MediaTimelineControlPointInterfaceRequest() =>
+      new MediaTimelineControlPointProxy.unbound();
 }
 
-class _MediaTimelineControlSiteProxyControl
+class _MediaTimelineControlPointProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl<MediaTimelineControlSite> {
-  MediaTimelineControlSite impl;
+    implements bindings.ProxyControl<MediaTimelineControlPoint> {
+  MediaTimelineControlPoint impl;
 
-  _MediaTimelineControlSiteProxyControl.fromEndpoint(
+  _MediaTimelineControlPointProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _MediaTimelineControlSiteProxyControl.fromHandle(
+  _MediaTimelineControlPointProxyControl.fromHandle(
       core.MojoHandle handle) : super.fromHandle(handle);
 
-  _MediaTimelineControlSiteProxyControl.unbound() : super.unbound();
+  _MediaTimelineControlPointProxyControl.unbound() : super.unbound();
 
-  String get serviceName => MediaTimelineControlSite.serviceName;
+  String get serviceName => MediaTimelineControlPoint.serviceName;
 
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
-      case _mediaTimelineControlSiteMethodGetStatusName:
-        var r = MediaTimelineControlSiteGetStatusResponseParams.deserialize(
+      case _mediaTimelineControlPointMethodGetStatusName:
+        var r = MediaTimelineControlPointGetStatusResponseParams.deserialize(
             message.payload);
         if (!message.header.hasRequestId) {
           proxyError("Expected a message with a valid request Id.");
@@ -732,52 +732,52 @@ class _MediaTimelineControlSiteProxyControl
   @override
   String toString() {
     var superString = super.toString();
-    return "_MediaTimelineControlSiteProxyControl($superString)";
+    return "_MediaTimelineControlPointProxyControl($superString)";
   }
 }
 
-class MediaTimelineControlSiteProxy
-    extends bindings.Proxy<MediaTimelineControlSite>
-    implements MediaTimelineControlSite,
-               MediaTimelineControlSiteInterface,
-               MediaTimelineControlSiteInterfaceRequest {
-  MediaTimelineControlSiteProxy.fromEndpoint(
+class MediaTimelineControlPointProxy
+    extends bindings.Proxy<MediaTimelineControlPoint>
+    implements MediaTimelineControlPoint,
+               MediaTimelineControlPointInterface,
+               MediaTimelineControlPointInterfaceRequest {
+  MediaTimelineControlPointProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
-      : super(new _MediaTimelineControlSiteProxyControl.fromEndpoint(endpoint));
+      : super(new _MediaTimelineControlPointProxyControl.fromEndpoint(endpoint));
 
-  MediaTimelineControlSiteProxy.fromHandle(core.MojoHandle handle)
-      : super(new _MediaTimelineControlSiteProxyControl.fromHandle(handle));
+  MediaTimelineControlPointProxy.fromHandle(core.MojoHandle handle)
+      : super(new _MediaTimelineControlPointProxyControl.fromHandle(handle));
 
-  MediaTimelineControlSiteProxy.unbound()
-      : super(new _MediaTimelineControlSiteProxyControl.unbound());
+  MediaTimelineControlPointProxy.unbound()
+      : super(new _MediaTimelineControlPointProxyControl.unbound());
 
-  factory MediaTimelineControlSiteProxy.fromMock(MediaTimelineControlSite mock) {
-    MediaTimelineControlSiteProxy newMockedProxy =
-        new MediaTimelineControlSiteProxy.unbound();
+  factory MediaTimelineControlPointProxy.fromMock(MediaTimelineControlPoint mock) {
+    MediaTimelineControlPointProxy newMockedProxy =
+        new MediaTimelineControlPointProxy.unbound();
     newMockedProxy.impl = mock;
     return newMockedProxy;
   }
 
-  static MediaTimelineControlSiteProxy newFromEndpoint(
+  static MediaTimelineControlPointProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaTimelineControlSiteProxy"));
-    return new MediaTimelineControlSiteProxy.fromEndpoint(endpoint);
+    assert(endpoint.setDescription("For MediaTimelineControlPointProxy"));
+    return new MediaTimelineControlPointProxy.fromEndpoint(endpoint);
   }
 
 
-  void getStatus(int versionLastSeen,void callback(int version, MediaTimelineControlSiteStatus status)) {
+  void getStatus(int versionLastSeen,void callback(int version, MediaTimelineControlPointStatus status)) {
     if (impl != null) {
       impl.getStatus(versionLastSeen,callback);
       return;
     }
-    var params = new _MediaTimelineControlSiteGetStatusParams();
+    var params = new _MediaTimelineControlPointGetStatusParams();
     params.versionLastSeen = versionLastSeen;
     Function zonedCallback;
     if (identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
-      zonedCallback = ((int version, MediaTimelineControlSiteStatus status) {
+      zonedCallback = ((int version, MediaTimelineControlPointStatus status) {
         z.bindCallback(() {
           callback(version, status);
         })();
@@ -785,7 +785,7 @@ class MediaTimelineControlSiteProxy
     }
     ctrl.sendMessageWithRequestId(
         params,
-        _mediaTimelineControlSiteMethodGetStatusName,
+        _mediaTimelineControlPointMethodGetStatusName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
         zonedCallback);
@@ -799,44 +799,44 @@ class MediaTimelineControlSiteProxy
       ctrl.proxyError("The Proxy is closed.");
       return;
     }
-    var params = new _MediaTimelineControlSiteGetTimelineConsumerParams();
+    var params = new _MediaTimelineControlPointGetTimelineConsumerParams();
     params.timelineConsumer = timelineConsumer;
     ctrl.sendMessage(params,
-        _mediaTimelineControlSiteMethodGetTimelineConsumerName);
+        _mediaTimelineControlPointMethodGetTimelineConsumerName);
   }
 }
 
-class _MediaTimelineControlSiteStubControl
+class _MediaTimelineControlPointStubControl
     extends bindings.StubMessageHandler
-    implements bindings.StubControl<MediaTimelineControlSite> {
-  MediaTimelineControlSite _impl;
+    implements bindings.StubControl<MediaTimelineControlPoint> {
+  MediaTimelineControlPoint _impl;
 
-  _MediaTimelineControlSiteStubControl.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint, [MediaTimelineControlSite impl])
+  _MediaTimelineControlPointStubControl.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [MediaTimelineControlPoint impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  _MediaTimelineControlSiteStubControl.fromHandle(
-      core.MojoHandle handle, [MediaTimelineControlSite impl])
+  _MediaTimelineControlPointStubControl.fromHandle(
+      core.MojoHandle handle, [MediaTimelineControlPoint impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  _MediaTimelineControlSiteStubControl.unbound([this._impl]) : super.unbound();
+  _MediaTimelineControlPointStubControl.unbound([this._impl]) : super.unbound();
 
-  String get serviceName => MediaTimelineControlSite.serviceName;
+  String get serviceName => MediaTimelineControlPoint.serviceName;
 
 
-  Function _mediaTimelineControlSiteGetStatusResponseParamsResponder(
+  Function _mediaTimelineControlPointGetStatusResponseParamsResponder(
       int requestId) {
-  return (int version, MediaTimelineControlSiteStatus status) {
-      var result = new MediaTimelineControlSiteGetStatusResponseParams();
+  return (int version, MediaTimelineControlPointStatus status) {
+      var result = new MediaTimelineControlPointGetStatusResponseParams();
       result.version = version;
       result.status = status;
       sendResponse(buildResponseWithId(
           result,
-          _mediaTimelineControlSiteMethodGetStatusName,
+          _mediaTimelineControlPointMethodGetStatusName,
           requestId,
           bindings.MessageHeader.kMessageIsResponse));
     };
@@ -852,13 +852,13 @@ class _MediaTimelineControlSiteStubControl
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
-      case _mediaTimelineControlSiteMethodGetStatusName:
-        var params = _MediaTimelineControlSiteGetStatusParams.deserialize(
+      case _mediaTimelineControlPointMethodGetStatusName:
+        var params = _MediaTimelineControlPointGetStatusParams.deserialize(
             message.payload);
-        _impl.getStatus(params.versionLastSeen, _mediaTimelineControlSiteGetStatusResponseParamsResponder(message.header.requestId));
+        _impl.getStatus(params.versionLastSeen, _mediaTimelineControlPointGetStatusResponseParamsResponder(message.header.requestId));
         break;
-      case _mediaTimelineControlSiteMethodGetTimelineConsumerName:
-        var params = _MediaTimelineControlSiteGetTimelineConsumerParams.deserialize(
+      case _mediaTimelineControlPointMethodGetTimelineConsumerName:
+        var params = _MediaTimelineControlPointGetTimelineConsumerParams.deserialize(
             message.payload);
         _impl.getTimelineConsumer(params.timelineConsumer);
         break;
@@ -868,8 +868,8 @@ class _MediaTimelineControlSiteStubControl
     }
   }
 
-  MediaTimelineControlSite get impl => _impl;
-  set impl(MediaTimelineControlSite d) {
+  MediaTimelineControlPoint get impl => _impl;
+  set impl(MediaTimelineControlPoint d) {
     if (d == null) {
       throw new core.MojoApiError("$this: Cannot set a null implementation");
     }
@@ -890,36 +890,36 @@ class _MediaTimelineControlSiteStubControl
   @override
   String toString() {
     var superString = super.toString();
-    return "_MediaTimelineControlSiteStubControl($superString)";
+    return "_MediaTimelineControlPointStubControl($superString)";
   }
 
   int get version => 0;
 }
 
-class MediaTimelineControlSiteStub
-    extends bindings.Stub<MediaTimelineControlSite>
-    implements MediaTimelineControlSite,
-               MediaTimelineControlSiteInterface,
-               MediaTimelineControlSiteInterfaceRequest {
-  MediaTimelineControlSiteStub.unbound([MediaTimelineControlSite impl])
-      : super(new _MediaTimelineControlSiteStubControl.unbound(impl));
+class MediaTimelineControlPointStub
+    extends bindings.Stub<MediaTimelineControlPoint>
+    implements MediaTimelineControlPoint,
+               MediaTimelineControlPointInterface,
+               MediaTimelineControlPointInterfaceRequest {
+  MediaTimelineControlPointStub.unbound([MediaTimelineControlPoint impl])
+      : super(new _MediaTimelineControlPointStubControl.unbound(impl));
 
-  MediaTimelineControlSiteStub.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint, [MediaTimelineControlSite impl])
-      : super(new _MediaTimelineControlSiteStubControl.fromEndpoint(endpoint, impl));
+  MediaTimelineControlPointStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [MediaTimelineControlPoint impl])
+      : super(new _MediaTimelineControlPointStubControl.fromEndpoint(endpoint, impl));
 
-  MediaTimelineControlSiteStub.fromHandle(
-      core.MojoHandle handle, [MediaTimelineControlSite impl])
-      : super(new _MediaTimelineControlSiteStubControl.fromHandle(handle, impl));
+  MediaTimelineControlPointStub.fromHandle(
+      core.MojoHandle handle, [MediaTimelineControlPoint impl])
+      : super(new _MediaTimelineControlPointStubControl.fromHandle(handle, impl));
 
-  static MediaTimelineControlSiteStub newFromEndpoint(
+  static MediaTimelineControlPointStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaTimelineControlSiteStub"));
-    return new MediaTimelineControlSiteStub.fromEndpoint(endpoint);
+    assert(endpoint.setDescription("For MediaTimelineControlPointStub"));
+    return new MediaTimelineControlPointStub.fromEndpoint(endpoint);
   }
 
 
-  void getStatus(int versionLastSeen,void callback(int version, MediaTimelineControlSiteStatus status)) {
+  void getStatus(int versionLastSeen,void callback(int version, MediaTimelineControlPointStatus status)) {
     return impl.getStatus(versionLastSeen,callback);
   }
   void getTimelineConsumer(timelines_mojom.TimelineConsumerInterfaceRequest timelineConsumer) {

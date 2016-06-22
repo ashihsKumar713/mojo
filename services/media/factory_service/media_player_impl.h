@@ -98,16 +98,16 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
       uint64_t version = MediaDemux::kInitialMetadata,
       MediaMetadataPtr metadata = nullptr);
 
-  // Handles a status update from the control site. When called with the default
-  // argument values, initiates control site. status updates.
-  void HandleTimelineControlSiteStatusUpdates(
-      uint64_t version = MediaTimelineControlSite::kInitialStatus,
-      MediaTimelineControlSiteStatusPtr status = nullptr);
+  // Handles a status update from the control point. When called with the
+  // default argument values, initiates control point. status updates.
+  void HandleTimelineControlPointStatusUpdates(
+      uint64_t version = MediaTimelineControlPoint::kInitialStatus,
+      MediaTimelineControlPointStatusPtr status = nullptr);
 
   MediaFactoryPtr factory_;
   MediaDemuxPtr demux_;
   MediaTimelineControllerPtr timeline_controller_;
-  MediaTimelineControlSitePtr timeline_control_site_;
+  MediaTimelineControlPointPtr timeline_control_point_;
   TimelineConsumerPtr timeline_consumer_;
   std::vector<std::unique_ptr<Stream>> streams_;
 

@@ -11,8 +11,8 @@ source_set("common") {
     "media_pipe_base.cc",
     "media_pipe_base.h",
     "mojo_publisher.h",
-    "timeline_control_site.cc",
-    "timeline_control_site.h",
+    "timeline_control_point.cc",
+    "timeline_control_point.h",
   ]
 
   deps = [

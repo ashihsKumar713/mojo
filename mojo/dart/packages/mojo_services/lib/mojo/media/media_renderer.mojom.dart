@@ -238,42 +238,42 @@ class _MediaRendererGetConsumerParams extends bindings.Struct {
 }
 
 
-class _MediaRendererGetTimelineControlSiteParams extends bindings.Struct {
+class _MediaRendererGetTimelineControlPointParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite = null;
+  timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest timelineControlPoint = null;
 
-  _MediaRendererGetTimelineControlSiteParams() : super(kVersions.last.size);
+  _MediaRendererGetTimelineControlPointParams() : super(kVersions.last.size);
 
-  _MediaRendererGetTimelineControlSiteParams.init(
-    timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest this.timelineControlSite
+  _MediaRendererGetTimelineControlPointParams.init(
+    timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest this.timelineControlPoint
   ) : super(kVersions.last.size);
 
-  static _MediaRendererGetTimelineControlSiteParams deserialize(bindings.Message message) =>
+  static _MediaRendererGetTimelineControlPointParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaRendererGetTimelineControlSiteParams decode(bindings.Decoder decoder0) {
+  static _MediaRendererGetTimelineControlPointParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaRendererGetTimelineControlSiteParams result = new _MediaRendererGetTimelineControlSiteParams();
+    _MediaRendererGetTimelineControlPointParams result = new _MediaRendererGetTimelineControlPointParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
-      result.timelineControlSite = decoder0.decodeInterfaceRequest(8, false, timeline_controller_mojom.MediaTimelineControlSiteStub.newFromEndpoint);
+      result.timelineControlPoint = decoder0.decodeInterfaceRequest(8, false, timeline_controller_mojom.MediaTimelineControlPointStub.newFromEndpoint);
     }
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaRendererGetTimelineControlSiteParams";
+    const String structName = "_MediaRendererGetTimelineControlPointParams";
     String fieldName;
     try {
-      fieldName = "timelineControlSite";
-      encoder0.encodeInterfaceRequest(timelineControlSite, 8, false);
+      fieldName = "timelineControlPoint";
+      encoder0.encodeInterfaceRequest(timelineControlPoint, 8, false);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -281,8 +281,8 @@ class _MediaRendererGetTimelineControlSiteParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaRendererGetTimelineControlSiteParams("
-           "timelineControlSite: $timelineControlSite" ")";
+    return "_MediaRendererGetTimelineControlPointParams("
+           "timelineControlPoint: $timelineControlPoint" ")";
   }
 
   Map toJson() {
@@ -294,7 +294,7 @@ class _MediaRendererGetTimelineControlSiteParams extends bindings.Struct {
 const int _mediaRendererMethodGetSupportedMediaTypesName = 0;
 const int _mediaRendererMethodSetMediaTypeName = 1;
 const int _mediaRendererMethodGetConsumerName = 2;
-const int _mediaRendererMethodGetTimelineControlSiteName = 3;
+const int _mediaRendererMethodGetTimelineControlPointName = 3;
 
 class _MediaRendererServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
@@ -335,7 +335,7 @@ abstract class MediaRenderer {
   void getSupportedMediaTypes(void callback(List<media_types_mojom.MediaTypeSet> supportedMediaTypes));
   void setMediaType(media_types_mojom.MediaType mediaType);
   void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer);
-  void getTimelineControlSite(timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite);
+  void getTimelineControlPoint(timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest timelineControlPoint);
 }
 
 abstract class MediaRendererInterface
@@ -489,19 +489,19 @@ class MediaRendererProxy
     ctrl.sendMessage(params,
         _mediaRendererMethodGetConsumerName);
   }
-  void getTimelineControlSite(timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite) {
+  void getTimelineControlPoint(timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest timelineControlPoint) {
     if (impl != null) {
-      impl.getTimelineControlSite(timelineControlSite);
+      impl.getTimelineControlPoint(timelineControlPoint);
       return;
     }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
     }
-    var params = new _MediaRendererGetTimelineControlSiteParams();
-    params.timelineControlSite = timelineControlSite;
+    var params = new _MediaRendererGetTimelineControlPointParams();
+    params.timelineControlPoint = timelineControlPoint;
     ctrl.sendMessage(params,
-        _mediaRendererMethodGetTimelineControlSiteName);
+        _mediaRendererMethodGetTimelineControlPointName);
   }
 }
 
@@ -563,10 +563,10 @@ class _MediaRendererStubControl
             message.payload);
         _impl.getConsumer(params.consumer);
         break;
-      case _mediaRendererMethodGetTimelineControlSiteName:
-        var params = _MediaRendererGetTimelineControlSiteParams.deserialize(
+      case _mediaRendererMethodGetTimelineControlPointName:
+        var params = _MediaRendererGetTimelineControlPointParams.deserialize(
             message.payload);
-        _impl.getTimelineControlSite(params.timelineControlSite);
+        _impl.getTimelineControlPoint(params.timelineControlPoint);
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
@@ -634,8 +634,8 @@ class MediaRendererStub
   void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
     return impl.getConsumer(consumer);
   }
-  void getTimelineControlSite(timeline_controller_mojom.MediaTimelineControlSiteInterfaceRequest timelineControlSite) {
-    return impl.getTimelineControlSite(timelineControlSite);
+  void getTimelineControlPoint(timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest timelineControlPoint) {
+    return impl.getTimelineControlPoint(timelineControlPoint);
   }
 }
 

@@ -13,7 +13,7 @@ namespace media {
 VideoRenderer::VideoRenderer()
     : renderer_binding_(this),
       consumer_binding_(this),
-      control_site_binding_(this),
+      control_point_binding_(this),
       timeline_consumer_binding_(this) {}
 
 VideoRenderer::~VideoRenderer() {}
@@ -88,9 +88,9 @@ void VideoRenderer::GetConsumer(
   consumer_binding_.Bind(consumer_request.Pass());
 }
 
-void VideoRenderer::GetTimelineControlSite(
-    InterfaceRequest<MediaTimelineControlSite> control_site_request) {
-  control_site_binding_.Bind(control_site_request.Pass());
+void VideoRenderer::GetTimelineControlPoint(
+    InterfaceRequest<MediaTimelineControlPoint> control_point_request) {
+  control_point_binding_.Bind(control_point_request.Pass());
 }
 
 void VideoRenderer::SetBuffer(ScopedSharedBufferHandle buffer,
@@ -219,8 +219,8 @@ void VideoRenderer::SendStatusUpdates() {
 }
 
 void VideoRenderer::CompleteGetStatus(const GetStatusCallback& callback) {
-  MediaTimelineControlSiteStatusPtr status =
-      MediaTimelineControlSiteStatus::New();
+  MediaTimelineControlPointStatusPtr status =
+      MediaTimelineControlPointStatus::New();
   status->timeline_transform =
       TimelineTransform::From(current_timeline_function_);
   status->end_of_stream =

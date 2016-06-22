@@ -20,6 +20,6 @@ interface MediaRenderer {
   // Gets the consumer for the stream to be delivered.
   GetConsumer(MediaConsumer& consumer);
 
-  // Requests the timeline control site for this output.
-  GetTimelineControlSite(MediaTimelineControlSite& timeline_control_site);
+  // Requests the timeline control point for this output.
+  GetTimelineControlPoint(MediaTimelineControlPoint& timeline_control_point);
 };

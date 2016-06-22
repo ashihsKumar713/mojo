@@ -15,19 +15,19 @@
 namespace mojo {
 namespace media {
 
-// MediaTimelineControlSite implementation.
-class TimelineControlSite : public MediaTimelineControlSite,
+// MediaTimelineControlPoint implementation.
+class TimelineControlPoint : public MediaTimelineControlPoint,
                             public TimelineConsumer {
  public:
-  TimelineControlSite();
+  TimelineControlPoint();
 
-  ~TimelineControlSite() override;
+  ~TimelineControlPoint() override;
 
-  // Binds to the control site. If a binding exists already, it is closed.
-  void Bind(InterfaceRequest<MediaTimelineControlSite> request);
+  // Binds to the control point. If a binding exists already, it is closed.
+  void Bind(InterfaceRequest<MediaTimelineControlPoint> request);
 
-  // Determines whether the control site is currently bound.
-  bool is_bound() { return control_site_binding_.is_bound(); }
+  // Determines whether the control point is currently bound.
+  bool is_bound() { return control_point_binding_.is_bound(); }
 
   // Unbinds from clients and resets to initial state.
   void Reset();
@@ -38,10 +38,10 @@ class TimelineControlSite : public MediaTimelineControlSite,
                                TimelineFunction* out,
                                uint32_t* generation = nullptr);
 
-  // Sets the current end_of_stream status published by the control site.
+  // Sets the current end_of_stream status published by the control point.
   void SetEndOfStreamPts(int64_t end_of_stream_pts);
 
-  // MediaTimelineControlSite implementation.
+  // MediaTimelineControlPoint implementation.
   void GetStatus(uint64_t version_last_seen,
                  const GetStatusCallback& callback) override;
 
@@ -76,7 +76,7 @@ class TimelineControlSite : public MediaTimelineControlSite,
   static void RunCallback(SetTimelineTransformCallback callback,
                           bool completed);
 
-  Binding<MediaTimelineControlSite> control_site_binding_;
+  Binding<MediaTimelineControlPoint> control_point_binding_;
   Binding<TimelineConsumer> consumer_binding_;
   MojoPublisher<GetStatusCallback> status_publisher_;
 

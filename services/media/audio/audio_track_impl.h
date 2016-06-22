@@ -16,7 +16,7 @@
 #include "mojo/services/media/core/interfaces/media_renderer.mojom.h"
 #include "services/media/audio/audio_pipe.h"
 #include "services/media/audio/fwd_decls.h"
-#include "services/media/common/timeline_control_site.h"
+#include "services/media/common/timeline_control_point.h"
 
 namespace mojo {
 namespace media {
@@ -69,8 +69,9 @@ class AudioTrackImpl : public AudioTrack, public MediaRenderer {
       const GetSupportedMediaTypesCallback& callback) override;
   void SetMediaType(MediaTypePtr media_type) override;
   void GetConsumer(InterfaceRequest<MediaConsumer> consumer_request) override;
-  void GetTimelineControlSite(
-      InterfaceRequest<MediaTimelineControlSite> control_site_request) override;
+  void GetTimelineControlPoint(
+      InterfaceRequest<MediaTimelineControlPoint> control_point_request)
+          override;
 
   // Methods called by our AudioPipe.
   //
@@ -87,7 +88,7 @@ class AudioTrackImpl : public AudioTrack, public MediaRenderer {
   Binding<AudioTrack>       track_binding_;
   Binding<MediaRenderer>    renderer_binding_;
   AudioPipe                 pipe_;
-  TimelineControlSite       timeline_control_site_;
+  TimelineControlPoint      timeline_control_point_;
   TimelineRate              frames_per_ns_;
   LinearTransform::Ratio    frame_to_media_ratio_;
   uint32_t                  bytes_per_frame_ = 1;

@@ -91,10 +91,10 @@ void MediaSinkImpl::GetConsumer(InterfaceRequest<MediaConsumer> consumer) {
   consumer_->AddBinding(consumer.Pass());
 }
 
-void MediaSinkImpl::GetTimelineControlSite(
-    InterfaceRequest<MediaTimelineControlSite> req) {
+void MediaSinkImpl::GetTimelineControlPoint(
+    InterfaceRequest<MediaTimelineControlPoint> req) {
   DCHECK(renderer_);
-  renderer_->GetTimelineControlSite(req.Pass());
+  renderer_->GetTimelineControlPoint(req.Pass());
 }
 
 }  // namespace media
