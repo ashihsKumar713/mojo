@@ -189,7 +189,7 @@ func resolveValue(fileGraph *mojom_files.MojomFileGraph, value mojom_types.Value
 func NewConstantTemplate(fileGraph *mojom_files.MojomFileGraph, mojomConstant mojom_types.DeclaredConstant) ConstantTemplate {
 	var type_text string
 	switch mojomConstant.Type.(type) {
-	// We can't type string constants as a 'union MojomStringPtr' since it
+	// We can't type string constants as a 'union MojomStringHeaderPtr' since it
 	// involves some setup and prevents immediate consumption. const char* should
 	// suffice.
 	case *mojom_types.TypeStringType:

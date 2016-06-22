@@ -21,7 +21,7 @@ const GenerateHeaderFile = `
 #include "mojo/public/c/bindings/array.h"
 #include "mojo/public/c/bindings/buffer.h"
 #include "mojo/public/c/bindings/interface.h"
-#include "mojo/public/c/bindings/lib/type_table.h"
+#include "mojo/public/c/bindings/lib/type_descriptor.h"
 #include "mojo/public/c/bindings/map.h"
 #include "mojo/public/c/bindings/string.h"
 #include "mojo/public/c/bindings/validation.h"

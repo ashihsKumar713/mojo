@@ -18,7 +18,6 @@ import (
 
 // TODO(vardhan): Make this file unittestable? This involves making it not crash
 // on failure (so that we can test failure).
-
 // Translates: path/to/file.mojom -> PATH_TO_FILE_MOJOM_C_H_
 func toHeaderGuard(path string) string {
 	return strings.Replace(strings.Replace(strings.ToUpper(path), string(os.PathSeparator), "_", -1), ".", "_", -1) + "_C_H_"
@@ -135,11 +134,11 @@ func mojomToCType(t mojom_types.Type, fileGraph *mojom_files.MojomFileGraph) str
 	case *mojom_types.TypeSimpleType:
 		return simpleTypeToCType(t.Interface().(mojom_types.SimpleType))
 	case *mojom_types.TypeArrayType:
-		return "union MojomArrayPtr"
+		return "union MojomArrayHeaderPtr"
 	case *mojom_types.TypeMapType:
-		return "union MojomMapPtr"
+		return "union MojomMapHeaderPtr"
 	case *mojom_types.TypeStringType:
-		return "union MojomStringPtr"
+		return "union MojomStringHeaderPtr"
 	case *mojom_types.TypeHandleType:
 		return "MojoHandle"
 	case *mojom_types.TypeTypeReference:

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(vardhan): The generated names for type tables may need to be reworked
-// to keep within C's identifier-length limit.
+// TODO(vardhan): Occurrances of "type table" and "pointer table" should be
+// "type descriptors".
 
 package cgen
 
@@ -20,7 +20,6 @@ type StructPointerTableEntry struct {
 	MinVersion uint32
 	ElemType   string
 	Nullable   bool
-	KeepGoing  bool
 }
 
 type UnionPointerTableEntry struct {
@@ -28,7 +27,6 @@ type UnionPointerTableEntry struct {
 	Tag       uint32
 	Nullable  bool
 	ElemType  string
-	KeepGoing bool
 }
 
 type ArrayPointerTableEntry struct {
@@ -68,7 +66,7 @@ func (table *TypeTableTemplate) getTableForUDT(typeRef mojom_types.TypeReference
 	nullable = typeRef.Nullable
 	if typeRef.IsInterfaceRequest {
 		elemTable = "NULL"
-		elemType = "MOJOM_ELEMENT_TYPE_HANDLE"
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_HANDLE"
 		return
 	}
 	if typeRef.TypeKey == nil {
@@ -78,18 +76,18 @@ func (table *TypeTableTemplate) getTableForUDT(typeRef mojom_types.TypeReference
 	switch udt.(type) {
 	case *mojom_types.UserDefinedTypeStructType:
 		structName := *udt.Interface().(mojom_types.MojomStruct).DeclData.FullIdentifier
-		elemTable = mojomToCName(structName) + "__PointerTable"
-		elemType = "MOJOM_ELEMENT_TYPE_STRUCT"
+		elemTable = "&" + mojomToCName(structName) + "__TypeDesc"
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_STRUCT"
 	case *mojom_types.UserDefinedTypeUnionType:
 		unionName := *udt.Interface().(mojom_types.MojomUnion).DeclData.FullIdentifier
-		elemTable = mojomToCName(unionName) + "__PointerTable"
-		elemType = "MOJOM_ELEMENT_TYPE_UNION"
+		elemTable = "&" + mojomToCName(unionName) + "__TypeDesc"
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_UNION"
 	case *mojom_types.UserDefinedTypeInterfaceType:
 		elemTable = "NULL"
-		elemType = "MOJOM_ELEMENT_TYPE_INTERFACE"
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_INTERFACE"
 	default:
 		elemTable = "NULL"
-		elemType = "MOJOM_ELEMENT_TYPE_POD"
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_POD"
 	}
 
 	return
@@ -98,33 +96,33 @@ func (table *TypeTableTemplate) getTableForUDT(typeRef mojom_types.TypeReference
 func (table *TypeTableTemplate) makeTableForType(prefix string, dataType mojom_types.Type) (elemTable string, elemType string, nullable bool) {
 	switch dataType.(type) {
 	case *mojom_types.TypeStringType:
-		elemTable = "(void*)&MojomStringPointerEntry"
-		elemType = "MOJOM_ELEMENT_TYPE_ARRAY"
+		elemTable = "&g_mojom_string_type_description"
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_ARRAY"
 		nullable = dataType.Interface().(mojom_types.StringType).Nullable
 	case *mojom_types.TypeArrayType:
 		arrayTableName := fmt.Sprintf("%s_%d", prefix, table.counter)
 		table.counter++
 		typ := dataType.Interface().(mojom_types.ArrayType)
 		elemTable = "&" + table.makeArrayPointerEntry(arrayTableName, typ)
-		elemType = "MOJOM_ELEMENT_TYPE_ARRAY"
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_ARRAY"
 		nullable = typ.Nullable
 	case *mojom_types.TypeMapType:
 		mapTableName := fmt.Sprintf("%s_%d", prefix, table.counter)
 		table.counter++
 		typ := dataType.Interface().(mojom_types.MapType)
 		elemTable = "&" + table.makeMapPointerTable(mapTableName, typ)
-		elemType = "MOJOM_ELEMENT_TYPE_STRUCT"
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_STRUCT"
 		nullable = typ.Nullable
 	case *mojom_types.TypeHandleType:
 		typ := dataType.Interface().(mojom_types.HandleType)
 		elemTable = "NULL"
-		elemType = "MOJOM_ELEMENT_TYPE_HANDLE"
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_HANDLE"
 		nullable = typ.Nullable
 	case *mojom_types.TypeTypeReference:
 		return table.getTableForUDT(dataType.Interface().(mojom_types.TypeReference))
 	case *mojom_types.TypeSimpleType:
 		elemTable = "NULL"
-		elemType = "MOJOM_ELEMENT_TYPE_POD"
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_POD"
 	default:
 		log.Fatal("uhoh, should not be here.")
 	}
@@ -140,7 +138,7 @@ func (table *TypeTableTemplate) makeArrayPointerEntry(prefix string, f mojom_typ
 		numElements = uint32(f.FixedLength)
 	}
 	entry := ArrayPointerTableEntry{
-		Name:        prefix + "__PointerEntry",
+		Name:        prefix + "__TypeDesc",
 		NumElements: numElements,
 		Nullable:    f.Nullable,
 	}
@@ -152,7 +150,7 @@ func (table *TypeTableTemplate) makeArrayPointerEntry(prefix string, f mojom_typ
 
 func (table *TypeTableTemplate) makeMapPointerTable(prefix string, f mojom_types.MapType) string {
 	structTable := StructPointerTable{
-		Name: prefix + "__PointerTable",
+		Name: prefix + "__TypeDesc",
 	}
 	// The key array has offset 0.
 	// The value array has offset 8.
@@ -160,7 +158,6 @@ func (table *TypeTableTemplate) makeMapPointerTable(prefix string, f mojom_types
 		table.makeStructPointerTableEntry(fmt.Sprintf("%s_%d", prefix, 0), 0, 0, f.KeyType))
 	structTable.Entries = append(structTable.Entries,
 		table.makeStructPointerTableEntry(fmt.Sprintf("%s_%d", prefix, 8), 8, 0, f.ValueType))
-	structTable.Entries[1].KeepGoing = false
 
 	table.Structs = append(table.Structs, structTable)
 	return structTable.Name
@@ -211,7 +208,6 @@ func (table *TypeTableTemplate) makeStructPointerTableEntry(prefix string, offse
 		MinVersion: minVersion,
 		ElemType:   elemType,
 		Nullable:   nullable,
-		KeepGoing:  true,
 	}
 }
 
@@ -220,16 +216,13 @@ func (table *TypeTableTemplate) makeStructPointerTableEntry(prefix string, offse
 func (table *TypeTableTemplate) insertStructPointerTable(s mojom_types.MojomStruct) {
 	structTablePrefix := mojomToCName(*s.DeclData.FullIdentifier)
 	structTable := StructPointerTable{
-		Name: structTablePrefix + "__PointerTable",
+		Name: structTablePrefix + "__TypeDesc",
 	}
 	for _, field := range s.Fields {
 		if table.isPointerOrHandle(field.Type) {
 			structTable.Entries = append(structTable.Entries, table.makeStructPointerTableEntry(
 				structTablePrefix, uint32(field.Offset), field.MinVersion, field.Type))
 		}
-	}
-	if len(structTable.Entries) > 0 {
-		structTable.Entries[len(structTable.Entries)-1].KeepGoing = false
 	}
 	table.PublicStructNames = append(table.PublicStructNames, structTable.Name)
 	table.Structs = append(table.Structs, structTable)
@@ -243,7 +236,6 @@ func (table *TypeTableTemplate) makeUnionPointerTableEntry(prefix string, tag ui
 		Tag:       tag,
 		Nullable:  nullable,
 		ElemType:  elemType,
-		KeepGoing: true,
 	}
 }
 
@@ -252,15 +244,12 @@ func (table *TypeTableTemplate) makeUnionPointerTableEntry(prefix string, tag ui
 func (table *TypeTableTemplate) insertUnionPointerTable(u mojom_types.MojomUnion) {
 	unionTablePrefix := mojomToCName(*u.DeclData.FullIdentifier)
 	unionTable := UnionPointerTable{
-		Name: unionTablePrefix + "__PointerTable",
+		Name: unionTablePrefix + "__TypeDesc",
 	}
 	for _, field := range u.Fields {
 		if table.isPointerOrHandle(field.Type) {
 			unionTable.Entries = append(unionTable.Entries, table.makeUnionPointerTableEntry(unionTablePrefix, uint32(field.Tag), field.Type))
 		}
-	}
-	if len(unionTable.Entries) > 0 {
-		unionTable.Entries[len(unionTable.Entries)-1].KeepGoing = false
 	}
 	table.PublicUnionNames = append(table.PublicUnionNames, unionTable.Name)
 	table.Unions = append(table.Unions, unionTable)

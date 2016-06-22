@@ -9,12 +9,14 @@ package templates
 // refer to them.
 const GenerateTypeTableDeclarations = `
 {{define "GenerateTypeTableDeclarations"}}
+// Union type table declarations.
 {{range $union := .PublicUnionNames -}}
-extern struct MojomPointerTableUnionEntry {{$union}}[];
-{{end}}
+extern struct MojomTypeDescriptorUnion {{$union}};
+{{end -}}
 
+// Struct type table declarations.
 {{range $struct := .PublicStructNames -}}
-extern struct MojomPointerTableStructEntry {{$struct}}[];
+extern struct MojomTypeDescriptorStruct {{$struct}};
 {{end -}}
 {{end}}
 `
@@ -23,48 +25,55 @@ const GenerateTypeTableDefinitions = `
 {{define "GenerateTypeTableDefinitions"}}
 // Declarations for array type entries.
 {{range $array := .Arrays -}}
-static struct MojomPointerTableArrayEntry {{$array.Name}};
+static struct MojomTypeDescriptorArray {{$array.Name}};
 {{end -}}
 
 // Declarations for struct type tables.
 {{range $struct := .Structs -}}
-struct MojomPointerTableStructEntry {{$struct.Name}}[];
+struct MojomTypeDescriptorStruct {{$struct.Name}};
 {{end -}}
 
 // Declarations for union type tables.
 {{range $union := .Unions -}}
-struct MojomPointerTableUnionEntry {{$union.Name}}[];
+struct MojomTypeDescriptorUnion {{$union.Name}};
 {{end -}}
 
 // Array type entry definitions.
 {{range $array := .Arrays -}}
-static struct MojomPointerTableArrayEntry {{$array.Name}} = {
-  {{$array.ElemTable}}, {{$array.NumElements}},
-  {{$array.ElemType}}, {{$array.Nullable}},
+static struct MojomTypeDescriptorArray {{$array.Name}} = {
+  {{$array.ElemType}}, {{$array.ElemTable}},
+  {{$array.NumElements}}, {{$array.Nullable}},
 };
 {{end -}}
 
 // Struct type table definitions.
 {{range $struct := .Structs -}}
-struct MojomPointerTableStructEntry {{$struct.Name}}[] = {
+struct MojomTypeDescriptorStructEntry {{$struct.Name}}_Entries[] = {
 {{- range $entry := $struct.Entries}}
   {
-    {{$entry.ElemTable}}, {{$entry.Offset}}, {{$entry.MinVersion}},
-    {{$entry.ElemType}}, {{$entry.Nullable}}, {{$entry.KeepGoing}},
+    {{$entry.ElemType}}, {{$entry.ElemTable}},
+    {{$entry.Offset}}, {{$entry.MinVersion}},
+    {{$entry.Nullable}},
   },
 {{end -}}
+};
+struct MojomTypeDescriptorStruct {{$struct.Name}} = {
+  {{len $struct.Entries}}ul, {{$struct.Name}}_Entries, 
 };
 {{end -}}
 
 // Union type table definitions.
 {{range $union := .Unions -}}
-struct MojomPointerTableUnionEntry {{$union.Name}}[] = {
+struct MojomTypeDescriptorUnionEntry {{$union.Name}}_Entries[] = {
 {{- range $entry := $union.Entries}}
   {
-    {{$entry.ElemTable}}, {{$entry.Tag}}, {{$entry.ElemType}},
-    {{$entry.Nullable}}, {{$entry.KeepGoing}},
+    {{$entry.ElemType}}, {{$entry.ElemTable}},
+    {{$entry.Tag}}, {{$entry.Nullable}},
   },
 {{end -}}
+};
+struct MojomTypeDescriptorUnion {{$union.Name}} = {
+  {{len $union.Entries}}ul, {{$union.Name}}_Entries, 
 };
 {{end}}
 
