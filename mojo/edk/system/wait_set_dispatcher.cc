@@ -16,8 +16,10 @@ using mojo::util::RefPtr;
 namespace mojo {
 namespace system {
 
-WaitSetDispatcher::Entry::Entry(MojoHandleSignals signals, uint64_t cookie)
-    : signals(signals), cookie(cookie) {}
+WaitSetDispatcher::Entry::Entry(RefPtr<Dispatcher>&& dispatcher,
+                                MojoHandleSignals signals,
+                                uint64_t cookie)
+    : dispatcher(std::move(dispatcher)), signals(signals), cookie(cookie) {}
 
 WaitSetDispatcher::Entry::~Entry() {}
 
@@ -107,9 +109,9 @@ void WaitSetDispatcher::CloseImplNoLock() {
 
   CookieToEntryMap entries;
   std::swap(entries_, entries);
-  possibly_triggered_head_ = nullptr;
-  possibly_triggered_tail_ = nullptr;
-  possibly_triggered_count_ = 0u;
+  triggered_head_ = nullptr;
+  triggered_tail_ = nullptr;
+  triggered_count_ = 0u;
 
   // We want to remove the awakables outside the lock, so we have to unlock
   // |mutex()|. Note that while unlocked, |Awake()| may get called.
@@ -146,13 +148,13 @@ MojoResult WaitSetDispatcher::WaitSetAddImpl(
     RefPtr<Dispatcher>&& dispatcher,
     MojoHandleSignals signals,
     uint64_t cookie) {
+  // This will be owned by |entries_|, so it should only be used under
+  // |mutex()|.
   Entry* entry = nullptr;
   {
     MutexLocker locker(&mutex());
     if (is_closed_no_lock())
       return MOJO_RESULT_INVALID_ARGUMENT;
-    if (is_busy_)
-      return MOJO_RESULT_BUSY;
     MojoWaitSetAddOptions validated_options;
     MojoResult result = ValidateWaitSetAddOptions(options, &validated_options);
     if (result != MOJO_RESULT_OK)
@@ -161,56 +163,54 @@ MojoResult WaitSetDispatcher::WaitSetAddImpl(
       return MOJO_RESULT_ALREADY_EXISTS;
     if (entries_.size() >= GetConfiguration().max_wait_set_num_entries)
       return MOJO_RESULT_RESOURCE_EXHAUSTED;
-    // Note: We'll have to set the entry's dispatcher later.
-    entry = new Entry(signals, cookie);
+    entry = new Entry(dispatcher.Clone(), signals, cookie);
     entries_[cookie] = std::unique_ptr<Entry>(entry);
-
-    is_busy_ = true;
   }
 
-  HandleSignalsState signals_state;
+  // Note: We can only call into another dispatcher outside the lock. This means
+  // that *we* may be closed at any time!
+
+  // We add ourself as a persistent awakable, which means that even if the
+  // condition is already satisfied or never-satisfiable we'll still be added.
   MojoResult result =
-      dispatcher->AddAwakable(this, cookie, true, signals, &signals_state);
+      dispatcher->AddAwakable(this, cookie, true, signals, nullptr);
 
-  // Can't use |MutexLocker|, since we need to do some work outside the lock
-  // in some code paths.
-  mutex().Lock();
-  DCHECK(is_busy_);
-  is_busy_ = false;
+  MutexLocker locker(&mutex());
 
-  // Note: We may have been closed while |mutex()| was unlocked, so we have to
-  // check again!
+  // Everywhere below, if |entry| is used, its validity must be justified. E.g.,
+  // us being closed invalidates |entry|.
+
   if (is_closed_no_lock()) {
-    // Warning: In this case, |entry| has been invalidated, since it was owned
-    // by |entries_|.
-    DCHECK(entries_.empty());
-    mutex().Unlock();
-    if (result == MOJO_RESULT_OK || result == MOJO_RESULT_ALREADY_EXISTS) {
-      // We have to remove ourself from the target dispatcher's awakable list.
-      dispatcher->RemoveAwakable(true, this, cookie, nullptr);
-    }
+    // WARNING: |entry| is invalid here.
+
+    // We need to remove ourself from the target dispatcher's awakable list.
+    // Regardless of |result|, it's OK to just call |RemoveAwakable()|.
+    dispatcher->RemoveAwakable(true, this, cookie, nullptr);
+
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
-  DCHECK(entries_.find(cookie) != entries_.end());
+  // |entry| is valid: Since we weren't closed and the entry is still not marked
+  // as ready, nothing should have removed it from |entries_|.
   DCHECK_EQ(entries_[cookie].get(), entry);
 
-  if (result == MOJO_RESULT_ALREADY_EXISTS) {
-    // It was added, but the wait condition is already satisfied.
-    AddPossiblyTriggeredNoLock(entry, Entry::TriggerState::SATISFIED);
-  } else if (result == MOJO_RESULT_FAILED_PRECONDITION) {
-    AddPossiblyTriggeredNoLock(entry, Entry::TriggerState::UNSATISFIABLE);
-  } else if (result != MOJO_RESULT_OK) {
-    size_t num_erased = entries_.erase(cookie);
-    DCHECK_EQ(num_erased, 1u);
-    mutex().Unlock();
-    return result;
+  if (result == MOJO_RESULT_INVALID_ARGUMENT) {
+    // The target dispatcher was closed, so we weren't added to its awakable
+    // list. This means that user code has a race condition in this case. We
+    // could try to keep the entry around and signal it as "cancelled", but it's
+    // simpler to just say that the target dispatcher was bad in the first
+    // place.
+    entries_.erase(cookie);
+    return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
-  // Update the entry to actually have the dispatcher.
-  entry->dispatcher = std::move(dispatcher);
+  // In all other cases, we were added.
+  DCHECK(result == MOJO_RESULT_OK || result == MOJO_RESULT_ALREADY_EXISTS ||
+         result == MOJO_RESULT_FAILED_PRECONDITION);
 
-  mutex().Unlock();
+  DCHECK(!entry->ready);
+  entry->ready = true;
+
   return MOJO_RESULT_OK;
 }
 
@@ -220,19 +220,23 @@ MojoResult WaitSetDispatcher::WaitSetRemoveImpl(uint64_t cookie) {
     MutexLocker locker(&mutex());
     if (is_closed_no_lock())
       return MOJO_RESULT_INVALID_ARGUMENT;
-    if (is_busy_)
-      return MOJO_RESULT_BUSY;
     auto it = entries_.find(cookie);
     if (it == entries_.end())
       return MOJO_RESULT_NOT_FOUND;
 
     Entry* entry = it->second.get();
+    if (!entry->ready) {
+      // |WaitSetAddImpl()| isn't done yet so, as far as user code is concerned,
+      // the entry with this cookie hasn't been added yet.
+      return MOJO_RESULT_NOT_FOUND;
+    }
+
     // We'll remove ourself from the target dispatcher's awakable list outside
     // the lock.
     dispatcher = std::move(entry->dispatcher);
 
-    if (entry->trigger_state != Entry::TriggerState::NOT_TRIGGERED)
-      RemovePossiblyTriggeredNoLock(entry);
+    if (entry->is_triggered)
+      RemoveTriggeredNoLock(entry);
 
     // Note: This invalidates |entry|.
     entries_.erase(it);
@@ -272,16 +276,12 @@ void WaitSetDispatcher::Awake(uint64_t context,
   auto it = entries_.find(context);
   DCHECK(it != entries_.end());
   const auto& entry = it->second;
-  // We should only ever get at most one "closed" (cancelled).
-  DCHECK_NE(static_cast<int>(entry->trigger_state),
-            static_cast<int>(Entry::TriggerState::CLOSED));
+  // Once we get "cancelled", we should never be awoken again.
+  DCHECK(entry->dispatcher);
   switch (reason) {
     case AwakeReason::CANCELLED:
-      if (entry->trigger_state == Entry::TriggerState::NOT_TRIGGERED) {
-        AddPossiblyTriggeredNoLock(entry.get(), Entry::TriggerState::CLOSED);
-      } else {
-        entry->trigger_state = Entry::TriggerState::CLOSED;
-      }
+      if (!entry->is_triggered)
+        AddTriggeredNoLock(entry.get());
       entry->dispatcher = nullptr;
       break;
     case AwakeReason::SATISFIED:
@@ -290,83 +290,66 @@ void WaitSetDispatcher::Awake(uint64_t context,
       NOTREACHED();
       break;
     case AwakeReason::INITIALIZE:
-      // TODO(vtl): Save the initial state here (and maybe add to the triggered
-      // list), and then update state on CHANGED.
-      break;
+      DCHECK(entry->signals_state.equals(HandleSignalsState()));
+    // Fall through.
     case AwakeReason::CHANGED:
-      if (signals_state.satisfies(entry->signals)) {
-        if (entry->trigger_state == Entry::TriggerState::NOT_TRIGGERED) {
-          AddPossiblyTriggeredNoLock(entry.get(),
-                                     Entry::TriggerState::SATISFIED);
-        } else {
-          entry->trigger_state = Entry::TriggerState::SATISFIED;
-        }
-      } else if (!signals_state.can_satisfy(entry->signals)) {
-        if (entry->trigger_state == Entry::TriggerState::NOT_TRIGGERED) {
-          AddPossiblyTriggeredNoLock(entry.get(),
-                                     Entry::TriggerState::UNSATISFIABLE);
-        } else {
-          entry->trigger_state = Entry::TriggerState::UNSATISFIABLE;
-        }
+      // Record the state for anyone waiting.
+      entry->signals_state = signals_state;
+      if (entry->signals_state.satisfies(entry->signals) ||
+          !entry->signals_state.can_satisfy(entry->signals)) {
+        if (!entry->is_triggered)
+          AddTriggeredNoLock(entry.get());
       } else {
-        if (entry->trigger_state != Entry::TriggerState::NOT_TRIGGERED)
-          RemovePossiblyTriggeredNoLock(entry.get());
+        if (entry->is_triggered)
+          RemoveTriggeredNoLock(entry.get());
       }
       break;
   }
 }
 
-void WaitSetDispatcher::AddPossiblyTriggeredNoLock(
-    Entry* entry,
-    Entry::TriggerState new_trigger_state) {
-  DCHECK_EQ(static_cast<int>(entry->trigger_state),
-            static_cast<int>(Entry::TriggerState::NOT_TRIGGERED));
-  DCHECK(!entry->possibly_triggered_previous);
-  DCHECK(!entry->possibly_triggered_next);
-  DCHECK_NE(static_cast<int>(new_trigger_state),
-            static_cast<int>(Entry::TriggerState::NOT_TRIGGERED));
+void WaitSetDispatcher::AddTriggeredNoLock(Entry* entry) {
+  DCHECK(!entry->is_triggered);
+  DCHECK(!entry->triggered_previous);
+  DCHECK(!entry->triggered_next);
 
-  entry->trigger_state = new_trigger_state;
-  possibly_triggered_count_++;
+  entry->is_triggered = true;
+  triggered_count_++;
 
-  if (!possibly_triggered_tail_) {
-    DCHECK(!possibly_triggered_head_);
-    possibly_triggered_head_ = entry;
-    possibly_triggered_tail_ = entry;
+  if (!triggered_tail_) {
+    DCHECK(!triggered_head_);
+    triggered_head_ = entry;
+    triggered_tail_ = entry;
     return;
   }
 
-  Entry* old_tail = possibly_triggered_tail_;
-  entry->possibly_triggered_previous = old_tail;
-  DCHECK(!old_tail->possibly_triggered_next);
-  old_tail->possibly_triggered_next = entry;
-  possibly_triggered_tail_ = entry;
+  Entry* old_tail = triggered_tail_;
+  entry->triggered_previous = old_tail;
+  DCHECK(!old_tail->triggered_next);
+  old_tail->triggered_next = entry;
+  triggered_tail_ = entry;
 }
 
-void WaitSetDispatcher::RemovePossiblyTriggeredNoLock(Entry* entry) {
-  DCHECK_NE(static_cast<int>(entry->trigger_state),
-            static_cast<int>(Entry::TriggerState::NOT_TRIGGERED));
-  entry->trigger_state = Entry::TriggerState::NOT_TRIGGERED;
-  possibly_triggered_count_--;
+void WaitSetDispatcher::RemoveTriggeredNoLock(Entry* entry) {
+  DCHECK(entry->is_triggered);
+  entry->is_triggered = false;
+  triggered_count_--;
 
-  if (!entry->possibly_triggered_previous) {
-    DCHECK_EQ(entry, possibly_triggered_head_);
-    possibly_triggered_head_ = entry->possibly_triggered_next;
+  if (!entry->triggered_previous) {
+    DCHECK_EQ(entry, triggered_head_);
+    triggered_head_ = entry->triggered_next;
   } else {
-    entry->possibly_triggered_previous->possibly_triggered_next =
-        entry->possibly_triggered_next;
+    entry->triggered_previous->triggered_next = entry->triggered_next;
   }
 
-  if (!entry->possibly_triggered_next) {
-    DCHECK_EQ(entry, possibly_triggered_tail_);
-    possibly_triggered_tail_ = entry->possibly_triggered_previous;
+  if (!entry->triggered_next) {
+    DCHECK_EQ(entry, triggered_tail_);
+    triggered_tail_ = entry->triggered_previous;
   } else {
-    entry->possibly_triggered_next->possibly_triggered_previous =
-        entry->possibly_triggered_previous;
+    entry->triggered_next->triggered_previous = entry->triggered_previous;
   }
 
-  entry->possibly_triggered_previous = nullptr;
-  entry->possibly_triggered_next = nullptr;
+  entry->triggered_previous = nullptr;
+  entry->triggered_next = nullptr;
 }
 
 }  // namespace system

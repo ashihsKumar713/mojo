@@ -62,31 +62,33 @@ class WaitSetDispatcher final : public Dispatcher, public Awakable {
  private:
   // Represents an entry in the wait set.
   struct Entry {
-    enum class TriggerState { NOT_TRIGGERED, SATISFIED, UNSATISFIABLE, CLOSED };
-
-    Entry(MojoHandleSignals signals, uint64_t cookie);
+    Entry(util::RefPtr<Dispatcher>&& dispatcher,
+          MojoHandleSignals signals,
+          uint64_t cookie);
     ~Entry();
 
+    // |dispatcher| is only null for an |Entry| in |WaitSetDispatcher::entries_|
+    // if the dispatcher was closed.
+    util::RefPtr<Dispatcher> dispatcher;
     const MojoHandleSignals signals;
     const uint64_t cookie;
-    // There are two cases when |dispatcher| is null for an |Entry| in
-    // |WaitSetDispatcher::entries_|:
-    //   - The wait set was closed in the middle of |WaitSetAddImpl()|;
-    //     |entries_| will be cleared out on closing, but |WaitSetAddImpl()|
-    //     must detect this and actually remove the dispatcher (which only it
-    //     knows about) from the "target" dispatcher's awakable list.
-    //   - It's an entry whose dispatcher was closed.
-    util::RefPtr<Dispatcher> dispatcher;
-    TriggerState trigger_state = TriggerState::NOT_TRIGGERED;
 
-    // Only meaningful if |trigger_state| is not |TriggerState::NOT_TRIGGERED|.
-    // This is used to maintain a doubly linked list of entries that are
-    // possibly satisfied. |possibly_triggered_previous| and
-    // |possibly_triggered_next| are null if |this| is equal to
-    // |WaitSetDispatcher::possibly_triggered_head_| and
-    // |...::possibly_triggered_tail_|, respectively.
-    Entry* possibly_triggered_previous = nullptr;
-    Entry* possibly_triggered_next = nullptr;
+    // This is false until |WaitSetDispatcher::WaitSetAddImpl()| is "finished"
+    // adding it. |...::WaitSetRemoveImpl()| won't acknowledge the existence of
+    // this entry until this is true.
+    bool ready = false;
+
+    HandleSignalsState signals_state;
+    bool is_triggered = false;
+
+    // Only meaningful if |is_triggered| is true. This is used to maintain a
+    // doubly linked list of entries that are triggered (for various reasons:
+    // being satisfied, being never-satisfiable, being cancelled/closed).
+    // |triggered_previous| and |triggered_next| are null if |this| is equal to
+    // |WaitSetDispatcher::triggered_head_| and
+    // |WaitSetDispatcher::triggered_tail_|, respectively.
+    Entry* triggered_previous = nullptr;
+    Entry* triggered_next = nullptr;
   };
 
   WaitSetDispatcher();
@@ -112,28 +114,19 @@ class WaitSetDispatcher final : public Dispatcher, public Awakable {
              AwakeReason reason,
              const HandleSignalsState& signals_state) override;
 
-  void AddPossiblyTriggeredNoLock(Entry* entry,
-                                  Entry::TriggerState new_trigger_state)
+  void AddTriggeredNoLock(Entry* entry) MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex());
+  void RemoveTriggeredNoLock(Entry* entry)
       MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex());
-  void RemovePossiblyTriggeredNoLock(Entry* entry)
-      MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex());
-
-  // Set when in the middle of a wait set operation (i.e., |WaitSet...Impl()|)
-  // with |mutex()| *unlocked*; if attempted (on a different thread), other wait
-  // set operations should report "busy". Note: Even if |is_busy_| is true, the
-  // wait set may still be closed.
-  bool is_busy_ MOJO_GUARDED_BY(mutex()) = false;
 
   // Map of cookies to entries.
   using CookieToEntryMap = std::map<uint64_t, std::unique_ptr<Entry>>;
   CookieToEntryMap entries_ MOJO_GUARDED_BY(mutex());
 
-  // Intrusive "doubly linked list" (via cookies) of entries that are possibly
-  // satisfied.
-  Entry* possibly_triggered_head_ MOJO_GUARDED_BY(mutex()) = nullptr;
-  Entry* possibly_triggered_tail_ MOJO_GUARDED_BY(mutex()) = nullptr;
+  // Intrusive "doubly linked list" (via cookies) of entries that are triggered.
+  Entry* triggered_head_ MOJO_GUARDED_BY(mutex()) = nullptr;
+  Entry* triggered_tail_ MOJO_GUARDED_BY(mutex()) = nullptr;
   // Size of the above list.
-  size_t possibly_triggered_count_ MOJO_GUARDED_BY(mutex()) = 0u;
+  size_t triggered_count_ MOJO_GUARDED_BY(mutex()) = 0u;
 
   MOJO_DISALLOW_COPY_AND_ASSIGN(WaitSetDispatcher);
 };
