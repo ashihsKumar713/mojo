@@ -318,7 +318,6 @@ func NewInterfaceTemplate(fileGraph *mojom_files.MojomFileGraph, mojomInterface 
 // around |fileGraph| all over the place.
 func NewStructTemplate(fileGraph *mojom_files.MojomFileGraph,
 	mojomStruct *mojom_types.MojomStruct) StructTemplate {
-
 	// Sort fields by packing order (by offset,bit).
 	sortedFields := mojomStruct.Fields
 	sort.Sort(MojomSortableStructFields(sortedFields))
@@ -447,8 +446,8 @@ func getPaddingAfter(fields []mojom_types.StructField, i int, fileGraph *mojom_f
 
 	// Calculate the remaining padding for the last field
 	if i == len(fields)-1 {
-		// m = offset % kAlignment
-		m := fields[i].Offset & uint32(kAlignment-1)
+		// m = (field offset + field size) % kAlignment
+		m := (fields[i].Offset + uint32(mojomTypeSize(fields[i].Type, fileGraph))) & uint32(kAlignment-1)
 		if m != 0 {
 			return kAlignment - int(m)
 		}

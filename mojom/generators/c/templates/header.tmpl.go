@@ -26,11 +26,14 @@ const GenerateHeaderFile = `
 #include "mojo/public/c/bindings/string.h"
 #include "mojo/public/c/bindings/validation.h"
 #include "mojo/public/c/system/handle.h"
+#include "mojo/public/c/system/macros.h"
 
 // Imports.
 {{range $import := .Imports -}}
 #include "{{$import}}"
 {{end}}
+
+MOJO_BEGIN_EXTERN_C
 
 // Forward declarations for structs.
 {{range $struct := .Structs -}}
@@ -58,7 +61,7 @@ MOJO_STATIC_ASSERT(sizeof(union {{$union.Name}}Ptr) == 8,
 
 // Top level constants.
 {{range $const := .Constants -}}
-const {{$const.Type}} {{$const.Name}};
+extern const {{$const.Type}} {{$const.Name}};
 {{end}}
 
 // Top level enums.
@@ -83,6 +86,8 @@ const {{$const.Type}} {{$const.Name}};
 
 // Type tables declarations for structs and unions.
 {{template "GenerateTypeTableDeclarations" .TypeTable}}
+
+MOJO_END_EXTERN_C
 
 #endif  // {{.HeaderGuard}}
 {{- end }}

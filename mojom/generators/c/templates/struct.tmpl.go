@@ -17,7 +17,7 @@ const GenerateStruct = `
 
 // Constants
 {{range $const := $struct.Constants -}}
-const {{$const.Type}} {{$const.Name}};
+extern const {{$const.Type}} {{$const.Name}};
 {{end -}}
 
 // Struct definition

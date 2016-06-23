@@ -313,7 +313,7 @@ func mojomTypeSize(typ mojom_types.Type, fileGraph *mojom_files.MojomFileGraph) 
 }
 
 func referenceTypeSize(typ mojom_types.TypeReference, fileGraph *mojom_files.MojomFileGraph) int {
-	if typ.Nullable || typ.IsInterfaceRequest {
+	if typ.IsInterfaceRequest {
 		return 8
 	}
 
