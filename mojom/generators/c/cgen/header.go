@@ -456,5 +456,5 @@ func getPaddingAfter(fields []mojom_types.StructField, i int, fileGraph *mojom_f
 
 	// (next element's offset)
 	//  - (current element's offset + current element's size)
-	return intmax(int(fields[i+1].Offset)-(int(fields[i].Offset)+mojomTypeSize(fields[i].Type, fileGraph)), 0)
+	return intmax(int(fields[i+1].Offset-(fields[i].Offset+uint32(mojomTypeSize(fields[i].Type, fileGraph)))), 0)
 }
