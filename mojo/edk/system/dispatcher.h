@@ -193,9 +193,9 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
   // also be woken up when it becomes impossible for the object to ever satisfy
   // |signals| with a suitable error status.
   //
-  // If |force| is true, the awakable will be added even if |signals| is already
-  // satisfied or is never-satisfiable (if it is possible that some other change
-  // will cause it to become satisfiable again).
+  // If |persistent| is true, the awakable will be added even if |signals| is
+  // already satisfied or is never-satisfiable (if it is possible that some
+  // other change will cause it to become satisfiable again).
   //
   // If |signals_state| is non-null, |*signals_state| will be set to the current
   // handle signals state.
@@ -209,14 +209,14 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
   // Returns:
   //  - |MOJO_RESULT_OK| if the awakable was added;
   //  - |MOJO_RESULT_ALREADY_EXISTS| if |signals| is already satisfied (if
-  //    |force| is true, the awakable will still be added);
+  //    |persistent| is true, the awakable will still be added);
   //  - |MOJO_RESULT_INVALID_ARGUMENT| if the dispatcher has been closed; and
   //  - |MOJO_RESULT_FAILED_PRECONDITION| if it is not (or no longer) possible
-  //    that |signals| will ever be satisfied(if |force| is true, the awakable
-  //    will still be added).
+  //    that |signals| will ever be satisfied(if |persistent| is true, the
+  //    awakable will still be added).
   MojoResult AddAwakable(Awakable* awakable,
                          uint64_t context,
-                         bool force,
+                         bool persistent,
                          MojoHandleSignals signals,
                          HandleSignalsState* signals_state);
   // Removes an awakable from this dispatcher. This will remove all instances
@@ -400,7 +400,7 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
       MOJO_SHARED_LOCKS_REQUIRED(mutex_);
   virtual MojoResult AddAwakableImplNoLock(Awakable* awakable,
                                            uint64_t context,
-                                           bool force,
+                                           bool persistent,
                                            MojoHandleSignals signals,
                                            HandleSignalsState* signals_state)
       MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex_);

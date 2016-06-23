@@ -18,10 +18,15 @@
 namespace mojo {
 namespace system {
 
-// IMPORTANT (all-caps gets your attention, right?): |Waiter| methods are called
-// under other locks, in particular, |Dispatcher::lock_|s, so |Waiter| methods
-// must never call out to other objects (in particular, |Dispatcher|s). This
-// class is thread-safe.
+// An implementation of |Awakable| that is used for blocking waits. This should
+// be used in a non-persistent way (i.e., |Awake()| should be called at most
+// once by each source, and only for "leading edges").
+//
+// IMPORTANT: |Waiter| methods are called under other locks, in particular,
+// |Dispatcher::lock_|s, so |Waiter| methods must never call out to other
+// objects (in particular, |Dispatcher|s).
+//
+// This class is thread-safe.
 class Waiter final : public Awakable {
  public:
   Waiter();
@@ -49,7 +54,7 @@ class Waiter final : public Awakable {
                   HandleSignalsState* signals_state);
 
   // |Awakable| implementation:
-  bool Awake(uint64_t context,
+  void Awake(uint64_t context,
              AwakeReason reason,
              const HandleSignalsState& signals_state) override;
 

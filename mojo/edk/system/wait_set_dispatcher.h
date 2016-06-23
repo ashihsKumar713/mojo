@@ -62,12 +62,7 @@ class WaitSetDispatcher final : public Dispatcher, public Awakable {
  private:
   // Represents an entry in the wait set.
   struct Entry {
-    enum class TriggerState {
-      NOT_TRIGGERED,
-      POSSIBLY_SATISFIED,
-      NEVER_SATISFIABLE,
-      CLOSED
-    };
+    enum class TriggerState { NOT_TRIGGERED, SATISFIED, UNSATISFIABLE, CLOSED };
 
     Entry(MojoHandleSignals signals, uint64_t cookie);
     ~Entry();
@@ -113,7 +108,7 @@ class WaitSetDispatcher final : public Dispatcher, public Awakable {
                              UserPointer<uint32_t> max_results) override;
 
   // |Awakable| implementation:
-  bool Awake(uint64_t context,
+  void Awake(uint64_t context,
              AwakeReason reason,
              const HandleSignalsState& signals_state) override;
 

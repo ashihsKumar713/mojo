@@ -24,18 +24,35 @@ void AwakableList::OnStateChange(const HandleSignalsState& old_state,
   // Instead of deleting elements in-place, swap them with the last element and
   // erase the elements from the end.
   auto last = awakables_.end();
-  for (AwakeInfoList::iterator it = awakables_.begin(); it != last;) {
-    bool keep = true;
-    if (new_state.satisfies(it->signals) && !old_state.satisfies(it->signals)) {
-      keep = it->awakable->Awake(it->context, Awakable::AwakeReason::SATISFIED,
-                                 new_state);
-    } else if (!new_state.can_satisfy(it->signals) &&
-               old_state.can_satisfy(it->signals)) {
-      keep = it->awakable->Awake(
-          it->context, Awakable::AwakeReason::UNSATISFIABLE, new_state);
+  for (auto it = awakables_.begin(); it != last;) {
+    bool awoken = false;
+    if (it->persistent) {
+      // Persistent awakables are called for all changes on watched signals.
+      if ((new_state.satisfied_signals & it->signals) !=
+              (old_state.satisfied_signals & it->signals) ||
+          (new_state.satisfiable_signals & it->signals) !=
+              (old_state.satisfiable_signals & it->signals)) {
+        awoken = true;
+        it->awakable->Awake(it->context, Awakable::AwakeReason::CHANGED,
+                            new_state);
+      }
+    } else {
+      // One-shot awakables are only called on "leading edge" changes.
+      if (new_state.satisfies(it->signals) &&
+          !old_state.satisfies(it->signals)) {
+        awoken = true;
+        it->awakable->Awake(it->context, Awakable::AwakeReason::SATISFIED,
+                            new_state);
+      } else if (!new_state.can_satisfy(it->signals) &&
+                 old_state.can_satisfy(it->signals)) {
+        awoken = true;
+        it->awakable->Awake(it->context, Awakable::AwakeReason::UNSATISFIABLE,
+                            new_state);
+      }
     }
 
-    if (!keep) {
+    // Remove if the awakable was awoken and one-shot.
+    if (awoken && !it->persistent) {
       --last;
       std::swap(*it, *last);
     } else {
@@ -45,9 +62,8 @@ void AwakableList::OnStateChange(const HandleSignalsState& old_state,
   awakables_.erase(last, awakables_.end());
 }
 
-void AwakableList::CancelAll() {
-  for (AwakeInfoList::iterator it = awakables_.begin(); it != awakables_.end();
-       ++it) {
+void AwakableList::CancelAndRemoveAll() {
+  for (auto it = awakables_.begin(); it != awakables_.end(); ++it) {
     it->awakable->Awake(it->context, Awakable::AwakeReason::CANCELLED,
                         HandleSignalsState());
   }
@@ -56,8 +72,9 @@ void AwakableList::CancelAll() {
 
 void AwakableList::Add(Awakable* awakable,
                        uint64_t context,
+                       bool persistent,
                        MojoHandleSignals signals) {
-  awakables_.push_back(AwakeInfo(awakable, signals, context));
+  awakables_.push_back(AwakeInfo(awakable, context, persistent, signals));
 }
 
 void AwakableList::Remove(bool match_context,

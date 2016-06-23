@@ -18,6 +18,8 @@ MojoResult Awakable::MojoResultForAwakeReason(AwakeReason reason) {
       return MOJO_RESULT_FAILED_PRECONDITION;
     case AwakeReason::CANCELLED:
       return MOJO_RESULT_CANCELLED;
+    case AwakeReason::CHANGED:
+      break;
   }
   NOTREACHED();
   return MOJO_RESULT_INTERNAL;

@@ -197,12 +197,9 @@ MojoResult WaitSetDispatcher::WaitSetAddImpl(
 
   if (result == MOJO_RESULT_ALREADY_EXISTS) {
     // It was added, but the wait condition is already satisfied.
-    AddPossiblyTriggeredNoLock(entry, Entry::TriggerState::POSSIBLY_SATISFIED);
+    AddPossiblyTriggeredNoLock(entry, Entry::TriggerState::SATISFIED);
   } else if (result == MOJO_RESULT_FAILED_PRECONDITION) {
-    // The condition is never-satisfiable. Leave a zombie entry (i.e., leave
-    // |dispatcher| null).
-    mutex().Unlock();
-    return MOJO_RESULT_OK;
+    AddPossiblyTriggeredNoLock(entry, Entry::TriggerState::UNSATISFIABLE);
   } else if (result != MOJO_RESULT_OK) {
     size_t num_erased = entries_.erase(cookie);
     DCHECK_EQ(num_erased, 1u);
@@ -260,7 +257,7 @@ MojoResult WaitSetDispatcher::WaitSetWaitImpl(
   return MOJO_RESULT_UNIMPLEMENTED;
 }
 
-bool WaitSetDispatcher::Awake(uint64_t context,
+void WaitSetDispatcher::Awake(uint64_t context,
                               AwakeReason reason,
                               const HandleSignalsState& signals_state) {
   MutexLocker locker(&mutex());
@@ -268,54 +265,51 @@ bool WaitSetDispatcher::Awake(uint64_t context,
   if (is_closed_no_lock()) {
     // See |CloseImplNoLock()|: This case may occur while we're unlocked in
     // |CloseImplNoLock()| (after that, we will have been removed from all the
-    // awakable lists, so |Awake()| should no longer be called). We may as well
-    // return false here, which will automatically remove ourselves from the
-    // awakable list (|CloseImplNoLock()| will call |RemoveAwakable()| anyway,
-    // but that's OK).
-    return false;
+    // awakable lists, so |Awake()| should no longer be called).
+    return;
   }
 
   auto it = entries_.find(context);
   DCHECK(it != entries_.end());
   const auto& entry = it->second;
+  // We should only ever get at most one "closed" (cancelled).
+  DCHECK_NE(static_cast<int>(entry->trigger_state),
+            static_cast<int>(Entry::TriggerState::CLOSED));
   switch (reason) {
     case AwakeReason::SATISFIED:
-      if (entry->trigger_state == Entry::TriggerState::NOT_TRIGGERED) {
-        AddPossiblyTriggeredNoLock(entry.get(),
-                                   Entry::TriggerState::POSSIBLY_SATISFIED);
-      }
-      return true;
     case AwakeReason::UNSATISFIABLE:
-      // Never satisfiable.
-      if (entry->trigger_state == Entry::TriggerState::NOT_TRIGGERED) {
-        AddPossiblyTriggeredNoLock(entry.get(),
-                                   Entry::TriggerState::NEVER_SATISFIABLE);
-      } else {
-        if (entry->trigger_state == Entry::TriggerState::POSSIBLY_SATISFIED) {
-          entry->trigger_state = Entry::TriggerState::NEVER_SATISFIABLE;
+      // We shouldn't see these since we're used as a persistent |Awakable|.
+      NOTREACHED();
+    // Fall through.
+    case AwakeReason::CHANGED:
+      if (signals_state.satisfies(entry->signals)) {
+        if (entry->trigger_state == Entry::TriggerState::NOT_TRIGGERED) {
+          AddPossiblyTriggeredNoLock(entry.get(),
+                                     Entry::TriggerState::SATISFIED);
         } else {
-          // It's possible to get repeated "never satisfiable" triggers, but we
-          // shouldn't get anything after "closed".
-          DCHECK_NE(static_cast<int>(entry->trigger_state),
-                    static_cast<int>(Entry::TriggerState::CLOSED));
+          entry->trigger_state = Entry::TriggerState::SATISFIED;
         }
+      } else if (!signals_state.can_satisfy(entry->signals)) {
+        if (entry->trigger_state == Entry::TriggerState::NOT_TRIGGERED) {
+          AddPossiblyTriggeredNoLock(entry.get(),
+                                     Entry::TriggerState::UNSATISFIABLE);
+        } else {
+          entry->trigger_state = Entry::TriggerState::UNSATISFIABLE;
+        }
+      } else {
+        if (entry->trigger_state != Entry::TriggerState::NOT_TRIGGERED)
+          RemovePossiblyTriggeredNoLock(entry.get());
       }
-      // Due to some action on some other thread, it may become satisfiable
-      // again, so continue to be awoken.
-      return true;
+      break;
     case AwakeReason::CANCELLED:
       if (entry->trigger_state == Entry::TriggerState::NOT_TRIGGERED) {
         AddPossiblyTriggeredNoLock(entry.get(), Entry::TriggerState::CLOSED);
       } else {
-        // We should only ever get at most one "closed".
-        DCHECK_NE(static_cast<int>(entry->trigger_state),
-                  static_cast<int>(Entry::TriggerState::CLOSED));
         entry->trigger_state = Entry::TriggerState::CLOSED;
       }
       entry->dispatcher = nullptr;
-      return false;
+      break;
   }
-  return false;
 }
 
 void WaitSetDispatcher::AddPossiblyTriggeredNoLock(

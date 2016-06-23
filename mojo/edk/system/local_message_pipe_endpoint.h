@@ -39,7 +39,7 @@ class LocalMessagePipeEndpoint final : public MessagePipeEndpoint {
   HandleSignalsState GetHandleSignalsState() const override;
   MojoResult AddAwakable(Awakable* awakable,
                          uint64_t context,
-                         bool force,
+                         bool persistent,
                          MojoHandleSignals signals,
                          HandleSignalsState* signals_state) override;
   void RemoveAwakable(bool match_context,

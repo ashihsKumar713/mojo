@@ -98,7 +98,7 @@ class MessagePipeDispatcher final : public Dispatcher {
   HandleSignalsState GetHandleSignalsStateImplNoLock() const override;
   MojoResult AddAwakableImplNoLock(Awakable* awakable,
                                    uint64_t context,
-                                   bool force,
+                                   bool persistent,
                                    MojoHandleSignals signals,
                                    HandleSignalsState* signals_state) override;
   void RemoveAwakableImplNoLock(bool match_context,

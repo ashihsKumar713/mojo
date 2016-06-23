@@ -65,7 +65,7 @@ void LocalMessagePipeEndpoint::Close() {
 
 void LocalMessagePipeEndpoint::CancelAllState() {
   DCHECK(is_open_);
-  awakable_list_.CancelAll();
+  awakable_list_.CancelAndRemoveAll();
 }
 
 MojoResult LocalMessagePipeEndpoint::ReadMessage(
@@ -151,7 +151,7 @@ HandleSignalsState LocalMessagePipeEndpoint::GetHandleSignalsState() const {
 MojoResult LocalMessagePipeEndpoint::AddAwakable(
     Awakable* awakable,
     uint64_t context,
-    bool force,
+    bool persistent,
     MojoHandleSignals signals,
     HandleSignalsState* signals_state) {
   DCHECK(is_open_);
@@ -160,17 +160,17 @@ MojoResult LocalMessagePipeEndpoint::AddAwakable(
   if (signals_state)
     *signals_state = state;
   if (state.satisfies(signals)) {
-    if (force)
-      awakable_list_.Add(awakable, context, signals);
+    if (persistent)
+      awakable_list_.Add(awakable, context, persistent, signals);
     return MOJO_RESULT_ALREADY_EXISTS;
   }
   if (!state.can_satisfy(signals)) {
-    if (force)
-      awakable_list_.Add(awakable, context, signals);
+    if (persistent)
+      awakable_list_.Add(awakable, context, persistent, signals);
     return MOJO_RESULT_FAILED_PRECONDITION;
   }
 
-  awakable_list_.Add(awakable, context, signals);
+  awakable_list_.Add(awakable, context, persistent, signals);
   return MOJO_RESULT_OK;
 }
 

@@ -67,7 +67,7 @@ class MessagePipeEndpoint {
   virtual HandleSignalsState GetHandleSignalsState() const;
   virtual MojoResult AddAwakable(Awakable* awakable,
                                  uint64_t context,
-                                 bool force,
+                                 bool persistent,
                                  MojoHandleSignals signals,
                                  HandleSignalsState* signals_state);
   virtual void RemoveAwakable(bool match_context,

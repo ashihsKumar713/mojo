@@ -30,9 +30,9 @@ TEST(AwakableListTest, BasicCancel) {
   {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread(&result, &context);
-    awakable_list.Add(thread.waiter(), 1, MOJO_HANDLE_SIGNAL_READABLE);
+    awakable_list.Add(thread.waiter(), 1, false, MOJO_HANDLE_SIGNAL_READABLE);
     thread.Start();
-    awakable_list.CancelAll();
+    awakable_list.CancelAndRemoveAll();
     // Double-remove okay:
     awakable_list.Remove(false, thread.waiter(), 0);
   }  // Join |thread|.
@@ -43,8 +43,8 @@ TEST(AwakableListTest, BasicCancel) {
   {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread(&result, &context);
-    awakable_list.Add(thread.waiter(), 2, MOJO_HANDLE_SIGNAL_WRITABLE);
-    awakable_list.CancelAll();
+    awakable_list.Add(thread.waiter(), 2, false, MOJO_HANDLE_SIGNAL_WRITABLE);
+    awakable_list.CancelAndRemoveAll();
     thread.Start();
   }  // Join |thread|.
   EXPECT_EQ(MOJO_RESULT_CANCELLED, result);
@@ -54,10 +54,10 @@ TEST(AwakableListTest, BasicCancel) {
   {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread(&result, &context);
-    awakable_list.Add(thread.waiter(), 3, MOJO_HANDLE_SIGNAL_READABLE);
+    awakable_list.Add(thread.waiter(), 3, false, MOJO_HANDLE_SIGNAL_READABLE);
     thread.Start();
     ThreadSleep(2 * test::EpsilonTimeout());
-    awakable_list.CancelAll();
+    awakable_list.CancelAndRemoveAll();
   }  // Join |thread|.
   EXPECT_EQ(MOJO_RESULT_CANCELLED, result);
   EXPECT_EQ(3u, context);
@@ -71,7 +71,7 @@ TEST(AwakableListTest, BasicAwakeSatisfied) {
   {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread(&result, &context);
-    awakable_list.Add(thread.waiter(), 1, MOJO_HANDLE_SIGNAL_READABLE);
+    awakable_list.Add(thread.waiter(), 1, false, MOJO_HANDLE_SIGNAL_READABLE);
     thread.Start();
     awakable_list.OnStateChange(
         HandleSignalsState(
@@ -89,7 +89,7 @@ TEST(AwakableListTest, BasicAwakeSatisfied) {
   {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread(&result, &context);
-    awakable_list.Add(thread.waiter(), 2, MOJO_HANDLE_SIGNAL_WRITABLE);
+    awakable_list.Add(thread.waiter(), 2, false, MOJO_HANDLE_SIGNAL_WRITABLE);
     awakable_list.OnStateChange(
         HandleSignalsState(
             MOJO_HANDLE_SIGNAL_NONE,
@@ -109,7 +109,7 @@ TEST(AwakableListTest, BasicAwakeSatisfied) {
   {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread(&result, &context);
-    awakable_list.Add(thread.waiter(), 3, MOJO_HANDLE_SIGNAL_READABLE);
+    awakable_list.Add(thread.waiter(), 3, false, MOJO_HANDLE_SIGNAL_READABLE);
     thread.Start();
     ThreadSleep(2 * test::EpsilonTimeout());
     awakable_list.OnStateChange(
@@ -133,7 +133,7 @@ TEST(AwakableListTest, BasicAwakeUnsatisfiable) {
   {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread(&result, &context);
-    awakable_list.Add(thread.waiter(), 1, MOJO_HANDLE_SIGNAL_READABLE);
+    awakable_list.Add(thread.waiter(), 1, false, MOJO_HANDLE_SIGNAL_READABLE);
     thread.Start();
     awakable_list.OnStateChange(
         HandleSignalsState(
@@ -150,7 +150,7 @@ TEST(AwakableListTest, BasicAwakeUnsatisfiable) {
   {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread(&result, &context);
-    awakable_list.Add(thread.waiter(), 2, MOJO_HANDLE_SIGNAL_WRITABLE);
+    awakable_list.Add(thread.waiter(), 2, false, MOJO_HANDLE_SIGNAL_WRITABLE);
     awakable_list.OnStateChange(
         HandleSignalsState(
             MOJO_HANDLE_SIGNAL_NONE,
@@ -167,7 +167,7 @@ TEST(AwakableListTest, BasicAwakeUnsatisfiable) {
   {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread(&result, &context);
-    awakable_list.Add(thread.waiter(), 3, MOJO_HANDLE_SIGNAL_READABLE);
+    awakable_list.Add(thread.waiter(), 3, false, MOJO_HANDLE_SIGNAL_READABLE);
     thread.Start();
     ThreadSleep(2 * test::EpsilonTimeout());
     awakable_list.OnStateChange(
@@ -198,13 +198,13 @@ TEST(AwakableListTest, MultipleAwakables) {
   {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread1(&result1, &context1);
-    awakable_list.Add(thread1.waiter(), 1, MOJO_HANDLE_SIGNAL_READABLE);
+    awakable_list.Add(thread1.waiter(), 1, false, MOJO_HANDLE_SIGNAL_READABLE);
     thread1.Start();
     test::SimpleWaiterThread thread2(&result2, &context2);
-    awakable_list.Add(thread2.waiter(), 2, MOJO_HANDLE_SIGNAL_WRITABLE);
+    awakable_list.Add(thread2.waiter(), 2, false, MOJO_HANDLE_SIGNAL_WRITABLE);
     thread2.Start();
     ThreadSleep(2 * test::EpsilonTimeout());
-    awakable_list.CancelAll();
+    awakable_list.CancelAndRemoveAll();
   }  // Join threads.
   EXPECT_EQ(MOJO_RESULT_CANCELLED, result1);
   EXPECT_EQ(1u, context1);
@@ -215,10 +215,10 @@ TEST(AwakableListTest, MultipleAwakables) {
   {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread1(&result1, &context1);
-    awakable_list.Add(thread1.waiter(), 3, MOJO_HANDLE_SIGNAL_READABLE);
+    awakable_list.Add(thread1.waiter(), 3, false, MOJO_HANDLE_SIGNAL_READABLE);
     thread1.Start();
     test::SimpleWaiterThread thread2(&result2, &context2);
-    awakable_list.Add(thread2.waiter(), 4, MOJO_HANDLE_SIGNAL_WRITABLE);
+    awakable_list.Add(thread2.waiter(), 4, false, MOJO_HANDLE_SIGNAL_WRITABLE);
     thread2.Start();
     ThreadSleep(2 * test::EpsilonTimeout());
     awakable_list.OnStateChange(
@@ -229,7 +229,7 @@ TEST(AwakableListTest, MultipleAwakables) {
             MOJO_HANDLE_SIGNAL_READABLE,
             MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
     awakable_list.Remove(false, thread1.waiter(), 0);
-    awakable_list.CancelAll();
+    awakable_list.CancelAndRemoveAll();
   }  // Join threads.
   EXPECT_EQ(MOJO_RESULT_OK, result1);
   EXPECT_EQ(3u, context1);
@@ -240,10 +240,10 @@ TEST(AwakableListTest, MultipleAwakables) {
   {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread1(&result1, &context1);
-    awakable_list.Add(thread1.waiter(), 5, MOJO_HANDLE_SIGNAL_READABLE);
+    awakable_list.Add(thread1.waiter(), 5, false, MOJO_HANDLE_SIGNAL_READABLE);
     thread1.Start();
     test::SimpleWaiterThread thread2(&result2, &context2);
-    awakable_list.Add(thread2.waiter(), 6, MOJO_HANDLE_SIGNAL_WRITABLE);
+    awakable_list.Add(thread2.waiter(), 6, false, MOJO_HANDLE_SIGNAL_WRITABLE);
     thread2.Start();
     ThreadSleep(2 * test::EpsilonTimeout());
     awakable_list.OnStateChange(
@@ -253,7 +253,7 @@ TEST(AwakableListTest, MultipleAwakables) {
         HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE,
                            MOJO_HANDLE_SIGNAL_READABLE));
     awakable_list.Remove(false, thread2.waiter(), 0);
-    awakable_list.CancelAll();
+    awakable_list.CancelAndRemoveAll();
   }  // Join threads.
   EXPECT_EQ(MOJO_RESULT_CANCELLED, result1);
   EXPECT_EQ(5u, context1);
@@ -264,7 +264,7 @@ TEST(AwakableListTest, MultipleAwakables) {
   {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread1(&result1, &context1);
-    awakable_list.Add(thread1.waiter(), 7, MOJO_HANDLE_SIGNAL_READABLE);
+    awakable_list.Add(thread1.waiter(), 7, false, MOJO_HANDLE_SIGNAL_READABLE);
     thread1.Start();
 
     ThreadSleep(1 * test::EpsilonTimeout());
@@ -279,7 +279,7 @@ TEST(AwakableListTest, MultipleAwakables) {
             MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE));
 
     test::SimpleWaiterThread thread2(&result2, &context2);
-    awakable_list.Add(thread2.waiter(), 8, MOJO_HANDLE_SIGNAL_WRITABLE);
+    awakable_list.Add(thread2.waiter(), 8, false, MOJO_HANDLE_SIGNAL_WRITABLE);
     thread2.Start();
 
     ThreadSleep(1 * test::EpsilonTimeout());
@@ -297,11 +297,11 @@ TEST(AwakableListTest, MultipleAwakables) {
     ThreadSleep(1 * test::EpsilonTimeout());
 
     test::SimpleWaiterThread thread3(&result3, &context3);
-    awakable_list.Add(thread3.waiter(), 9, MOJO_HANDLE_SIGNAL_WRITABLE);
+    awakable_list.Add(thread3.waiter(), 9, false, MOJO_HANDLE_SIGNAL_WRITABLE);
     thread3.Start();
 
     test::SimpleWaiterThread thread4(&result4, &context4);
-    awakable_list.Add(thread4.waiter(), 10, MOJO_HANDLE_SIGNAL_READABLE);
+    awakable_list.Add(thread4.waiter(), 10, false, MOJO_HANDLE_SIGNAL_READABLE);
     thread4.Start();
 
     ThreadSleep(1 * test::EpsilonTimeout());
@@ -317,7 +317,7 @@ TEST(AwakableListTest, MultipleAwakables) {
     awakable_list.Remove(false, thread3.waiter(), 0);
 
     // Cancel #4.
-    awakable_list.CancelAll();
+    awakable_list.CancelAndRemoveAll();
   }  // Join threads.
   EXPECT_EQ(MOJO_RESULT_OK, result1);
   EXPECT_EQ(7u, context1);
@@ -336,8 +336,8 @@ TEST(AwakableListTest, RemoveMatchContext) {
   {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread(&result, &context);
-    awakable_list.Add(thread.waiter(), 1, MOJO_HANDLE_SIGNAL_READABLE);
-    awakable_list.Add(thread.waiter(), 2, MOJO_HANDLE_SIGNAL_READABLE);
+    awakable_list.Add(thread.waiter(), 1, false, MOJO_HANDLE_SIGNAL_READABLE);
+    awakable_list.Add(thread.waiter(), 2, false, MOJO_HANDLE_SIGNAL_READABLE);
     thread.Start();
     awakable_list.Remove(true, thread.waiter(), 2);
     awakable_list.OnStateChange(
@@ -358,8 +358,8 @@ TEST(AwakableListTest, RemoveMatchContext) {
   {
     AwakableList awakable_list;
     test::SimpleWaiterThread thread(&result, &context);
-    awakable_list.Add(thread.waiter(), 1, MOJO_HANDLE_SIGNAL_READABLE);
-    awakable_list.Add(thread.waiter(), 2, MOJO_HANDLE_SIGNAL_READABLE);
+    awakable_list.Add(thread.waiter(), 1, false, MOJO_HANDLE_SIGNAL_READABLE);
+    awakable_list.Add(thread.waiter(), 2, false, MOJO_HANDLE_SIGNAL_READABLE);
     thread.Start();
     awakable_list.Remove(true, thread.waiter(), 1);
     awakable_list.OnStateChange(
@@ -375,86 +375,69 @@ TEST(AwakableListTest, RemoveMatchContext) {
   EXPECT_EQ(2u, context);
 }
 
-class KeepAwakable : public Awakable {
+class TestAwakable : public Awakable {
  public:
-  KeepAwakable() : awake_count(0) {}
+  TestAwakable() {}
 
-  bool Awake(uint64_t context,
-             AwakeReason reason,
-             const HandleSignalsState& signals_state) override {
-    awake_count++;
-    return true;
-  }
-
-  int awake_count;
-
-  MOJO_DISALLOW_COPY_AND_ASSIGN(KeepAwakable);
-};
-
-class RemoveAwakable : public Awakable {
- public:
-  RemoveAwakable() : awake_count(0) {}
-
-  bool Awake(uint64_t /*context*/,
+  void Awake(uint64_t /*context*/,
              AwakeReason /*reason*/,
              const HandleSignalsState& /*signals_state*/) override {
     awake_count++;
-    return false;
   }
 
-  int awake_count;
+  unsigned awake_count = 0;
 
-  MOJO_DISALLOW_COPY_AND_ASSIGN(RemoveAwakable);
+  MOJO_DISALLOW_COPY_AND_ASSIGN(TestAwakable);
 };
 
-TEST(AwakableListTest, KeepAwakablesReturningTrue) {
-  KeepAwakable keep0;
-  KeepAwakable keep1;
-  RemoveAwakable remove0;
-  RemoveAwakable remove1;
-  RemoveAwakable remove2;
+TEST(AwakableListTest, PersistentVsNonPersistent) {
+  TestAwakable persistent0;
+  TestAwakable persistent1;
+  TestAwakable oneshot0;
+  TestAwakable oneshot1;
+  TestAwakable oneshot2;
 
   AwakableList remove_all;
-  remove_all.Add(&remove0, 0, MOJO_HANDLE_SIGNAL_WRITABLE);
-  remove_all.Add(&remove1, 0, MOJO_HANDLE_SIGNAL_WRITABLE);
+  remove_all.Add(&oneshot0, 0, false, MOJO_HANDLE_SIGNAL_WRITABLE);
+  remove_all.Add(&oneshot1, 0, false, MOJO_HANDLE_SIGNAL_WRITABLE);
 
   remove_all.OnStateChange(
       HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE),
       HandleSignalsState(MOJO_HANDLE_SIGNAL_WRITABLE,
                          MOJO_HANDLE_SIGNAL_WRITABLE));
-  EXPECT_EQ(remove0.awake_count, 1);
-  EXPECT_EQ(remove1.awake_count, 1);
+  EXPECT_EQ(oneshot0.awake_count, 1u);
+  EXPECT_EQ(oneshot1.awake_count, 1u);
 
   remove_all.OnStateChange(
       HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE),
       HandleSignalsState(MOJO_HANDLE_SIGNAL_WRITABLE,
                          MOJO_HANDLE_SIGNAL_WRITABLE));
-  EXPECT_EQ(remove0.awake_count, 1);
-  EXPECT_EQ(remove1.awake_count, 1);
+  EXPECT_EQ(oneshot0.awake_count, 1u);
+  EXPECT_EQ(oneshot1.awake_count, 1u);
 
   AwakableList remove_first;
-  remove_first.Add(&remove2, 0, MOJO_HANDLE_SIGNAL_WRITABLE);
-  remove_first.Add(&keep0, 0, MOJO_HANDLE_SIGNAL_WRITABLE);
-  remove_first.Add(&keep1, 0, MOJO_HANDLE_SIGNAL_WRITABLE);
+  remove_first.Add(&oneshot2, 0, false, MOJO_HANDLE_SIGNAL_WRITABLE);
+  remove_first.Add(&persistent0, 0, true, MOJO_HANDLE_SIGNAL_WRITABLE);
+  remove_first.Add(&persistent1, 0, true, MOJO_HANDLE_SIGNAL_WRITABLE);
 
   remove_first.OnStateChange(
       HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE),
       HandleSignalsState(MOJO_HANDLE_SIGNAL_WRITABLE,
                          MOJO_HANDLE_SIGNAL_WRITABLE));
-  EXPECT_EQ(keep0.awake_count, 1);
-  EXPECT_EQ(keep1.awake_count, 1);
-  EXPECT_EQ(remove2.awake_count, 1);
+  EXPECT_EQ(persistent0.awake_count, 1u);
+  EXPECT_EQ(persistent1.awake_count, 1u);
+  EXPECT_EQ(oneshot2.awake_count, 1u);
 
   remove_first.OnStateChange(
       HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE),
       HandleSignalsState(MOJO_HANDLE_SIGNAL_WRITABLE,
                          MOJO_HANDLE_SIGNAL_WRITABLE));
-  EXPECT_EQ(keep0.awake_count, 2);
-  EXPECT_EQ(keep1.awake_count, 2);
-  EXPECT_EQ(remove2.awake_count, 1);
+  EXPECT_EQ(persistent0.awake_count, 2u);
+  EXPECT_EQ(persistent1.awake_count, 2u);
+  EXPECT_EQ(oneshot2.awake_count, 1u);
 
-  remove_first.Remove(false, &keep0, 0);
-  remove_first.Remove(false, &keep1, 0);
+  remove_first.Remove(false, &persistent0, 0);
+  remove_first.Remove(false, &persistent1, 0);
 }
 
 }  // namespace

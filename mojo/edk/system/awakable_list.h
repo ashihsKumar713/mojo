@@ -32,10 +32,27 @@ class AwakableList {
 
   void OnStateChange(const HandleSignalsState& old_state,
                      const HandleSignalsState& new_state);
-  void CancelAll();
+  // This will awake all awakables with |Awakable::AwakeReason::CANCELLED|, and
+  // remove all awakes.
+  void CancelAndRemoveAll();
 
   // Adds an awakable, identified by its pointer and its context.
-  void Add(Awakable* awakable, uint64_t context, MojoHandleSignals signals);
+  //
+  // An awakable may either be persistent or one-shot (non-persistent).
+  //   - A one-shot's |Awake()| will be called at most once per |Add()|, and
+  //     will only be called if a watched signal goes from unsatisfied to
+  //     satisfied (|Awake()| will be called with reason
+  //     |Awakable::AwakeReason::SATISFIED|), all watched signals become
+  //     never-satisfiable (|Awakable::AwakeReason::UNSATISFIABLE|), or
+  //     |CancelAndRemoveAll()| is called (|Awakable::AwakeReason::CANCELLED|).
+  //   - A persistent awakable's |Awake()| will be called for all state changes
+  //     on watched signals (with reason |Awakable::AwakeReason::CHANGED|) until
+  //     |CancelAndRemoveAll()| is called (at which point its |Awake()| will be
+  //     called a final time with reason |Awakable::AwakeReason::CANCELLED|).
+  void Add(Awakable* awakable,
+           uint64_t context,
+           bool persistent,
+           MojoHandleSignals signals);
 
   // Removes all awakables matching the given pointer and, if |match_context| is
   // true, the given context.
@@ -43,12 +60,19 @@ class AwakableList {
 
  private:
   struct AwakeInfo {
-    AwakeInfo(Awakable* awakable, MojoHandleSignals signals, uint64_t context)
-        : awakable(awakable), signals(signals), context(context) {}
+    AwakeInfo(Awakable* awakable,
+              uint64_t context,
+              bool persistent,
+              MojoHandleSignals signals)
+        : awakable(awakable),
+          context(context),
+          persistent(persistent),
+          signals(signals) {}
 
     Awakable* awakable;
-    MojoHandleSignals signals;
     uint64_t context;
+    bool persistent;
+    MojoHandleSignals signals;
   };
   using AwakeInfoList = std::vector<AwakeInfo>;
 

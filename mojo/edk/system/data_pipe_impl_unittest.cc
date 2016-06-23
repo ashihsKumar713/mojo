@@ -141,10 +141,10 @@ class DataPipeImplTest : public testing::Test {
   }
   MojoResult ProducerAddAwakable(Awakable* awakable,
                                  uint64_t context,
-                                 bool force,
+                                 bool persistent,
                                  MojoHandleSignals signals,
                                  HandleSignalsState* signals_state) {
-    return dpp()->ProducerAddAwakable(awakable, context, force, signals,
+    return dpp()->ProducerAddAwakable(awakable, context, persistent, signals,
                                       signals_state);
   }
   void ProducerRemoveAwakable(bool match_context,
@@ -184,10 +184,10 @@ class DataPipeImplTest : public testing::Test {
   }
   MojoResult ConsumerAddAwakable(Awakable* awakable,
                                  uint64_t context,
-                                 bool force,
+                                 bool persistent,
                                  MojoHandleSignals signals,
                                  HandleSignalsState* signals_state) {
-    return dpc()->ConsumerAddAwakable(awakable, context, force, signals,
+    return dpc()->ConsumerAddAwakable(awakable, context, persistent, signals,
                                       signals_state);
   }
   void ConsumerRemoveAwakable(bool match_context,

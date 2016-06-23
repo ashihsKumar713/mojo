@@ -393,7 +393,7 @@ HandleSignalsState DataPipe::ProducerGetHandleSignalsState() {
 
 MojoResult DataPipe::ProducerAddAwakable(Awakable* awakable,
                                          uint64_t context,
-                                         bool force,
+                                         bool persistent,
                                          MojoHandleSignals signals,
                                          HandleSignalsState* signals_state) {
   MutexLocker locker(&mutex_);
@@ -403,17 +403,17 @@ MojoResult DataPipe::ProducerAddAwakable(Awakable* awakable,
   if (signals_state)
     *signals_state = producer_state;
   if (producer_state.satisfies(signals)) {
-    if (force)
-      producer_awakable_list_->Add(awakable, context, signals);
+    if (persistent)
+      producer_awakable_list_->Add(awakable, context, persistent, signals);
     return MOJO_RESULT_ALREADY_EXISTS;
   }
   if (!producer_state.can_satisfy(signals)) {
-    if (force)
-      producer_awakable_list_->Add(awakable, context, signals);
+    if (persistent)
+      producer_awakable_list_->Add(awakable, context, persistent, signals);
     return MOJO_RESULT_FAILED_PRECONDITION;
   }
 
-  producer_awakable_list_->Add(awakable, context, signals);
+  producer_awakable_list_->Add(awakable, context, persistent, signals);
   return MOJO_RESULT_OK;
 }
 
@@ -607,7 +607,7 @@ HandleSignalsState DataPipe::ConsumerGetHandleSignalsState() {
 
 MojoResult DataPipe::ConsumerAddAwakable(Awakable* awakable,
                                          uint64_t context,
-                                         bool force,
+                                         bool persistent,
                                          MojoHandleSignals signals,
                                          HandleSignalsState* signals_state) {
   MutexLocker locker(&mutex_);
@@ -617,17 +617,17 @@ MojoResult DataPipe::ConsumerAddAwakable(Awakable* awakable,
   if (signals_state)
     *signals_state = consumer_state;
   if (consumer_state.satisfies(signals)) {
-    if (force)
-      consumer_awakable_list_->Add(awakable, context, signals);
+    if (persistent)
+      consumer_awakable_list_->Add(awakable, context, persistent, signals);
     return MOJO_RESULT_ALREADY_EXISTS;
   }
   if (!consumer_state.can_satisfy(signals)) {
-    if (force)
-      consumer_awakable_list_->Add(awakable, context, signals);
+    if (persistent)
+      consumer_awakable_list_->Add(awakable, context, persistent, signals);
     return MOJO_RESULT_FAILED_PRECONDITION;
   }
 
-  consumer_awakable_list_->Add(awakable, context, signals);
+  consumer_awakable_list_->Add(awakable, context, persistent, signals);
   return MOJO_RESULT_OK;
 }
 
@@ -719,7 +719,7 @@ std::unique_ptr<DataPipeImpl> DataPipe::ReplaceImplNoLock(
 void DataPipe::ProducerCancelAllStateNoLock() {
   DCHECK(has_local_producer_no_lock());
   if (producer_awakable_list_)
-    producer_awakable_list_->CancelAll();
+    producer_awakable_list_->CancelAndRemoveAll();
   // Not a bug, except possibly in "user" code.
   DVLOG_IF(2, producer_in_two_phase_write_no_lock())
       << "Active two-phase write cancelled";
@@ -729,7 +729,7 @@ void DataPipe::ProducerCancelAllStateNoLock() {
 void DataPipe::ConsumerCancelAllStateNoLock() {
   DCHECK(has_local_consumer_no_lock());
   if (consumer_awakable_list_)
-    consumer_awakable_list_->CancelAll();
+    consumer_awakable_list_->CancelAndRemoveAll();
   // Not a bug, except possibly in "user" code.
   DVLOG_IF(2, consumer_in_two_phase_read_no_lock())
       << "Active two-phase read cancelled";
