@@ -76,8 +76,11 @@ void AwakableList::CancelAndRemoveAll() {
 void AwakableList::Add(Awakable* awakable,
                        uint64_t context,
                        bool persistent,
-                       MojoHandleSignals signals) {
+                       MojoHandleSignals signals,
+                       const HandleSignalsState& current_state) {
   awakables_.push_back(AwakeInfo(awakable, context, persistent, signals));
+  if (persistent)
+    awakable->Awake(context, Awakable::AwakeReason::INITIALIZE, current_state);
 }
 
 void AwakableList::Remove(bool match_context,

@@ -36,19 +36,18 @@ MojoResult SimpleDispatcher::AddAwakableImplNoLock(
   HandleSignalsState state(GetHandleSignalsStateImplNoLock());
   if (signals_state)
     *signals_state = state;
-  if (state.satisfies(signals)) {
-    if (persistent)
-      awakable_list_.Add(awakable, context, persistent, signals);
-    return MOJO_RESULT_ALREADY_EXISTS;
-  }
-  if (!state.can_satisfy(signals)) {
-    if (persistent)
-      awakable_list_.Add(awakable, context, persistent, signals);
-    return MOJO_RESULT_FAILED_PRECONDITION;
-  }
+  MojoResult rv = MOJO_RESULT_OK;
+  bool should_add = persistent;
+  if (state.satisfies(signals))
+    rv = MOJO_RESULT_ALREADY_EXISTS;
+  else if (!state.can_satisfy(signals))
+    rv = MOJO_RESULT_FAILED_PRECONDITION;
+  else
+    should_add = true;
 
-  awakable_list_.Add(awakable, context, persistent, signals);
-  return MOJO_RESULT_OK;
+  if (should_add)
+    awakable_list_.Add(awakable, context, persistent, signals, state);
+  return rv;
 }
 
 void SimpleDispatcher::RemoveAwakableImplNoLock(

@@ -12,12 +12,14 @@ namespace system {
 // static
 MojoResult Awakable::MojoResultForAwakeReason(AwakeReason reason) {
   switch (reason) {
+    case AwakeReason::CANCELLED:
+      return MOJO_RESULT_CANCELLED;
     case AwakeReason::SATISFIED:
       return MOJO_RESULT_OK;
     case AwakeReason::UNSATISFIABLE:
       return MOJO_RESULT_FAILED_PRECONDITION;
-    case AwakeReason::CANCELLED:
-      return MOJO_RESULT_CANCELLED;
+    case AwakeReason::INITIALIZE:
+      break;
     case AwakeReason::CHANGED:
       break;
   }

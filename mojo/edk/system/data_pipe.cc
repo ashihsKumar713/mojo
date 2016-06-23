@@ -402,19 +402,20 @@ MojoResult DataPipe::ProducerAddAwakable(Awakable* awakable,
   HandleSignalsState producer_state = impl_->ProducerGetHandleSignalsState();
   if (signals_state)
     *signals_state = producer_state;
-  if (producer_state.satisfies(signals)) {
-    if (persistent)
-      producer_awakable_list_->Add(awakable, context, persistent, signals);
-    return MOJO_RESULT_ALREADY_EXISTS;
-  }
-  if (!producer_state.can_satisfy(signals)) {
-    if (persistent)
-      producer_awakable_list_->Add(awakable, context, persistent, signals);
-    return MOJO_RESULT_FAILED_PRECONDITION;
-  }
+  MojoResult rv = MOJO_RESULT_OK;
+  bool should_add = persistent;
+  if (producer_state.satisfies(signals))
+    rv = MOJO_RESULT_ALREADY_EXISTS;
+  else if (!producer_state.can_satisfy(signals))
+    rv = MOJO_RESULT_FAILED_PRECONDITION;
+  else
+    should_add = true;
 
-  producer_awakable_list_->Add(awakable, context, persistent, signals);
-  return MOJO_RESULT_OK;
+  if (should_add) {
+    producer_awakable_list_->Add(awakable, context, persistent, signals,
+                                 producer_state);
+  }
+  return rv;
 }
 
 void DataPipe::ProducerRemoveAwakable(bool match_context,
@@ -616,19 +617,20 @@ MojoResult DataPipe::ConsumerAddAwakable(Awakable* awakable,
   HandleSignalsState consumer_state = impl_->ConsumerGetHandleSignalsState();
   if (signals_state)
     *signals_state = consumer_state;
-  if (consumer_state.satisfies(signals)) {
-    if (persistent)
-      consumer_awakable_list_->Add(awakable, context, persistent, signals);
-    return MOJO_RESULT_ALREADY_EXISTS;
-  }
-  if (!consumer_state.can_satisfy(signals)) {
-    if (persistent)
-      consumer_awakable_list_->Add(awakable, context, persistent, signals);
-    return MOJO_RESULT_FAILED_PRECONDITION;
-  }
+  MojoResult rv = MOJO_RESULT_OK;
+  bool should_add = persistent;
+  if (consumer_state.satisfies(signals))
+    rv = MOJO_RESULT_ALREADY_EXISTS;
+  else if (!consumer_state.can_satisfy(signals))
+    rv = MOJO_RESULT_FAILED_PRECONDITION;
+  else
+    should_add = true;
 
-  consumer_awakable_list_->Add(awakable, context, persistent, signals);
-  return MOJO_RESULT_OK;
+  if (should_add) {
+    consumer_awakable_list_->Add(awakable, context, persistent, signals,
+                                 consumer_state);
+  }
+  return rv;
 }
 
 void DataPipe::ConsumerRemoveAwakable(bool match_context,

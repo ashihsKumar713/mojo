@@ -45,14 +45,18 @@ class AwakableList {
   //     |Awakable::AwakeReason::SATISFIED|), all watched signals become
   //     never-satisfiable (|Awakable::AwakeReason::UNSATISFIABLE|), or
   //     |CancelAndRemoveAll()| is called (|Awakable::AwakeReason::CANCELLED|).
-  //   - A persistent awakable's |Awake()| will be called for all state changes
-  //     on watched signals (with reason |Awakable::AwakeReason::CHANGED|) until
-  //     |CancelAndRemoveAll()| is called (at which point its |Awake()| will be
-  //     called a final time with reason |Awakable::AwakeReason::CANCELLED|).
+  //   - A persistent awakable's |Awake()| will be called inside |Add()| (under
+  //     any mutex protecting the |AwakableList()| -- this is similar to
+  //     |OnStateChange()|) (with reason |Awakable::AwakeReason::INITIALIZE|),
+  //     and then subsequently for all state changes on watched signals
+  //     (|Awakable::AwakeReason::CHANGED|) until |CancelAndRemoveAll()| is
+  //     called (at which point its |Awake()| will be called a final time with
+  //     reason |Awakable::AwakeReason::CANCELLED|).
   void Add(Awakable* awakable,
            uint64_t context,
            bool persistent,
-           MojoHandleSignals signals);
+           MojoHandleSignals signals,
+           const HandleSignalsState& current_state);
 
   // Removes all awakables matching the given pointer and, if |match_context| is
   // true, the given context.

@@ -17,13 +17,26 @@ namespace system {
 // implementation that blocks while waiting to be awoken.
 class Awakable {
  public:
-  // See |AwakableList| (in particular its |Add()| method).
-  enum class AwakeReason { SATISFIED, UNSATISFIABLE, CANCELLED, CHANGED };
+  // See |AwakableList| (in particular its |Add()| method) for information about
+  // persistent versus one-shot awakables.
+  enum class AwakeReason {
+    // Sent to both persistent and one-shot awakables (after |Awake()| is
+    // called with this, it will no longer be called by the same source):
+    CANCELLED,
+    // Sent to one-shot awakables:
+    SATISFIED,
+    UNSATISFIABLE,
+    // Sent to persistent awakables:
+    INITIALIZE,
+    CHANGED,
+  };
 
   // Helper function that translates:
+  //   - |AwakeReason::CANCELLED| -> |MOJO_RESULT_CANCELLED|.
   //   - |AwakeReason::SATISFIED| -> |MOJO_RESULT_OK|,
   //   - |AwakeReason::UNSATISFIABLE| -> |MOJO_RESULT_FAILED_PRECONDITION|, and
-  //   - |AwakeReason::CANCELLED| -> |MOJO_RESULT_CANCELLED|.
+  //   - |AwakeReason::INITIALIZE| -> |MOJO_RESULT_INTERNAL| (this function
+  //     never be called with this reason).
   //   - |AwakeReason::CHANGED| -> |MOJO_RESULT_INTERNAL| (this function never
   //     be called with this reason).
   static MojoResult MojoResultForAwakeReason(AwakeReason reason);

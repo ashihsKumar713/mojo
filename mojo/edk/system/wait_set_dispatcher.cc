@@ -276,11 +276,23 @@ void WaitSetDispatcher::Awake(uint64_t context,
   DCHECK_NE(static_cast<int>(entry->trigger_state),
             static_cast<int>(Entry::TriggerState::CLOSED));
   switch (reason) {
+    case AwakeReason::CANCELLED:
+      if (entry->trigger_state == Entry::TriggerState::NOT_TRIGGERED) {
+        AddPossiblyTriggeredNoLock(entry.get(), Entry::TriggerState::CLOSED);
+      } else {
+        entry->trigger_state = Entry::TriggerState::CLOSED;
+      }
+      entry->dispatcher = nullptr;
+      break;
     case AwakeReason::SATISFIED:
     case AwakeReason::UNSATISFIABLE:
       // We shouldn't see these since we're used as a persistent |Awakable|.
       NOTREACHED();
-    // Fall through.
+      break;
+    case AwakeReason::INITIALIZE:
+      // TODO(vtl): Save the initial state here (and maybe add to the triggered
+      // list), and then update state on CHANGED.
+      break;
     case AwakeReason::CHANGED:
       if (signals_state.satisfies(entry->signals)) {
         if (entry->trigger_state == Entry::TriggerState::NOT_TRIGGERED) {
@@ -300,14 +312,6 @@ void WaitSetDispatcher::Awake(uint64_t context,
         if (entry->trigger_state != Entry::TriggerState::NOT_TRIGGERED)
           RemovePossiblyTriggeredNoLock(entry.get());
       }
-      break;
-    case AwakeReason::CANCELLED:
-      if (entry->trigger_state == Entry::TriggerState::NOT_TRIGGERED) {
-        AddPossiblyTriggeredNoLock(entry.get(), Entry::TriggerState::CLOSED);
-      } else {
-        entry->trigger_state = Entry::TriggerState::CLOSED;
-      }
-      entry->dispatcher = nullptr;
       break;
   }
 }
