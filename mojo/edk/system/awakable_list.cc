@@ -37,7 +37,10 @@ void AwakableList::OnStateChange(const HandleSignalsState& old_state,
                             new_state);
       }
     } else {
-      // One-shot awakables are only called on "leading edge" changes.
+      // One-shot awakables are only called on "leading edge" changes in overall
+      // satisfied-ness or never-satisfiable-ness. (That is, if a one-shot
+      // awakable was previously satisfied and is still satisfied, but for
+      // different reasons, it will not be called.)
       if (new_state.satisfies(it->signals) &&
           !old_state.satisfies(it->signals)) {
         awoken = true;

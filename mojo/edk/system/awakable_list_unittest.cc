@@ -22,7 +22,7 @@ namespace mojo {
 namespace system {
 namespace {
 
-TEST(AwakableListTest, BasicCancel) {
+TEST(AwakableListTest, BasicCancelAndRemoveAll) {
   MojoResult result;
   uint64_t context;
 
@@ -329,7 +329,7 @@ TEST(AwakableListTest, MultipleAwakables) {
   EXPECT_EQ(10u, context4);
 }
 
-TEST(AwakableListTest, RemoveMatchContext) {
+TEST(AwakableListTest, RemoveMatchContext1) {
   MojoResult result;
   uint64_t context;
 
@@ -379,65 +379,342 @@ class TestAwakable : public Awakable {
  public:
   TestAwakable() {}
 
-  void Awake(uint64_t /*context*/,
-             AwakeReason /*reason*/,
-             const HandleSignalsState& /*signals_state*/) override {
+  void Awake(uint64_t context,
+             AwakeReason reason,
+             const HandleSignalsState& signals_state) override {
     awake_count++;
+    last_context = context;
+    last_reason = reason;
+    last_state = signals_state;
   }
 
   unsigned awake_count = 0;
+  uint64_t last_context = static_cast<uint64_t>(-1);
+  AwakeReason last_reason = AwakeReason::CANCELLED;
+  HandleSignalsState last_state;
 
   MOJO_DISALLOW_COPY_AND_ASSIGN(TestAwakable);
 };
 
-TEST(AwakableListTest, PersistentVsNonPersistent) {
+TEST(AwakableListTest, PersistentVsOneShot1) {
+  AwakableList awakable_list;
   TestAwakable persistent0;
   TestAwakable persistent1;
   TestAwakable oneshot0;
   TestAwakable oneshot1;
-  TestAwakable oneshot2;
 
-  AwakableList remove_all;
-  remove_all.Add(&oneshot0, 0, false, MOJO_HANDLE_SIGNAL_WRITABLE);
-  remove_all.Add(&oneshot1, 0, false, MOJO_HANDLE_SIGNAL_WRITABLE);
+  awakable_list.Add(&persistent0, 100, true, MOJO_HANDLE_SIGNAL_WRITABLE);
+  awakable_list.Add(&persistent1, 101, true, MOJO_HANDLE_SIGNAL_WRITABLE);
+  awakable_list.Add(&oneshot0, 200, false, MOJO_HANDLE_SIGNAL_WRITABLE);
+  awakable_list.Add(&oneshot1, 201, false, MOJO_HANDLE_SIGNAL_WRITABLE);
+  EXPECT_EQ(persistent0.awake_count, 0u);
+  EXPECT_EQ(persistent1.awake_count, 0u);
+  EXPECT_EQ(oneshot0.awake_count, 0u);
+  EXPECT_EQ(oneshot1.awake_count, 0u);
 
-  remove_all.OnStateChange(
-      HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE),
-      HandleSignalsState(MOJO_HANDLE_SIGNAL_WRITABLE,
-                         MOJO_HANDLE_SIGNAL_WRITABLE));
-  EXPECT_EQ(oneshot0.awake_count, 1u);
-  EXPECT_EQ(oneshot1.awake_count, 1u);
-
-  remove_all.OnStateChange(
-      HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE),
-      HandleSignalsState(MOJO_HANDLE_SIGNAL_WRITABLE,
-                         MOJO_HANDLE_SIGNAL_WRITABLE));
-  EXPECT_EQ(oneshot0.awake_count, 1u);
-  EXPECT_EQ(oneshot1.awake_count, 1u);
-
-  AwakableList remove_first;
-  remove_first.Add(&oneshot2, 0, false, MOJO_HANDLE_SIGNAL_WRITABLE);
-  remove_first.Add(&persistent0, 0, true, MOJO_HANDLE_SIGNAL_WRITABLE);
-  remove_first.Add(&persistent1, 0, true, MOJO_HANDLE_SIGNAL_WRITABLE);
-
-  remove_first.OnStateChange(
+  awakable_list.OnStateChange(
       HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE),
       HandleSignalsState(MOJO_HANDLE_SIGNAL_WRITABLE,
                          MOJO_HANDLE_SIGNAL_WRITABLE));
   EXPECT_EQ(persistent0.awake_count, 1u);
+  EXPECT_EQ(persistent0.last_context, 100u);
+  EXPECT_EQ(persistent0.last_reason, Awakable::AwakeReason::CHANGED);
+  EXPECT_TRUE(persistent0.last_state.equals(HandleSignalsState(
+      MOJO_HANDLE_SIGNAL_WRITABLE, MOJO_HANDLE_SIGNAL_WRITABLE)));
   EXPECT_EQ(persistent1.awake_count, 1u);
-  EXPECT_EQ(oneshot2.awake_count, 1u);
+  EXPECT_EQ(persistent1.last_context, 101u);
+  EXPECT_EQ(persistent1.last_reason, Awakable::AwakeReason::CHANGED);
+  EXPECT_TRUE(persistent1.last_state.equals(HandleSignalsState(
+      MOJO_HANDLE_SIGNAL_WRITABLE, MOJO_HANDLE_SIGNAL_WRITABLE)));
+  EXPECT_EQ(oneshot0.awake_count, 1u);
+  EXPECT_EQ(oneshot0.last_context, 200u);
+  EXPECT_EQ(oneshot0.last_reason, Awakable::AwakeReason::SATISFIED);
+  EXPECT_TRUE(oneshot0.last_state.equals(HandleSignalsState(
+      MOJO_HANDLE_SIGNAL_WRITABLE, MOJO_HANDLE_SIGNAL_WRITABLE)));
+  EXPECT_EQ(oneshot1.awake_count, 1u);
+  EXPECT_EQ(oneshot1.last_context, 201u);
+  EXPECT_EQ(oneshot1.last_reason, Awakable::AwakeReason::SATISFIED);
+  EXPECT_TRUE(oneshot1.last_state.equals(HandleSignalsState(
+      MOJO_HANDLE_SIGNAL_WRITABLE, MOJO_HANDLE_SIGNAL_WRITABLE)));
 
-  remove_first.OnStateChange(
+  awakable_list.OnStateChange(
+      HandleSignalsState(MOJO_HANDLE_SIGNAL_WRITABLE,
+                         MOJO_HANDLE_SIGNAL_WRITABLE),
+      HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE));
+  EXPECT_EQ(persistent0.awake_count, 2u);
+  EXPECT_EQ(persistent0.last_context, 100u);
+  EXPECT_EQ(persistent0.last_reason, Awakable::AwakeReason::CHANGED);
+  EXPECT_TRUE(persistent0.last_state.equals(HandleSignalsState(
+      MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE)));
+  EXPECT_EQ(persistent1.awake_count, 2u);
+  EXPECT_EQ(persistent1.last_context, 101u);
+  EXPECT_EQ(persistent1.last_reason, Awakable::AwakeReason::CHANGED);
+  EXPECT_TRUE(persistent1.last_state.equals(HandleSignalsState(
+      MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE)));
+  EXPECT_EQ(oneshot0.awake_count, 1u);
+  EXPECT_EQ(oneshot1.awake_count, 1u);
+
+  awakable_list.OnStateChange(
       HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE),
       HandleSignalsState(MOJO_HANDLE_SIGNAL_WRITABLE,
                          MOJO_HANDLE_SIGNAL_WRITABLE));
+  EXPECT_EQ(persistent0.awake_count, 3u);
+  EXPECT_EQ(persistent0.last_context, 100u);
+  EXPECT_EQ(persistent0.last_reason, Awakable::AwakeReason::CHANGED);
+  EXPECT_TRUE(persistent0.last_state.equals(HandleSignalsState(
+      MOJO_HANDLE_SIGNAL_WRITABLE, MOJO_HANDLE_SIGNAL_WRITABLE)));
+  EXPECT_EQ(persistent1.awake_count, 3u);
+  EXPECT_EQ(persistent1.last_context, 101u);
+  EXPECT_EQ(persistent1.last_reason, Awakable::AwakeReason::CHANGED);
+  EXPECT_TRUE(persistent1.last_state.equals(HandleSignalsState(
+      MOJO_HANDLE_SIGNAL_WRITABLE, MOJO_HANDLE_SIGNAL_WRITABLE)));
+  EXPECT_EQ(oneshot0.awake_count, 1u);
+  EXPECT_EQ(oneshot1.awake_count, 1u);
+
+  awakable_list.Remove(false, &persistent0, 0);
+  awakable_list.Remove(false, &persistent1, 0);
+  EXPECT_EQ(persistent0.awake_count, 3u);
+  EXPECT_EQ(persistent1.awake_count, 3u);
+  EXPECT_EQ(oneshot0.awake_count, 1u);
+  EXPECT_EQ(oneshot1.awake_count, 1u);
+
+  awakable_list.OnStateChange(
+      HandleSignalsState(MOJO_HANDLE_SIGNAL_WRITABLE,
+                         MOJO_HANDLE_SIGNAL_WRITABLE),
+      HandleSignalsState(MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_WRITABLE));
+  EXPECT_EQ(persistent0.awake_count, 3u);
+  EXPECT_EQ(persistent1.awake_count, 3u);
+  EXPECT_EQ(oneshot0.awake_count, 1u);
+  EXPECT_EQ(oneshot1.awake_count, 1u);
+}
+
+// Checks carefully that persistent awakables see all changes whereas one-shot
+// awakables see only "leading edges".
+TEST(AwakableListTest, PersistentVsOneShot2) {
+  static constexpr MojoHandleSignals kNone = MOJO_HANDLE_SIGNAL_NONE;
+  static constexpr MojoHandleSignals kR = MOJO_HANDLE_SIGNAL_READABLE;
+  static constexpr MojoHandleSignals kW = MOJO_HANDLE_SIGNAL_WRITABLE;
+  static constexpr MojoHandleSignals kPC = MOJO_HANDLE_SIGNAL_PEER_CLOSED;
+
+  AwakableList awakable_list;
+  TestAwakable persistent;
+  TestAwakable oneshot;
+
+  // Starting state: Satisfied: None. Satisfiable: R | W | PC.
+  HandleSignalsState old_state(kNone, kR | kW | kPC);
+  HandleSignalsState new_state = old_state;
+
+  // Watch R and PC; we'll do the same for |oneshot|, but add/remove each time.
+  awakable_list.Add(&persistent, 123, true, kR | kPC);
+  EXPECT_EQ(persistent.awake_count, 0u);
+
+  // Satisfied: +R.
+  awakable_list.Add(&oneshot, 456, false, kR | kPC);
+  new_state.satisfied_signals |= kR;
+  awakable_list.OnStateChange(old_state, new_state);
+  old_state = new_state;
+  EXPECT_EQ(persistent.awake_count, 1u);
+  EXPECT_EQ(oneshot.awake_count, 1u);
+  EXPECT_EQ(oneshot.last_reason, Awakable::AwakeReason::SATISFIED);
+  awakable_list.Remove(true, &oneshot, 456);
+
+  // Satisfied: -R.
+  oneshot.awake_count = 0;
+  awakable_list.Add(&oneshot, 456, false, kR | kPC);
+  new_state.satisfied_signals &= ~kR;
+  awakable_list.OnStateChange(old_state, new_state);
+  old_state = new_state;
+  EXPECT_EQ(persistent.awake_count, 2u);
+  EXPECT_EQ(oneshot.awake_count, 0u);
+  awakable_list.Remove(true, &oneshot, 456);
+
+  // Satisfied: +W.
+  oneshot.awake_count = 0;
+  awakable_list.Add(&oneshot, 456, false, kR | kPC);
+  new_state.satisfied_signals |= kW;
+  awakable_list.OnStateChange(old_state, new_state);
+  old_state = new_state;
+  EXPECT_EQ(persistent.awake_count, 2u);
+  EXPECT_EQ(oneshot.awake_count, 0u);
+  awakable_list.Remove(true, &oneshot, 456);
+
+  // Satisfied: +PC -W.
+  oneshot.awake_count = 0;
+  awakable_list.Add(&oneshot, 456, false, kR | kPC);
+  new_state.satisfied_signals |= kPC;
+  new_state.satisfied_signals &= ~kW;
+  awakable_list.OnStateChange(old_state, new_state);
+  old_state = new_state;
+  EXPECT_EQ(persistent.awake_count, 3u);
+  EXPECT_EQ(oneshot.awake_count, 1u);
+  EXPECT_EQ(oneshot.last_reason, Awakable::AwakeReason::SATISFIED);
+  awakable_list.Remove(true, &oneshot, 456);
+
+  // Satisfied: +R -PC.
+  oneshot.awake_count = 0;
+  awakable_list.Add(&oneshot, 456, false, kR | kPC);
+  new_state.satisfied_signals |= kR;
+  new_state.satisfied_signals &= ~kPC;
+  awakable_list.OnStateChange(old_state, new_state);
+  old_state = new_state;
+  EXPECT_EQ(persistent.awake_count, 4u);
+  // It was previously satisfied and remains satisfied (for different reasons),
+  // so the one-shot does not observe this change.
+  EXPECT_EQ(oneshot.awake_count, 0u);
+  awakable_list.Remove(true, &oneshot, 456);
+
+  // Satisfiable: -PC.
+  oneshot.awake_count = 0;
+  awakable_list.Add(&oneshot, 456, false, kR | kPC);
+  new_state.satisfiable_signals &= ~kPC;
+  awakable_list.OnStateChange(old_state, new_state);
+  old_state = new_state;
+  EXPECT_EQ(persistent.awake_count, 5u);
+  EXPECT_EQ(oneshot.awake_count, 0u);
+  awakable_list.Remove(true, &oneshot, 456);
+
+  // Satisfiable: -W.
+  oneshot.awake_count = 0;
+  awakable_list.Add(&oneshot, 456, false, kR | kPC);
+  new_state.satisfiable_signals &= ~kW;
+  awakable_list.OnStateChange(old_state, new_state);
+  old_state = new_state;
+  EXPECT_EQ(persistent.awake_count, 5u);
+  EXPECT_EQ(oneshot.awake_count, 0u);
+  awakable_list.Remove(true, &oneshot, 456);
+
+  // Satisfied: -R. Satisfiable: -R.
+  oneshot.awake_count = 0;
+  awakable_list.Add(&oneshot, 456, false, kR | kPC);
+  new_state.satisfied_signals &= ~kR;
+  new_state.satisfiable_signals &= ~kR;
+  awakable_list.OnStateChange(old_state, new_state);
+  old_state = new_state;
+  EXPECT_EQ(persistent.awake_count, 6u);
+  // "Leading edge" for one-shot is "rising" for (overall) satisfied-ness and
+  // "falling" for (overall) satisfiability, so it's really picking up the -R in
+  // satisfiability here.
+  EXPECT_EQ(oneshot.awake_count, 1u);
+  EXPECT_EQ(oneshot.last_reason, Awakable::AwakeReason::UNSATISFIABLE);
+  awakable_list.Remove(true, &oneshot, 456);
+
+  // Satisfiable: +R:
+  oneshot.awake_count = 0;
+  awakable_list.Add(&oneshot, 456, false, kR | kPC);
+  new_state.satisfiable_signals |= kR;
+  awakable_list.OnStateChange(old_state, new_state);
+  old_state = new_state;
+  EXPECT_EQ(persistent.awake_count, 7u);
+  // And the one-shot doesn't pick up the +R in satisfiability here.
+  EXPECT_EQ(oneshot.awake_count, 0u);
+  awakable_list.Remove(true, &oneshot, 456);
+
+  awakable_list.Remove(true, &persistent, 123);
+  EXPECT_EQ(persistent.awake_count, 7u);
+}
+
+TEST(AwakableListTest, RemoveNoMatchContext) {
+  static constexpr MojoHandleSignals kNone = MOJO_HANDLE_SIGNAL_NONE;
+  static constexpr MojoHandleSignals kR = MOJO_HANDLE_SIGNAL_READABLE;
+
+  AwakableList awakable_list;
+  TestAwakable persistent0;
+  TestAwakable persistent1;
+
+  // Add |persistent0| twice, with different contexts.
+  awakable_list.Add(&persistent0, 12, true, kR);
+  awakable_list.Add(&persistent0, 34, true, kR);
+  awakable_list.Add(&persistent1, 56, true, kR);
+  EXPECT_EQ(persistent0.awake_count, 0u);
+  EXPECT_EQ(persistent1.awake_count, 0u);
+
+  awakable_list.OnStateChange(HandleSignalsState(kNone, kR),
+                              HandleSignalsState(kR, kR));
+  EXPECT_EQ(persistent0.awake_count, 2u);
+  EXPECT_EQ(persistent1.awake_count, 1u);
+
+  awakable_list.OnStateChange(HandleSignalsState(kNone, kR),
+                              HandleSignalsState(kNone, kR));
+  EXPECT_EQ(persistent0.awake_count, 2u);
+  EXPECT_EQ(persistent1.awake_count, 1u);
+
+  awakable_list.Remove(false, &persistent0, 0);
+  EXPECT_EQ(persistent0.awake_count, 2u);
+  EXPECT_EQ(persistent1.awake_count, 1u);
+
+  awakable_list.OnStateChange(HandleSignalsState(kNone, kR),
+                              HandleSignalsState(kR, kR));
   EXPECT_EQ(persistent0.awake_count, 2u);
   EXPECT_EQ(persistent1.awake_count, 2u);
-  EXPECT_EQ(oneshot2.awake_count, 1u);
 
-  remove_first.Remove(false, &persistent0, 0);
-  remove_first.Remove(false, &persistent1, 0);
+  awakable_list.Remove(false, &persistent1, 0);
+  EXPECT_EQ(persistent0.awake_count, 2u);
+  EXPECT_EQ(persistent1.awake_count, 2u);
+}
+
+TEST(AwakableListTest, RemoveMatchContext2) {
+  static constexpr MojoHandleSignals kNone = MOJO_HANDLE_SIGNAL_NONE;
+  static constexpr MojoHandleSignals kR = MOJO_HANDLE_SIGNAL_READABLE;
+
+  AwakableList awakable_list;
+  TestAwakable persistent0;
+  TestAwakable persistent1;
+
+  // Add |persistent0| twice, with different contexts.
+  awakable_list.Add(&persistent0, 12, true, kR);
+  awakable_list.Add(&persistent0, 34, true, kR);
+  awakable_list.Add(&persistent1, 56, true, kR);
+  EXPECT_EQ(persistent0.awake_count, 0u);
+  EXPECT_EQ(persistent1.awake_count, 0u);
+
+  awakable_list.OnStateChange(HandleSignalsState(kNone, kR),
+                              HandleSignalsState(kR, kR));
+  EXPECT_EQ(persistent0.awake_count, 2u);
+  EXPECT_EQ(persistent1.awake_count, 1u);
+
+  awakable_list.OnStateChange(HandleSignalsState(kNone, kR),
+                              HandleSignalsState(kNone, kR));
+  EXPECT_EQ(persistent0.awake_count, 2u);
+  EXPECT_EQ(persistent1.awake_count, 1u);
+
+  awakable_list.Remove(true, &persistent0, 34);
+  EXPECT_EQ(persistent0.awake_count, 2u);
+  EXPECT_EQ(persistent1.awake_count, 1u);
+
+  awakable_list.OnStateChange(HandleSignalsState(kNone, kR),
+                              HandleSignalsState(kR, kR));
+  EXPECT_EQ(persistent0.awake_count, 3u);
+  EXPECT_EQ(persistent0.last_context, 12u);
+  EXPECT_EQ(persistent1.awake_count, 2u);
+
+  // No-op: non-existent context.
+  awakable_list.Remove(true, &persistent1, 0);
+  EXPECT_EQ(persistent0.awake_count, 3u);
+  EXPECT_EQ(persistent1.awake_count, 2u);
+
+  awakable_list.OnStateChange(HandleSignalsState(kNone, kR),
+                              HandleSignalsState(kNone, kR));
+  EXPECT_EQ(persistent0.awake_count, 3u);
+  EXPECT_EQ(persistent1.awake_count, 2u);
+
+  awakable_list.OnStateChange(HandleSignalsState(kNone, kR),
+                              HandleSignalsState(kR, kR));
+  EXPECT_EQ(persistent0.awake_count, 4u);
+  EXPECT_EQ(persistent0.last_context, 12u);
+  EXPECT_EQ(persistent1.awake_count, 3u);
+
+  awakable_list.Remove(true, &persistent0, 12);
+  awakable_list.Remove(true, &persistent1, 56);
+
+  awakable_list.OnStateChange(HandleSignalsState(kNone, kR),
+                              HandleSignalsState(kNone, kR));
+  EXPECT_EQ(persistent0.awake_count, 4u);
+  EXPECT_EQ(persistent1.awake_count, 3u);
+
+  awakable_list.OnStateChange(HandleSignalsState(kNone, kR),
+                              HandleSignalsState(kR, kR));
+  EXPECT_EQ(persistent0.awake_count, 4u);
+  EXPECT_EQ(persistent1.awake_count, 3u);
 }
 
 }  // namespace
