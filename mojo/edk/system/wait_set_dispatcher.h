@@ -10,6 +10,7 @@
 
 #include "mojo/edk/system/awakable.h"
 #include "mojo/edk/system/dispatcher.h"
+#include "mojo/edk/util/cond_var.h"
 #include "mojo/edk/util/ref_ptr.h"
 #include "mojo/edk/util/thread_annotations.h"
 #include "mojo/public/cpp/system/macros.h"
@@ -23,8 +24,8 @@ namespace system {
 // under |mutex()|. We should specify (and double-check) this requirement.
 class WaitSetDispatcher final : public Dispatcher, public Awakable {
  public:
-  // The default/standard rights for a wait set handle. Note that they are not
-  // transferrable.
+  // The default/standard rights for a wait set handle. Note that wait set
+  // handles are not transferrable.
   // TODO(vtl): Figure out if these are the correct rights. (E.g., we currently
   // don't have get/set options functions ... but maybe we should?)
   static constexpr MojoHandleRights kDefaultHandleRights =
@@ -78,6 +79,14 @@ class WaitSetDispatcher final : public Dispatcher, public Awakable {
     // this entry until this is true.
     bool ready = false;
 
+    // This is set only "inside" |WaitSetDispatcher::WaitSetRemoveImpl()|: Since
+    // we can only call |dispatcher|'s |RemoveAwakable()| with |mutex()|
+    // unlocked, we may get awoken before that happens. So instead of removing
+    // the entry from |entries_| immediately, we first set this to true under
+    // |mutex()|, unlock and call |RemoveAwakable()|, and then reacquire
+    // |mutex()| and actually remove the entry.
+    bool is_being_removed = false;
+
     HandleSignalsState signals_state;
     bool is_triggered = false;
 
@@ -117,6 +126,10 @@ class WaitSetDispatcher final : public Dispatcher, public Awakable {
   void AddTriggeredNoLock(Entry* entry) MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex());
   void RemoveTriggeredNoLock(Entry* entry)
       MOJO_EXCLUSIVE_LOCKS_REQUIRED(mutex());
+
+  // Associated to |mutex_|. This should be signaled when |triggered_count_|
+  // becomes nonzero or this dispatcher is closed.
+  util::CondVar cv_;
 
   // Map of cookies to entries.
   using CookieToEntryMap = std::map<uint64_t, std::unique_ptr<Entry>>;
