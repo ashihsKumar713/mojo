@@ -19,12 +19,16 @@ import (
 	"mojom/generated/mojom_files"
 )
 
-// GetConfig provides the primary interface for generators.
-// By calling GetConfig, a generator implements the command line interface
+// GetCliConfig provides the primary interface for generators.
+// By calling GetCliConfig, a generator implements the command line interface
 // that is used by all generators.
 func GetCliConfig(args []string) GeneratorConfig {
-	config := new(generatorCliConfig)
 	flagSet := flag.NewFlagSet("Generator Common Flag Set", flag.ExitOnError)
+	return GetCliConfigWithFlagSet(args, flagSet)
+}
+
+func GetCliConfigWithFlagSet(args []string, flagSet *flag.FlagSet) GeneratorConfig {
+	config := new(generatorCliConfig)
 
 	var fileGraphFile string
 	flagSet.StringVar(&fileGraphFile, "file-graph", "-",

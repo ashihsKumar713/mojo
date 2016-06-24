@@ -11,6 +11,7 @@ import (
 
 	"mojom/generated/mojom_files"
 	"mojom/generated/mojom_types"
+	"mojom/generators/common"
 )
 
 type Translator interface {
@@ -20,7 +21,10 @@ type Translator interface {
 type translator struct {
 	fileGraph *mojom_files.MojomFileGraph
 	// goTypeCache maps type keys to go type strings.
-	goTypeCache map[string]string
+	goTypeCache     map[string]string
+	imports         map[string]string
+	currentFileName string
+	Config          common.GeneratorConfig
 }
 
 func NewTranslator(fileGraph *mojom_files.MojomFileGraph) (t *translator) {
@@ -31,6 +35,9 @@ func NewTranslator(fileGraph *mojom_files.MojomFileGraph) (t *translator) {
 }
 
 func (t *translator) TranslateMojomFile(fileName string) (tmplFile *TmplFile) {
+	t.currentFileName = fileName
+	t.imports = map[string]string{}
+
 	tmplFile = new(TmplFile)
 	file := t.fileGraph.Files[fileName]
 
@@ -81,6 +88,13 @@ func (t *translator) TranslateMojomFile(fileName string) (tmplFile *TmplFile) {
 		Import{PackagePath: "mojo/public/go/bindings", PackageName: "bindings"},
 		Import{PackagePath: "fmt", PackageName: "fmt"},
 		Import{PackagePath: "sort", PackageName: "sort"},
+	}
+
+	for pkgName, pkgPath := range t.imports {
+		tmplFile.Imports = append(
+			tmplFile.Imports,
+			Import{PackagePath: pkgPath, PackageName: pkgName},
+		)
 	}
 	return tmplFile
 }

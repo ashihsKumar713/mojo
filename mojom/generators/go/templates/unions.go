@@ -16,7 +16,7 @@ const unionTmplText = `
 {{ template "UnknownUnionFieldDecl" $union }}
 {{ template "UnknownUnionFieldEncode" $union }}
 
-{{- range $field := $union.Field}}
+{{- range $field := $union.Fields}}
 {{ template "UnionFieldDecl" $field }}
 
 {{ template "UnionFieldEncode" $field }}

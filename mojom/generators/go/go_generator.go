@@ -5,6 +5,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 	"path/filepath"
@@ -16,19 +17,29 @@ import (
 
 func main() {
 	log.SetFlags(0)
-	config := common.GetCliConfig(os.Args)
+	flagSet := flag.NewFlagSet("Generator Go Flag Set", flag.ExitOnError)
+	var noGoSrc bool
+	flagSet.BoolVar(&noGoSrc, "no-go-src", false, "Do not prepend the output path with go/src.")
+
+	config := common.GetCliConfigWithFlagSet(os.Args, flagSet)
 	t := translator.NewTranslator(config.FileGraph())
-	goConfig := goConfig{config, t}
+	goConfig := goConfig{config, t, noGoSrc}
+	t.Config = goConfig
 	common.GenerateOutput(WriteGoFile, goConfig)
 }
 
 type goConfig struct {
 	common.GeneratorConfig
 	translator translator.Translator
+	noGoSrc    bool
 }
 
 func (c goConfig) OutputDir() string {
-	return filepath.Join(c.GeneratorConfig.OutputDir(), "go", "src")
+	if c.noGoSrc {
+		return c.GeneratorConfig.OutputDir()
+	} else {
+		return filepath.Join(c.GeneratorConfig.OutputDir(), "go", "src")
+	}
 }
 
 func WriteGoFile(fileName string, config common.GeneratorConfig) {

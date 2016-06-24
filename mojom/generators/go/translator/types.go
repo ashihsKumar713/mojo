@@ -6,6 +6,7 @@ package translator
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"mojom/generated/mojom_types"
 )
@@ -121,9 +122,9 @@ func (t *translator) translateMapType(mojomType mojom_types.MapType) (goType str
 }
 
 func (t *translator) translateTypeReference(typeRef mojom_types.TypeReference) (goType string) {
-	// TOOD(azani): Handle imported types.
 	typeKey := *typeRef.TypeKey
 	userDefinedType := t.fileGraph.ResolvedTypes[typeKey]
+
 	typeName := t.goTypeName(*typeRef.TypeKey)
 
 	if _, ok := userDefinedType.(*mojom_types.UserDefinedTypeInterfaceType); ok {
@@ -132,6 +133,18 @@ func (t *translator) translateTypeReference(typeRef mojom_types.TypeReference) (
 		} else {
 			return fmt.Sprintf("%s_Pointer", typeName)
 		}
+	}
+
+	srcFileInfo := userDefinedTypeDeclData(userDefinedType).SourceFileInfo
+	if srcFileInfo != nil && srcFileInfo.FileName == t.currentFileName {
+		pkgName := fileNameToPackageName(srcFileInfo.FileName)
+		pkgPath, err := filepath.Rel(t.Config.SrcRootPath(), srcFileInfo.FileName)
+		if err != nil {
+			panic(err.Error())
+		}
+		pkgPath = pkgPath[:len(pkgPath)-len(filepath.Ext(pkgPath))-1]
+		t.imports[pkgName] = pkgPath
+		typeName = fmt.Sprintf("%s.%s", pkgName, typeName)
 	}
 
 	return typeName
