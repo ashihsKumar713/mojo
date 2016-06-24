@@ -10,6 +10,7 @@
 #include "mojo/edk/system/wait_set_dispatcher.h"
 
 #include <thread>
+#include <vector>
 
 #include "mojo/edk/platform/test_stopwatch.h"
 #include "mojo/edk/platform/thread_utils.h"
@@ -592,7 +593,52 @@ TEST(WaitSetDispatcherTest, BasicThreaded2) {
   EXPECT_EQ(MOJO_RESULT_OK, d->Close());
 }
 
-// TODO(vtl): Test waiting on multiple threads.
+TEST(WaitSetDispatcherTest, BasicThreaded3) {
+  static constexpr auto kNone = MOJO_HANDLE_SIGNAL_NONE;
+  static constexpr auto kR = MOJO_HANDLE_SIGNAL_READABLE;
+
+  const auto epsilon = test::EpsilonTimeout();
+
+  Stopwatch stopwatch;
+
+  auto d = WaitSetDispatcher::Create(WaitSetDispatcher::kDefaultCreateOptions);
+  auto d_member = MakeRefCounted<test::MockSimpleDispatcher>(kNone, kR);
+
+  {
+    // Add an entry.
+    EXPECT_EQ(MOJO_RESULT_OK,
+              d->WaitSetAdd(NullUserPointer(), d_member.Clone(), kR, 123u));
+
+    // Wait on a bunch of threads. We'll trigger on the main thread.
+    std::vector<std::thread> threads;
+    for (size_t i = 0; i < 4; i++) {
+      threads.push_back(std::thread([epsilon, d, d_member]() {
+        uint32_t num_results = 10u;
+        MojoWaitSetResult results[10] = {};
+        EXPECT_EQ(MOJO_RESULT_OK,
+                  d->WaitSetWait(5 * epsilon, MakeUserPointer(&num_results),
+                                 MakeUserPointer(results), NullUserPointer()));
+        EXPECT_EQ(1u, num_results);
+        EXPECT_TRUE(CheckHasResult(num_results, results, 123u, kR,
+                                   MOJO_RESULT_OK,
+                                   d_member->GetHandleSignalsState()));
+      }));
+    }
+
+    // Sleep a bit, to try to ensure that all the threads are already waiting.
+    ThreadSleep(epsilon);
+
+    // Trigger the entry.
+    d_member->SetSatisfiedSignals(kR);
+
+    for (auto& t : threads)
+      t.join();
+  }
+
+  EXPECT_EQ(MOJO_RESULT_OK, d_member->Close());
+  EXPECT_EQ(MOJO_RESULT_OK, d->Close());
+}
+
 // TODO(vtl): Stress tests.
 
 // TODO(vtl): Test options validation for "create" and "add" (not that there's

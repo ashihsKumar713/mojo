@@ -119,7 +119,7 @@ void WaitSetDispatcher::CloseImplNoLock() {
   triggered_tail_ = nullptr;
   triggered_count_ = 0u;
 
-  cv_.Signal();
+  cv_.SignalAll();
 
   // We want to remove the awakables outside the lock, so we have to unlock
   // |mutex()|. Note that while unlocked, |Awake()| may get called.
@@ -425,7 +425,7 @@ void WaitSetDispatcher::AddTriggeredNoLock(Entry* entry) {
 
   entry->is_triggered = true;
   if (!triggered_count_)
-    cv_.Signal();
+    cv_.SignalAll();
   triggered_count_++;
 
   if (!triggered_tail_) {
