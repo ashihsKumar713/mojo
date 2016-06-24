@@ -2,11 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// NOTE(vtl): Some of these tests are inherently flaky (e.g., if run on a
+// heavily-loaded system). Sorry. |test::EpsilonTimeout()| may be increased to
+// increase tolerance and reduce observed flakiness (though doing so reduces the
+// meaningfulness of the test).
+
 #include "mojo/edk/system/wait_set_dispatcher.h"
 
+#include <thread>
+
+#include "mojo/edk/platform/test_stopwatch.h"
+#include "mojo/edk/platform/thread_utils.h"
 #include "mojo/edk/system/mock_simple_dispatcher.h"
+#include "mojo/edk/system/test/timeouts.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using mojo::platform::test::Stopwatch;
+using mojo::platform::ThreadSleep;
 using mojo::util::MakeRefCounted;
 
 namespace mojo {
@@ -208,13 +220,11 @@ TEST(WaitSetDispatcherTest, Basic) {
   {
     uint32_t num_results = 10u;
     MojoWaitSetResult results[10] = {};
-    uint32_t max_results = static_cast<uint32_t>(-1);
+    // Try passing null for |max_results|.
     EXPECT_EQ(MOJO_RESULT_OK,
               d->WaitSetWait(k10ms, MakeUserPointer(&num_results),
-                             MakeUserPointer(results),
-                             MakeUserPointer(&max_results)));
+                             MakeUserPointer(results), NullUserPointer()));
     EXPECT_EQ(3u, num_results);
-    EXPECT_EQ(3u, max_results);
 
     EXPECT_TRUE(CheckHasResult(num_results, results, kCookie0, kSignals0,
                                MOJO_RESULT_OK,
@@ -227,6 +237,17 @@ TEST(WaitSetDispatcherTest, Basic) {
                                d_member0->GetHandleSignalsState()));
   }
 
+  // Wait with zero |num_results| (in which case a null |results| is OK).
+  {
+    uint32_t num_results = 0u;
+    uint32_t max_results = static_cast<uint32_t>(-1);
+    EXPECT_EQ(MOJO_RESULT_OK,
+              d->WaitSetWait(k10ms, MakeUserPointer(&num_results),
+                             NullUserPointer(), MakeUserPointer(&max_results)));
+    EXPECT_EQ(0u, num_results);
+    EXPECT_EQ(3u, max_results);
+  }
+
   // Can remove something whose dispatcher has been closed.
   EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetRemove(kCookie1));
 
@@ -235,6 +256,204 @@ TEST(WaitSetDispatcherTest, Basic) {
 
   EXPECT_EQ(MOJO_RESULT_OK, d_member0->Close());
 }
+
+TEST(WaitSetDispatcherTest, TimeOut) {
+  Stopwatch stopwatch;
+
+  auto d = WaitSetDispatcher::Create(WaitSetDispatcher::kDefaultCreateOptions);
+
+  // Wait with timeout without any entries.
+  {
+    uint32_t num_results = 1u;
+    MojoWaitSetResult results[1] = {{456u}};
+    uint32_t max_results = 789u;
+    stopwatch.Start();
+    EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED,
+              d->WaitSetWait(
+                  2 * test::EpsilonTimeout(), MakeUserPointer(&num_results),
+                  MakeUserPointer(results), MakeUserPointer(&max_results)));
+    MojoDeadline elapsed = stopwatch.Elapsed();
+    EXPECT_GT(elapsed, test::EpsilonTimeout());
+    EXPECT_LT(elapsed, 3 * test::EpsilonTimeout());
+    // The inputs should be untouched.
+    EXPECT_EQ(1u, num_results);
+    EXPECT_EQ(456u, results[0].cookie);
+    EXPECT_EQ(789u, max_results);
+  }
+
+  auto d_member = MakeRefCounted<test::MockSimpleDispatcher>(
+      MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_READABLE);
+  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(NullUserPointer(), d_member.Clone(),
+                                          MOJO_HANDLE_SIGNAL_READABLE, 123u));
+
+  // Wait with timeout with an unsatisfied (but satisfiable) entry.
+  {
+    uint32_t num_results = 1u;
+    MojoWaitSetResult results[1] = {{456u}};
+    uint32_t max_results = 789u;
+    stopwatch.Start();
+    EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED,
+              d->WaitSetWait(
+                  2 * test::EpsilonTimeout(), MakeUserPointer(&num_results),
+                  MakeUserPointer(results), MakeUserPointer(&max_results)));
+    MojoDeadline elapsed = stopwatch.Elapsed();
+    EXPECT_GT(elapsed, test::EpsilonTimeout());
+    EXPECT_LT(elapsed, 3 * test::EpsilonTimeout());
+    // The inputs should be untouched.
+    EXPECT_EQ(1u, num_results);
+    EXPECT_EQ(456u, results[0].cookie);
+    EXPECT_EQ(789u, max_results);
+  }
+
+  EXPECT_EQ(MOJO_RESULT_OK, d->Close());
+  EXPECT_EQ(MOJO_RESULT_OK, d_member->Close());
+}
+
+TEST(WaitSetDispatcherTest, BasicThreaded) {
+  static constexpr auto kNone = MOJO_HANDLE_SIGNAL_NONE;
+  static constexpr auto kR = MOJO_HANDLE_SIGNAL_READABLE;
+  static constexpr auto kW = MOJO_HANDLE_SIGNAL_WRITABLE;
+
+  const auto epsilon = test::EpsilonTimeout();
+
+  auto d = WaitSetDispatcher::Create(WaitSetDispatcher::kDefaultCreateOptions);
+
+  // These will be members of our wait set.
+  auto d_member0 = MakeRefCounted<test::MockSimpleDispatcher>(kNone, kR | kW);
+  auto d_member1 = MakeRefCounted<test::MockSimpleDispatcher>(kNone, kR);
+
+  // Add |d_member0|.
+  static constexpr uint64_t kCookie0 = 123u;
+  static constexpr auto kSignals0 = kR;
+  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(NullUserPointer(), d_member0.Clone(),
+                                          kSignals0, kCookie0));
+
+  // Add |d_member1|.
+  static constexpr uint64_t kCookie1 = 456u;
+  static constexpr auto kSignals1 = kR;
+  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(NullUserPointer(), d_member1.Clone(),
+                                          kSignals1, kCookie1));
+
+  // Can add |d_member0| again with a different cookie.
+  static constexpr uint64_t kCookie2 = 789u;
+  static constexpr auto kSignals2 = kW;
+  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(NullUserPointer(), d_member0.Clone(),
+                                          kSignals2, kCookie2));
+
+  // We'll wait on the main thread, and do stuff on another thread.
+
+  {
+    // Trigger |kCookie0|.
+    std::thread t([epsilon, d_member0]() {
+      // Sleep to try to ensure that waiting has started.
+      ThreadSleep(epsilon);
+      d_member0->SetSatisfiedSignals(kR);
+    });
+
+    uint32_t num_results = 10u;
+    MojoWaitSetResult results[10] = {};
+    uint32_t max_results = static_cast<uint32_t>(-1);
+    EXPECT_EQ(MOJO_RESULT_OK,
+              d->WaitSetWait(3 * epsilon, MakeUserPointer(&num_results),
+                             MakeUserPointer(results),
+                             MakeUserPointer(&max_results)));
+    EXPECT_EQ(1u, num_results);
+    EXPECT_EQ(1u, max_results);
+
+    EXPECT_TRUE(CheckHasResult(num_results, results, kCookie0, kSignals0,
+                               MOJO_RESULT_OK,
+                               d_member0->GetHandleSignalsState()));
+
+    t.join();
+  }
+
+  // Untrigger |kCookie0|.
+  d_member0->SetSatisfiedSignals(kNone);
+
+  {
+    // Make |kCookie2| unsatisfiable.
+    std::thread t([epsilon, d_member0]() {
+      // Sleep to try to ensure that waiting has started.
+      ThreadSleep(epsilon);
+      d_member0->SetSatisfiableSignals(kR);
+    });
+
+    uint32_t num_results = 10u;
+    MojoWaitSetResult results[10] = {};
+    EXPECT_EQ(MOJO_RESULT_OK,
+              d->WaitSetWait(3 * epsilon, MakeUserPointer(&num_results),
+                             MakeUserPointer(results), NullUserPointer()));
+    EXPECT_EQ(1u, num_results);
+
+    EXPECT_TRUE(CheckHasResult(num_results, results, kCookie2, kSignals2,
+                               MOJO_RESULT_FAILED_PRECONDITION,
+                               d_member0->GetHandleSignalsState()));
+
+    t.join();
+  }
+
+  {
+    // Trigger |kCookie1|.
+    std::thread t(
+        [epsilon, d_member1]() { d_member1->SetSatisfiedSignals(kR); });
+
+    // Sleep to try to ensure that |kCookie1| has been triggered.
+    ThreadSleep(epsilon);
+
+    uint32_t num_results = 10u;
+    MojoWaitSetResult results[10] = {};
+    EXPECT_EQ(MOJO_RESULT_OK,
+              d->WaitSetWait(3 * epsilon, MakeUserPointer(&num_results),
+                             MakeUserPointer(results), NullUserPointer()));
+    EXPECT_EQ(2u, num_results);
+
+    EXPECT_TRUE(CheckHasResult(num_results, results, kCookie1, kSignals1,
+                               MOJO_RESULT_OK,
+                               d_member1->GetHandleSignalsState()));
+    EXPECT_TRUE(CheckHasResult(num_results, results, kCookie2, kSignals2,
+                               MOJO_RESULT_FAILED_PRECONDITION,
+                               d_member0->GetHandleSignalsState()));
+
+    t.join();
+  }
+
+  // Make |kCookie0| satisfiable again.
+  d_member0->SetSatisfiableSignals(kR | kW);
+  // Untrigger |kCookie1|.
+  d_member1->SetSatisfiedSignals(kNone);
+
+  {
+    // Cancel |kCookie0| and |kCookie2| by closing |d_member0|.
+    std::thread t([epsilon, d_member0]() {
+      // Sleep to try to ensure that waiting has started.
+      ThreadSleep(epsilon);
+      EXPECT_EQ(MOJO_RESULT_OK, d_member0->Close());
+    });
+
+    uint32_t num_results = 10u;
+    MojoWaitSetResult results[10] = {};
+    EXPECT_EQ(MOJO_RESULT_OK,
+              d->WaitSetWait(3 * epsilon, MakeUserPointer(&num_results),
+                             MakeUserPointer(results), NullUserPointer()));
+    EXPECT_EQ(2u, num_results);
+
+    EXPECT_TRUE(CheckHasResult(num_results, results, kCookie0, kSignals0,
+                               MOJO_RESULT_CANCELLED,
+                               MojoHandleSignalsState()));
+    EXPECT_TRUE(CheckHasResult(num_results, results, kCookie2, kSignals2,
+                               MOJO_RESULT_CANCELLED,
+                               MojoHandleSignalsState()));
+
+    t.join();
+  }
+
+  EXPECT_EQ(MOJO_RESULT_OK, d_member1->Close());
+  EXPECT_EQ(MOJO_RESULT_OK, d->Close());
+}
+
+// TODO(vtl): Test adding/removing on another thread.
+// TODO(vtl): Test waiting on multiple threads.
+// TODO(vtl): Stress tests.
 
 // TODO(vtl): Test options validation for "create" and "add" (not that there's
 // much to test).
