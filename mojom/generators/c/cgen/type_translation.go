@@ -267,7 +267,7 @@ func mojomTypeIsUnion(typ mojom_types.Type, fileGraph *mojom_files.MojomFileGrap
 	return false
 }
 
-func mojomTypeSize(typ mojom_types.Type, fileGraph *mojom_files.MojomFileGraph) int {
+func mojomTypeSize(typ mojom_types.Type, fileGraph *mojom_files.MojomFileGraph) uint32 {
 	switch typ.(type) {
 	case *mojom_types.TypeSimpleType:
 		switch typ.Interface().(mojom_types.SimpleType) {
@@ -303,7 +303,7 @@ func mojomTypeSize(typ mojom_types.Type, fileGraph *mojom_files.MojomFileGraph) 
 	case *mojom_types.TypeMapType:
 		return 8
 	case *mojom_types.TypeHandleType:
-		return 8
+		return 4
 	case *mojom_types.TypeTypeReference:
 		return referenceTypeSize(typ.Interface().(mojom_types.TypeReference), fileGraph)
 	default:
@@ -312,9 +312,9 @@ func mojomTypeSize(typ mojom_types.Type, fileGraph *mojom_files.MojomFileGraph) 
 	return 0
 }
 
-func referenceTypeSize(typ mojom_types.TypeReference, fileGraph *mojom_files.MojomFileGraph) int {
+func referenceTypeSize(typ mojom_types.TypeReference, fileGraph *mojom_files.MojomFileGraph) uint32 {
 	if typ.IsInterfaceRequest {
-		return 8
+		return 4
 	}
 
 	udt := fileGraph.ResolvedTypes[*typ.TypeKey]

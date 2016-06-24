@@ -440,21 +440,25 @@ func NewHeaderTemplate(fileGraph *mojom_files.MojomFileGraph, file *mojom_files.
 	}
 }
 
-func getPaddingAfter(fields []mojom_types.StructField, i int, fileGraph *mojom_files.MojomFileGraph) int {
+func getPaddingAfter(fields []mojom_types.StructField, i int, fileGraph *mojom_files.MojomFileGraph) uint32 {
 	// Must be a power of 2 for the remaining computation to work
-	const kAlignment int = 8
+	const kAlignment uint32 = 8
 
 	// Calculate the remaining padding for the last field
 	if i == len(fields)-1 {
 		// m = (field offset + field size) % kAlignment
-		m := (fields[i].Offset + uint32(mojomTypeSize(fields[i].Type, fileGraph))) & uint32(kAlignment-1)
+		m := (fields[i].Offset + mojomTypeSize(fields[i].Type, fileGraph)) & (kAlignment - 1)
 		if m != 0 {
-			return kAlignment - int(m)
+			return kAlignment - m
 		}
 		return 0
 	}
 
 	// (next element's offset)
 	//  - (current element's offset + current element's size)
-	return intmax(int(fields[i+1].Offset-(fields[i].Offset+uint32(mojomTypeSize(fields[i].Type, fileGraph)))), 0)
+	diff := int64(fields[i+1].Offset) - (int64(fields[i].Offset) + int64(mojomTypeSize(fields[i].Type, fileGraph)))
+	if diff <= 0 {
+		return 0
+	}
+	return uint32(diff)
 }
