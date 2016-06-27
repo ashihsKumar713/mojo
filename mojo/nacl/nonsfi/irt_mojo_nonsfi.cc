@@ -49,6 +49,10 @@ const struct nacl_irt_mojo kIrtMojo = {
     MojoGetBufferInformation,
     MojoMapBuffer,
     MojoUnmapBuffer,
+    MojoCreateWaitSet,
+    MojoWaitSetAdd,
+    MojoWaitSetRemove,
+    MojoWaitSetWait,
 };
 
 const struct nacl_irt_mgl kIrtMGL = {
