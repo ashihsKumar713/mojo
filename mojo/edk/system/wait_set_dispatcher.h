@@ -108,10 +108,11 @@ class WaitSetDispatcher final : public Dispatcher, public Awakable {
   util::RefPtr<Dispatcher> CreateEquivalentDispatcherAndCloseImplNoLock(
       MessagePipe* message_pipe,
       unsigned port) override;
-  MojoResult WaitSetAddImpl(UserPointer<const MojoWaitSetAddOptions> options,
-                            util::RefPtr<Dispatcher>&& dispatcher,
-                            MojoHandleSignals signals,
-                            uint64_t cookie) override;
+  MojoResult WaitSetAddImpl(
+      util::RefPtr<Dispatcher>&& dispatcher,
+      MojoHandleSignals signals,
+      uint64_t cookie,
+      UserPointer<const MojoWaitSetAddOptions> options) override;
   MojoResult WaitSetRemoveImpl(uint64_t cookie) override;
   MojoResult WaitSetWaitImpl(MojoDeadline deadline,
                              UserPointer<uint32_t> num_results,

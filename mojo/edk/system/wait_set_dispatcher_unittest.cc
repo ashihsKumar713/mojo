@@ -94,24 +94,24 @@ TEST(WaitSetDispatcherTest, Basic) {
   // Add |d_member0|, for something not satisfied, but satisfiable.
   static constexpr uint64_t kCookie0 = 0x123456789abcdef0ULL;
   static constexpr auto kSignals0 = kR;
-  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(NullUserPointer(), d_member0.Clone(),
-                                          kSignals0, kCookie0));
+  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(d_member0.Clone(), kSignals0,
+                                          kCookie0, NullUserPointer()));
 
   // Add |d_member1|, for something satisfied.
   static constexpr uint64_t kCookie1 = 0x23456789abcdef01ULL;
   static constexpr auto kSignals1 = kR;
-  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(NullUserPointer(), d_member1.Clone(),
-                                          kSignals1, kCookie1));
+  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(d_member1.Clone(), kSignals1,
+                                          kCookie1, NullUserPointer()));
 
   // Can add |d_member0| again (satisfied), with a different cookie.
   static constexpr uint64_t kCookie2 = 0x3456789abcdef012ULL;
   static constexpr auto kSignals2 = kW;
-  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(NullUserPointer(), d_member0.Clone(),
-                                          kSignals2, kCookie2));
+  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(d_member0.Clone(), kSignals2,
+                                          kCookie2, NullUserPointer()));
 
   // Adding something with the same cookie yields "already exists".
   EXPECT_EQ(MOJO_RESULT_ALREADY_EXISTS,
-            d->WaitSetAdd(NullUserPointer(), d_member1.Clone(), kR, kCookie2));
+            d->WaitSetAdd(d_member1.Clone(), kR, kCookie2, NullUserPointer()));
 
   // Can remove something based on a cookie.
   EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetRemove(kCookie0));
@@ -121,7 +121,7 @@ TEST(WaitSetDispatcherTest, Basic) {
 
   // Can re-add it (still not satisfied, but satisfiable).
   EXPECT_EQ(MOJO_RESULT_OK,
-            d->WaitSetAdd(NullUserPointer(), d_member0.Clone(), kR, kCookie0));
+            d->WaitSetAdd(d_member0.Clone(), kR, kCookie0, NullUserPointer()));
 
   // Wait. Recall:
   //   - |kCookie0| is for |d_member0| and is not satisfied (but satisfiable).
@@ -292,8 +292,9 @@ TEST(WaitSetDispatcherTest, TimeOut) {
 
   auto d_member = MakeRefCounted<test::MockSimpleDispatcher>(
       MOJO_HANDLE_SIGNAL_NONE, MOJO_HANDLE_SIGNAL_READABLE);
-  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(NullUserPointer(), d_member.Clone(),
-                                          MOJO_HANDLE_SIGNAL_READABLE, 123u));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            d->WaitSetAdd(d_member.Clone(), MOJO_HANDLE_SIGNAL_READABLE, 123u,
+                          NullUserPointer()));
 
   // Wait with timeout with an unsatisfied (but satisfiable) entry.
   {
@@ -334,20 +335,20 @@ TEST(WaitSetDispatcherTest, BasicThreaded1) {
   // Add |d_member0|.
   static constexpr uint64_t kCookie0 = 123u;
   static constexpr auto kSignals0 = kR;
-  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(NullUserPointer(), d_member0.Clone(),
-                                          kSignals0, kCookie0));
+  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(d_member0.Clone(), kSignals0,
+                                          kCookie0, NullUserPointer()));
 
   // Add |d_member1|.
   static constexpr uint64_t kCookie1 = 456u;
   static constexpr auto kSignals1 = kR;
-  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(NullUserPointer(), d_member1.Clone(),
-                                          kSignals1, kCookie1));
+  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(d_member1.Clone(), kSignals1,
+                                          kCookie1, NullUserPointer()));
 
   // Can add |d_member0| again with a different cookie.
   static constexpr uint64_t kCookie2 = 789u;
   static constexpr auto kSignals2 = kW;
-  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(NullUserPointer(), d_member0.Clone(),
-                                          kSignals2, kCookie2));
+  EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(d_member0.Clone(), kSignals2,
+                                          kCookie2, NullUserPointer()));
 
   // We'll wait on the main thread, and do stuff on another thread.
 
@@ -486,9 +487,8 @@ TEST(WaitSetDispatcherTest, BasicThreaded2) {
     std::thread t0([epsilon, d, d_member]() {
       // Sleep to try to ensure that waiting has started.
       ThreadSleep(epsilon);
-      EXPECT_EQ(MOJO_RESULT_OK,
-                d->WaitSetAdd(NullUserPointer(), d_member.Clone(), kSignals0,
-                              kCookie0));
+      EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(d_member.Clone(), kSignals0,
+                                              kCookie0, NullUserPointer()));
     });
     // Trigger |kCookie0| after |2 * epsilon| on another thread.
     stopwatch.Start();
@@ -531,17 +531,15 @@ TEST(WaitSetDispatcherTest, BasicThreaded2) {
     std::thread t1([epsilon, d, d_member]() {
       // Sleep to try to ensure that waiting has started.
       ThreadSleep(epsilon);
-      EXPECT_EQ(MOJO_RESULT_OK,
-                d->WaitSetAdd(NullUserPointer(), d_member.Clone(), kSignals1,
-                              kCookie1));
+      EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(d_member.Clone(), kSignals1,
+                                              kCookie1, NullUserPointer()));
     });
     // Add |kCookie2|.
     std::thread t2([epsilon, d, d_member]() {
       // Sleep to try to ensure that waiting has started.
       ThreadSleep(epsilon);
-      EXPECT_EQ(MOJO_RESULT_OK,
-                d->WaitSetAdd(NullUserPointer(), d_member.Clone(), kSignals2,
-                              kCookie2));
+      EXPECT_EQ(MOJO_RESULT_OK, d->WaitSetAdd(d_member.Clone(), kSignals2,
+                                              kCookie2, NullUserPointer()));
     });
     // Trigger |kCookie1| and |kCookie2| after |2 * epsilon| on another thread.
     stopwatch.Start();
@@ -615,7 +613,7 @@ TEST(WaitSetDispatcherTest, BasicThreaded3) {
   {
     // Add an entry.
     EXPECT_EQ(MOJO_RESULT_OK,
-              d->WaitSetAdd(NullUserPointer(), d_member.Clone(), kR, 123u));
+              d->WaitSetAdd(d_member.Clone(), kR, 123u, NullUserPointer()));
 
     // Wait on a bunch of threads. We'll trigger on the main thread.
     std::vector<std::thread> threads;
@@ -688,8 +686,8 @@ TEST(WaitSetDispatcherTest, ThreadedStress) {
   // The quit dispatcher and entry.
   auto quit = MakeRefCounted<test::MockSimpleDispatcher>(kNone, kSignal);
   EXPECT_EQ(MOJO_RESULT_OK,
-            wait_set->WaitSetAdd(NullUserPointer(), quit.Clone(), kSignal,
-                                 kQuitCookie));
+            wait_set->WaitSetAdd(quit.Clone(), kSignal, kQuitCookie,
+                                 NullUserPointer()));
 
   std::vector<std::thread> threads;
 
@@ -767,10 +765,9 @@ TEST(WaitSetDispatcherTest, ThreadedStress) {
             cookies.push_back(new_cookie);
           }
           EXPECT_NE(new_cookie, kQuitCookie);
-          EXPECT_EQ(
-              MOJO_RESULT_OK,
-              wait_set->WaitSetAdd(NullUserPointer(), std::move(new_dispatcher),
-                                   kSignal, new_cookie));
+          EXPECT_EQ(MOJO_RESULT_OK,
+                    wait_set->WaitSetAdd(std::move(new_dispatcher), kSignal,
+                                         new_cookie, NullUserPointer()));
         }
 
         // Should we trigger an entry? Make the probability be (current number)

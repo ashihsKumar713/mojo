@@ -279,11 +279,11 @@ MojoResult Dispatcher::MapBuffer(
 // everything for |WaitSet...Impl()| to do. (We could just make these methods
 // virtual, but we prefer to have a separate "impl" methods for consistency.)
 MojoResult Dispatcher::WaitSetAdd(
-    UserPointer<const MojoWaitSetAddOptions> options,
     RefPtr<Dispatcher>&& dispatcher,
     MojoHandleSignals signals,
-    uint64_t cookie) {
-  return WaitSetAddImpl(options, std::move(dispatcher), signals, cookie);
+    uint64_t cookie,
+    UserPointer<const MojoWaitSetAddOptions> options) {
+  return WaitSetAddImpl(std::move(dispatcher), signals, cookie, options);
 }
 
 MojoResult Dispatcher::WaitSetRemove(uint64_t cookie) {
@@ -511,10 +511,10 @@ MojoResult Dispatcher::MapBufferImplNoLock(
 // methods are only needed for wait set dispatchers), we don't need to lock
 // |mutex_| and check |is_closed_|.
 MojoResult Dispatcher::WaitSetAddImpl(
-    UserPointer<const MojoWaitSetAddOptions> /*options*/,
     RefPtr<Dispatcher>&& /*dispatcher*/,
     MojoHandleSignals /*signals*/,
-    uint64_t /*cookie*/) {
+    uint64_t /*cookie*/,
+    UserPointer<const MojoWaitSetAddOptions> /*options*/) {
   // See note above.
   return MOJO_RESULT_INVALID_ARGUMENT;
 }

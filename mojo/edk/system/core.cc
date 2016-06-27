@@ -25,6 +25,7 @@
 #include "mojo/edk/system/message_pipe.h"
 #include "mojo/edk/system/message_pipe_dispatcher.h"
 #include "mojo/edk/system/shared_buffer_dispatcher.h"
+#include "mojo/edk/system/wait_set_dispatcher.h"
 #include "mojo/edk/system/waiter.h"
 #include "mojo/public/c/system/macros.h"
 #include "mojo/public/cpp/system/macros.h"
@@ -748,6 +749,89 @@ MojoResult Core::MapBuffer(MojoHandle buffer_handle,
 MojoResult Core::UnmapBuffer(UserPointer<void> buffer) {
   MutexLocker locker(&mapping_table_mutex_);
   return mapping_table_.RemoveMapping(buffer.GetPointerValue());
+}
+
+MojoResult Core::CreateWaitSet(
+    UserPointer<const MojoCreateWaitSetOptions> options,
+    UserPointer<MojoHandle> wait_set_handle) {
+  MojoCreateWaitSetOptions validated_options = {};
+  MojoResult result =
+      WaitSetDispatcher::ValidateCreateOptions(options, &validated_options);
+  if (result != MOJO_RESULT_OK)
+    return result;
+
+  auto dispatcher = WaitSetDispatcher::Create(validated_options);
+
+  MojoHandle handle = AddHandle(
+      Handle(dispatcher.Clone(), WaitSetDispatcher::kDefaultHandleRights));
+  if (handle == MOJO_HANDLE_INVALID) {
+    LOG(ERROR) << "Handle table full";
+    dispatcher->Close();
+    return MOJO_RESULT_RESOURCE_EXHAUSTED;
+  }
+
+  wait_set_handle.Put(handle);
+  return MOJO_RESULT_OK;
+}
+
+MojoResult Core::WaitSetAdd(MojoHandle wait_set_handle,
+                            MojoHandle handle,
+                            MojoHandleSignals signals,
+                            uint64_t cookie,
+                            UserPointer<const MojoWaitSetAddOptions> options) {
+  if (wait_set_handle == MOJO_HANDLE_INVALID)
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  if (handle == MOJO_HANDLE_INVALID)
+    return MOJO_RESULT_INVALID_ARGUMENT;
+
+  Handle wait_set_h;
+  Handle h;
+  {
+    MutexLocker locker(&handle_table_mutex_);
+    MojoResult result = handle_table_.GetHandle(wait_set_handle, &wait_set_h);
+    if (result != MOJO_RESULT_OK)
+      return result;
+    result = handle_table_.GetHandle(handle, &h);
+    if (result != MOJO_RESULT_OK)
+      return result;
+  }
+
+  if (!wait_set_h.has_all_rights(MOJO_HANDLE_RIGHT_WRITE)) {
+    return wait_set_h.dispatcher->SupportsEntrypointClass(
+               EntrypointClass::WAIT_SET)
+               ? MOJO_RESULT_PERMISSION_DENIED
+               : MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  return wait_set_h.dispatcher->WaitSetAdd(std::move(h.dispatcher), signals,
+                                           cookie, options);
+}
+
+MojoResult Core::WaitSetRemove(MojoHandle wait_set_handle, uint64_t cookie) {
+  RefPtr<Dispatcher> wait_set_dispatcher;
+  MojoResult result = GetDispatcherAndCheckRights(
+      wait_set_handle, MOJO_HANDLE_RIGHT_WRITE, EntrypointClass::WAIT_SET,
+      &wait_set_dispatcher);
+  if (result != MOJO_RESULT_OK)
+    return result;
+
+  return wait_set_dispatcher->WaitSetRemove(cookie);
+}
+
+MojoResult Core::WaitSetWait(MojoHandle wait_set_handle,
+                             MojoDeadline deadline,
+                             UserPointer<uint32_t> num_results,
+                             UserPointer<MojoWaitSetResult> results,
+                             UserPointer<uint32_t> max_results) {
+  RefPtr<Dispatcher> wait_set_dispatcher;
+  MojoResult result = GetDispatcherAndCheckRights(
+      wait_set_handle, MOJO_HANDLE_RIGHT_READ, EntrypointClass::WAIT_SET,
+      &wait_set_dispatcher);
+  if (result != MOJO_RESULT_OK)
+    return result;
+
+  return wait_set_dispatcher->WaitSetWait(deadline, num_results, results,
+                                          max_results);
 }
 
 // Note: We allow |handles| to repeat the same handle multiple times, since

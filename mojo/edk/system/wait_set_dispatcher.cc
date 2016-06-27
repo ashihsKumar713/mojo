@@ -152,10 +152,10 @@ WaitSetDispatcher::CreateEquivalentDispatcherAndCloseImplNoLock(
 }
 
 MojoResult WaitSetDispatcher::WaitSetAddImpl(
-    UserPointer<const MojoWaitSetAddOptions> options,
     RefPtr<Dispatcher>&& dispatcher,
     MojoHandleSignals signals,
-    uint64_t cookie) {
+    uint64_t cookie,
+    UserPointer<const MojoWaitSetAddOptions> options) {
   // This will be owned by |entries_|, so it should only be used under
   // |mutex()|.
   Entry* entry = nullptr;

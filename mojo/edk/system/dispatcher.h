@@ -170,10 +170,10 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
       std::unique_ptr<platform::PlatformSharedBufferMapping>* mapping);
 
   // |EntrypointClass::WAIT_SET|:
-  MojoResult WaitSetAdd(UserPointer<const MojoWaitSetAddOptions> options,
-                        util::RefPtr<Dispatcher>&& dispatcher,
+  MojoResult WaitSetAdd(util::RefPtr<Dispatcher>&& dispatcher,
                         MojoHandleSignals signals,
-                        uint64_t cookie);
+                        uint64_t cookie,
+                        UserPointer<const MojoWaitSetAddOptions> options);
   MojoResult WaitSetRemove(uint64_t cookie);
   // Note: This will likely block the calling thread (so, e.g., no mutexes
   // should be held when it's called).
@@ -387,10 +387,10 @@ class Dispatcher : public util::RefCountedThreadSafe<Dispatcher> {
   // lock |mutex()| and check |is_closed_no_lock()| (returning
   // |MOJO_RESULT_INVALID_ARGUMENT| if it is true).
   virtual MojoResult WaitSetAddImpl(
-      UserPointer<const MojoWaitSetAddOptions> options,
       util::RefPtr<Dispatcher>&& dispatcher,
       MojoHandleSignals signals,
-      uint64_t cookie);
+      uint64_t cookie,
+      UserPointer<const MojoWaitSetAddOptions> options);
   virtual MojoResult WaitSetRemoveImpl(uint64_t cookie);
   virtual MojoResult WaitSetWaitImpl(MojoDeadline deadline,
                                      UserPointer<uint32_t> num_results,

@@ -153,6 +153,22 @@ TEST_F(CoreTest, Basic) {
       core()->MapBuffer(h, 0, 0, NullUserPointer(), MOJO_MAP_BUFFER_FLAG_NONE));
   EXPECT_EQ(1u, info.GetMapBufferCallCount());
 
+  EXPECT_EQ(0u, info.GetWaitSetAddCallCount());
+  EXPECT_EQ(
+      MOJO_RESULT_UNIMPLEMENTED,
+      core()->WaitSetAdd(h, h, MOJO_HANDLE_SIGNAL_NONE, 0, NullUserPointer()));
+  EXPECT_EQ(1u, info.GetWaitSetAddCallCount());
+
+  EXPECT_EQ(0u, info.GetWaitSetRemoveCallCount());
+  EXPECT_EQ(MOJO_RESULT_UNIMPLEMENTED, core()->WaitSetRemove(h, 0));
+  EXPECT_EQ(1u, info.GetWaitSetRemoveCallCount());
+
+  EXPECT_EQ(0u, info.GetWaitSetWaitCallCount());
+  EXPECT_EQ(MOJO_RESULT_UNIMPLEMENTED,
+            core()->WaitSetWait(h, MOJO_DEADLINE_INDEFINITE, NullUserPointer(),
+                                NullUserPointer(), NullUserPointer()));
+  EXPECT_EQ(1u, info.GetWaitSetWaitCallCount());
+
   EXPECT_EQ(0u, info.GetAddAwakableCallCount());
   EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
             core()->Wait(h, ~MOJO_HANDLE_SIGNAL_NONE, MOJO_DEADLINE_INDEFINITE,
@@ -644,6 +660,37 @@ TEST_F(CoreTest, InvalidArguments) {
   // |UnmapBuffer()|:
   EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
             core()->UnmapBuffer(NullUserPointer()));
+
+  // |WaitSetAdd()|:
+  {
+    MockHandleInfo info;
+    MojoHandle h = CreateMockHandle(&info);
+
+    EXPECT_EQ(
+        MOJO_RESULT_INVALID_ARGUMENT,
+        core()->WaitSetAdd(MOJO_HANDLE_INVALID, MOJO_HANDLE_INVALID,
+                           MOJO_HANDLE_SIGNAL_NONE, 0, NullUserPointer()));
+    EXPECT_EQ(
+        MOJO_RESULT_INVALID_ARGUMENT,
+        core()->WaitSetAdd(MOJO_HANDLE_INVALID, h, MOJO_HANDLE_SIGNAL_NONE, 0,
+                           NullUserPointer()));
+    EXPECT_EQ(
+        MOJO_RESULT_INVALID_ARGUMENT,
+        core()->WaitSetAdd(h, MOJO_HANDLE_INVALID, MOJO_HANDLE_SIGNAL_NONE, 0,
+                           NullUserPointer()));
+
+    EXPECT_EQ(MOJO_RESULT_OK, core()->Close(h));
+  }
+
+  // |WaitSetRemove()|:
+  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
+            core()->WaitSetRemove(MOJO_HANDLE_INVALID, 0));
+
+  // |WaitSetWait()|:
+  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
+            core()->WaitSetWait(MOJO_HANDLE_INVALID, MOJO_DEADLINE_INDEFINITE,
+                                NullUserPointer(), NullUserPointer(),
+                                NullUserPointer()));
 }
 
 // These test invalid arguments that should cause death if we're being paranoid
@@ -756,6 +803,13 @@ TEST_F(CoreTest, InvalidArgumentsDeath) {
   }
 
   // TODO(vtl): Missing a bunch here.
+
+  // |CreateWaitSet()|:
+  {
+    EXPECT_DEATH_IF_SUPPORTED(
+        core()->CreateWaitSet(NullUserPointer(), NullUserPointer()),
+        kMemoryCheckFailedRegex);
+  }
 }
 
 // TODO(vtl): test |Wait()| and |WaitMany()| properly
@@ -1962,6 +2016,38 @@ TEST_F(CoreTest, AsyncWait) {
 
 // TODO(vtl): Test |CreateSharedBuffer()|, |DuplicateBufferHandle()|, and
 // |MapBuffer()|.
+
+TEST_F(CoreTest, WaitSet) {
+  MojoHandle h = MOJO_HANDLE_INVALID;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            core()->CreateWaitSet(NullUserPointer(), MakeUserPointer(&h)));
+  EXPECT_NE(h, MOJO_HANDLE_INVALID);
+
+  MockHandleInfo info;
+  info.AllowAddAwakable(true);
+  MojoHandle h_member = CreateMockHandle(&info);
+
+  EXPECT_EQ(0u, info.GetAddAwakableCallCount());
+  EXPECT_EQ(MOJO_RESULT_OK,
+            core()->WaitSetAdd(h, h_member, MOJO_HANDLE_SIGNAL_READABLE, 123,
+                               NullUserPointer()));
+  EXPECT_EQ(1u, info.GetAddAwakableCallCount());
+
+  EXPECT_EQ(0u, info.GetRemoveAwakableCallCount());
+  EXPECT_EQ(MOJO_RESULT_OK, core()->WaitSetRemove(h, 123));
+  EXPECT_EQ(1u, info.GetRemoveAwakableCallCount());
+
+  EXPECT_EQ(MOJO_RESULT_OK, core()->Close(h_member));
+
+  uint32_t num_results = 5;
+  MojoWaitSetResult results[5] = {};
+  EXPECT_EQ(MOJO_RESULT_DEADLINE_EXCEEDED,
+            core()->WaitSetWait(h, static_cast<MojoDeadline>(0),
+                                MakeUserPointer(&num_results),
+                                MakeUserPointer(results), NullUserPointer()));
+
+  EXPECT_EQ(MOJO_RESULT_OK, core()->Close(h));
+}
 
 }  // namespace
 }  // namespace system
