@@ -21,7 +21,7 @@ namespace media {
 
 // Implements MediaRenderer for an app that wants to show video.
 class VideoRenderer : public MediaRenderer,
-                      public MediaConsumer,
+                      public MediaPacketConsumer,
                       public MediaTimelineControlPoint,
                       public TimelineConsumer {
  public:
@@ -56,12 +56,13 @@ class VideoRenderer : public MediaRenderer,
 
   void SetMediaType(MediaTypePtr media_type) override;
 
-  void GetConsumer(InterfaceRequest<MediaConsumer> consumer_request) override;
+  void GetPacketConsumer(
+      InterfaceRequest<MediaPacketConsumer> consumer_request) override;
 
   void GetTimelineControlPoint(InterfaceRequest<MediaTimelineControlPoint>
                                    control_point_request) override;
 
-  // MediaConsumer implementation.
+  // MediaPacketConsumer implementation.
   void SetBuffer(ScopedSharedBufferHandle buffer,
                  const SetBufferCallback& callback) override;
 
@@ -101,7 +102,7 @@ class VideoRenderer : public MediaRenderer,
   void CompleteGetStatus(const GetStatusCallback& callback);
 
   Binding<MediaRenderer> renderer_binding_;
-  Binding<MediaConsumer> consumer_binding_;
+  Binding<MediaPacketConsumer> consumer_binding_;
   Binding<MediaTimelineControlPoint> control_point_binding_;
   Binding<TimelineConsumer> timeline_consumer_binding_;
   MappedSharedBuffer shared_buffer_;

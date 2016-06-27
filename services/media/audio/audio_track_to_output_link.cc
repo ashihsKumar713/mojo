@@ -159,7 +159,7 @@ void AudioTrackToOutputLink::ReleaseQueue(const PacketQueuePtr& queue) {
   }
 
   for (auto iter = queue->begin(); iter != queue->end(); ++iter) {
-    (*iter)->SetResult(MediaConsumer::SendResult::FLUSHED);
+    (*iter)->SetResult(MediaPacketConsumer::SendResult::FLUSHED);
     (*iter).reset();
   }
 

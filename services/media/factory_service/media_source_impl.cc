@@ -102,27 +102,16 @@ void MediaSourceImpl::GetStreams(const GetStreamsCallback& callback) {
   });
 }
 
-void MediaSourceImpl::GetProducer(uint32_t stream_index,
-                                  InterfaceRequest<MediaProducer> producer) {
-  RCHECK(init_complete_.occurred());
-
-  if (stream_index >= streams_.size()) {
-    return;
-  }
-
-  streams_[stream_index]->GetProducer(producer.Pass());
-}
-
-void MediaSourceImpl::GetPullModeProducer(
+void MediaSourceImpl::GetPacketProducer(
     uint32_t stream_index,
-    InterfaceRequest<MediaPullModeProducer> producer) {
+    InterfaceRequest<MediaPacketProducer> producer) {
   RCHECK(init_complete_.occurred());
 
   if (stream_index >= streams_.size()) {
     return;
   }
 
-  streams_[stream_index]->GetPullModeProducer(producer.Pass());
+  streams_[stream_index]->GetPacketProducer(producer.Pass());
 }
 
 void MediaSourceImpl::GetStatus(uint64_t version_last_seen,
@@ -215,45 +204,25 @@ MediaTypePtr MediaSourceImpl::Stream::original_media_type() const {
   return MediaType::From(original_stream_type_);
 }
 
-void MediaSourceImpl::Stream::GetProducer(
-    InterfaceRequest<MediaProducer> producer) {
-  if (pull_mode_producer_) {
-    // Can't have both push mode and pull mode producers.
-    return;
-  }
-
+void MediaSourceImpl::Stream::GetPacketProducer(
+    InterfaceRequest<MediaPacketProducer> producer) {
   if (!producer_) {
-    producer_ = MojoProducer::Create();
+    producer_ = MojoPacketProducer::Create();
     graph_->ConnectOutputToPart(output_, graph_->Add(producer_));
   }
 
   producer_->AddBinding(producer.Pass());
 }
 
-void MediaSourceImpl::Stream::GetPullModeProducer(
-    InterfaceRequest<MediaPullModeProducer> producer) {
-  if (producer_) {
-    // Can't have both push mode and pull mode producers.
-    return;
-  }
-
-  if (!pull_mode_producer_) {
-    pull_mode_producer_ = MojoPullModeProducer::Create();
-    graph_->ConnectOutputToPart(output_, graph_->Add(pull_mode_producer_));
-  }
-
-  pull_mode_producer_->AddBinding(producer.Pass());
-}
-
 void MediaSourceImpl::Stream::EnsureSink() {
-  if (producer_ == nullptr && pull_mode_producer_ == nullptr) {
+  if (producer_ == nullptr) {
     null_sink_ = NullSink::Create();
     graph_->ConnectOutputToPart(output_, graph_->Add(null_sink_));
   }
 }
 
 void MediaSourceImpl::Stream::PrimeConnection(
-    const MojoProducer::PrimeConnectionCallback callback) {
+    const MojoPacketProducer::PrimeConnectionCallback callback) {
   if (producer_ != nullptr) {
     producer_->PrimeConnection(callback);
   } else {
@@ -262,7 +231,7 @@ void MediaSourceImpl::Stream::PrimeConnection(
 }
 
 void MediaSourceImpl::Stream::FlushConnection(
-    const MojoProducer::FlushConnectionCallback callback) {
+    const MojoPacketProducer::FlushConnectionCallback callback) {
   if (producer_ != nullptr) {
     producer_->FlushConnection(callback);
   } else {

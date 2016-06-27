@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOJO_SERVICES_MEDIA_FACTORY_MEDIA_DEMUX_IMPL_H_
-#define MOJO_SERVICES_MEDIA_FACTORY_MEDIA_DEMUX_IMPL_H_
+#ifndef SERVICES_MEDIA_FACTORY_SERVICE_MEDIA_DEMUX_IMPL_H_
+#define SERVICES_MEDIA_FACTORY_SERVICE_MEDIA_DEMUX_IMPL_H_
 
 #include <cstdint>
 #include <memory>
@@ -17,7 +17,7 @@
 #include "services/media/factory_service/factory_service.h"
 #include "services/media/framework/graph.h"
 #include "services/media/framework/parts/demux.h"
-#include "services/media/framework_mojo/mojo_producer.h"
+#include "services/media/framework_mojo/mojo_packet_producer.h"
 #include "services/util/cpp/incident.h"
 
 namespace mojo {
@@ -37,8 +37,9 @@ class MediaDemuxImpl : public MediaFactoryService::Product<MediaDemux>,
   // MediaDemux implementation.
   void Describe(const DescribeCallback& callback) override;
 
-  void GetProducer(uint32_t stream_index,
-                   InterfaceRequest<MediaProducer> producer) override;
+  void GetPacketProducer(
+      uint32_t stream_index,
+      InterfaceRequest<MediaPacketProducer> producer) override;
 
   void GetMetadata(uint64_t version_last_seen,
                    const GetMetadataCallback& callback) override;
@@ -66,19 +67,21 @@ class MediaDemuxImpl : public MediaFactoryService::Product<MediaDemux>,
     MediaTypePtr media_type() const;
 
     // Gets the producer.
-    void GetProducer(InterfaceRequest<MediaProducer> producer);
+    void GetPacketProducer(InterfaceRequest<MediaPacketProducer> producer);
 
     // Tells the producer to prime its connection.
-    void PrimeConnection(const MojoProducer::PrimeConnectionCallback callback);
+    void PrimeConnection(
+        const MojoPacketProducer::PrimeConnectionCallback callback);
 
     // Tells the producer to flush its connection.
-    void FlushConnection(const MojoProducer::FlushConnectionCallback callback);
+    void FlushConnection(
+        const MojoPacketProducer::FlushConnectionCallback callback);
 
    private:
     std::unique_ptr<StreamType> stream_type_;
     Graph* graph_;
     OutputRef output_;
-    std::shared_ptr<MojoProducer> producer_;
+    std::shared_ptr<MojoPacketProducer> producer_;
   };
 
   // Handles the completion of demux initialization.
@@ -98,4 +101,4 @@ class MediaDemuxImpl : public MediaFactoryService::Product<MediaDemux>,
 }  // namespace media
 }  // namespace mojo
 
-#endif  // MOJO_SERVICES_MEDIA_FACTORY_MEDIA_DEMUX_IMPL_H_
+#endif  // SERVICES_MEDIA_FACTORY_SERVICE_MEDIA_DEMUX_IMPL_H_

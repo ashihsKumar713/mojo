@@ -18,8 +18,8 @@ interface MediaDemux {
   // Describes the demux.
   Describe() => (array<MediaType> stream_types);
 
-  // Gets the producer for the specified stream.
-  GetProducer(uint32 stream_index, MediaProducer& producer);
+  // Gets the packet producer for the specified stream.
+  GetPacketProducer(uint32 stream_index, MediaPacketProducer& packet_producer);
 
   // Gets the metadata. To get the metadata immediately, call
   // GetMetadata(kInitialMetadata). To get updates thereafter, pass the version

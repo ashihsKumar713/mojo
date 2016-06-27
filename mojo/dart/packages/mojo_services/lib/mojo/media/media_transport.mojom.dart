@@ -179,38 +179,38 @@ class MediaPacket extends bindings.Struct {
 }
 
 
-class _MediaProducerConnectParams extends bindings.Struct {
+class _MediaPacketProducerConnectParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  MediaConsumerInterface consumer = null;
+  MediaPacketConsumerInterface consumer = null;
 
-  _MediaProducerConnectParams() : super(kVersions.last.size);
+  _MediaPacketProducerConnectParams() : super(kVersions.last.size);
 
-  _MediaProducerConnectParams.init(
-    MediaConsumerInterface this.consumer
+  _MediaPacketProducerConnectParams.init(
+    MediaPacketConsumerInterface this.consumer
   ) : super(kVersions.last.size);
 
-  static _MediaProducerConnectParams deserialize(bindings.Message message) =>
+  static _MediaPacketProducerConnectParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaProducerConnectParams decode(bindings.Decoder decoder0) {
+  static _MediaPacketProducerConnectParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaProducerConnectParams result = new _MediaProducerConnectParams();
+    _MediaPacketProducerConnectParams result = new _MediaPacketProducerConnectParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
-      result.consumer = decoder0.decodeServiceInterface(8, false, MediaConsumerProxy.newFromEndpoint);
+      result.consumer = decoder0.decodeServiceInterface(8, false, MediaPacketConsumerProxy.newFromEndpoint);
     }
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaProducerConnectParams";
+    const String structName = "_MediaPacketProducerConnectParams";
     String fieldName;
     try {
       fieldName = "consumer";
@@ -222,7 +222,7 @@ class _MediaProducerConnectParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaProducerConnectParams("
+    return "_MediaPacketProducerConnectParams("
            "consumer: $consumer" ")";
   }
 
@@ -233,24 +233,24 @@ class _MediaProducerConnectParams extends bindings.Struct {
 }
 
 
-class MediaProducerConnectResponseParams extends bindings.Struct {
+class MediaPacketProducerConnectResponseParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(8, 0)
   ];
 
-  MediaProducerConnectResponseParams() : super(kVersions.last.size);
+  MediaPacketProducerConnectResponseParams() : super(kVersions.last.size);
 
-  MediaProducerConnectResponseParams.init(
+  MediaPacketProducerConnectResponseParams.init(
   ) : super(kVersions.last.size);
 
-  static MediaProducerConnectResponseParams deserialize(bindings.Message message) =>
+  static MediaPacketProducerConnectResponseParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static MediaProducerConnectResponseParams decode(bindings.Decoder decoder0) {
+  static MediaPacketProducerConnectResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    MediaProducerConnectResponseParams result = new MediaProducerConnectResponseParams();
+    MediaPacketProducerConnectResponseParams result = new MediaPacketProducerConnectResponseParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
@@ -258,7 +258,7 @@ class MediaProducerConnectResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaProducerConnectResponseParams";
+    const String structName = "MediaPacketProducerConnectResponseParams";
     String fieldName;
     try {
     } on bindings.MojoCodecError catch(e) {
@@ -268,7 +268,7 @@ class MediaProducerConnectResponseParams extends bindings.Struct {
   }
 
   String toString() {
-    return "MediaProducerConnectResponseParams("")";
+    return "MediaPacketProducerConnectResponseParams("")";
   }
 
   Map toJson() {
@@ -278,24 +278,24 @@ class MediaProducerConnectResponseParams extends bindings.Struct {
 }
 
 
-class _MediaProducerDisconnectParams extends bindings.Struct {
+class _MediaPacketProducerDisconnectParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(8, 0)
   ];
 
-  _MediaProducerDisconnectParams() : super(kVersions.last.size);
+  _MediaPacketProducerDisconnectParams() : super(kVersions.last.size);
 
-  _MediaProducerDisconnectParams.init(
+  _MediaPacketProducerDisconnectParams.init(
   ) : super(kVersions.last.size);
 
-  static _MediaProducerDisconnectParams deserialize(bindings.Message message) =>
+  static _MediaPacketProducerDisconnectParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaProducerDisconnectParams decode(bindings.Decoder decoder0) {
+  static _MediaPacketProducerDisconnectParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaProducerDisconnectParams result = new _MediaProducerDisconnectParams();
+    _MediaPacketProducerDisconnectParams result = new _MediaPacketProducerDisconnectParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
@@ -303,7 +303,7 @@ class _MediaProducerDisconnectParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaProducerDisconnectParams";
+    const String structName = "_MediaPacketProducerDisconnectParams";
     String fieldName;
     try {
     } on bindings.MojoCodecError catch(e) {
@@ -313,7 +313,7 @@ class _MediaProducerDisconnectParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaProducerDisconnectParams("")";
+    return "_MediaPacketProducerDisconnectParams("")";
   }
 
   Map toJson() {
@@ -323,71 +323,26 @@ class _MediaProducerDisconnectParams extends bindings.Struct {
 }
 
 
-class _MediaPullModeProducerGetBufferParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(8, 0)
-  ];
-
-  _MediaPullModeProducerGetBufferParams() : super(kVersions.last.size);
-
-  _MediaPullModeProducerGetBufferParams.init(
-  ) : super(kVersions.last.size);
-
-  static _MediaPullModeProducerGetBufferParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static _MediaPullModeProducerGetBufferParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    _MediaPullModeProducerGetBufferParams result = new _MediaPullModeProducerGetBufferParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaPullModeProducerGetBufferParams";
-    String fieldName;
-    try {
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "_MediaPullModeProducerGetBufferParams("")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    return map;
-  }
-}
-
-
-class MediaPullModeProducerGetBufferResponseParams extends bindings.Struct {
+class _MediaPacketConsumerSetBufferParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
   core.MojoSharedBuffer buffer = null;
 
-  MediaPullModeProducerGetBufferResponseParams() : super(kVersions.last.size);
+  _MediaPacketConsumerSetBufferParams() : super(kVersions.last.size);
 
-  MediaPullModeProducerGetBufferResponseParams.init(
+  _MediaPacketConsumerSetBufferParams.init(
     core.MojoSharedBuffer this.buffer
   ) : super(kVersions.last.size);
 
-  static MediaPullModeProducerGetBufferResponseParams deserialize(bindings.Message message) =>
+  static _MediaPacketConsumerSetBufferParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static MediaPullModeProducerGetBufferResponseParams decode(bindings.Decoder decoder0) {
+  static _MediaPacketConsumerSetBufferParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    MediaPullModeProducerGetBufferResponseParams result = new MediaPullModeProducerGetBufferResponseParams();
+    _MediaPacketConsumerSetBufferParams result = new _MediaPacketConsumerSetBufferParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
@@ -399,7 +354,7 @@ class MediaPullModeProducerGetBufferResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaPullModeProducerGetBufferResponseParams";
+    const String structName = "_MediaPacketConsumerSetBufferParams";
     String fieldName;
     try {
       fieldName = "buffer";
@@ -411,7 +366,7 @@ class MediaPullModeProducerGetBufferResponseParams extends bindings.Struct {
   }
 
   String toString() {
-    return "MediaPullModeProducerGetBufferResponseParams("
+    return "_MediaPacketConsumerSetBufferParams("
            "buffer: $buffer" ")";
   }
 
@@ -422,43 +377,34 @@ class MediaPullModeProducerGetBufferResponseParams extends bindings.Struct {
 }
 
 
-class _MediaPullModeProducerPullPacketParams extends bindings.Struct {
+class MediaPacketConsumerSetBufferResponseParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(16, 0)
+    const bindings.StructDataHeader(8, 0)
   ];
-  MediaPacket toRelease = null;
 
-  _MediaPullModeProducerPullPacketParams() : super(kVersions.last.size);
+  MediaPacketConsumerSetBufferResponseParams() : super(kVersions.last.size);
 
-  _MediaPullModeProducerPullPacketParams.init(
-    MediaPacket this.toRelease
+  MediaPacketConsumerSetBufferResponseParams.init(
   ) : super(kVersions.last.size);
 
-  static _MediaPullModeProducerPullPacketParams deserialize(bindings.Message message) =>
+  static MediaPacketConsumerSetBufferResponseParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaPullModeProducerPullPacketParams decode(bindings.Decoder decoder0) {
+  static MediaPacketConsumerSetBufferResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaPullModeProducerPullPacketParams result = new _MediaPullModeProducerPullPacketParams();
+    MediaPacketConsumerSetBufferResponseParams result = new MediaPacketConsumerSetBufferResponseParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
-    if (mainDataHeader.version >= 0) {
-      
-      var decoder1 = decoder0.decodePointer(8, true);
-      result.toRelease = MediaPacket.decode(decoder1);
-    }
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
-    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaPullModeProducerPullPacketParams";
+    encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "MediaPacketConsumerSetBufferResponseParams";
     String fieldName;
     try {
-      fieldName = "toRelease";
-      encoder0.encodeStruct(toRelease, 8, true);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -466,38 +412,36 @@ class _MediaPullModeProducerPullPacketParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaPullModeProducerPullPacketParams("
-           "toRelease: $toRelease" ")";
+    return "MediaPacketConsumerSetBufferResponseParams("")";
   }
 
   Map toJson() {
     Map map = new Map();
-    map["toRelease"] = toRelease;
     return map;
   }
 }
 
 
-class MediaPullModeProducerPullPacketResponseParams extends bindings.Struct {
+class _MediaPacketConsumerSendPacketParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
   MediaPacket packet = null;
 
-  MediaPullModeProducerPullPacketResponseParams() : super(kVersions.last.size);
+  _MediaPacketConsumerSendPacketParams() : super(kVersions.last.size);
 
-  MediaPullModeProducerPullPacketResponseParams.init(
+  _MediaPacketConsumerSendPacketParams.init(
     MediaPacket this.packet
   ) : super(kVersions.last.size);
 
-  static MediaPullModeProducerPullPacketResponseParams deserialize(bindings.Message message) =>
+  static _MediaPacketConsumerSendPacketParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static MediaPullModeProducerPullPacketResponseParams decode(bindings.Decoder decoder0) {
+  static _MediaPacketConsumerSendPacketParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    MediaPullModeProducerPullPacketResponseParams result = new MediaPullModeProducerPullPacketResponseParams();
+    _MediaPacketConsumerSendPacketParams result = new _MediaPacketConsumerSendPacketParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
@@ -510,7 +454,7 @@ class MediaPullModeProducerPullPacketResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaPullModeProducerPullPacketResponseParams";
+    const String structName = "_MediaPacketConsumerSendPacketParams";
     String fieldName;
     try {
       fieldName = "packet";
@@ -522,7 +466,7 @@ class MediaPullModeProducerPullPacketResponseParams extends bindings.Struct {
   }
 
   String toString() {
-    return "MediaPullModeProducerPullPacketResponseParams("
+    return "_MediaPacketConsumerSendPacketParams("
            "packet: $packet" ")";
   }
 
@@ -534,245 +478,34 @@ class MediaPullModeProducerPullPacketResponseParams extends bindings.Struct {
 }
 
 
-class _MediaPullModeProducerReleasePacketParams extends bindings.Struct {
+class MediaPacketConsumerSendPacketResponseParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  MediaPacket toRelease = null;
+  MediaPacketConsumerSendResult result = null;
 
-  _MediaPullModeProducerReleasePacketParams() : super(kVersions.last.size);
+  MediaPacketConsumerSendPacketResponseParams() : super(kVersions.last.size);
 
-  _MediaPullModeProducerReleasePacketParams.init(
-    MediaPacket this.toRelease
+  MediaPacketConsumerSendPacketResponseParams.init(
+    MediaPacketConsumerSendResult this.result
   ) : super(kVersions.last.size);
 
-  static _MediaPullModeProducerReleasePacketParams deserialize(bindings.Message message) =>
+  static MediaPacketConsumerSendPacketResponseParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaPullModeProducerReleasePacketParams decode(bindings.Decoder decoder0) {
+  static MediaPacketConsumerSendPacketResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaPullModeProducerReleasePacketParams result = new _MediaPullModeProducerReleasePacketParams();
+    MediaPacketConsumerSendPacketResponseParams result = new MediaPacketConsumerSendPacketResponseParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
-      var decoder1 = decoder0.decodePointer(8, false);
-      result.toRelease = MediaPacket.decode(decoder1);
-    }
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaPullModeProducerReleasePacketParams";
-    String fieldName;
-    try {
-      fieldName = "toRelease";
-      encoder0.encodeStruct(toRelease, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "_MediaPullModeProducerReleasePacketParams("
-           "toRelease: $toRelease" ")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    map["toRelease"] = toRelease;
-    return map;
-  }
-}
-
-
-class _MediaConsumerSetBufferParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(16, 0)
-  ];
-  core.MojoSharedBuffer buffer = null;
-
-  _MediaConsumerSetBufferParams() : super(kVersions.last.size);
-
-  _MediaConsumerSetBufferParams.init(
-    core.MojoSharedBuffer this.buffer
-  ) : super(kVersions.last.size);
-
-  static _MediaConsumerSetBufferParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static _MediaConsumerSetBufferParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    _MediaConsumerSetBufferParams result = new _MediaConsumerSetBufferParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
-    if (mainDataHeader.version >= 0) {
-      
-      result.buffer = decoder0.decodeSharedBufferHandle(8, false);
-    }
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaConsumerSetBufferParams";
-    String fieldName;
-    try {
-      fieldName = "buffer";
-      encoder0.encodeSharedBufferHandle(buffer, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "_MediaConsumerSetBufferParams("
-           "buffer: $buffer" ")";
-  }
-
-  Map toJson() {
-    throw new bindings.MojoCodecError(
-        'Object containing handles cannot be encoded to JSON.');
-  }
-}
-
-
-class MediaConsumerSetBufferResponseParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(8, 0)
-  ];
-
-  MediaConsumerSetBufferResponseParams() : super(kVersions.last.size);
-
-  MediaConsumerSetBufferResponseParams.init(
-  ) : super(kVersions.last.size);
-
-  static MediaConsumerSetBufferResponseParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static MediaConsumerSetBufferResponseParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    MediaConsumerSetBufferResponseParams result = new MediaConsumerSetBufferResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaConsumerSetBufferResponseParams";
-    String fieldName;
-    try {
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "MediaConsumerSetBufferResponseParams("")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    return map;
-  }
-}
-
-
-class _MediaConsumerSendPacketParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(16, 0)
-  ];
-  MediaPacket packet = null;
-
-  _MediaConsumerSendPacketParams() : super(kVersions.last.size);
-
-  _MediaConsumerSendPacketParams.init(
-    MediaPacket this.packet
-  ) : super(kVersions.last.size);
-
-  static _MediaConsumerSendPacketParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static _MediaConsumerSendPacketParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    _MediaConsumerSendPacketParams result = new _MediaConsumerSendPacketParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
-    if (mainDataHeader.version >= 0) {
-      
-      var decoder1 = decoder0.decodePointer(8, false);
-      result.packet = MediaPacket.decode(decoder1);
-    }
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaConsumerSendPacketParams";
-    String fieldName;
-    try {
-      fieldName = "packet";
-      encoder0.encodeStruct(packet, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "_MediaConsumerSendPacketParams("
-           "packet: $packet" ")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    map["packet"] = packet;
-    return map;
-  }
-}
-
-
-class MediaConsumerSendPacketResponseParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(16, 0)
-  ];
-  MediaConsumerSendResult result = null;
-
-  MediaConsumerSendPacketResponseParams() : super(kVersions.last.size);
-
-  MediaConsumerSendPacketResponseParams.init(
-    MediaConsumerSendResult this.result
-  ) : super(kVersions.last.size);
-
-  static MediaConsumerSendPacketResponseParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static MediaConsumerSendPacketResponseParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    MediaConsumerSendPacketResponseParams result = new MediaConsumerSendPacketResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
-    if (mainDataHeader.version >= 0) {
-      
-        result.result = MediaConsumerSendResult.decode(decoder0, 8);
+        result.result = MediaPacketConsumerSendResult.decode(decoder0, 8);
         if (result.result == null) {
           throw new bindings.MojoCodecError(
-            'Trying to decode null union for non-nullable MediaConsumerSendResult.');
+            'Trying to decode null union for non-nullable MediaPacketConsumerSendResult.');
         }
     }
     return result;
@@ -780,7 +513,7 @@ class MediaConsumerSendPacketResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaConsumerSendPacketResponseParams";
+    const String structName = "MediaPacketConsumerSendPacketResponseParams";
     String fieldName;
     try {
       fieldName = "result";
@@ -792,7 +525,7 @@ class MediaConsumerSendPacketResponseParams extends bindings.Struct {
   }
 
   String toString() {
-    return "MediaConsumerSendPacketResponseParams("
+    return "MediaPacketConsumerSendPacketResponseParams("
            "result: $result" ")";
   }
 
@@ -804,24 +537,24 @@ class MediaConsumerSendPacketResponseParams extends bindings.Struct {
 }
 
 
-class _MediaConsumerPrimeParams extends bindings.Struct {
+class _MediaPacketConsumerPrimeParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(8, 0)
   ];
 
-  _MediaConsumerPrimeParams() : super(kVersions.last.size);
+  _MediaPacketConsumerPrimeParams() : super(kVersions.last.size);
 
-  _MediaConsumerPrimeParams.init(
+  _MediaPacketConsumerPrimeParams.init(
   ) : super(kVersions.last.size);
 
-  static _MediaConsumerPrimeParams deserialize(bindings.Message message) =>
+  static _MediaPacketConsumerPrimeParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaConsumerPrimeParams decode(bindings.Decoder decoder0) {
+  static _MediaPacketConsumerPrimeParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaConsumerPrimeParams result = new _MediaConsumerPrimeParams();
+    _MediaPacketConsumerPrimeParams result = new _MediaPacketConsumerPrimeParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
@@ -829,7 +562,7 @@ class _MediaConsumerPrimeParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaConsumerPrimeParams";
+    const String structName = "_MediaPacketConsumerPrimeParams";
     String fieldName;
     try {
     } on bindings.MojoCodecError catch(e) {
@@ -839,7 +572,7 @@ class _MediaConsumerPrimeParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaConsumerPrimeParams("")";
+    return "_MediaPacketConsumerPrimeParams("")";
   }
 
   Map toJson() {
@@ -849,24 +582,24 @@ class _MediaConsumerPrimeParams extends bindings.Struct {
 }
 
 
-class MediaConsumerPrimeResponseParams extends bindings.Struct {
+class MediaPacketConsumerPrimeResponseParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(8, 0)
   ];
 
-  MediaConsumerPrimeResponseParams() : super(kVersions.last.size);
+  MediaPacketConsumerPrimeResponseParams() : super(kVersions.last.size);
 
-  MediaConsumerPrimeResponseParams.init(
+  MediaPacketConsumerPrimeResponseParams.init(
   ) : super(kVersions.last.size);
 
-  static MediaConsumerPrimeResponseParams deserialize(bindings.Message message) =>
+  static MediaPacketConsumerPrimeResponseParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static MediaConsumerPrimeResponseParams decode(bindings.Decoder decoder0) {
+  static MediaPacketConsumerPrimeResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    MediaConsumerPrimeResponseParams result = new MediaConsumerPrimeResponseParams();
+    MediaPacketConsumerPrimeResponseParams result = new MediaPacketConsumerPrimeResponseParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
@@ -874,7 +607,7 @@ class MediaConsumerPrimeResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaConsumerPrimeResponseParams";
+    const String structName = "MediaPacketConsumerPrimeResponseParams";
     String fieldName;
     try {
     } on bindings.MojoCodecError catch(e) {
@@ -884,7 +617,7 @@ class MediaConsumerPrimeResponseParams extends bindings.Struct {
   }
 
   String toString() {
-    return "MediaConsumerPrimeResponseParams("")";
+    return "MediaPacketConsumerPrimeResponseParams("")";
   }
 
   Map toJson() {
@@ -894,24 +627,24 @@ class MediaConsumerPrimeResponseParams extends bindings.Struct {
 }
 
 
-class _MediaConsumerFlushParams extends bindings.Struct {
+class _MediaPacketConsumerFlushParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(8, 0)
   ];
 
-  _MediaConsumerFlushParams() : super(kVersions.last.size);
+  _MediaPacketConsumerFlushParams() : super(kVersions.last.size);
 
-  _MediaConsumerFlushParams.init(
+  _MediaPacketConsumerFlushParams.init(
   ) : super(kVersions.last.size);
 
-  static _MediaConsumerFlushParams deserialize(bindings.Message message) =>
+  static _MediaPacketConsumerFlushParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaConsumerFlushParams decode(bindings.Decoder decoder0) {
+  static _MediaPacketConsumerFlushParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaConsumerFlushParams result = new _MediaConsumerFlushParams();
+    _MediaPacketConsumerFlushParams result = new _MediaPacketConsumerFlushParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
@@ -919,7 +652,7 @@ class _MediaConsumerFlushParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaConsumerFlushParams";
+    const String structName = "_MediaPacketConsumerFlushParams";
     String fieldName;
     try {
     } on bindings.MojoCodecError catch(e) {
@@ -929,7 +662,7 @@ class _MediaConsumerFlushParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaConsumerFlushParams("")";
+    return "_MediaPacketConsumerFlushParams("")";
   }
 
   Map toJson() {
@@ -939,24 +672,24 @@ class _MediaConsumerFlushParams extends bindings.Struct {
 }
 
 
-class MediaConsumerFlushResponseParams extends bindings.Struct {
+class MediaPacketConsumerFlushResponseParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(8, 0)
   ];
 
-  MediaConsumerFlushResponseParams() : super(kVersions.last.size);
+  MediaPacketConsumerFlushResponseParams() : super(kVersions.last.size);
 
-  MediaConsumerFlushResponseParams.init(
+  MediaPacketConsumerFlushResponseParams.init(
   ) : super(kVersions.last.size);
 
-  static MediaConsumerFlushResponseParams deserialize(bindings.Message message) =>
+  static MediaPacketConsumerFlushResponseParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static MediaConsumerFlushResponseParams decode(bindings.Decoder decoder0) {
+  static MediaPacketConsumerFlushResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    MediaConsumerFlushResponseParams result = new MediaConsumerFlushResponseParams();
+    MediaPacketConsumerFlushResponseParams result = new MediaPacketConsumerFlushResponseParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
@@ -964,7 +697,7 @@ class MediaConsumerFlushResponseParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaConsumerFlushResponseParams";
+    const String structName = "MediaPacketConsumerFlushResponseParams";
     String fieldName;
     try {
     } on bindings.MojoCodecError catch(e) {
@@ -974,7 +707,7 @@ class MediaConsumerFlushResponseParams extends bindings.Struct {
   }
 
   String toString() {
-    return "MediaConsumerFlushResponseParams("")";
+    return "MediaPacketConsumerFlushResponseParams("")";
   }
 
   Map toJson() {
@@ -983,10 +716,10 @@ class MediaConsumerFlushResponseParams extends bindings.Struct {
   }
 }
 
-const int _mediaProducerMethodConnectName = 0;
-const int _mediaProducerMethodDisconnectName = 1;
+const int _mediaPacketProducerMethodConnectName = 0;
+const int _mediaPacketProducerMethodDisconnectName = 1;
 
-class _MediaProducerServiceDescription implements service_describer.ServiceDescription {
+class _MediaPacketProducerServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
     responder(null);
   }
@@ -1000,21 +733,21 @@ class _MediaProducerServiceDescription implements service_describer.ServiceDescr
   }
 }
 
-abstract class MediaProducer {
+abstract class MediaPacketProducer {
   static const String serviceName = null;
 
   static service_describer.ServiceDescription _cachedServiceDescription;
   static service_describer.ServiceDescription get serviceDescription {
     if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _MediaProducerServiceDescription();
+      _cachedServiceDescription = new _MediaPacketProducerServiceDescription();
     }
     return _cachedServiceDescription;
   }
 
-  static MediaProducerProxy connectToService(
+  static MediaPacketProducerProxy connectToService(
       bindings.ServiceConnector s, String url, [String serviceName]) {
-    MediaProducerProxy p = new MediaProducerProxy.unbound();
-    String name = serviceName ?? MediaProducer.serviceName;
+    MediaPacketProducerProxy p = new MediaPacketProducerProxy.unbound();
+    String name = serviceName ?? MediaPacketProducer.serviceName;
     if ((name == null) || name.isEmpty) {
       throw new core.MojoApiError(
           "If an interface has no ServiceName, then one must be provided.");
@@ -1022,54 +755,54 @@ abstract class MediaProducer {
     s.connectToService(url, p, name);
     return p;
   }
-  void connect(MediaConsumerInterface consumer,void callback());
+  void connect(MediaPacketConsumerInterface consumer,void callback());
   void disconnect();
 }
 
-abstract class MediaProducerInterface
-    implements bindings.MojoInterface<MediaProducer>,
-               MediaProducer {
-  factory MediaProducerInterface([MediaProducer impl]) =>
-      new MediaProducerStub.unbound(impl);
+abstract class MediaPacketProducerInterface
+    implements bindings.MojoInterface<MediaPacketProducer>,
+               MediaPacketProducer {
+  factory MediaPacketProducerInterface([MediaPacketProducer impl]) =>
+      new MediaPacketProducerStub.unbound(impl);
 
-  factory MediaProducerInterface.fromEndpoint(
+  factory MediaPacketProducerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
-      [MediaProducer impl]) =>
-      new MediaProducerStub.fromEndpoint(endpoint, impl);
+      [MediaPacketProducer impl]) =>
+      new MediaPacketProducerStub.fromEndpoint(endpoint, impl);
 
-  factory MediaProducerInterface.fromMock(
-      MediaProducer mock) =>
-      new MediaProducerProxy.fromMock(mock);
+  factory MediaPacketProducerInterface.fromMock(
+      MediaPacketProducer mock) =>
+      new MediaPacketProducerProxy.fromMock(mock);
 }
 
-abstract class MediaProducerInterfaceRequest
-    implements bindings.MojoInterface<MediaProducer>,
-               MediaProducer {
-  factory MediaProducerInterfaceRequest() =>
-      new MediaProducerProxy.unbound();
+abstract class MediaPacketProducerInterfaceRequest
+    implements bindings.MojoInterface<MediaPacketProducer>,
+               MediaPacketProducer {
+  factory MediaPacketProducerInterfaceRequest() =>
+      new MediaPacketProducerProxy.unbound();
 }
 
-class _MediaProducerProxyControl
+class _MediaPacketProducerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl<MediaProducer> {
-  MediaProducer impl;
+    implements bindings.ProxyControl<MediaPacketProducer> {
+  MediaPacketProducer impl;
 
-  _MediaProducerProxyControl.fromEndpoint(
+  _MediaPacketProducerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _MediaProducerProxyControl.fromHandle(
+  _MediaPacketProducerProxyControl.fromHandle(
       core.MojoHandle handle) : super.fromHandle(handle);
 
-  _MediaProducerProxyControl.unbound() : super.unbound();
+  _MediaPacketProducerProxyControl.unbound() : super.unbound();
 
-  String get serviceName => MediaProducer.serviceName;
+  String get serviceName => MediaPacketProducer.serviceName;
 
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
-      case _mediaProducerMethodConnectName:
+      case _mediaPacketProducerMethodConnectName:
         Function callback = getCallback(message);
         if (callback != null) {
-          var r = MediaProducerConnectResponseParams.deserialize(
+          var r = MediaPacketProducerConnectResponseParams.deserialize(
               message.payload);
           callback();
         }
@@ -1084,45 +817,45 @@ class _MediaProducerProxyControl
   @override
   String toString() {
     var superString = super.toString();
-    return "_MediaProducerProxyControl($superString)";
+    return "_MediaPacketProducerProxyControl($superString)";
   }
 }
 
-class MediaProducerProxy
-    extends bindings.Proxy<MediaProducer>
-    implements MediaProducer,
-               MediaProducerInterface,
-               MediaProducerInterfaceRequest {
-  MediaProducerProxy.fromEndpoint(
+class MediaPacketProducerProxy
+    extends bindings.Proxy<MediaPacketProducer>
+    implements MediaPacketProducer,
+               MediaPacketProducerInterface,
+               MediaPacketProducerInterfaceRequest {
+  MediaPacketProducerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
-      : super(new _MediaProducerProxyControl.fromEndpoint(endpoint));
+      : super(new _MediaPacketProducerProxyControl.fromEndpoint(endpoint));
 
-  MediaProducerProxy.fromHandle(core.MojoHandle handle)
-      : super(new _MediaProducerProxyControl.fromHandle(handle));
+  MediaPacketProducerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _MediaPacketProducerProxyControl.fromHandle(handle));
 
-  MediaProducerProxy.unbound()
-      : super(new _MediaProducerProxyControl.unbound());
+  MediaPacketProducerProxy.unbound()
+      : super(new _MediaPacketProducerProxyControl.unbound());
 
-  factory MediaProducerProxy.fromMock(MediaProducer mock) {
-    MediaProducerProxy newMockedProxy =
-        new MediaProducerProxy.unbound();
+  factory MediaPacketProducerProxy.fromMock(MediaPacketProducer mock) {
+    MediaPacketProducerProxy newMockedProxy =
+        new MediaPacketProducerProxy.unbound();
     newMockedProxy.impl = mock;
     return newMockedProxy;
   }
 
-  static MediaProducerProxy newFromEndpoint(
+  static MediaPacketProducerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaProducerProxy"));
-    return new MediaProducerProxy.fromEndpoint(endpoint);
+    assert(endpoint.setDescription("For MediaPacketProducerProxy"));
+    return new MediaPacketProducerProxy.fromEndpoint(endpoint);
   }
 
 
-  void connect(MediaConsumerInterface consumer,void callback()) {
+  void connect(MediaPacketConsumerInterface consumer,void callback()) {
     if (impl != null) {
       impl.connect(consumer,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
-    var params = new _MediaProducerConnectParams();
+    var params = new _MediaPacketProducerConnectParams();
     params.consumer = consumer;
     Function zonedCallback;
     if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
@@ -1137,7 +870,7 @@ class MediaProducerProxy
     }
     ctrl.sendMessageWithRequestId(
         params,
-        _mediaProducerMethodConnectName,
+        _mediaPacketProducerMethodConnectName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
         zonedCallback);
@@ -1151,41 +884,41 @@ class MediaProducerProxy
       ctrl.proxyError("The Proxy is closed.");
       return;
     }
-    var params = new _MediaProducerDisconnectParams();
+    var params = new _MediaPacketProducerDisconnectParams();
     ctrl.sendMessage(params,
-        _mediaProducerMethodDisconnectName);
+        _mediaPacketProducerMethodDisconnectName);
   }
 }
 
-class _MediaProducerStubControl
+class _MediaPacketProducerStubControl
     extends bindings.StubMessageHandler
-    implements bindings.StubControl<MediaProducer> {
-  MediaProducer _impl;
+    implements bindings.StubControl<MediaPacketProducer> {
+  MediaPacketProducer _impl;
 
-  _MediaProducerStubControl.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint, [MediaProducer impl])
+  _MediaPacketProducerStubControl.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [MediaPacketProducer impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  _MediaProducerStubControl.fromHandle(
-      core.MojoHandle handle, [MediaProducer impl])
+  _MediaPacketProducerStubControl.fromHandle(
+      core.MojoHandle handle, [MediaPacketProducer impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  _MediaProducerStubControl.unbound([this._impl]) : super.unbound();
+  _MediaPacketProducerStubControl.unbound([this._impl]) : super.unbound();
 
-  String get serviceName => MediaProducer.serviceName;
+  String get serviceName => MediaPacketProducer.serviceName;
 
 
-  Function _mediaProducerConnectResponseParamsResponder(
+  Function _mediaPacketProducerConnectResponseParamsResponder(
       int requestId) {
   return () {
-      var result = new MediaProducerConnectResponseParams();
+      var result = new MediaPacketProducerConnectResponseParams();
       sendResponse(buildResponseWithId(
           result,
-          _mediaProducerMethodConnectName,
+          _mediaPacketProducerMethodConnectName,
           requestId,
           bindings.MessageHeader.kMessageIsResponse));
     };
@@ -1201,12 +934,12 @@ class _MediaProducerStubControl
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
-      case _mediaProducerMethodConnectName:
-        var params = _MediaProducerConnectParams.deserialize(
+      case _mediaPacketProducerMethodConnectName:
+        var params = _MediaPacketProducerConnectParams.deserialize(
             message.payload);
-        _impl.connect(params.consumer, _mediaProducerConnectResponseParamsResponder(message.header.requestId));
+        _impl.connect(params.consumer, _mediaPacketProducerConnectResponseParamsResponder(message.header.requestId));
         break;
-      case _mediaProducerMethodDisconnectName:
+      case _mediaPacketProducerMethodDisconnectName:
         _impl.disconnect();
         break;
       default:
@@ -1215,8 +948,8 @@ class _MediaProducerStubControl
     }
   }
 
-  MediaProducer get impl => _impl;
-  set impl(MediaProducer d) {
+  MediaPacketProducer get impl => _impl;
+  set impl(MediaPacketProducer d) {
     if (d == null) {
       throw new core.MojoApiError("$this: Cannot set a null implementation");
     }
@@ -1237,36 +970,36 @@ class _MediaProducerStubControl
   @override
   String toString() {
     var superString = super.toString();
-    return "_MediaProducerStubControl($superString)";
+    return "_MediaPacketProducerStubControl($superString)";
   }
 
   int get version => 0;
 }
 
-class MediaProducerStub
-    extends bindings.Stub<MediaProducer>
-    implements MediaProducer,
-               MediaProducerInterface,
-               MediaProducerInterfaceRequest {
-  MediaProducerStub.unbound([MediaProducer impl])
-      : super(new _MediaProducerStubControl.unbound(impl));
+class MediaPacketProducerStub
+    extends bindings.Stub<MediaPacketProducer>
+    implements MediaPacketProducer,
+               MediaPacketProducerInterface,
+               MediaPacketProducerInterfaceRequest {
+  MediaPacketProducerStub.unbound([MediaPacketProducer impl])
+      : super(new _MediaPacketProducerStubControl.unbound(impl));
 
-  MediaProducerStub.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint, [MediaProducer impl])
-      : super(new _MediaProducerStubControl.fromEndpoint(endpoint, impl));
+  MediaPacketProducerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [MediaPacketProducer impl])
+      : super(new _MediaPacketProducerStubControl.fromEndpoint(endpoint, impl));
 
-  MediaProducerStub.fromHandle(
-      core.MojoHandle handle, [MediaProducer impl])
-      : super(new _MediaProducerStubControl.fromHandle(handle, impl));
+  MediaPacketProducerStub.fromHandle(
+      core.MojoHandle handle, [MediaPacketProducer impl])
+      : super(new _MediaPacketProducerStubControl.fromHandle(handle, impl));
 
-  static MediaProducerStub newFromEndpoint(
+  static MediaPacketProducerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaProducerStub"));
-    return new MediaProducerStub.fromEndpoint(endpoint);
+    assert(endpoint.setDescription("For MediaPacketProducerStub"));
+    return new MediaPacketProducerStub.fromEndpoint(endpoint);
   }
 
 
-  void connect(MediaConsumerInterface consumer,void callback()) {
+  void connect(MediaPacketConsumerInterface consumer,void callback()) {
     return impl.connect(consumer,callback);
   }
   void disconnect() {
@@ -1274,392 +1007,45 @@ class MediaProducerStub
   }
 }
 
-const int _mediaPullModeProducerMethodGetBufferName = 0;
-const int _mediaPullModeProducerMethodPullPacketName = 1;
-const int _mediaPullModeProducerMethodReleasePacketName = 2;
-
-class _MediaPullModeProducerServiceDescription implements service_describer.ServiceDescription {
-  void getTopLevelInterface(Function responder) {
-    responder(null);
-  }
-
-  void getTypeDefinition(String typeKey, Function responder) {
-    responder(null);
-  }
-
-  void getAllTypeDefinitions(Function responder) {
-    responder(null);
-  }
-}
-
-abstract class MediaPullModeProducer {
-  static const String serviceName = null;
-
-  static service_describer.ServiceDescription _cachedServiceDescription;
-  static service_describer.ServiceDescription get serviceDescription {
-    if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _MediaPullModeProducerServiceDescription();
-    }
-    return _cachedServiceDescription;
-  }
-
-  static MediaPullModeProducerProxy connectToService(
-      bindings.ServiceConnector s, String url, [String serviceName]) {
-    MediaPullModeProducerProxy p = new MediaPullModeProducerProxy.unbound();
-    String name = serviceName ?? MediaPullModeProducer.serviceName;
-    if ((name == null) || name.isEmpty) {
-      throw new core.MojoApiError(
-          "If an interface has no ServiceName, then one must be provided.");
-    }
-    s.connectToService(url, p, name);
-    return p;
-  }
-  void getBuffer(void callback(core.MojoSharedBuffer buffer));
-  void pullPacket(MediaPacket toRelease,void callback(MediaPacket packet));
-  void releasePacket(MediaPacket toRelease);
-}
-
-abstract class MediaPullModeProducerInterface
-    implements bindings.MojoInterface<MediaPullModeProducer>,
-               MediaPullModeProducer {
-  factory MediaPullModeProducerInterface([MediaPullModeProducer impl]) =>
-      new MediaPullModeProducerStub.unbound(impl);
-
-  factory MediaPullModeProducerInterface.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint,
-      [MediaPullModeProducer impl]) =>
-      new MediaPullModeProducerStub.fromEndpoint(endpoint, impl);
-
-  factory MediaPullModeProducerInterface.fromMock(
-      MediaPullModeProducer mock) =>
-      new MediaPullModeProducerProxy.fromMock(mock);
-}
-
-abstract class MediaPullModeProducerInterfaceRequest
-    implements bindings.MojoInterface<MediaPullModeProducer>,
-               MediaPullModeProducer {
-  factory MediaPullModeProducerInterfaceRequest() =>
-      new MediaPullModeProducerProxy.unbound();
-}
-
-class _MediaPullModeProducerProxyControl
-    extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl<MediaPullModeProducer> {
-  MediaPullModeProducer impl;
-
-  _MediaPullModeProducerProxyControl.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
-
-  _MediaPullModeProducerProxyControl.fromHandle(
-      core.MojoHandle handle) : super.fromHandle(handle);
-
-  _MediaPullModeProducerProxyControl.unbound() : super.unbound();
-
-  String get serviceName => MediaPullModeProducer.serviceName;
-
-  void handleResponse(bindings.ServiceMessage message) {
-    switch (message.header.type) {
-      case _mediaPullModeProducerMethodGetBufferName:
-        Function callback = getCallback(message);
-        if (callback != null) {
-          var r = MediaPullModeProducerGetBufferResponseParams.deserialize(
-              message.payload);
-          callback(r.buffer );
-        }
-        break;
-      case _mediaPullModeProducerMethodPullPacketName:
-        Function callback = getCallback(message);
-        if (callback != null) {
-          var r = MediaPullModeProducerPullPacketResponseParams.deserialize(
-              message.payload);
-          callback(r.packet );
-        }
-        break;
-      default:
-        proxyError("Unexpected message type: ${message.header.type}");
-        close(immediate: true);
-        break;
-    }
-  }
-
-  @override
-  String toString() {
-    var superString = super.toString();
-    return "_MediaPullModeProducerProxyControl($superString)";
-  }
-}
-
-class MediaPullModeProducerProxy
-    extends bindings.Proxy<MediaPullModeProducer>
-    implements MediaPullModeProducer,
-               MediaPullModeProducerInterface,
-               MediaPullModeProducerInterfaceRequest {
-  MediaPullModeProducerProxy.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint)
-      : super(new _MediaPullModeProducerProxyControl.fromEndpoint(endpoint));
-
-  MediaPullModeProducerProxy.fromHandle(core.MojoHandle handle)
-      : super(new _MediaPullModeProducerProxyControl.fromHandle(handle));
-
-  MediaPullModeProducerProxy.unbound()
-      : super(new _MediaPullModeProducerProxyControl.unbound());
-
-  factory MediaPullModeProducerProxy.fromMock(MediaPullModeProducer mock) {
-    MediaPullModeProducerProxy newMockedProxy =
-        new MediaPullModeProducerProxy.unbound();
-    newMockedProxy.impl = mock;
-    return newMockedProxy;
-  }
-
-  static MediaPullModeProducerProxy newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaPullModeProducerProxy"));
-    return new MediaPullModeProducerProxy.fromEndpoint(endpoint);
-  }
-
-
-  void getBuffer(void callback(core.MojoSharedBuffer buffer)) {
-    if (impl != null) {
-      impl.getBuffer(callback ?? bindings.DoNothingFunction.fn);
-      return;
-    }
-    var params = new _MediaPullModeProducerGetBufferParams();
-    Function zonedCallback;
-    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
-      zonedCallback = callback;
-    } else {
-      Zone z = Zone.current;
-      zonedCallback = ((core.MojoSharedBuffer buffer) {
-        z.bindCallback(() {
-          callback(buffer);
-        })();
-      });
-    }
-    ctrl.sendMessageWithRequestId(
-        params,
-        _mediaPullModeProducerMethodGetBufferName,
-        -1,
-        bindings.MessageHeader.kMessageExpectsResponse,
-        zonedCallback);
-  }
-  void pullPacket(MediaPacket toRelease,void callback(MediaPacket packet)) {
-    if (impl != null) {
-      impl.pullPacket(toRelease,callback ?? bindings.DoNothingFunction.fn);
-      return;
-    }
-    var params = new _MediaPullModeProducerPullPacketParams();
-    params.toRelease = toRelease;
-    Function zonedCallback;
-    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
-      zonedCallback = callback;
-    } else {
-      Zone z = Zone.current;
-      zonedCallback = ((MediaPacket packet) {
-        z.bindCallback(() {
-          callback(packet);
-        })();
-      });
-    }
-    ctrl.sendMessageWithRequestId(
-        params,
-        _mediaPullModeProducerMethodPullPacketName,
-        -1,
-        bindings.MessageHeader.kMessageExpectsResponse,
-        zonedCallback);
-  }
-  void releasePacket(MediaPacket toRelease) {
-    if (impl != null) {
-      impl.releasePacket(toRelease);
-      return;
-    }
-    if (!ctrl.isBound) {
-      ctrl.proxyError("The Proxy is closed.");
-      return;
-    }
-    var params = new _MediaPullModeProducerReleasePacketParams();
-    params.toRelease = toRelease;
-    ctrl.sendMessage(params,
-        _mediaPullModeProducerMethodReleasePacketName);
-  }
-}
-
-class _MediaPullModeProducerStubControl
-    extends bindings.StubMessageHandler
-    implements bindings.StubControl<MediaPullModeProducer> {
-  MediaPullModeProducer _impl;
-
-  _MediaPullModeProducerStubControl.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint, [MediaPullModeProducer impl])
-      : super.fromEndpoint(endpoint, autoBegin: impl != null) {
-    _impl = impl;
-  }
-
-  _MediaPullModeProducerStubControl.fromHandle(
-      core.MojoHandle handle, [MediaPullModeProducer impl])
-      : super.fromHandle(handle, autoBegin: impl != null) {
-    _impl = impl;
-  }
-
-  _MediaPullModeProducerStubControl.unbound([this._impl]) : super.unbound();
-
-  String get serviceName => MediaPullModeProducer.serviceName;
-
-
-  Function _mediaPullModeProducerGetBufferResponseParamsResponder(
-      int requestId) {
-  return (core.MojoSharedBuffer buffer) {
-      var result = new MediaPullModeProducerGetBufferResponseParams();
-      result.buffer = buffer;
-      sendResponse(buildResponseWithId(
-          result,
-          _mediaPullModeProducerMethodGetBufferName,
-          requestId,
-          bindings.MessageHeader.kMessageIsResponse));
-    };
-  }
-  Function _mediaPullModeProducerPullPacketResponseParamsResponder(
-      int requestId) {
-  return (MediaPacket packet) {
-      var result = new MediaPullModeProducerPullPacketResponseParams();
-      result.packet = packet;
-      sendResponse(buildResponseWithId(
-          result,
-          _mediaPullModeProducerMethodPullPacketName,
-          requestId,
-          bindings.MessageHeader.kMessageIsResponse));
-    };
-  }
-
-  void handleMessage(bindings.ServiceMessage message) {
-    if (bindings.ControlMessageHandler.isControlMessage(message)) {
-      bindings.ControlMessageHandler.handleMessage(
-          this, 0, message);
-      return;
-    }
-    if (_impl == null) {
-      throw new core.MojoApiError("$this has no implementation set");
-    }
-    switch (message.header.type) {
-      case _mediaPullModeProducerMethodGetBufferName:
-        _impl.getBuffer(_mediaPullModeProducerGetBufferResponseParamsResponder(message.header.requestId));
-        break;
-      case _mediaPullModeProducerMethodPullPacketName:
-        var params = _MediaPullModeProducerPullPacketParams.deserialize(
-            message.payload);
-        _impl.pullPacket(params.toRelease, _mediaPullModeProducerPullPacketResponseParamsResponder(message.header.requestId));
-        break;
-      case _mediaPullModeProducerMethodReleasePacketName:
-        var params = _MediaPullModeProducerReleasePacketParams.deserialize(
-            message.payload);
-        _impl.releasePacket(params.toRelease);
-        break;
-      default:
-        throw new bindings.MojoCodecError("Unexpected message name");
-        break;
-    }
-  }
-
-  MediaPullModeProducer get impl => _impl;
-  set impl(MediaPullModeProducer d) {
-    if (d == null) {
-      throw new core.MojoApiError("$this: Cannot set a null implementation");
-    }
-    if (isBound && (_impl == null)) {
-      beginHandlingEvents();
-    }
-    _impl = d;
-  }
-
-  @override
-  void bind(core.MojoMessagePipeEndpoint endpoint) {
-    super.bind(endpoint);
-    if (!isOpen && (_impl != null)) {
-      beginHandlingEvents();
-    }
-  }
-
-  @override
-  String toString() {
-    var superString = super.toString();
-    return "_MediaPullModeProducerStubControl($superString)";
-  }
-
-  int get version => 0;
-}
-
-class MediaPullModeProducerStub
-    extends bindings.Stub<MediaPullModeProducer>
-    implements MediaPullModeProducer,
-               MediaPullModeProducerInterface,
-               MediaPullModeProducerInterfaceRequest {
-  MediaPullModeProducerStub.unbound([MediaPullModeProducer impl])
-      : super(new _MediaPullModeProducerStubControl.unbound(impl));
-
-  MediaPullModeProducerStub.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint, [MediaPullModeProducer impl])
-      : super(new _MediaPullModeProducerStubControl.fromEndpoint(endpoint, impl));
-
-  MediaPullModeProducerStub.fromHandle(
-      core.MojoHandle handle, [MediaPullModeProducer impl])
-      : super(new _MediaPullModeProducerStubControl.fromHandle(handle, impl));
-
-  static MediaPullModeProducerStub newFromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaPullModeProducerStub"));
-    return new MediaPullModeProducerStub.fromEndpoint(endpoint);
-  }
-
-
-  void getBuffer(void callback(core.MojoSharedBuffer buffer)) {
-    return impl.getBuffer(callback);
-  }
-  void pullPacket(MediaPacket toRelease,void callback(MediaPacket packet)) {
-    return impl.pullPacket(toRelease,callback);
-  }
-  void releasePacket(MediaPacket toRelease) {
-    return impl.releasePacket(toRelease);
-  }
-}
-
-const int _mediaConsumerMethodSetBufferName = 0;
-const int _mediaConsumerMethodSendPacketName = 1;
-const int _mediaConsumerMethodPrimeName = 2;
-const int _mediaConsumerMethodFlushName = 3;
+const int _mediaPacketConsumerMethodSetBufferName = 0;
+const int _mediaPacketConsumerMethodSendPacketName = 1;
+const int _mediaPacketConsumerMethodPrimeName = 2;
+const int _mediaPacketConsumerMethodFlushName = 3;
   
-class MediaConsumerSendResult extends bindings.MojoEnum {
-  static const MediaConsumerSendResult consumed = const MediaConsumerSendResult._(0);
-  static const MediaConsumerSendResult flushed = const MediaConsumerSendResult._(1);
+class MediaPacketConsumerSendResult extends bindings.MojoEnum {
+  static const MediaPacketConsumerSendResult consumed = const MediaPacketConsumerSendResult._(0);
+  static const MediaPacketConsumerSendResult flushed = const MediaPacketConsumerSendResult._(1);
 
-  const MediaConsumerSendResult._(int v) : super(v);
+  const MediaPacketConsumerSendResult._(int v) : super(v);
 
-  static const Map<String, MediaConsumerSendResult> valuesMap = const {
+  static const Map<String, MediaPacketConsumerSendResult> valuesMap = const {
     "consumed": consumed,
     "flushed": flushed,
   };
-  static const List<MediaConsumerSendResult> values = const [
+  static const List<MediaPacketConsumerSendResult> values = const [
     consumed,
     flushed,
   ];
 
-  static MediaConsumerSendResult valueOf(String name) => valuesMap[name];
+  static MediaPacketConsumerSendResult valueOf(String name) => valuesMap[name];
 
-  factory MediaConsumerSendResult(int v) {
+  factory MediaPacketConsumerSendResult(int v) {
     switch (v) {
       case 0:
-        return MediaConsumerSendResult.consumed;
+        return MediaPacketConsumerSendResult.consumed;
       case 1:
-        return MediaConsumerSendResult.flushed;
+        return MediaPacketConsumerSendResult.flushed;
       default:
         return null;
     }
   }
 
-  static MediaConsumerSendResult decode(bindings.Decoder decoder0, int offset) {
+  static MediaPacketConsumerSendResult decode(bindings.Decoder decoder0, int offset) {
     int v = decoder0.decodeUint32(offset);
-    MediaConsumerSendResult result = new MediaConsumerSendResult(v);
+    MediaPacketConsumerSendResult result = new MediaPacketConsumerSendResult(v);
     if (result == null) {
       throw new bindings.MojoCodecError(
-          'Bad value $v for enum MediaConsumerSendResult.');
+          'Bad value $v for enum MediaPacketConsumerSendResult.');
     }
     return result;
   }
@@ -1667,9 +1053,9 @@ class MediaConsumerSendResult extends bindings.MojoEnum {
   String toString() {
     switch(this) {
       case consumed:
-        return 'MediaConsumerSendResult.consumed';
+        return 'MediaPacketConsumerSendResult.consumed';
       case flushed:
-        return 'MediaConsumerSendResult.flushed';
+        return 'MediaPacketConsumerSendResult.flushed';
       default:
         return null;
     }
@@ -1678,7 +1064,7 @@ class MediaConsumerSendResult extends bindings.MojoEnum {
   int toJson() => mojoEnumValue;
 }
 
-class _MediaConsumerServiceDescription implements service_describer.ServiceDescription {
+class _MediaPacketConsumerServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
     responder(null);
   }
@@ -1692,21 +1078,21 @@ class _MediaConsumerServiceDescription implements service_describer.ServiceDescr
   }
 }
 
-abstract class MediaConsumer {
+abstract class MediaPacketConsumer {
   static const String serviceName = null;
 
   static service_describer.ServiceDescription _cachedServiceDescription;
   static service_describer.ServiceDescription get serviceDescription {
     if (_cachedServiceDescription == null) {
-      _cachedServiceDescription = new _MediaConsumerServiceDescription();
+      _cachedServiceDescription = new _MediaPacketConsumerServiceDescription();
     }
     return _cachedServiceDescription;
   }
 
-  static MediaConsumerProxy connectToService(
+  static MediaPacketConsumerProxy connectToService(
       bindings.ServiceConnector s, String url, [String serviceName]) {
-    MediaConsumerProxy p = new MediaConsumerProxy.unbound();
-    String name = serviceName ?? MediaConsumer.serviceName;
+    MediaPacketConsumerProxy p = new MediaPacketConsumerProxy.unbound();
+    String name = serviceName ?? MediaPacketConsumer.serviceName;
     if ((name == null) || name.isEmpty) {
       throw new core.MojoApiError(
           "If an interface has no ServiceName, then one must be provided.");
@@ -1715,80 +1101,80 @@ abstract class MediaConsumer {
     return p;
   }
   void setBuffer(core.MojoSharedBuffer buffer,void callback());
-  void sendPacket(MediaPacket packet,void callback(MediaConsumerSendResult result));
+  void sendPacket(MediaPacket packet,void callback(MediaPacketConsumerSendResult result));
   void prime(void callback());
   void flush(void callback());
   static const int kMaxBufferLen = 4611686018427387903;
 }
 
-abstract class MediaConsumerInterface
-    implements bindings.MojoInterface<MediaConsumer>,
-               MediaConsumer {
-  factory MediaConsumerInterface([MediaConsumer impl]) =>
-      new MediaConsumerStub.unbound(impl);
+abstract class MediaPacketConsumerInterface
+    implements bindings.MojoInterface<MediaPacketConsumer>,
+               MediaPacketConsumer {
+  factory MediaPacketConsumerInterface([MediaPacketConsumer impl]) =>
+      new MediaPacketConsumerStub.unbound(impl);
 
-  factory MediaConsumerInterface.fromEndpoint(
+  factory MediaPacketConsumerInterface.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint,
-      [MediaConsumer impl]) =>
-      new MediaConsumerStub.fromEndpoint(endpoint, impl);
+      [MediaPacketConsumer impl]) =>
+      new MediaPacketConsumerStub.fromEndpoint(endpoint, impl);
 
-  factory MediaConsumerInterface.fromMock(
-      MediaConsumer mock) =>
-      new MediaConsumerProxy.fromMock(mock);
+  factory MediaPacketConsumerInterface.fromMock(
+      MediaPacketConsumer mock) =>
+      new MediaPacketConsumerProxy.fromMock(mock);
 }
 
-abstract class MediaConsumerInterfaceRequest
-    implements bindings.MojoInterface<MediaConsumer>,
-               MediaConsumer {
-  factory MediaConsumerInterfaceRequest() =>
-      new MediaConsumerProxy.unbound();
+abstract class MediaPacketConsumerInterfaceRequest
+    implements bindings.MojoInterface<MediaPacketConsumer>,
+               MediaPacketConsumer {
+  factory MediaPacketConsumerInterfaceRequest() =>
+      new MediaPacketConsumerProxy.unbound();
 }
 
-class _MediaConsumerProxyControl
+class _MediaPacketConsumerProxyControl
     extends bindings.ProxyMessageHandler
-    implements bindings.ProxyControl<MediaConsumer> {
-  MediaConsumer impl;
+    implements bindings.ProxyControl<MediaPacketConsumer> {
+  MediaPacketConsumer impl;
 
-  _MediaConsumerProxyControl.fromEndpoint(
+  _MediaPacketConsumerProxyControl.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) : super.fromEndpoint(endpoint);
 
-  _MediaConsumerProxyControl.fromHandle(
+  _MediaPacketConsumerProxyControl.fromHandle(
       core.MojoHandle handle) : super.fromHandle(handle);
 
-  _MediaConsumerProxyControl.unbound() : super.unbound();
+  _MediaPacketConsumerProxyControl.unbound() : super.unbound();
 
-  String get serviceName => MediaConsumer.serviceName;
+  String get serviceName => MediaPacketConsumer.serviceName;
 
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
-      case _mediaConsumerMethodSetBufferName:
+      case _mediaPacketConsumerMethodSetBufferName:
         Function callback = getCallback(message);
         if (callback != null) {
-          var r = MediaConsumerSetBufferResponseParams.deserialize(
+          var r = MediaPacketConsumerSetBufferResponseParams.deserialize(
               message.payload);
           callback();
         }
         break;
-      case _mediaConsumerMethodSendPacketName:
+      case _mediaPacketConsumerMethodSendPacketName:
         Function callback = getCallback(message);
         if (callback != null) {
-          var r = MediaConsumerSendPacketResponseParams.deserialize(
+          var r = MediaPacketConsumerSendPacketResponseParams.deserialize(
               message.payload);
           callback(r.result );
         }
         break;
-      case _mediaConsumerMethodPrimeName:
+      case _mediaPacketConsumerMethodPrimeName:
         Function callback = getCallback(message);
         if (callback != null) {
-          var r = MediaConsumerPrimeResponseParams.deserialize(
+          var r = MediaPacketConsumerPrimeResponseParams.deserialize(
               message.payload);
           callback();
         }
         break;
-      case _mediaConsumerMethodFlushName:
+      case _mediaPacketConsumerMethodFlushName:
         Function callback = getCallback(message);
         if (callback != null) {
-          var r = MediaConsumerFlushResponseParams.deserialize(
+          var r = MediaPacketConsumerFlushResponseParams.deserialize(
               message.payload);
           callback();
         }
@@ -1803,36 +1189,36 @@ class _MediaConsumerProxyControl
   @override
   String toString() {
     var superString = super.toString();
-    return "_MediaConsumerProxyControl($superString)";
+    return "_MediaPacketConsumerProxyControl($superString)";
   }
 }
 
-class MediaConsumerProxy
-    extends bindings.Proxy<MediaConsumer>
-    implements MediaConsumer,
-               MediaConsumerInterface,
-               MediaConsumerInterfaceRequest {
-  MediaConsumerProxy.fromEndpoint(
+class MediaPacketConsumerProxy
+    extends bindings.Proxy<MediaPacketConsumer>
+    implements MediaPacketConsumer,
+               MediaPacketConsumerInterface,
+               MediaPacketConsumerInterfaceRequest {
+  MediaPacketConsumerProxy.fromEndpoint(
       core.MojoMessagePipeEndpoint endpoint)
-      : super(new _MediaConsumerProxyControl.fromEndpoint(endpoint));
+      : super(new _MediaPacketConsumerProxyControl.fromEndpoint(endpoint));
 
-  MediaConsumerProxy.fromHandle(core.MojoHandle handle)
-      : super(new _MediaConsumerProxyControl.fromHandle(handle));
+  MediaPacketConsumerProxy.fromHandle(core.MojoHandle handle)
+      : super(new _MediaPacketConsumerProxyControl.fromHandle(handle));
 
-  MediaConsumerProxy.unbound()
-      : super(new _MediaConsumerProxyControl.unbound());
+  MediaPacketConsumerProxy.unbound()
+      : super(new _MediaPacketConsumerProxyControl.unbound());
 
-  factory MediaConsumerProxy.fromMock(MediaConsumer mock) {
-    MediaConsumerProxy newMockedProxy =
-        new MediaConsumerProxy.unbound();
+  factory MediaPacketConsumerProxy.fromMock(MediaPacketConsumer mock) {
+    MediaPacketConsumerProxy newMockedProxy =
+        new MediaPacketConsumerProxy.unbound();
     newMockedProxy.impl = mock;
     return newMockedProxy;
   }
 
-  static MediaConsumerProxy newFromEndpoint(
+  static MediaPacketConsumerProxy newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaConsumerProxy"));
-    return new MediaConsumerProxy.fromEndpoint(endpoint);
+    assert(endpoint.setDescription("For MediaPacketConsumerProxy"));
+    return new MediaPacketConsumerProxy.fromEndpoint(endpoint);
   }
 
 
@@ -1841,7 +1227,7 @@ class MediaConsumerProxy
       impl.setBuffer(buffer,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
-    var params = new _MediaConsumerSetBufferParams();
+    var params = new _MediaPacketConsumerSetBufferParams();
     params.buffer = buffer;
     Function zonedCallback;
     if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
@@ -1856,24 +1242,24 @@ class MediaConsumerProxy
     }
     ctrl.sendMessageWithRequestId(
         params,
-        _mediaConsumerMethodSetBufferName,
+        _mediaPacketConsumerMethodSetBufferName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
         zonedCallback);
   }
-  void sendPacket(MediaPacket packet,void callback(MediaConsumerSendResult result)) {
+  void sendPacket(MediaPacket packet,void callback(MediaPacketConsumerSendResult result)) {
     if (impl != null) {
       impl.sendPacket(packet,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
-    var params = new _MediaConsumerSendPacketParams();
+    var params = new _MediaPacketConsumerSendPacketParams();
     params.packet = packet;
     Function zonedCallback;
     if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
-      zonedCallback = ((MediaConsumerSendResult result) {
+      zonedCallback = ((MediaPacketConsumerSendResult result) {
         z.bindCallback(() {
           callback(result);
         })();
@@ -1881,7 +1267,7 @@ class MediaConsumerProxy
     }
     ctrl.sendMessageWithRequestId(
         params,
-        _mediaConsumerMethodSendPacketName,
+        _mediaPacketConsumerMethodSendPacketName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
         zonedCallback);
@@ -1891,7 +1277,7 @@ class MediaConsumerProxy
       impl.prime(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
-    var params = new _MediaConsumerPrimeParams();
+    var params = new _MediaPacketConsumerPrimeParams();
     Function zonedCallback;
     if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
@@ -1905,7 +1291,7 @@ class MediaConsumerProxy
     }
     ctrl.sendMessageWithRequestId(
         params,
-        _mediaConsumerMethodPrimeName,
+        _mediaPacketConsumerMethodPrimeName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
         zonedCallback);
@@ -1915,7 +1301,7 @@ class MediaConsumerProxy
       impl.flush(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
-    var params = new _MediaConsumerFlushParams();
+    var params = new _MediaPacketConsumerFlushParams();
     Function zonedCallback;
     if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
@@ -1929,76 +1315,76 @@ class MediaConsumerProxy
     }
     ctrl.sendMessageWithRequestId(
         params,
-        _mediaConsumerMethodFlushName,
+        _mediaPacketConsumerMethodFlushName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
         zonedCallback);
   }
 }
 
-class _MediaConsumerStubControl
+class _MediaPacketConsumerStubControl
     extends bindings.StubMessageHandler
-    implements bindings.StubControl<MediaConsumer> {
-  MediaConsumer _impl;
+    implements bindings.StubControl<MediaPacketConsumer> {
+  MediaPacketConsumer _impl;
 
-  _MediaConsumerStubControl.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint, [MediaConsumer impl])
+  _MediaPacketConsumerStubControl.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [MediaPacketConsumer impl])
       : super.fromEndpoint(endpoint, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  _MediaConsumerStubControl.fromHandle(
-      core.MojoHandle handle, [MediaConsumer impl])
+  _MediaPacketConsumerStubControl.fromHandle(
+      core.MojoHandle handle, [MediaPacketConsumer impl])
       : super.fromHandle(handle, autoBegin: impl != null) {
     _impl = impl;
   }
 
-  _MediaConsumerStubControl.unbound([this._impl]) : super.unbound();
+  _MediaPacketConsumerStubControl.unbound([this._impl]) : super.unbound();
 
-  String get serviceName => MediaConsumer.serviceName;
+  String get serviceName => MediaPacketConsumer.serviceName;
 
 
-  Function _mediaConsumerSetBufferResponseParamsResponder(
+  Function _mediaPacketConsumerSetBufferResponseParamsResponder(
       int requestId) {
   return () {
-      var result = new MediaConsumerSetBufferResponseParams();
+      var result = new MediaPacketConsumerSetBufferResponseParams();
       sendResponse(buildResponseWithId(
           result,
-          _mediaConsumerMethodSetBufferName,
+          _mediaPacketConsumerMethodSetBufferName,
           requestId,
           bindings.MessageHeader.kMessageIsResponse));
     };
   }
-  Function _mediaConsumerSendPacketResponseParamsResponder(
+  Function _mediaPacketConsumerSendPacketResponseParamsResponder(
       int requestId) {
-  return (MediaConsumerSendResult result) {
-      var result = new MediaConsumerSendPacketResponseParams();
+  return (MediaPacketConsumerSendResult result) {
+      var result = new MediaPacketConsumerSendPacketResponseParams();
       result.result = result;
       sendResponse(buildResponseWithId(
           result,
-          _mediaConsumerMethodSendPacketName,
+          _mediaPacketConsumerMethodSendPacketName,
           requestId,
           bindings.MessageHeader.kMessageIsResponse));
     };
   }
-  Function _mediaConsumerPrimeResponseParamsResponder(
+  Function _mediaPacketConsumerPrimeResponseParamsResponder(
       int requestId) {
   return () {
-      var result = new MediaConsumerPrimeResponseParams();
+      var result = new MediaPacketConsumerPrimeResponseParams();
       sendResponse(buildResponseWithId(
           result,
-          _mediaConsumerMethodPrimeName,
+          _mediaPacketConsumerMethodPrimeName,
           requestId,
           bindings.MessageHeader.kMessageIsResponse));
     };
   }
-  Function _mediaConsumerFlushResponseParamsResponder(
+  Function _mediaPacketConsumerFlushResponseParamsResponder(
       int requestId) {
   return () {
-      var result = new MediaConsumerFlushResponseParams();
+      var result = new MediaPacketConsumerFlushResponseParams();
       sendResponse(buildResponseWithId(
           result,
-          _mediaConsumerMethodFlushName,
+          _mediaPacketConsumerMethodFlushName,
           requestId,
           bindings.MessageHeader.kMessageIsResponse));
     };
@@ -2014,21 +1400,21 @@ class _MediaConsumerStubControl
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
-      case _mediaConsumerMethodSetBufferName:
-        var params = _MediaConsumerSetBufferParams.deserialize(
+      case _mediaPacketConsumerMethodSetBufferName:
+        var params = _MediaPacketConsumerSetBufferParams.deserialize(
             message.payload);
-        _impl.setBuffer(params.buffer, _mediaConsumerSetBufferResponseParamsResponder(message.header.requestId));
+        _impl.setBuffer(params.buffer, _mediaPacketConsumerSetBufferResponseParamsResponder(message.header.requestId));
         break;
-      case _mediaConsumerMethodSendPacketName:
-        var params = _MediaConsumerSendPacketParams.deserialize(
+      case _mediaPacketConsumerMethodSendPacketName:
+        var params = _MediaPacketConsumerSendPacketParams.deserialize(
             message.payload);
-        _impl.sendPacket(params.packet, _mediaConsumerSendPacketResponseParamsResponder(message.header.requestId));
+        _impl.sendPacket(params.packet, _mediaPacketConsumerSendPacketResponseParamsResponder(message.header.requestId));
         break;
-      case _mediaConsumerMethodPrimeName:
-        _impl.prime(_mediaConsumerPrimeResponseParamsResponder(message.header.requestId));
+      case _mediaPacketConsumerMethodPrimeName:
+        _impl.prime(_mediaPacketConsumerPrimeResponseParamsResponder(message.header.requestId));
         break;
-      case _mediaConsumerMethodFlushName:
-        _impl.flush(_mediaConsumerFlushResponseParamsResponder(message.header.requestId));
+      case _mediaPacketConsumerMethodFlushName:
+        _impl.flush(_mediaPacketConsumerFlushResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
@@ -2036,8 +1422,8 @@ class _MediaConsumerStubControl
     }
   }
 
-  MediaConsumer get impl => _impl;
-  set impl(MediaConsumer d) {
+  MediaPacketConsumer get impl => _impl;
+  set impl(MediaPacketConsumer d) {
     if (d == null) {
       throw new core.MojoApiError("$this: Cannot set a null implementation");
     }
@@ -2058,39 +1444,39 @@ class _MediaConsumerStubControl
   @override
   String toString() {
     var superString = super.toString();
-    return "_MediaConsumerStubControl($superString)";
+    return "_MediaPacketConsumerStubControl($superString)";
   }
 
   int get version => 0;
 }
 
-class MediaConsumerStub
-    extends bindings.Stub<MediaConsumer>
-    implements MediaConsumer,
-               MediaConsumerInterface,
-               MediaConsumerInterfaceRequest {
-  MediaConsumerStub.unbound([MediaConsumer impl])
-      : super(new _MediaConsumerStubControl.unbound(impl));
+class MediaPacketConsumerStub
+    extends bindings.Stub<MediaPacketConsumer>
+    implements MediaPacketConsumer,
+               MediaPacketConsumerInterface,
+               MediaPacketConsumerInterfaceRequest {
+  MediaPacketConsumerStub.unbound([MediaPacketConsumer impl])
+      : super(new _MediaPacketConsumerStubControl.unbound(impl));
 
-  MediaConsumerStub.fromEndpoint(
-      core.MojoMessagePipeEndpoint endpoint, [MediaConsumer impl])
-      : super(new _MediaConsumerStubControl.fromEndpoint(endpoint, impl));
+  MediaPacketConsumerStub.fromEndpoint(
+      core.MojoMessagePipeEndpoint endpoint, [MediaPacketConsumer impl])
+      : super(new _MediaPacketConsumerStubControl.fromEndpoint(endpoint, impl));
 
-  MediaConsumerStub.fromHandle(
-      core.MojoHandle handle, [MediaConsumer impl])
-      : super(new _MediaConsumerStubControl.fromHandle(handle, impl));
+  MediaPacketConsumerStub.fromHandle(
+      core.MojoHandle handle, [MediaPacketConsumer impl])
+      : super(new _MediaPacketConsumerStubControl.fromHandle(handle, impl));
 
-  static MediaConsumerStub newFromEndpoint(
+  static MediaPacketConsumerStub newFromEndpoint(
       core.MojoMessagePipeEndpoint endpoint) {
-    assert(endpoint.setDescription("For MediaConsumerStub"));
-    return new MediaConsumerStub.fromEndpoint(endpoint);
+    assert(endpoint.setDescription("For MediaPacketConsumerStub"));
+    return new MediaPacketConsumerStub.fromEndpoint(endpoint);
   }
 
 
   void setBuffer(core.MojoSharedBuffer buffer,void callback()) {
     return impl.setBuffer(buffer,callback);
   }
-  void sendPacket(MediaPacket packet,void callback(MediaConsumerSendResult result)) {
+  void sendPacket(MediaPacket packet,void callback(MediaPacketConsumerSendResult result)) {
     return impl.sendPacket(packet,callback);
   }
   void prime(void callback()) {

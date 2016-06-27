@@ -25,8 +25,8 @@ MediaSinkImpl::MediaSinkImpl(InterfaceHandle<MediaRenderer> renderer,
                              InterfaceRequest<MediaSink> request,
                              MediaFactoryService* owner)
     : MediaFactoryService::Product<MediaSink>(this, request.Pass(), owner),
-      consumer_(MojoConsumer::Create()),
-      producer_(MojoProducer::Create()),
+      consumer_(MojoPacketConsumer::Create()),
+      producer_(MojoPacketProducer::Create()),
       renderer_(MediaRendererPtr::Create(renderer.Pass())) {
   DCHECK(renderer_);
   DCHECK(media_type);
@@ -35,14 +35,14 @@ MediaSinkImpl::MediaSinkImpl(InterfaceHandle<MediaRenderer> renderer,
   PartRef producer_ref = graph_.Add(producer_);
 
   consumer_->SetPrimeRequestedCallback(
-      [this](const MediaConsumer::PrimeCallback& callback) {
+      [this](const MediaPacketConsumer::PrimeCallback& callback) {
         ready_.When([this, callback]() {
           DCHECK(producer_);
           producer_->PrimeConnection(callback);
         });
       });
   consumer_->SetFlushRequestedCallback(
-      [this, consumer_ref](const MediaConsumer::FlushCallback& callback) {
+      [this, consumer_ref](const MediaPacketConsumer::FlushCallback& callback) {
         ready_.When([this, consumer_ref, callback]() {
           DCHECK(producer_);
           graph_.FlushOutput(consumer_ref.output());
@@ -76,8 +76,8 @@ MediaSinkImpl::MediaSinkImpl(InterfaceHandle<MediaRenderer> renderer,
     graph_.ConnectOutputToPart(out, producer_ref);
 
     renderer_->SetMediaType(MediaType::From(std::move(producer_stream_type)));
-    MediaConsumerPtr consumer;
-    renderer_->GetConsumer(GetProxy(&consumer));
+    MediaPacketConsumerPtr consumer;
+    renderer_->GetPacketConsumer(GetProxy(&consumer));
     producer_->Connect(consumer.Pass(), [this]() {
       graph_.Prepare();
       ready_.Occur();
@@ -87,7 +87,8 @@ MediaSinkImpl::MediaSinkImpl(InterfaceHandle<MediaRenderer> renderer,
 
 MediaSinkImpl::~MediaSinkImpl() {}
 
-void MediaSinkImpl::GetConsumer(InterfaceRequest<MediaConsumer> consumer) {
+void MediaSinkImpl::GetPacketConsumer(
+    InterfaceRequest<MediaPacketConsumer> consumer) {
   consumer_->AddBinding(consumer.Pass());
 }
 

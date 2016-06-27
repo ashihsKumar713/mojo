@@ -259,8 +259,8 @@ void AudioTrackImpl::SetMediaType(MediaTypePtr media_type) {
   owner_->GetOutputManager().SelectOutputsForTrack(strong_this);
 }
 
-void AudioTrackImpl::GetConsumer(
-    InterfaceRequest<MediaConsumer> consumer_request) {
+void AudioTrackImpl::GetPacketConsumer(
+    InterfaceRequest<MediaPacketConsumer> consumer_request) {
   // Bind our pipe to the interface request.
   if (pipe_.Init(consumer_request.Pass()) != MOJO_RESULT_OK) {
     LOG(ERROR) << "Failed to media pipe to interface request.";
@@ -343,7 +343,8 @@ void AudioTrackImpl::OnPacketReceived(AudioPipe::AudioPacketRefPtr packet) {
   }
 }
 
-bool AudioTrackImpl::OnFlushRequested(const MediaConsumer::FlushCallback& cbk) {
+bool AudioTrackImpl::OnFlushRequested(
+    const MediaPacketConsumer::FlushCallback& cbk) {
   for (const auto& output : outputs_) {
     DCHECK(output);
     output->FlushPendingQueue();

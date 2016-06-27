@@ -128,28 +128,28 @@ class MediaDemuxDescribeResponseParams extends bindings.Struct {
 }
 
 
-class _MediaDemuxGetProducerParams extends bindings.Struct {
+class _MediaDemuxGetPacketProducerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
   int streamIndex = 0;
-  media_transport_mojom.MediaProducerInterfaceRequest producer = null;
+  media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer = null;
 
-  _MediaDemuxGetProducerParams() : super(kVersions.last.size);
+  _MediaDemuxGetPacketProducerParams() : super(kVersions.last.size);
 
-  _MediaDemuxGetProducerParams.init(
+  _MediaDemuxGetPacketProducerParams.init(
     int this.streamIndex, 
-    media_transport_mojom.MediaProducerInterfaceRequest this.producer
+    media_transport_mojom.MediaPacketProducerInterfaceRequest this.packetProducer
   ) : super(kVersions.last.size);
 
-  static _MediaDemuxGetProducerParams deserialize(bindings.Message message) =>
+  static _MediaDemuxGetPacketProducerParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaDemuxGetProducerParams decode(bindings.Decoder decoder0) {
+  static _MediaDemuxGetPacketProducerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaDemuxGetProducerParams result = new _MediaDemuxGetProducerParams();
+    _MediaDemuxGetPacketProducerParams result = new _MediaDemuxGetPacketProducerParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
@@ -158,20 +158,20 @@ class _MediaDemuxGetProducerParams extends bindings.Struct {
     }
     if (mainDataHeader.version >= 0) {
       
-      result.producer = decoder0.decodeInterfaceRequest(12, false, media_transport_mojom.MediaProducerStub.newFromEndpoint);
+      result.packetProducer = decoder0.decodeInterfaceRequest(12, false, media_transport_mojom.MediaPacketProducerStub.newFromEndpoint);
     }
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaDemuxGetProducerParams";
+    const String structName = "_MediaDemuxGetPacketProducerParams";
     String fieldName;
     try {
       fieldName = "streamIndex";
       encoder0.encodeUint32(streamIndex, 8);
-      fieldName = "producer";
-      encoder0.encodeInterfaceRequest(producer, 12, false);
+      fieldName = "packetProducer";
+      encoder0.encodeInterfaceRequest(packetProducer, 12, false);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -179,9 +179,9 @@ class _MediaDemuxGetProducerParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaDemuxGetProducerParams("
+    return "_MediaDemuxGetPacketProducerParams("
            "streamIndex: $streamIndex" ", "
-           "producer: $producer" ")";
+           "packetProducer: $packetProducer" ")";
   }
 
   Map toJson() {
@@ -592,7 +592,7 @@ class MediaDemuxSeekResponseParams extends bindings.Struct {
 }
 
 const int _mediaDemuxMethodDescribeName = 0;
-const int _mediaDemuxMethodGetProducerName = 1;
+const int _mediaDemuxMethodGetPacketProducerName = 1;
 const int _mediaDemuxMethodGetMetadataName = 2;
 const int _mediaDemuxMethodPrimeName = 3;
 const int _mediaDemuxMethodFlushName = 4;
@@ -635,7 +635,7 @@ abstract class MediaDemux {
     return p;
   }
   void describe(void callback(List<media_types_mojom.MediaType> streamTypes));
-  void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer);
+  void getPacketProducer(int streamIndex, media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer);
   void getMetadata(int versionLastSeen,void callback(int version, media_metadata_mojom.MediaMetadata metadata));
   void prime(void callback());
   void flush(void callback());
@@ -790,20 +790,20 @@ class MediaDemuxProxy
         bindings.MessageHeader.kMessageExpectsResponse,
         zonedCallback);
   }
-  void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer) {
+  void getPacketProducer(int streamIndex, media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer) {
     if (impl != null) {
-      impl.getProducer(streamIndex, producer);
+      impl.getPacketProducer(streamIndex, packetProducer);
       return;
     }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
     }
-    var params = new _MediaDemuxGetProducerParams();
+    var params = new _MediaDemuxGetPacketProducerParams();
     params.streamIndex = streamIndex;
-    params.producer = producer;
+    params.packetProducer = packetProducer;
     ctrl.sendMessage(params,
-        _mediaDemuxMethodGetProducerName);
+        _mediaDemuxMethodGetPacketProducerName);
   }
   void getMetadata(int versionLastSeen,void callback(int version, media_metadata_mojom.MediaMetadata metadata)) {
     if (impl != null) {
@@ -999,10 +999,10 @@ class _MediaDemuxStubControl
       case _mediaDemuxMethodDescribeName:
         _impl.describe(_mediaDemuxDescribeResponseParamsResponder(message.header.requestId));
         break;
-      case _mediaDemuxMethodGetProducerName:
-        var params = _MediaDemuxGetProducerParams.deserialize(
+      case _mediaDemuxMethodGetPacketProducerName:
+        var params = _MediaDemuxGetPacketProducerParams.deserialize(
             message.payload);
-        _impl.getProducer(params.streamIndex, params.producer);
+        _impl.getPacketProducer(params.streamIndex, params.packetProducer);
         break;
       case _mediaDemuxMethodGetMetadataName:
         var params = _MediaDemuxGetMetadataParams.deserialize(
@@ -1080,8 +1080,8 @@ class MediaDemuxStub
   void describe(void callback(List<media_types_mojom.MediaType> streamTypes)) {
     return impl.describe(callback);
   }
-  void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer) {
-    return impl.getProducer(streamIndex, producer);
+  void getPacketProducer(int streamIndex, media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer) {
+    return impl.getPacketProducer(streamIndex, packetProducer);
   }
   void getMetadata(int versionLastSeen,void callback(int version, media_metadata_mojom.MediaMetadata metadata)) {
     return impl.getMetadata(versionLastSeen,callback);

@@ -141,8 +141,8 @@ void PlayToneApp::OnInitialize() {
   media_type->encoding = MediaType::kAudioEncodingLpcm;
 
   media_renderer_->SetMediaType(media_type.Pass());
-  MediaConsumerPtr pipe;
-  media_renderer_->GetConsumer(GetProxy(&pipe));
+  MediaPacketConsumerPtr pipe;
+  media_renderer_->GetPacketConsumer(GetProxy(&pipe));
 
   // Now that the configuration request is in-flight and we our media pipe
   // proxy, pass its interface to our circular buffer helper, set up our

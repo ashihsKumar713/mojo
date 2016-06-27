@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOJO_SERVICES_MEDIA_FACTORY_FACTORY_SERVICE_H_
-#define MOJO_SERVICES_MEDIA_FACTORY_FACTORY_SERVICE_H_
+#ifndef SERVICES_MEDIA_FACTORY_SERVICE_FACTORY_SERVICE_H_
+#define SERVICES_MEDIA_FACTORY_SERVICE_FACTORY_SERVICE_H_
 
 #include "mojo/common/binding_set.h"
 #include "mojo/services/media/control/interfaces/media_factory.mojom.h"
@@ -55,4 +55,4 @@ class MediaFactoryService : public util::FactoryServiceBase,
 }  // namespace media
 }  // namespace mojo
 
-#endif  // MOJO_SERVICES_MEDIA_FACTORY_FACTORY_SERVICE_H_
+#endif  // SERVICES_MEDIA_FACTORY_SERVICE_FACTORY_SERVICE_H_

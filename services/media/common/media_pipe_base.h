@@ -18,7 +18,7 @@
 namespace mojo {
 namespace media {
 
-class MediaPipeBase : public MediaConsumer {
+class MediaPipeBase : public MediaPacketConsumer {
  protected:
   class MappedSharedBuffer;
   using MappedSharedBufferPtr = std::shared_ptr<MappedSharedBuffer>;
@@ -30,7 +30,7 @@ class MediaPipeBase : public MediaConsumer {
 
     const MediaPacketPtr& packet() const { return packet_; }
     const MappedSharedBufferPtr& buffer() const { return buffer_; }
-    void SetResult(MediaConsumer::SendResult result);
+    void SetResult(MediaPacketConsumer::SendResult result);
 
    private:
     friend class MediaPipeBase;
@@ -41,7 +41,7 @@ class MediaPipeBase : public MediaConsumer {
     MediaPacketPtr packet_;
     MappedSharedBufferPtr buffer_;
     SendPacketCallback cbk_;
-    std::atomic<MediaConsumer::SendResult> result_;
+    std::atomic<MediaPacketConsumer::SendResult> result_;
   };
   using MediaPacketStatePtr = std::unique_ptr<MediaPacketState>;
 
@@ -50,7 +50,7 @@ class MediaPipeBase : public MediaConsumer {
   ~MediaPipeBase() override;
 
   // Initialize the internal state of the pipe (allocate resources, etc..)
-  MojoResult Init(InterfaceRequest<MediaConsumer> request);
+  MojoResult Init(InterfaceRequest<MediaPacketConsumer> request);
 
   bool IsInitialized() const;
   void Reset();
@@ -82,9 +82,9 @@ class MediaPipeBase : public MediaConsumer {
   MappedSharedBufferPtr buffer_;
 
  private:
-  Binding<MediaConsumer> binding_;
+  Binding<MediaPacketConsumer> binding_;
 
-  // MediaConsumer.mojom implementation.
+  // MediaPacketConsumer.mojom implementation.
   void SetBuffer(ScopedSharedBufferHandle handle,
                 const SetBufferCallback& cbk) final;
   void SendPacket(MediaPacketPtr packet,

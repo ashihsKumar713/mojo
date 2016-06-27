@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOJO_MEDIA_MODELS_ACTIVE_SINK_H_
-#define MOJO_MEDIA_MODELS_ACTIVE_SINK_H_
+#ifndef SERVICES_MEDIA_FRAMEWORK_MODELS_ACTIVE_SINK_H_
+#define SERVICES_MEDIA_FRAMEWORK_MODELS_ACTIVE_SINK_H_
 
 #include "services/media/framework/models/demand.h"
 #include "services/media/framework/models/part.h"
@@ -34,4 +34,4 @@ class ActiveSink : public Part {
 }  // namespace media
 }  // namespace mojo
 
-#endif  // MOJO_MEDIA_MODELS_ACTIVE_SINK_H_
+#endif  // SERVICES_MEDIA_FRAMEWORK_MODELS_ACTIVE_SINK_H_

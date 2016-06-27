@@ -96,15 +96,16 @@ void MediaDemuxImpl::Describe(const DescribeCallback& callback) {
   });
 }
 
-void MediaDemuxImpl::GetProducer(uint32_t stream_index,
-                                 InterfaceRequest<MediaProducer> producer) {
+void MediaDemuxImpl::GetPacketProducer(
+    uint32_t stream_index,
+    InterfaceRequest<MediaPacketProducer> producer) {
   RCHECK(init_complete_.occurred());
 
   if (stream_index >= streams_.size()) {
     return;
   }
 
-  streams_[stream_index]->GetProducer(producer.Pass());
+  streams_[stream_index]->GetPacketProducer(producer.Pass());
 }
 
 void MediaDemuxImpl::GetMetadata(uint64_t version_last_seen,
@@ -158,7 +159,7 @@ MediaDemuxImpl::Stream::Stream(OutputRef output,
   DCHECK(stream_type_);
   DCHECK(graph);
 
-  producer_ = MojoProducer::Create();
+  producer_ = MojoPacketProducer::Create();
   graph_->ConnectOutputToPart(output_, graph_->Add(producer_));
 }
 
@@ -168,20 +169,20 @@ MediaTypePtr MediaDemuxImpl::Stream::media_type() const {
   return MediaType::From(stream_type_);
 }
 
-void MediaDemuxImpl::Stream::GetProducer(
-    InterfaceRequest<MediaProducer> producer) {
+void MediaDemuxImpl::Stream::GetPacketProducer(
+    InterfaceRequest<MediaPacketProducer> producer) {
   DCHECK(producer_);
   producer_->AddBinding(producer.Pass());
 }
 
 void MediaDemuxImpl::Stream::PrimeConnection(
-    const MojoProducer::PrimeConnectionCallback callback) {
+    const MojoPacketProducer::PrimeConnectionCallback callback) {
   DCHECK(producer_);
   producer_->PrimeConnection(callback);
 }
 
 void MediaDemuxImpl::Stream::FlushConnection(
-    const MojoProducer::FlushConnectionCallback callback) {
+    const MojoPacketProducer::FlushConnectionCallback callback) {
   DCHECK(producer_);
   producer_->FlushConnection(callback);
 }

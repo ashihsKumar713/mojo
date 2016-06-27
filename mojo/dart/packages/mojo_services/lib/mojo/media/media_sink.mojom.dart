@@ -11,42 +11,42 @@ import 'package:mojo_services/mojo/media/timeline_controller.mojom.dart' as time
 
 
 
-class _MediaSinkGetConsumerParams extends bindings.Struct {
+class _MediaSinkGetPacketConsumerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  media_transport_mojom.MediaConsumerInterfaceRequest consumer = null;
+  media_transport_mojom.MediaPacketConsumerInterfaceRequest packetConsumer = null;
 
-  _MediaSinkGetConsumerParams() : super(kVersions.last.size);
+  _MediaSinkGetPacketConsumerParams() : super(kVersions.last.size);
 
-  _MediaSinkGetConsumerParams.init(
-    media_transport_mojom.MediaConsumerInterfaceRequest this.consumer
+  _MediaSinkGetPacketConsumerParams.init(
+    media_transport_mojom.MediaPacketConsumerInterfaceRequest this.packetConsumer
   ) : super(kVersions.last.size);
 
-  static _MediaSinkGetConsumerParams deserialize(bindings.Message message) =>
+  static _MediaSinkGetPacketConsumerParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaSinkGetConsumerParams decode(bindings.Decoder decoder0) {
+  static _MediaSinkGetPacketConsumerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaSinkGetConsumerParams result = new _MediaSinkGetConsumerParams();
+    _MediaSinkGetPacketConsumerParams result = new _MediaSinkGetPacketConsumerParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
-      result.consumer = decoder0.decodeInterfaceRequest(8, false, media_transport_mojom.MediaConsumerStub.newFromEndpoint);
+      result.packetConsumer = decoder0.decodeInterfaceRequest(8, false, media_transport_mojom.MediaPacketConsumerStub.newFromEndpoint);
     }
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaSinkGetConsumerParams";
+    const String structName = "_MediaSinkGetPacketConsumerParams";
     String fieldName;
     try {
-      fieldName = "consumer";
-      encoder0.encodeInterfaceRequest(consumer, 8, false);
+      fieldName = "packetConsumer";
+      encoder0.encodeInterfaceRequest(packetConsumer, 8, false);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -54,8 +54,8 @@ class _MediaSinkGetConsumerParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaSinkGetConsumerParams("
-           "consumer: $consumer" ")";
+    return "_MediaSinkGetPacketConsumerParams("
+           "packetConsumer: $packetConsumer" ")";
   }
 
   Map toJson() {
@@ -118,7 +118,7 @@ class _MediaSinkGetTimelineControlPointParams extends bindings.Struct {
   }
 }
 
-const int _mediaSinkMethodGetConsumerName = 0;
+const int _mediaSinkMethodGetPacketConsumerName = 0;
 const int _mediaSinkMethodGetTimelineControlPointName = 1;
 
 class _MediaSinkServiceDescription implements service_describer.ServiceDescription {
@@ -157,7 +157,7 @@ abstract class MediaSink {
     s.connectToService(url, p, name);
     return p;
   }
-  void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer);
+  void getPacketConsumer(media_transport_mojom.MediaPacketConsumerInterfaceRequest packetConsumer);
   void getTimelineControlPoint(timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest timelineControlPoint);
 }
 
@@ -244,19 +244,19 @@ class MediaSinkProxy
   }
 
 
-  void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
+  void getPacketConsumer(media_transport_mojom.MediaPacketConsumerInterfaceRequest packetConsumer) {
     if (impl != null) {
-      impl.getConsumer(consumer);
+      impl.getPacketConsumer(packetConsumer);
       return;
     }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
     }
-    var params = new _MediaSinkGetConsumerParams();
-    params.consumer = consumer;
+    var params = new _MediaSinkGetPacketConsumerParams();
+    params.packetConsumer = packetConsumer;
     ctrl.sendMessage(params,
-        _mediaSinkMethodGetConsumerName);
+        _mediaSinkMethodGetPacketConsumerName);
   }
   void getTimelineControlPoint(timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest timelineControlPoint) {
     if (impl != null) {
@@ -307,10 +307,10 @@ class _MediaSinkStubControl
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
-      case _mediaSinkMethodGetConsumerName:
-        var params = _MediaSinkGetConsumerParams.deserialize(
+      case _mediaSinkMethodGetPacketConsumerName:
+        var params = _MediaSinkGetPacketConsumerParams.deserialize(
             message.payload);
-        _impl.getConsumer(params.consumer);
+        _impl.getPacketConsumer(params.packetConsumer);
         break;
       case _mediaSinkMethodGetTimelineControlPointName:
         var params = _MediaSinkGetTimelineControlPointParams.deserialize(
@@ -374,8 +374,8 @@ class MediaSinkStub
   }
 
 
-  void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
-    return impl.getConsumer(consumer);
+  void getPacketConsumer(media_transport_mojom.MediaPacketConsumerInterfaceRequest packetConsumer) {
+    return impl.getPacketConsumer(packetConsumer);
   }
   void getTimelineControlPoint(timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest timelineControlPoint) {
     return impl.getTimelineControlPoint(timelineControlPoint);

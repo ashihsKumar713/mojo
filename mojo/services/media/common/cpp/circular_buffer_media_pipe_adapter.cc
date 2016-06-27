@@ -26,20 +26,20 @@ CircularBufferMediaPipeAdapter::MappedPacket::~MappedPacket() {
 CircularBufferMediaPipeAdapter::PacketState::PacketState(
     uint64_t post_consume_rd,
     uint32_t seq_num,
-    const MediaConsumer::SendPacketCallback& cbk)
+    const MediaPacketConsumer::SendPacketCallback& cbk)
   : post_consume_rd_(post_consume_rd),
     seq_num_(seq_num),
     cbk_(cbk) {}
 CircularBufferMediaPipeAdapter::PacketState::~PacketState() { }
 
 CircularBufferMediaPipeAdapter::CircularBufferMediaPipeAdapter(
-    MediaConsumerPtr pipe)
+    MediaPacketConsumerPtr pipe)
   : pipe_(pipe.Pass())
   , thiz_(new CircularBufferMediaPipeAdapter*(this)) {
   MOJO_DCHECK(pipe_);
   MOJO_DCHECK(RunLoop::current());
 
-  pipe_flush_cbk_ = MediaConsumer::FlushCallback(
+  pipe_flush_cbk_ = MediaPacketConsumer::FlushCallback(
   [this] () {
     HandleFlush();
   });
@@ -242,7 +242,7 @@ MediaResult CircularBufferMediaPipeAdapter::CreateMediaPacket(
 
 MediaResult CircularBufferMediaPipeAdapter::SendMediaPacket(
     MappedPacket* packet,
-    const MediaConsumer::SendPacketCallback& cbk) {
+    const MediaPacketConsumer::SendPacketCallback& cbk) {
   MOJO_DCHECK(packet && !packet->packet_.is_null());
   if (!packet || packet->packet_.is_null()) {
     return MediaResult::INVALID_ARGUMENT;
@@ -295,7 +295,7 @@ MediaResult CircularBufferMediaPipeAdapter::SendMediaPacket(
 
   pipe_->SendPacket(
       packet->packet_.Pass(),
-      [this, seq_num](MediaConsumer::SendResult result) {
+      [this, seq_num](MediaPacketConsumer::SendResult result) {
         HandleSendPacket(seq_num, result);
       });
 
@@ -344,8 +344,8 @@ MediaResult CircularBufferMediaPipeAdapter::Flush() {
 
 void CircularBufferMediaPipeAdapter::HandleSendPacket(
     uint32_t seq_num,
-    MediaConsumer::SendResult result) {
-  MediaConsumer::SendPacketCallback cbk;
+    MediaPacketConsumer::SendResult result) {
+  MediaPacketConsumer::SendPacketCallback cbk;
 
   do {
     // There should be at least one element in the in-flight queue, and the

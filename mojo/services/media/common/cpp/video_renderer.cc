@@ -83,8 +83,8 @@ void VideoRenderer::SetMediaType(MediaTypePtr media_type) {
   converter_.SetMediaType(media_type);
 }
 
-void VideoRenderer::GetConsumer(
-    InterfaceRequest<MediaConsumer> consumer_request) {
+void VideoRenderer::GetPacketConsumer(
+    InterfaceRequest<MediaPacketConsumer> consumer_request) {
   consumer_binding_.Bind(consumer_request.Pass());
 }
 
@@ -108,7 +108,7 @@ void VideoRenderer::SendPacket(MediaPacketPtr packet,
 
   // Discard empty packets so they don't confuse the selection logic.
   if (!packet->payload || packet->payload->length == 0) {
-    callback.Run(MediaConsumer::SendResult::CONSUMED);
+    callback.Run(MediaPacketConsumer::SendResult::CONSUMED);
     return;
   }
 
@@ -238,7 +238,7 @@ VideoRenderer::PacketAndCallback::PacketAndCallback(
 }
 
 VideoRenderer::PacketAndCallback::~PacketAndCallback() {
-  callback_.Run(MediaConsumer::SendResult::CONSUMED);
+  callback_.Run(MediaPacketConsumer::SendResult::CONSUMED);
 }
 
 }  // namespace media

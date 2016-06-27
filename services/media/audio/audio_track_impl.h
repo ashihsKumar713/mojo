@@ -68,7 +68,8 @@ class AudioTrackImpl : public AudioTrack, public MediaRenderer {
   void GetSupportedMediaTypes(
       const GetSupportedMediaTypesCallback& callback) override;
   void SetMediaType(MediaTypePtr media_type) override;
-  void GetConsumer(InterfaceRequest<MediaConsumer> consumer_request) override;
+  void GetPacketConsumer(InterfaceRequest<MediaPacketConsumer> consumer_request)
+      override;
   void GetTimelineControlPoint(
       InterfaceRequest<MediaTimelineControlPoint> control_point_request)
           override;
@@ -81,7 +82,7 @@ class AudioTrackImpl : public AudioTrack, public MediaRenderer {
   // encapsulation so that AudioPipe does not have to know that we are an
   // AudioTrackImpl (just that we implement its interface).
   void OnPacketReceived(AudioPipe::AudioPacketRefPtr packet);
-  bool OnFlushRequested(const MediaConsumer::FlushCallback& cbk);
+  bool OnFlushRequested(const MediaPacketConsumer::FlushCallback& cbk);
 
   AudioTrackImplWeakPtr     weak_this_;
   AudioServerImpl*          owner_;

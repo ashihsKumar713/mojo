@@ -19,8 +19,8 @@ namespace mojo {
 namespace media {
 
 // A class to help producers of media with the bookkeeping involved in using the
-// shared buffer provided by a MediaConsumer mojo interface in a circular buffer
-// fashion.
+// shared buffer provided by a MediaPacketConsumer mojo interface in a circular
+// buffer fashion.
 //
 class CircularBufferMediaPipeAdapter {
  public:
@@ -73,14 +73,15 @@ class CircularBufferMediaPipeAdapter {
   /**
    * Constructor
    *
-   * Create an adapter which will take ownership of the provided MediaConsumer
-   * interface and assist in the process of generating MediaPackets and
-   * marshalling them to the other side of the MediaConsumer.
+   * Create an adapter which will take ownership of the provided
+   * MediaPacketConsumer interface and assist in the process of generating
+   * MediaPackets and marshalling them to the other side of the
+   * MediaPacketConsumer.
    *
-   * @param pipe A pointer to the MediaConsumer interface which will be used as
-   * the target for MediaPackets.
+   * @param pipe A pointer to the MediaPacketConsumer interface which will be
+   * used as the target for MediaPackets.
    */
-  explicit CircularBufferMediaPipeAdapter(MediaConsumerPtr pipe);
+  explicit CircularBufferMediaPipeAdapter(MediaPacketConsumerPtr pipe);
 
   /**
    * Destructor
@@ -91,7 +92,7 @@ class CircularBufferMediaPipeAdapter {
    * Init
    *
    * Allocate a shared memory buffer of the specified size and begin the process
-   * of marshalling it to the other side of the MediaConsumer.
+   * of marshalling it to the other side of the MediaPacketConsumer.
    *
    * @param size The size in bytes of the shared memory buffer to allocate.
    */
@@ -189,8 +190,8 @@ class CircularBufferMediaPipeAdapter {
    */
   MediaResult SendMediaPacket(
       MappedPacket* packet,
-      const MediaConsumer::SendPacketCallback& cbk =
-        MediaConsumer::SendPacketCallback());
+      const MediaPacketConsumer::SendPacketCallback& cbk =
+        MediaPacketConsumer::SendPacketCallback());
 
   /**
    * Cancel a packet previously created using CreateMediaPacket.
@@ -220,16 +221,17 @@ class CircularBufferMediaPipeAdapter {
   struct PacketState {
     PacketState(uint64_t post_consume_rd,
                 uint32_t seq_num,
-                const MediaConsumer::SendPacketCallback& cbk);
+                const MediaPacketConsumer::SendPacketCallback& cbk);
     ~PacketState();
 
     uint64_t post_consume_rd_;
     uint32_t seq_num_;
-    MediaConsumer::SendPacketCallback cbk_;
+    MediaPacketConsumer::SendPacketCallback cbk_;
   };
   using PacketStateQueue = std::deque<PacketState>;
 
-  void HandleSendPacket(uint32_t seq_num, MediaConsumer::SendResult result);
+  void HandleSendPacket(uint32_t seq_num,
+      MediaPacketConsumer::SendResult result);
   void HandleFlush();
   void HandleSignalCallback();
 
@@ -246,9 +248,9 @@ class CircularBufferMediaPipeAdapter {
   }
 
   // Pipe interface callbacks
-  MediaConsumerPtr pipe_;
-  MediaConsumer::FlushCallback pipe_flush_cbk_;
-  Closure                      signalled_callback_;
+  MediaPacketConsumerPtr pipe_;
+  MediaPacketConsumer::FlushCallback pipe_flush_cbk_;
+  Closure signalled_callback_;
 
   // A small helper which lets us nerf callbacks we may have directly scheduled
   // on the main run loop which may be in flight as we get destroyed.

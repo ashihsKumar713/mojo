@@ -296,7 +296,7 @@ void MediaPlayerImpl::PrepareStream(Stream* stream,
                                     const std::function<void()>& callback) {
   DCHECK(factory_);
 
-  demux_->GetProducer(index, GetProxy(&stream->encoded_producer_));
+  demux_->GetPacketProducer(index, GetProxy(&stream->encoded_producer_));
 
   if (input_media_type->encoding != MediaType::kAudioEncodingLpcm &&
       input_media_type->encoding != MediaType::kVideoEncodingUncompressed) {
@@ -307,8 +307,8 @@ void MediaPlayerImpl::PrepareStream(Stream* stream,
     factory_->CreateDecoder(input_media_type.Clone(),
                             GetProxy(&stream->decoder_));
 
-    MediaConsumerPtr decoder_consumer;
-    stream->decoder_->GetConsumer(GetProxy(&decoder_consumer));
+    MediaPacketConsumerPtr decoder_consumer;
+    stream->decoder_->GetPacketConsumer(GetProxy(&decoder_consumer));
 
     callback_joiner->Spawn();
     stream->encoded_producer_->Connect(decoder_consumer.Pass(),
@@ -318,12 +318,12 @@ void MediaPlayerImpl::PrepareStream(Stream* stream,
                                        });
 
     callback_joiner->Spawn();
-    stream->decoder_->GetOutputType(
-        [this, stream, callback_joiner](MediaTypePtr output_type) {
-          stream->decoder_->GetProducer(GetProxy(&stream->decoded_producer_));
-          CreateSink(stream, output_type, callback_joiner->NewCallback());
-          callback_joiner->Complete();
-        });
+    stream->decoder_->GetOutputType([this, stream, callback_joiner](
+        MediaTypePtr output_type) {
+      stream->decoder_->GetPacketProducer(GetProxy(&stream->decoded_producer_));
+      CreateSink(stream, output_type, callback_joiner->NewCallback());
+      callback_joiner->Complete();
+    });
 
     callback_joiner->WhenJoined(callback);
   } else {
@@ -350,8 +350,8 @@ void MediaPlayerImpl::CreateSink(Stream* stream,
 
   timeline_controller_->AddControlPoint(timeline_control_point.Pass());
 
-  MediaConsumerPtr consumer;
-  stream->sink_->GetConsumer(GetProxy(&consumer));
+  MediaPacketConsumerPtr consumer;
+  stream->sink_->GetPacketConsumer(GetProxy(&consumer));
 
   stream->decoded_producer_->Connect(consumer.Pass(),
                                      [this, callback, stream]() {

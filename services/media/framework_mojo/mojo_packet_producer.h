@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_MEDIA_FRAMEWORK_MOJO_PUSH_PRODUCER_BASE_H_
-#define SERVICES_MEDIA_FRAMEWORK_MOJO_PUSH_PRODUCER_BASE_H_
+#ifndef SERVICES_MEDIA_FRAMEWORK_MOJO_MOJO_PACKET_PRODUCER_H_
+#define SERVICES_MEDIA_FRAMEWORK_MOJO_MOJO_PACKET_PRODUCER_H_
 
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -15,20 +15,20 @@
 namespace mojo {
 namespace media {
 
-// Implements MediaProducer to forward a stream across mojo.
-class MojoProducer : public MediaProducer, public ActiveSink {
+// Implements MediaPacketProducer to forward a stream across mojo.
+class MojoPacketProducer : public MediaPacketProducer, public ActiveSink {
  public:
   using PrimeConnectionCallback = mojo::Callback<void()>;
   using FlushConnectionCallback = mojo::Callback<void()>;
 
-  static std::shared_ptr<MojoProducer> Create() {
-    return std::shared_ptr<MojoProducer>(new MojoProducer());
+  static std::shared_ptr<MojoPacketProducer> Create() {
+    return std::shared_ptr<MojoPacketProducer>(new MojoPacketProducer());
   }
 
-  ~MojoProducer() override;
+  ~MojoPacketProducer() override;
 
   // Adds a binding.
-  void AddBinding(InterfaceRequest<MediaProducer> producer);
+  void AddBinding(InterfaceRequest<MediaPacketProducer> producer);
 
   // Initiates demand to provide downstream parties with enough content to
   // start without starving.
@@ -44,14 +44,14 @@ class MojoProducer : public MediaProducer, public ActiveSink {
 
   Demand SupplyPacket(PacketPtr packet) override;
 
-  // MediaProducer implementation.
-  void Connect(InterfaceHandle<MediaConsumer> consumer,
+  // MediaPacketProducer implementation.
+  void Connect(InterfaceHandle<MediaPacketConsumer> consumer,
                const ConnectCallback& callback) override;
 
   void Disconnect() override;
 
  private:
-  MojoProducer();
+  MojoPacketProducer();
 
   // Sends a packet to the consumer.
   // TODO(dalesat): Don't use a raw pointer, if possible.
@@ -63,8 +63,8 @@ class MojoProducer : public MediaProducer, public ActiveSink {
   // Allocates from the shared buffer.
   MojoAllocator mojo_allocator_;
 
-  BindingSet<MediaProducer> bindings_;
-  MediaConsumerPtr consumer_;
+  BindingSet<MediaPacketProducer> bindings_;
+  MediaPacketConsumerPtr consumer_;
 
   mutable base::Lock lock_;
   // THE FIELDS BELOW SHOULD ONLY BE ACCESSED WITH lock_ TAKEN.
@@ -79,4 +79,4 @@ class MojoProducer : public MediaProducer, public ActiveSink {
 }  // namespace media
 }  // namespace mojo
 
-#endif  // SERVICES_MEDIA_FRAMEWORK_MOJO_PUSH_PRODUCER_BASE_H_
+#endif  // SERVICES_MEDIA_FRAMEWORK_MOJO_MOJO_PACKET_PRODUCER_H_

@@ -17,8 +17,8 @@ interface MediaRenderer {
   // Sets the media type of the stream to be delivered.
   SetMediaType(MediaType media_type);
 
-  // Gets the consumer for the stream to be delivered.
-  GetConsumer(MediaConsumer& consumer);
+  // Gets the packet consumer for the stream to be delivered.
+  GetPacketConsumer(MediaPacketConsumer& packet_consumer);
 
   // Requests the timeline control point for this output.
   GetTimelineControlPoint(MediaTimelineControlPoint& timeline_control_point);

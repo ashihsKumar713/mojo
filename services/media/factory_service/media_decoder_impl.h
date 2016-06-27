@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOJO_SERVICES_MEDIA_FACTORY_MEDIA_DECODER_IMPL_H_
-#define MOJO_SERVICES_MEDIA_FACTORY_MEDIA_DECODER_IMPL_H_
+#ifndef SERVICES_MEDIA_FACTORY_SERVICE_MEDIA_DECODER_IMPL_H_
+#define SERVICES_MEDIA_FACTORY_SERVICE_MEDIA_DECODER_IMPL_H_
 
 #include <memory>
 
@@ -12,8 +12,8 @@
 #include "services/media/factory_service/factory_service.h"
 #include "services/media/framework/graph.h"
 #include "services/media/framework/parts/decoder.h"
-#include "services/media/framework_mojo/mojo_consumer.h"
-#include "services/media/framework_mojo/mojo_producer.h"
+#include "services/media/framework_mojo/mojo_packet_consumer.h"
+#include "services/media/framework_mojo/mojo_packet_producer.h"
 
 namespace mojo {
 namespace media {
@@ -33,9 +33,11 @@ class MediaDecoderImpl
   // MediaTypeConverter implementation.
   void GetOutputType(const GetOutputTypeCallback& callback) override;
 
-  void GetConsumer(InterfaceRequest<MediaConsumer> consumer) override;
+  void GetPacketConsumer(
+      InterfaceRequest<MediaPacketConsumer> consumer) override;
 
-  void GetProducer(InterfaceRequest<MediaProducer> producer) override;
+  void GetPacketProducer(
+      InterfaceRequest<MediaPacketProducer> producer) override;
 
  private:
   MediaDecoderImpl(MediaTypePtr input_media_type,
@@ -43,12 +45,12 @@ class MediaDecoderImpl
                    MediaFactoryService* owner);
 
   Graph graph_;
-  std::shared_ptr<MojoConsumer> consumer_;
+  std::shared_ptr<MojoPacketConsumer> consumer_;
   std::shared_ptr<Decoder> decoder_;
-  std::shared_ptr<MojoProducer> producer_;
+  std::shared_ptr<MojoPacketProducer> producer_;
 };
 
 }  // namespace media
 }  // namespace mojo
 
-#endif  // MOJO_SERVICES_MEDIA_FACTORY_MEDIA_DECODER_IMPL_H_
+#endif  // SERVICES_MEDIA_FACTORY_SERVICE_MEDIA_DECODER_IMPL_H_

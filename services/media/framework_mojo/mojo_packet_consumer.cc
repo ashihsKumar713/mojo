@@ -5,51 +5,53 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/message_loop/message_loop.h"
-#include "services/media/framework_mojo/mojo_consumer.h"
+#include "services/media/framework_mojo/mojo_packet_consumer.h"
 
 namespace mojo {
 namespace media {
 
-void MojoConsumerMediaConsumer::Flush(const FlushCallback& callback) {
-  MediaConsumerFlush(callback);
+void MojoPacketConsumerMediaPacketConsumer::Flush(
+    const FlushCallback& callback) {
+  MediaPacketConsumerFlush(callback);
 }
 
-MojoConsumer::MojoConsumer() {}
+MojoPacketConsumer::MojoPacketConsumer() {}
 
-MojoConsumer::~MojoConsumer() {}
+MojoPacketConsumer::~MojoPacketConsumer() {}
 
-void MojoConsumer::AddBinding(InterfaceRequest<MediaConsumer> consumer) {
+void MojoPacketConsumer::AddBinding(
+    InterfaceRequest<MediaPacketConsumer> consumer) {
   bindings_.AddBinding(this, consumer.Pass());
   DCHECK(base::MessageLoop::current());
   task_runner_ = base::MessageLoop::current()->task_runner();
   DCHECK(task_runner_);
 }
 
-void MojoConsumer::SetPrimeRequestedCallback(
+void MojoPacketConsumer::SetPrimeRequestedCallback(
     const PrimeRequestedCallback& callback) {
   prime_requested_callback_ = callback;
 }
 
-void MojoConsumer::SetFlushRequestedCallback(
+void MojoPacketConsumer::SetFlushRequestedCallback(
     const FlushRequestedCallback& callback) {
   flush_requested_callback_ = callback;
 }
 
-void MojoConsumer::SetBuffer(ScopedSharedBufferHandle buffer,
-                             const SetBufferCallback& callback) {
+void MojoPacketConsumer::SetBuffer(ScopedSharedBufferHandle buffer,
+                                   const SetBufferCallback& callback) {
   buffer_.InitFromHandle(buffer.Pass());
   callback.Run();
 }
 
-void MojoConsumer::SendPacket(MediaPacketPtr media_packet,
-                              const SendPacketCallback& callback) {
+void MojoPacketConsumer::SendPacket(MediaPacketPtr media_packet,
+                                    const SendPacketCallback& callback) {
   DCHECK(media_packet);
   DCHECK(supply_callback_);
   supply_callback_(
       PacketImpl::Create(media_packet.Pass(), callback, task_runner_, buffer_));
 }
 
-void MojoConsumer::Prime(const PrimeCallback& callback) {
+void MojoPacketConsumer::Prime(const PrimeCallback& callback) {
   if (prime_requested_callback_) {
     prime_requested_callback_(callback);
   } else {
@@ -58,7 +60,8 @@ void MojoConsumer::Prime(const PrimeCallback& callback) {
   }
 }
 
-void MojoConsumer::MediaConsumerFlush(const FlushCallback& callback) {
+void MojoPacketConsumer::MediaPacketConsumerFlush(
+    const FlushCallback& callback) {
   if (flush_requested_callback_) {
     flush_requested_callback_(callback);
   } else {
@@ -67,21 +70,22 @@ void MojoConsumer::MediaConsumerFlush(const FlushCallback& callback) {
   }
 }
 
-bool MojoConsumer::can_accept_allocator() const {
+bool MojoPacketConsumer::can_accept_allocator() const {
   return false;
 }
 
-void MojoConsumer::set_allocator(PayloadAllocator* allocator) {
-  LOG(ERROR) << "set_allocator called on MojoConsumer";
+void MojoPacketConsumer::set_allocator(PayloadAllocator* allocator) {
+  LOG(ERROR) << "set_allocator called on MojoPacketConsumer";
 }
 
-void MojoConsumer::SetSupplyCallback(const SupplyCallback& supply_callback) {
+void MojoPacketConsumer::SetSupplyCallback(
+    const SupplyCallback& supply_callback) {
   supply_callback_ = supply_callback;
 }
 
-void MojoConsumer::SetDownstreamDemand(Demand demand) {}
+void MojoPacketConsumer::SetDownstreamDemand(Demand demand) {}
 
-MojoConsumer::PacketImpl::PacketImpl(
+MojoPacketConsumer::PacketImpl::PacketImpl(
     MediaPacketPtr media_packet,
     const SendPacketCallback& callback,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
@@ -96,14 +100,15 @@ MojoConsumer::PacketImpl::PacketImpl(
       callback_(callback),
       task_runner_(task_runner) {}
 
-MojoConsumer::PacketImpl::~PacketImpl() {}
+MojoPacketConsumer::PacketImpl::~PacketImpl() {}
 
 // static
-void MojoConsumer::PacketImpl::RunCallback(const SendPacketCallback& callback) {
-  callback.Run(MediaConsumer::SendResult::CONSUMED);
+void MojoPacketConsumer::PacketImpl::RunCallback(
+    const SendPacketCallback& callback) {
+  callback.Run(MediaPacketConsumer::SendResult::CONSUMED);
 }
 
-void MojoConsumer::PacketImpl::Release() {
+void MojoPacketConsumer::PacketImpl::Release() {
   task_runner_->PostTask(FROM_HERE, base::Bind(&RunCallback, callback_));
   delete this;
 }

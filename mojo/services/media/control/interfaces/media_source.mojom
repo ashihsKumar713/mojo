@@ -18,11 +18,8 @@ interface MediaSource {
   // Gets the streams produced by this source.
   GetStreams() => (array<MediaSourceStreamDescriptor> streams);
 
-  // Gets the producer for the specified stream.
-  GetProducer(uint32 stream_index, MediaProducer& producer);
-
-  // Gets the pull mode producer for the specified stream.
-  GetPullModeProducer(uint32 stream_index, MediaPullModeProducer& producer);
+  // Gets the packet producer for the specified stream.
+  GetPacketProducer(uint32 stream_index, MediaPacketProducer& packet_producer);
 
   // Gets the status. To get the status immediately, call
   // GetStatus(kInitialStatus). To get updates thereafter, pass the version

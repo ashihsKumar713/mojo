@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_MEDIA_FRAMEWORK_MOJO_MOJO_CONSUMER_H_
-#define SERVICES_MEDIA_FRAMEWORK_MOJO_MOJO_CONSUMER_H_
+#ifndef SERVICES_MEDIA_FRAMEWORK_MOJO_MOJO_PACKET_CONSUMER_H_
+#define SERVICES_MEDIA_FRAMEWORK_MOJO_MOJO_PACKET_CONSUMER_H_
 
 #include "base/single_thread_task_runner.h"
 #include "base/task_runner.h"
@@ -15,40 +15,42 @@
 namespace mojo {
 namespace media {
 
-// Implements MediaConsumer::Flush on behalf of MediaConsumer to avoid name
+// Implements MediaPacketConsumer::Flush on behalf of MediaPacketConsumer to
+// avoid name
 // conflict with Part::Flush.
-class MojoConsumerMediaConsumer : public MediaConsumer {
-  // MediaConsumer implementation.
+class MojoPacketConsumerMediaPacketConsumer : public MediaPacketConsumer {
+  // MediaPacketConsumer implementation.
   void Flush(const FlushCallback& callback) override;
 
-  // Implements MediaConsumer::Flush.
-  virtual void MediaConsumerFlush(const FlushCallback& callback) = 0;
+  // Implements MediaPacketConsumer::Flush.
+  virtual void MediaPacketConsumerFlush(const FlushCallback& callback) = 0;
 };
 
-// Implements MediaConsumer to receive a stream from across mojo.
-class MojoConsumer : public MojoConsumerMediaConsumer, public ActiveSource {
+// Implements MediaPacketConsumer to receive a stream from across mojo.
+class MojoPacketConsumer : public MojoPacketConsumerMediaPacketConsumer,
+                     public ActiveSource {
  public:
   using PrimeRequestedCallback = std::function<void(const PrimeCallback&)>;
   using FlushRequestedCallback = std::function<void(const FlushCallback&)>;
 
-  static std::shared_ptr<MojoConsumer> Create() {
-    return std::shared_ptr<MojoConsumer>(new MojoConsumer());
+  static std::shared_ptr<MojoPacketConsumer> Create() {
+    return std::shared_ptr<MojoPacketConsumer>(new MojoPacketConsumer());
   }
 
-  ~MojoConsumer() override;
+  ~MojoPacketConsumer() override;
 
   // Adds a binding.
-  void AddBinding(InterfaceRequest<MediaConsumer> consumer);
+  void AddBinding(InterfaceRequest<MediaPacketConsumer> consumer);
 
   // Sets a callback signalling that a prime has been requested from the
-  // MediaConsumer client.
+  // MediaPacketConsumer client.
   void SetPrimeRequestedCallback(const PrimeRequestedCallback& callback);
 
   // Sets a callback signalling that a flush has been requested from the
-  // MediaConsumer client.
+  // MediaPacketConsumer client.
   void SetFlushRequestedCallback(const FlushRequestedCallback& callback);
 
-  // MediaConsumer implementation.
+  // MediaPacketConsumer implementation.
   void SetBuffer(ScopedSharedBufferHandle buffer,
                  const SetBufferCallback& callback) override;
 
@@ -57,7 +59,7 @@ class MojoConsumer : public MojoConsumerMediaConsumer, public ActiveSource {
 
   void Prime(const PrimeCallback& callback) override;
 
-  void MediaConsumerFlush(const FlushCallback& callback) override;
+  void MediaPacketConsumerFlush(const FlushCallback& callback) override;
 
   // ActiveSource implementation.
   bool can_accept_allocator() const override;
@@ -69,7 +71,7 @@ class MojoConsumer : public MojoConsumerMediaConsumer, public ActiveSource {
   void SetDownstreamDemand(Demand demand) override;
 
  private:
-  MojoConsumer();
+  MojoPacketConsumer();
 
   // Specialized packet implementation.
   class PacketImpl : public Packet {
@@ -101,7 +103,7 @@ class MojoConsumer : public MojoConsumerMediaConsumer, public ActiveSource {
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   };
 
-  BindingSet<MediaConsumer> bindings_;
+  BindingSet<MediaPacketConsumer> bindings_;
   PrimeRequestedCallback prime_requested_callback_;
   FlushRequestedCallback flush_requested_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -112,4 +114,4 @@ class MojoConsumer : public MojoConsumerMediaConsumer, public ActiveSource {
 }  // namespace media
 }  // namespace mojo
 
-#endif  // SERVICES_MEDIA_FRAMEWORK_MOJO_MOJO_CONSUMER_H_
+#endif  // SERVICES_MEDIA_FRAMEWORK_MOJO_MOJO_PACKET_CONSUMER_H_

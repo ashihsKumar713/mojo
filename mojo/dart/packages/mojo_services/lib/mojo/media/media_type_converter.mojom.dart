@@ -112,42 +112,42 @@ class MediaTypeConverterGetOutputTypeResponseParams extends bindings.Struct {
 }
 
 
-class _MediaTypeConverterGetConsumerParams extends bindings.Struct {
+class _MediaTypeConverterGetPacketConsumerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  media_transport_mojom.MediaConsumerInterfaceRequest consumer = null;
+  media_transport_mojom.MediaPacketConsumerInterfaceRequest packetConsumer = null;
 
-  _MediaTypeConverterGetConsumerParams() : super(kVersions.last.size);
+  _MediaTypeConverterGetPacketConsumerParams() : super(kVersions.last.size);
 
-  _MediaTypeConverterGetConsumerParams.init(
-    media_transport_mojom.MediaConsumerInterfaceRequest this.consumer
+  _MediaTypeConverterGetPacketConsumerParams.init(
+    media_transport_mojom.MediaPacketConsumerInterfaceRequest this.packetConsumer
   ) : super(kVersions.last.size);
 
-  static _MediaTypeConverterGetConsumerParams deserialize(bindings.Message message) =>
+  static _MediaTypeConverterGetPacketConsumerParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaTypeConverterGetConsumerParams decode(bindings.Decoder decoder0) {
+  static _MediaTypeConverterGetPacketConsumerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaTypeConverterGetConsumerParams result = new _MediaTypeConverterGetConsumerParams();
+    _MediaTypeConverterGetPacketConsumerParams result = new _MediaTypeConverterGetPacketConsumerParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
-      result.consumer = decoder0.decodeInterfaceRequest(8, false, media_transport_mojom.MediaConsumerStub.newFromEndpoint);
+      result.packetConsumer = decoder0.decodeInterfaceRequest(8, false, media_transport_mojom.MediaPacketConsumerStub.newFromEndpoint);
     }
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaTypeConverterGetConsumerParams";
+    const String structName = "_MediaTypeConverterGetPacketConsumerParams";
     String fieldName;
     try {
-      fieldName = "consumer";
-      encoder0.encodeInterfaceRequest(consumer, 8, false);
+      fieldName = "packetConsumer";
+      encoder0.encodeInterfaceRequest(packetConsumer, 8, false);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -155,8 +155,8 @@ class _MediaTypeConverterGetConsumerParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaTypeConverterGetConsumerParams("
-           "consumer: $consumer" ")";
+    return "_MediaTypeConverterGetPacketConsumerParams("
+           "packetConsumer: $packetConsumer" ")";
   }
 
   Map toJson() {
@@ -166,42 +166,42 @@ class _MediaTypeConverterGetConsumerParams extends bindings.Struct {
 }
 
 
-class _MediaTypeConverterGetProducerParams extends bindings.Struct {
+class _MediaTypeConverterGetPacketProducerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  media_transport_mojom.MediaProducerInterfaceRequest producer = null;
+  media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer = null;
 
-  _MediaTypeConverterGetProducerParams() : super(kVersions.last.size);
+  _MediaTypeConverterGetPacketProducerParams() : super(kVersions.last.size);
 
-  _MediaTypeConverterGetProducerParams.init(
-    media_transport_mojom.MediaProducerInterfaceRequest this.producer
+  _MediaTypeConverterGetPacketProducerParams.init(
+    media_transport_mojom.MediaPacketProducerInterfaceRequest this.packetProducer
   ) : super(kVersions.last.size);
 
-  static _MediaTypeConverterGetProducerParams deserialize(bindings.Message message) =>
+  static _MediaTypeConverterGetPacketProducerParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaTypeConverterGetProducerParams decode(bindings.Decoder decoder0) {
+  static _MediaTypeConverterGetPacketProducerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaTypeConverterGetProducerParams result = new _MediaTypeConverterGetProducerParams();
+    _MediaTypeConverterGetPacketProducerParams result = new _MediaTypeConverterGetPacketProducerParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
-      result.producer = decoder0.decodeInterfaceRequest(8, false, media_transport_mojom.MediaProducerStub.newFromEndpoint);
+      result.packetProducer = decoder0.decodeInterfaceRequest(8, false, media_transport_mojom.MediaPacketProducerStub.newFromEndpoint);
     }
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaTypeConverterGetProducerParams";
+    const String structName = "_MediaTypeConverterGetPacketProducerParams";
     String fieldName;
     try {
-      fieldName = "producer";
-      encoder0.encodeInterfaceRequest(producer, 8, false);
+      fieldName = "packetProducer";
+      encoder0.encodeInterfaceRequest(packetProducer, 8, false);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -209,8 +209,8 @@ class _MediaTypeConverterGetProducerParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaTypeConverterGetProducerParams("
-           "producer: $producer" ")";
+    return "_MediaTypeConverterGetPacketProducerParams("
+           "packetProducer: $packetProducer" ")";
   }
 
   Map toJson() {
@@ -220,8 +220,8 @@ class _MediaTypeConverterGetProducerParams extends bindings.Struct {
 }
 
 const int _mediaTypeConverterMethodGetOutputTypeName = 0;
-const int _mediaTypeConverterMethodGetConsumerName = 1;
-const int _mediaTypeConverterMethodGetProducerName = 2;
+const int _mediaTypeConverterMethodGetPacketConsumerName = 1;
+const int _mediaTypeConverterMethodGetPacketProducerName = 2;
 
 class _MediaTypeConverterServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
@@ -260,8 +260,8 @@ abstract class MediaTypeConverter {
     return p;
   }
   void getOutputType(void callback(media_types_mojom.MediaType outputType));
-  void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer);
-  void getProducer(media_transport_mojom.MediaProducerInterfaceRequest producer);
+  void getPacketConsumer(media_transport_mojom.MediaPacketConsumerInterfaceRequest packetConsumer);
+  void getPacketProducer(media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer);
 }
 
 abstract class MediaTypeConverterInterface
@@ -379,33 +379,33 @@ class MediaTypeConverterProxy
         bindings.MessageHeader.kMessageExpectsResponse,
         zonedCallback);
   }
-  void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
+  void getPacketConsumer(media_transport_mojom.MediaPacketConsumerInterfaceRequest packetConsumer) {
     if (impl != null) {
-      impl.getConsumer(consumer);
+      impl.getPacketConsumer(packetConsumer);
       return;
     }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
     }
-    var params = new _MediaTypeConverterGetConsumerParams();
-    params.consumer = consumer;
+    var params = new _MediaTypeConverterGetPacketConsumerParams();
+    params.packetConsumer = packetConsumer;
     ctrl.sendMessage(params,
-        _mediaTypeConverterMethodGetConsumerName);
+        _mediaTypeConverterMethodGetPacketConsumerName);
   }
-  void getProducer(media_transport_mojom.MediaProducerInterfaceRequest producer) {
+  void getPacketProducer(media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer) {
     if (impl != null) {
-      impl.getProducer(producer);
+      impl.getPacketProducer(packetProducer);
       return;
     }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
     }
-    var params = new _MediaTypeConverterGetProducerParams();
-    params.producer = producer;
+    var params = new _MediaTypeConverterGetPacketProducerParams();
+    params.packetProducer = packetProducer;
     ctrl.sendMessage(params,
-        _mediaTypeConverterMethodGetProducerName);
+        _mediaTypeConverterMethodGetPacketProducerName);
   }
 }
 
@@ -457,15 +457,15 @@ class _MediaTypeConverterStubControl
       case _mediaTypeConverterMethodGetOutputTypeName:
         _impl.getOutputType(_mediaTypeConverterGetOutputTypeResponseParamsResponder(message.header.requestId));
         break;
-      case _mediaTypeConverterMethodGetConsumerName:
-        var params = _MediaTypeConverterGetConsumerParams.deserialize(
+      case _mediaTypeConverterMethodGetPacketConsumerName:
+        var params = _MediaTypeConverterGetPacketConsumerParams.deserialize(
             message.payload);
-        _impl.getConsumer(params.consumer);
+        _impl.getPacketConsumer(params.packetConsumer);
         break;
-      case _mediaTypeConverterMethodGetProducerName:
-        var params = _MediaTypeConverterGetProducerParams.deserialize(
+      case _mediaTypeConverterMethodGetPacketProducerName:
+        var params = _MediaTypeConverterGetPacketProducerParams.deserialize(
             message.payload);
-        _impl.getProducer(params.producer);
+        _impl.getPacketProducer(params.packetProducer);
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
@@ -527,11 +527,11 @@ class MediaTypeConverterStub
   void getOutputType(void callback(media_types_mojom.MediaType outputType)) {
     return impl.getOutputType(callback);
   }
-  void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
-    return impl.getConsumer(consumer);
+  void getPacketConsumer(media_transport_mojom.MediaPacketConsumerInterfaceRequest packetConsumer) {
+    return impl.getPacketConsumer(packetConsumer);
   }
-  void getProducer(media_transport_mojom.MediaProducerInterfaceRequest producer) {
-    return impl.getProducer(producer);
+  void getPacketProducer(media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer) {
+    return impl.getPacketProducer(packetProducer);
   }
 }
 

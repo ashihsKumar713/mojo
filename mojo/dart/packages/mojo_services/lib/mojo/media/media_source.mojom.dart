@@ -261,28 +261,28 @@ class MediaSourceGetStreamsResponseParams extends bindings.Struct {
 }
 
 
-class _MediaSourceGetProducerParams extends bindings.Struct {
+class _MediaSourceGetPacketProducerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
   int streamIndex = 0;
-  media_transport_mojom.MediaProducerInterfaceRequest producer = null;
+  media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer = null;
 
-  _MediaSourceGetProducerParams() : super(kVersions.last.size);
+  _MediaSourceGetPacketProducerParams() : super(kVersions.last.size);
 
-  _MediaSourceGetProducerParams.init(
+  _MediaSourceGetPacketProducerParams.init(
     int this.streamIndex, 
-    media_transport_mojom.MediaProducerInterfaceRequest this.producer
+    media_transport_mojom.MediaPacketProducerInterfaceRequest this.packetProducer
   ) : super(kVersions.last.size);
 
-  static _MediaSourceGetProducerParams deserialize(bindings.Message message) =>
+  static _MediaSourceGetPacketProducerParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaSourceGetProducerParams decode(bindings.Decoder decoder0) {
+  static _MediaSourceGetPacketProducerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaSourceGetProducerParams result = new _MediaSourceGetProducerParams();
+    _MediaSourceGetPacketProducerParams result = new _MediaSourceGetPacketProducerParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
@@ -291,20 +291,20 @@ class _MediaSourceGetProducerParams extends bindings.Struct {
     }
     if (mainDataHeader.version >= 0) {
       
-      result.producer = decoder0.decodeInterfaceRequest(12, false, media_transport_mojom.MediaProducerStub.newFromEndpoint);
+      result.packetProducer = decoder0.decodeInterfaceRequest(12, false, media_transport_mojom.MediaPacketProducerStub.newFromEndpoint);
     }
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaSourceGetProducerParams";
+    const String structName = "_MediaSourceGetPacketProducerParams";
     String fieldName;
     try {
       fieldName = "streamIndex";
       encoder0.encodeUint32(streamIndex, 8);
-      fieldName = "producer";
-      encoder0.encodeInterfaceRequest(producer, 12, false);
+      fieldName = "packetProducer";
+      encoder0.encodeInterfaceRequest(packetProducer, 12, false);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -312,72 +312,9 @@ class _MediaSourceGetProducerParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaSourceGetProducerParams("
+    return "_MediaSourceGetPacketProducerParams("
            "streamIndex: $streamIndex" ", "
-           "producer: $producer" ")";
-  }
-
-  Map toJson() {
-    throw new bindings.MojoCodecError(
-        'Object containing handles cannot be encoded to JSON.');
-  }
-}
-
-
-class _MediaSourceGetPullModeProducerParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(16, 0)
-  ];
-  int streamIndex = 0;
-  media_transport_mojom.MediaPullModeProducerInterfaceRequest producer = null;
-
-  _MediaSourceGetPullModeProducerParams() : super(kVersions.last.size);
-
-  _MediaSourceGetPullModeProducerParams.init(
-    int this.streamIndex, 
-    media_transport_mojom.MediaPullModeProducerInterfaceRequest this.producer
-  ) : super(kVersions.last.size);
-
-  static _MediaSourceGetPullModeProducerParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static _MediaSourceGetPullModeProducerParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    _MediaSourceGetPullModeProducerParams result = new _MediaSourceGetPullModeProducerParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
-    if (mainDataHeader.version >= 0) {
-      
-      result.streamIndex = decoder0.decodeUint32(8);
-    }
-    if (mainDataHeader.version >= 0) {
-      
-      result.producer = decoder0.decodeInterfaceRequest(12, false, media_transport_mojom.MediaPullModeProducerStub.newFromEndpoint);
-    }
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaSourceGetPullModeProducerParams";
-    String fieldName;
-    try {
-      fieldName = "streamIndex";
-      encoder0.encodeUint32(streamIndex, 8);
-      fieldName = "producer";
-      encoder0.encodeInterfaceRequest(producer, 12, false);
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "_MediaSourceGetPullModeProducerParams("
-           "streamIndex: $streamIndex" ", "
-           "producer: $producer" ")";
+           "packetProducer: $packetProducer" ")";
   }
 
   Map toJson() {
@@ -878,13 +815,12 @@ class MediaSourceSeekResponseParams extends bindings.Struct {
 }
 
 const int _mediaSourceMethodGetStreamsName = 0;
-const int _mediaSourceMethodGetProducerName = 1;
-const int _mediaSourceMethodGetPullModeProducerName = 2;
-const int _mediaSourceMethodGetStatusName = 3;
-const int _mediaSourceMethodPrepareName = 4;
-const int _mediaSourceMethodPrimeName = 5;
-const int _mediaSourceMethodFlushName = 6;
-const int _mediaSourceMethodSeekName = 7;
+const int _mediaSourceMethodGetPacketProducerName = 1;
+const int _mediaSourceMethodGetStatusName = 2;
+const int _mediaSourceMethodPrepareName = 3;
+const int _mediaSourceMethodPrimeName = 4;
+const int _mediaSourceMethodFlushName = 5;
+const int _mediaSourceMethodSeekName = 6;
 
 class _MediaSourceServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
@@ -923,8 +859,7 @@ abstract class MediaSource {
     return p;
   }
   void getStreams(void callback(List<MediaSourceStreamDescriptor> streams));
-  void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer);
-  void getPullModeProducer(int streamIndex, media_transport_mojom.MediaPullModeProducerInterfaceRequest producer);
+  void getPacketProducer(int streamIndex, media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer);
   void getStatus(int versionLastSeen,void callback(int version, MediaSourceStatus status));
   void prepare(void callback());
   void prime(void callback());
@@ -1088,35 +1023,20 @@ class MediaSourceProxy
         bindings.MessageHeader.kMessageExpectsResponse,
         zonedCallback);
   }
-  void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer) {
+  void getPacketProducer(int streamIndex, media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer) {
     if (impl != null) {
-      impl.getProducer(streamIndex, producer);
+      impl.getPacketProducer(streamIndex, packetProducer);
       return;
     }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
     }
-    var params = new _MediaSourceGetProducerParams();
+    var params = new _MediaSourceGetPacketProducerParams();
     params.streamIndex = streamIndex;
-    params.producer = producer;
+    params.packetProducer = packetProducer;
     ctrl.sendMessage(params,
-        _mediaSourceMethodGetProducerName);
-  }
-  void getPullModeProducer(int streamIndex, media_transport_mojom.MediaPullModeProducerInterfaceRequest producer) {
-    if (impl != null) {
-      impl.getPullModeProducer(streamIndex, producer);
-      return;
-    }
-    if (!ctrl.isBound) {
-      ctrl.proxyError("The Proxy is closed.");
-      return;
-    }
-    var params = new _MediaSourceGetPullModeProducerParams();
-    params.streamIndex = streamIndex;
-    params.producer = producer;
-    ctrl.sendMessage(params,
-        _mediaSourceMethodGetPullModeProducerName);
+        _mediaSourceMethodGetPacketProducerName);
   }
   void getStatus(int versionLastSeen,void callback(int version, MediaSourceStatus status)) {
     if (impl != null) {
@@ -1347,15 +1267,10 @@ class _MediaSourceStubControl
       case _mediaSourceMethodGetStreamsName:
         _impl.getStreams(_mediaSourceGetStreamsResponseParamsResponder(message.header.requestId));
         break;
-      case _mediaSourceMethodGetProducerName:
-        var params = _MediaSourceGetProducerParams.deserialize(
+      case _mediaSourceMethodGetPacketProducerName:
+        var params = _MediaSourceGetPacketProducerParams.deserialize(
             message.payload);
-        _impl.getProducer(params.streamIndex, params.producer);
-        break;
-      case _mediaSourceMethodGetPullModeProducerName:
-        var params = _MediaSourceGetPullModeProducerParams.deserialize(
-            message.payload);
-        _impl.getPullModeProducer(params.streamIndex, params.producer);
+        _impl.getPacketProducer(params.streamIndex, params.packetProducer);
         break;
       case _mediaSourceMethodGetStatusName:
         var params = _MediaSourceGetStatusParams.deserialize(
@@ -1436,11 +1351,8 @@ class MediaSourceStub
   void getStreams(void callback(List<MediaSourceStreamDescriptor> streams)) {
     return impl.getStreams(callback);
   }
-  void getProducer(int streamIndex, media_transport_mojom.MediaProducerInterfaceRequest producer) {
-    return impl.getProducer(streamIndex, producer);
-  }
-  void getPullModeProducer(int streamIndex, media_transport_mojom.MediaPullModeProducerInterfaceRequest producer) {
-    return impl.getPullModeProducer(streamIndex, producer);
+  void getPacketProducer(int streamIndex, media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer) {
+    return impl.getPacketProducer(streamIndex, packetProducer);
   }
   void getStatus(int versionLastSeen,void callback(int version, MediaSourceStatus status)) {
     return impl.getStatus(versionLastSeen,callback);

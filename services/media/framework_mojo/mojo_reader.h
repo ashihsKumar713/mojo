@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_MEDIA_FRAMEWORK_MOJO_PARTS_MOJO_READER_H_
-#define SERVICES_MEDIA_FRAMEWORK_MOJO_PARTS_MOJO_READER_H_
+#ifndef SERVICES_MEDIA_FRAMEWORK_MOJO_MOJO_READER_H_
+#define SERVICES_MEDIA_FRAMEWORK_MOJO_MOJO_READER_H_
 
 #include <atomic>
 

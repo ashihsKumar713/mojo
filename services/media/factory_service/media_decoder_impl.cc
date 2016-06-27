@@ -24,8 +24,8 @@ MediaDecoderImpl::MediaDecoderImpl(MediaTypePtr input_media_type,
     : MediaFactoryService::Product<MediaTypeConverter>(this,
                                                        request.Pass(),
                                                        owner),
-      consumer_(MojoConsumer::Create()),
-      producer_(MojoProducer::Create()) {
+      consumer_(MojoPacketConsumer::Create()),
+      producer_(MojoPacketProducer::Create()) {
   DCHECK(input_media_type);
 
   std::unique_ptr<StreamType> input_stream_type =
@@ -45,12 +45,12 @@ MediaDecoderImpl::MediaDecoderImpl(MediaTypePtr input_media_type,
   graph_.ConnectParts(decoder_ref, producer_ref);
 
   consumer_->SetPrimeRequestedCallback(
-      [this](const MediaConsumer::PrimeCallback& callback) {
+      [this](const MediaPacketConsumer::PrimeCallback& callback) {
         DCHECK(producer_);
         producer_->PrimeConnection(callback);
       });
   consumer_->SetFlushRequestedCallback(
-      [this, consumer_ref](const MediaConsumer::FlushCallback& callback) {
+      [this, consumer_ref](const MediaPacketConsumer::FlushCallback& callback) {
         DCHECK(producer_);
         graph_.FlushOutput(consumer_ref.output());
         producer_->FlushConnection(callback);
@@ -66,13 +66,13 @@ void MediaDecoderImpl::GetOutputType(const GetOutputTypeCallback& callback) {
   callback.Run(MediaType::From(decoder_->output_stream_type()));
 }
 
-void MediaDecoderImpl::GetConsumer(
-    mojo::InterfaceRequest<MediaConsumer> consumer) {
+void MediaDecoderImpl::GetPacketConsumer(
+    mojo::InterfaceRequest<MediaPacketConsumer> consumer) {
   consumer_->AddBinding(consumer.Pass());
 }
 
-void MediaDecoderImpl::GetProducer(
-    mojo::InterfaceRequest<MediaProducer> producer) {
+void MediaDecoderImpl::GetPacketProducer(
+    mojo::InterfaceRequest<MediaPacketProducer> producer) {
   producer_->AddBinding(producer.Pass());
 }
 

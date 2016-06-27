@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOJO_SERVICES_MEDIA_FACTORY_MEDIA_PLAYER_IMPL_H_
-#define MOJO_SERVICES_MEDIA_FACTORY_MEDIA_PLAYER_IMPL_H_
+#ifndef SERVICES_MEDIA_FACTORY_SERVICE_MEDIA_PLAYER_IMPL_H_
+#define SERVICES_MEDIA_FACTORY_SERVICE_MEDIA_PLAYER_IMPL_H_
 
 #include <limits>
 #include <vector>
@@ -64,8 +64,8 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
     MediaSinkPtr sink_;
     // The following fields are just temporaries used to solve lambda capture
     // problems.
-    MediaProducerPtr encoded_producer_;
-    MediaProducerPtr decoded_producer_;
+    MediaPacketProducerPtr encoded_producer_;
+    MediaPacketProducerPtr decoded_producer_;
     InterfaceHandle<MediaRenderer> renderer_;
   };
 
@@ -146,4 +146,4 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
 }  // namespace media
 }  // namespace mojo
 
-#endif  // MOJO_SERVICES_MEDIA_FACTORY_MEDIA_PLAYER_IMPL_H_
+#endif  // SERVICES_MEDIA_FACTORY_SERVICE_MEDIA_PLAYER_IMPL_H_

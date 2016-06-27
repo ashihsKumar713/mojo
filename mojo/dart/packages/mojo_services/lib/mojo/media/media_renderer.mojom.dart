@@ -184,42 +184,42 @@ class _MediaRendererSetMediaTypeParams extends bindings.Struct {
 }
 
 
-class _MediaRendererGetConsumerParams extends bindings.Struct {
+class _MediaRendererGetPacketConsumerParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  media_transport_mojom.MediaConsumerInterfaceRequest consumer = null;
+  media_transport_mojom.MediaPacketConsumerInterfaceRequest packetConsumer = null;
 
-  _MediaRendererGetConsumerParams() : super(kVersions.last.size);
+  _MediaRendererGetPacketConsumerParams() : super(kVersions.last.size);
 
-  _MediaRendererGetConsumerParams.init(
-    media_transport_mojom.MediaConsumerInterfaceRequest this.consumer
+  _MediaRendererGetPacketConsumerParams.init(
+    media_transport_mojom.MediaPacketConsumerInterfaceRequest this.packetConsumer
   ) : super(kVersions.last.size);
 
-  static _MediaRendererGetConsumerParams deserialize(bindings.Message message) =>
+  static _MediaRendererGetPacketConsumerParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaRendererGetConsumerParams decode(bindings.Decoder decoder0) {
+  static _MediaRendererGetPacketConsumerParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaRendererGetConsumerParams result = new _MediaRendererGetConsumerParams();
+    _MediaRendererGetPacketConsumerParams result = new _MediaRendererGetPacketConsumerParams();
 
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
-      result.consumer = decoder0.decodeInterfaceRequest(8, false, media_transport_mojom.MediaConsumerStub.newFromEndpoint);
+      result.packetConsumer = decoder0.decodeInterfaceRequest(8, false, media_transport_mojom.MediaPacketConsumerStub.newFromEndpoint);
     }
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaRendererGetConsumerParams";
+    const String structName = "_MediaRendererGetPacketConsumerParams";
     String fieldName;
     try {
-      fieldName = "consumer";
-      encoder0.encodeInterfaceRequest(consumer, 8, false);
+      fieldName = "packetConsumer";
+      encoder0.encodeInterfaceRequest(packetConsumer, 8, false);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -227,8 +227,8 @@ class _MediaRendererGetConsumerParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaRendererGetConsumerParams("
-           "consumer: $consumer" ")";
+    return "_MediaRendererGetPacketConsumerParams("
+           "packetConsumer: $packetConsumer" ")";
   }
 
   Map toJson() {
@@ -293,7 +293,7 @@ class _MediaRendererGetTimelineControlPointParams extends bindings.Struct {
 
 const int _mediaRendererMethodGetSupportedMediaTypesName = 0;
 const int _mediaRendererMethodSetMediaTypeName = 1;
-const int _mediaRendererMethodGetConsumerName = 2;
+const int _mediaRendererMethodGetPacketConsumerName = 2;
 const int _mediaRendererMethodGetTimelineControlPointName = 3;
 
 class _MediaRendererServiceDescription implements service_describer.ServiceDescription {
@@ -334,7 +334,7 @@ abstract class MediaRenderer {
   }
   void getSupportedMediaTypes(void callback(List<media_types_mojom.MediaTypeSet> supportedMediaTypes));
   void setMediaType(media_types_mojom.MediaType mediaType);
-  void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer);
+  void getPacketConsumer(media_transport_mojom.MediaPacketConsumerInterfaceRequest packetConsumer);
   void getTimelineControlPoint(timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest timelineControlPoint);
 }
 
@@ -467,19 +467,19 @@ class MediaRendererProxy
     ctrl.sendMessage(params,
         _mediaRendererMethodSetMediaTypeName);
   }
-  void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
+  void getPacketConsumer(media_transport_mojom.MediaPacketConsumerInterfaceRequest packetConsumer) {
     if (impl != null) {
-      impl.getConsumer(consumer);
+      impl.getPacketConsumer(packetConsumer);
       return;
     }
     if (!ctrl.isBound) {
       ctrl.proxyError("The Proxy is closed.");
       return;
     }
-    var params = new _MediaRendererGetConsumerParams();
-    params.consumer = consumer;
+    var params = new _MediaRendererGetPacketConsumerParams();
+    params.packetConsumer = packetConsumer;
     ctrl.sendMessage(params,
-        _mediaRendererMethodGetConsumerName);
+        _mediaRendererMethodGetPacketConsumerName);
   }
   void getTimelineControlPoint(timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest timelineControlPoint) {
     if (impl != null) {
@@ -550,10 +550,10 @@ class _MediaRendererStubControl
             message.payload);
         _impl.setMediaType(params.mediaType);
         break;
-      case _mediaRendererMethodGetConsumerName:
-        var params = _MediaRendererGetConsumerParams.deserialize(
+      case _mediaRendererMethodGetPacketConsumerName:
+        var params = _MediaRendererGetPacketConsumerParams.deserialize(
             message.payload);
-        _impl.getConsumer(params.consumer);
+        _impl.getPacketConsumer(params.packetConsumer);
         break;
       case _mediaRendererMethodGetTimelineControlPointName:
         var params = _MediaRendererGetTimelineControlPointParams.deserialize(
@@ -623,8 +623,8 @@ class MediaRendererStub
   void setMediaType(media_types_mojom.MediaType mediaType) {
     return impl.setMediaType(mediaType);
   }
-  void getConsumer(media_transport_mojom.MediaConsumerInterfaceRequest consumer) {
-    return impl.getConsumer(consumer);
+  void getPacketConsumer(media_transport_mojom.MediaPacketConsumerInterfaceRequest packetConsumer) {
+    return impl.getPacketConsumer(packetConsumer);
   }
   void getTimelineControlPoint(timeline_controller_mojom.MediaTimelineControlPointInterfaceRequest timelineControlPoint) {
     return impl.getTimelineControlPoint(timelineControlPoint);

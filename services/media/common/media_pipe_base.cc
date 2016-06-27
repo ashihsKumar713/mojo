@@ -15,7 +15,7 @@ MediaPipeBase::MediaPipeBase()
 MediaPipeBase::~MediaPipeBase() {
 }
 
-MojoResult MediaPipeBase::Init(InterfaceRequest<MediaConsumer> request) {
+MojoResult MediaPipeBase::Init(InterfaceRequest<MediaPacketConsumer> request) {
   // Double init?
   if (IsInitialized()) {
     return MOJO_RESULT_ALREADY_EXISTS;
@@ -45,8 +45,8 @@ void MediaPipeBase::SetBuffer(ScopedSharedBufferHandle handle,
 
   // Double init?  Close the connection.
   if (buffer_) {
-    LOG(ERROR) << "Attempting to set a new buffer on a MediaConsumer which "
-                  "already has a buffer assigned. (size = "
+    LOG(ERROR) << "Attempting to set a new buffer on a MediaPacketConsumer "
+                  "which already has a buffer assigned. (size = "
                << buffer_->size()
                << ")";
     Reset();
@@ -66,7 +66,7 @@ void MediaPipeBase::SetBuffer(ScopedSharedBufferHandle handle,
 
   // Invalid size?  Close the connection.
   uint64_t size = info.num_bytes;
-  if (!size || (size > MediaConsumer::kMaxBufferLen)) {
+  if (!size || (size > MediaPacketConsumer::kMaxBufferLen)) {
     LOG(ERROR) << "Invalid shared buffer size (size = " << size << ")";
     Reset();
     return;
@@ -163,7 +163,7 @@ MediaPipeBase::MediaPacketState::MediaPacketState(
   : packet_(packet.Pass()),
     buffer_(buffer),
     cbk_(cbk),
-    result_(MediaConsumer::SendResult::CONSUMED) {
+    result_(MediaPacketConsumer::SendResult::CONSUMED) {
   DCHECK(packet_);
   DCHECK(packet_->payload);
 }
@@ -173,8 +173,9 @@ MediaPipeBase::MediaPacketState::~MediaPacketState() {
 }
 
 void MediaPipeBase::MediaPacketState::SetResult(
-    MediaConsumer::SendResult result) {
-  MediaConsumer::SendResult tmp = MediaConsumer::SendResult::CONSUMED;
+    MediaPacketConsumer::SendResult result) {
+  MediaPacketConsumer::SendResult tmp =
+      MediaPacketConsumer::SendResult::CONSUMED;
   result_.compare_exchange_strong(tmp, result);
 }
 

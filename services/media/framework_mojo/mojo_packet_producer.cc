@@ -6,25 +6,27 @@
 #include "base/bind_helpers.h"
 #include "base/logging.h"
 #include "base/message_loop/message_loop.h"
-#include "services/media/framework_mojo/mojo_producer.h"
+#include "services/media/framework_mojo/mojo_packet_producer.h"
 
 namespace mojo {
 namespace media {
 
-MojoProducer::MojoProducer() {
+MojoPacketProducer::MojoPacketProducer() {
   task_runner_ = base::MessageLoop::current()->task_runner();
   DCHECK(task_runner_);
 }
 
-MojoProducer::~MojoProducer() {
+MojoPacketProducer::~MojoPacketProducer() {
   base::AutoLock lock(lock_);
 }
 
-void MojoProducer::AddBinding(InterfaceRequest<MediaProducer> producer) {
+void MojoPacketProducer::AddBinding(
+    InterfaceRequest<MediaPacketProducer> producer) {
   bindings_.AddBinding(this, producer.Pass());
 }
 
-void MojoProducer::PrimeConnection(const PrimeConnectionCallback& callback) {
+void MojoPacketProducer::PrimeConnection(
+    const PrimeConnectionCallback& callback) {
   Demand demand;
 
   if (consumer_.is_bound()) {
@@ -50,7 +52,8 @@ void MojoProducer::PrimeConnection(const PrimeConnectionCallback& callback) {
   }
 }
 
-void MojoProducer::FlushConnection(const FlushConnectionCallback& callback) {
+void MojoPacketProducer::FlushConnection(
+    const FlushConnectionCallback& callback) {
   {
     base::AutoLock lock(lock_);
     max_pushes_outstanding_ = 0;
@@ -66,15 +69,16 @@ void MojoProducer::FlushConnection(const FlushConnectionCallback& callback) {
   }
 }
 
-PayloadAllocator* MojoProducer::allocator() {
+PayloadAllocator* MojoPacketProducer::allocator() {
   return &mojo_allocator_;
 }
 
-void MojoProducer::SetDemandCallback(const DemandCallback& demand_callback) {
+void MojoPacketProducer::SetDemandCallback(
+    const DemandCallback& demand_callback) {
   demand_callback_ = demand_callback;
 }
 
-Demand MojoProducer::SupplyPacket(PacketPtr packet) {
+Demand MojoPacketProducer::SupplyPacket(PacketPtr packet) {
   DCHECK(packet);
 
   // If we're not connected, throw the packet away.
@@ -103,17 +107,17 @@ Demand MojoProducer::SupplyPacket(PacketPtr packet) {
   MediaPacketPtr media_packet = CreateMediaPacket(packet);
   task_runner_->PostTask(
       FROM_HERE,
-      base::Bind(&MojoProducer::SendPacket, base::Unretained(this),
+      base::Bind(&MojoPacketProducer::SendPacket, base::Unretained(this),
                  packet.release(), base::Passed(media_packet.Pass())));
 
   return demand;
 }
 
-void MojoProducer::Connect(InterfaceHandle<MediaConsumer> consumer,
-                           const ConnectCallback& callback) {
+void MojoPacketProducer::Connect(InterfaceHandle<MediaPacketConsumer> consumer,
+                                 const ConnectCallback& callback) {
   DCHECK(consumer);
 
-  consumer_ = MediaConsumerPtr::Create(std::move(consumer));
+  consumer_ = MediaPacketConsumerPtr::Create(std::move(consumer));
 
   if (!mojo_allocator_.initialized()) {
     mojo_allocator_.InitNew(4096 * 1024);  // TODO(dalesat): Made up!
@@ -123,17 +127,17 @@ void MojoProducer::Connect(InterfaceHandle<MediaConsumer> consumer,
                        [callback]() { callback.Run(); });
 }
 
-void MojoProducer::Disconnect() {
+void MojoPacketProducer::Disconnect() {
   DCHECK(demand_callback_);
   demand_callback_(Demand::kNegative);
   consumer_.reset();
 }
 
-void MojoProducer::SendPacket(Packet* packet_raw_ptr,
-                              MediaPacketPtr media_packet) {
+void MojoPacketProducer::SendPacket(Packet* packet_raw_ptr,
+                                    MediaPacketPtr media_packet) {
   consumer_->SendPacket(
       media_packet.Pass(),
-      [this, packet_raw_ptr](MediaConsumer::SendResult send_result) {
+      [this, packet_raw_ptr](MediaPacketConsumer::SendResult send_result) {
         PacketPtr packet = PacketPtr(packet_raw_ptr);
         Demand demand;
 
@@ -149,7 +153,7 @@ void MojoProducer::SendPacket(Packet* packet_raw_ptr,
       });
 }
 
-MediaPacketPtr MojoProducer::CreateMediaPacket(const PacketPtr& packet) {
+MediaPacketPtr MojoPacketProducer::CreateMediaPacket(const PacketPtr& packet) {
   DCHECK(packet);
 
   MediaPacketRegionPtr region = MediaPacketRegion::New();

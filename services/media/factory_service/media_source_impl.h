@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOJO_SERVICES_MEDIA_FACTORY_MEDIA_SOURCE_IMPL_H_
-#define MOJO_SERVICES_MEDIA_FACTORY_MEDIA_SOURCE_IMPL_H_
+#ifndef SERVICES_MEDIA_FACTORY_SERVICE_MEDIA_SOURCE_IMPL_H_
+#define SERVICES_MEDIA_FACTORY_SERVICE_MEDIA_SOURCE_IMPL_H_
 
 #include <vector>
 
@@ -18,8 +18,7 @@
 #include "services/media/framework/parts/demux.h"
 #include "services/media/framework/parts/null_sink.h"
 #include "services/media/framework/parts/reader.h"
-#include "services/media/framework_mojo/mojo_producer.h"
-#include "services/media/framework_mojo/mojo_pull_mode_producer.h"
+#include "services/media/framework_mojo/mojo_packet_producer.h"
 #include "services/util/cpp/incident.h"
 
 namespace mojo {
@@ -40,12 +39,9 @@ class MediaSourceImpl : public MediaFactoryService::Product<MediaSource>,
   // MediaSource implementation.
   void GetStreams(const GetStreamsCallback& callback) override;
 
-  void GetProducer(uint32_t stream_index,
-                   InterfaceRequest<MediaProducer> producer) override;
-
-  void GetPullModeProducer(
+  void GetPacketProducer(
       uint32_t stream_index,
-      InterfaceRequest<MediaPullModeProducer> producer) override;
+      InterfaceRequest<MediaPacketProducer> producer) override;
 
   void GetStatus(uint64_t version_last_seen,
                  const GetStatusCallback& callback) override;
@@ -81,27 +77,25 @@ class MediaSourceImpl : public MediaFactoryService::Product<MediaSource>,
     MediaTypePtr original_media_type() const;
 
     // Gets the producer.
-    void GetProducer(InterfaceRequest<MediaProducer> producer);
-
-    // Gets the pull mode producer.
-    void GetPullModeProducer(InterfaceRequest<MediaPullModeProducer> producer);
+    void GetPacketProducer(InterfaceRequest<MediaPacketProducer> producer);
 
     // Makes sure the stream has a sink.
     void EnsureSink();
 
     // Tells the producer to prime its connection.
-    void PrimeConnection(const MojoProducer::PrimeConnectionCallback callback);
+    void PrimeConnection(
+        const MojoPacketProducer::PrimeConnectionCallback callback);
 
     // Tells the producer to flush its connection.
-    void FlushConnection(const MojoProducer::FlushConnectionCallback callback);
+    void FlushConnection(
+        const MojoPacketProducer::FlushConnectionCallback callback);
 
    private:
     std::unique_ptr<StreamType> stream_type_;
     std::unique_ptr<StreamType> original_stream_type_;
     Graph* graph_;
     OutputRef output_;
-    std::shared_ptr<MojoProducer> producer_;
-    std::shared_ptr<MojoPullModeProducer> pull_mode_producer_;
+    std::shared_ptr<MojoPacketProducer> producer_;
     std::shared_ptr<NullSink> null_sink_;
   };
 
@@ -124,4 +118,4 @@ class MediaSourceImpl : public MediaFactoryService::Product<MediaSource>,
 }  // namespace media
 }  // namespace mojo
 
-#endif  // MOJO_SERVICES_MEDIA_FACTORY_MEDIA_SOURCE_IMPL_H_
+#endif  // SERVICES_MEDIA_FACTORY_SERVICE_MEDIA_SOURCE_IMPL_H_

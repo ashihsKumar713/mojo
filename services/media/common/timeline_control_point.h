@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOJO_SERVICES_MEDIA_COMMON_TIMELINE_CONTROL_SITE_IMPL_H_
-#define MOJO_SERVICES_MEDIA_COMMON_TIMELINE_CONTROL_SITE_IMPL_H_
+#ifndef SERVICES_MEDIA_COMMON_TIMELINE_CONTROL_POINT_H_
+#define SERVICES_MEDIA_COMMON_TIMELINE_CONTROL_POINT_H_
 
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -95,4 +95,4 @@ class TimelineControlPoint : public MediaTimelineControlPoint,
 }  // namespace media
 }  // namespace mojo
 
-#endif  // MOJO_SERVICES_MEDIA_COMMON_TIMELINE_CONTROL_SITE_IMPL_H_
+#endif  // SERVICES_MEDIA_COMMON_TIMELINE_CONTROL_POINT_H_

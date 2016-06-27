@@ -59,47 +59,25 @@ struct MediaPacket {
   // packet?
 };
 
-// Models a stream producer. A MediaProducer allows a client to connect the
-// producer to a MediaConsumer so packets flow from the producer to the
-// consumer. Clients who want to receive packets directly from the producer
+// Models a stream producer. A MediaPacketProducer allows a client to connect
+// the producer to a MediaPacketConsumer so packets flow from the producer to
+// the consumer. Clients who want to receive packets directly from the producer
 // should use MediaPullModeProducer instead.
 //
 // The client calls Connect to connect producer and consumer. The producer then
 // calls PushPacket on the consumer to deliver packets.
-interface MediaProducer {
-  // Connects this MediaProducer to a MediaConsumer.
-  Connect(MediaConsumer consumer) => ();
+interface MediaPacketProducer {
+  // Connects this MediaPacketProducer to a MediaPacketConsumer.
+  Connect(MediaPacketConsumer consumer) => ();
 
-  // Disconnects this MediaProducer from a previously-connected MediaConsumer.
+  // Disconnects this MediaPacketProducer from a previously-connected
+  // MediaPacketConsumer.
   Disconnect();
 };
 
-// Models a stream producer. A MediaPullModeProducer allows a client to receive
-// packets directly from the producer. Clients who want to connect the producer
-// to a MediaConsumer should use MediaProducer instead.
-//
-// The client calls PullPacket to get a packet. Once the client is done with
-// the packet, it calls ReleasePacket to let the producer know that the packet
-// buffer region can be reused. Alternatively, the client can piggyback a
-// release on a PullPacket call using the to_release parameter.
-interface MediaPullModeProducer {
-  // Gets the shared buffer in which packet payload will be located.
-  GetBuffer() => (handle<shared_buffer> buffer);
-
-  // Pulls a packet from the producer. When the client is done with the
-  // packet buffer region, it should call ReleasePacket or PullPacket passing
-  // the locator. Note that the optional locator passed in PullPacket is
-  // a locator to be released and probably won't be the same locator passed
-  // back in the callback.
-  PullPacket(MediaPacket? to_release) => (MediaPacket packet);
-
-  // Signals the producer that the client is done with the buffer region.
-  ReleasePacket(MediaPacket to_release);
-};
-
-// Models a stream consumer. A MediaConsumer allows a client to send packets
-// directly to the consumer or to connect the consumer to a MediaProducer so
-// packets flow from the producer to the consumer.
+// Models a stream consumer. A MediaPacketConsumer allows a client to send
+// packets directly to the consumer or to connect the consumer to a
+// MediaPacketProducer so packets flow from the producer to the consumer.
 //
 // In the former scenario, the client calls PushPacket to deliver a packet. The
 // callback notifies the client that the consumer is done with the packet
@@ -108,7 +86,7 @@ interface MediaPullModeProducer {
 // In the latter scenario, the client calls Connect on the producer to connect
 // producer and consumer. The producer then calls PushPacket on the consumer to
 // deliver packets.
-interface MediaConsumer {
+interface MediaPacketConsumer {
   const uint64 kMaxBufferLen = 0x3FFFFFFFFFFFFFFF;
 
   // An enumeration used to indicate the ultimate fate of packets sent across

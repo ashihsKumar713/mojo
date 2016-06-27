@@ -60,7 +60,7 @@ class PlayWAVApp : public ApplicationImplBase {
  private:
   using AudioPipePtr = std::unique_ptr<CircularBufferMediaPipeAdapter>;
   using AudioPacket  = CircularBufferMediaPipeAdapter::MappedPacket;
-  using PacketCbk    = MediaConsumer::SendPacketCallback;
+  using PacketCbk    = MediaPacketConsumer::SendPacketCallback;
 
   // TODO(johngro): endianness!
   struct PACKED RIFFChunkHeader {
@@ -103,7 +103,7 @@ class PlayWAVApp : public ApplicationImplBase {
   bool ReadAndValidateDATAHeader();
 
   void OnNeedsData(MediaResult res);
-  void OnPlayoutComplete(MediaConsumer::SendResult res);
+  void OnPlayoutComplete(MediaPacketConsumer::SendResult res);
   void OnConnectionError(const std::string& connection_name);
   void PostShutdown();
   void Shutdown();
@@ -175,9 +175,10 @@ void PlayWAVApp::OnInitialize() {
     OnConnectionError("url_loader");
   });
 
-  playout_complete_cbk_ = PacketCbk([this](MediaConsumer::SendResult res) {
-                                      this->OnPlayoutComplete(res);
-                                    });
+  playout_complete_cbk_ =
+      PacketCbk([this](MediaPacketConsumer::SendResult res) {
+        this->OnPlayoutComplete(res);
+      });
 
   URLRequestPtr req(URLRequest::New());
   req->url    = TEST_FILE;
@@ -282,8 +283,8 @@ void PlayWAVApp::ProcessHTTPResponse(URLResponsePtr resp) {
 
   // Configure the track based on the WAV header information.
   media_renderer_->SetMediaType(media_type.Pass());
-  MediaConsumerPtr media_pipe;
-  media_renderer_->GetConsumer(GetProxy(&media_pipe));
+  MediaPacketConsumerPtr media_pipe;
+  media_renderer_->GetPacketConsumer(GetProxy(&media_pipe));
 
   // Grab the timeline consumer interface for our audio renderer.
   MediaTimelineControlPointPtr timeline_control_point;
@@ -508,7 +509,7 @@ void PlayWAVApp::OnNeedsData(MediaResult res) {
   }
 }
 
-void PlayWAVApp::OnPlayoutComplete(MediaConsumer::SendResult res) {
+void PlayWAVApp::OnPlayoutComplete(MediaPacketConsumer::SendResult res) {
   MOJO_DCHECK(!audio_pipe_->GetPending());
   audio_pipe_ = nullptr;
   PostShutdown();

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOJO_SERVICES_MEDIA_COMMON_CPP_MAPPED_SHARED_MEDIA_BUFFER_ALLOCATOR_H_
-#define MOJO_SERVICES_MEDIA_COMMON_CPP_MAPPED_SHARED_MEDIA_BUFFER_ALLOCATOR_H_
+#ifndef MOJO_SERVICES_MEDIA_COMMON_CPP_SHARED_MEDIA_BUFFER_ALLOCATOR_H_
+#define MOJO_SERVICES_MEDIA_COMMON_CPP_SHARED_MEDIA_BUFFER_ALLOCATOR_H_
 
 #include <memory>
 #include <mutex>  // NOLINT(build/c++11)
@@ -64,4 +64,4 @@ class SharedMediaBufferAllocator : public MappedSharedBuffer {
 }  // namespace media
 }  // namespace mojo
 
-#endif  // MOJO_SERVICES_MEDIA_COMMON_CPP_MAPPED_SHARED_MEDIA_BUFFER_ALLOCATOR_H_
+#endif  // MOJO_SERVICES_MEDIA_COMMON_CPP_SHARED_MEDIA_BUFFER_ALLOCATOR_H_
