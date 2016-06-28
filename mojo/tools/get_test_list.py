@@ -168,7 +168,8 @@ def GetTestList(config, verbose_count=0):
       AddEntry("Dart mojom package generate tests",
           [os.path.join("third_party", "dart-sdk", "dart-sdk", "bin", "dart"),
            "--checked",
-           "-p", os.path.join(build_dir, "gen", "dart-pkg", "packages"),
+           "--package-root=" +
+            os.path.join(build_dir, "gen", "dart-pkg", "packages"),
            os.path.join(
              "mojo", "dart", "packages", "mojom", "test",
              "generate_test.dart")])
@@ -177,7 +178,8 @@ def GetTestList(config, verbose_count=0):
       AddEntry("Dart mojo package can be imported by a non-mojo embedder",
           [os.path.join("third_party", "dart-sdk", "dart-sdk", "bin", "dart"),
            "--checked",
-           "-p", os.path.join(build_dir, "gen", "dart-pkg", "packages"),
+           "--package-root=" +
+             os.path.join(build_dir, "gen", "dart-pkg", "packages"),
            os.path.join(
              "mojo", "dart", "packages", "mojo", "test",
              "standalone_test.dart")])
