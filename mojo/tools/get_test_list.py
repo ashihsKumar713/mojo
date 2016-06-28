@@ -215,8 +215,8 @@ def GetTestList(config, verbose_count=0):
   bot_name = "linux_%s" % ("debug" if config.is_debug else "release")
 
   if target_os == Config.OS_LINUX and ShouldRunTest(Config.TEST_TYPE_PERF):
-    test_names = ["mojo_public_system_perftests",
-                  "mojo_public_bindings_perftests",
+    test_names = ["mojo_public_c_system_perftests",
+                  "mojo_public_cpp_bindings_perftests",
                   "mojo_edk_system_perftests"]
 
     for test_name in test_names:

@@ -27,20 +27,26 @@ tests = [
 
   # Public tests:
   {
-    "test": "mojo_public_bindings_unittests",
-    "cacheable": False,
-  },
-  {
     "test": "mojo_public_c_bindings_unittests",
   },
   {
-    "test": "mojo_public_environment_unittests",
+    "test": "mojo_public_c_system_unittests",
   },
   {
-    "test": "mojo_public_system_unittests",
+    "test": "mojo_public_cpp_application_unittests",
   },
   {
-    "test": "mojo_public_utility_unittests",
+    "test": "mojo_public_cpp_bindings_unittests",
+    "cacheable": False,
+  },
+  {
+    "test": "mojo_public_cpp_environment_unittests",
+  },
+  {
+    "test": "mojo_public_cpp_system_unittests",
+  },
+  {
+    "test": "mojo_public_cpp_utility_unittests",
   },
 
   # Non-system, non-public tests:

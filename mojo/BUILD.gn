@@ -95,30 +95,22 @@ static_library("system_thunks") {
 group("public_tests") {
   testonly = true
   deps = [
-    ":mojo_public_application_unittests",
-    ":mojo_public_bindings_perftests",
-    ":mojo_public_bindings_unittests",
+    # Unit tests:
     ":mojo_public_c_bindings_unittests",
-    ":mojo_public_environment_unittests",
-    ":mojo_public_system_perftests",
-    ":mojo_public_system_unittests",
-    ":mojo_public_utility_unittests",
+    ":mojo_public_c_system_unittests",
+    ":mojo_public_cpp_application_unittests",
+    ":mojo_public_cpp_bindings_unittests",
+    ":mojo_public_cpp_environment_unittests",
+    ":mojo_public_cpp_system_unittests",
+    ":mojo_public_cpp_utility_unittests",
+
+    # Perf tests:
+    ":mojo_public_c_system_perftests",
+    ":mojo_public_cpp_bindings_perftests",
   ]
 }
 
-test("mojo_public_application_unittests") {
-  deps = [
-    "//mojo/edk/test:run_all_unittests",
-    "//mojo/public/cpp/application/tests",
-  ]
-}
-
-test("mojo_public_bindings_unittests") {
-  deps = [
-    "//mojo/edk/test:run_all_unittests",
-    "//mojo/public/cpp/bindings/tests",
-  ]
-}
+# C unit tests:
 
 test("mojo_public_c_bindings_unittests") {
   deps = [
@@ -127,37 +119,64 @@ test("mojo_public_c_bindings_unittests") {
   ]
 }
 
-test("mojo_public_bindings_perftests") {
+test("mojo_public_c_system_unittests") {
   deps = [
-    "//mojo/edk/test:run_all_perftests",
-    "//mojo/public/cpp/bindings/tests:perftests",
+    "//mojo/edk/test:run_all_unittests",
+    "//mojo/public/c/system/tests",
   ]
 }
 
-test("mojo_public_environment_unittests") {
+# C++ unit tests:
+
+test("mojo_public_cpp_application_unittests") {
+  deps = [
+    "//mojo/edk/test:run_all_unittests",
+    "//mojo/public/cpp/application/tests",
+  ]
+}
+
+test("mojo_public_cpp_bindings_unittests") {
+  deps = [
+    "//mojo/edk/test:run_all_unittests",
+    "//mojo/public/cpp/bindings/tests",
+  ]
+}
+
+test("mojo_public_cpp_environment_unittests") {
   deps = [
     "//mojo/edk/test:run_all_unittests",
     "//mojo/public/cpp/environment/tests",
   ]
 }
 
-test("mojo_public_system_perftests") {
-  deps = [
-    "//mojo/edk/test:run_all_perftests",
-    "//mojo/public/c/system/tests:perftests",
-  ]
-}
-
-test("mojo_public_system_unittests") {
+test("mojo_public_cpp_system_unittests") {
   deps = [
     "//mojo/edk/test:run_all_unittests",
     "//mojo/public/cpp/system/tests",
   ]
 }
 
-test("mojo_public_utility_unittests") {
+test("mojo_public_cpp_utility_unittests") {
   deps = [
     "//mojo/edk/test:run_all_unittests",
     "//mojo/public/cpp/utility/tests",
+  ]
+}
+
+# C perf tests:
+
+test("mojo_public_c_system_perftests") {
+  deps = [
+    "//mojo/edk/test:run_all_perftests",
+    "//mojo/public/c/system/tests:perftests",
+  ]
+}
+
+# C++ perf tests:
+
+test("mojo_public_cpp_bindings_perftests") {
+  deps = [
+    "//mojo/edk/test:run_all_perftests",
+    "//mojo/public/cpp/bindings/tests:perftests",
   ]
 }
