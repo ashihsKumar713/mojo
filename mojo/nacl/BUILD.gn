@@ -2,20 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/mojo_sdk.gni")
+
 # Untrusted code
 if (is_nacl) {
-  # Unit test for the Mojo public API.
+  # Unit test for the Mojo public C API.
+  # TODO(vtl): Should also have a test for the C++ API?
   executable("monacl_test") {
     testonly = true
-    sources = [
-      "//mojo/public/cpp/system/tests/core_unittest.cc",
-      "//mojo/public/cpp/system/tests/macros_unittest.cc",
-    ]
+    sources = []
     deps = [
-      "//mojo/public/c/system/tests:tests",
-      "//mojo/public/cpp/system:system",
+      "//mojo/public/c/system/tests",
       "//mojo/public/platform/nacl:mojo",
-      "//testing/gtest:gtest",
+      "//testing/gtest",
       "//testing/gtest:gtest_main",
     ]
   }
