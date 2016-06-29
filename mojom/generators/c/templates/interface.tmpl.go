@@ -19,7 +19,7 @@ const GenerateInterface = `
 
 // Constants
 {{range $const := $interface.Constants -}}
-const {{$const.Type}} {{$const.Name}};
+extern const {{$const.Type}} {{$const.Name}};
 {{end}}
 
 {{range $message := $interface.Messages -}}
@@ -31,10 +31,10 @@ const {{$const.Type}} {{$const.Name}};
     ((uint32_t){{$message.MinVersion}})
 
 struct {{$message.RequestStruct.Name}};
-{{template "GenerateStruct" $message.RequestStruct}}
+{{template "GenerateStructDeclarations" $message.RequestStruct}}
 {{if ne $message.ResponseStruct.Name "" -}}
 struct {{$message.ResponseStruct.Name}};
-{{template "GenerateStruct" $message.ResponseStruct}}
+{{template "GenerateStructDeclarations" $message.ResponseStruct}}
 {{end}}
 {{end}}
 {{end}}

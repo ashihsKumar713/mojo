@@ -4,9 +4,9 @@
 
 package templates
 
-const GenerateStruct = `
+const GenerateStructDeclarations = `
 {{- /* . (dot) refers to the Go type |cgen.StructTemplate| */ -}}
-{{define "GenerateStruct" -}}
+{{define "GenerateStructDeclarations" -}}
 {{- $struct := . -}}
 
 // -- {{$struct.Name}} --
@@ -54,6 +54,22 @@ MojomValidationResult {{$struct.Name}}_DecodePointersAndHandles(
 MojomValidationResult {{$struct.Name}}_Validate(
   const void* in_buf, uint32_t in_buf_size,
   const MojoHandle* in_handles, uint32_t in_num_handles);
+
+{{end}}
+`
+
+// TODO(vardhan): Move other struct constant definitions in here.
+const GenerateStructDefinitions = `
+{{- /* . (dot) refers to the Go type |cgen.StructTemplate| */ -}}
+{{define "GenerateStructDefinitions" -}}
+{{- $struct := . -}}
+
+size_t {{$struct.Name}}_ComputeSerializedSize(
+    const struct {{$struct.Name}}* in_data) {
+  return MojomStruct_ComputeSerializedSize(
+    &{{$struct.Name}}__TypeDesc,
+		(const struct MojomStructHeader*)in_data);
+}
 
 {{end}}
 `

@@ -77,7 +77,7 @@ func (table *TypeTableTemplate) getTableForUDT(typeRef mojom_types.TypeReference
 	case *mojom_types.UserDefinedTypeStructType:
 		structName := *udt.Interface().(mojom_types.MojomStruct).DeclData.FullIdentifier
 		elemTable = "&" + mojomToCName(structName) + "__TypeDesc"
-		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_STRUCT"
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_STRUCT_PTR"
 	case *mojom_types.UserDefinedTypeUnionType:
 		unionName := *udt.Interface().(mojom_types.MojomUnion).DeclData.FullIdentifier
 		elemTable = "&" + mojomToCName(unionName) + "__TypeDesc"
@@ -97,21 +97,21 @@ func (table *TypeTableTemplate) makeTableForType(prefix string, dataType mojom_t
 	switch dataType.(type) {
 	case *mojom_types.TypeStringType:
 		elemTable = "&g_mojom_string_type_description"
-		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_ARRAY"
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_ARRAY_PTR"
 		nullable = dataType.Interface().(mojom_types.StringType).Nullable
 	case *mojom_types.TypeArrayType:
 		arrayTableName := fmt.Sprintf("%s_%d", prefix, table.counter)
 		table.counter++
 		typ := dataType.Interface().(mojom_types.ArrayType)
 		elemTable = "&" + table.makeArrayPointerEntry(arrayTableName, typ)
-		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_ARRAY"
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_ARRAY_PTR"
 		nullable = typ.Nullable
 	case *mojom_types.TypeMapType:
 		mapTableName := fmt.Sprintf("%s_%d", prefix, table.counter)
 		table.counter++
 		typ := dataType.Interface().(mojom_types.MapType)
 		elemTable = "&" + table.makeMapPointerTable(mapTableName, typ)
-		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_STRUCT"
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_STRUCT_PTR"
 		nullable = typ.Nullable
 	case *mojom_types.TypeHandleType:
 		typ := dataType.Interface().(mojom_types.HandleType)
@@ -231,6 +231,9 @@ func (table *TypeTableTemplate) insertStructPointerTable(s mojom_types.MojomStru
 func (table *TypeTableTemplate) makeUnionPointerTableEntry(prefix string, tag uint32, fieldType mojom_types.Type) UnionPointerTableEntry {
 	elemTableName := fmt.Sprintf("%s_%d", prefix, tag)
 	elemTable, elemType, nullable := table.makeTableForType(elemTableName, fieldType)
+	if elemType == "MOJOM_TYPE_DESCRIPTOR_TYPE_UNION" {
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_UNION_PTR"
+	}
 	return UnionPointerTableEntry{
 		ElemTable: elemTable,
 		Tag:       tag,

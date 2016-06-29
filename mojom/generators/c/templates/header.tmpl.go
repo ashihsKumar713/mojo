@@ -76,7 +76,7 @@ extern const {{$const.Type}} {{$const.Name}};
 
 // Struct definitions.
 {{range $struct := .Structs -}}
-{{template "GenerateStruct" $struct}}
+{{template "GenerateStructDeclarations" $struct}}
 {{end}}
 
 // Interface definitions.

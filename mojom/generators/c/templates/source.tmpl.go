@@ -43,5 +43,9 @@ const {{$const.Type}} {{$const.Name}} = {{$const.Value}};
 {{end -}}
 {{end -}}
 
+{{range $struct := .Structs -}}
+{{template "GenerateStructDefinitions" $struct}}
+{{end -}}
+
 {{end}}
 `
