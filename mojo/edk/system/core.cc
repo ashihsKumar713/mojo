@@ -257,17 +257,18 @@ MojoResult Core::WaitMany(UserPointer<const MojoHandle> handles,
                           MojoDeadline deadline,
                           UserPointer<uint32_t> result_index,
                           UserPointer<MojoHandleSignalsState> signals_states) {
-  if (num_handles < 1)
-    return MOJO_RESULT_INVALID_ARGUMENT;
   if (num_handles > GetConfiguration().max_wait_many_num_handles)
     return MOJO_RESULT_RESOURCE_EXHAUSTED;
+
+  uint64_t index = static_cast<uint64_t>(-1);
+  if (num_handles == 0u)
+    return WaitManyInternal(nullptr, nullptr, 0u, deadline, &index, nullptr);
 
   UserPointer<const MojoHandle>::Reader handles_reader(handles, num_handles);
   UserPointer<const MojoHandleSignals>::Reader signals_reader(signals,
                                                               num_handles);
-  uint64_t index = static_cast<uint64_t>(-1);
   MojoResult result;
-  if (signals_states.IsNull()) {
+  if (signals_states.IsNull() || num_handles == 0u) {
     result = WaitManyInternal(handles_reader.GetPointer(),
                               signals_reader.GetPointer(), num_handles,
                               deadline, &index, nullptr);
@@ -842,7 +843,6 @@ MojoResult Core::WaitManyInternal(const MojoHandle* handles,
                                   MojoDeadline deadline,
                                   uint64_t* result_index,
                                   HandleSignalsState* signals_states) {
-  DCHECK_GT(num_handles, 0u);
   DCHECK_EQ(*result_index, static_cast<uint64_t>(-1));
 
   DispatcherVector dispatchers;
