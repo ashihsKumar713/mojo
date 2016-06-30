@@ -339,6 +339,15 @@ hooks = [
         'python', 'src/tools/go/download.py',
     ],
   },
+  {
+    # This downloads linux Rust binaries according to
+    # tools/rust/VERSION.
+    'name': 'rusttools',
+    'pattern': '.',
+    'action': [
+        'python', 'src/tools/rust/download.py',
+    ],
+  },
   # Pull DejaVu fonts using checked-in hashes.
   {
     'name': 'dejavu-fonts',

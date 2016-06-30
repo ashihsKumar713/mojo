@@ -1,0 +1,10 @@
+[package]
+name = "system_echo"
+version = "0.1.0"
+authors = ["Michael Anthony Knyszek <mknyszek@gmail.com>"]
+
+[lib]
+crate-type = ["dylib"]
+
+[dependencies]
+mojo = { path = "../../../mojo/public/rust" }

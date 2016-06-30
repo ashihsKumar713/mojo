@@ -1,0 +1,81 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("rules.gni")
+
+group("rust") {
+  testonly = true
+  deps = [
+    ":rust_embedder",
+    ":rust_mojo_lib",
+  ]
+}
+
+# Declare the Rust bindings to be built.
+#
+# Generates the build output from Cargo for the main bindings library
+# in order to use it for testing later.
+#
+# Only tested on Linux. |rust_cargo_tool| must be set to the
+# absolute path of the cargo binary.
+#
+
+action("rust_mojo_lib") {
+  testonly = true
+  assert(is_linux)
+  assert(rust_cargo_tool != "")
+  assert(rustc_tool != "")
+  assert(rustdoc_tool != "")
+
+  cargo_out_dir = "debug"
+  if (!is_debug) {
+    cargo_out_dir = "release"
+  }
+  manifest = "//mojo/public/rust/Cargo.toml"
+  lib_name = "lib" + target_name + ".rlib"
+  deps = [
+    "//mojo:system_thunks",
+    "//mojo/rust:rust_embedder",
+  ]
+  script = "//mojo/rust/cargo.py"
+  inputs = [
+    manifest,
+  ]
+  inputs += rust_mojo_sources
+  args = [
+    rust_cargo_tool,
+    "test",
+    rebase_path(rustc_tool) + "",
+    rebase_path(rustdoc_tool) + "",
+    rebase_path(manifest) + "",
+    rebase_path(root_out_dir) + "",
+    rebase_path(target_out_dir) + "",
+  ]
+  if (!is_debug) {
+    args += [ "--release" ]
+  }
+  outputs = [
+    "${target_out_dir}/${cargo_out_dir}/${lib_name}",
+  ]
+}
+
+# Declare the Mojo Embedder SDK to be used with Rust.
+#
+# Generates a static library which Rust binaries can link against
+# to get basic platform support for Mojo. Used only in test binaries.
+#
+
+static_library("rust_embedder") {
+  testonly = true
+  complete_static_lib = true
+  sources = [
+    "//mojo/rust/c_embedder/c_embedder.cc",
+    "//mojo/rust/c_embedder/c_embedder.h",
+  ]
+  deps = [
+    "//mojo/edk/base_edk",
+    "//mojo/edk/system",
+    "//mojo/public/interfaces/bindings/tests:test_interfaces",
+  ]
+}

@@ -123,6 +123,25 @@ def GetTestList(config, verbose_count=0):
              ["python", os.path.join("mojo", "tools", "run_pure_go_tests.py"),
               go_tool, os.path.join("mojo", "tools", "data", "gotests")])
 
+  # Rust unit tests (Linux-only):
+  if (target_os == Config.OS_LINUX and
+      config.sanitizer != Config.SANITIZER_ASAN and
+      ShouldRunTest(Config.TEST_TYPE_DEFAULT, Config.TEST_TYPE_UNIT, "rust")):
+    assert paths.rust_cargo_path is not None
+    assert paths.rustc_path is not None
+    assert paths.rustdoc_path is not None
+    # Covers all Rust Mojo tests, ran with `cargo test`
+    # Assumes tests are prebuilt in {build_dir}/obj/mojo/rust
+    rust_test_command = ["python",
+                         os.path.join("mojo", "tools", "run_rust_tests.py"),
+                         paths.rust_cargo_path,
+                         paths.rustc_path,
+                         paths.rustdoc_path,
+                         os.path.join(build_dir, "obj", "mojo", "rust")]
+    if not config.is_debug:
+      rust_test_command += ["--release"]
+    AddEntry("Rust tests", rust_test_command)
+
   # Python unit tests:
   if ShouldRunTest(Config.TEST_TYPE_DEFAULT, Config.TEST_TYPE_UNIT, "python"):
     AddEntry("Python unit tests",

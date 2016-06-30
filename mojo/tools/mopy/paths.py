@@ -31,6 +31,19 @@ class Paths(object):
         self.go_tool_path = os.path.join(self.src_root, "third_party",
             "go", "tool", "android_arm", "bin", "go")
 
+    self.rust_cargo_path = None
+    self.rustc_path = None
+    self.rustdoc_path = None
+    if config:
+      if (config.target_os == Config.OS_LINUX and
+          config.target_cpu == Config.ARCH_X64):
+        self.rust_cargo_path = os.path.join(self.src_root, "third_party",
+            "rust", "usr", "local", "bin", "cargo")
+        self.rustc_path = os.path.join(self.src_root, "third_party",
+            "rust", "usr", "local", "bin", "rustc")
+        self.rustdoc_path = os.path.join(self.src_root, "third_party",
+            "rust", "usr", "local", "bin", "rustdoc")
+
     if config:
       self.build_dir = BuildDirectoryForConfig(config, self.src_root)
     elif build_dir is not None:

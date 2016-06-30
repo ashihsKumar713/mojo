@@ -1,0 +1,18 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/rust/rules.gni")
+
+group("rust") {
+  deps = [
+    ":system_echo",
+  ]
+}
+
+rust_mojo_application("system_echo") {
+  manifest = "system_echo/Cargo.toml"
+  sources = [
+    "system_echo/src/lib.rs",
+  ]
+}

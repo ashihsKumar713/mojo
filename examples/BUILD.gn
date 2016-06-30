@@ -71,6 +71,10 @@ group("examples") {
     }
   }
 
+  if (defined(rust_cargo_tool) && rust_cargo_tool != "") {
+    deps += [ "//examples/rust" ]
+  }
+
   if (is_linux && !is_fnl) {
     deps += [ "//examples/python" ]
   }

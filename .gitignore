@@ -12,6 +12,7 @@
 .pub
 .pydevproject
 .checkstyle
+Cargo.lock
 cscope.*
 mojo_shell.trace
 Session.vim
@@ -62,6 +63,7 @@ v8.log
 /third_party/pywebsocket/src/
 /third_party/requests/src/
 /third_party/robolectric/lib/
+/third_party/rust/
 /third_party/skia/
 /third_party/smhasher/src/
 /third_party/snappy/src/
@@ -97,3 +99,4 @@ v8.log
 
 # downloaded prediction dictionary files.
 /services/prediction/res/*.dict
+

@@ -94,6 +94,13 @@ def GNArgsForConfig(config):
     if gn_args["mojo_use_go"]:
       gn_args["go_build_tool"] = config.values.get("go_build_tool")
 
+  if "mojo_use_rust" in config.values:
+    gn_args["mojo_use_rust"] = config.values.get("mojo_use_rust", False)
+    if gn_args["mojo_use_rust"]:
+      gn_args["rust_cargo_tool"] = config.values.get("rust_cargo_tool")
+      gn_args["rustc_tool"] = config.values.get("rustc_tool")
+      gn_args["rustdoc_tool"] = config.values.get("rustdoc_tool")
+
   if "boringssl_path" in config.values:
     gn_args["dart_boringssl_path"] = config.values.get("boringssl_path", "")
 

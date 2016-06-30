@@ -1,0 +1,95 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  rust_cargo_tool = ""
+  rustc_tool = ""
+  rustdoc_tool = ""
+  rust_mojo_sources = [
+    "//mojo/public/rust/src/lib.rs",
+    "//mojo/public/rust/src/system/core.rs",
+    "//mojo/public/rust/src/system/data_pipe.rs",
+    "//mojo/public/rust/src/system/ffi.rs",
+    "//mojo/public/rust/src/system/handle.rs",
+    "//mojo/public/rust/src/system/message_pipe.rs",
+    "//mojo/public/rust/src/system/mod.rs",
+    "//mojo/public/rust/src/system/mojo_types.rs",
+    "//mojo/public/rust/src/system/shared_buffer.rs",
+  ]
+}
+
+# Declare a Rust Mojo Application
+#
+# The target generates a Mojo executable from a Cargo project
+# using the Cargo manifest. The Cargo project has access to
+# the "mojo" crate as we compile against the source code
+# of the Rust bindings.
+#
+# Only tested on Linux. |rust_cargo_tool| must be set to the
+# absolute path of the cargo binary.
+#
+# Variables:
+#   manifest: Cargo manifest file at the root of the Mojo app
+#             (rustc can find other source files via the source
+#             itself)
+#
+#   sources (Optional): A list of files which are the sources for the project.
+#                       Useful for allowing GN to rebuild on changes.
+
+template("rust_mojo_application") {
+  assert(is_linux)
+  assert(defined(invoker.manifest))
+  assert(rust_cargo_tool != "")
+  assert(rustc_tool != "")
+  assert(rustdoc_tool != "")
+
+  cargo_target_dir = "${target_name}"
+  cargo_out_dir = cargo_target_dir + "/debug"
+  if (!is_debug) {
+    cargo_out_dir = cargo_target_dir + "/release"
+  }
+
+  lib_name = "lib" + target_name + ".so"
+  action(lib_name) {
+    deps = [
+      "//mojo:system_thunks",
+    ]
+    script = "//mojo/rust/cargo.py"
+    inputs = [
+      invoker.manifest,
+    ]
+    inputs += rust_mojo_sources
+    if (defined(invoker.sources)) {
+      inputs += invoker.sources
+    }
+    args = [
+      rust_cargo_tool,
+      "build",
+      rebase_path(rustc_tool) + "",
+      rebase_path(rustdoc_tool) + "",
+      rebase_path(invoker.manifest) + "",
+      rebase_path(root_out_dir) + "",
+      rebase_path(target_out_dir + "/" + cargo_target_dir) + "",
+      "--no_embed",
+    ]
+    if (!is_debug) {
+      args += [ "--release" ]
+    }
+    outputs = [
+      "${target_out_dir}/${cargo_out_dir}/${lib_name}",
+    ]
+  }
+
+  copy(target_name) {
+    deps = [
+      ":${lib_name}",
+    ]
+    sources = [
+      "${target_out_dir}/${cargo_out_dir}/${lib_name}",
+    ]
+    outputs = [
+      "${root_out_dir}/rust_${target_name}.mojo",
+    ]
+  }
+}
