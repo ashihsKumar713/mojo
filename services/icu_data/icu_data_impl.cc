@@ -4,7 +4,9 @@
 
 #include "services/icu_data/icu_data_impl.h"
 
+#include "base/logging.h"
 #include "mojo/public/cpp/bindings/interface_ptr.h"
+#include "mojo/public/cpp/system/handle.h"
 #include "services/icu_data/kICUData.h"
 
 namespace icu_data {
@@ -33,8 +35,11 @@ void ICUDataImpl::Map(
   }
   EnsureBuffer();
   mojo::ScopedSharedBufferHandle handle;
-  // FIXME: We should create a read-only duplicate of the handle.
-  mojo::DuplicateBuffer(buffer_->handle.get(), nullptr, &handle);
+  // TODO(vtl): We should create a read-only duplicate of the handle. (We could
+  // remove the "map write/executable" rights, but currently |mojo::MapBuffer()|
+  // always requires "map read" *and* "map write".)
+  handle = mojo::DuplicateHandle(buffer_->handle.get());
+  CHECK(handle.is_valid());
   callback.Run(handle.Pass());
 }
 

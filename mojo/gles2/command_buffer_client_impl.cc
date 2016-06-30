@@ -10,6 +10,8 @@
 #include "base/logging.h"
 #include "base/memory/scoped_ptr.h"
 #include "base/process/process_handle.h"
+#include "mojo/public/cpp/system/buffer.h"
+#include "mojo/public/cpp/system/handle.h"
 #include "services/gles2/command_buffer_type_conversions.h"
 #include "services/gles2/mojo_buffer_backing.h"
 
@@ -26,10 +28,9 @@ bool CreateMapAndDupSharedBuffer(size_t size,
     return false;
   DCHECK(handle->is_valid());
 
-  result = mojo::DuplicateBuffer(handle->get(), NULL, duped);
-  if (result != MOJO_RESULT_OK)
+  *duped = mojo::DuplicateHandle(handle->get());
+  if (!duped->is_valid())
     return false;
-  DCHECK(duped->is_valid());
 
   result = mojo::MapBuffer(
       handle->get(), 0, size, memory, MOJO_MAP_BUFFER_FLAG_NONE);

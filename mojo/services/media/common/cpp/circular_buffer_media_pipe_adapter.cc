@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "mojo/public/cpp/environment/logging.h"
-#include "mojo/public/cpp/utility/run_loop.h"
 #include "mojo/services/media/common/cpp/circular_buffer_media_pipe_adapter.h"
+
+#include "mojo/public/cpp/environment/logging.h"
+#include "mojo/public/cpp/system/handle.h"
+#include "mojo/public/cpp/utility/run_loop.h"
 #include "mojo/services/media/common/interfaces/media_common.mojom.h"
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
 
@@ -104,13 +106,12 @@ void CircularBufferMediaPipeAdapter::Init(uint64_t size) {
 
   // Duplicate the buffer and send it to the other side of the pipe.
   //
-  // TODO(johngro) : It would be nice if we could restrict this handle to be
-  // read-only.
-  ScopedSharedBufferHandle duplicated_handle;
-  res = DuplicateBuffer(buffer_handle_.get(), nullptr, &duplicated_handle);
-  if (res != MOJO_RESULT_OK) {
-    MOJO_LOG(ERROR) << "Failed to duplicate handle in " << __PRETTY_FUNCTION__
-                    << " (error " << res << ")";
+  // TODO(johngro): It would be nice if we could restrict this handle to be
+  // read-only. (We could remove the "map write/executable" rights, but
+  // currently |MapBuffer()| always requires "map read" *and* "map write".
+  auto duplicated_handle = DuplicateHandle(buffer_handle_.get());
+  if (!duplicated_handle.is_valid()) {
+    MOJO_LOG(ERROR) << "Failed to duplicate handle in " << __PRETTY_FUNCTION__;
     Fault(MediaResult::UNKNOWN_ERROR);
     return;
   }

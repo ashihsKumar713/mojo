@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "mojo/public/cpp/environment/logging.h"
 #include "mojo/services/media/common/cpp/mapped_shared_buffer.h"
+
+#include "mojo/public/cpp/environment/logging.h"
+#include "mojo/public/cpp/system/handle.h"
 
 namespace mojo {
 namespace media {
@@ -70,12 +72,13 @@ ScopedSharedBufferHandle MappedSharedBuffer::GetDuplicateHandle() const {
   MOJO_DCHECK(initialized());
   ScopedSharedBufferHandle handle;
   if (buffer_) {
-    DuplicateBuffer(buffer_->handle.get(), nullptr, &handle);
+    handle = DuplicateHandle(buffer_->handle.get());
   } else {
     MOJO_DCHECK(handle_.is_valid());
-    DuplicateBuffer(handle_.get(), nullptr, &handle);
+    handle = DuplicateHandle(handle_.get());
   }
-  return handle.Pass();
+  MOJO_DCHECK(handle.is_valid());
+  return handle;
 }
 
 void* MappedSharedBuffer::PtrFromOffset(uint64_t offset) const {
