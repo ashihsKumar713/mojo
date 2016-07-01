@@ -281,6 +281,61 @@ class StructOfUnions extends bindings.Struct {
 }
 
 
+class StructOfUnionOfReferences extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(24, 0)
+  ];
+  UnionOfReferences u = null;
+
+  StructOfUnionOfReferences() : super(kVersions.last.size);
+
+  StructOfUnionOfReferences.init(
+    UnionOfReferences this.u
+  ) : super(kVersions.last.size);
+
+  static StructOfUnionOfReferences deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
+
+  static StructOfUnionOfReferences decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    StructOfUnionOfReferences result = new StructOfUnionOfReferences();
+
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    if (mainDataHeader.version >= 0) {
+      
+        result.u = UnionOfReferences.decode(decoder0, 8);
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "StructOfUnionOfReferences";
+    String fieldName;
+    try {
+      fieldName = "u";
+      encoder0.encodeUnion(u, 8, true);
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "StructOfUnionOfReferences("
+           "u: $u" ")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    map["u"] = u;
+    return map;
+  }
+}
+
+
 class WrapperStruct extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(56, 0)
@@ -1939,6 +1994,134 @@ class UnionOfUnions extends bindings.Union {
 }
 
 
+enum UnionOfReferencesTag {
+  podUnion,
+  dummyStruct,
+  intArray,
+  unknown
+}
+
+class UnionOfReferences extends bindings.Union {
+  static final _tagToInt = const {
+    UnionOfReferencesTag.podUnion: 0,
+    UnionOfReferencesTag.dummyStruct: 1,
+    UnionOfReferencesTag.intArray: 2,
+  };
+
+  static final _intToTag = const {
+    0: UnionOfReferencesTag.podUnion,
+    1: UnionOfReferencesTag.dummyStruct,
+    2: UnionOfReferencesTag.intArray,
+  };
+
+  var _data;
+  UnionOfReferencesTag _tag = UnionOfReferencesTag.unknown;
+
+  UnionOfReferencesTag get tag => _tag;
+  PodUnion get podUnion {
+    if (_tag != UnionOfReferencesTag.podUnion) {
+      throw new bindings.UnsetUnionTagError(_tag, UnionOfReferencesTag.podUnion);
+    }
+    return _data;
+  }
+
+  set podUnion(PodUnion value) {
+    _tag = UnionOfReferencesTag.podUnion;
+    _data = value;
+  }
+  DummyStruct get dummyStruct {
+    if (_tag != UnionOfReferencesTag.dummyStruct) {
+      throw new bindings.UnsetUnionTagError(_tag, UnionOfReferencesTag.dummyStruct);
+    }
+    return _data;
+  }
+
+  set dummyStruct(DummyStruct value) {
+    _tag = UnionOfReferencesTag.dummyStruct;
+    _data = value;
+  }
+  List<int> get intArray {
+    if (_tag != UnionOfReferencesTag.intArray) {
+      throw new bindings.UnsetUnionTagError(_tag, UnionOfReferencesTag.intArray);
+    }
+    return _data;
+  }
+
+  set intArray(List<int> value) {
+    _tag = UnionOfReferencesTag.intArray;
+    _data = value;
+  }
+
+  static UnionOfReferences decode(bindings.Decoder decoder0, int offset) {
+    int size = decoder0.decodeUint32(offset);
+    if (size == 0) {
+      return null;
+    }
+    UnionOfReferences result = new UnionOfReferences();
+
+    
+    UnionOfReferencesTag tag = _intToTag[decoder0.decodeUint32(offset + 4)];
+    switch (tag) {
+      case UnionOfReferencesTag.podUnion:
+        var decoder1 = decoder0.decodePointer(offset + 8, true);
+        result.podUnion = PodUnion.decode(decoder1, 0);
+        break;
+      case UnionOfReferencesTag.dummyStruct:
+        
+        var decoder1 = decoder0.decodePointer(offset + 8, true);
+        result.dummyStruct = DummyStruct.decode(decoder1);
+        break;
+      case UnionOfReferencesTag.intArray:
+        
+        result.intArray = decoder0.decodeInt32Array(offset + 8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
+        break;
+      default:
+        throw new bindings.MojoCodecError("Bad union tag: $tag");
+    }
+
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder0, int offset) {
+    
+    encoder0.encodeUint32(16, offset);
+    encoder0.encodeUint32(_tagToInt[_tag], offset + 4);
+    switch (_tag) {
+      case UnionOfReferencesTag.podUnion:
+        encoder0.encodeNestedUnion(podUnion, offset + 8, true);
+        break;
+      case UnionOfReferencesTag.dummyStruct:
+        encoder0.encodeStruct(dummyStruct, offset + 8, true);
+        break;
+      case UnionOfReferencesTag.intArray:
+        encoder0.encodeInt32Array(intArray, offset + 8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
+        break;
+      default:
+        throw new bindings.MojoCodecError("Bad union tag: $_tag");
+    }
+  }
+
+  String toString() {
+    String result = "UnionOfReferences(";
+    switch (_tag) {
+      case UnionOfReferencesTag.podUnion:
+        result += "podUnion";
+        break;
+      case UnionOfReferencesTag.dummyStruct:
+        result += "dummyStruct";
+        break;
+      case UnionOfReferencesTag.intArray:
+        result += "intArray";
+        break;
+      default:
+        result += "unknown";
+    }
+    result += ": $_data)";
+    return result;
+  }
+}
+
+
 enum ObjectUnionTag {
   fInt8,
   fString,
@@ -3236,7 +3419,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "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";
+  var serializedRuntimeTypeInfo = "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";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

@@ -245,6 +245,22 @@ testUnionsToString() {
   Expect.equals("PodUnion(fUint32: 32)", podUnion.toString());
 }
 
+testSerializeEnumArray() {
+  var s = new regression.ContainsNullableArrayOfEnum();
+  s.arrayOfEnums = [
+    regression.NormalEnum.first,
+    regression.NormalEnum.second,
+    regression.NormalEnum.second,
+    regression.NormalEnum.first,
+  ];
+
+  var message = messageOfStruct(s);
+  var s2 = regression.ContainsNullableArrayOfEnum.deserialize(message.payload);
+  for (int i = 0; i < s.arrayOfEnums.length; i++) {
+    Expect.equals(s.arrayOfEnums[i], s2.arrayOfEnums[i]);
+  }
+}
+
 testUnions() {
   testSerializePodUnions();
   testSerializeStructInUnion();
@@ -254,6 +270,7 @@ testUnions() {
   testSerializeUnionInMap();
   testSerializeUnionInUnion();
   testUnionsToString();
+  testSerializeEnumArray();
 }
 
 class CheckEnumCapsImpl implements regression.CheckEnumCaps {

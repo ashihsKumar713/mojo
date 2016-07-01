@@ -912,7 +912,14 @@ class ContainsArrayOfEnum extends bindings.Struct {
     String fieldName;
     try {
       fieldName = "arrayOfEnums";
-      encoder0.encodeEnumArray(arrayOfEnums, 8, bindings.kNothingNullable, bindings.kUnspecifiedArrayLength);
+      if (arrayOfEnums == null) {
+        encoder0.encodeNullPointer(8, false);
+      } else {
+        var encoder1 = encoder0.encodeEnumArray(arrayOfEnums.length, 8, bindings.kUnspecifiedArrayLength);
+        for (int i0 = 0; i0 < arrayOfEnums.length; ++i0) {
+          encoder1.encodeEnum(arrayOfEnums[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kEnumSize * i0);
+        }
+      }
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -921,6 +928,82 @@ class ContainsArrayOfEnum extends bindings.Struct {
 
   String toString() {
     return "ContainsArrayOfEnum("
+           "arrayOfEnums: $arrayOfEnums" ")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    map["arrayOfEnums"] = arrayOfEnums;
+    return map;
+  }
+}
+
+
+class ContainsNullableArrayOfEnum extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(16, 0)
+  ];
+  List<NormalEnum> arrayOfEnums = null;
+
+  ContainsNullableArrayOfEnum() : super(kVersions.last.size);
+
+  ContainsNullableArrayOfEnum.init(
+    List<NormalEnum> this.arrayOfEnums
+  ) : super(kVersions.last.size);
+
+  static ContainsNullableArrayOfEnum deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
+
+  static ContainsNullableArrayOfEnum decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    ContainsNullableArrayOfEnum result = new ContainsNullableArrayOfEnum();
+
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    if (mainDataHeader.version >= 0) {
+      
+      var decoder1 = decoder0.decodePointer(8, true);
+      if (decoder1 == null) {
+        result.arrayOfEnums = null;
+      } else {
+        var si1 = decoder1.decodeDataHeaderForEnumArray(bindings.kUnspecifiedArrayLength);
+        result.arrayOfEnums = new List<NormalEnum>(si1.numElements);
+        for (int i1 = 0; i1 < si1.numElements; ++i1) {
+          
+            result.arrayOfEnums[i1] = NormalEnum.decode(decoder1, bindings.ArrayDataHeader.kHeaderSize + bindings.kEnumSize * i1);
+            if (result.arrayOfEnums[i1] == null) {
+              throw new bindings.MojoCodecError(
+                'Trying to decode null union for non-nullable NormalEnum.');
+            }
+        }
+      }
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "ContainsNullableArrayOfEnum";
+    String fieldName;
+    try {
+      fieldName = "arrayOfEnums";
+      if (arrayOfEnums == null) {
+        encoder0.encodeNullPointer(8, true);
+      } else {
+        var encoder1 = encoder0.encodeEnumArray(arrayOfEnums.length, 8, bindings.kUnspecifiedArrayLength);
+        for (int i0 = 0; i0 < arrayOfEnums.length; ++i0) {
+          encoder1.encodeEnum(arrayOfEnums[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kEnumSize * i0);
+        }
+      }
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "ContainsNullableArrayOfEnum("
            "arrayOfEnums: $arrayOfEnums" ")";
   }
 
@@ -3203,7 +3286,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "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";
+  var serializedRuntimeTypeInfo = "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";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);
