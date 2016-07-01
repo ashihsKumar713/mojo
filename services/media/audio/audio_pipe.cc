@@ -14,25 +14,25 @@ namespace media {
 namespace audio {
 
 AudioPipe::AudioPacketRef::AudioPacketRef(
-    MediaPacketStatePtr state,
+    SuppliedPacketPtr supplied_packet,
     AudioServerImpl* server,
-    std::vector<Region>&& regions,  // NOLINT(build/c++11)
+    uint32_t frac_frame_len,
     int64_t start_pts,
     int64_t end_pts,
     uint32_t frame_count)
-  : state_(std::move(state)),
+  : supplied_packet_(std::move(supplied_packet)),
     server_(server),
-    regions_(std::move(regions)),
+    frac_frame_len_(frac_frame_len),
     start_pts_(start_pts),
     end_pts_(end_pts),
     frame_count_(frame_count) {
-  DCHECK(state_);
+  DCHECK(supplied_packet_);
   DCHECK(server_);
 }
 
 AudioPipe::AudioPacketRef::~AudioPacketRef() {
   DCHECK(server_);
-  server_->SchedulePacketCleanup(std::move(state_));
+  server_->SchedulePacketCleanup(std::move(supplied_packet_));
 }
 
 AudioPipe::AudioPipe(AudioTrackImpl* owner,
@@ -45,60 +45,38 @@ AudioPipe::AudioPipe(AudioTrackImpl* owner,
 
 AudioPipe::~AudioPipe() {}
 
-void AudioPipe::OnPacketReceived(MediaPacketStatePtr state) {
-  const MediaPacketPtr& packet = state->packet();
+void AudioPipe::OnPacketSupplied(SuppliedPacketPtr supplied_packet) {
+  DCHECK(supplied_packet);
+  const MediaPacketPtr& packet = supplied_packet->packet();
   DCHECK(packet);
   DCHECK(packet->payload);
   DCHECK(owner_);
 
-  // Start by making sure that we are regions we are receiving are made from an
+  // Start by making sure that the region we are receiving is made from an
   // integral number of audio frames.  Count the total number of frames in the
   // process.
   //
   // TODO(johngro): Someday, automatically enforce this using
   // alignment/allocation restrictions at the MediaPipe level of things.
-  uint32_t frame_count = 0;
   uint32_t frame_size = owner_->BytesPerFrame();
-  const MediaPacketRegionPtr* region = &packet->payload;
-  size_t ndx = 0;
-  std::vector<AudioPacketRef::Region> regions;
 
-  regions.reserve(packet->extra_payload.size() + 1);
+  if ((frame_size > 1) && (packet->payload->length % frame_size)) {
+    LOG(ERROR) << "Region length (" << packet->payload->length
+               << ") is not divisible by by audio frame size ("
+               << frame_size << ")";
+    Reset();
+    return;
+  }
 
-  DCHECK(frame_size);
-  while (true) {
-    if ((frame_size > 1) && ((*region)->length % frame_size)) {
-      LOG(ERROR) << "Region length (" << (*region)->length
-                 << ") is not divisible by by audio frame size ("
-                 << frame_size << ") at index " << ndx
-                 << " during SendPacket on MediaPipe transporting audio data.";
-      Reset();
-      return;
-    }
-
-    static constexpr uint32_t kMaxFrames = std::numeric_limits<uint32_t>::max()
-                                        >> AudioTrackImpl::PTS_FRACTIONAL_BITS;
-    frame_count += ((*region)->length / frame_size);
-    if (frame_count > kMaxFrames) {
-      LOG(ERROR) << "Running total of audio frame count ("
-                 << frame_count << ") exceeds maximum allowed ("
-                 << kMaxFrames  << ") at region index "
-                 << ndx
-                 << " during SendPacket on MediaPipe transporting audio data.";
-      Reset();
-      return;
-    }
-
-    const uint8_t* base = static_cast<const uint8_t*>(state->buffer()->base());
-    regions.emplace_back(base + (*region)->offset,
-                         frame_count << AudioTrackImpl::PTS_FRACTIONAL_BITS);
-
-    if (ndx >= packet->extra_payload.size()) {
-      break;
-    }
-
-    region = &(packet->extra_payload[ndx]);
-    ndx++;
+  static constexpr uint32_t kMaxFrames = std::numeric_limits<uint32_t>::max()
+                                      >> AudioTrackImpl::PTS_FRACTIONAL_BITS;
+  uint32_t frame_count = (packet->payload->length / frame_size);
+  if (frame_count > kMaxFrames) {
+    LOG(ERROR) << "Audio frame count ("
+               << frame_count << ") exceeds maximum allowed ("
+               << kMaxFrames  << ")";
+    Reset();
+    return;
   }
 
   // Figure out the starting PTS.
@@ -128,9 +106,9 @@ void AudioPipe::OnPacketReceived(MediaPacketStatePtr state) {
   next_pts_known_ = true;
 
   owner_->OnPacketReceived(AudioPacketRefPtr(
-        new AudioPacketRef(std::move(state),
+        new AudioPacketRef(std::move(supplied_packet),
                            server_,
-                           std::move(regions),
+                           frame_count << AudioTrackImpl::PTS_FRACTIONAL_BITS,
                            start_pts,
                            next_pts_,
                            frame_count)));
@@ -143,7 +121,7 @@ void AudioPipe::OnPacketReceived(MediaPacketStatePtr state) {
    }
 }
 
-void AudioPipe::OnPrimeRequested(const PrimeCallback& cbk) {
+void AudioPipe::Prime(const PrimeCallback& cbk) {
   if (!prime_callback_.is_null()) {
     // Prime was already requested. Complete the old one and warn.
     LOG(WARNING) << "multiple prime requests received";
@@ -152,10 +130,10 @@ void AudioPipe::OnPrimeRequested(const PrimeCallback& cbk) {
   prime_callback_ = cbk;
 }
 
-bool AudioPipe::OnFlushRequested(const FlushCallback& cbk) {
+void AudioPipe::Flush(const FlushCallback& cbk) {
   DCHECK(owner_);
   next_pts_known_ = false;
-  return owner_->OnFlushRequested(cbk);
+  owner_->OnFlushRequested(cbk);
 }
 
 }  // namespace audio

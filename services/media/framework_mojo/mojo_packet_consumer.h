@@ -5,30 +5,26 @@
 #ifndef SERVICES_MEDIA_FRAMEWORK_MOJO_MOJO_PACKET_CONSUMER_H_
 #define SERVICES_MEDIA_FRAMEWORK_MOJO_MOJO_PACKET_CONSUMER_H_
 
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
-#include "mojo/common/binding_set.h"
-#include "mojo/services/media/common/cpp/mapped_shared_buffer.h"
+#include "mojo/services/media/common/cpp/media_packet_consumer_base.h"
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
 #include "services/media/framework/models/active_source.h"
 
 namespace mojo {
 namespace media {
 
-// Implements MediaPacketConsumer::Flush on behalf of MediaPacketConsumer to
-// avoid name
+// Implements MediaConsumer::Flush on behalf of MojoPacketConsumer to avoid name
 // conflict with Part::Flush.
-class MojoPacketConsumerMediaPacketConsumer : public MediaPacketConsumer {
-  // MediaPacketConsumer implementation.
+class MojoMediaPacketConsumerBase : public MediaPacketConsumerBase {
+  // MediaConsumer implementation.
   void Flush(const FlushCallback& callback) override;
 
-  // Implements MediaPacketConsumer::Flush.
+  // Implements MediaConsumer::Flush.
   virtual void MediaPacketConsumerFlush(const FlushCallback& callback) = 0;
 };
 
 // Implements MediaPacketConsumer to receive a stream from across mojo.
-class MojoPacketConsumer : public MojoPacketConsumerMediaPacketConsumer,
-                     public ActiveSource {
+class MojoPacketConsumer : public MojoMediaPacketConsumerBase,
+                           public ActiveSource {
  public:
   using PrimeRequestedCallback = std::function<void(const PrimeCallback&)>;
   using FlushRequestedCallback = std::function<void(const FlushCallback&)>;
@@ -39,8 +35,8 @@ class MojoPacketConsumer : public MojoPacketConsumerMediaPacketConsumer,
 
   ~MojoPacketConsumer() override;
 
-  // Adds a binding.
-  void AddBinding(InterfaceRequest<MediaPacketConsumer> consumer);
+  // Binds.
+  void Bind(InterfaceRequest<MediaPacketConsumer> packet_consumer_request);
 
   // Sets a callback signalling that a prime has been requested from the
   // MediaPacketConsumer client.
@@ -50,12 +46,9 @@ class MojoPacketConsumer : public MojoPacketConsumerMediaPacketConsumer,
   // MediaPacketConsumer client.
   void SetFlushRequestedCallback(const FlushRequestedCallback& callback);
 
-  // MediaPacketConsumer implementation.
-  void SetBuffer(ScopedSharedBufferHandle buffer,
-                 const SetBufferCallback& callback) override;
-
-  void SendPacket(MediaPacketPtr packet,
-                  const SendPacketCallback& callback) override;
+  // MediaPacketConsumerBase overrides.
+  void OnPacketSupplied(
+      std::unique_ptr<SuppliedPacket> supplied_packet) override;
 
   void Prime(const PrimeCallback& callback) override;
 
@@ -76,38 +69,23 @@ class MojoPacketConsumer : public MojoPacketConsumerMediaPacketConsumer,
   // Specialized packet implementation.
   class PacketImpl : public Packet {
    public:
-    static PacketPtr Create(
-        MediaPacketPtr media_packet,
-        const SendPacketCallback& callback,
-        scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-        const MappedSharedBuffer& buffer) {
-      return PacketPtr(
-          new PacketImpl(media_packet.Pass(), callback, task_runner, buffer));
+    static PacketPtr Create(std::unique_ptr<SuppliedPacket> supplied_packet) {
+      return PacketPtr(new PacketImpl(std::move(supplied_packet)));
     }
 
    protected:
     void Release() override;
 
    private:
-    PacketImpl(MediaPacketPtr media_packet,
-               const SendPacketCallback& callback,
-               scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-               const MappedSharedBuffer& buffer);
+    PacketImpl(std::unique_ptr<SuppliedPacket> supplied_packet);
 
     ~PacketImpl() override;
 
-    static void RunCallback(const SendPacketCallback& callback);
-
-    MediaPacketPtr media_packet_;
-    const SendPacketCallback callback_;
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+    std::unique_ptr<SuppliedPacket> supplied_packet_;
   };
 
-  BindingSet<MediaPacketConsumer> bindings_;
   PrimeRequestedCallback prime_requested_callback_;
   FlushRequestedCallback flush_requested_callback_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  MappedSharedBuffer buffer_;
   SupplyCallback supply_callback_;
 };
 

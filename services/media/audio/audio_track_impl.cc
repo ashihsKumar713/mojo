@@ -89,7 +89,7 @@ void AudioTrackImpl::Shutdown() {
   // If we are unbound, then we have already been shut down and are just waiting
   // for the service to destroy us.  Run some DCHECK sanity checks and get out.
   if (!renderer_binding_.is_bound()) {
-    DCHECK(!pipe_.IsInitialized());
+    DCHECK(!pipe_.is_bound());
     DCHECK(!timeline_control_point_.is_bound());
     DCHECK(!outputs_.size());
     return;
@@ -153,7 +153,7 @@ void AudioTrackImpl::GetSupportedMediaTypes(
 
 void AudioTrackImpl::SetMediaType(MediaTypePtr media_type) {
   // Are we already configured?
-  if (pipe_.IsInitialized()) {
+  if (pipe_.is_bound()) {
     LOG(ERROR) << "Attempting to reconfigure a configured audio track.";
     Shutdown();
     return;
@@ -262,11 +262,7 @@ void AudioTrackImpl::SetMediaType(MediaTypePtr media_type) {
 void AudioTrackImpl::GetPacketConsumer(
     InterfaceRequest<MediaPacketConsumer> consumer_request) {
   // Bind our pipe to the interface request.
-  if (pipe_.Init(consumer_request.Pass()) != MOJO_RESULT_OK) {
-    LOG(ERROR) << "Failed to media pipe to interface request.";
-    Shutdown();
-    return;
-  }
+  pipe_.Bind(consumer_request.Pass());
 }
 
 void AudioTrackImpl::GetTimelineControlPoint(
@@ -336,9 +332,9 @@ void AudioTrackImpl::OnPacketReceived(AudioPipe::AudioPacketRefPtr packet) {
     output->PushToPendingQueue(packet);
   }
 
-  if (packet->state()->packet()->end_of_stream) {
+  if (packet->supplied_packet()->packet()->end_of_stream) {
     timeline_control_point_.SetEndOfStreamPts(
-        (packet->state()->packet()->pts + packet->frame_count()) /
+        (packet->supplied_packet()->packet()->pts + packet->frame_count()) /
             frames_per_ns_);
   }
 }

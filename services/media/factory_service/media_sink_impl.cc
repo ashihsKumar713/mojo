@@ -89,7 +89,7 @@ MediaSinkImpl::~MediaSinkImpl() {}
 
 void MediaSinkImpl::GetPacketConsumer(
     InterfaceRequest<MediaPacketConsumer> consumer) {
-  consumer_->AddBinding(consumer.Pass());
+  consumer_->Bind(consumer.Pass());
 }
 
 void MediaSinkImpl::GetTimelineControlPoint(

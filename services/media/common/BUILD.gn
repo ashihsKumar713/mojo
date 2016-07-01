@@ -8,8 +8,6 @@ import("$mojo_sdk_root/mojo/public/mojo_sdk.gni")
 
 source_set("common") {
   sources = [
-    "media_pipe_base.cc",
-    "media_pipe_base.h",
     "mojo_publisher.h",
     "timeline_control_point.cc",
     "timeline_control_point.h",

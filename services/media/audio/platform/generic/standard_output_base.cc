@@ -340,30 +340,23 @@ bool StandardOutputBase::ProcessMix(
   uint32_t output_offset = static_cast<uint32_t>(output_offset_64);
   int32_t  frac_input_offset = static_cast<int32_t>(input_offset_64);
 
-  // Looks like we are ready to go.  Iterate over the regions of this input
-  // packet, mixing data as we go.
-  size_t i;
-  const auto& regions = packet->regions();
-  for (i = 0; i < regions.size(); ++i) {
-    const auto& region = regions[i];
+  // Looks like we are ready to go. Mix.
+  DCHECK_LE(packet->frac_frame_len(),
+            static_cast<uint32_t>(std::numeric_limits<int32_t>::max()));
 
-    DCHECK_LE(region.frac_frame_len,
-              static_cast<uint32_t>(std::numeric_limits<int32_t>::max()));
-
-    if (frac_input_offset >= static_cast<int32_t>(region.frac_frame_len)) {
-      frac_input_offset -= region.frac_frame_len;
-      continue;
-    }
-
-    bool consumed_source = info->mixer->Mix(buf,
-                                            frames_left,
-                                            &output_offset,
-                                            region.base,
-                                            region.frac_frame_len,
-                                            &frac_input_offset,
-                                            info->step_size,
-                                            info->amplitude_scale,
-                                            cur_mix_job_.accumulate);
+  if (frac_input_offset >= static_cast<int32_t>(packet->frac_frame_len())) {
+    frac_input_offset -= packet->frac_frame_len();
+  } else {
+    bool consumed_source =
+        info->mixer->Mix(buf,
+                         frames_left,
+                         &output_offset,
+                         packet->supplied_packet()->payload(),
+                         packet->frac_frame_len(),
+                         &frac_input_offset,
+                         info->step_size,
+                         info->amplitude_scale,
+                         cur_mix_job_.accumulate);
     DCHECK_LE(output_offset, frames_left);
 
     if (!consumed_source) {
@@ -373,12 +366,11 @@ bool StandardOutputBase::ProcessMix(
       return false;
     }
 
-    frac_input_offset -= region.frac_frame_len;
+    frac_input_offset -= packet->frac_frame_len();
   }
 
   cur_mix_job_.frames_produced += output_offset;
   DCHECK_LE(cur_mix_job_.frames_produced, cur_mix_job_.buf_frames);
-  DCHECK_EQ(i, regions.size());
   return true;
 }
 

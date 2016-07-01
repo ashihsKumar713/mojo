@@ -7,7 +7,7 @@
 
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
-#include "mojo/common/binding_set.h"
+#include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
 #include "services/media/framework/models/active_sink.h"
 #include "services/media/framework_mojo/mojo_allocator.h"
@@ -27,8 +27,8 @@ class MojoPacketProducer : public MediaPacketProducer, public ActiveSink {
 
   ~MojoPacketProducer() override;
 
-  // Adds a binding.
-  void AddBinding(InterfaceRequest<MediaPacketProducer> producer);
+  // Binds.
+  void Bind(InterfaceRequest<MediaPacketProducer> request);
 
   // Initiates demand to provide downstream parties with enough content to
   // start without starving.
@@ -60,10 +60,17 @@ class MojoPacketProducer : public MediaPacketProducer, public ActiveSink {
   // Creates a MediaPacket from a Packet.
   MediaPacketPtr CreateMediaPacket(const PacketPtr& packet);
 
+  // Ensures that the allocator is initialized. Returns false if the allocator
+  // could not be initialized.
+  bool EnsureAllocatorInitialized();
+
+  // Shuts down the producer.
+  void Reset();
+
   // Allocates from the shared buffer.
   MojoAllocator mojo_allocator_;
 
-  BindingSet<MediaPacketProducer> bindings_;
+  Binding<MediaPacketProducer> binding_;
   MediaPacketConsumerPtr consumer_;
 
   mutable base::Lock lock_;

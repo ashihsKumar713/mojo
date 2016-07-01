@@ -4,14 +4,12 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
 #include "services/media/framework_mojo/mojo_packet_consumer.h"
 
 namespace mojo {
 namespace media {
 
-void MojoPacketConsumerMediaPacketConsumer::Flush(
-    const FlushCallback& callback) {
+void MojoMediaPacketConsumerBase::Flush(const FlushCallback& callback) {
   MediaPacketConsumerFlush(callback);
 }
 
@@ -19,12 +17,9 @@ MojoPacketConsumer::MojoPacketConsumer() {}
 
 MojoPacketConsumer::~MojoPacketConsumer() {}
 
-void MojoPacketConsumer::AddBinding(
-    InterfaceRequest<MediaPacketConsumer> consumer) {
-  bindings_.AddBinding(this, consumer.Pass());
-  DCHECK(base::MessageLoop::current());
-  task_runner_ = base::MessageLoop::current()->task_runner();
-  DCHECK(task_runner_);
+void MojoPacketConsumer::Bind(
+    InterfaceRequest<MediaPacketConsumer> packet_consumer_request) {
+  MediaPacketConsumerBase::Bind(packet_consumer_request.Pass());
 }
 
 void MojoPacketConsumer::SetPrimeRequestedCallback(
@@ -37,18 +32,11 @@ void MojoPacketConsumer::SetFlushRequestedCallback(
   flush_requested_callback_ = callback;
 }
 
-void MojoPacketConsumer::SetBuffer(ScopedSharedBufferHandle buffer,
-                                   const SetBufferCallback& callback) {
-  buffer_.InitFromHandle(buffer.Pass());
-  callback.Run();
-}
-
-void MojoPacketConsumer::SendPacket(MediaPacketPtr media_packet,
-                                    const SendPacketCallback& callback) {
-  DCHECK(media_packet);
+void MojoPacketConsumer::OnPacketSupplied(
+    std::unique_ptr<SuppliedPacket> supplied_packet) {
+  DCHECK(supplied_packet);
   DCHECK(supply_callback_);
-  supply_callback_(
-      PacketImpl::Create(media_packet.Pass(), callback, task_runner_, buffer_));
+  supply_callback_(PacketImpl::Create(std::move(supplied_packet)));
 }
 
 void MojoPacketConsumer::Prime(const PrimeCallback& callback) {
@@ -86,30 +74,16 @@ void MojoPacketConsumer::SetSupplyCallback(
 void MojoPacketConsumer::SetDownstreamDemand(Demand demand) {}
 
 MojoPacketConsumer::PacketImpl::PacketImpl(
-    MediaPacketPtr media_packet,
-    const SendPacketCallback& callback,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    const MappedSharedBuffer& buffer)
-    : Packet(media_packet->pts,
-             media_packet->end_of_stream,
-             media_packet->payload->length,
-             media_packet->payload->length == 0
-                 ? nullptr
-                 : buffer.PtrFromOffset(media_packet->payload->offset)),
-      media_packet_(media_packet.Pass()),
-      callback_(callback),
-      task_runner_(task_runner) {}
+    std::unique_ptr<SuppliedPacket> supplied_packet)
+    : Packet(supplied_packet->packet()->pts,
+             supplied_packet->packet()->end_of_stream,
+             supplied_packet->payload_size(),
+             supplied_packet->payload()),
+      supplied_packet_(std::move(supplied_packet)) {}
 
 MojoPacketConsumer::PacketImpl::~PacketImpl() {}
 
-// static
-void MojoPacketConsumer::PacketImpl::RunCallback(
-    const SendPacketCallback& callback) {
-  callback.Run(MediaPacketConsumer::SendResult::CONSUMED);
-}
-
 void MojoPacketConsumer::PacketImpl::Release() {
-  task_runner_->PostTask(FROM_HERE, base::Bind(&RunCallback, callback_));
   delete this;
 }
 

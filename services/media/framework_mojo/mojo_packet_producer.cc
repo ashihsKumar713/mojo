@@ -11,7 +11,7 @@
 namespace mojo {
 namespace media {
 
-MojoPacketProducer::MojoPacketProducer() {
+MojoPacketProducer::MojoPacketProducer() : binding_(this) {
   task_runner_ = base::MessageLoop::current()->task_runner();
   DCHECK(task_runner_);
 }
@@ -20,9 +20,9 @@ MojoPacketProducer::~MojoPacketProducer() {
   base::AutoLock lock(lock_);
 }
 
-void MojoPacketProducer::AddBinding(
-    InterfaceRequest<MediaPacketProducer> producer) {
-  bindings_.AddBinding(this, producer.Pass());
+void MojoPacketProducer::Bind(
+    InterfaceRequest<MediaPacketProducer> request) {
+  binding_.Bind(request.Pass());
 }
 
 void MojoPacketProducer::PrimeConnection(
@@ -37,8 +37,9 @@ void MojoPacketProducer::PrimeConnection(
                  : Demand::kNegative;
   } else {
     demand = Demand::kNeutral;
-    if (!mojo_allocator_.initialized()) {
-      mojo_allocator_.InitNew(4096 * 1024);  // TODO(dalesat): Made up!
+    if (!EnsureAllocatorInitialized()) {
+      callback.Run();
+      return;
     }
   }
 
@@ -119,8 +120,9 @@ void MojoPacketProducer::Connect(InterfaceHandle<MediaPacketConsumer> consumer,
 
   consumer_ = MediaPacketConsumerPtr::Create(std::move(consumer));
 
-  if (!mojo_allocator_.initialized()) {
-    mojo_allocator_.InitNew(4096 * 1024);  // TODO(dalesat): Made up!
+  if (!EnsureAllocatorInitialized()) {
+    callback.Run();
+    return;
   }
 
   consumer_->SetBuffer(mojo_allocator_.GetDuplicateHandle(),
@@ -128,8 +130,9 @@ void MojoPacketProducer::Connect(InterfaceHandle<MediaPacketConsumer> consumer,
 }
 
 void MojoPacketProducer::Disconnect() {
-  DCHECK(demand_callback_);
-  demand_callback_(Demand::kNegative);
+  if (demand_callback_) {
+    demand_callback_(Demand::kNegative);
+  }
   consumer_.reset();
 }
 
@@ -168,6 +171,30 @@ MediaPacketPtr MojoPacketProducer::CreateMediaPacket(const PacketPtr& packet) {
   media_packet->payload = region.Pass();
 
   return media_packet.Pass();
+}
+
+bool MojoPacketProducer::EnsureAllocatorInitialized() {
+  if (mojo_allocator_.initialized()) {
+    return true;
+  }
+
+  // TODO(dalesat): Made up allocation.
+  if (mojo_allocator_.InitNew(4096 * 1024) == MOJO_RESULT_OK) {
+    return true;
+  }
+
+  Reset();
+  return false;
+}
+
+void MojoPacketProducer::Reset() {
+  if (binding_.is_bound()) {
+    binding_.Close();
+  }
+
+  Disconnect();
+
+  mojo_allocator_.Reset();
 }
 
 }  // namespace media

@@ -68,12 +68,12 @@ void MediaDecoderImpl::GetOutputType(const GetOutputTypeCallback& callback) {
 
 void MediaDecoderImpl::GetPacketConsumer(
     mojo::InterfaceRequest<MediaPacketConsumer> consumer) {
-  consumer_->AddBinding(consumer.Pass());
+  consumer_->Bind(consumer.Pass());
 }
 
 void MediaDecoderImpl::GetPacketProducer(
     mojo::InterfaceRequest<MediaPacketProducer> producer) {
-  producer_->AddBinding(producer.Pass());
+  producer_->Bind(producer.Pass());
 }
 
 }  // namespace media

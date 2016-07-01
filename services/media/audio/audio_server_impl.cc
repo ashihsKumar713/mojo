@@ -98,10 +98,10 @@ void AudioServerImpl::DoPacketCleanup() {
 }
 
 void AudioServerImpl::SchedulePacketCleanup(
-    MediaPipeBase::MediaPacketStatePtr state) {
+    std::unique_ptr<MediaPacketConsumerBase::SuppliedPacket> supplied_packet) {
   base::AutoLock lock(cleanup_queue_lock_);
 
-  cleanup_queue_->emplace_back(std::move(state));
+  cleanup_queue_->emplace_back(std::move(supplied_packet));
 
   if (!cleanup_scheduled_ && !shutting_down_) {
     DCHECK(task_runner_);

@@ -15,7 +15,6 @@
 #include "mojo/services/media/audio/interfaces/audio_track.mojom.h"
 #include "services/media/audio/audio_output_manager.h"
 #include "services/media/audio/fwd_decls.h"
-#include "services/media/common/media_pipe_base.h"
 
 namespace mojo {
 namespace media {
@@ -42,7 +41,8 @@ class AudioServerImpl : public AudioServer {
   // threads other than the thread which executed the method itself, we will
   // want to switch to creating the callback message directly, instead of
   // indirecting through the server.
-  void SchedulePacketCleanup(MediaPipeBase::MediaPacketStatePtr state);
+  void SchedulePacketCleanup(
+      std::unique_ptr<MediaPacketConsumerBase::SuppliedPacket> supplied_packet);
 
   // Schedule a closure to run on the server's main message loop.
   void ScheduleMessageLoopTask(const tracked_objects::Location& from_here,
@@ -63,7 +63,8 @@ class AudioServerImpl : public AudioServer {
   AudioOutputManager& GetOutputManager() { return output_manager_; }
 
  private:
-  using CleanupQueue = std::list<MediaPipeBase::MediaPacketStatePtr>;
+  using CleanupQueue =
+      std::list<std::unique_ptr<MediaPacketConsumerBase::SuppliedPacket>>;
 
   void Shutdown();
   void DoPacketCleanup();

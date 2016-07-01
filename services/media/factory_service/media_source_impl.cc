@@ -211,7 +211,7 @@ void MediaSourceImpl::Stream::GetPacketProducer(
     graph_->ConnectOutputToPart(output_, graph_->Add(producer_));
   }
 
-  producer_->AddBinding(producer.Pass());
+  producer_->Bind(producer.Pass());
 }
 
 void MediaSourceImpl::Stream::EnsureSink() {

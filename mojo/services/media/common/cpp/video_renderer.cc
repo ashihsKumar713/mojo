@@ -12,7 +12,6 @@ namespace media {
 
 VideoRenderer::VideoRenderer()
     : renderer_binding_(this),
-      consumer_binding_(this),
       control_point_binding_(this),
       timeline_consumer_binding_(this) {}
 
@@ -37,7 +36,7 @@ void VideoRenderer::GetRgbaFrame(uint8_t* rgba_buffer,
   // Discard empty and old packets. We keep one packet around even if it's old,
   // so we can show an old frame instead of no frame when we starve.
   while (packet_queue_.size() > 1 &&
-         packet_queue_.front().packet_->pts < presentation_time) {
+         packet_queue_.front()->packet()->pts < presentation_time) {
     // TODO(dalesat): Add hysteresis.
     packet_queue_.pop();
   }
@@ -48,11 +47,10 @@ void VideoRenderer::GetRgbaFrame(uint8_t* rgba_buffer,
     memset(rgba_buffer, 0,
            rgba_buffer_size.width * rgba_buffer_size.height * 4);
   } else {
-    const MediaPacketPtr& packet = packet_queue_.front().packet_;
-    converter_.ConvertFrame(
-        rgba_buffer, rgba_buffer_size.width, rgba_buffer_size.height,
-        shared_buffer_.PtrFromOffset(packet->payload->offset),
-        packet->payload->length);
+    converter_.ConvertFrame(rgba_buffer, rgba_buffer_size.width,
+                            rgba_buffer_size.height,
+                            packet_queue_.front()->payload(),
+                            packet_queue_.front()->payload_size());
   }
 }
 
@@ -84,8 +82,8 @@ void VideoRenderer::SetMediaType(MediaTypePtr media_type) {
 }
 
 void VideoRenderer::GetPacketConsumer(
-    InterfaceRequest<MediaPacketConsumer> consumer_request) {
-  consumer_binding_.Bind(consumer_request.Pass());
+    InterfaceRequest<MediaPacketConsumer> packet_consumer_request) {
+  MediaPacketConsumerBase::Bind(packet_consumer_request.Pass());
 }
 
 void VideoRenderer::GetTimelineControlPoint(
@@ -93,30 +91,36 @@ void VideoRenderer::GetTimelineControlPoint(
   control_point_binding_.Bind(control_point_request.Pass());
 }
 
-void VideoRenderer::SetBuffer(ScopedSharedBufferHandle buffer,
-                              const SetBufferCallback& callback) {
-  shared_buffer_.InitFromHandle(buffer.Pass());
-  callback.Run();
-}
-
-void VideoRenderer::SendPacket(MediaPacketPtr packet,
-                               const SendPacketCallback& callback) {
-  MOJO_DCHECK(packet);
-  if (packet->end_of_stream) {
-    end_of_stream_pts_ = packet->pts;
+void VideoRenderer::OnPacketSupplied(
+    std::unique_ptr<SuppliedPacket> supplied_packet) {
+  MOJO_DCHECK(supplied_packet);
+  if (supplied_packet->packet()->end_of_stream) {
+    end_of_stream_pts_ = supplied_packet->packet()->pts;
   }
 
   // Discard empty packets so they don't confuse the selection logic.
-  if (!packet->payload || packet->payload->length == 0) {
-    callback.Run(MediaPacketConsumer::SendResult::CONSUMED);
+  if (supplied_packet->payload() == nullptr) {
     return;
   }
 
-  packet_queue_.emplace(packet.Pass(), callback);
+  packet_queue_.push(std::move(supplied_packet));
 }
 
-void VideoRenderer::Prime(const PrimeCallback& callback) {
-  callback.Run();
+void VideoRenderer::OnFailure() {
+  // TODO(dalesat): Report this to our owner.
+  if (renderer_binding_.is_bound()) {
+    renderer_binding_.Close();
+  }
+
+  if (control_point_binding_.is_bound()) {
+    control_point_binding_.Close();
+  }
+
+  if (timeline_consumer_binding_.is_bound()) {
+    timeline_consumer_binding_.Close();
+  }
+
+  MediaPacketConsumerBase::OnFailure();
 }
 
 void VideoRenderer::Flush(const FlushCallback& callback) {
@@ -227,18 +231,6 @@ void VideoRenderer::CompleteGetStatus(const GetStatusCallback& callback) {
       end_of_stream_pts_ != kUnspecifiedTime &&
       current_timeline_function_(Timeline::local_now()) >= end_of_stream_pts_;
   callback.Run(status_version_, status.Pass());
-}
-
-VideoRenderer::PacketAndCallback::PacketAndCallback(
-    MediaPacketPtr packet,
-    const SendPacketCallback& callback)
-    : packet_(packet.Pass()), callback_(callback) {
-  MOJO_DCHECK(packet_);
-  MOJO_DCHECK(!callback.is_null());
-}
-
-VideoRenderer::PacketAndCallback::~PacketAndCallback() {
-  callback_.Run(MediaPacketConsumer::SendResult::CONSUMED);
 }
 
 }  // namespace media

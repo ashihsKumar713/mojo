@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "mojo/services/media/common/cpp/mapped_shared_buffer.h"
+#include "mojo/services/media/common/interfaces/media_transport.mojom.h"
 
 #include "mojo/public/cpp/environment/logging.h"
 #include "mojo/public/cpp/system/handle.h"
@@ -12,56 +13,81 @@ namespace media {
 
 MappedSharedBuffer::MappedSharedBuffer() {}
 
-MappedSharedBuffer::~MappedSharedBuffer() {}
+MappedSharedBuffer::~MappedSharedBuffer() {
+  Reset();
+}
 
-void MappedSharedBuffer::InitNew(uint64_t size) {
+MojoResult MappedSharedBuffer::InitNew(uint64_t size) {
   MOJO_DCHECK(size > 0);
 
   buffer_.reset(new SharedBuffer(size));
   handle_.reset();
 
-  InitInternal(buffer_->handle);
+  return InitInternal(buffer_->handle);
 }
 
-void MappedSharedBuffer::InitFromHandle(ScopedSharedBufferHandle handle) {
+MojoResult MappedSharedBuffer::InitFromHandle(ScopedSharedBufferHandle handle) {
   MOJO_DCHECK(handle.is_valid());
 
   buffer_.reset();
   handle_ = handle.Pass();
 
-  InitInternal(handle_);
+  return InitInternal(handle_);
 }
 
-void MappedSharedBuffer::InitInternal(const ScopedSharedBufferHandle& handle) {
+MojoResult MappedSharedBuffer::InitInternal(
+    const ScopedSharedBufferHandle& handle) {
   MOJO_DCHECK(handle.is_valid());
 
   // Query the buffer for its size.
-  // TODO(johngro) :  It would be nice if we could do something other than
-  // DCHECK if things don't go exactly our way.
   MojoBufferInformation info;
-  MojoResult res =
+  MojoResult result =
       MojoGetBufferInformation(handle.get().value(), &info, sizeof(info));
   uint64_t size = info.num_bytes;
-  MOJO_DCHECK(res == MOJO_RESULT_OK);
-  MOJO_DCHECK(size > 0);
+
+  if (result != MOJO_RESULT_OK) {
+    MOJO_DLOG(ERROR) << "MojoGetBufferInformation failed, result " << result;
+    return result;
+  }
+
+  if (size == 0 || size > MediaPacketConsumer::kMaxBufferLen) {
+    MOJO_DLOG(ERROR) << "MojoGetBufferInformation returned invalid size "
+                     << size;
+    return MOJO_RESULT_OUT_OF_RANGE;
+  }
 
   size_ = size;
   buffer_ptr_.reset();
 
   void* ptr;
-  auto result = MapBuffer(handle.get(),
-                          0,  // offset
-                          size, &ptr, MOJO_MAP_BUFFER_FLAG_NONE);
-  MOJO_DCHECK(result == MOJO_RESULT_OK);
+  result = MapBuffer(handle.get(),
+                     0,  // offset
+                     size, &ptr, MOJO_MAP_BUFFER_FLAG_NONE);
+
+  if (result != MOJO_RESULT_OK) {
+    MOJO_DLOG(ERROR) << "MapBuffer failed, result " << result;
+    Reset();
+    return result;
+  }
+
   MOJO_DCHECK(ptr);
 
   buffer_ptr_.reset(reinterpret_cast<uint8_t*>(ptr));
 
   OnInit();
+
+  return MOJO_RESULT_OK;
 }
 
 bool MappedSharedBuffer::initialized() const {
   return buffer_ptr_ != nullptr;
+}
+
+void MappedSharedBuffer::Reset() {
+  size_ = 0;
+  buffer_.reset();
+  handle_.reset();
+  buffer_ptr_.reset();
 }
 
 uint64_t MappedSharedBuffer::size() const {
@@ -79,6 +105,11 @@ ScopedSharedBufferHandle MappedSharedBuffer::GetDuplicateHandle() const {
   }
   MOJO_DCHECK(handle.is_valid());
   return handle;
+}
+
+bool MappedSharedBuffer::Validate(uint64_t offset, uint64_t size) {
+  MOJO_DCHECK(buffer_ptr_);
+  return offset < size_ && size <= size_ - offset;
 }
 
 void* MappedSharedBuffer::PtrFromOffset(uint64_t offset) const {

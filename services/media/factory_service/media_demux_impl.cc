@@ -172,7 +172,7 @@ MediaTypePtr MediaDemuxImpl::Stream::media_type() const {
 void MediaDemuxImpl::Stream::GetPacketProducer(
     InterfaceRequest<MediaPacketProducer> producer) {
   DCHECK(producer_);
-  producer_->AddBinding(producer.Pass());
+  producer_->Bind(producer.Pass());
 }
 
 void MediaDemuxImpl::Stream::PrimeConnection(

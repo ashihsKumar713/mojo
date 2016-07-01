@@ -10,7 +10,7 @@
 
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/services/geometry/interfaces/geometry.mojom.h"
-#include "mojo/services/media/common/cpp/mapped_shared_buffer.h"
+#include "mojo/services/media/common/cpp/media_packet_consumer_base.h"
 #include "mojo/services/media/common/cpp/timeline_function.h"
 #include "mojo/services/media/common/cpp/video_converter.h"
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
@@ -20,8 +20,8 @@ namespace mojo {
 namespace media {
 
 // Implements MediaRenderer for an app that wants to show video.
-class VideoRenderer : public MediaRenderer,
-                      public MediaPacketConsumer,
+class VideoRenderer : public MediaPacketConsumerBase,
+                      public MediaRenderer,
                       public MediaTimelineControlPoint,
                       public TimelineConsumer {
  public:
@@ -40,16 +40,6 @@ class VideoRenderer : public MediaRenderer,
                     int64_t reference_time);
 
  private:
-  struct PacketAndCallback {
-    PacketAndCallback(MediaPacketPtr packet,
-                      const SendPacketCallback& callback);
-
-    ~PacketAndCallback();
-
-    MediaPacketPtr packet_;
-    SendPacketCallback callback_;
-  };
-
   // MediaRenderer implementation.
   void GetSupportedMediaTypes(
       const GetSupportedMediaTypesCallback& callback) override;
@@ -57,19 +47,16 @@ class VideoRenderer : public MediaRenderer,
   void SetMediaType(MediaTypePtr media_type) override;
 
   void GetPacketConsumer(
-      InterfaceRequest<MediaPacketConsumer> consumer_request) override;
+      InterfaceRequest<MediaPacketConsumer> packet_consumer_request) override;
 
   void GetTimelineControlPoint(InterfaceRequest<MediaTimelineControlPoint>
                                    control_point_request) override;
 
-  // MediaPacketConsumer implementation.
-  void SetBuffer(ScopedSharedBufferHandle buffer,
-                 const SetBufferCallback& callback) override;
+  // PacketConsumerBase overrides.
+  void OnPacketSupplied(
+      std::unique_ptr<SuppliedPacket> supplied_packet) override;
 
-  void SendPacket(MediaPacketPtr packet,
-                  const SendPacketCallback& callback) override;
-
-  void Prime(const PrimeCallback& callback) override;
+  void OnFailure() override;
 
   void Flush(const FlushCallback& callback) override;
 
@@ -102,11 +89,9 @@ class VideoRenderer : public MediaRenderer,
   void CompleteGetStatus(const GetStatusCallback& callback);
 
   Binding<MediaRenderer> renderer_binding_;
-  Binding<MediaPacketConsumer> consumer_binding_;
   Binding<MediaTimelineControlPoint> control_point_binding_;
   Binding<TimelineConsumer> timeline_consumer_binding_;
-  MappedSharedBuffer shared_buffer_;
-  std::queue<PacketAndCallback> packet_queue_;
+  std::queue<std::unique_ptr<SuppliedPacket>> packet_queue_;
   TimelineFunction current_timeline_function_;
   TimelineFunction pending_timeline_function_;
   SetTimelineTransformCallback set_timeline_transform_callback_;
