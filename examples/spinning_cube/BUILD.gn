@@ -28,6 +28,8 @@ mojo_native_application("spinning_cube") {
 
 source_set("lib") {
   sources = [
+    "gl_util.cc",
+    "gl_util.h",
     "spinning_cube.cc",
     "spinning_cube.h",
   ]
