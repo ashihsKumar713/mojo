@@ -84,8 +84,8 @@ def main():
   if script_args.verbose:
     print "Shell arguments: " + str(shell_args)
 
-  shell.run(shell_args)
-  return 0
+  return_code = shell.run(shell_args)
+  return return_code if return_code else 0
 
 
 if __name__ == "__main__":
