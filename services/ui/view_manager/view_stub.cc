@@ -14,6 +14,24 @@
 
 namespace view_manager {
 
+class PendingViewOwnerTransferState {
+ public:
+  PendingViewOwnerTransferState(std::unique_ptr<ViewStub> view_stub,
+                                mojo::InterfaceRequest<mojo::ui::ViewOwner>
+                                    transferred_view_owner_request)
+      : view_stub_(std::move(view_stub)),
+        transferred_view_owner_request_(transferred_view_owner_request.Pass()) {
+  }
+
+  ~PendingViewOwnerTransferState() {}
+
+  // A reference to keep the |ViewStub| alive until |OnViewResolved| is called.
+  std::unique_ptr<ViewStub> view_stub_;
+
+  // The |ViewOwner| we want to transfer ownership to.
+  mojo::InterfaceRequest<mojo::ui::ViewOwner> transferred_view_owner_request_;
+};
+
 ViewStub::ViewStub(ViewRegistry* registry,
                    mojo::InterfaceHandle<mojo::ui::ViewOwner> owner)
     : registry_(registry),
@@ -127,9 +145,49 @@ void ViewStub::SetTreeForChildrenOfView(ViewState* view, ViewTreeState* tree) {
 }
 
 void ViewStub::OnViewResolved(mojo::ui::ViewTokenPtr view_token) {
-  DCHECK(owner_);
-  owner_.reset();
-  registry_->OnViewResolved(this, view_token.Pass());
+  if (transfer_view_owner_when_view_resolved()) {
+    DCHECK(!container());  // Make sure we're removed from the view tree
+    DCHECK(pending_view_owner_transfer_->view_stub_ != nullptr);
+    // TODO(mikejurka): any other way to check that
+    // transferred_view_owner_request_ is not null?
+    DCHECK(pending_view_owner_transfer_->transferred_view_owner_request_
+               .is_pending());
+    DCHECK(owner_);
+    owner_.reset();
+
+    registry_->TransferViewOwner(
+        view_token.Pass(),
+        pending_view_owner_transfer_->transferred_view_owner_request_.Pass());
+
+    // We don't have any |view_state| resolved to us now, but |ReleaseView| will
+    // still mark us as unavailable and clear properties
+    ReleaseView();
+
+    // |pending_view_owner_transfer_| holds a reference to ourselves. Don't hold
+    // that reference anymore, which should release us immediately.
+    pending_view_owner_transfer_.reset();
+  } else {
+    DCHECK(owner_);
+    owner_.reset();
+    registry_->OnViewResolved(this, view_token.Pass());
+  }
+}
+
+void ViewStub::TransferViewOwnerWhenViewResolved(
+    std::unique_ptr<ViewStub> view_stub,
+    mojo::InterfaceRequest<mojo::ui::ViewOwner>
+        transferred_view_owner_request) {
+  DCHECK(!container());  // Make sure we've been removed from the view tree
+  DCHECK(!pending_view_owner_transfer_);
+
+  // When |OnViewResolved| gets called, we'll just transfer ownership
+  // of the view instead of calling |ViewRegistry.OnViewResolved|.
+  // Save the necessary state in |pending_view_owner_transfer_|
+  pending_view_owner_transfer_.reset(new PendingViewOwnerTransferState(
+      std::move(view_stub), transferred_view_owner_request.Pass()));
+
+  // TODO(mikejurka): should we have an error handler on
+  // transferred_view_owner_request_?
 }
 
 }  // namespace view_manager

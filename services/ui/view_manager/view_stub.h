@@ -17,6 +17,7 @@ class ViewContainerState;
 class ViewRegistry;
 class ViewState;
 class ViewTreeState;
+class PendingViewOwnerTransferState;
 
 // Describes a link in the view hierarchy either from a parent view to one
 // of its children or from the view tree to its root view.
@@ -29,6 +30,13 @@ class ViewTreeState;
 // parent view or view tree at the point where the view is being linked.
 // Note that the lifetime of the views themselves is managed by the view
 // registry.
+//
+// Note: sometimes, we might be waiting for |OnViewResolved| while this
+// |ViewStub| has already been removed and ownership of the child is supposed
+// to be transferred.
+// In that case, this |ViewStub| holds a reference to itself and, when
+// |OnViewResolved| is finally called, it tells the |view_registry| to
+// immediately transfer ownership of the child view.
 class ViewStub {
  public:
   // Begins the process of resolving a view.
@@ -115,11 +123,27 @@ class ViewStub {
   // Resets the parent view state and tree pointers to null.
   void Unlink();
 
+  // Called in the rare case when |OnViewResolved| hasn't been called, but
+  // we have already been removed and the child view's ownership is supposed to
+  // be transferred
+  void TransferViewOwnerWhenViewResolved(
+      std::unique_ptr<ViewStub> view_stub,
+      mojo::InterfaceRequest<mojo::ui::ViewOwner>
+          transferred_view_owner_request);
+
  private:
   void SetTreeRecursively(ViewTreeState* tree);
   static void SetTreeForChildrenOfView(ViewState* view, ViewTreeState* tree);
 
   void OnViewResolved(mojo::ui::ViewTokenPtr view_token);
+
+  // This is true when |ViewStub| has been transferred before |OnViewResolved|
+  // has been called, and the child view's ownership is supposed to be
+  // transferred. In that case, we will transfer ownership of the child
+  // immediately once |OnViewResolved| is called.
+  inline bool transfer_view_owner_when_view_resolved() const {
+    return pending_view_owner_transfer_ != nullptr;
+  }
 
   ViewRegistry* registry_;
   mojo::ui::ViewOwnerPtr owner_;
@@ -127,6 +151,11 @@ class ViewStub {
   bool unavailable_ = false;
   mojo::gfx::composition::ScenePtr stub_scene_;
   mojo::gfx::composition::SceneTokenPtr stub_scene_token_;
+
+  // Non-null when we are waiting to transfer the |ViewOwner|.
+  // Saves the |ViewOwner| we want to transfer ownership to, and a reference to
+  // ourselves to keep us alive until |OnViewResolved| is called.
+  std::unique_ptr<PendingViewOwnerTransferState> pending_view_owner_transfer_;
 
   uint32_t scene_version_ = mojo::gfx::composition::kSceneVersionNone;
   mojo::ui::ViewPropertiesPtr properties_;

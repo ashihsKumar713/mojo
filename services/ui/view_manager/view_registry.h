@@ -57,6 +57,9 @@ class ViewRegistry : public mojo::ui::ViewInspector {
   // VIEW STUB REQUESTS
 
   void OnViewResolved(ViewStub* view_stub, mojo::ui::ViewTokenPtr view_token);
+  void TransferViewOwner(mojo::ui::ViewTokenPtr view_token,
+                         mojo::InterfaceRequest<mojo::ui::ViewOwner>
+                             transferred_view_owner_request);
 
   // VIEW REQUESTS
 

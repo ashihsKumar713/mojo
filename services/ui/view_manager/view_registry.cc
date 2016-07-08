@@ -512,6 +512,19 @@ void ViewRegistry::OnViewResolved(ViewStub* view_stub,
     ReleaseUnavailableViewAndNotify(view_stub);
 }
 
+void ViewRegistry::TransferViewOwner(mojo::ui::ViewTokenPtr view_token,
+                                     mojo::InterfaceRequest<mojo::ui::ViewOwner>
+                                         transferred_view_owner_request) {
+  DCHECK(view_token);
+  DCHECK(transferred_view_owner_request.is_pending());
+
+  ViewState* view_state = view_token ? FindView(view_token->value) : nullptr;
+  if (view_state) {
+    view_state->ReleaseOwner();  // don't need the ViewOwner pipe anymore
+    view_state->BindOwner(transferred_view_owner_request.Pass());
+  }
+}
+
 void ViewRegistry::AttachResolvedViewAndNotify(ViewStub* view_stub,
                                                ViewState* view_state) {
   DCHECK(view_stub);
@@ -564,15 +577,19 @@ void ViewRegistry::TransferOrUnregisterViewStub(
 
   if (transferred_view_owner_request.is_pending()) {
     if (view_stub->state()) {
-      ScheduleViewInvalidation(view_stub->state(),
+      ViewState* view_state = view_stub->ReleaseView();
+      ScheduleViewInvalidation(view_state,
                                ViewState::INVALIDATION_PARENT_CHANGED);
-      view_stub->ReleaseView()->BindOwner(
-          transferred_view_owner_request.Pass());
+      view_state->BindOwner(transferred_view_owner_request.Pass());
       return;
     }
     if (view_stub->is_pending()) {
-      // TODO(jeffbrown): Handle transfer of pending view
-      CHECK(false);
+      DCHECK(!view_stub->state());
+
+      // Handle transfer of pending view.
+      view_stub->TransferViewOwnerWhenViewResolved(
+          std::move(view_stub), transferred_view_owner_request.Pass());
+
       return;
     }
   }

@@ -43,7 +43,11 @@ class ViewManagerTest : public ViewManagerTestBase {
   DISALLOW_COPY_AND_ASSIGN(ViewManagerTest);
 };
 
-TEST_F(ViewManagerTest, CreateAViewManagerAndView) {
+TEST_F(ViewManagerTest, CreateAViewManager) {
+  ASSERT_TRUE(view_manager_.is_bound());
+}
+
+TEST_F(ViewManagerTest, CreateAView) {
   // Create and bind a mock view listener
   mojo::ui::ViewListenerPtr view_listener;
   MockViewListener mock_view_listener;
@@ -52,9 +56,8 @@ TEST_F(ViewManagerTest, CreateAViewManagerAndView) {
 
   // Create a view
   mojo::ui::ViewPtr view;
-  mojo::ui::ViewOwnerPtr client_view_owner;
-  view_manager_->CreateView(mojo::GetProxy(&view),
-                            mojo::GetProxy(&client_view_owner),
+  mojo::ui::ViewOwnerPtr view_owner;
+  view_manager_->CreateView(mojo::GetProxy(&view), mojo::GetProxy(&view_owner),
                             view_listener.Pass(), "test_view");
 
   // Call View::GetToken. Check that you get the callback.
@@ -64,6 +67,59 @@ TEST_F(ViewManagerTest, CreateAViewManagerAndView) {
 
   EXPECT_EQ(0, view_token_callback_invokecount);
   view->GetToken(view_token_callback);
+
+  KICK_MESSAGE_LOOP_WHILE(view_token_callback_invokecount != 1);
+
+  EXPECT_EQ(1, view_token_callback_invokecount);
+}
+
+TEST_F(ViewManagerTest, CreateAChildView) {
+  // Create and bind a mock view listener for a parent view
+  mojo::ui::ViewListenerPtr parent_view_listener;
+  MockViewListener parent_mock_view_listener;
+  mojo::Binding<mojo::ui::ViewListener> child_view_listener_binding(
+      &parent_mock_view_listener, mojo::GetProxy(&parent_view_listener));
+
+  // Create a parent view
+  mojo::ui::ViewPtr parent_view;
+  mojo::ui::ViewOwnerPtr parent_view_owner;
+  view_manager_->CreateView(mojo::GetProxy(&parent_view),
+                            mojo::GetProxy(&parent_view_owner),
+                            parent_view_listener.Pass(), "parent_test_view");
+
+  mojo::ui::ViewContainerPtr parent_view_container;
+  parent_view->GetContainer(mojo::GetProxy(&parent_view_container));
+
+  // Create and bind a mock view listener for a child view
+  mojo::ui::ViewListenerPtr child_view_listener;
+  MockViewListener child_mock_view_listener;
+  mojo::Binding<mojo::ui::ViewListener> parent_view_listener_binding(
+      &child_mock_view_listener, mojo::GetProxy(&child_view_listener));
+
+  // Create a child view
+  mojo::ui::ViewPtr child_view;
+  mojo::ui::ViewOwnerPtr child_view_owner;
+  view_manager_->CreateView(mojo::GetProxy(&child_view),
+                            mojo::GetProxy(&child_view_owner),
+                            child_view_listener.Pass(), "test_view");
+
+  // Add the view to the parent
+  parent_view_container->AddChild(0, child_view_owner.Pass());
+
+  // Remove the view from the parent
+  mojo::ui::ViewOwnerPtr new_child_view_owner;
+  parent_view_container->RemoveChild(0, mojo::GetProxy(&new_child_view_owner));
+
+  // If we had a ViewContainerListener, we would still not get a OnViewAttached
+  // since the view hasn't had enough time to be resolved
+
+  // Call View::GetToken. Check that you get the callback.
+  int view_token_callback_invokecount = 0;
+  auto view_token_callback = [&view_token_callback_invokecount](
+      mojo::ui::ViewTokenPtr token) { view_token_callback_invokecount++; };
+
+  EXPECT_EQ(0, view_token_callback_invokecount);
+  child_view->GetToken(view_token_callback);
 
   KICK_MESSAGE_LOOP_WHILE(view_token_callback_invokecount != 1);
 
