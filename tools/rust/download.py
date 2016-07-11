@@ -39,6 +39,8 @@ def RunCommand(command):
 def VersionFileName():
   if sys.platform.startswith('linux'):
     platform_suffix = 'LINUX'
+  elif sys.platform == 'darwin':
+    platform_suffix = 'MACOSX'
   else:
     raise Exception('unsupported platform: ' + sys.platform)
   return 'VERSION_' + platform_suffix
@@ -60,7 +62,7 @@ def InstallRustBinaries(version):
   os.makedirs(INSTALL_DIR)
   # Download rust tool binaries.
   archive_path = os.path.join(INSTALL_DIR, 'rust.tar.gz')
-  rust_toolchain = 'rust-%s-x86_64-unknown-linux-gnu' % version
+  rust_toolchain = 'rust-%s' % version
   download_cmd = ['python', GSUTIL_PATH, 'cp',
                   'gs://mojo-build/rust/%s.tar.gz' % rust_toolchain,
                   archive_path]
