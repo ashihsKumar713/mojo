@@ -237,7 +237,8 @@ def GetTestList(config, verbose_count=0):
     test_names = ["mojo_public_c_system_perftests",
                   "mojo_public_cpp_bindings_perftests",
                   "mojo_public_cpp_environment_perftests",
-                  "mojo_edk_system_perftests"]
+                  "mojo_edk_system_perftests",
+                  "mojo_environment_perftests"]
 
     for test_name in test_names:
       command = ["python",

@@ -63,6 +63,9 @@ group("tests") {
     "//mojo/dart:tests",
     "//mojo/data_pipe_utils:mojo_data_pipe_utils_apptests",
     "//mojo/edk:tests",
+
+    # TODO(vtl): Should there be a separate target for perf tests?
+    "//mojo/environment:mojo_environment_perftests",
     "//mojo/file_utils:file_utils_apptests",
     "//mojo/gles2:mgl_unittests",
     "//mojo/message_pump:mojo_message_pump_apptests",
