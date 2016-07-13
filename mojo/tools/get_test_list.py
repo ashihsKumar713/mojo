@@ -137,7 +137,8 @@ def GetTestList(config, verbose_count=0):
                          paths.rust_cargo_path,
                          paths.rustc_path,
                          paths.rustdoc_path,
-                         os.path.join(build_dir, "obj", "mojo", "rust")]
+                         os.path.join(build_dir, "obj", "mojo", "rust"),
+                         build_dir]
     if not config.is_debug:
       rust_test_command += ["--release"]
     AddEntry("Rust tests", rust_test_command)

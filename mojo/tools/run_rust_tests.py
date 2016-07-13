@@ -23,6 +23,8 @@ def main():
       help="the path to the 'rustdoc' binary")
   parser.add_argument('target_out_dir', metavar='target_out_dir',
       help="the path to the output directory")
+  parser.add_argument('mojo_out_dir', metavar='mojo_out_dir',
+      help="the path to the mojo output directory")
   parser.add_argument('--release', action='store_true',
       help="specify whether we are building for release")
   args = parser.parse_args()
@@ -34,6 +36,7 @@ def main():
   os.environ["RUSTC"] = os.path.abspath(args.rustc_path)
   os.environ["RUSTDOC"] = os.path.abspath(args.rustdoc_path)
   os.environ["CARGO_TARGET_DIR"] = os.path.abspath(args.target_out_dir)
+  os.environ["MOJO_OUT_DIR"] = os.path.abspath(args.mojo_out_dir)
   test_result = subprocess.call(test_command)
   return test_result
 
