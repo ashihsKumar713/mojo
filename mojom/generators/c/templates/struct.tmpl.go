@@ -43,17 +43,17 @@ struct {{$struct.Name}}* {{$struct.Name}}_DeepCopy(
 size_t {{$struct.Name}}_ComputeSerializedSize(
   const struct {{$struct.Name}}* in_data);
 
-MojomValidationResult {{$struct.Name}}_EncodePointersAndHandles(
-  void* inout_buf, uint32_t in_buf_size, MojoHandle* inout_handles,
-  uint32_t in_num_handles, uint32_t* out_num_handles);
+void {{$struct.Name}}_EncodePointersAndHandles(
+  struct {{$struct.Name}}* inout_buf, uint32_t in_buf_size,
+  struct MojomHandleBuffer* inout_handle_buffer);
 
-MojomValidationResult {{$struct.Name}}_DecodePointersAndHandles(
+void {{$struct.Name}}_DecodePointersAndHandles(
   void* inout_buf, uint32_t in_buf_size,
-  MojoHandle* inout_handles, uint32_t in_num_handles);
+  MojoHandle inout_handles[], uint32_t in_num_handles);
 
 MojomValidationResult {{$struct.Name}}_Validate(
   const void* in_buf, uint32_t in_buf_size,
-  const MojoHandle* in_handles, uint32_t in_num_handles);
+  const MojoHandle in_handles[], uint32_t in_num_handles);
 
 {{end}}
 `
@@ -69,6 +69,14 @@ size_t {{$struct.Name}}_ComputeSerializedSize(
   return MojomStruct_ComputeSerializedSize(
     &{{$struct.Name}}__TypeDesc,
 		(const struct MojomStructHeader*)in_data);
+}
+
+void {{$struct.Name}}_EncodePointersAndHandles(
+  struct {{$struct.Name}}* inout_buf, uint32_t in_buf_size,
+  struct MojomHandleBuffer* inout_handle_buffer) {
+  MojomStruct_EncodePointersAndHandles(
+    &{{$struct.Name}}__TypeDesc,
+    (struct MojomStructHeader*)inout_buf, in_buf_size, inout_handle_buffer);
 }
 
 {{end}}
