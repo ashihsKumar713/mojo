@@ -72,15 +72,16 @@ def _args_to_config(args):
       additional_args['mojo_use_go'] = True
       additional_args['go_build_tool'] = os.path.join(
           go_dir, 'linux_amd64', 'bin', 'go')
-    rust_dir = os.path.join(Paths().src_root, 'third_party', 'rust')
+    rust_dir = os.path.join(Paths().src_root, 'third_party',
+                            'rust', 'usr', 'local', 'bin')
     if target_os is None and Config.GetHostOS() == Config.OS_LINUX:
       additional_args['mojo_use_rust'] = True
       additional_args['rust_cargo_tool'] = os.path.join(
-          rust_dir, 'usr', 'local', 'bin', 'cargo')
+          rust_dir, 'cargo')
       additional_args['rustc_tool'] = os.path.join(
-          rust_dir, 'usr', 'local', 'bin', 'rustc')
+          rust_dir, 'rustc')
       additional_args['rustdoc_tool'] = os.path.join(
-          rust_dir, 'usr', 'local', 'bin', 'rustdoc')
+          rust_dir, 'rustdoc')
 
   if 'dry_run' in args:
     additional_args['dry_run'] = args.dry_run

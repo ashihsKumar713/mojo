@@ -340,12 +340,33 @@ hooks = [
     ],
   },
   {
-    # This downloads linux Rust binaries according to
-    # tools/rust/VERSION.
-    'name': 'rusttools',
+    # This downloads linux Rust binaries
+    'name': 'rusttools_linux',
     'pattern': '.',
-    'action': [
-        'python', 'src/tools/rust/download.py',
+    'action': [ 'download_from_google_storage.py',
+                '-o', 'src/third_party/rust/usr.tar.gz',
+                '--extract',
+                '--no_resume',
+                '--quiet',
+                '--no_auth',
+                '--platform=linux*',
+                '--bucket', 'mojo-build/rust',
+                '-s', 'src/third_party/rust/rust-linux.sha1'
+    ],
+  },
+  {
+    # This downloads OSX Rust binaries
+    'name': 'rusttools_mac',
+    'pattern': '.',
+    'action': [ 'download_from_google_storage.py',
+                '-o', 'src/third_party/rust/usr.tar.gz',
+                '--extract',
+                '--no_resume',
+                '--quiet',
+                '--no_auth',
+                '--platform=darwin',
+                '--bucket', 'mojo-build/rust',
+                '-s', 'src/third_party/rust/rust-mac.sha1'
     ],
   },
   # Pull DejaVu fonts using checked-in hashes.
