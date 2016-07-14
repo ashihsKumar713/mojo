@@ -8,7 +8,7 @@
 #include <unordered_map>
 
 #include "base/macros.h"
-#include "mojo/common/binding_set.h"
+#include "mojo/public/cpp/bindings/binding_set.h"
 #include "mojo/services/ui/views/interfaces/view_associates.mojom.h"
 
 namespace mojo {

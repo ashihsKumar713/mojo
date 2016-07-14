@@ -4,17 +4,13 @@
 
 #include "services/authentication/google_authentication_impl.h"
 
+#include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/message_loop/message_loop.h"
-#include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "mojo/common/binding_set.h"
 #include "mojo/data_pipe_utils/data_pipe_drainer.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
-#include "mojo/public/c/system/main.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
-#include "mojo/public/cpp/system/macros.h"
 #include "mojo/services/network/interfaces/url_loader.mojom.h"
 #include "services/authentication/credentials_impl_db.mojom.h"
 #include "services/authentication/google_authentication_utils.h"

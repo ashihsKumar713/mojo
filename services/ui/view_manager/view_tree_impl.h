@@ -6,7 +6,7 @@
 #define SERVICES_UI_VIEW_MANAGER_VIEW_TREE_IMPL_H_
 
 #include "base/macros.h"
-#include "mojo/common/binding_set.h"
+#include "mojo/public/cpp/bindings/binding_set.h"
 #include "mojo/services/ui/views/interfaces/view_trees.mojom.h"
 
 namespace view_manager {

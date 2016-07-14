@@ -7,8 +7,8 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "mojo/common/binding_set.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/binding_set.h"
 #include "mojo/services/gfx/composition/interfaces/renderers.mojom.h"
 #include "services/gfx/compositor/compositor_engine.h"
 #include "services/gfx/compositor/renderer_state.h"

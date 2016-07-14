@@ -2,45 +2,44 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "mojo/common/binding_set.h"
+#include "mojo/public/cpp/bindings/binding_set.h"
 
-#include "base/message_loop/message_loop.h"
-#include "mojo/common/test_interfaces.mojom.h"
-#include "mojo/message_pump/message_pump_mojo.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/system/macros.h"
+#include "mojo/public/cpp/utility/run_loop.h"
+#include "mojo/public/interfaces/bindings/tests/minimal_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
-namespace common {
 namespace {
 
-class DummyImpl : public tests::Dummy {
+class MinimalInterfaceImpl : public test::MinimalInterface {
  public:
-  DummyImpl() {}
+  MinimalInterfaceImpl() {}
 
-  void Foo() override { call_count_++; }
+  void Message() override { call_count_++; }
 
   int call_count() const { return call_count_; }
 
  private:
   int call_count_ = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(DummyImpl);
+  MOJO_DISALLOW_COPY_AND_ASSIGN(MinimalInterfaceImpl);
 };
 
 // Tests all of the functionality of BindingSet.
 TEST(BindingSetTest, FullLifeCycle) {
-  base::MessageLoop loop(MessagePumpMojo::Create());
+  RunLoop loop;
 
-  // Create 10 InterfacePtrs and DummyImpls.
+  // Create 10 InterfacePtrs and MinimalInterfaceImpls.
   const size_t kNumObjects = 10;
-  InterfacePtr<tests::Dummy> intrfc_ptrs[kNumObjects];
-  DummyImpl impls[kNumObjects];
+  InterfacePtr<test::MinimalInterface> intrfc_ptrs[kNumObjects];
+  MinimalInterfaceImpl impls[kNumObjects];
 
   // Create 10 message pipes, bind everything together, and add the
   // bindings to binding_set.
-  BindingSet<tests::Dummy> binding_set;
+  BindingSet<test::MinimalInterface> binding_set;
   EXPECT_EQ(0u, binding_set.size());
   for (size_t i = 0; i < kNumObjects; i++) {
     binding_set.AddBinding(&impls[i], GetProxy(&intrfc_ptrs[i]));
@@ -53,8 +52,8 @@ TEST(BindingSetTest, FullLifeCycle) {
   }
 
   // Invoke method foo() on all 10 InterfacePointers.
-  for (InterfacePtr<tests::Dummy>& ptr : intrfc_ptrs) {
-    ptr->Foo();
+  for (InterfacePtr<test::MinimalInterface>& ptr : intrfc_ptrs) {
+    ptr->Message();
   }
 
   // Check that now all call counts are one.
@@ -75,7 +74,7 @@ TEST(BindingSetTest, FullLifeCycle) {
 
   // Invoke method foo() on the second five InterfacePointers.
   for (size_t i = kNumObjects / 2; i < kNumObjects; i++) {
-    intrfc_ptrs[i]->Foo();
+    intrfc_ptrs[i]->Message();
   }
   loop.RunUntilIdle();
 
@@ -92,7 +91,7 @@ TEST(BindingSetTest, FullLifeCycle) {
 
   // Invoke method foo() on the second five InterfacePointers.
   for (size_t i = kNumObjects / 2; i < kNumObjects; i++) {
-    intrfc_ptrs[i]->Foo();
+    intrfc_ptrs[i]->Message();
   }
   loop.RunUntilIdle();
 
@@ -104,5 +103,4 @@ TEST(BindingSetTest, FullLifeCycle) {
 }
 
 }  // namespace
-}  // namespace common
 }  // namespace mojo

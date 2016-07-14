@@ -9,9 +9,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "mojo/common/binding_set.h"
 #include "mojo/common/tracing_impl.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/bindings/binding_set.h"
 #include "services/ui/launcher/launch_instance.h"
 #include "services/ui/launcher/launcher.mojom.h"
 

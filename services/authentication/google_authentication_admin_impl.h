@@ -5,7 +5,7 @@
 #ifndef SERVICES_AUTHENTICATION_GOOGLE_AUTHENTICATION_ADMIN_IMPL_H_
 #define SERVICES_AUTHENTICATION_GOOGLE_AUTHENTICATION_ADMIN_IMPL_H_
 
-#include "mojo/common/binding_set.h"
+#include "mojo/public/cpp/bindings/binding_set.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "mojo/services/authentication/interfaces/authentication_admin.mojom.h"

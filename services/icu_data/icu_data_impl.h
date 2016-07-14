@@ -4,9 +4,9 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_ptr.h"
-#include "mojo/common/binding_set.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
+#include "mojo/public/cpp/bindings/binding_set.h"
 #include "mojo/services/icu_data/interfaces/icu_data.mojom.h"
 
 namespace icu_data {

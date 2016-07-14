@@ -8,7 +8,7 @@
 #include <map>
 #include <memory>
 
-#include "mojo/common/binding_set.h"
+#include "mojo/public/cpp/bindings/binding_set.h"
 #include "mojo/services/flog/interfaces/flog.mojom.h"
 #include "services/flog/flog_directory.h"
 #include "services/util/cpp/factory_service_base.h"

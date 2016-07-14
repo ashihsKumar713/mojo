@@ -7,12 +7,12 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/message_loop/message_loop.h"
-#include "mojo/common/binding_set.h"
 #include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/application/run_application.h"
+#include "mojo/public/cpp/bindings/binding_set.h"
 #include "mojo/services/notifications/interfaces/notifications.mojom.h"
 
 namespace examples {

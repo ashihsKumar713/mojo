@@ -6,8 +6,8 @@
 #define SERVICES_GFX_COMPOSITOR_SCENE_IMPL_H_
 
 #include "base/macros.h"
-#include "mojo/common/binding_set.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/binding_set.h"
 #include "mojo/services/gfx/composition/interfaces/scenes.mojom.h"
 #include "mojo/services/gfx/composition/interfaces/scheduling.mojom.h"
 #include "services/gfx/compositor/compositor_engine.h"

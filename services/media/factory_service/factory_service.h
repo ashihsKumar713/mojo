@@ -5,7 +5,7 @@
 #ifndef SERVICES_MEDIA_FACTORY_SERVICE_FACTORY_SERVICE_H_
 #define SERVICES_MEDIA_FACTORY_SERVICE_FACTORY_SERVICE_H_
 
-#include "mojo/common/binding_set.h"
+#include "mojo/public/cpp/bindings/binding_set.h"
 #include "mojo/services/media/control/interfaces/media_factory.mojom.h"
 #include "services/util/cpp/factory_service_base.h"
 
