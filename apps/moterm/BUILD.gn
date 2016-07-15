@@ -19,7 +19,6 @@ mojo_native_application("moterm") {
     ":model",
     "//base",
     "//mojo/application",
-    "//mojo/common",
     "//mojo/public/c/gpu",
     "//mojo/public/c/system",
     "//mojo/public/cpp/application",

@@ -19,7 +19,6 @@ mojo_native_application("spinning_cube") {
     "//base",
     "//examples/spinning_cube:lib",
     "//mojo/application",
-    "//mojo/common",
     "//mojo/environment:chromium",
     "//mojo/gpu",
     "//mojo/public/c/gpu",

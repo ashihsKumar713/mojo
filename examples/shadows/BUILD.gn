@@ -23,7 +23,6 @@ mojo_native_application("shadows") {
     "//base",
     "//examples/shadows/vfx",
     "//mojo/application",
-    "//mojo/common",
     "//mojo/environment:chromium",
     "//mojo/gpu",
     "//mojo/public/c/gpu",

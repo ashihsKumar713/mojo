@@ -25,7 +25,6 @@ source_set("chromium") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
-    "//mojo/common",
     "//mojo/message_pump",
     "//mojo/public/c/environment",
     "//mojo/public/cpp/bindings:callback",

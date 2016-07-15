@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOJO_COMMON_STRONG_BINDING_SET_H_
-#define MOJO_COMMON_STRONG_BINDING_SET_H_
+#ifndef MOJO_PUBLIC_CPP_BINDINGS_STRONG_BINDING_SET_H_
+#define MOJO_PUBLIC_CPP_BINDINGS_STRONG_BINDING_SET_H_
+
+#include <assert.h>
 
 #include <algorithm>
 #include <memory>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/system/macros.h"
 
 namespace mojo {
 
@@ -38,7 +39,7 @@ class StrongBindingSet {
                        [binding](const std::unique_ptr<Binding<Interface>>& b) {
                          return (b.get() == binding);
                        });
-      DCHECK(it != bindings_.end());
+      assert(it != bindings_.end());
       delete binding->impl();
       bindings_.erase(it);
     });
@@ -67,9 +68,9 @@ class StrongBindingSet {
  private:
   std::vector<std::unique_ptr<Binding<Interface>>> bindings_;
 
-  DISALLOW_COPY_AND_ASSIGN(StrongBindingSet);
+  MOJO_DISALLOW_COPY_AND_ASSIGN(StrongBindingSet);
 };
 
 }  // namespace mojo
 
-#endif  // MOJO_COMMON_STRONG_BINDING_SET_H_
+#endif  // MOJO_PUBLIC_CPP_BINDINGS_STRONG_BINDING_SET_H_

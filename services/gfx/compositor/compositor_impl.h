@@ -6,7 +6,6 @@
 #define SERVICES_GFX_COMPOSITOR_COMPOSITOR_IMPL_H_
 
 #include "base/macros.h"
-#include "mojo/common/strong_binding_set.h"
 #include "mojo/services/gfx/composition/interfaces/compositor.mojom.h"
 #include "services/gfx/compositor/compositor_engine.h"
 

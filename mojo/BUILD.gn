@@ -18,7 +18,6 @@ group("mojo") {
   deps = [
     ":system_thunks",
     ":tests",
-    "//mojo/common",
     "//mojo/dart",
     "//mojo/public",
     "//mojo/services",

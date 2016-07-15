@@ -5,8 +5,8 @@
 #ifndef MOJO_UI_CONTENT_VIEWER_APP_H_
 #define MOJO_UI_CONTENT_VIEWER_APP_H_
 
-#include "mojo/common/strong_binding_set.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/bindings/strong_binding_set.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "mojo/services/content_handler/interfaces/content_handler.mojom.h"
 

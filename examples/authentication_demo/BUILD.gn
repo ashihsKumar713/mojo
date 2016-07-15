@@ -11,7 +11,6 @@ mojo_native_application("authentication_demo") {
 
   deps = [
     "//base",
-    "//mojo/common",
     "//mojo/public/cpp/application:standalone",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",

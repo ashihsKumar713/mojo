@@ -18,7 +18,6 @@ mojo_native_application("motown_video") {
   deps = [
     "//base",
     "//mojo/application",
-    "//mojo/common",
     "//mojo/environment:chromium",
     "//mojo/gpu",
     "//mojo/public/c/gpu",

@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "mojo/common/strong_binding_set.h"
 #include "mojo/common/tracing_impl.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/bindings/strong_binding_set.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "mojo/services/ui/views/interfaces/view_provider.mojom.h"
 
@@ -56,7 +56,7 @@ class ViewProviderApp : public ApplicationImplBase {
                   InterfaceRequest<ViewOwner> view_owner_request,
                   InterfaceRequest<ServiceProvider> services);
 
-  mojo::TracingImpl tracing_;
+  TracingImpl tracing_;
   StrongBindingSet<ViewProvider> bindings_;
 
   MOJO_DISALLOW_COPY_AND_ASSIGN(ViewProviderApp);

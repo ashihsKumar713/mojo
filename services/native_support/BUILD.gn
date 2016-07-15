@@ -22,7 +22,6 @@ mojo_native_application("native_support") {
   deps = [
     "//base",
     "//mojo/application",
-    "//mojo/common",
     "//mojo/public/cpp/application",
     "//mojo/public/cpp/bindings:callback",
     "//mojo/public/cpp/system",

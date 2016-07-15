@@ -46,7 +46,6 @@ source_set("framework_ffmpeg") {
 
   deps = [
     "//base",
-    "//mojo/common",
     "//mojo/services/media/common/cpp",
     "//services/media/framework",
     "//services/util/cpp",

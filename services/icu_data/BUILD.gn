@@ -38,7 +38,6 @@ source_set("lib") {
     ":embed_icu_data",
     "//base",
     "//mojo/application",
-    "//mojo/common",
     "//mojo/environment:chromium",
     "//mojo/services/icu_data/interfaces",
   ]

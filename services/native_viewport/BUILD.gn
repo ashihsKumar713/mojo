@@ -108,7 +108,6 @@ source_set("lib") {
     "//base",
     "//gpu/command_buffer/service",
     "//mojo/application",
-    "//mojo/common",
     "//mojo/converters/geometry",
     "//mojo/converters/input_events",
     "//mojo/converters/native_viewport",

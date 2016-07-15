@@ -35,7 +35,6 @@ source_set("lib") {
   deps = [
     "//base",
     "//mojo/application",
-    "//mojo/common",
     "//mojo/common:tracing_impl",
     "//mojo/converters/geometry",
     "//mojo/environment:chromium",

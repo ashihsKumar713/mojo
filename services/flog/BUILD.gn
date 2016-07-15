@@ -20,7 +20,6 @@ mojo_native_application("flog") {
   deps = [
     "//base",
     "//mojo/application",
-    "//mojo/common",
     "//mojo/public/cpp/application",
     "//mojo/services/files/interfaces",
     "//mojo/services/flog/interfaces",

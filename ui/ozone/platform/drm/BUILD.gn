@@ -117,7 +117,6 @@ source_set("drm_common") {
   deps = [
     "//base",
     "//mojo/application",
-    "//mojo/common",
     "//mojo/converters/geometry",
     "//mojo/converters/ozone_drm_gpu",
     "//mojo/services/ozone_drm_gpu/interfaces",

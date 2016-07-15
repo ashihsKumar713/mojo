@@ -38,7 +38,6 @@ if (is_android) {
       "//base",
       "//mojo/application",
       "//mojo/application:test_support",
-      "//mojo/common:common",
       "//mojo/public/cpp/bindings:callback",
       "//mojo/public/cpp/environment",
       "//mojo/public/cpp/system:system",

@@ -8,7 +8,6 @@ mojo_native_application("echo_terminal") {
   deps = [
     "//base",
     "//mojo/application",
-    "//mojo/common",
     "//mojo/public/cpp/application",
     "//mojo/public/cpp/system",
     "//mojo/services/terminal/interfaces",

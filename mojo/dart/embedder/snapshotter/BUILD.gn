@@ -18,9 +18,8 @@ executable("dart_snapshotter") {
   deps = [
     "//base",
     "//build/config/sanitizers:deps",
-    "//dart/runtime/vm:libdart_platform",
     "//dart/runtime:libdart",
-    "//mojo/common",
+    "//dart/runtime/vm:libdart_platform",
     "//mojo/dart/embedder:dart_snapshot_cc",
     "//mojo/edk/base_edk",
     "//mojo/edk/system",

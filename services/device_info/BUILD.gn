@@ -30,7 +30,6 @@ if (is_linux) {
 
     deps = [
       "//base",
-      "//mojo/common",
       "//mojo/public/cpp/application:standalone",
       "//mojo/public/cpp/bindings",
       "//mojo/services/device_info/interfaces",

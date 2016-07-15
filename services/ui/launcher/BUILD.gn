@@ -33,7 +33,6 @@ source_set("lib") {
     ":bindings",
     "//base",
     "//mojo/application",
-    "//mojo/common",
     "//mojo/common:tracing_impl",
     "//mojo/environment:chromium",
     "//mojo/public/cpp/bindings:bindings",

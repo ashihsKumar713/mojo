@@ -2,74 +2,76 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "mojo/common/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/interface_ptr_set.h"
 
-#include "base/message_loop/message_loop.h"
-#include "mojo/common/test_interfaces.mojom.h"
-#include "mojo/message_pump/message_pump_mojo.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/system/macros.h"
+#include "mojo/public/cpp/utility/run_loop.h"
+#include "mojo/public/interfaces/bindings/tests/minimal_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
 namespace common {
 namespace {
 
-class DummyImpl : public tests::Dummy {
+class MinimalInterfaceImpl : public test::MinimalInterface {
  public:
-  explicit DummyImpl(InterfaceRequest<tests::Dummy> request)
+  explicit MinimalInterfaceImpl(
+      InterfaceRequest<test::MinimalInterface> request)
       : binding_(this, request.Pass()) {}
 
-  void Foo() override { call_count_++; }
+  void Message() override { call_count_++; }
 
   void CloseMessagePipe() { binding_.Close(); }
 
   int call_count() { return call_count_; }
 
  private:
-  Binding<tests::Dummy> binding_;
+  Binding<test::MinimalInterface> binding_;
   int call_count_ = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(DummyImpl);
+  MOJO_DISALLOW_COPY_AND_ASSIGN(MinimalInterfaceImpl);
 };
 
 // Tests all of the functionality of InterfacePtrSet.
 TEST(InterfacePtrSetTest, FullLifeCycle) {
-  base::MessageLoop loop(MessagePumpMojo::Create());
+  RunLoop loop;
 
   // Create 10 InterfacePtrs.
   const size_t kNumObjects = 10;
-  InterfacePtr<tests::Dummy> intrfc_ptrs[kNumObjects];
+  InterfacePtr<test::MinimalInterface> intrfc_ptrs[kNumObjects];
 
-  // Create 10 DummyImpls and 10 message pipes and bind them all together.
-  std::unique_ptr<DummyImpl> impls[kNumObjects];
+  // Create 10 MinimalInterfaceImpls and 10 message pipes and bind them all
+  // together.
+  std::unique_ptr<MinimalInterfaceImpl> impls[kNumObjects];
   for (size_t i = 0; i < kNumObjects; i++) {
-    impls[i].reset(new DummyImpl(GetProxy(&intrfc_ptrs[i])));
+    impls[i].reset(new MinimalInterfaceImpl(GetProxy(&intrfc_ptrs[i])));
   }
 
   // Move all 10 InterfacePtrs into the set.
-  InterfacePtrSet<tests::Dummy> intrfc_ptr_set;
+  InterfacePtrSet<test::MinimalInterface> intrfc_ptr_set;
   EXPECT_EQ(0u, intrfc_ptr_set.size());
-  for (InterfacePtr<tests::Dummy>& ptr : intrfc_ptrs) {
+  for (InterfacePtr<test::MinimalInterface>& ptr : intrfc_ptrs) {
     intrfc_ptr_set.AddInterfacePtr(ptr.Pass());
   }
   EXPECT_EQ(kNumObjects, intrfc_ptr_set.size());
 
   // Check that initially all call counts are zero.
-  for (const std::unique_ptr<DummyImpl>& impl : impls) {
+  for (const std::unique_ptr<MinimalInterfaceImpl>& impl : impls) {
     EXPECT_EQ(0, impl->call_count());
   }
 
   // Invoke ForAllPtrs().
   size_t num_invocations = 0;
-  intrfc_ptr_set.ForAllPtrs([&num_invocations](tests::Dummy* dummy) {
-    dummy->Foo();
+  intrfc_ptr_set.ForAllPtrs([&num_invocations](test::MinimalInterface* dummy) {
+    dummy->Message();
     num_invocations++;
   });
   EXPECT_EQ(kNumObjects, num_invocations);
 
   // Check that now all call counts are one.
   loop.RunUntilIdle();
-  for (const std::unique_ptr<DummyImpl>& impl : impls) {
+  for (const std::unique_ptr<MinimalInterfaceImpl>& impl : impls) {
     EXPECT_EQ(1, impl->call_count());
   }
 
@@ -84,7 +86,8 @@ TEST(InterfacePtrSetTest, FullLifeCycle) {
   EXPECT_EQ(kNumObjects / 2, intrfc_ptr_set.size());
 
   // Invoke ForAllPtrs again on the remaining five pointers
-  intrfc_ptr_set.ForAllPtrs([](tests::Dummy* dummy) { dummy->Foo(); });
+  intrfc_ptr_set.ForAllPtrs(
+      [](test::MinimalInterface* dummy) { dummy->Message(); });
   loop.RunUntilIdle();
 
   // Check that now the first five counts are still 1 but the second five
@@ -98,7 +101,8 @@ TEST(InterfacePtrSetTest, FullLifeCycle) {
   intrfc_ptr_set.CloseAll();
 
   // Invoke ForAllPtrs() again.
-  intrfc_ptr_set.ForAllPtrs([](tests::Dummy* dummy) { dummy->Foo(); });
+  intrfc_ptr_set.ForAllPtrs(
+      [](test::MinimalInterface* dummy) { dummy->Message(); });
   loop.RunUntilIdle();
 
   // Check that the counts are the same as last time.

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOJO_COMMON_INTERFACE_PTR_SET_H_
-#define MOJO_COMMON_INTERFACE_PTR_SET_H_
+#ifndef MOJO_PUBLIC_CPP_BINDINGS_INTERFACE_PTR_SET_H_
+#define MOJO_PUBLIC_CPP_BINDINGS_INTERFACE_PTR_SET_H_
+
+#include <assert.h>
 
 #include <vector>
 
-#include "base/logging.h"
 #include "mojo/public/cpp/bindings/interface_ptr.h"
 
 namespace mojo {
@@ -24,7 +25,7 @@ class InterfacePtrSet {
 
   // |ptr| must be bound to a message pipe.
   void AddInterfacePtr(InterfacePtr<Interface> ptr) {
-    DCHECK(ptr.is_bound());
+    assert(ptr.is_bound());
     ptrs_.emplace_back(ptr.Pass());
     InterfacePtr<Interface>& intrfc_ptr = ptrs_.back();
     Interface* pointer = intrfc_ptr.get();
@@ -37,7 +38,7 @@ class InterfacePtrSet {
                              [pointer](const InterfacePtr<Interface>& p) {
                                return (p.get() == pointer);
                              });
-      DCHECK(it != ptrs_.end());
+      assert(it != ptrs_.end());
       ptrs_.erase(it);
     });
   }
@@ -69,4 +70,4 @@ class InterfacePtrSet {
 
 }  // namespace mojo
 
-#endif  // MOJO_COMMON_INTERFACE_PTR_SET_H_
+#endif  // MOJO_PUBLIC_CPP_BINDINGS_INTERFACE_PTR_SET_H_

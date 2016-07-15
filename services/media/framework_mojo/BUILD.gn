@@ -18,7 +18,6 @@ source_set("framework_mojo") {
 
   deps = [
     "//base",
-    "//mojo/common",
     "//mojo/public/cpp/application",
     "//mojo/services/media/audio/interfaces",
     "//mojo/services/media/common/cpp",

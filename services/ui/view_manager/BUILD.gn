@@ -32,7 +32,6 @@ source_set("common") {
   public_deps = [
     "//base",
     "//mojo/application",
-    "//mojo/common",
     "//mojo/common:tracing_impl",
     "//mojo/converters/geometry",
     "//mojo/public/cpp/bindings:bindings",

@@ -36,7 +36,6 @@ source_set("mocks") {
   deps = [
     ":associates",
     "//base",
-    "//mojo/common",
     "//mojo/public/cpp/bindings",
     "//mojo/services/geometry/interfaces",
     "//mojo/services/gfx/composition/interfaces",
@@ -61,7 +60,6 @@ mojo_native_application("apptests") {
     "//base",
     "//mojo/application",
     "//mojo/application:test_support",
-    "//mojo/common",
     "//mojo/public/cpp/bindings:callback",
     "//mojo/services/geometry/interfaces",
     "//mojo/services/gfx/composition/interfaces",

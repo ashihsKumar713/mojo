@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "mojo/common/strong_binding_set.h"
 #include "mojo/common/tracing_impl.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
+#include "mojo/public/cpp/bindings/strong_binding_set.h"
 #include "mojo/services/gfx/composition/interfaces/compositor.mojom.h"
 #include "services/gfx/compositor/compositor_engine.h"
 
