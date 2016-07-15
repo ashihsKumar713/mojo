@@ -8,15 +8,19 @@
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/services/media/common/cpp/media_packet_producer_base.h"
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
 #include "services/media/framework/models/active_sink.h"
-#include "services/media/framework_mojo/mojo_allocator.h"
+#include "services/media/framework/payload_allocator.h"
 
 namespace mojo {
 namespace media {
 
 // Implements MediaPacketProducer to forward a stream across mojo.
-class MojoPacketProducer : public MediaPacketProducer, public ActiveSink {
+class MojoPacketProducer : private MediaPacketProducerBase,
+                           public MediaPacketProducer,
+                           public ActiveSink,
+                           public PayloadAllocator {
  public:
   using PrimeConnectionCallback = mojo::Callback<void()>;
   using FlushConnectionCallback = mojo::Callback<void()>;
@@ -50,28 +54,23 @@ class MojoPacketProducer : public MediaPacketProducer, public ActiveSink {
 
   void Disconnect() override;
 
+  // PayloadAllocator implementation:
+  void* AllocatePayloadBuffer(size_t size) override;
+
+  // Releases a buffer previously allocated via AllocatePayloadBuffer.
+  void ReleasePayloadBuffer(void* buffer) override;
+
  private:
   MojoPacketProducer();
 
   // Sends a packet to the consumer.
   // TODO(dalesat): Don't use a raw pointer, if possible.
-  void SendPacket(Packet* packet_raw_ptr, MediaPacketPtr media_packet);
-
-  // Creates a MediaPacket from a Packet.
-  MediaPacketPtr CreateMediaPacket(const PacketPtr& packet);
-
-  // Ensures that the allocator is initialized. Returns false if the allocator
-  // could not be initialized.
-  bool EnsureAllocatorInitialized();
+  void SendPacket(Packet* packet_raw_ptr);
 
   // Shuts down the producer.
   void Reset();
 
-  // Allocates from the shared buffer.
-  MojoAllocator mojo_allocator_;
-
   Binding<MediaPacketProducer> binding_;
-  MediaPacketConsumerPtr consumer_;
 
   mutable base::Lock lock_;
   // THE FIELDS BELOW SHOULD ONLY BE ACCESSED WITH lock_ TAKEN.

@@ -13,13 +13,8 @@ group("audio_play_test") {
 
 mojo_native_application("play_wav") {
   deps = [
+    ":lib",
     "//mojo/public/cpp/application:standalone",
-    "//mojo/public/cpp/system",
-    "//mojo/public/cpp/utility",
-    "//mojo/services/media/audio/interfaces",
-    "//mojo/services/media/common/cpp",
-    "//mojo/services/media/common/interfaces",
-    "//mojo/services/media/core/interfaces",
     "//mojo/services/network/interfaces",
   ]
 
@@ -30,15 +25,27 @@ mojo_native_application("play_wav") {
 
 mojo_native_application("play_tone") {
   deps = [
+    ":lib",
+    "//mojo/public/cpp/application:standalone",
+  ]
+
+  sources = [
+    "play_tone.cc",
+  ]
+}
+
+source_set("lib") {
+  sources = [
+    "play_audio.cc",
+    "play_audio.h",
+  ]
+
+  deps = [
     "//mojo/public/cpp/application:standalone",
     "//mojo/public/cpp/utility",
     "//mojo/services/media/audio/interfaces",
     "//mojo/services/media/common/cpp",
     "//mojo/services/media/common/interfaces",
     "//mojo/services/media/core/interfaces",
-  ]
-
-  sources = [
-    "play_tone.cc",
   ]
 }

@@ -8,8 +8,6 @@ import("$mojo_sdk_root/mojo/public/mojo_sdk.gni")
 mojo_sdk_source_set("cpp") {
   restrict_external_deps = false
   sources = [
-    "circular_buffer_media_pipe_adapter.cc",
-    "circular_buffer_media_pipe_adapter.h",
     "fifo_allocator.cc",
     "fifo_allocator.h",
     "linear_transform.cc",
@@ -19,6 +17,8 @@ mojo_sdk_source_set("cpp") {
     "mapped_shared_buffer.h",
     "media_packet_consumer_base.cc",
     "media_packet_consumer_base.h",
+    "media_packet_producer_base.cc",
+    "media_packet_producer_base.h",
     "shared_media_buffer_allocator.cc",
     "shared_media_buffer_allocator.h",
     "timeline.h",

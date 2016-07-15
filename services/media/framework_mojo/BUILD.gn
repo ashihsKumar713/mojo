@@ -4,8 +4,6 @@
 
 source_set("framework_mojo") {
   sources = [
-    "mojo_allocator.cc",
-    "mojo_allocator.h",
     "mojo_formatting.cc",
     "mojo_formatting.h",
     "mojo_packet_consumer.cc",

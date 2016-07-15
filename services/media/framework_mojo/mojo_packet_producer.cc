@@ -20,8 +20,7 @@ MojoPacketProducer::~MojoPacketProducer() {
   base::AutoLock lock(lock_);
 }
 
-void MojoPacketProducer::Bind(
-    InterfaceRequest<MediaPacketProducer> request) {
+void MojoPacketProducer::Bind(InterfaceRequest<MediaPacketProducer> request) {
   binding_.Bind(request.Pass());
 }
 
@@ -29,7 +28,7 @@ void MojoPacketProducer::PrimeConnection(
     const PrimeConnectionCallback& callback) {
   Demand demand;
 
-  if (consumer_.is_bound()) {
+  if (is_connected()) {
     base::AutoLock lock(lock_);
     max_pushes_outstanding_ = 4;  // TODO(dalesat): Made up!
     demand = current_pushes_outstanding_ < max_pushes_outstanding_
@@ -37,17 +36,13 @@ void MojoPacketProducer::PrimeConnection(
                  : Demand::kNegative;
   } else {
     demand = Demand::kNeutral;
-    if (!EnsureAllocatorInitialized()) {
-      callback.Run();
-      return;
-    }
   }
 
   DCHECK(demand_callback_);
   demand_callback_(demand);
 
-  if (consumer_.is_bound()) {
-    consumer_->Prime([this, callback]() { callback.Run(); });
+  if (is_connected()) {
+    PrimeConsumer(callback);
   } else {
     callback.Run();
   }
@@ -63,15 +58,15 @@ void MojoPacketProducer::FlushConnection(
   DCHECK(demand_callback_);
   demand_callback_(Demand::kNegative);
 
-  if (consumer_.is_bound()) {
-    consumer_->Flush(callback);
+  if (is_connected()) {
+    FlushConsumer(callback);
   } else {
     callback.Run();
   }
 }
 
 PayloadAllocator* MojoPacketProducer::allocator() {
-  return &mojo_allocator_;
+  return this;
 }
 
 void MojoPacketProducer::SetDemandCallback(
@@ -83,7 +78,7 @@ Demand MojoPacketProducer::SupplyPacket(PacketPtr packet) {
   DCHECK(packet);
 
   // If we're not connected, throw the packet away.
-  if (!consumer_.is_bound()) {
+  if (!is_connected()) {
     return packet->end_of_stream() ? Demand::kNegative : Demand::kNeutral;
   }
 
@@ -105,11 +100,9 @@ Demand MojoPacketProducer::SupplyPacket(PacketPtr packet) {
     }
   }
 
-  MediaPacketPtr media_packet = CreateMediaPacket(packet);
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::Bind(&MojoPacketProducer::SendPacket, base::Unretained(this),
-                 packet.release(), base::Passed(media_packet.Pass())));
+  task_runner_->PostTask(FROM_HERE,
+                         base::Bind(&MojoPacketProducer::SendPacket,
+                                    base::Unretained(this), packet.release()));
 
   return demand;
 }
@@ -117,30 +110,32 @@ Demand MojoPacketProducer::SupplyPacket(PacketPtr packet) {
 void MojoPacketProducer::Connect(InterfaceHandle<MediaPacketConsumer> consumer,
                                  const ConnectCallback& callback) {
   DCHECK(consumer);
-
-  consumer_ = MediaPacketConsumerPtr::Create(std::move(consumer));
-
-  if (!EnsureAllocatorInitialized()) {
-    callback.Run();
-    return;
-  }
-
-  consumer_->SetBuffer(mojo_allocator_.GetDuplicateHandle(),
-                       [callback]() { callback.Run(); });
+  MediaPacketProducerBase::Connect(
+      MediaPacketConsumerPtr::Create(std::move(consumer)).Pass(), callback);
 }
 
 void MojoPacketProducer::Disconnect() {
   if (demand_callback_) {
     demand_callback_(Demand::kNegative);
   }
-  consumer_.reset();
+
+  MediaPacketProducerBase::Disconnect();
 }
 
-void MojoPacketProducer::SendPacket(Packet* packet_raw_ptr,
-                                    MediaPacketPtr media_packet) {
-  consumer_->SendPacket(
-      media_packet.Pass(),
-      [this, packet_raw_ptr](MediaPacketConsumer::SendResult send_result) {
+void* MojoPacketProducer::AllocatePayloadBuffer(size_t size) {
+  return MediaPacketProducerBase::AllocatePayloadBuffer(size);
+}
+
+void MojoPacketProducer::ReleasePayloadBuffer(void* buffer) {
+  MediaPacketProducerBase::ReleasePayloadBuffer(buffer);
+}
+
+void MojoPacketProducer::SendPacket(Packet* packet_raw_ptr) {
+  DCHECK(packet_raw_ptr);
+
+  ProducePacket(
+      packet_raw_ptr->payload(), packet_raw_ptr->size(), packet_raw_ptr->pts(),
+      packet_raw_ptr->end_of_stream(), [this, packet_raw_ptr]() {
         PacketPtr packet = PacketPtr(packet_raw_ptr);
         Demand demand;
 
@@ -156,45 +151,12 @@ void MojoPacketProducer::SendPacket(Packet* packet_raw_ptr,
       });
 }
 
-MediaPacketPtr MojoPacketProducer::CreateMediaPacket(const PacketPtr& packet) {
-  DCHECK(packet);
-
-  MediaPacketRegionPtr region = MediaPacketRegion::New();
-  region->offset = packet->size() == 0
-                       ? 0
-                       : mojo_allocator_.OffsetFromPtr(packet->payload());
-  region->length = packet->size();
-
-  MediaPacketPtr media_packet = MediaPacket::New();
-  media_packet->pts = packet->pts();
-  media_packet->end_of_stream = packet->end_of_stream();
-  media_packet->payload = region.Pass();
-
-  return media_packet.Pass();
-}
-
-bool MojoPacketProducer::EnsureAllocatorInitialized() {
-  if (mojo_allocator_.initialized()) {
-    return true;
-  }
-
-  // TODO(dalesat): Made up allocation.
-  if (mojo_allocator_.InitNew(4096 * 1024) == MOJO_RESULT_OK) {
-    return true;
-  }
-
-  Reset();
-  return false;
-}
-
 void MojoPacketProducer::Reset() {
   if (binding_.is_bound()) {
     binding_.Close();
   }
 
-  Disconnect();
-
-  mojo_allocator_.Reset();
+  MediaPacketProducerBase::Reset();
 }
 
 }  // namespace media
