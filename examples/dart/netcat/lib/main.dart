@@ -8,7 +8,6 @@ import 'dart:core';
 import 'dart:typed_data';
 
 import 'package:mojo/application.dart';
-import 'package:mojo/bindings.dart';
 import 'package:mojo/core.dart';
 import 'package:mojo/mojo/network_error.mojom.dart';
 import 'package:mojo_services/mojo/files/file.mojom.dart' as files;
@@ -66,7 +65,8 @@ class Connector {
       NetAddress local_address = makeIPv4NetAddress([0, 0, 0, 0], 0);
       var boundSocket = new TcpBoundSocketProxy.unbound();
       var c = new Completer();
-      networkService.createTcpBoundSocket(local_address, boundSocket, (_) {
+      networkService.createTcpBoundSocket(local_address, boundSocket,
+          (NetworkError error, NetAddress address) {
         c.complete(null);
       });
       await networkService.responseOrError(c.future);
@@ -100,9 +100,8 @@ class Connector {
   void _startReadingFromTerminal() {
     // TODO(vtl): Do we have to do something on error?
     var c = new Completer();
-    _terminal.read(
-        _writeBuffer.lengthInBytes, 0,
-        files.Whence.fromCurrent, (error, bytes) {
+    _terminal.read(_writeBuffer.lengthInBytes, 0, files.Whence.fromCurrent,
+        (error, bytes) {
       _onReadFromTerminal(error, bytes);
       c.complete(null);
     });
@@ -185,13 +184,12 @@ class Connector {
 }
 
 class TerminalClientImpl implements TerminalClient {
-  TerminalClientStub _stub;
   Application _application;
   String _resolvedUrl;
 
   TerminalClientImpl(
       this._application, this._resolvedUrl, MojoMessagePipeEndpoint endpoint) {
-    _stub = new TerminalClientStub.fromEndpoint(endpoint, this);
+    new TerminalClientStub.fromEndpoint(endpoint, this);
   }
 
   @override

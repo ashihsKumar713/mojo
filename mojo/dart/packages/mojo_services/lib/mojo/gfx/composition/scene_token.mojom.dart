@@ -27,7 +27,6 @@ class SceneToken extends bindings.Struct {
       return null;
     }
     SceneToken result = new SceneToken();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

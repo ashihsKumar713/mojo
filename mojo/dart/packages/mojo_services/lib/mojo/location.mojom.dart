@@ -51,7 +51,6 @@ class Location extends bindings.Struct {
       return null;
     }
     Location result = new Location();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

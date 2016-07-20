@@ -35,7 +35,6 @@ class HttpRequest extends bindings.Struct {
       return null;
     }
     HttpRequest result = new HttpRequest();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -132,7 +131,6 @@ class HttpResponse extends bindings.Struct {
       return null;
     }
     HttpResponse result = new HttpResponse();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

@@ -4,14 +4,10 @@
 
 library file_apptests;
 
-import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:mojo_apptest/apptest.dart';
 import 'package:mojo/application.dart';
-import 'package:mojo/bindings.dart';
-import 'package:mojo/core.dart';
 
 tests(Application application, String url) {
   group('File Apptests', () {
@@ -25,7 +21,7 @@ tests(Application application, String url) {
         }
         expect(new File(relative).absolute.isAbsolute, isTrue);
         expect(new Directory(relative).absolute.path,
-               new Link(relative).absolute.path);
+            new Link(relative).absolute.path);
         expect(new File(relative).absolute is File, isTrue);
         expect(new Directory(relative).absolute is Directory, isTrue);
         expect(new Link(relative).absolute is Link, isTrue);
@@ -33,7 +29,7 @@ tests(Application application, String url) {
       for (String absolute in ['/abd', '/', '/./..\\', '/efg/hij', '/abc/']) {
         expect(new File(absolute).absolute.path, absolute);
         expect(new File(absolute).absolute.isAbsolute, isTrue);
-       }
+      }
     });
     test('File Constructor', () async {
       expect(new File('blåbærgrød'), isNotNull);
@@ -63,14 +59,13 @@ tests(Application application, String url) {
         directory.statSync();
         // We shouldn't hit here.
         fail("Directory.statSync is expected to throw.");
-      } on UnsupportedError catch (e) {
+      } on UnsupportedError {
         exceptionCaught = true;
       }
       expect(exceptionCaught, isTrue);
     });
     test('Directory stat', () async {
-      Directory directory =
-          await Directory.systemTemp.createTemp('stat_test');
+      Directory directory = await Directory.systemTemp.createTemp('stat_test');
       FileStat fs = await directory.stat();
       expect(fs, isNotNull);
       expect(fs.modeString(), "rwx------");
@@ -78,15 +73,13 @@ tests(Application application, String url) {
     });
     test('Directory list', () async {
       // Setup state.
-      Directory directory =
-        await Directory.systemTemp.createTemp('list_test');
+      Directory directory = await Directory.systemTemp.createTemp('list_test');
       File f = new File('${directory.path}/child_file.txt');
       await f.create();
       Directory d = new Directory('${directory.path}/child_dir');
       await d.create();
       Directory d2 = new Directory('${d.path}/deeper_child_dir');
       await d2.create();
-
 
       // Non-recursive listing.
       List<String> paths = new List<String>();
@@ -186,8 +179,7 @@ tests(Application application, String url) {
       // expect(await childDirectory.exists(), isFalse);
     });
     test('RandomAccessFile Open', () async {
-      Directory directory =
-          await Directory.systemTemp.createTemp('raf0');
+      Directory directory = await Directory.systemTemp.createTemp('raf0');
       File file = new File('${directory.path}/file.txt');
       expect(await file.exists(), isFalse);
 
@@ -214,8 +206,7 @@ tests(Application application, String url) {
       await raf.close();
     });
     test('RandomAccessFile Write Byte', () async {
-      Directory directory =
-          await Directory.systemTemp.createTemp('raf1');
+      Directory directory = await Directory.systemTemp.createTemp('raf1');
       File file = new File('${directory.path}/file.txt');
       expect(await file.exists(), isFalse);
       // Attempt to open for writing. This will succeed.
@@ -232,8 +223,7 @@ tests(Application application, String url) {
       await raf.close();
     });
     test('RandomAccessFile WriteFrom', () async {
-      Directory directory =
-          await Directory.systemTemp.createTemp('raf2');
+      Directory directory = await Directory.systemTemp.createTemp('raf2');
       File file = new File('${directory.path}/file.txt');
       expect(await file.exists(), isFalse);
       // Attempt to open for writing. This will succeed.
@@ -246,8 +236,7 @@ tests(Application application, String url) {
       await raf.close();
     });
     test('RandomAccessFile Write Seek Read', () async {
-      Directory directory =
-          await Directory.systemTemp.createTemp('raf3');
+      Directory directory = await Directory.systemTemp.createTemp('raf3');
       File file = new File('${directory.path}/file.txt');
       expect(await file.exists(), isFalse);
       // Attempt to open for writing. This will succeed.
@@ -274,8 +263,7 @@ tests(Application application, String url) {
       await raf.close();
     });
     test('RandomAccessFile Write Length Truncate Length', () async {
-      Directory directory =
-          await Directory.systemTemp.createTemp('raf4');
+      Directory directory = await Directory.systemTemp.createTemp('raf4');
       File file = new File('${directory.path}/file.txt');
       expect(await file.exists(), isFalse);
       // Attempt to open for writing. This will succeed.
@@ -285,7 +273,6 @@ tests(Application application, String url) {
 
       // Write payload into file.
       const String payload = 'Hello Mojo';
-      final List<int> payloadBytes = payload.codeUnits;
       await raf.writeString(payload);
       expect(await raf.position(), payload.length);
       expect(await raf.length(), payload.length);
@@ -296,8 +283,7 @@ tests(Application application, String url) {
       await raf.close();
     });
     test('RandomAccessFile WriteFrom with offset', () async {
-      Directory directory =
-          await Directory.systemTemp.createTemp('raf5');
+      Directory directory = await Directory.systemTemp.createTemp('raf5');
       File file = new File('${directory.path}/file.txt');
       expect(await file.exists(), isFalse);
       // Attempt to open for writing. This will succeed.
@@ -326,7 +312,7 @@ tests(Application application, String url) {
       try {
         await raf.readByte();
         fail("Should not be able to read anymore bytes.");
-      } on FileSystemException catch (e) {
+      } on FileSystemException {
         exceptionCaught = true;
       }
       expect(exceptionCaught, true);
@@ -334,8 +320,7 @@ tests(Application application, String url) {
       await raf.close();
     });
     test('File WriteAsString ReadAsString', () async {
-      Directory directory =
-          await Directory.systemTemp.createTemp('raf6');
+      Directory directory = await Directory.systemTemp.createTemp('raf6');
       File file = new File('${directory.path}/file.txt');
       expect(await file.exists(), isFalse);
       String payload = 'HELLO WORLD';
@@ -345,8 +330,7 @@ tests(Application application, String url) {
       expect(readBack, payload);
     });
     test('File WriteAsString ReadAsLines', () async {
-      Directory directory =
-          await Directory.systemTemp.createTemp('raf7');
+      Directory directory = await Directory.systemTemp.createTemp('raf7');
       File file = new File('${directory.path}/file.txt');
       expect(await file.exists(), isFalse);
       String payload = 'HELLO\nWORLD';
@@ -358,8 +342,7 @@ tests(Application application, String url) {
       expect(readBack[1], 'WORLD');
     });
     test('RandomAccessFile Append', () async {
-      Directory directory =
-          await Directory.systemTemp.createTemp('raf8');
+      Directory directory = await Directory.systemTemp.createTemp('raf8');
       File file = new File('${directory.path}/file.txt');
       expect(await file.exists(), isFalse);
       String payload = 'HELLO ';
@@ -372,8 +355,7 @@ tests(Application application, String url) {
       expect(readBack, 'HELLO EARTH');
     });
     test('File Copy', () async {
-      Directory directory =
-          await Directory.systemTemp.createTemp('raf9');
+      Directory directory = await Directory.systemTemp.createTemp('raf9');
       File file = new File('${directory.path}/file.txt');
       File copy = new File('${directory.path}/copy.txt');
       expect(await file.exists(), isFalse);

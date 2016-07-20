@@ -36,7 +36,6 @@ class _CompositorCreateSceneParams extends bindings.Struct {
       return null;
     }
     _CompositorCreateSceneParams result = new _CompositorCreateSceneParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -97,7 +96,6 @@ class CompositorCreateSceneResponseParams extends bindings.Struct {
       return null;
     }
     CompositorCreateSceneResponseParams result = new CompositorCreateSceneResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -157,7 +155,6 @@ class _CompositorCreateRendererParams extends bindings.Struct {
       return null;
     }
     _CompositorCreateRendererParams result = new _CompositorCreateRendererParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

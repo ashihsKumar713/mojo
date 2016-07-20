@@ -2,7 +2,6 @@
 // See $MOJO_SDK/tools/bindings/mojom_bindings_generator.py.
 
 library keyboard_mojom;
-import 'dart:async';
 import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
@@ -147,7 +146,6 @@ class CompletionData extends bindings.Struct {
       return null;
     }
     CompletionData result = new CompletionData();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -230,7 +228,6 @@ class CorrectionData extends bindings.Struct {
       return null;
     }
     CorrectionData result = new CorrectionData();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -301,7 +298,6 @@ class _KeyboardClientCommitCompletionParams extends bindings.Struct {
       return null;
     }
     _KeyboardClientCommitCompletionParams result = new _KeyboardClientCommitCompletionParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -357,7 +353,6 @@ class _KeyboardClientCommitCorrectionParams extends bindings.Struct {
       return null;
     }
     _KeyboardClientCommitCorrectionParams result = new _KeyboardClientCommitCorrectionParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -415,7 +410,6 @@ class _KeyboardClientCommitTextParams extends bindings.Struct {
       return null;
     }
     _KeyboardClientCommitTextParams result = new _KeyboardClientCommitTextParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -480,7 +474,6 @@ class _KeyboardClientDeleteSurroundingTextParams extends bindings.Struct {
       return null;
     }
     _KeyboardClientDeleteSurroundingTextParams result = new _KeyboardClientDeleteSurroundingTextParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -545,7 +538,6 @@ class _KeyboardClientSetComposingRegionParams extends bindings.Struct {
       return null;
     }
     _KeyboardClientSetComposingRegionParams result = new _KeyboardClientSetComposingRegionParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -610,7 +602,6 @@ class _KeyboardClientSetComposingTextParams extends bindings.Struct {
       return null;
     }
     _KeyboardClientSetComposingTextParams result = new _KeyboardClientSetComposingTextParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -675,7 +666,6 @@ class _KeyboardClientSetSelectionParams extends bindings.Struct {
       return null;
     }
     _KeyboardClientSetSelectionParams result = new _KeyboardClientSetSelectionParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -738,7 +728,6 @@ class _KeyboardClientSubmitParams extends bindings.Struct {
       return null;
     }
     _KeyboardClientSubmitParams result = new _KeyboardClientSubmitParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -799,7 +788,6 @@ class _KeyboardServiceShowParams extends bindings.Struct {
       return null;
     }
     _KeyboardServiceShowParams result = new _KeyboardServiceShowParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -862,8 +850,7 @@ class _KeyboardServiceShowByRequestParams extends bindings.Struct {
       return null;
     }
     _KeyboardServiceShowByRequestParams result = new _KeyboardServiceShowByRequestParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -907,8 +894,7 @@ class _KeyboardServiceHideParams extends bindings.Struct {
       return null;
     }
     _KeyboardServiceHideParams result = new _KeyboardServiceHideParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -954,7 +940,6 @@ class _KeyboardServiceSetTextParams extends bindings.Struct {
       return null;
     }
     _KeyboardServiceSetTextParams result = new _KeyboardServiceSetTextParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1011,7 +996,6 @@ class _KeyboardServiceSetSelectionParams extends bindings.Struct {
       return null;
     }
     _KeyboardServiceSetSelectionParams result = new _KeyboardServiceSetSelectionParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1076,7 +1060,6 @@ class _KeyboardServiceFactoryCreateKeyboardServiceParams extends bindings.Struct
       return null;
     }
     _KeyboardServiceFactoryCreateKeyboardServiceParams result = new _KeyboardServiceFactoryCreateKeyboardServiceParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

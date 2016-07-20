@@ -34,7 +34,6 @@ class _EchoEchoStringParams extends bindings.Struct {
       return null;
     }
     _EchoEchoStringParams result = new _EchoEchoStringParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -89,7 +88,6 @@ class EchoEchoStringResponseParams extends bindings.Struct {
       return null;
     }
     EchoEchoStringResponseParams result = new EchoEchoStringResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -409,7 +407,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/5JggAABKN0BpdHFLZD4jEDMAeXLALEIEOfmZ+VbWaVWJOYW5KQWW1m5JmfkY1OvDMTSQBwSGeAa7+0aaQXSqAfTpwfThmG/Aw77STGPEaqfGUm/BpRWgNIBjBA6A0ozoNkPC4cZUHoBlP4PBRsYsAN0dytgCWd2JHFhIOYG4uDUorLM5FS/xNxUosKbB4hZgBjGlwJiIah6LMGCEc6cQMwF0g/EtkCsX1pcpJ+Tn5yYo5+en5+ek6qfkZ+bql9VlKgPMtJIv7goWR9mrn4q0FwwoQeSzCXCvej2w/g80PDCFX7o8XYBSj9gwh5vMGCAxgfFGTZxGBCChQfQvcElRZl56djDDaSGiYrhhp4+YP67wUi8v0DAAoe/YOkC4S/dotTC0tTiEuz+gwFq+Q89Ph1wlDM3GIgDxMazBg79vEDMCsRliTmlqTjiV5TK/mdASuPo4SGB5DZGJPW0ThfS0LIHJV0UF+TnFaeOpgsc6UJjEKQLQAAAAP//GmHdL8gHAAA=";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/5JggAABKN0BpdHFLZD4jEDMAeXLALEIEOfmZ+VbWaVWJOYW5KQWW1m5JmfkY1OvDMTSQBwSGeAa7+0aaQXSqAfTpwfThmG/Aw77STGPEaqfGUm/BpRWgNIRjBC6AEozoNkPC4cZUHoBlP4PBRsYsAN0dytgCWd2JHFhIOYG4uDUorLM5FS/xNxUosKbB4hZgBjGlwJiIah6LMGCEc6cQMwFxN5A7AzE+qXFRfo5+cmJOfrp+fnpOan6Gfm5qfqZiXk5+ZnJ+iWF+iCT9YuLkvVhpuunAk0HE3oguVyi3I3uDhifBxpuuMIRPf5uQOkfTNjjDwYM0PiguMMmDgNC0HABuTe4pCgzLx17+IHUMNEg/NDTC8yfLxiJ9x8IWODwHyydIPynW5RaWJpaXILdnzBAbX+ix68DjvLnAQNxgNh418ChnxeIWYG4LDGnNBVHfIvSKBwYkNI+erhIILmREUk9rdOJNLRsQkknxQX5ecWpo+mEQDrRGETpBBAAAP//b0avY/gHAAA=";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

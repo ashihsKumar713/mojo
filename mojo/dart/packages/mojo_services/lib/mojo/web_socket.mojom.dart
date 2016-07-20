@@ -2,7 +2,6 @@
 // See $MOJO_SDK/tools/bindings/mojom_bindings_generator.py.
 
 library web_socket_mojom;
-import 'dart:async';
 import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
@@ -37,7 +36,6 @@ class _WebSocketConnectParams extends bindings.Struct {
       return null;
     }
     _WebSocketConnectParams result = new _WebSocketConnectParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -138,7 +136,6 @@ class _WebSocketSendParams extends bindings.Struct {
       return null;
     }
     _WebSocketSendParams result = new _WebSocketSendParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -213,7 +210,6 @@ class _WebSocketFlowControlParams extends bindings.Struct {
       return null;
     }
     _WebSocketFlowControlParams result = new _WebSocketFlowControlParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -270,7 +266,6 @@ class _WebSocketCloseParams extends bindings.Struct {
       return null;
     }
     _WebSocketCloseParams result = new _WebSocketCloseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -337,7 +332,6 @@ class _WebSocketClientDidConnectParams extends bindings.Struct {
       return null;
     }
     _WebSocketClientDidConnectParams result = new _WebSocketClientDidConnectParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -409,7 +403,6 @@ class _WebSocketClientDidReceiveDataParams extends bindings.Struct {
       return null;
     }
     _WebSocketClientDidReceiveDataParams result = new _WebSocketClientDidReceiveDataParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -484,7 +477,6 @@ class _WebSocketClientDidReceiveFlowControlParams extends bindings.Struct {
       return null;
     }
     _WebSocketClientDidReceiveFlowControlParams result = new _WebSocketClientDidReceiveFlowControlParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -539,7 +531,6 @@ class _WebSocketClientDidFailParams extends bindings.Struct {
       return null;
     }
     _WebSocketClientDidFailParams result = new _WebSocketClientDidFailParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -598,7 +589,6 @@ class _WebSocketClientDidCloseParams extends bindings.Struct {
       return null;
     }
     _WebSocketClientDidCloseParams result = new _WebSocketClientDidCloseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

@@ -2,7 +2,6 @@
 // See $MOJO_SDK/tools/bindings/mojom_bindings_generator.py.
 
 library media_sink_mojom;
-import 'dart:async';
 import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
@@ -31,7 +30,6 @@ class _MediaSinkGetPacketConsumerParams extends bindings.Struct {
       return null;
     }
     _MediaSinkGetPacketConsumerParams result = new _MediaSinkGetPacketConsumerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -85,7 +83,6 @@ class _MediaSinkGetTimelineControlPointParams extends bindings.Struct {
       return null;
     }
     _MediaSinkGetTimelineControlPointParams result = new _MediaSinkGetTimelineControlPointParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

@@ -29,8 +29,7 @@ class _MediaTypeConverterGetOutputTypeParams extends bindings.Struct {
       return null;
     }
     _MediaTypeConverterGetOutputTypeParams result = new _MediaTypeConverterGetOutputTypeParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -76,7 +75,6 @@ class MediaTypeConverterGetOutputTypeResponseParams extends bindings.Struct {
       return null;
     }
     MediaTypeConverterGetOutputTypeResponseParams result = new MediaTypeConverterGetOutputTypeResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -132,7 +130,6 @@ class _MediaTypeConverterGetPacketConsumerParams extends bindings.Struct {
       return null;
     }
     _MediaTypeConverterGetPacketConsumerParams result = new _MediaTypeConverterGetPacketConsumerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -186,7 +183,6 @@ class _MediaTypeConverterGetPacketProducerParams extends bindings.Struct {
       return null;
     }
     _MediaTypeConverterGetPacketProducerParams result = new _MediaTypeConverterGetPacketProducerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:mojo/application.dart';
-import 'package:mojo/bindings.dart';
 import 'package:mojo/core.dart';
 import 'package:_mojo_for_test_only/test/echo_service.mojom.dart';
 
@@ -14,7 +11,8 @@ class DummyEchoServiceImpl implements EchoService {
   dynamic echoString(String value, [Function responseFactory]) => null;
 
   dynamic delayedEchoString(String value, int millis,
-      [Function responseFactory]) => null;
+          [Function responseFactory]) =>
+      null;
 
   void swap() {}
 
@@ -27,9 +25,9 @@ class EchoApplication extends Application {
   @override
   void acceptConnection(String requestorUrl, String resolvedUrl,
       ApplicationConnection connection) {
-    connection.provideService(EchoService.serviceName,
-      (endpoint) => new DummyEchoServiceImpl(),
-      description: EchoService.serviceDescription);
+    connection.provideService(
+        EchoService.serviceName, (endpoint) => new DummyEchoServiceImpl(),
+        description: EchoService.serviceDescription);
   }
 }
 

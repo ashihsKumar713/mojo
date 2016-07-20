@@ -2,7 +2,6 @@
 // See $MOJO_SDK/tools/bindings/mojom_bindings_generator.py.
 
 library speech_recognizer_mojom;
-import 'dart:async';
 import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
@@ -132,7 +131,6 @@ class UtteranceCandidate extends bindings.Struct {
       return null;
     }
     UtteranceCandidate result = new UtteranceCandidate();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -195,7 +193,6 @@ class _SpeechRecognizerListenerOnRecognizerErrorParams extends bindings.Struct {
       return null;
     }
     _SpeechRecognizerListenerOnRecognizerErrorParams result = new _SpeechRecognizerListenerOnRecognizerErrorParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -256,7 +253,6 @@ class _SpeechRecognizerListenerOnResultsParams extends bindings.Struct {
       return null;
     }
     _SpeechRecognizerListenerOnResultsParams result = new _SpeechRecognizerListenerOnResultsParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -335,7 +331,6 @@ class _SpeechRecognizerListenerOnSoundLevelChangedParams extends bindings.Struct
       return null;
     }
     _SpeechRecognizerListenerOnSoundLevelChangedParams result = new _SpeechRecognizerListenerOnSoundLevelChangedParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -390,7 +385,6 @@ class _SpeechRecognizerServiceListenParams extends bindings.Struct {
       return null;
     }
     _SpeechRecognizerServiceListenParams result = new _SpeechRecognizerServiceListenParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -442,8 +436,7 @@ class _SpeechRecognizerServiceStopListeningParams extends bindings.Struct {
       return null;
     }
     _SpeechRecognizerServiceStopListeningParams result = new _SpeechRecognizerServiceStopListeningParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 

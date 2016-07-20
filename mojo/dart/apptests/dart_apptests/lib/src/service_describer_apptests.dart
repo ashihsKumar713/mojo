@@ -8,8 +8,6 @@ import 'dart:async';
 
 import 'package:mojo_apptest/apptest.dart';
 import 'package:mojo/application.dart';
-import 'package:mojo/bindings.dart';
-import 'package:mojo/core.dart';
 import 'package:mojo/mojo/bindings/types/mojom_types.mojom.dart' as mojom_types;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart'
     as service_describer;
@@ -25,14 +23,14 @@ tests(Application application, String url) {
     test('PingPong Service Verification', () async {
       var serviceDescriber =
           new service_describer.ServiceDescriberInterfaceRequest();
-      serviceDescriber.ctrl.errorFuture.then(
-          (v) => fail('There was an error $v'));
+      serviceDescriber.ctrl.errorFuture
+          .then((v) => fail('There was an error $v'));
       application.connectToService("mojo:dart_pingpong", serviceDescriber);
 
       var serviceDescription =
           new service_describer.ServiceDescriptionInterfaceRequest();
-      serviceDescription.ctrl.errorFuture.then(
-          (v) => fail('There was an error $v'));
+      serviceDescription.ctrl.errorFuture
+          .then((v) => fail('There was an error $v'));
 
       serviceDescriber.describeService(
           "test::PingPongService", serviceDescription);
@@ -47,13 +45,14 @@ tests(Application application, String url) {
 
       // Top-level Mojom Interfaces must match.
       var c = new Completer();
-      serviceDescription.getTopLevelInterface(
-          (mojom_types.MojomInterface iface) {
+      serviceDescription
+          .getTopLevelInterface((mojom_types.MojomInterface iface) {
         c.complete(iface);
       });
 
-      mojom_types.MojomInterface interfaceA =
-          (await serviceDescription.responseOrError(c.future));
+      mojom_types.MojomInterface interfaceA = await (serviceDescription
+              as service_describer.ServiceDescriptionProxy)
+          .responseOrError(c.future);
 
       serviceDescription2.getTopLevelInterface(sdValueAssign);
       mojom_types.MojomInterface interfaceB = sdValue;
@@ -73,9 +72,12 @@ tests(Application application, String url) {
         c.complete(type);
       });
       mojom_types.MojomInterface pingPongClientInterface =
-          (await serviceDescription.responseOrError(c.future)).interfaceType;
-      expect(pingPongClientInterface.declData.shortName,
-          equals("PingPongClient"));
+          (await (serviceDescription
+                      as service_describer.ServiceDescriptionProxy)
+                  .responseOrError(c.future))
+              .interfaceType;
+      expect(
+          pingPongClientInterface.declData.shortName, equals("PingPongClient"));
 
       // Check that the mojom type definitions match between mappings.
       // For simplicity, check in a shallow manner.
@@ -85,8 +87,9 @@ tests(Application application, String url) {
         c.complete(definitions);
       });
 
-      var actualDescriptions =
-          (await serviceDescription.responseOrError(c.future));
+      var actualDescriptions = await (serviceDescription
+              as service_describer.ServiceDescriptionProxy)
+          .responseOrError(c.future);
       serviceDescription2.getAllTypeDefinitions(sdValueAssign);
       var expectedDescriptions = sdValue;
       actualDescriptions.keys.forEach((String key) {

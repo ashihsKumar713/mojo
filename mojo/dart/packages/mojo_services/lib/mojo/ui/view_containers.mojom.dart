@@ -32,7 +32,6 @@ class ViewInfo extends bindings.Struct {
       return null;
     }
     ViewInfo result = new ViewInfo();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -88,7 +87,6 @@ class _ViewContainerSetListenerParams extends bindings.Struct {
       return null;
     }
     _ViewContainerSetListenerParams result = new _ViewContainerSetListenerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -144,7 +142,6 @@ class _ViewContainerAddChildParams extends bindings.Struct {
       return null;
     }
     _ViewContainerAddChildParams result = new _ViewContainerAddChildParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -207,7 +204,6 @@ class _ViewContainerRemoveChildParams extends bindings.Struct {
       return null;
     }
     _ViewContainerRemoveChildParams result = new _ViewContainerRemoveChildParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -272,7 +268,6 @@ class _ViewContainerSetChildPropertiesParams extends bindings.Struct {
       return null;
     }
     _ViewContainerSetChildPropertiesParams result = new _ViewContainerSetChildPropertiesParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -344,7 +339,6 @@ class _ViewContainerFlushChildrenParams extends bindings.Struct {
       return null;
     }
     _ViewContainerFlushChildrenParams result = new _ViewContainerFlushChildrenParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -401,7 +395,6 @@ class _ViewContainerListenerOnChildAttachedParams extends bindings.Struct {
       return null;
     }
     _ViewContainerListenerOnChildAttachedParams result = new _ViewContainerListenerOnChildAttachedParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -463,8 +456,7 @@ class ViewContainerListenerOnChildAttachedResponseParams extends bindings.Struct
       return null;
     }
     ViewContainerListenerOnChildAttachedResponseParams result = new ViewContainerListenerOnChildAttachedResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -510,7 +502,6 @@ class _ViewContainerListenerOnChildUnavailableParams extends bindings.Struct {
       return null;
     }
     _ViewContainerListenerOnChildUnavailableParams result = new _ViewContainerListenerOnChildUnavailableParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -563,8 +554,7 @@ class ViewContainerListenerOnChildUnavailableResponseParams extends bindings.Str
       return null;
     }
     ViewContainerListenerOnChildUnavailableResponseParams result = new ViewContainerListenerOnChildUnavailableResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 

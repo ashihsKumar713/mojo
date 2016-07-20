@@ -2,7 +2,6 @@
 // See $MOJO_SDK/tools/bindings/mojom_bindings_generator.py.
 
 library application_mojom;
-import 'dart:async';
 import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
@@ -35,7 +34,6 @@ class _ApplicationInitializeParams extends bindings.Struct {
       return null;
     }
     _ApplicationInitializeParams result = new _ApplicationInitializeParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -124,7 +122,6 @@ class _ApplicationAcceptConnectionParams extends bindings.Struct {
       return null;
     }
     _ApplicationAcceptConnectionParams result = new _ApplicationAcceptConnectionParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -190,8 +187,7 @@ class _ApplicationRequestQuitParams extends bindings.Struct {
       return null;
     }
     _ApplicationRequestQuitParams result = new _ApplicationRequestQuitParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 

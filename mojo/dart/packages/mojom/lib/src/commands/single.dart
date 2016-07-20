@@ -4,15 +4,11 @@
 
 library mojom.command.single;
 
-import 'dart:async';
 import 'dart:io';
 
-import 'package:args/args.dart';
-import 'package:args/command_runner.dart';
 import 'package:mojom/src/commands/mojom_command.dart';
 import 'package:mojom/src/generate.dart';
 import 'package:mojom/src/utils.dart';
-import 'package:path/path.dart' as path;
 
 class SinglePackageCommand extends MojomCommand {
   String get name => 'single';

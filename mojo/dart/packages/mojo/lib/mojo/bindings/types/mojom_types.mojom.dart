@@ -222,7 +222,6 @@ class StringType extends bindings.Struct {
       return null;
     }
     StringType result = new StringType();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -352,7 +351,6 @@ class HandleType extends bindings.Struct {
       return null;
     }
     HandleType result = new HandleType();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -423,7 +421,6 @@ class ArrayType extends bindings.Struct {
       return null;
     }
     ArrayType result = new ArrayType();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -502,7 +499,6 @@ class MapType extends bindings.Struct {
       return null;
     }
     MapType result = new MapType();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -587,7 +583,6 @@ class TypeReference extends bindings.Struct {
       return null;
     }
     TypeReference result = new TypeReference();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -676,7 +671,6 @@ class StructField extends bindings.Struct {
       return null;
     }
     StructField result = new StructField();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -774,8 +768,7 @@ class DefaultKeyword extends bindings.Struct {
       return null;
     }
     DefaultKeyword result = new DefaultKeyword();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -825,7 +818,6 @@ class StructVersion extends bindings.Struct {
       return null;
     }
     StructVersion result = new StructVersion();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -900,7 +892,6 @@ class MojomStruct extends bindings.Struct {
       return null;
     }
     MojomStruct result = new MojomStruct();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1010,7 +1001,6 @@ class UnionField extends bindings.Struct {
       return null;
     }
     UnionField result = new UnionField();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1088,7 +1078,6 @@ class MojomUnion extends bindings.Struct {
       return null;
     }
     MojomUnion result = new MojomUnion();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1172,7 +1161,6 @@ class EnumValue extends bindings.Struct {
       return null;
     }
     EnumValue result = new EnumValue();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1246,7 +1234,6 @@ class MojomEnum extends bindings.Struct {
       return null;
     }
     MojomEnum result = new MojomEnum();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1334,7 +1321,6 @@ class MojomMethod extends bindings.Struct {
       return null;
     }
     MojomMethod result = new MojomMethod();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1430,7 +1416,6 @@ class MojomInterface extends bindings.Struct {
       return null;
     }
     MojomInterface result = new MojomInterface();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1550,7 +1535,6 @@ class ConstantReference extends bindings.Struct {
       return null;
     }
     ConstantReference result = new ConstantReference();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1617,7 +1601,6 @@ class EnumValueReference extends bindings.Struct {
       return null;
     }
     EnumValueReference result = new EnumValueReference();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1694,7 +1677,6 @@ class DeclaredConstant extends bindings.Struct {
       return null;
     }
     DeclaredConstant result = new DeclaredConstant();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1784,7 +1766,6 @@ class Attribute extends bindings.Struct {
       return null;
     }
     Attribute result = new Attribute();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1865,7 +1846,6 @@ class DeclarationData extends bindings.Struct {
       return null;
     }
     DeclarationData result = new DeclarationData();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -2000,7 +1980,6 @@ class SourceFileInfo extends bindings.Struct {
       return null;
     }
     SourceFileInfo result = new SourceFileInfo();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -2073,7 +2052,6 @@ class ContainedDeclarations extends bindings.Struct {
       return null;
     }
     ContainedDeclarations result = new ContainedDeclarations();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -2172,7 +2150,6 @@ class RuntimeTypeInfo extends bindings.Struct {
       return null;
     }
     RuntimeTypeInfo result = new RuntimeTypeInfo();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

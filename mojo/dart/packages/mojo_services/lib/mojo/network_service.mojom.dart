@@ -40,7 +40,6 @@ class _NetworkServiceCreateUrlLoaderParams extends bindings.Struct {
       return null;
     }
     _NetworkServiceCreateUrlLoaderParams result = new _NetworkServiceCreateUrlLoaderParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -94,7 +93,6 @@ class _NetworkServiceGetCookieStoreParams extends bindings.Struct {
       return null;
     }
     _NetworkServiceGetCookieStoreParams result = new _NetworkServiceGetCookieStoreParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -148,7 +146,6 @@ class _NetworkServiceCreateWebSocketParams extends bindings.Struct {
       return null;
     }
     _NetworkServiceCreateWebSocketParams result = new _NetworkServiceCreateWebSocketParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -204,7 +201,6 @@ class _NetworkServiceCreateTcpBoundSocketParams extends bindings.Struct {
       return null;
     }
     _NetworkServiceCreateTcpBoundSocketParams result = new _NetworkServiceCreateTcpBoundSocketParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -268,7 +264,6 @@ class NetworkServiceCreateTcpBoundSocketResponseParams extends bindings.Struct {
       return null;
     }
     NetworkServiceCreateTcpBoundSocketResponseParams result = new NetworkServiceCreateTcpBoundSocketResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -339,7 +334,6 @@ class _NetworkServiceCreateTcpConnectedSocketParams extends bindings.Struct {
       return null;
     }
     _NetworkServiceCreateTcpConnectedSocketParams result = new _NetworkServiceCreateTcpConnectedSocketParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -417,7 +411,6 @@ class NetworkServiceCreateTcpConnectedSocketResponseParams extends bindings.Stru
       return null;
     }
     NetworkServiceCreateTcpConnectedSocketResponseParams result = new NetworkServiceCreateTcpConnectedSocketResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -482,7 +475,6 @@ class _NetworkServiceCreateUdpSocketParams extends bindings.Struct {
       return null;
     }
     _NetworkServiceCreateUdpSocketParams result = new _NetworkServiceCreateUdpSocketParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -538,7 +530,6 @@ class _NetworkServiceCreateHttpServerParams extends bindings.Struct {
       return null;
     }
     _NetworkServiceCreateHttpServerParams result = new _NetworkServiceCreateHttpServerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -602,7 +593,6 @@ class NetworkServiceCreateHttpServerResponseParams extends bindings.Struct {
       return null;
     }
     NetworkServiceCreateHttpServerResponseParams result = new NetworkServiceCreateHttpServerResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -667,7 +657,6 @@ class _NetworkServiceRegisterUrlLoaderInterceptorParams extends bindings.Struct 
       return null;
     }
     _NetworkServiceRegisterUrlLoaderInterceptorParams result = new _NetworkServiceRegisterUrlLoaderInterceptorParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -721,7 +710,6 @@ class _NetworkServiceCreateHostResolverParams extends bindings.Struct {
       return null;
     }
     _NetworkServiceCreateHostResolverParams result = new _NetworkServiceCreateHostResolverParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

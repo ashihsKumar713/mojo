@@ -2,7 +2,6 @@
 // See $MOJO_SDK/tools/bindings/mojom_bindings_generator.py.
 
 library dart_to_cpp_mojom;
-import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
@@ -68,7 +67,6 @@ class EchoArgs extends bindings.Struct {
       return null;
     }
     EchoArgs result = new EchoArgs();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -260,7 +258,6 @@ class EchoArgsList extends bindings.Struct {
       return null;
     }
     EchoArgsList result = new EchoArgsList();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -321,8 +318,7 @@ class _CppSideStartTestParams extends bindings.Struct {
       return null;
     }
     _CppSideStartTestParams result = new _CppSideStartTestParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -366,8 +362,7 @@ class _CppSideTestFinishedParams extends bindings.Struct {
       return null;
     }
     _CppSideTestFinishedParams result = new _CppSideTestFinishedParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -411,8 +406,7 @@ class _CppSidePingResponseParams extends bindings.Struct {
       return null;
     }
     _CppSidePingResponseParams result = new _CppSidePingResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -458,7 +452,6 @@ class _CppSideEchoResponseParams extends bindings.Struct {
       return null;
     }
     _CppSideEchoResponseParams result = new _CppSideEchoResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -513,7 +506,6 @@ class _DartSideSetClientParams extends bindings.Struct {
       return null;
     }
     _DartSideSetClientParams result = new _DartSideSetClientParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -565,8 +557,7 @@ class _DartSidePingParams extends bindings.Struct {
       return null;
     }
     _DartSidePingParams result = new _DartSidePingParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -614,7 +605,6 @@ class _DartSideEchoParams extends bindings.Struct {
       return null;
     }
     _DartSideEchoParams result = new _DartSideEchoParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1257,7 +1247,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/9yaPWzbRhTHSUqyJVmy5a9EbdNUBRLULWrTcYJA6KQideGiGYwmKJIuCi1dJBYSqZJUkXbK2LGjx4wdM3bsmLFjxnTLmCVAtvQufpTP57vTiVCogwg8nBhezHs//u/du4+qcXJVoNyFkv33uMwzJVvvOZRb2LLYanDfgPIBlI+hvILtEra79w/3m9/v3/+q7QRRM/KbrcFg59ZgcMdtI1LvKraPRfW+wb+horTefqvrfx10Qvz8c2yfjqt32w0jaOcB+EP8zGCrU36T++dLp/cmticXz95vbZ9yMSguo8s8e9tgHsffJX7vW7gODP61gm0RW4zwI/x7HZsA77nvSDgWsR1h+wmbPQwDu+e3nJ7d8f1OD9ldv4/s3wPH7vs/+3t2GLTe/bLJG+yh50YRCqPQRv0j1G6joEluUWDTDSD1+3wd1Sh9Ee71H2/n3r54nTP+e50zsbH6OrBOykH2pDxe4PN+xXAif1fGm623K+C9iq2A7U6E/buLRrph/foMm5Ui1xrTjldMOc7vWGd1gd8fgO8jv7cD9MtQ7H98peV/3jjbD9m4ZTDxbJxe3mlQhRuuZ0r0soGtROIPbv23rueGXdTm8fpizvRyCXyn/aYlM296IfFKlZuloJdD1+v8gMKB74WIx2t7TvVC+z3PejEn0EtGQS8klZHpZUcTvQys6eqF9lsnvbA6aTB5HXlOBPDGULtUeNG6Y68S5FE9l89nB5imrQ9DkA/SuqZT9EnzeVl/Nan3ppWvV6At8VQm1rFgmnPuO13TJF/fgPlQjMiinmeo//cUKj3LKY6jE+p9bJ6Ools9F3miPHVPk7j4wJpynh77rVmerltcjOfPLZgj8/SxoUFcrArm+6rrKknj4EtBOFThbiqMRyTf4+ny+oz75UumVO2XKnn9POW1rD6sCXhZCvogQzqP0w1N9PEoM119EH910kcVOI/Gf1Mctw2I3dOM2yJem9jK2Lxh/zvcfCdy8QxAoJNyirwmHc/yCbjI4uoS5F9O0DFE/eaqRuNZnA/Hqbvqur4sXlnUPdtv4wHs3uZ08/m4abx8nmr2ue9RgPE8re9xjG0N25/w/mPg8QQC918Qz57C+vrf0KH/gXX2Z4sn5b8A/kUB8tgiFbiJf2XgvwxcV2D9Hhz/YxXetyaPJwspz49D9+YN3ncqwneeZRyRxddpx5FTHtf3eDyWNOGRlbR/Uh6WEo9rN3k8SprwyAjav5yAR0ZhnAndOnecKacc10Q8ipK4PSmPrII+hoL4sQyxftY8CoL2VxPwyCnx4MePFU145CXry5PyWFDiwY8fFU14LErWSSblsagQP4aC+LGqSTy1BO2vJeCRV1ivfNjznaj5q9MTrNetac7lSgIuBWUurvdQwGVdcy5bCbgUlbl4jifgsqEJF1Pgx24CLksSLmsw5rf94VEPnXYklsumJvFWxKWegEtJncuoI7FcLmjOpZGAS1mdy6gjsVwuasDFlKwjHSTgsqyQr3hOn7sPWU15H7Ii2H+g+VgS4Rwm4LOicO4ijALX6zSdIHB+43GK9+PSXm8zwQd2nUw076E5ZiUcv0zAsSLheAHmRn0Uhk4HNbuO1+6h8xw/BLaz0JuZgNO9BJxWJZzWIWduO5EzgsTRGzn/e3lGnKwx67Ik1nYF67J54PhmzH5Kg1mXPVTYT6GPhNTgnaJjIyzPyymvY7D7LY9Nvc4PeegRd1/qE/g9izj3Ps8PzXo/J+buRqgvOo9T0oB7Wvs5/wcAAP//rWXXIMgyAAA=";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/9yaP2zbxhfHScqyJdmyZdlO9Ps1TVUgQd2iNp0/CIROKlIXLprBaIIimRRGukgsKFIhqSLdMnbs6DFjx4wdO2bsmDHdMmYJkC29qx7l8/nudCJU6iACDyeaB/Pe57737t0da8boqkB5ACX796QsMCVb7xWUu9iWsNXhvgnlQyifQXkF2yVs9x4cH7a+P3zwVccJ41YctNqDwf7tweCu20Gk3lVsH4vqfYN/Q0VpvcN2L/g67Eb4+efYPp1U744bxdDOI/CH+JnD1qD8JvevVk/vTWzPL56939075WJQXMaXefa2yTxO+iV57we4jgz+tYFtBVuC8CP8ewubAO+5fiQcS9h60Gf2MAptL2g7nt0Ngq6H7F7QR7br+F7gtu34id0PfgrsKGyPfpD32EPfjWMUxZGN+o9Qp4PCFrlFoU03g9Tvs++vU/oi3Bs/3sl/eP0ub/z9Lm9iY/V1ZI3KwdKoPFnm837LcCL/V8abrXcg4L2JrYjtbow9u4fGumH9+gyblSHXOtOOt0w5ye9EZw2B3/8D38d+74XoyVDsf3Jl5X/BODsO2bhlMPFskl7+1aAKN1zPlOhlG9saiT+43d+6vhv1UIfH64sF08sl8J32m5bMoumFxCtVbpaCXo5dv/sDigaBHyEer70F1Qvt9yLrxZxCLzkFvZBURqaXfU30MrBmqxfab530wuqkyeR15DkRwHtD7VLhReuOvdYgj/JcPp99YJq1PgxBPkjrmk7Rp83nZePVpN6bVb5egbYkS5lEx4Jlzrl+uqZJvr4N66EEkUU9z1HtfgGVXuYV59Ep9T4xT0fxbc9FvihPva5JXHxozThPT/zWLE/XLS4m6+c2rJF5+tjWIC7WBOt91X2VtHHwjSAcqnA3FeYjku/xdHljzuPyDVOqjkuVvH6R8lpWH9YUvCwFfZApncfppib6eJqbrT6Ivzrpowacx/O/KY7bBsTuWcZtEa8dbGVs/rD/HW64E7t4BSDQSTlDXtPOZ4UUXGRxdRXyLyfsGqJxc1Wj+SzJh5PUXXVfXxavLOqeHbfJBHZ/Z7b5fNI0Xj5PNftcfxRhPs+qP07wO6rYfoP3nwCP5xC4f4d49gL21/+AAf0n7LO/XBmVfwH410XIY0tU4Cb+lYH/OnDdgP17cPzXTXhfVR5PljNeH0furZu8fipBP88zjsji66zjyCmPG9d5PFY14bEkaf+0PCwlHtdu8XisacIjJ2j/egoeOYV5JnIb3HmmnHFcE/EoSeL2tDyWFPQxFMSPdYj18+ZRFLS/loJHXokHP35saMKjINlfnpbHshIPfvyoaMJjRbJPMi2PFYX4MRTEj01N4qklaH89BY+Cwn7lYy9w4tbPjifYr6tqzuVKCi5FZS6u/1jAZUtzLrspuJSUufiOL+CyrQkXU+DHQQouqxIuVZjzO8HwkYdOBxLLZUeTeCvi0kjBZU2dy3ggsVwuaM6lmYJLWZ3LeCCxXC5qwMWU7CMdpeCyrpCv+E6few5Zy/gcsiI4f6D5WBLhHKfgs6Hw3UUUh67fbTlh6PzC45Scx2W932aCD+w+mWjdQ3NcknD8MgXHioTjBVgb9VEUOV3U6jl+x0PnOf4f2M5Db2YKTvdTcNqUcNqCnLnjxM4YEkdv5Pvfy3PiZE3Yl61Cu3j7sgXg+H7CeUqT2Zc9VjhPoT8JqcM7RZ+NsDwvZ7yPwZ63PDP1+n7IR0+551KfwO95xLn/8vuheZ/nJNzdGPV53OtQZ97cszrP+ScAAP//z5Ilg8gyAAA=";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

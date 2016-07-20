@@ -2,7 +2,6 @@
 // See $MOJO_SDK/tools/bindings/mojom_bindings_generator.py.
 
 library renderers_mojom;
-import 'dart:async';
 import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
@@ -37,7 +36,6 @@ class _RendererSetRootSceneParams extends bindings.Struct {
       return null;
     }
     _RendererSetRootSceneParams result = new _RendererSetRootSceneParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -108,8 +106,7 @@ class _RendererClearRootSceneParams extends bindings.Struct {
       return null;
     }
     _RendererClearRootSceneParams result = new _RendererClearRootSceneParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -155,7 +152,6 @@ class _RendererGetSchedulerParams extends bindings.Struct {
       return null;
     }
     _RendererGetSchedulerParams result = new _RendererGetSchedulerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -209,7 +205,6 @@ class _RendererGetHitTesterParams extends bindings.Struct {
       return null;
     }
     _RendererGetHitTesterParams result = new _RendererGetHitTesterParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

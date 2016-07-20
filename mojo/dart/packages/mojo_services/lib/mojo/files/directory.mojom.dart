@@ -29,8 +29,7 @@ class _DirectoryReadParams extends bindings.Struct {
       return null;
     }
     _DirectoryReadParams result = new _DirectoryReadParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -78,7 +77,6 @@ class DirectoryReadResponseParams extends bindings.Struct {
       return null;
     }
     DirectoryReadResponseParams result = new DirectoryReadResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -161,8 +159,7 @@ class _DirectoryStatParams extends bindings.Struct {
       return null;
     }
     _DirectoryStatParams result = new _DirectoryStatParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -210,7 +207,6 @@ class DirectoryStatResponseParams extends bindings.Struct {
       return null;
     }
     DirectoryStatResponseParams result = new DirectoryStatResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -280,7 +276,6 @@ class _DirectoryTouchParams extends bindings.Struct {
       return null;
     }
     _DirectoryTouchParams result = new _DirectoryTouchParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -345,7 +340,6 @@ class DirectoryTouchResponseParams extends bindings.Struct {
       return null;
     }
     DirectoryTouchResponseParams result = new DirectoryTouchResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -408,7 +402,6 @@ class _DirectoryOpenFileParams extends bindings.Struct {
       return null;
     }
     _DirectoryOpenFileParams result = new _DirectoryOpenFileParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -476,7 +469,6 @@ class DirectoryOpenFileResponseParams extends bindings.Struct {
       return null;
     }
     DirectoryOpenFileResponseParams result = new DirectoryOpenFileResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -539,7 +531,6 @@ class _DirectoryOpenDirectoryParams extends bindings.Struct {
       return null;
     }
     _DirectoryOpenDirectoryParams result = new _DirectoryOpenDirectoryParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -607,7 +598,6 @@ class DirectoryOpenDirectoryResponseParams extends bindings.Struct {
       return null;
     }
     DirectoryOpenDirectoryResponseParams result = new DirectoryOpenDirectoryResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -668,7 +658,6 @@ class _DirectoryRenameParams extends bindings.Struct {
       return null;
     }
     _DirectoryRenameParams result = new _DirectoryRenameParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -731,7 +720,6 @@ class DirectoryRenameResponseParams extends bindings.Struct {
       return null;
     }
     DirectoryRenameResponseParams result = new DirectoryRenameResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -792,7 +780,6 @@ class _DirectoryDeleteParams extends bindings.Struct {
       return null;
     }
     _DirectoryDeleteParams result = new _DirectoryDeleteParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -855,7 +842,6 @@ class DirectoryDeleteResponseParams extends bindings.Struct {
       return null;
     }
     DirectoryDeleteResponseParams result = new DirectoryDeleteResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

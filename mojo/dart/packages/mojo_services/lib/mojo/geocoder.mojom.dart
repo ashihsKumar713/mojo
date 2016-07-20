@@ -32,8 +32,7 @@ class LocationType extends bindings.Struct {
       return null;
     }
     LocationType result = new LocationType();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -81,7 +80,6 @@ class Bounds extends bindings.Struct {
       return null;
     }
     Bounds result = new Bounds();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -154,7 +152,6 @@ class ComponentRestrictions extends bindings.Struct {
       return null;
     }
     ComponentRestrictions result = new ComponentRestrictions();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -245,7 +242,6 @@ class Options extends bindings.Struct {
       return null;
     }
     Options result = new Options();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -324,7 +320,6 @@ class Geometry extends bindings.Struct {
       return null;
     }
     Geometry result = new Geometry();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -413,7 +408,6 @@ class Result extends bindings.Struct {
       return null;
     }
     Result result = new Result();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -511,8 +505,7 @@ class Status extends bindings.Struct {
       return null;
     }
     Status result = new Status();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -560,7 +553,6 @@ class _GeocoderAddressToLocationParams extends bindings.Struct {
       return null;
     }
     _GeocoderAddressToLocationParams result = new _GeocoderAddressToLocationParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -626,7 +618,6 @@ class GeocoderAddressToLocationResponseParams extends bindings.Struct {
       return null;
     }
     GeocoderAddressToLocationResponseParams result = new GeocoderAddressToLocationResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -709,7 +700,6 @@ class _GeocoderLocationToAddressParams extends bindings.Struct {
       return null;
     }
     _GeocoderLocationToAddressParams result = new _GeocoderLocationToAddressParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -776,7 +766,6 @@ class GeocoderLocationToAddressResponseParams extends bindings.Struct {
       return null;
     }
     GeocoderLocationToAddressResponseParams result = new GeocoderLocationToAddressResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

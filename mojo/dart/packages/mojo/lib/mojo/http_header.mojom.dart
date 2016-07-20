@@ -29,7 +29,6 @@ class HttpHeader extends bindings.Struct {
       return null;
     }
     HttpHeader result = new HttpHeader();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

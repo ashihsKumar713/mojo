@@ -30,7 +30,6 @@ class _LocationServiceGetNextLocationParams extends bindings.Struct {
       return null;
     }
     _LocationServiceGetNextLocationParams result = new _LocationServiceGetNextLocationParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -89,7 +88,6 @@ class LocationServiceGetNextLocationResponseParams extends bindings.Struct {
       return null;
     }
     LocationServiceGetNextLocationResponseParams result = new LocationServiceGetNextLocationResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

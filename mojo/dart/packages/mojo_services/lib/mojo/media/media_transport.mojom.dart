@@ -31,7 +31,6 @@ class MediaPacketRegion extends bindings.Struct {
       return null;
     }
     MediaPacketRegion result = new MediaPacketRegion();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -101,7 +100,6 @@ class MediaPacket extends bindings.Struct {
       return null;
     }
     MediaPacket result = new MediaPacket();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -199,7 +197,6 @@ class _MediaPacketProducerConnectParams extends bindings.Struct {
       return null;
     }
     _MediaPacketProducerConnectParams result = new _MediaPacketProducerConnectParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -251,8 +248,7 @@ class MediaPacketProducerConnectResponseParams extends bindings.Struct {
       return null;
     }
     MediaPacketProducerConnectResponseParams result = new MediaPacketProducerConnectResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -296,8 +292,7 @@ class _MediaPacketProducerDisconnectParams extends bindings.Struct {
       return null;
     }
     _MediaPacketProducerDisconnectParams result = new _MediaPacketProducerDisconnectParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -343,7 +338,6 @@ class _MediaPacketConsumerSetBufferParams extends bindings.Struct {
       return null;
     }
     _MediaPacketConsumerSetBufferParams result = new _MediaPacketConsumerSetBufferParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -395,8 +389,7 @@ class MediaPacketConsumerSetBufferResponseParams extends bindings.Struct {
       return null;
     }
     MediaPacketConsumerSetBufferResponseParams result = new MediaPacketConsumerSetBufferResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -442,7 +435,6 @@ class _MediaPacketConsumerSendPacketParams extends bindings.Struct {
       return null;
     }
     _MediaPacketConsumerSendPacketParams result = new _MediaPacketConsumerSendPacketParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -498,7 +490,6 @@ class MediaPacketConsumerSendPacketResponseParams extends bindings.Struct {
       return null;
     }
     MediaPacketConsumerSendPacketResponseParams result = new MediaPacketConsumerSendPacketResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -555,8 +546,7 @@ class _MediaPacketConsumerPrimeParams extends bindings.Struct {
       return null;
     }
     _MediaPacketConsumerPrimeParams result = new _MediaPacketConsumerPrimeParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -600,8 +590,7 @@ class MediaPacketConsumerPrimeResponseParams extends bindings.Struct {
       return null;
     }
     MediaPacketConsumerPrimeResponseParams result = new MediaPacketConsumerPrimeResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -645,8 +634,7 @@ class _MediaPacketConsumerFlushParams extends bindings.Struct {
       return null;
     }
     _MediaPacketConsumerFlushParams result = new _MediaPacketConsumerFlushParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -690,8 +678,7 @@ class MediaPacketConsumerFlushResponseParams extends bindings.Struct {
       return null;
     }
     MediaPacketConsumerFlushResponseParams result = new MediaPacketConsumerFlushResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 

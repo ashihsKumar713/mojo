@@ -33,7 +33,6 @@ class Struct1 extends bindings.Struct {
       return null;
     }
     Struct1 result = new Struct1();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -88,7 +87,6 @@ class Struct2 extends bindings.Struct {
       return null;
     }
     Struct2 result = new Struct2();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -142,7 +140,6 @@ class Struct3 extends bindings.Struct {
       return null;
     }
     Struct3 result = new Struct3();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -198,7 +195,6 @@ class Struct4 extends bindings.Struct {
       return null;
     }
     Struct4 result = new Struct4();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -269,7 +265,6 @@ class Struct5 extends bindings.Struct {
       return null;
     }
     Struct5 result = new Struct5();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -340,7 +335,6 @@ class Struct6 extends bindings.Struct {
       return null;
     }
     Struct6 result = new Struct6();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -399,7 +393,6 @@ class StructOfNullables extends bindings.Struct {
       return null;
     }
     StructOfNullables result = new StructOfNullables();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -460,7 +453,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+yYzW7TQBDHY5cobmlFkEBK+ZBCy6EHlKX5UsQpl0qRkAAJDvQUNo6bLGziyutIqE/BkcfgyCNw5Mgj8AjcYDcZw3rZjUxCYge60mi8ztgZ/+eX2XVKudkogn8IXj0feUfxatzQmvk2twK3Fpx/Cf4t+PfgP4L/Av4b+ANut7i9OH120n18cvpo5L/2K6HHwsrzMJi44XHCuGrCuFrCuHrCuEbCuOYs7gG3+/Pinp49mVCKe9RjkY4F0F1IPpTqIOaf7fi8k4/PHSc+/7oTn3/ai8/bUOCyWneod8v+VXd5RDxFHHyH0cnpxzV4rqjI+/z4OjdD+X/jz4HrhUhvuKEJCxD1XUzRwPcH1ENDf+ShiwAjccsqYoE7PULnkx4lLiLj0AvOsOsx1CPjPhkPGBLfyxDzAoIpucAh8cddca7LprmwirjBKK5vLq5HS8mzkEs2THrmJD2FPzJcvw35EINe25BrVvQqSblbUp4m7jor4a5q5K5q0HF3A7i7Ij631sPdVW5boi/1qVavPWAvTb3ksSyH71bCYc3IYW3OOp11DvNr5LAY9bdppt1jVS+h7U6KepU1+cp1VdfDpPuiZXn+sBKe60ae6waeb2wAz/Yaed6FPt7HIdbpdRP0zQLP4ll+/t4V3v4P3htG3hsG3kuXvGt5P8ck0Om1Dz0iC7zb8vqWcd5Xs29uGnlvGni/swG8Wynsm3mmWr3u/iP75iPQs5Sfr1tH4fCVQbeIO+2fJXwccrut4VKNVPUup8xnGXiI8mob1qusvufdS3l/XZRYXOR9xFlAL2uJ95ED0DTt9cz6y+vVn/bV4gK620v01cOMcTqvr25JdfoRAAD//xj2NYbAFwAA";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+yYzW7TQBDH45QoLhQIEkguH1JoOfSAsm2+FHHqpVIkJECCQ3sKjuMmizZ263Uk4Ek49jE48hgceQxusItnxXrxWiYhYQNdaTTe1dgd/+fX2XWcUjJq4PfBq+vC24pX4yZW4g+ZVZn1YP0Y/FvwH8B/BP8Z/FfwO8zuMnt18uJo8PTo5Mk0fBM2Yp/GjZdxNPPig4JxzYJxrYJx7YJxnYJx3STuMbNHeXHPT5/NCHGHxKdCxyroziWfSHXg8y/l9HxSSc97dnq+dy09d26k5xdQ4LpSdwfq3S//rLs8BE+Cg28w+qXscRPeSxR5m13fYqYp/y/82XD/O2bnzNCMRoiEnkvQOAzHxEeTcOoj7AYkxB6KzxF/MqKRl1yczYaEreMg9qNT1/MpGuJghIMxRfyvU0T9CLsEv3djHAYDvjagPzKiDf6AqVIH8X9yqOgg8q2Wig2driVJV+73NPdvQj5Yo9sm5Gqabo70DpaUr47D46Vw2NRy2NToubVGHF7h3loNh7zNbPB+NCKZul0HFk3QTR6LcnmxFC5bWi5bOfv4unBZWSGXNcglyXVwoOrGNb5qgG71jLzlOqv7Z9Fz1KJ8f1oK320t320N37fXiO/yCvnegj4/cmM3S7c7oLNJfPN3En3A/i/572j572j4dy75z+X/zMVRlm7b0DtM4r8s7YOm87+cc3dXy39Xw//9NeLf+gvnbpZrpm4P/rFz9z7o2qvk69dXuHyt0U9wmPljDBu7zO5lcKpGqrrXDeG1DnyI/Pqafc3U78aHhpzPaxKb83zX2HPoZi3wXbMD2pqy71l/eF/73b5bm0P/8gJ9d9dQbvP67oZUr+8BAAD//0HLTrNAGAAA";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

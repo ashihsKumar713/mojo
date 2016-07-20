@@ -8,7 +8,6 @@ library generate;
 
 import 'dart:async';
 import 'dart:collection';
-import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
 
@@ -77,15 +76,15 @@ class MojomGenerator {
   final Directory _mojoSdk;
 
   Map<String, String> _duplicateDetection;
-  int _generationMs;
 
   MojomGenerator(this._mojoSdk,
-      {bool errorOnDuplicate: true, bool profile: false, bool dryRun: false,
-       bool force: false})
+      {bool errorOnDuplicate: true,
+      bool profile: false,
+      bool dryRun: false,
+      bool force: false})
       : _errorOnDuplicate = errorOnDuplicate,
         _dryRun = dryRun,
         _force = force,
-        _generationMs = 0,
         _duplicateDetection = new Map<String, String>() {
     if (_genMs == null) {
       _genMs = new dev.Counter("mojom generation",
@@ -118,7 +117,8 @@ class MojomGenerator {
 
     // If we don't have enough .mojom.dart files, or if a .mojom file is
     // newer than the oldest .mojom.dart file, then regenerate.
-    if (_force || (mojomDartCount < mojomCount) ||
+    if (_force ||
+        (mojomDartCount < mojomCount) ||
         _shouldRegenerate(newestMojomTime, oldestMojomDartTime)) {
       var tasks = new List();
       for (File mojom in info.mojomFiles) {
@@ -221,8 +221,9 @@ class MojomGenerator {
       // Force type information to be generated for the test package.
       // TODO(afandria): Is there a better way to accomplish this goal?
       // https://github.com/domokit/mojo/issues/641
-      final generateTypeInfoFlag = packageName == mojoTestPackage ?
-        '--generate-type-info' : '--no-generate-type-info';
+      final generateTypeInfoFlag = packageName == mojoTestPackage
+          ? '--generate-type-info'
+          : '--no-generate-type-info';
 
       final arguments = [
         '--use_bundled_pylibs',
@@ -336,8 +337,6 @@ class TreeGenerator {
   final List<String> _skip;
   final bool _dryRun;
 
-  Set<String> _processedPackages;
-
   int errors;
 
   TreeGenerator(
@@ -346,7 +345,6 @@ class TreeGenerator {
       : _mojoSdk = mojoSdk,
         _dryRun = dryRun,
         _generator = new MojomGenerator(mojoSdk, dryRun: dryRun, force: force),
-        _processedPackages = new Set<String>(),
         errors = 0;
 
   generate() async {

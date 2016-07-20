@@ -80,7 +80,6 @@ class _ProviderEchoStringParams extends bindings.Struct {
       return null;
     }
     _ProviderEchoStringParams result = new _ProviderEchoStringParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -135,7 +134,6 @@ class ProviderEchoStringResponseParams extends bindings.Struct {
       return null;
     }
     ProviderEchoStringResponseParams result = new ProviderEchoStringResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -192,7 +190,6 @@ class _ProviderEchoStringsParams extends bindings.Struct {
       return null;
     }
     _ProviderEchoStringsParams result = new _ProviderEchoStringsParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -257,7 +254,6 @@ class ProviderEchoStringsResponseParams extends bindings.Struct {
       return null;
     }
     ProviderEchoStringsResponseParams result = new ProviderEchoStringsResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -320,7 +316,6 @@ class _ProviderEchoMessagePipeHandleParams extends bindings.Struct {
       return null;
     }
     _ProviderEchoMessagePipeHandleParams result = new _ProviderEchoMessagePipeHandleParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -374,7 +369,6 @@ class ProviderEchoMessagePipeHandleResponseParams extends bindings.Struct {
       return null;
     }
     ProviderEchoMessagePipeHandleResponseParams result = new ProviderEchoMessagePipeHandleResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -428,7 +422,6 @@ class _ProviderEchoEnumParams extends bindings.Struct {
       return null;
     }
     _ProviderEchoEnumParams result = new _ProviderEchoEnumParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -487,7 +480,6 @@ class ProviderEchoEnumResponseParams extends bindings.Struct {
       return null;
     }
     ProviderEchoEnumResponseParams result = new ProviderEchoEnumResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -546,7 +538,6 @@ class _ProviderEchoIntParams extends bindings.Struct {
       return null;
     }
     _ProviderEchoIntParams result = new _ProviderEchoIntParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -601,7 +592,6 @@ class ProviderEchoIntResponseParams extends bindings.Struct {
       return null;
     }
     ProviderEchoIntResponseParams result = new ProviderEchoIntResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -654,8 +644,7 @@ class _IntegerAccessorGetIntegerParams extends bindings.Struct {
       return null;
     }
     _IntegerAccessorGetIntegerParams result = new _IntegerAccessorGetIntegerParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -704,7 +693,6 @@ class IntegerAccessorGetIntegerResponseParams extends bindings.Struct {
       return null;
     }
     IntegerAccessorGetIntegerResponseParams result = new IntegerAccessorGetIntegerResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -774,7 +762,6 @@ class _IntegerAccessorSetIntegerParams extends bindings.Struct {
       return null;
     }
     _IntegerAccessorSetIntegerParams result = new _IntegerAccessorSetIntegerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -843,7 +830,6 @@ class _SampleInterfaceSampleMethod1Params extends bindings.Struct {
       return null;
     }
     _SampleInterfaceSampleMethod1Params result = new _SampleInterfaceSampleMethod1Params();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -908,7 +894,6 @@ class SampleInterfaceSampleMethod1ResponseParams extends bindings.Struct {
       return null;
     }
     SampleInterfaceSampleMethod1ResponseParams result = new SampleInterfaceSampleMethod1ResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -973,8 +958,7 @@ class _SampleInterfaceSampleMethod0Params extends bindings.Struct {
       return null;
     }
     _SampleInterfaceSampleMethod0Params result = new _SampleInterfaceSampleMethod0Params();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -1018,8 +1002,7 @@ class _SampleInterfaceSampleMethod2Params extends bindings.Struct {
       return null;
     }
     _SampleInterfaceSampleMethod2Params result = new _SampleInterfaceSampleMethod2Params();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -2159,7 +2142,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xb3XLbRBSWLKeElkLaJOD01y1T8E0i28xAhivnwoMzkBnPBDrpVevYi+2OLRlJZgJPwCPwCFzyCDwCj8Jl7ugqPqderXdlyZajVZKdObPRn1f76Tvf2T27KWiTsgF1GWr+PNbrXM3f9w/UJWp5akU43of6BOoR1I+obVH78VWz/vr7+qtv3dZwNCB7dWs89K9/Se2p4Pqh5ZEucQ7abeK6tnPRTkFwX9Oxf+13iCP7neOLyv815+dWm2gNeO8N7r39Y4Pam1zw+K9PgsdaRYzLOdQ1LVjKXDv/Q+Hvw/IRvB/is0ntDjUOtpn2/efWqL2ldkrNHLuOObDbrYHZte3ugJg9e0jM352WObTf2lXTddoXf5mj8emg3zb7CJFrnvatTt/quqZHXM81J02/nt6w5z83nLavM3wpQV3UwktUnBqS5+9Cf18e/PBTndY71O4FcdrDayK8/OdzKeAlw2dDn9TGHHxqHD5NCT6fUfOpy/vRE3ru0ylO/OUZnPzj2yngJHoPPAYXveBdAY7xvrNbYpzRP0u5aDzUGJxF57HcB3y+Ix5gKX7/nZT4VuTwO4+oVxrHs31J/x8ABtP+7zrklzF9MTEOWC4bh3VNrFcF7r3WtXDc/jWSwe0haHsAN3dkWy5RCjfev4p6sP/73Hve0qKVqH5XmhMnOy2vJfO3nRTwEuHix6mGLu4H8i2niZ8/E+CiM+MrvvD8Lgr002DaQ/066lsvieP2bSuIr/fbiMjw/SpFPdMk8YEfP80bf87wW6ALuqCdHFhBMu6pcd9bB4v6fc+W/L76nO+L54/nxK2HisWtpPQX49ax4nErq/qL8S0r+mtcsv4aS+qvj+/uNdZfY47+Bh5eYN5ZC/m+/rfFvAPOs7h0hDC/osI8qsTkZdYYiHKAaZ7BZY25/xxuLn0Mv7c1qZsPwudbJ8Zq5lv1ds8+9hwKg7if9xSLWzjvTCpuTfuvZtzidVCky7rAP1cVrz6EplqanC9bKeEUFj9kOrhqnmH8DvBMwflpFnn2PEM8k+n6H/lgeI2Cmx6i65jnnvLNFeJ3XzFdPzFW5W9uQNhVnY+U9Wz4nc+bbQX8Li5O6wvgpEfA6TQEp6eK6xM77l+1X+L8JeiX00B445fL++XujV9G8stvMuSXM/NxwLFniPPdYbjlmO/Cl8eg675/HhHXbXVJsz8ijZbVGRABjpuKjB8Qj3LM8bosL/ECsBDiwIwksjRuzyukU5sK6JS+xPwwab59Qe1JCN8wQt7wbXG+HWaIb7ze/4fzRCPavhYWNyMEN8y/+rzzc8g8bluK6Dv2/01Mf5PNjwvQR+w3SnqW/GtNIf/agr+zvn6ybL6wl1C+EPffMfxksoXZigOq8fTRNeKpLI7sQwDJx8A9H4K7v2b3AfD10PJmcN9WLI5sJBRHcL0S+v1+ZpAl/9SYtcu0/XM7pTiyqO4nzSd2XDLh00T2b/i0OJ8eK8ynefvX5+FU43g1b/86//8b3P51/vIMnkVF9l0UmXhucPsu8LrBPNeEC3/fDl+Hi8tPbFfmzz7/7r7H/Yh4PbtTFvTnuXY197NjPjHQfwXzZ3H3s8v4cxZzHVcP4ZWMPxUBbs8U40/DWB1/KgryJ+6+0suKj3dAB/tWRaijz+CcCvtKL3N9aIpLVYrLixTzhXpC67Z/JuSHOE7g/VC1vLSq67Y4v7fHXkXGt68V4Fvc/E3SfsngVJXhdHDF8zdh6778ODXqui/+f02ccUZVgP/n12icWr0C49R3AQAA//8untFvsEAAAA==";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+yb3W7jRBTH7Thdyi4L3W0K6X5mFy3kpnVSJKi4Si8iUkGlSIVV92o3TYbEKLGztoPKG/AIPAKXPAKPwKNw2TvwNOc048mMYydOM25raTT1V+z5+X/OmTkzLWrjbQPqCtT8cazXuZq/7m+oy0HJB6UE+/tQn0A9hPpJUApB+fFNs/72+/qbb73WYNgnu3V7NKDnvwzKc8H5Q9snXeIetNvE8xz34jlFwXVN1/nV6hBX9jvHFxX9NffnVptoDXjvDe696b4RlHe58P6fn4T3taqYyznUNS28Vbjn/Acbfx1uH8H7IZ/NoNwLCodt6vn0vjXg3guKOfJcs++0W32z6zjdPjF7zoCYVsvuO1bb9N+bA+cXx/Tc9viP4ei0Hxy3EJRnnlp2x7K7nukTz/fM8Qu8nVywS+8b0OfrjF7KUJe06C0up4bk/vvQ3tcHP/xUD+rtoDwIc9rFcyJe9P7cCnjJ+Gzo49qYwafG8WlK+HwWFCpd3o6eBcc+nXDiT09xovt3V8BJ9B64DyZ6obsi7ON1Z3fEOkT7LOfi6VBjOIuO4/YQ+HxHfGAp1tv2ivRW4vidx/RXGqezfUn7HwGDSft3XPJ+FLySmIPGxIer5LDOvIcuiG8aF/dk3P4x0uH2GHx7iJs3dGyPKMWNt6+SHm7/Pveed7R4W1y7K8+Ik52W35LZ2/YKeIm40DjV0MXtQL3lNDHXMwEXnelf8Ruv75LAfxrM89B/HVn2a+J6lmOH+fq/DYmM71cr9GeaJD7w/adZ/c8pfQv8gi54Tg5KUdLvqXHfW4cS9/ueLfh99RnfF48fz4hbjxWLW2n5X4xbx4rHraz6X4xvWfG/xhX7X2NB/0v57txg/2vM8L+hm+cYd9Yivi/9tph3wHEWl44Q5ldUGEeVmbzMGoMoB0zzDJc15vpzuLj8MfxeYVw3H0WPt06M5Yy36u2ec+y7AQCxv36gWNzCcWdacWvSfjXjFu8HRX5ZF9jnsuLVh/ColibXS2FFnKLih8wPLltnGL9DOlNwfJpFnb3MkM5kfv33fDi8xuGmR/h1zHNP9OYJ+T1UzK+fGMuyNy/k2FUdj1T0bNgd1c2WAnaXlNP6HJz0GJxOIzg9V9w/sf3+Zdsljl/CdjkJhLd2ubhd7tzaZSy7/CZDdjk1HgeOPUOc747ilmO+C789Bb9O7fOIeF6rS5rWkDRadqdPBBw3Fek/II9Kwv66LC/xClgIOTA9iSz12/MK+alNBfyUvsD4MG29fRGUZxF6wwh5q7f59XaYIb3x/v5fHCca8da1sNyMCG6Yf6W6ozlknltBEf+O7X+X0N5k4+MitBHbjS49S/a1ppB9FeDvrM+fLJov7KWUL8T1d4w+mWxhtuKAajp9coN0Kosj+xBA8gm45yO40zm7D0Cvh7Y/xX1LsTiykVIcwflKaPflyCBL9qkxc5erts+tFcWRef1+2npi+yVjPY3d/q2e5tfTU4X1NGv9+ixONU5Xs9av8/+/wa1f509P8Swpsu6ixMRzg1t3gecNhnsTTvx1N3oeLqk+8bkye6b6u3/J/Yj4PadTEej0pXY917NjPjHUfgXzZ0nXs8v0c5ZwHleP0JVMP1UBtxeK6adhLE8/VQX1k3Rd6VXFx3vgBy27KoyPL+CYCutKr3J+aMJlT8rl1QrzhXpK87Z/pGSH2E/g7VC1vLSq87Y4vndGflWmt68V0FvS/E3adslw2pNxOrjm+ZuoeV++nxp33hf/vyZJP2NPwP/zG9RP3bsG/dT/AwAA//+VSBxIsEAAAA==";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

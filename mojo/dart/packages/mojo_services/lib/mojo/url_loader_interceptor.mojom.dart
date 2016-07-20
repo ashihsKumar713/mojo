@@ -33,7 +33,6 @@ class UrlLoaderInterceptorResponse extends bindings.Struct {
       return null;
     }
     UrlLoaderInterceptorResponse result = new UrlLoaderInterceptorResponse();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -96,7 +95,6 @@ class _UrlLoaderInterceptorFactoryCreateParams extends bindings.Struct {
       return null;
     }
     _UrlLoaderInterceptorFactoryCreateParams result = new _UrlLoaderInterceptorFactoryCreateParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -150,7 +148,6 @@ class _UrlLoaderInterceptorInterceptRequestParams extends bindings.Struct {
       return null;
     }
     _UrlLoaderInterceptorInterceptRequestParams result = new _UrlLoaderInterceptorInterceptRequestParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -205,7 +202,6 @@ class UrlLoaderInterceptorInterceptRequestResponseParams extends bindings.Struct
       return null;
     }
     UrlLoaderInterceptorInterceptRequestResponseParams result = new UrlLoaderInterceptorInterceptRequestResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -258,8 +254,7 @@ class _UrlLoaderInterceptorInterceptFollowRedirectParams extends bindings.Struct
       return null;
     }
     _UrlLoaderInterceptorInterceptFollowRedirectParams result = new _UrlLoaderInterceptorInterceptFollowRedirectParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -305,7 +300,6 @@ class UrlLoaderInterceptorInterceptFollowRedirectResponseParams extends bindings
       return null;
     }
     UrlLoaderInterceptorInterceptFollowRedirectResponseParams result = new UrlLoaderInterceptorInterceptFollowRedirectResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -360,7 +354,6 @@ class _UrlLoaderInterceptorInterceptResponseParams extends bindings.Struct {
       return null;
     }
     _UrlLoaderInterceptorInterceptResponseParams result = new _UrlLoaderInterceptorInterceptResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -415,7 +408,6 @@ class UrlLoaderInterceptorInterceptResponseResponseParams extends bindings.Struc
       return null;
     }
     UrlLoaderInterceptorInterceptResponseResponseParams result = new UrlLoaderInterceptorInterceptResponseResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

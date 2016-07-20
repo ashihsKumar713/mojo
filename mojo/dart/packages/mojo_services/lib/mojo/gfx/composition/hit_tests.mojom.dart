@@ -94,7 +94,6 @@ class HitTestBehavior extends bindings.Struct {
       return null;
     }
     HitTestBehavior result = new HitTestBehavior();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -170,7 +169,6 @@ class HitTestResult extends bindings.Struct {
       return null;
     }
     HitTestResult result = new HitTestResult();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -230,7 +228,6 @@ class SceneHit extends bindings.Struct {
       return null;
     }
     SceneHit result = new SceneHit();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -323,7 +320,6 @@ class NodeHit extends bindings.Struct {
       return null;
     }
     NodeHit result = new NodeHit();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -387,7 +383,6 @@ class _HitTesterHitTestParams extends bindings.Struct {
       return null;
     }
     _HitTesterHitTestParams result = new _HitTesterHitTestParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -443,7 +438,6 @@ class HitTesterHitTestResponseParams extends bindings.Struct {
       return null;
     }
     HitTesterHitTestResponseParams result = new HitTesterHitTestResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

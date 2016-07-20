@@ -29,7 +29,6 @@ class _AssetBundleGetAsStreamParams extends bindings.Struct {
       return null;
     }
     _AssetBundleGetAsStreamParams result = new _AssetBundleGetAsStreamParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -84,7 +83,6 @@ class AssetBundleGetAsStreamResponseParams extends bindings.Struct {
       return null;
     }
     AssetBundleGetAsStreamResponseParams result = new AssetBundleGetAsStreamResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -140,7 +138,6 @@ class _AssetUnpackerUnpackZipStreamParams extends bindings.Struct {
       return null;
     }
     _AssetUnpackerUnpackZipStreamParams result = new _AssetUnpackerUnpackZipStreamParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

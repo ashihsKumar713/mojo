@@ -19,8 +19,7 @@ class DartHandlerRunning extends Application {
 
   Future initialize(List<String> args, String url) async {
     Timeline.instantSync("connecting");
-    ApplicationConnection connection =
-        connectToApplication("mojo:dart_startup");
+    connectToApplication("mojo:dart_startup");
   }
 }
 

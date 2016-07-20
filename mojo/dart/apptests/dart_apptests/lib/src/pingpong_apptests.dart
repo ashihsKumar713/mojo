@@ -8,8 +8,6 @@ import 'dart:async';
 
 import 'package:mojo_apptest/apptest.dart';
 import 'package:mojo/application.dart';
-import 'package:mojo/bindings.dart';
-import 'package:mojo/core.dart';
 import 'package:_mojo_for_test_only/test/pingpong_service.mojom.dart';
 
 class _TestingPingPongClient extends PingPongClient {
@@ -67,7 +65,10 @@ pingpongApptests(Application application, String url) {
       pingPongService.pingTargetUrl("mojo:dart_pingpong_target", 9, (bool ok) {
         c.complete(ok);
       });
-      expect(await pingPongService.responseOrError(c.future), isTrue);
+      expect(
+          await (pingPongService as PingPongServiceProxy)
+              .responseOrError(c.future),
+          isTrue);
 
       await pingPongService.close();
     });
@@ -79,7 +80,7 @@ pingpongApptests(Application application, String url) {
       pingPongService.ctrl.errorFuture.then((e) => fail('$e'));
       application.connectToService("mojo:dart_pingpong", pingPongService);
 
-      var targetService = new PingPongServiceInterfaceRequest();
+      var targetService = new PingPongServiceProxy.unbound();
       targetService.ctrl.errorFuture.then((e) => fail('$e'));
       application.connectToService("mojo:dart_pingpong_target", targetService);
 
@@ -87,7 +88,10 @@ pingpongApptests(Application application, String url) {
       pingPongService.pingTargetService(targetService, 9, (bool ok) {
         c.complete(ok);
       });
-      expect(await pingPongService.responseOrError(c.future), isTrue);
+      expect(
+          await (pingPongService as PingPongServiceProxy)
+              .responseOrError(c.future),
+          isTrue);
 
       // This side no longer has access to the pipe.
       expect(targetService.ctrl.isOpen, equals(false));

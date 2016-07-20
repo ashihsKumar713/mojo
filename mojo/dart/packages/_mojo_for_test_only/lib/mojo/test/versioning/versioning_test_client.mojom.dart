@@ -90,7 +90,6 @@ class Employee extends bindings.Struct {
       return null;
     }
     Employee result = new Employee();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -165,7 +164,6 @@ class _HumanResourceDatabaseAddEmployeeParams extends bindings.Struct {
       return null;
     }
     _HumanResourceDatabaseAddEmployeeParams result = new _HumanResourceDatabaseAddEmployeeParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -221,7 +219,6 @@ class HumanResourceDatabaseAddEmployeeResponseParams extends bindings.Struct {
       return null;
     }
     HumanResourceDatabaseAddEmployeeResponseParams result = new HumanResourceDatabaseAddEmployeeResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -279,7 +276,6 @@ class _HumanResourceDatabaseQueryEmployeeParams extends bindings.Struct {
       return null;
     }
     _HumanResourceDatabaseQueryEmployeeParams result = new _HumanResourceDatabaseQueryEmployeeParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -345,7 +341,6 @@ class HumanResourceDatabaseQueryEmployeeResponseParams extends bindings.Struct {
       return null;
     }
     HumanResourceDatabaseQueryEmployeeResponseParams result = new HumanResourceDatabaseQueryEmployeeResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -411,7 +406,6 @@ class _HumanResourceDatabaseAttachFingerPrintParams extends bindings.Struct {
       return null;
     }
     _HumanResourceDatabaseAttachFingerPrintParams result = new _HumanResourceDatabaseAttachFingerPrintParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -474,7 +468,6 @@ class HumanResourceDatabaseAttachFingerPrintResponseParams extends bindings.Stru
       return null;
     }
     HumanResourceDatabaseAttachFingerPrintResponseParams result = new HumanResourceDatabaseAttachFingerPrintResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -527,8 +520,7 @@ class _HumanResourceDatabaseListEmployeeIdsParams extends bindings.Struct {
       return null;
     }
     _HumanResourceDatabaseListEmployeeIdsParams result = new _HumanResourceDatabaseListEmployeeIdsParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -574,7 +566,6 @@ class HumanResourceDatabaseListEmployeeIdsResponseParams extends bindings.Struct
       return null;
     }
     HumanResourceDatabaseListEmployeeIdsResponseParams result = new HumanResourceDatabaseListEmployeeIdsResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1059,7 +1050,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xaT4/bRBS3nYUNW6ou/beGwtYLAqJC41URUpRedsUGFVFQYFFFT5HXmSZGiR1sZ7Xl1CNHPgbHHvsR+Agce+TIcW8wk7ypJ+MZ20m8sSN1pKdZe53xvN+893u/mURXpm0b+hfQ8/fbzLWKrQrXX2K7i23o/eI1myEKwmbzFPmB47mO22s2H4yHlvsjCryxb6MjK7ROrAAJxrmP7QtsPz1utzrfth43yYB1Ml49Gq4uGy0+37+gN7BVmP8fQN+Hfh9bLfW9R2hk+eEQuWEdP/tJ6vOt4WjgPUVoeb8aMH/qV41bh+eV6Jr8+XdVvH7b6qz/CuM/e/8/aD8r4nYV2xa2CJHp/U+x3YY4SIAvNq9L2N7A5mHrYTPHgW8OPNsamD3P6w2Q2feGyPzNt0wy9D0z8O3JX+ZofDJwbNNxQ+Q/sWwUmCeO28WvC0zy/sCMJtAhNzr2wCELSD48nMxDY+bRUGfxNZTkJsOxkRHHy+D38eHD1jHk0Mfp+NXp8zyOb4M/q8YxDS81J7wuQXwftR5Nrj/D9lEGvOjzPF6XC8LL4PkVADrfmA+ntgSnbeBUykAkpj6Q4RTRVJwvsG0WhA/L1/uAT1ubxafBzXdLydZk+CoMvqL7tF2DWEQAXcfpCuPrHWxvFYCfCB+VTUSuVRfAR2V4km+Eh0gou9YQiXC5WhAu2xI/WZwIH1dVeV7Ni5OWEEe0jna5OsrjdQ24qiie4v03UnTAvHqK14E6884K8z6+zryAdfoHek2yrs85PUj5898E/mTnYwj08CZzn/LBMfJPHRt9D2G/sC4mXH0Dm+z/97DdkfG5XEbG4moH1m/VcbUoLrokDnXgG0pxGsRNDe7T5/bfnPa/X5n2L2+K4+oc+j8rF1M3DrtdpurG/dJLoksoDmdadv9Ja0j8vwUYMP7f9dGvYzwRIQ60FVEn2PyX1QlZPV1Ub9RS9BzVG6J42SlRfdAlOnTefXNSXVAlPMDGrZ5T3L6P7XosboOR5wZo3eJ2nrZs3F6BOhmMbexKIOS5OyXASRZXsrrwciPbvpbXy7K6cAP03Q9j5D9N2I+9V7K68Ecln/yiemfGf6YylCW/+PMiQ13tflSWZ1swL9iGCuNmpyT70KRWlZwX0c+fSfLq2RI6vsK8j+5nvnPcR1O/ZuPTR6HvoFPUeYL9RX5n5DtuKMHbLEN8pvCbzmlmPaWeVjfyyfddbDcF+U4ralnz/Zm6HnrwFuiVouqEekF6UIQ7WZ+2mi+fnF0wn1yHMzKORhTROt4veB0JJnQ+m9z+dFme4fXVA3qesxGd56gZ101bQR14F850D8PQsvtfT1avTRdPsH67JdFr1LH+nHrtQILnHmARw2FmN/9aty2r23aBA8qg27SEc/FFvz+Q7Yey8iPB5/OCzz1E/Ji0v0zSWTRPDS2fPP0QtKgoT6PTi9fnF4ueX5D4+2qNzi8OIL5GWvTdipaxvlZy0EVaSn3dAcwfOkFIVd833TjueyU7BzlX8tkX3QYMOP9fVdWy5Gk1A88pCfFA8WrkdD5rwNhx3KYst078pq1wH0l/T+PgHBPVgT34TVdZ9h9bGeKO5b//AwAA///eLupx2CgAAA==";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xaT4/bRBS3nS6bbqka+ocYClsvCIgKjSsQUpRedsUGLaKgwKJqewpeZ7prlNip/6zaW4/9KBw5cuyxH4VjvwHMJG/wZDxjO4l37Ugd6WnWs44985s3v/d7L9GVWWtA/zf0/HifuVax1eH6W2z3sI29P7xuN0RB2O2eIT9wPNdxT7rdg2hsub+iwIt8G+1boXVsBUjwnAfYvsH22+N+b/Bj73GXPLBNnteOH9eWPS0539fQG9hqzP93oT+F/j62VuZ799HE8sMxcsM2vvfzzPt748nIe47Q6uvqwPzpulrcPryuxdfT+y6L909X59evMOtnx/+FdqSI23VsW9hiRGbjX2C7A36QAl9iXlewbWCLyGexmVHgmyPPtkbmieedjJB56o2R6VjuyHNsM3xqkjeYgW/P/phExyM87rgh8p9YNgrMY8cd4pcGJplFYMbTGJCBgT1yyDaSD48BJ42Zz646j7OhpDcZnp2ceF6F9R/uPewdwln6LBvHNr2fx/NdWE9ZeGbhphaE2xXw9/3eo+n1l9g+zYEbvZ/H7WrJuBkc79Lzqm8shldfglcDuJYyE/Gxj2V4xfSVwIn0myXjxPJ5B3D6XZvHqcPNe0vJ12Q4KwzOonHaboBvIoBw4AyF/vYetssl4ijCaRqPVfG66kvgpDJ8wDfCU5ewudYYifC5XjI+Dcl6WbzI0Wyo8vO2KF5ail/RuDvk4i6P2w3gsrJ5jMfByNAPi+owXj/qzDtrzPv4ePQK9usN9Jpkf//idCTl1zcp/MrOxxDo6E1mnPLEIfLPHBv9DMdgaT1NuPwWNtn/v8Z2V8b3cvmZ8K8m7F9Z/rUsPrrEH3XgIapNNPCfFozT+47emfX/XJv1k6ZEJ4JfvaqdT1zZGw6Z6CzQ+RXTMRSPl1p+HEjrSHC4DVgwONzz0dMIT0WIB21lxhGWF2RxRBZ3l9UnrQwdSPWJyH+aFYwfukTHLpqPp8UNVcIPrB+3CvLjj7DdTPhxMPHcAK2rHy/SVvXjaxBPg8jGiwmEPHi3QnjJ/EwWP5SNfPkyr7dl8eMW6MJfIuQ/T8nvPqxo/PizVsy5ozppDgcmglTt3PH1qZZ6sXmu7PxtwbwgvRX6UbNi+W1aq0vqU/TzzyTn7cUK+UCNeR/Ni35y3Eezlc37q49C30FnaPAErxj5g4nvuKEEd7NC/mpk8J/OaW89I/4al4rhgW1s7wt4gEbgqvPAS3U99ORt0DllxxP1nPSkCH+yT0dqsTzz7Jx55ibU5Dh6UUT7+aAi+0mwofPa5PLfVfmH12V9ALC+EdeN1Jz7p11AnPgAasp7YWjZp99Pd7FPN1Gwj9sV03mUr14sqPN2JbjuACYJPOaqBW/1XlF6bxu4oUp6T0upzy/7fYYsv8rLnwSnrypSXxHxZ1remqbP6Pm9rxVzfj8BLSs6v3GV5G2dZNU6CfHH79awTnJA44UWf+ej5YzHtQL0lJYRj5uA/UMnCKla/GGYxH+novUWRS0mz7oDWHA4/B+Fq3Z+6zl4UEnxD4rbQUF1YgOencRvxoLryH/aBean9HdCDj57onixA79dq1o+s5XDD1l+/C8AAP//UNsIJ8gpAAA=";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

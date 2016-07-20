@@ -34,7 +34,6 @@ class _TerminalConnectParams extends bindings.Struct {
       return null;
     }
     _TerminalConnectParams result = new _TerminalConnectParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -95,7 +94,6 @@ class TerminalConnectResponseParams extends bindings.Struct {
       return null;
     }
     TerminalConnectResponseParams result = new TerminalConnectResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -156,7 +154,6 @@ class _TerminalConnectToClientParams extends bindings.Struct {
       return null;
     }
     _TerminalConnectToClientParams result = new _TerminalConnectToClientParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -217,7 +214,6 @@ class TerminalConnectToClientResponseParams extends bindings.Struct {
       return null;
     }
     TerminalConnectToClientResponseParams result = new TerminalConnectToClientResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -274,8 +270,7 @@ class _TerminalGetSizeParams extends bindings.Struct {
       return null;
     }
     _TerminalGetSizeParams result = new _TerminalGetSizeParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -325,7 +320,6 @@ class TerminalGetSizeResponseParams extends bindings.Struct {
       return null;
     }
     TerminalGetSizeResponseParams result = new TerminalGetSizeResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -404,7 +398,6 @@ class _TerminalSetSizeParams extends bindings.Struct {
       return null;
     }
     _TerminalSetSizeParams result = new _TerminalSetSizeParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -479,7 +472,6 @@ class TerminalSetSizeResponseParams extends bindings.Struct {
       return null;
     }
     TerminalSetSizeResponseParams result = new TerminalSetSizeResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

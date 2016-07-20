@@ -9,7 +9,6 @@
 import 'dart:async';
 
 import 'package:mojo/application.dart';
-import 'package:mojo/bindings.dart';
 import 'package:mojo/core.dart';
 
 class Hello extends Application {

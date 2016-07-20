@@ -30,7 +30,6 @@ class _InputConnectionSetListenerParams extends bindings.Struct {
       return null;
     }
     _InputConnectionSetListenerParams result = new _InputConnectionSetListenerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -84,7 +83,6 @@ class _InputListenerOnEventParams extends bindings.Struct {
       return null;
     }
     _InputListenerOnEventParams result = new _InputListenerOnEventParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -140,7 +138,6 @@ class InputListenerOnEventResponseParams extends bindings.Struct {
       return null;
     }
     InputListenerOnEventResponseParams result = new InputListenerOnEventResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

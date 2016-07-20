@@ -29,7 +29,6 @@ class NfcData extends bindings.Struct {
       return null;
     }
     NfcData result = new NfcData();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -82,8 +81,7 @@ class _NfcTransmissionCancelParams extends bindings.Struct {
       return null;
     }
     _NfcTransmissionCancelParams result = new _NfcTransmissionCancelParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -129,7 +127,6 @@ class _NfcReceiverOnReceivedNfcDataParams extends bindings.Struct {
       return null;
     }
     _NfcReceiverOnReceivedNfcDataParams result = new _NfcReceiverOnReceivedNfcDataParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -187,7 +184,6 @@ class _NfcTransmitOnNextConnectionParams extends bindings.Struct {
       return null;
     }
     _NfcTransmitOnNextConnectionParams result = new _NfcTransmitOnNextConnectionParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -249,7 +245,6 @@ class NfcTransmitOnNextConnectionResponseParams extends bindings.Struct {
       return null;
     }
     NfcTransmitOnNextConnectionResponseParams result = new NfcTransmitOnNextConnectionResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -302,8 +297,7 @@ class _NfcRegisterParams extends bindings.Struct {
       return null;
     }
     _NfcRegisterParams result = new _NfcRegisterParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -347,8 +341,7 @@ class _NfcUnregisterParams extends bindings.Struct {
       return null;
     }
     _NfcUnregisterParams result = new _NfcUnregisterParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 

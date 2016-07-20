@@ -29,7 +29,6 @@ class NetworkError extends bindings.Struct {
       return null;
     }
     NetworkError result = new NetworkError();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

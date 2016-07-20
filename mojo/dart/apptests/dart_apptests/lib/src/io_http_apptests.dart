@@ -4,14 +4,11 @@
 
 library io_http_apptests;
 
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:mojo_apptest/apptest.dart';
 import 'package:mojo/application.dart';
-import 'package:mojo/bindings.dart';
-import 'package:mojo/core.dart';
 
 tests(Application application, String url) {
   group('Http Apptests', () {
@@ -46,7 +43,7 @@ tests(Application application, String url) {
     // Make a request.
     // Expect an OK response.
     test('Http Server Response', () async {
-    var server = await HttpServer.bind(InternetAddress.LOOPBACK_IP_V4, 0);
+      var server = await HttpServer.bind(InternetAddress.LOOPBACK_IP_V4, 0);
       expect(server, isNotNull);
       expect(server.port, greaterThan(1024));
       server.listen((HttpRequest request) {

@@ -40,7 +40,6 @@ class SceneUpdate extends bindings.Struct {
       return null;
     }
     SceneUpdate result = new SceneUpdate();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -196,7 +195,6 @@ class SceneMetadata extends bindings.Struct {
       return null;
     }
     SceneMetadata result = new SceneMetadata();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -259,7 +257,6 @@ class _SceneSetListenerParams extends bindings.Struct {
       return null;
     }
     _SceneSetListenerParams result = new _SceneSetListenerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -313,7 +310,6 @@ class _SceneUpdateParams extends bindings.Struct {
       return null;
     }
     _SceneUpdateParams result = new _SceneUpdateParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -368,7 +364,6 @@ class _ScenePublishParams extends bindings.Struct {
       return null;
     }
     _ScenePublishParams result = new _ScenePublishParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -424,7 +419,6 @@ class _SceneGetSchedulerParams extends bindings.Struct {
       return null;
     }
     _SceneGetSchedulerParams result = new _SceneGetSchedulerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -478,7 +472,6 @@ class _SceneListenerOnResourceUnavailableParams extends bindings.Struct {
       return null;
     }
     _SceneListenerOnResourceUnavailableParams result = new _SceneListenerOnResourceUnavailableParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -531,8 +524,7 @@ class SceneListenerOnResourceUnavailableResponseParams extends bindings.Struct {
       return null;
     }
     SceneListenerOnResourceUnavailableResponseParams result = new SceneListenerOnResourceUnavailableResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 

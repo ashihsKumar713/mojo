@@ -4,10 +4,8 @@
 
 library mojom.command;
 
-import 'dart:async';
 import 'dart:io';
 
-import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:logging/logging.dart' as logging;
 import 'package:mojom/src/utils.dart';

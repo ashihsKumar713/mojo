@@ -27,8 +27,7 @@ class _VSyncProviderAwaitVSyncParams extends bindings.Struct {
       return null;
     }
     _VSyncProviderAwaitVSyncParams result = new _VSyncProviderAwaitVSyncParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -74,7 +73,6 @@ class VSyncProviderAwaitVSyncResponseParams extends bindings.Struct {
       return null;
     }
     VSyncProviderAwaitVSyncResponseParams result = new VSyncProviderAwaitVSyncResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

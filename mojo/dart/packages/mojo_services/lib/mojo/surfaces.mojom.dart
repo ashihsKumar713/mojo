@@ -118,7 +118,6 @@ class Mailbox extends bindings.Struct {
       return null;
     }
     Mailbox result = new Mailbox();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -177,7 +176,6 @@ class MailboxHolder extends bindings.Struct {
       return null;
     }
     MailboxHolder result = new MailboxHolder();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -261,7 +259,6 @@ class TransferableResource extends bindings.Struct {
       return null;
     }
     TransferableResource result = new TransferableResource();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -376,7 +373,6 @@ class ReturnedResource extends bindings.Struct {
       return null;
     }
     ReturnedResource result = new ReturnedResource();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -457,7 +453,6 @@ class Frame extends bindings.Struct {
       return null;
     }
     Frame result = new Frame();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -552,7 +547,6 @@ class _ResourceReturnerReturnResourcesParams extends bindings.Struct {
       return null;
     }
     _ResourceReturnerReturnResourcesParams result = new _ResourceReturnerReturnResourcesParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -621,8 +615,7 @@ class _SurfaceGetIdNamespaceParams extends bindings.Struct {
       return null;
     }
     _SurfaceGetIdNamespaceParams result = new _SurfaceGetIdNamespaceParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -668,7 +661,6 @@ class SurfaceGetIdNamespaceResponseParams extends bindings.Struct {
       return null;
     }
     SurfaceGetIdNamespaceResponseParams result = new SurfaceGetIdNamespaceResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -723,7 +715,6 @@ class _SurfaceSetResourceReturnerParams extends bindings.Struct {
       return null;
     }
     _SurfaceSetResourceReturnerParams result = new _SurfaceSetResourceReturnerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -777,7 +768,6 @@ class _SurfaceCreateSurfaceParams extends bindings.Struct {
       return null;
     }
     _SurfaceCreateSurfaceParams result = new _SurfaceCreateSurfaceParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -834,7 +824,6 @@ class _SurfaceSubmitFrameParams extends bindings.Struct {
       return null;
     }
     _SurfaceSubmitFrameParams result = new _SurfaceSubmitFrameParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -896,8 +885,7 @@ class SurfaceSubmitFrameResponseParams extends bindings.Struct {
       return null;
     }
     SurfaceSubmitFrameResponseParams result = new SurfaceSubmitFrameResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -943,7 +931,6 @@ class _SurfaceDestroySurfaceParams extends bindings.Struct {
       return null;
     }
     _SurfaceDestroySurfaceParams result = new _SurfaceDestroySurfaceParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

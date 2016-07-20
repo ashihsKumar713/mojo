@@ -454,7 +454,6 @@ class Edge extends bindings.Struct {
       return null;
     }
     Edge result = new Edge();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -510,7 +509,6 @@ class Vertex extends bindings.Struct {
       return null;
     }
     Vertex result = new Vertex();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -564,8 +562,7 @@ class EmptyStruct extends bindings.Struct {
       return null;
     }
     EmptyStruct result = new EmptyStruct();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -611,7 +608,6 @@ class A extends bindings.Struct {
       return null;
     }
     A result = new A();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -667,7 +663,6 @@ class B extends bindings.Struct {
       return null;
     }
     B result = new B();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -723,7 +718,6 @@ class StructWithHandleCalledHandles extends bindings.Struct {
       return null;
     }
     StructWithHandleCalledHandles result = new StructWithHandleCalledHandles();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -777,7 +771,6 @@ class StructWithArrayOfHandlesCalledHandles extends bindings.Struct {
       return null;
     }
     StructWithArrayOfHandlesCalledHandles result = new StructWithArrayOfHandlesCalledHandles();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -831,7 +824,6 @@ class StructWithInterfaceCalledHandles extends bindings.Struct {
       return null;
     }
     StructWithInterfaceCalledHandles result = new StructWithInterfaceCalledHandles();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -885,7 +877,6 @@ class ContainsArrayOfEnum extends bindings.Struct {
       return null;
     }
     ContainsArrayOfEnum result = new ContainsArrayOfEnum();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -959,7 +950,6 @@ class ContainsNullableArrayOfEnum extends bindings.Struct {
       return null;
     }
     ContainsNullableArrayOfEnum result = new ContainsNullableArrayOfEnum();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1033,8 +1023,7 @@ class _CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseParams extend
       return null;
     }
     _CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseParams result = new _CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -1078,8 +1067,7 @@ class CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParams
       return null;
     }
     CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParams result = new CheckMethodWithEmptyResponseWithoutParameterAndEmptyResponseResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -1125,7 +1113,6 @@ class _CheckMethodWithEmptyResponseWithParameterAndEmptyResponseParams extends b
       return null;
     }
     _CheckMethodWithEmptyResponseWithParameterAndEmptyResponseParams result = new _CheckMethodWithEmptyResponseWithParameterAndEmptyResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1178,8 +1165,7 @@ class CheckMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParams ex
       return null;
     }
     CheckMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParams result = new CheckMethodWithEmptyResponseWithParameterAndEmptyResponseResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -1227,7 +1213,6 @@ class _CheckNameCollisionWithNameCollisionParams extends bindings.Struct {
       return null;
     }
     _CheckNameCollisionWithNameCollisionParams result = new _CheckNameCollisionWithNameCollisionParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1292,7 +1277,6 @@ class CheckNameCollisionWithNameCollisionResponseParams extends bindings.Struct 
       return null;
     }
     CheckNameCollisionWithNameCollisionResponseParams result = new CheckNameCollisionWithNameCollisionResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1355,7 +1339,6 @@ class _CheckEnumCapsSetEnumWithInternalAllCapsParams extends bindings.Struct {
       return null;
     }
     _CheckEnumCapsSetEnumWithInternalAllCapsParams result = new _CheckEnumCapsSetEnumWithInternalAllCapsParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1412,8 +1395,7 @@ class _TestInterfaceSomeMessageParams extends bindings.Struct {
       return null;
     }
     _TestInterfaceSomeMessageParams result = new _TestInterfaceSomeMessageParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -1459,7 +1441,6 @@ class _Regression551GetParams extends bindings.Struct {
       return null;
     }
     _Regression551GetParams result = new _Regression551GetParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1529,7 +1510,6 @@ class Regression551GetResponseParams extends bindings.Struct {
       return null;
     }
     Regression551GetResponseParams result = new Regression551GetResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1582,8 +1562,7 @@ class _ServiceNameServiceNameParams extends bindings.Struct {
       return null;
     }
     _ServiceNameServiceNameParams result = new _ServiceNameServiceNameParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -1629,7 +1608,6 @@ class ServiceNameServiceNameResponseParams extends bindings.Struct {
       return null;
     }
     ServiceNameServiceNameResponseParams result = new ServiceNameServiceNameResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -3286,7 +3264,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xdP3gbRRaflR1ikgDOHQEHgzHhIDlCJNuJExEOsGzLkbEt+7NkMB/3nSLLa0t49YeVzDlXpUxJSUmZ8sqUlJSUKSlTUqa7m9G+sXaednZnlbV3Zazvm2+88jxp5jfvz8yb90YjxHoNQz0BNX6f10Ooxu1+OmPVv9DyJi1P4P2nUD+H+ppm1WtQP4L6CdTPoB6PWfUM1GWof4b6V6ifQ31twKo3oX4I9WOof4N6eNCqM1A/gvq/UL9Pyygt+W/W0oWl9Dd3TX3X1JvNSr1WaOnNVjOeUmw32253k5brru3milXdmCs29Tx9TNf2q226BC1X3enKemmPtZ8rNprkc9r2tnf7Fb1Vrm9/XWmV09VG68G63mzUa02dkFuU9mNv+izt7FzdMCrsH6yf07TccKer11rFSq2ZMs3ig9UdGOFnQOtNl903jOKWoYv0H9Iy5kqf3t7Vrb594N6OAZFrmfulFm33CS2T7u1pBxiAi9l8ej2bWk4ZRnsGrNd14A1v+iVF/uDtl+v/1s1SkU0W9PHvSnTZ/eqWbvL+qX/fur6jm3qtZH0f442/udJl62a1aHAG9ubf9cM3pqcnFeYpp5s/VEo640Da7h4tX7i3b08pGwlwTqZY2zb05lzRMPRteGh/xh3Fz7FoRHom5XcV6RdrLd3cKZbQRyjKO1MPh59ArjEd6dr+K91s6QcHmqWPmZ5mqrWsdfQ2+3NkUNTjv77UeWYqc+gN8fn+qPi8+YH4eb/Fxeenk+LzH7fE55/viN//LCk+P/9MfF6bQXZpXnwuL4jPv3wp9jeTFZ8PNsT+PPxWfM78S3z+/b5I/7Qk/r+xC/YL2ckhwP0ht2tEfHH7C8Mn/4NXhji/XobvS8HzW7T8hRaJuSJO9v4sLRVaioz/9ptmwqiXikZit17fNfREuV7VE/8xi4lq/bv6VKJpltp/JRr7W0allKhwVmwmtiq17Uptt5lof2OiqwuMrEpEnPg6YgaNm/2/vZTQiNJLhiOx4dheH3jguCVZ10xCf44bJ84/GurPCOr3LCG+1iMY/xEbFprte46Lf2e9+HfWeV5unfKvgGNRwr/TEeffFPG37lblX4zDuOaOdwbxbVmC92VaLtLivGon5CNarjjxsYQA93M3pPliZu08s+fw/KMm7rMIrBOSsM9rwDrh8Vmr/h0mZOQc2OnzsL+6APszxBd+5WFGcX6YDmFdmF1dXS7kM4vZex05uKE0L3GBFM8P+95YCPPjhZ8WEH6v08KmbH51Y3Y53UHwDqxRFfATSDF+lYjiFwsIv7+CHC0sr6byNgZke/O4Gn4CKcbvu4jiNxCw/NLddbJH+RVIMX57EcVvMHj8Jm/3jF+HFONnRBS/MwHLLwXh5hTlokn/8iuQYvyqEcXvpeDxu32rkC9P1nZ7wK9DivGrRRS/swHjt8G0WL7QC34CKcavHlH8hgJev2y0tViLouB7/SKQYvwaEcXv5SPAz9JiFgP6xO+QFOP3fUTxO3cE+DEtlumN/w5JMX5mxPAb0Xrbv21K8LtEyytsfy2cbnXOezyOwbrw+hzm9rjxGpH4PS4g1xD2Z2Cch7QX8xvNSHC+Aj63nN5yPdDC4/giJP6T+SMfx9TxcPNHcr+NHI8bpv79Pu2XMy7Etr899UcSohM5/0yHyD8E9YeP412IW5AJw4ueC6v6LWV6NqmoZ9cQvx9I5omd5b7N9aw0KsBt3+hOiOf9XMT08LDN56PB+zFbuycD7vo4EwtWH/PzXIZlfb+1VjTpuoCOOFXbFqDF4zkfMX08pAWjjycAEy88uFaOij4eUpB3ezuM47Am1qo4rklw5HEiCjh2hD5C9s0vnjJ5LQ+o+cntuGou8srCHt4BXKWgOuB4IWLyei2g9ROP33HFw7aE6qf1k5/XUccjXACcw8bJb9xAUHYhDntBLz7jAnhS9BhB8bNe/KZ6ns3jLpyjOzvxjIrhoF14v9bn+2/e+GCwNzlPesQRtCM0u2F3jMOOgt3geMwM+JNnmR19D7DowkHcbkdGjvE+AceVhGU3XoMziCrteXFXd+SfyyHg1Qsumk9cNBdchkG2Tcn+idVXI2ZPYy72NGj5435AJ/mzbwhO5e/F5O8itDmVv25c3ukj+ePrr6exYNZfo3Dm65wl08m7UEyr6eK7ryMcJxtzOd/oVT4nJPQsjeFVhgGDq1DfKegUMIfzok04wwvTP83Gwv32Qx7+63EU9yNm4fjP2+l1n8f9089iwfineTywexZYJ2/NZ/pY17x/eyonvuTkn3BWG2ZceT/KSdB5FBcgdtDKdrRs6SUneYAGeB4/JKd5FHa/2w+S/ebVkPwY42hNhv0Zr0LsnpXtR5TzAnvlXx7vMaIFE+/B493ELNzO+aRHum7XPMVD4me//r2jyk/xOsfm52qqx9e4n0kSXj7RgA03fn/AjzG1+C4vPZFUxJfvZ3L5VHY+tT7P4wJU8YxzQgkffEJORn5JQ/I53P4ubCwv5+bW02nIx/2UWLnpyjiiD8A43iUnI89EhuNFsFmLKyvp9dziV2nbuKf84Ig+AOP4aUg4dvnpArI3HDfxFoaOH8zjuoaufl0JSR96nVtg3PzqvzWPddISiiOS4xZfcsLt/ZD4iuftkyO2w/x8x/n2Dpc8UQkB7uflkPgO+18zWjD2d0YRVy6/a0axVjQXJm/D+1I/QBeecYEU4/oWOdn5nQi/m1M942eRYvxGT5i9eBP89vg2Hb7P8rp2B/drLOL2gu/rBn3aCxl+r8B49wpThUlb/IYXbnEgwPi9G7LdGDxmuyHewqRgNxAB7ufrEbEbB5o7H3K7Mkb8+ZMfecQZ7BVydP2bXi3QXRjzj8yu0r1YYWVxDtqxfdk/lPCNu34Uxv1SyHw75iL3MZvcjwUu9yupTVs8rxKulATj90ZE4l+SPfJVr/euHZVdk/nB+bmLh/u7q1/rEdErSe1o/EFefL6wuJ7LEyvW+j13/OK8rROOuT5df6rixf3VufTcanbexZ7Z8OJtnfDKkz9HPqR4W6JLPiRqiPEq9Hk85h9QNwaCPf85D3bynt5y7O/9iNgfPv6Mz7j9CY/zFzpuIeKyn+Lzj/N8nOd37+kPCg1T36kcWDd4OvFLVOJINHQ+RVzkTfUckPPhcEB8yHG1+LATedhveSJnjinekNtR2uN9o+XMfx+T6OaJHJf95PpNvD3YxW+NGmJcS31uPw/vYY8Fqxc5zk2EM+73dkTs6HNUq+qvpEccp238kbSnL5qfyvGaiAWD29ug+0Xc+lP/a8e4DvEjb6Mh4RXEOoP7AX/y4LdNRT8gz1NVux2eHP6uQo/Xy3fNx0LE40yPK96O50uUASiM0z34Owrr58EjWD9zP1U5oHhpno/u/msFLvfIeRDi+ZmNMB8PRoiP5+C8tV/17wy6B1qVTx9K8OLnpl6/iiGNq1P7OY2ueciS0zhnFX5djYDeJQ78yP2g4q+g+P/dlKjtT2Xjkvp3UUM8f1+ekP3pUa2Xc3T0K5Cj6dTvpRO+P7WN/0TuT4dQXLjqeVXGw8/G8yt4fL0kraILx49O7Y4QNyq7X+o6CSc/ehydb2K7I8tP8fu7cqp25/8BAAD//7CclxiYcQAA";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xdP3gbRRaflQ0xiQHnjoCDwYRwQI4QyU7iRIQDLNtyZGzL/iwZzMd9p8jy2hJe/clK5pwuZUpKSsqUV6akpKRMSZmSMt3djPaNtfO0szurrLUrn/V9841XnifN/Ob9mXnz3micWK8xqKegxu/zegTVuN3PL1n1r7S8RcsTeP8p1M+hvqJZ9TrUj6B+AvUzqC/FrHoW6jLUv0D9G9TPob4yZNVbUD+E+jHUv0M9NmzVGagfQf0fqD+gZYKW/Hfr6cJy+rs7pr5n6s1mpV4rtPRmqxlPKbaba7e7QctV13bzxapuzBebep4+pmsH1TZdgpaP3enKemmftZ8vNprkS9r2lnf7Vb1Vru98W2mV09VG68GG3mzUa02dkJuU9lNv+izt7HzdMCrsH6yfM7Rcc6er11rFSq2ZMs3ig7VdGOEXQOtNlz0wjOK2oYv0H9Ey6Uqf3tnTrb596N6OAZFrmQelFm33GS3T7u1pBxiAS9l8eiObWkkZRnsGrNdV4A1v+mVF/uDtV+r/1s1SkU0W9PHvSnTZg+q2bvL+qX/fhr6rm3qtZH0f442/udJl62a1aHAG9ubfjaM3ZmamFeYpp5s/Vko640Da7i4tX7m3b08pGwlwTqZY2zH05nzRMPQdeGh/xm3Fz7FoRHom5XcU6ZdqLd3cLZbQRyjKO1MPR59ArjAd6dr+G91s6YeHmqWPmZ5mqrWsdfQ2+3N8WNTjv73ceWYqc+RN8fnehPi89aH4eb/Hxeen0+LznzfF519ui9//LCk+P/9CfF6fRXZpQXwuL4rPv34t9jeTFZ8PN8X+PPxefM78S3z+455I/7Qk/r+xB/YL2ckRwP0ht2tEfHH7C8Mn/4VXhji/XoHvS8Hz27T8hRaJuSJO9v4MLXVaWJcTB00zYdRLRSOxV6/vGXqiXK/qiUqxZtQrpUTrfqJa/6GeaJol64/GwbZB369whmwmtiu1nUptr5lof2+iqyOMrHqEE19HzKJxs/+3lxIaUXrJcCQ2HNvrAw8ctyXrmmnoT79x4vyjof6Mo37PEeJrPYLxH7dhodm+p1/8O+fFv3PO83LzlH8FHIsS/p2JOP+miL91tyr/Yhwuae54ZxDfliV4X6TlPC3Oq3ZCPqHlshMfSwhwP/dCmi9m1s4xew79+EkT91kE1glJ2Oc1YJ3w+IxV/wETMn4W7PQ52F+Nwv4M6RW/8jCrOD9Mh7AuzK2trRTymaXs3Y4cXFOal7hAiueHfW8shPnxwk8LCL83aGFTtrC2ObeS7iB4G9aoCvgJpBi/SkTxiwWE319BjhZX1lJ5GwOyvXlcDT+BFOP3Q0TxGwpYfunuOtmj/AqkGL/9iOI3HDx+07d6xq9DivEzIorfSwHLLwXhxnXKRdP+5VcgxfhVI4rfy8Hjd+tmIV+eru31gF+HFONXiyh+ZwLGb5NpsXyhF/wEUoxfPaL4jQS8ftlsa7EWRcH3+kUgxfg1IorfK8eAn6XFLAb0id8RKcbvfkTxO3sM+DEtlumN/45IMX5mxPAb13rbv21J8LtAy6tsfy2cbnXOezyOwbrw+hLmtt94jUv8HqPINYT9GRjnEe3F/EazEpwvg88tp7dcD7TwOL4Kif9k/sjHMXU83PyR3G8jx+Oaqd8/oD1yxoXY7OupP5IQncj5ZyZE/iGoP3wc70HcgkwYXvRcWNVvKdOzSUU9u474/VAyT+ws9x2uZ6VRAW77RndCPO9nI6aHx2w+Hw3ej9naPRly18eZWLD6mJ/nMizrB631oknXBXSsqdqOAC0ez7mI6eMRLRh9PAWYeOHBtXJU9PGIgrzb9zsYxzFNrFVxXJfgyONEFHDsCH2E7JtfPGXyWh5S85PbcdVc5JWFPbwLuEpBdcBxNGLyeiWg9ROP33HFw7aEGqT1k5/XcccjjALOYePkN24gKLsQh72gF59xATwpeoyg+FkvflM9z+ZxF87RnZ14RsVw0C68Xx/w/TdvfDjcm5wnPeII2hGa3bA7xmFHwW5wPGaH/MmzzI6+D1h04SButyMjx3ifgONKwrIbr8MZRJX2ubinO/LPxRDw6gUXzScumgsuYyDbpmT/NAZxt1GypzEXexq0/HE/oJP82TcEp/L3YvJ3Htqcyl83Lu8OkPzx9dfTWDDrrwk483XOkunkXSim1XTx3bcRjpONuZxv9CqfUxJ6lsbwGouTZXAV6rsFnQLmcF60BWd4Yfqn2Vi4335Esg/A/MnjfsQsHP95O73u87h/+lksGP80jwd2zwLr5K35TB/rmvfvT+XEl5z8E85qw4wrH0Q5CTqPYhRiB61sR8uWXnCSB2iA5/EjcppHYfe7/SjZb34ckh/jElqTYX/GaxC7Z2X7EeW8wF75l8d7jGvBxHvweDcxC7dzPumRrts1T/GQ+Nmvf++48lO8zrH5uZrq8TXuZ5KEl080ZMON3x/wU8zdX6qqJ5KK+PL9TC6fyi6kNhZ4XIAqnnFOKOGDz8jJyC9pSD6H29/FzZWV3PxGOg35uJ8TKzddGUf0ARjHO+Rk5JnIcDwPNmtpdTW9kVv6Jm0b93U/OKIPwDh+HhKOXX66gOwNx028haHjB/O4rqGrX5dD0ode5xYYN7/6b91jnbSM4ojkuMWXnXD7ICS+4nn75JjtMD/fcb69wyVPVEKA+3kxJL7D/teMFoz9nVXElcvvulGsFc3F6VvwvtQP0IVnXCDFuL5NTnZ+J8LvxvWe8bNIMX4TJ8xevAV+e3ybDt9neV27g/s1GXF7wfd1wz7thQy/V2G8+4XrhWlb/IYXbnEgwPi9F7LdGO6z3RBvYVKwG4gA9/ONiNiNQ82dD7ldmfQZ7/zII85gv5Cj69/0WoHuwph/ZG6N7sUKq0vz0I7ty/6hhG/c9aMw7hdC5ttJF7mP2eR+MnC5X01t2eJ5lXClJBi/NyMS/5Lska96vXftuOyazA/Oz1083N9d/dqIiF5JasfjD/Li88WljVweYq3fd8cvzts64Zgb0PWnKl7cX51Lz69lF1zsmQ0v3tYJrzz5/8iHFG9LdMmHRA0xXoUBj8f8E+rGULDnP+fATt7VW458di8i9oePP+Mzbn/K4/yFjluIuByk+Px+no/z/O59/UGhYeq7lUPrBk8nfolKHIkdvzGH84xezgE5H44FxIccV4sPO5GHg5Yn8lKf4g25HaV9PTBazvz3KYlunki/7CfXb+LtwS5+a9QQ41oacPt5dA97LFi9yHFuIpxxv3ciYkefo1pVfyU94jht44+kPX3R/FSO11QsGNzeAd0v4jaY+l/r4zrEj7xNhIRXEOsM7gf82YPfthT9gDxPVe12eHL0uwo9Xi/fNR+LEY8z7Ve8Hc+XKANQGKe78HcU1s/Dx7B+5n6qckDx0jwf3f3XClzukfMgxPMzF2E+Ho4QH8/Deeug6t9ZdA+0Kp8+lODFz029fhVDGlen9nMaXfOQPY1zVuLXtQjoXeLAj9wPKv4Kiv/fTYna/lQ2Lql/FzXE8/f1CdmfHtd6OUdHvwo5mk56YvmE709t4z+R+9MRFBeuel6V8fCz8fwKHl8vSavowvGTU7sjxI3K7pe6SsLJj76Ezjex3ZHlp/j9XTlVu/O/AAAA///wpVwDmHEAAA==";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

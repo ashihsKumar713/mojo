@@ -27,8 +27,7 @@ class _DeviceInfoGetDeviceTypeParams extends bindings.Struct {
       return null;
     }
     _DeviceInfoGetDeviceTypeParams result = new _DeviceInfoGetDeviceTypeParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -74,7 +73,6 @@ class DeviceInfoGetDeviceTypeResponseParams extends bindings.Struct {
       return null;
     }
     DeviceInfoGetDeviceTypeResponseParams result = new DeviceInfoGetDeviceTypeResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

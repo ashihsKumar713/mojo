@@ -6,7 +6,6 @@
 import 'dart:async';
 
 import 'package:mojo/application.dart';
-import 'package:mojo/bindings.dart';
 import 'package:mojo/core.dart';
 import 'package:mojo_services/mojo/device_info.mojom.dart';
 

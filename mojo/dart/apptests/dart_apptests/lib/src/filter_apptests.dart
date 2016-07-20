@@ -5,14 +5,11 @@
 library filter_apptests;
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:mojo_apptest/apptest.dart';
 import 'package:mojo/application.dart';
-import 'package:mojo/bindings.dart';
-import 'package:mojo/core.dart';
 
 var generateListTypes = [
   (list) => list,
@@ -48,31 +45,31 @@ tests(Application application, String url) {
     test('ZLibDeflateEmpty', () async {
       Completer completer = new Completer();
       var controller = new StreamController(sync: true);
-      controller.stream.transform(new ZLibEncoder(gzip: false, level: 6))
+      controller.stream
+          .transform(new ZLibEncoder(gzip: false, level: 6))
           .fold([], (buffer, data) {
-            buffer.addAll(data);
-            return buffer;
-          })
-          .then((data) {
-            expect(data, equals([120, 156, 3, 0, 0, 0, 0, 1]));
-            completer.complete(null);
-          });
+        buffer.addAll(data);
+        return buffer;
+      }).then((data) {
+        expect(data, equals([120, 156, 3, 0, 0, 0, 0, 1]));
+        completer.complete(null);
+      });
       controller.close();
       await completer.future;
     });
     test('ZLibDeflateEmptyGzip', () async {
       Completer completer = new Completer();
       var controller = new StreamController(sync: true);
-      controller.stream.transform(new ZLibEncoder(gzip: true, level: 6))
+      controller.stream
+          .transform(new ZLibEncoder(gzip: true, level: 6))
           .fold([], (buffer, data) {
-            buffer.addAll(data);
-            return buffer;
-          })
-          .then((data) {
-            expect(data.length > 0, isTrue);
-            expect([], equals(new ZLibDecoder().convert(data)));
-            completer.complete(null);
-          });
+        buffer.addAll(data);
+        return buffer;
+      }).then((data) {
+        expect(data.length > 0, isTrue);
+        expect([], equals(new ZLibDecoder().convert(data)));
+        completer.complete(null);
+      });
       controller.close();
       await completer.future;
     });
@@ -102,20 +99,19 @@ tests(Application application, String url) {
         [3, 6, 9].forEach((level) {
           var controller = new StreamController(sync: true);
           controller.stream
-              .transform(new ZLibEncoder(gzip: gzip, level: level,
-                                         windowBits: 8))
+              .transform(
+                  new ZLibEncoder(gzip: gzip, level: level, windowBits: 8))
               .transform(new ZLibDecoder(windowBits: 10))
               .fold([], (buffer, data) {
-                buffer.addAll(data);
-                return buffer;
-              })
-              .then((inflated) {
-                expect(inflated, equals(data));
-                doneCount++;
-                if (doneCount == totalCount) {
-                  completer.complete(null);
-                }
-              });
+            buffer.addAll(data);
+            return buffer;
+          }).then((inflated) {
+            expect(inflated, equals(data));
+            doneCount++;
+            if (doneCount == totalCount) {
+              completer.complete(null);
+            }
+          });
           controller.add(data);
           controller.close();
         });
@@ -127,8 +123,8 @@ tests(Application application, String url) {
       var data = [98, 97, 114, 102, 111, 111];
 
       [3, 6, 9].forEach((level) {
-        var encoded = new ZLibEncoder(level: level, dictionary: dict)
-            .convert(data);
+        var encoded =
+            new ZLibEncoder(level: level, dictionary: dict).convert(data);
         var decoded = new ZLibDecoder(dictionary: dict).convert(encoded);
         expect(decoded, equals(data));
       });

@@ -32,7 +32,6 @@ class MediaTimelineControlPointStatus extends bindings.Struct {
       return null;
     }
     MediaTimelineControlPointStatus result = new MediaTimelineControlPointStatus();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -96,7 +95,6 @@ class _MediaTimelineControllerAddControlPointParams extends bindings.Struct {
       return null;
     }
     _MediaTimelineControllerAddControlPointParams result = new _MediaTimelineControllerAddControlPointParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -150,7 +148,6 @@ class _MediaTimelineControllerGetControlPointParams extends bindings.Struct {
       return null;
     }
     _MediaTimelineControllerGetControlPointParams result = new _MediaTimelineControllerGetControlPointParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -204,7 +201,6 @@ class _MediaTimelineControlPointGetStatusParams extends bindings.Struct {
       return null;
     }
     _MediaTimelineControlPointGetStatusParams result = new _MediaTimelineControlPointGetStatusParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -261,7 +257,6 @@ class MediaTimelineControlPointGetStatusResponseParams extends bindings.Struct {
       return null;
     }
     MediaTimelineControlPointGetStatusResponseParams result = new MediaTimelineControlPointGetStatusResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -325,7 +320,6 @@ class _MediaTimelineControlPointGetTimelineConsumerParams extends bindings.Struc
       return null;
     }
     _MediaTimelineControlPointGetTimelineConsumerParams result = new _MediaTimelineControlPointGetTimelineConsumerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

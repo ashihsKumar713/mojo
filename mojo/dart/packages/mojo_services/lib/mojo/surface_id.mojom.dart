@@ -29,7 +29,6 @@ class SurfaceId extends bindings.Struct {
       return null;
     }
     SurfaceId result = new SurfaceId();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

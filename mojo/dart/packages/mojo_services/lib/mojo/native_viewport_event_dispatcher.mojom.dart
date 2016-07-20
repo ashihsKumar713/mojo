@@ -30,7 +30,6 @@ class _NativeViewportEventDispatcherOnEventParams extends bindings.Struct {
       return null;
     }
     _NativeViewportEventDispatcherOnEventParams result = new _NativeViewportEventDispatcherOnEventParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -84,8 +83,7 @@ class NativeViewportEventDispatcherOnEventResponseParams extends bindings.Struct
       return null;
     }
     NativeViewportEventDispatcherOnEventResponseParams result = new NativeViewportEventDispatcherOnEventResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 

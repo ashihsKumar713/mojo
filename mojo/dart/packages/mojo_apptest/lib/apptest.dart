@@ -7,7 +7,6 @@ library mojo_apptest;
 import 'dart:async';
 
 import 'package:mojo/application.dart';
-import 'package:mojo/bindings.dart';
 import 'package:mojo/core.dart';
 
 // Import and reexport the test package.
@@ -58,8 +57,7 @@ class _ConnectionToShellApplication extends Application {
 /// and url.
 runAppTests(var incomingHandle, List<AppTestFunction> testFunctions) {
   var appHandle = new MojoHandle(incomingHandle);
-  var application =
-      new _ConnectionToShellApplication.fromHandle(appHandle, testFunctions);
+  new _ConnectionToShellApplication.fromHandle(appHandle, testFunctions);
 
   /// [Application]'s [initialize] will be called.
 }

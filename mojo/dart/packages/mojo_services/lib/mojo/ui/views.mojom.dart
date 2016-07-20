@@ -41,7 +41,6 @@ class ViewInvalidation extends bindings.Struct {
       return null;
     }
     ViewInvalidation result = new ViewInvalidation();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -120,8 +119,7 @@ class _ViewGetTokenParams extends bindings.Struct {
       return null;
     }
     _ViewGetTokenParams result = new _ViewGetTokenParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -167,7 +165,6 @@ class ViewGetTokenResponseParams extends bindings.Struct {
       return null;
     }
     ViewGetTokenResponseParams result = new ViewGetTokenResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -223,7 +220,6 @@ class _ViewGetServiceProviderParams extends bindings.Struct {
       return null;
     }
     _ViewGetServiceProviderParams result = new _ViewGetServiceProviderParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -277,7 +273,6 @@ class _ViewCreateSceneParams extends bindings.Struct {
       return null;
     }
     _ViewCreateSceneParams result = new _ViewCreateSceneParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -331,7 +326,6 @@ class _ViewGetContainerParams extends bindings.Struct {
       return null;
     }
     _ViewGetContainerParams result = new _ViewGetContainerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -383,8 +377,7 @@ class _ViewInvalidateParams extends bindings.Struct {
       return null;
     }
     _ViewInvalidateParams result = new _ViewInvalidateParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -430,7 +423,6 @@ class _ViewListenerOnInvalidationParams extends bindings.Struct {
       return null;
     }
     _ViewListenerOnInvalidationParams result = new _ViewListenerOnInvalidationParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -484,8 +476,7 @@ class ViewListenerOnInvalidationResponseParams extends bindings.Struct {
       return null;
     }
     ViewListenerOnInvalidationResponseParams result = new ViewListenerOnInvalidationResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 

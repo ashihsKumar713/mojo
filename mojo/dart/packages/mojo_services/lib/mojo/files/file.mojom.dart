@@ -28,8 +28,7 @@ class _FileCloseParams extends bindings.Struct {
       return null;
     }
     _FileCloseParams result = new _FileCloseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -75,7 +74,6 @@ class FileCloseResponseParams extends bindings.Struct {
       return null;
     }
     FileCloseResponseParams result = new FileCloseResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -138,7 +136,6 @@ class _FileReadParams extends bindings.Struct {
       return null;
     }
     _FileReadParams result = new _FileReadParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -215,7 +212,6 @@ class FileReadResponseParams extends bindings.Struct {
       return null;
     }
     FileReadResponseParams result = new FileReadResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -286,7 +282,6 @@ class _FileWriteParams extends bindings.Struct {
       return null;
     }
     _FileWriteParams result = new _FileWriteParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -363,7 +358,6 @@ class FileWriteResponseParams extends bindings.Struct {
       return null;
     }
     FileWriteResponseParams result = new FileWriteResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -436,7 +430,6 @@ class _FileReadToStreamParams extends bindings.Struct {
       return null;
     }
     _FileReadToStreamParams result = new _FileReadToStreamParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -515,7 +508,6 @@ class FileReadToStreamResponseParams extends bindings.Struct {
       return null;
     }
     FileReadToStreamResponseParams result = new FileReadToStreamResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -578,7 +570,6 @@ class _FileWriteFromStreamParams extends bindings.Struct {
       return null;
     }
     _FileWriteFromStreamParams result = new _FileWriteFromStreamParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -650,7 +641,6 @@ class FileWriteFromStreamResponseParams extends bindings.Struct {
       return null;
     }
     FileWriteFromStreamResponseParams result = new FileWriteFromStreamResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -707,8 +697,7 @@ class _FileTellParams extends bindings.Struct {
       return null;
     }
     _FileTellParams result = new _FileTellParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -756,7 +745,6 @@ class FileTellResponseParams extends bindings.Struct {
       return null;
     }
     FileTellResponseParams result = new FileTellResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -825,7 +813,6 @@ class _FileSeekParams extends bindings.Struct {
       return null;
     }
     _FileSeekParams result = new _FileSeekParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -894,7 +881,6 @@ class FileSeekResponseParams extends bindings.Struct {
       return null;
     }
     FileSeekResponseParams result = new FileSeekResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -959,8 +945,7 @@ class _FileStatParams extends bindings.Struct {
       return null;
     }
     _FileStatParams result = new _FileStatParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -1008,7 +993,6 @@ class FileStatResponseParams extends bindings.Struct {
       return null;
     }
     FileStatResponseParams result = new FileStatResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1076,7 +1060,6 @@ class _FileTruncateParams extends bindings.Struct {
       return null;
     }
     _FileTruncateParams result = new _FileTruncateParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1131,7 +1114,6 @@ class FileTruncateResponseParams extends bindings.Struct {
       return null;
     }
     FileTruncateResponseParams result = new FileTruncateResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1192,7 +1174,6 @@ class _FileTouchParams extends bindings.Struct {
       return null;
     }
     _FileTouchParams result = new _FileTouchParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1257,7 +1238,6 @@ class FileTouchResponseParams extends bindings.Struct {
       return null;
     }
     FileTouchResponseParams result = new FileTouchResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1316,7 +1296,6 @@ class _FileDupParams extends bindings.Struct {
       return null;
     }
     _FileDupParams result = new _FileDupParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1370,7 +1349,6 @@ class FileDupResponseParams extends bindings.Struct {
       return null;
     }
     FileDupResponseParams result = new FileDupResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1431,7 +1409,6 @@ class _FileReopenParams extends bindings.Struct {
       return null;
     }
     _FileReopenParams result = new _FileReopenParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1492,7 +1469,6 @@ class FileReopenResponseParams extends bindings.Struct {
       return null;
     }
     FileReopenResponseParams result = new FileReopenResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1549,8 +1525,7 @@ class _FileAsBufferParams extends bindings.Struct {
       return null;
     }
     _FileAsBufferParams result = new _FileAsBufferParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -1598,7 +1573,6 @@ class FileAsBufferResponseParams extends bindings.Struct {
       return null;
     }
     FileAsBufferResponseParams result = new FileAsBufferResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1665,7 +1639,6 @@ class _FileIoctlParams extends bindings.Struct {
       return null;
     }
     _FileIoctlParams result = new _FileIoctlParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1730,7 +1703,6 @@ class FileIoctlResponseParams extends bindings.Struct {
       return null;
     }
     FileIoctlResponseParams result = new FileIoctlResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

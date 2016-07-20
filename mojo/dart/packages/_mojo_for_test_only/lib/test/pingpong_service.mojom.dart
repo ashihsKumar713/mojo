@@ -34,7 +34,6 @@ class _PingPongServiceSetClientParams extends bindings.Struct {
       return null;
     }
     _PingPongServiceSetClientParams result = new _PingPongServiceSetClientParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -88,7 +87,6 @@ class _PingPongServicePingParams extends bindings.Struct {
       return null;
     }
     _PingPongServicePingParams result = new _PingPongServicePingParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -145,7 +143,6 @@ class _PingPongServicePingTargetUrlParams extends bindings.Struct {
       return null;
     }
     _PingPongServicePingTargetUrlParams result = new _PingPongServicePingTargetUrlParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -208,7 +205,6 @@ class PingPongServicePingTargetUrlResponseParams extends bindings.Struct {
       return null;
     }
     PingPongServicePingTargetUrlResponseParams result = new PingPongServicePingTargetUrlResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -265,7 +261,6 @@ class _PingPongServicePingTargetServiceParams extends bindings.Struct {
       return null;
     }
     _PingPongServicePingTargetServiceParams result = new _PingPongServicePingTargetServiceParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -326,7 +321,6 @@ class PingPongServicePingTargetServiceResponseParams extends bindings.Struct {
       return null;
     }
     PingPongServicePingTargetServiceResponseParams result = new PingPongServicePingTargetServiceResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -381,7 +375,6 @@ class _PingPongServiceGetPingPongServiceParams extends bindings.Struct {
       return null;
     }
     _PingPongServiceGetPingPongServiceParams result = new _PingPongServiceGetPingPongServiceParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -435,7 +428,6 @@ class _PingPongServiceGetPingPongServiceDelayedParams extends bindings.Struct {
       return null;
     }
     _PingPongServiceGetPingPongServiceDelayedParams result = new _PingPongServiceGetPingPongServiceDelayedParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -487,8 +479,7 @@ class _PingPongServiceQuitParams extends bindings.Struct {
       return null;
     }
     _PingPongServiceQuitParams result = new _PingPongServiceQuitParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -534,7 +525,6 @@ class _PingPongClientPongParams extends bindings.Struct {
       return null;
     }
     _PingPongClientPongParams result = new _PingPongClientPongParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1268,7 +1258,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xazW7TThC3nabNv/33Cwikn0pLQeXQugIOVU+VaEUlEApQDj1VVrqkpk4cbKcCTj32EXrkyCNw5DF4jB65wW4zWzbr3cSO3GSNstJgdhNnZ347M7/Z3Ra0ZpuC5zk8+fFNpq9jyUF/AUseS4D8YGurZNcqJbdWeYu8U7uMBN9/AO/sH5R2D1/sHmyRF9fD7/Hz1xm9DGZ8A54rWOalv/vMsVEtiDP/KjNPhtOH9H8MNfurMF7UWtuU3trf5j7f4MZ/Qytp4nYXywQW3qI5PHYb8BeYG8JxCcsolhMsZSxmw/dMxy1bjllx3YqDzGO3iswvnmVW3Q/uY9P3ylf/M48sLzCtep3M5Jvk30Pc8027FiDvvVVGvlnH89fx/Id+E8d18mJVqAft/w/+oUn8i8f3UoKPDF+NwZf9Pb4RPciSEvhE+i6DP/QatyKHF7W/YES3m7QNid13wHZi95qHPjawfiL7aeu1/bw/bAvykcZ83qlF9RMZXrcgfq7UPbWcBhLny2WI137jVWB01xn9+Lg6gyC8kOQtivcFPL9x/vVdghevT1HALyPMOMllY1ggE7+yqigSz9zDMsnkR/rJPPi4JM2H1i3Xp/zYyT5eT5b3Rpj1NYCfSC7LYhlm1nGEWcfLDIzDy8WJ5vM4D78/A3gsiP3l1w3F1zSW/67WP2BYLGz/qCL5mOLwKWY+3pTYPwMYXNvPJuWU5eWsxpF7AnlZxt8T4OtlcBqRv8z10V80Tp9ih7ouaj3bbb7n6yg9xjroUeooW1xHjf/rdZQ9qKNi1VF2+zpqPGV11DUfwP7QiIGX0QavPGBB/Gvf8iooePfmpQCvacV4cS+TDC/S+qjFfibQVImz0PmELo83vYf8OAZ1YcNzhHE2DTV0P+Ks3X6jU17KdYFTO/4ah7ql7DZqgQSn+4rlI4Ppy+KwkFB9ugg1Cx+HPtbbR+njO03rTfzR/Yp7oknj70mKeI7mrZ/Ac5kYOGWYdZDtf/76F7NZF+CWV4TvKB5fY/LdtgSHJcAihIOi+0Ge9850NfaFk3DuARoL/WdFwX2h7Dwr6v2F6jxKcH+aIh6l/lo0kolvcj48K4lvyqVp3D+qwqfEv3ZSyKe0DcXAaagNn87CXvs5CgSn3+J7OZX49CzheAvj0Eqog/PV7niU9B/20W+MG+LRbuM5x61LNsY6ZAXf4+vCsB/vIMf6jI4kdeGcInFNcTmPGdd7EjweASZSPAb3J4nEN/GftUF8S+9PhmOsw3CE+5PXDVt4f7Co2P3JpZbs/QmxW8X7k5zk7xkKkn3UnwAAAP//RrpkZ1gnAAA=";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xZzW7TShS2nf7ktrd/9xLov9JSUFi0jgSLqqtKtAIJhAKURVfFcodgcOLUdiqxY5klyy5Z8gh9BB6BJY/RHcw0Z2Aynkns4DZjkZFO3XHi+Mw35zvfmZl5rd1m4dqCK39/m+nr2PLQX8FWwBaiINzZqTj1asWrV18i/9SxkeD7d+CZg8PK/tGT/cMd8uBW9Dn+/Q3GL4O5X4brBrZl6e8+dB1UD5O8v8S8J8f5Q/rfR9r9Etwvap1tXu/s73Kfl7n7P6BVNHG7iW0aGz+iJXzvf8BfMNwIjmvYJrCdYHOwmc3AN13Ptlyz6nlVF5lvvRoyHavueo5thidmzXvnmYFvt/85tvzQtBoN8r7AJH+PcC8wnXqI/DeWjQKzgb1oYC+OgjaaW+TBmiSuaP9fiBNNEmc8zhcSnGQ4awzO7O/xjfhBppbAKPJ3HeJiUPgVOdwoDiUj/vhJK0vGfwMwIOPf9NFJE3sowoG2QeHAx8euIE9pzOe9Wty4keH2H/Dq0uFTy20icbyvA49VwW2eGYPO+MnzrQXk/CzJaxT3M7h+4eLtXIIb709RkCfGmfsk101ig0z9zKqhWDp0C9sMkz/pJ8sQ8xIZiMxffsD5s9c4eX9ZfRxn5tkAHSO5bhTbGDOf48x85kHnGvDwx2nIO4X29dtC+/p1RaKH+tXwbQ7bP5dxEDJqFx3/hGL5muLRSpivtyU4LAAWv3Bgk3ZG8zaJx7yebt6W6f00xL4NQSSKnyUF4kfj/Cr2qAvj1sP96gFff+kJ5kOPU3854vpr6m+pv5xh/dVX/eV0r7+mMlp/UYKdgR4bCXAzuuBWAExIvB1YfhWFr148FeA2p6iOvs6lo6O0rurAgSGgavzj90G2dTkP9WvU00moK5u+K+TfHNTig+Rft/VLr7yV7wOvbno3BfWO7TXroQSv24rmK4Ppy/hZSqnOXYVah+dngD0PUHb1UdOuh5d0HeS916S8vJ9BXaR57QJ0MZcArxwzH7J11e94YzYFBPgVFNNHist5Qn3cleCxBphE8FB8vcnrZEtXY905A/ss4LMwnjYUXnfK9tPinq+orrsE/wcZ1F0av2UjHd6T/epFCe+p9mZ5faqK/pJ428uw/tI2kgCvkS76uwhr+kcoFOzKi88RVdTfTynzMIpHpwAP93v/THdJ/64CcWRcke72y/NZbn5GE8zHqOB7fF0Zjes95Fof0LGkrlxSjO8Un7OEfH8sweUeYCPFZXjOkyrvSTxtDnnf85xnLMF8jMU453nedITnG6uKnvNcaOme85Dxq3zOk49RH7Lf+xkAAP//oEAa5VAoAAA=";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

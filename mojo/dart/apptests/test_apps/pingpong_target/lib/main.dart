@@ -5,24 +5,21 @@
 import 'dart:async';
 
 import 'package:mojo/application.dart';
-import 'package:mojo/bindings.dart';
 import 'package:mojo/core.dart';
 
 import 'package:_mojo_for_test_only/test/pingpong_service.mojom.dart';
 
 class PingPongServiceImpl implements PingPongService {
-  PingPongService _service;
-  Application _application;
   PingPongClient _pingPongClient;
 
-  PingPongServiceImpl(this._application, MojoMessagePipeEndpoint endpoint) {
-    _service = new PingPongServiceInterface.fromEndpoint(endpoint, this);
+  PingPongServiceImpl(
+      Application application, MojoMessagePipeEndpoint endpoint) {
+    new PingPongServiceInterface.fromEndpoint(endpoint, this);
   }
 
   PingPongServiceImpl.fromInterfaceRequest(
       PingPongServiceInterfaceRequest service) {
     service.impl = this;
-    _service = service;
   }
 
   void setClient(PingPongClientInterface client) {
@@ -36,7 +33,7 @@ class PingPongServiceImpl implements PingPongService {
   void pingTargetUrl(String url, int count, void callback(bool ok)) =>
       throw "Unimplemented";
   void pingTargetService(PingPongServiceInterface service, int count,
-      void callback(bool ok)) =>
+          void callback(bool ok)) =>
       throw "Unimplemented";
   void getPingPongServiceDelayed(PingPongServiceInterfaceRequest service) =>
       throw "Unimplemented";

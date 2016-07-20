@@ -29,7 +29,6 @@ class ViewToken extends bindings.Struct {
       return null;
     }
     ViewToken result = new ViewToken();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -82,8 +81,7 @@ class _ViewOwnerGetTokenParams extends bindings.Struct {
       return null;
     }
     _ViewOwnerGetTokenParams result = new _ViewOwnerGetTokenParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -129,7 +127,6 @@ class ViewOwnerGetTokenResponseParams extends bindings.Struct {
       return null;
     }
     ViewOwnerGetTokenResponseParams result = new ViewOwnerGetTokenResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

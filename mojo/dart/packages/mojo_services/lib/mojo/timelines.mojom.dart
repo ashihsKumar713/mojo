@@ -36,7 +36,6 @@ class TimelineTransform extends bindings.Struct {
       return null;
     }
     TimelineTransform result = new TimelineTransform();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -115,7 +114,6 @@ class _TimelineConsumerSetTimelineTransformParams extends bindings.Struct {
       return null;
     }
     _TimelineConsumerSetTimelineTransformParams result = new _TimelineConsumerSetTimelineTransformParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -171,7 +169,6 @@ class TimelineConsumerSetTimelineTransformResponseParams extends bindings.Struct
       return null;
     }
     TimelineConsumerSetTimelineTransformResponseParams result = new TimelineConsumerSetTimelineTransformResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

@@ -30,8 +30,7 @@ class _MediaDemuxDescribeParams extends bindings.Struct {
       return null;
     }
     _MediaDemuxDescribeParams result = new _MediaDemuxDescribeParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -77,7 +76,6 @@ class MediaDemuxDescribeResponseParams extends bindings.Struct {
       return null;
     }
     MediaDemuxDescribeResponseParams result = new MediaDemuxDescribeResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -150,7 +148,6 @@ class _MediaDemuxGetPacketProducerParams extends bindings.Struct {
       return null;
     }
     _MediaDemuxGetPacketProducerParams result = new _MediaDemuxGetPacketProducerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -211,7 +208,6 @@ class _MediaDemuxGetMetadataParams extends bindings.Struct {
       return null;
     }
     _MediaDemuxGetMetadataParams result = new _MediaDemuxGetMetadataParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -268,7 +264,6 @@ class MediaDemuxGetMetadataResponseParams extends bindings.Struct {
       return null;
     }
     MediaDemuxGetMetadataResponseParams result = new MediaDemuxGetMetadataResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -330,8 +325,7 @@ class _MediaDemuxPrimeParams extends bindings.Struct {
       return null;
     }
     _MediaDemuxPrimeParams result = new _MediaDemuxPrimeParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -375,8 +369,7 @@ class MediaDemuxPrimeResponseParams extends bindings.Struct {
       return null;
     }
     MediaDemuxPrimeResponseParams result = new MediaDemuxPrimeResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -420,8 +413,7 @@ class _MediaDemuxFlushParams extends bindings.Struct {
       return null;
     }
     _MediaDemuxFlushParams result = new _MediaDemuxFlushParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -465,8 +457,7 @@ class MediaDemuxFlushResponseParams extends bindings.Struct {
       return null;
     }
     MediaDemuxFlushResponseParams result = new MediaDemuxFlushResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -512,7 +503,6 @@ class _MediaDemuxSeekParams extends bindings.Struct {
       return null;
     }
     _MediaDemuxSeekParams result = new _MediaDemuxSeekParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -565,8 +555,7 @@ class MediaDemuxSeekResponseParams extends bindings.Struct {
       return null;
     }
     MediaDemuxSeekResponseParams result = new MediaDemuxSeekResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 

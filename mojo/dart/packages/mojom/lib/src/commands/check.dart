@@ -4,15 +4,11 @@
 
 library mojom.command.check;
 
-import 'dart:async';
 import 'dart:io';
 
-import 'package:args/args.dart';
-import 'package:args/command_runner.dart';
 import 'package:mojom/src/commands/mojom_command.dart';
 import 'package:mojom/src/generate.dart';
 import 'package:mojom/src/utils.dart';
-import 'package:path/path.dart' as path;
 
 class CheckCommand extends MojomCommand {
   String get name => 'check';

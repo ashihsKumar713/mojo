@@ -2,7 +2,6 @@
 // See $MOJO_SDK/tools/bindings/mojom_bindings_generator.py.
 
 library notifications_mojom;
-import 'dart:async';
 import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
@@ -37,7 +36,6 @@ class NotificationData extends bindings.Struct {
       return null;
     }
     NotificationData result = new NotificationData();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -122,8 +120,7 @@ class _NotificationClientOnSelectedParams extends bindings.Struct {
       return null;
     }
     _NotificationClientOnSelectedParams result = new _NotificationClientOnSelectedParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -167,8 +164,7 @@ class _NotificationClientOnDismissedParams extends bindings.Struct {
       return null;
     }
     _NotificationClientOnDismissedParams result = new _NotificationClientOnDismissedParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -214,7 +210,6 @@ class _NotificationUpdateParams extends bindings.Struct {
       return null;
     }
     _NotificationUpdateParams result = new _NotificationUpdateParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -268,8 +263,7 @@ class _NotificationCancelParams extends bindings.Struct {
       return null;
     }
     _NotificationCancelParams result = new _NotificationCancelParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -319,7 +313,6 @@ class _NotificationServicePostParams extends bindings.Struct {
       return null;
     }
     _NotificationServicePostParams result = new _NotificationServicePostParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

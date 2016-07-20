@@ -29,7 +29,6 @@ class _ClipboardGetSequenceNumberParams extends bindings.Struct {
       return null;
     }
     _ClipboardGetSequenceNumberParams result = new _ClipboardGetSequenceNumberParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -88,7 +87,6 @@ class ClipboardGetSequenceNumberResponseParams extends bindings.Struct {
       return null;
     }
     ClipboardGetSequenceNumberResponseParams result = new ClipboardGetSequenceNumberResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -143,7 +141,6 @@ class _ClipboardGetAvailableMimeTypesParams extends bindings.Struct {
       return null;
     }
     _ClipboardGetAvailableMimeTypesParams result = new _ClipboardGetAvailableMimeTypesParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -202,7 +199,6 @@ class ClipboardGetAvailableMimeTypesResponseParams extends bindings.Struct {
       return null;
     }
     ClipboardGetAvailableMimeTypesResponseParams result = new ClipboardGetAvailableMimeTypesResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -274,7 +270,6 @@ class _ClipboardReadMimeTypeParams extends bindings.Struct {
       return null;
     }
     _ClipboardReadMimeTypeParams result = new _ClipboardReadMimeTypeParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -341,7 +336,6 @@ class ClipboardReadMimeTypeResponseParams extends bindings.Struct {
       return null;
     }
     ClipboardReadMimeTypeResponseParams result = new ClipboardReadMimeTypeResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -398,7 +392,6 @@ class _ClipboardWriteClipboardDataParams extends bindings.Struct {
       return null;
     }
     _ClipboardWriteClipboardDataParams result = new _ClipboardWriteClipboardDataParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

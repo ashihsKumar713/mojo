@@ -41,7 +41,6 @@ class KeyData extends bindings.Struct {
       return null;
     }
     KeyData result = new KeyData();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -170,7 +169,6 @@ class PointerData extends bindings.Struct {
       return null;
     }
     PointerData result = new PointerData();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -325,7 +323,6 @@ class Event extends bindings.Struct {
       return null;
     }
     Event result = new Event();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

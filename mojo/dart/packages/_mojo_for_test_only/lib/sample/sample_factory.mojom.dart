@@ -41,7 +41,6 @@ class Request extends bindings.Struct {
       return null;
     }
     Request result = new Request();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -118,7 +117,6 @@ class Response extends bindings.Struct {
       return null;
     }
     Response result = new Response();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -179,7 +177,6 @@ class _NamedObjectSetNameParams extends bindings.Struct {
       return null;
     }
     _NamedObjectSetNameParams result = new _NamedObjectSetNameParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -232,8 +229,7 @@ class _NamedObjectGetNameParams extends bindings.Struct {
       return null;
     }
     _NamedObjectGetNameParams result = new _NamedObjectGetNameParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -279,7 +275,6 @@ class NamedObjectGetNameResponseParams extends bindings.Struct {
       return null;
     }
     NamedObjectGetNameResponseParams result = new NamedObjectGetNameResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -336,7 +331,6 @@ class _FactoryDoStuffParams extends bindings.Struct {
       return null;
     }
     _FactoryDoStuffParams result = new _FactoryDoStuffParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -400,7 +394,6 @@ class FactoryDoStuffResponseParams extends bindings.Struct {
       return null;
     }
     FactoryDoStuffResponseParams result = new FactoryDoStuffResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -462,7 +455,6 @@ class _FactoryDoStuff2Params extends bindings.Struct {
       return null;
     }
     _FactoryDoStuff2Params result = new _FactoryDoStuff2Params();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -516,7 +508,6 @@ class FactoryDoStuff2ResponseParams extends bindings.Struct {
       return null;
     }
     FactoryDoStuff2ResponseParams result = new FactoryDoStuff2ResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -571,7 +562,6 @@ class _FactoryCreateNamedObjectParams extends bindings.Struct {
       return null;
     }
     _FactoryCreateNamedObjectParams result = new _FactoryCreateNamedObjectParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -625,7 +615,6 @@ class _FactoryRequestImportedInterfaceParams extends bindings.Struct {
       return null;
     }
     _FactoryRequestImportedInterfaceParams result = new _FactoryRequestImportedInterfaceParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -679,7 +668,6 @@ class FactoryRequestImportedInterfaceResponseParams extends bindings.Struct {
       return null;
     }
     FactoryRequestImportedInterfaceResponseParams result = new FactoryRequestImportedInterfaceResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -733,7 +721,6 @@ class _FactoryTakeImportedInterfaceParams extends bindings.Struct {
       return null;
     }
     _FactoryTakeImportedInterfaceParams result = new _FactoryTakeImportedInterfaceParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -787,7 +774,6 @@ class FactoryTakeImportedInterfaceResponseParams extends bindings.Struct {
       return null;
     }
     FactoryTakeImportedInterfaceResponseParams result = new FactoryTakeImportedInterfaceResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1589,7 +1575,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xaT3PbRBTXH4eaf6nTDI0oberQNrgwRCYcyOTUGShthxnoEA705JGdteNgW0KSGcOJY44c8xH4CPkYfIweOXKjK+utvV7tSpYrS+uOd2ZnLUWK9v3e7/3Z3WcoYavAeAEje/+IulZxL8P1R7hv4+5ZfaeHjo+/t/ro9IfmOWr53OfvwTs/vXj+uPHd4xfH4YsH7Hvs969grOFewr3KzOtnGB0Y7+K+w/nOt1bLt93f556H6P/8iH4dIs8fz8Pg/t1z7IGHnsJ8Azl0Bsfg+rI6i2vt09lrpz6VW6HkJu0/5voRc11ncPofGvscaddxv4Y7wekm/r050e8Evoh+9nB/B/cO7g3czaHnmj27ZfXMjm13esg8s/vI/MO1zL59bh+antsa/zKdYbPXbZndgY/cttVCntnsDk67g45n+hhhzww/3WiHnz4IXupHvk/wuY37BvwO8NMA5xKFxwb1/AUQs7oZjv9sheOZwcf9JYyXpflwVyjc6f8nwv0b+8QfttsR+T4GWfLCt8r4ASL3SJ9f3qDVBfLugMwg7+cu2BMrN2l58kqjvn+mzspL2+8Gx/5ELSt+iHAK+HGjAH4ozDwMZr7ETyb5UR6+pRh8ywvgq8bg+x58z+k6iBd/Any/yBHfCuXDVE4cNai5a9T1su3WgLlM7TaMc2u75bcK6EyE0z3In2SxWzJfkr8k5TePBPlh3nbro5HPs9sA3/sF2K0iyJdFdivKM+r61A9kgRfRL9jvIYvXfUnyjIq2FH91SBKNov0Vy4u08S9rP5UU/wJe7BdkR1qCHanUPFk+/UuuU/LpSIDTh7hvzfIpdISCdbOMvFIL4JXIPwe8+kpS/6xy1pdVwbpbS4GXRulDxK+vXWT5iN2NiOL3oGB/TXBwUtqXaP9hDzCIyD9ZIa6OneWZZ74L+xx281zIk70CeKIx8yD3t2HOLMPn3Zd7Xbu9grxKT4G/HmO3JE+G9eyzvmO7Pjp9RlBj9bEvid1eZGS3NcBAJP8q5V0y2e1+zvFRZLd1ah/kFu5dUPBBRNPhc5+BLU/sOOGFRfM7sjD6KyWPnwr08RD8ZAyPVy7fk4nPn+S8jpCdz0nxqZRCL6WY+HQH9w+C+Vu/IN6Meecpb1J8egAYcOWncsu1Paez5+C9LyXYv5Q1PmXN48B37sbwmASnNY/T8fgh+Ig1j/lxaUTyLJWvF6LXSxj/Zvh8FbMfTc+nysmrrnHWjSfI/a3bGm8QzFWHIlpv3oJzU8EyM8KT2znXOSTJZcSc42iUXtnzsed6/LnDss6vT5A/1hk77ztv2LkDqW8AeaWpb5B1f3gAhszjxdYK7g8TPpW1bM/viB09EdjRriR29FLJ1o6eSGZH5Tn4ocTEtWWdc05xkqMuY9X8zS5wTnZ/I1pnGG/F45S2DpTUZzF1oOR2BL/34b288GPrgWuk7gfs6k9dzDtFmdaKLpt3b4P+RoJ9w03QeV64pa03KOVcb3cd7hVVb8fDR6MDeQZ1TRrnPmk3YJ3Rt13UCEDy+LwJxrsFxHsVZCC8KXPijLrAur+yAI76a6z7t8HnF4GfLOt+2n+K4sqRnk1cYesLSX7HlBVG9HQz57jCrpcNdTXiyM46jkT2Q4qMI0n1n+T5VwEAAP//hkGPYIg1AAA=";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xaT2/bNhTXH2f1/qVugjVe16bO2mYtikVud1iQU4Ctq4sBW7DssJ4C2aETZbalSvLQ3XLcccccd+xHyHEfYR8lx902Mnq0aYqULEe26MACCEWKZJG/9/u990i+qhYdFTj/AWf+/jZzreNWhuvPcFvFLbC7Xgft7Pxgd9Hhj80T1AqFzz+Ad35+vffi4PsXr3eiF7f49/jvn8P5MW4l3Gpcv36Bswfn+7itCb7znd0KXf/3sfsh+52f0Js+CsLLflSF/w88txegBvSXjMPkcCTXxxujuG4/Hb1+92w4bo0Z9+DQRy93uX/XOZz+g4N/jh43cbuBG8XpNv57eWDfAXwx+5BhfIBbFzeEm9UPfKvjtuyOdeS6Rx1kHbtdZDl2r+M6LSt8Y3XdE9cK/Fb0h9dvdvB9pxciv223UGA1nd6h0zsKrBDjHFhRBw7aUQe2yEtdAU8oTndxW2IgMgDvEoPLEvP830DQ0+Xo3FiJzuVPxfhfUF6WxsNfY/Bnf0+G/7fufthvt2Pj+xzGMmuca5xfoOP/0xx/3OSoS8a9BmOHcX/pg7748dOjCJ4ZTD88fXTcrK6XBLqUHXnxRYYX4ctKgXzRuP5UuX5TP5rmZ0U4lxJwLk+As56A80fwPc/xkCg+EZyfFYBzhfFxuiDeVpkxGMz1tPVchb4M9RzFw4Wek/VcAdvJ8HoA+ZZqeqb9pnlPWl60K8krZ63nEL0NRXomOD8sUM+aJN+W6VmWnzTM0TTxqrhRO4Oun/O4PVQsP6kZU/Fnz2mCooo/43mSNV7m7cfS4iXhyWbB+jJS9KUzz/P8+pfqLiO/tiV4kWnGrVF+RY5SMh9XmWd6ATyT+XHCs68V9+O6YP5ak8zvjQy4GYxdZHz7xkd2iPhVjziOjxTx6xSP04y6k613bAAWMRwGM9D5098s89UPYV3FbZ5IebNRIG8Mrj/0/ir0nWf+uOuCV9XzP5CXmRnsYCbomebbMF9+1fVcP0SHryhuvF02FdPzWU56fgzfkOEwj3mbSnreLCieyvRcZ9Zf7uDmgMG3YpaPnnsKGh/oO+WFSfPDMtjrr4y8bkjs8gT8aAKv5zZfVInfXxQ0L1Gd32lxrJTBPqWEOHYPt09I/+1fkajHov2e6xjHHgEWQhyY3HSh88l0Tt77SqF1VFXjWN68Jr51PYHXNIgteD0Zr5+A71jwOjl+nVJeS+onqH3P4PyO4/d5wvo425+aIB+7IZiH7iP/N6d1uQAxVl2NbP56B/Z7JdPWGF/uFlS3kTa+asI+k8HYl9/HOzaT90Omtf++j8JL2/H9vndN90NovQaMW7l6DVXXqXsgcBFPbs3xOjXlV9XId7+R6uulRF/riunrQstXXy8V1Vd5DL5oCXFwWvuzQ7zUqjeZN3+0DhycF38km7fsvpeMV9a6WFqPxtXF0tsxHD+G92aNI18nXQc89kBvZ6ach5o2rJ2dNg/fB1O9laxbLoPtZ41f1vqJ0ozrDW/CvaLrDUU4Gcz6dx51XIbgPj1W6PzF9dEBASsQ84ic7xeYJ+gwFsqjsiAu6ROsL1QmwNO8wvrCKsSGInFUZX2B9a+y+LNn5hN/+PpKmh9yZZUxe90uKP7w8/KaPh/xZm0Rb5Bs/UWFeJNWD0uf/z8AAP//tHQdr9g2AAA=";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

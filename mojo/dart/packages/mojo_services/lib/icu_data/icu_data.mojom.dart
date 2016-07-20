@@ -29,7 +29,6 @@ class _IcuDataMapParams extends bindings.Struct {
       return null;
     }
     _IcuDataMapParams result = new _IcuDataMapParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -84,7 +83,6 @@ class IcuDataMapResponseParams extends bindings.Struct {
       return null;
     }
     IcuDataMapResponseParams result = new IcuDataMapResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

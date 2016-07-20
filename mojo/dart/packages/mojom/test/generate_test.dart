@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:mojom/src/command_runner.dart';
-import 'package:mojom/src/utils.dart';
 import 'package:path/path.dart' as path;
 import 'package:unittest/unittest.dart';
 
@@ -28,29 +27,28 @@ Future runCommand(List<String> args) {
 
 Future<String> setupPackage(
     String basePath, String dirName, String packageName, String pubspec) async {
-    // //dirName
-    String packagePath = path.join(basePath, dirName);
-    // //dirName/lib
-    String packageLibPath = path.join(packagePath, 'lib');
-    // //dirName/packages
-    String packagePackagesPath = path.join(packagePath, 'packages');
-    // //dirName/packages/packageName
-    String packagePackagePath =
-        path.join(packagePackagesPath, packageName);
-    // //dirName/pubspec.yaml
-    String pubspecPath = path.join(packagePath, 'pubspec.yaml');
+  // //dirName
+  String packagePath = path.join(basePath, dirName);
+  // //dirName/lib
+  String packageLibPath = path.join(packagePath, 'lib');
+  // //dirName/packages
+  String packagePackagesPath = path.join(packagePath, 'packages');
+  // //dirName/packages/packageName
+  String packagePackagePath = path.join(packagePackagesPath, packageName);
+  // //dirName/pubspec.yaml
+  String pubspecPath = path.join(packagePath, 'pubspec.yaml');
 
-    // Create the directory structure
-    await new Directory(packageLibPath).create(recursive: true);
-    await new Directory(packagePackagesPath).create(recursive: true);
-    await new Link(packagePackagePath).create(packageLibPath);
+  // Create the directory structure
+  await new Directory(packageLibPath).create(recursive: true);
+  await new Directory(packagePackagesPath).create(recursive: true);
+  await new Link(packagePackagePath).create(packageLibPath);
 
-    // Write the pubspec.yaml
-    File pubspecFile = new File(pubspecPath);
-    await pubspecFile.create(recursive: true);
-    await pubspecFile.writeAsString(pubspec);
+  // Write the pubspec.yaml
+  File pubspecFile = new File(pubspecPath);
+  await pubspecFile.create(recursive: true);
+  await pubspecFile.writeAsString(pubspec);
 
-    return packagePath;
+  return packagePath;
 }
 
 Future destroyPackage(String basePath, String dirName) async {
@@ -90,19 +88,11 @@ main() async {
 
   group('Commands', () {
     test('single', () async {
-      String packagePath = await setupPackage(
-          scriptPath, 'single_package', 'single_package',
-          singlePackagePubspecContents);
+      String packagePath = await setupPackage(scriptPath, 'single_package',
+          'single_package', singlePackagePubspecContents);
 
-      await runCommand([
-        'single',
-        '-m',
-        mojoSdk,
-        '-r',
-        testMojomPath,
-        '-p',
-        packagePath
-      ]);
+      await runCommand(
+          ['single', '-m', mojoSdk, '-r', testMojomPath, '-p', packagePath]);
 
       // Should have:
       // //single_package/lib/single_package/single_package.mojom.dart
@@ -115,9 +105,8 @@ main() async {
     });
 
     test('gen', () async {
-      String packagePath = await setupPackage(
-          scriptPath, 'single_package', 'single_package',
-          singlePackagePubspecContents);
+      String packagePath = await setupPackage(scriptPath, 'single_package',
+          'single_package', singlePackagePubspecContents);
 
       await runCommand(
           ['gen', '-m', mojoSdk, '-r', testMojomPath, '-o', scriptPath]);
@@ -133,9 +122,8 @@ main() async {
     });
 
     test('gen wrong name', () async {
-      String packagePath = await setupPackage(
-          scriptPath, 'wrong_name', 'single_package',
-          singlePackagePubspecContents);
+      String packagePath = await setupPackage(scriptPath, 'wrong_name',
+          'single_package', singlePackagePubspecContents);
 
       await runCommand(
           ['gen', '-m', mojoSdk, '-r', testMojomPath, '-o', scriptPath]);

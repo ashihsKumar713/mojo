@@ -31,8 +31,7 @@ class _ViewTreeGetTokenParams extends bindings.Struct {
       return null;
     }
     _ViewTreeGetTokenParams result = new _ViewTreeGetTokenParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -78,7 +77,6 @@ class ViewTreeGetTokenResponseParams extends bindings.Struct {
       return null;
     }
     ViewTreeGetTokenResponseParams result = new ViewTreeGetTokenResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -134,7 +132,6 @@ class _ViewTreeGetServiceProviderParams extends bindings.Struct {
       return null;
     }
     _ViewTreeGetServiceProviderParams result = new _ViewTreeGetServiceProviderParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -188,7 +185,6 @@ class _ViewTreeSetRendererParams extends bindings.Struct {
       return null;
     }
     _ViewTreeSetRendererParams result = new _ViewTreeSetRendererParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -242,7 +238,6 @@ class _ViewTreeGetContainerParams extends bindings.Struct {
       return null;
     }
     _ViewTreeGetContainerParams result = new _ViewTreeGetContainerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -294,8 +289,7 @@ class _ViewTreeListenerOnRendererDiedParams extends bindings.Struct {
       return null;
     }
     _ViewTreeListenerOnRendererDiedParams result = new _ViewTreeListenerOnRendererDiedParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -339,8 +333,7 @@ class ViewTreeListenerOnRendererDiedResponseParams extends bindings.Struct {
       return null;
     }
     ViewTreeListenerOnRendererDiedResponseParams result = new ViewTreeListenerOnRendererDiedResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 

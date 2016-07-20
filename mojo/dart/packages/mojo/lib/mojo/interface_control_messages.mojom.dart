@@ -33,7 +33,6 @@ class RunMessageParams extends bindings.Struct {
       return null;
     }
     RunMessageParams result = new RunMessageParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -109,7 +108,6 @@ class RunResponseMessageParams extends bindings.Struct {
       return null;
     }
     RunResponseMessageParams result = new RunResponseMessageParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -179,8 +177,7 @@ class QueryVersion extends bindings.Struct {
       return null;
     }
     QueryVersion result = new QueryVersion();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -226,7 +223,6 @@ class QueryVersionResult extends bindings.Struct {
       return null;
     }
     QueryVersionResult result = new QueryVersionResult();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -285,7 +281,6 @@ class RunOrClosePipeMessageParams extends bindings.Struct {
       return null;
     }
     RunOrClosePipeMessageParams result = new RunOrClosePipeMessageParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -357,7 +352,6 @@ class RequireVersion extends bindings.Struct {
       return null;
     }
     RequireVersion result = new RequireVersion();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

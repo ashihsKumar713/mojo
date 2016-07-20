@@ -33,7 +33,6 @@ class _HostResolverGetHostAddressesParams extends bindings.Struct {
       return null;
     }
     _HostResolverGetHostAddressesParams result = new _HostResolverGetHostAddressesParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -102,7 +101,6 @@ class HostResolverGetHostAddressesResponseParams extends bindings.Struct {
       return null;
     }
     HostResolverGetHostAddressesResponseParams result = new HostResolverGetHostAddressesResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

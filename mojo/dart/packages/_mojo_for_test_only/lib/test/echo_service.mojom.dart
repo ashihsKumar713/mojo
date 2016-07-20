@@ -34,7 +34,6 @@ class _EchoServiceEchoStringParams extends bindings.Struct {
       return null;
     }
     _EchoServiceEchoStringParams result = new _EchoServiceEchoStringParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -89,7 +88,6 @@ class EchoServiceEchoStringResponseParams extends bindings.Struct {
       return null;
     }
     EchoServiceEchoStringResponseParams result = new EchoServiceEchoStringResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -146,7 +144,6 @@ class _EchoServiceDelayedEchoStringParams extends bindings.Struct {
       return null;
     }
     _EchoServiceDelayedEchoStringParams result = new _EchoServiceDelayedEchoStringParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -209,7 +206,6 @@ class EchoServiceDelayedEchoStringResponseParams extends bindings.Struct {
       return null;
     }
     EchoServiceDelayedEchoStringResponseParams result = new EchoServiceDelayedEchoStringResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -262,8 +258,7 @@ class _EchoServiceSwapParams extends bindings.Struct {
       return null;
     }
     _EchoServiceSwapParams result = new _EchoServiceSwapParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -307,8 +302,7 @@ class _EchoServiceQuitParams extends bindings.Struct {
       return null;
     }
     _EchoServiceQuitParams result = new _EchoServiceQuitParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -717,7 +711,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xYvY4TMRDenwPCXUD8SstPEahCwRlRRZGQUpAKCYGO5qrI2jPJot3sst4cgifgESgpKSl5BB7lSko6sC9jcCZ2cKIjq5xupLmJfZnY3+dvxptE3tSuQPwIEc93tLEvvAHjW8KvCq8Yr7rdfjzK91h5mMTM8v57kPNq/0V/8Ky/35WJu/N5eP3eCXyeD/mhlt+G2IJY+MADRA+tr3j4BPELxF9gXz2z4X23DDgvaPPXhe8IBxTPacac+FZ5+D8RrIHpwTzL/W0LHwofCCcTXpI0j2lKhnk+TBkZ5RkjH0pKsvxN/pjwMj5+RQ5oWRFaFHIFTuTfgRhxkowrVr6mMeOEiXUHfLrwrkzK/okH70/nbQteS14DONc2zKv3fT83jZ+b0/jtsvncf6hzDs3nruwRGsszN80ruwZ8HiOrymQ8NOO6CBjWxTvWn8IfBe64pXUsuG8D9r+4H5bs7UTszoxf2brw43rsWfrcT8/NXHXStuRfEi6lekjTCbPo4+aa+VG1ZepfkbZ331Kf/0NXd6DHzeiKF/mYszNdrair9gboCvdrxd9oa/bzXPjytfPApu6jpyyl79kBbttz/G3X3LcVD51wufrqWfCr56k5/LPtu/Y6i4D3P/rwN6PepF7u1lhvJn482LPJGivw4y/gRz5+nReeJWmacDM/D2rs13r/CbSxre5awcnU3X14ZjLVnXa9nd1vK9Tbkw28344QzmAJvoIFfDXh+9HeO1qY9LRT8312hKJrXdm+f90AzBKvfoXVXUcNB314C36nwPoIl+ArdNDHy0li5Kl5SvUh8W6yPn4HAAD//6kk0hzIEwAA";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xYzW4TMRDe3RQIbfgHKfwcCqflQJ1jFQkpB3JCQkXlQE+RtTXpot04XW8KvEGPHHkEjjxajr2BzY6FM7Ejh5ayqTrSdGI3s/b3+ZtxknZQ2W2IxxDx/LYxDqU3YfxQ+h3pJRNlt9tPDvguK47ShDne/xRy3u3t9Aev+3tdlbg1n4fX753B80LIbxj5McRNiJ/DKn6FGKD1NQ/fIH6H+BPsR2A3vO9NC85rxvw96RvSAcUbmjMvvnUe/k8b1sD0YJ7V/tal59JVJpmIgmQ8oRkZcj7MGDngOSMpHWU8TUh5SHL+kRNRJNWLfVqUhI7Hah1B1N+BHAmSjkpWfKAJE4TJ1QeiWn5LJeUeuPA+Tf7W4LXiN4LzjWFev296pYonLci/ZT//E4jvG/bz19ZBY3X2tnltd4HX38jKIh0N7biuA4bz5h/rUfMQR/74lW078D8CDv7gf1Gww4ncn50HbefNA67TnqP/BWHgZb66iR35N6Qr6R7RbMIcennwn3gyacC8tQ0MoaNu/4XOHkMPnNGZGPORYJc6O6XO4hXSGe7r+gHHa7PP8+EtNM4Fm763XrGMfmH7uL3P8bhek/6uCdhpLFd3PQcP+nPYHA+zbb429deGc9D76ISrUYdKP09qUIc2ngLYu82af8FTuICnm9KvKh7SLEuFnafnNejrZn+KjLGrHjvR2dTjM/jMZatH4zq8vA9PUYcvV/g+nCK80RK8RQt4a8H3rt1PdGzT10ZN7r8pir715vp+dx+wK9zmlVeX+mp66CVY8LsI1ktjCd4aHnp5O0mtfLUuuF4U7ougl18BAAD//xOVVONIFAAA";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

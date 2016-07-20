@@ -35,7 +35,6 @@ class ViewAssociateInfo extends bindings.Struct {
       return null;
     }
     ViewAssociateInfo result = new ViewAssociateInfo();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -132,7 +131,6 @@ class _ViewAssociateConnectParams extends bindings.Struct {
       return null;
     }
     _ViewAssociateConnectParams result = new _ViewAssociateConnectParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -186,7 +184,6 @@ class ViewAssociateConnectResponseParams extends bindings.Struct {
       return null;
     }
     ViewAssociateConnectResponseParams result = new ViewAssociateConnectResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -246,7 +243,6 @@ class _ViewAssociateConnectToViewServiceParams extends bindings.Struct {
       return null;
     }
     _ViewAssociateConnectToViewServiceParams result = new _ViewAssociateConnectToViewServiceParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -319,7 +315,6 @@ class _ViewAssociateConnectToViewTreeServiceParams extends bindings.Struct {
       return null;
     }
     _ViewAssociateConnectToViewTreeServiceParams result = new _ViewAssociateConnectToViewTreeServiceParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -390,7 +385,6 @@ class _ViewInspectorGetHitTesterParams extends bindings.Struct {
       return null;
     }
     _ViewInspectorGetHitTesterParams result = new _ViewInspectorGetHitTesterParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -452,7 +446,6 @@ class ViewInspectorGetHitTesterResponseParams extends bindings.Struct {
       return null;
     }
     ViewInspectorGetHitTesterResponseParams result = new ViewInspectorGetHitTesterResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -507,7 +500,6 @@ class _ViewInspectorResolveScenesParams extends bindings.Struct {
       return null;
     }
     _ViewInspectorResolveScenesParams result = new _ViewInspectorResolveScenesParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -578,7 +570,6 @@ class ViewInspectorResolveScenesResponseParams extends bindings.Struct {
       return null;
     }
     ViewInspectorResolveScenesResponseParams result = new ViewInspectorResolveScenesResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

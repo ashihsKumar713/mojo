@@ -2,7 +2,6 @@
 // See $MOJO_SDK/tools/bindings/mojom_bindings_generator.py.
 
 library shell_mojom;
-import 'dart:async';
 import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
@@ -33,7 +32,6 @@ class _ShellConnectToApplicationParams extends bindings.Struct {
       return null;
     }
     _ShellConnectToApplicationParams result = new _ShellConnectToApplicationParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -94,7 +92,6 @@ class _ShellCreateApplicationConnectorParams extends bindings.Struct {
       return null;
     }
     _ShellCreateApplicationConnectorParams result = new _ShellCreateApplicationConnectorParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

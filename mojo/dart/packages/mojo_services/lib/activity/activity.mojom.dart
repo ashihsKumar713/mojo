@@ -295,7 +295,6 @@ class StringExtra extends bindings.Struct {
       return null;
     }
     StringExtra result = new StringExtra();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -360,7 +359,6 @@ class ComponentName extends bindings.Struct {
       return null;
     }
     ComponentName result = new ComponentName();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -433,7 +431,6 @@ class Intent extends bindings.Struct {
       return null;
     }
     Intent result = new Intent();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -549,7 +546,6 @@ class TaskDescription extends bindings.Struct {
       return null;
     }
     TaskDescription result = new TaskDescription();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -612,7 +608,6 @@ class _ActivityGetUserFeedbackParams extends bindings.Struct {
       return null;
     }
     _ActivityGetUserFeedbackParams result = new _ActivityGetUserFeedbackParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -666,7 +661,6 @@ class _ActivityStartActivityParams extends bindings.Struct {
       return null;
     }
     _ActivityStartActivityParams result = new _ActivityStartActivityParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -720,8 +714,7 @@ class _ActivityFinishCurrentActivityParams extends bindings.Struct {
       return null;
     }
     _ActivityFinishCurrentActivityParams result = new _ActivityFinishCurrentActivityParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -767,7 +760,6 @@ class _ActivitySetTaskDescriptionParams extends bindings.Struct {
       return null;
     }
     _ActivitySetTaskDescriptionParams result = new _ActivitySetTaskDescriptionParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -823,7 +815,6 @@ class _ActivitySetSystemUiVisibilityParams extends bindings.Struct {
       return null;
     }
     _ActivitySetSystemUiVisibilityParams result = new _ActivitySetSystemUiVisibilityParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -882,7 +873,6 @@ class _ActivitySetRequestedOrientationParams extends bindings.Struct {
       return null;
     }
     _ActivitySetRequestedOrientationParams result = new _ActivitySetRequestedOrientationParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -939,8 +929,7 @@ class _PathServiceGetAppDataDirParams extends bindings.Struct {
       return null;
     }
     _PathServiceGetAppDataDirParams result = new _PathServiceGetAppDataDirParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -986,7 +975,6 @@ class PathServiceGetAppDataDirResponseParams extends bindings.Struct {
       return null;
     }
     PathServiceGetAppDataDirResponseParams result = new PathServiceGetAppDataDirResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1039,8 +1027,7 @@ class _PathServiceGetFilesDirParams extends bindings.Struct {
       return null;
     }
     _PathServiceGetFilesDirParams result = new _PathServiceGetFilesDirParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -1086,7 +1073,6 @@ class PathServiceGetFilesDirResponseParams extends bindings.Struct {
       return null;
     }
     PathServiceGetFilesDirResponseParams result = new PathServiceGetFilesDirResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1139,8 +1125,7 @@ class _PathServiceGetCacheDirParams extends bindings.Struct {
       return null;
     }
     _PathServiceGetCacheDirParams result = new _PathServiceGetCacheDirParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -1186,7 +1171,6 @@ class PathServiceGetCacheDirResponseParams extends bindings.Struct {
       return null;
     }
     PathServiceGetCacheDirResponseParams result = new PathServiceGetCacheDirResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1241,7 +1225,6 @@ class _UserFeedbackPerformHapticFeedbackParams extends bindings.Struct {
       return null;
     }
     _UserFeedbackPerformHapticFeedbackParams result = new _UserFeedbackPerformHapticFeedbackParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1300,7 +1283,6 @@ class _UserFeedbackPerformAuralFeedbackParams extends bindings.Struct {
       return null;
     }
     _UserFeedbackPerformAuralFeedbackParams result = new _UserFeedbackPerformAuralFeedbackParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

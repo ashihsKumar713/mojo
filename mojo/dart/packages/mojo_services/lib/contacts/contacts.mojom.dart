@@ -31,7 +31,6 @@ class Contact extends bindings.Struct {
       return null;
     }
     Contact result = new Contact();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -94,7 +93,6 @@ class _ContactsServiceGetCountParams extends bindings.Struct {
       return null;
     }
     _ContactsServiceGetCountParams result = new _ContactsServiceGetCountParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -149,7 +147,6 @@ class ContactsServiceGetCountResponseParams extends bindings.Struct {
       return null;
     }
     ContactsServiceGetCountResponseParams result = new ContactsServiceGetCountResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -208,7 +205,6 @@ class _ContactsServiceGetParams extends bindings.Struct {
       return null;
     }
     _ContactsServiceGetParams result = new _ContactsServiceGetParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -279,7 +275,6 @@ class ContactsServiceGetResponseParams extends bindings.Struct {
       return null;
     }
     ContactsServiceGetResponseParams result = new ContactsServiceGetResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -350,7 +345,6 @@ class _ContactsServiceGetEmailsParams extends bindings.Struct {
       return null;
     }
     _ContactsServiceGetEmailsParams result = new _ContactsServiceGetEmailsParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -405,7 +399,6 @@ class ContactsServiceGetEmailsResponseParams extends bindings.Struct {
       return null;
     }
     ContactsServiceGetEmailsResponseParams result = new ContactsServiceGetEmailsResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -477,7 +470,6 @@ class _ContactsServiceGetPhotoParams extends bindings.Struct {
       return null;
     }
     _ContactsServiceGetPhotoParams result = new _ContactsServiceGetPhotoParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -540,7 +532,6 @@ class ContactsServiceGetPhotoResponseParams extends bindings.Struct {
       return null;
     }
     ContactsServiceGetPhotoResponseParams result = new ContactsServiceGetPhotoResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

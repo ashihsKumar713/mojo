@@ -9,7 +9,6 @@ import 'dart:async';
 import 'package:mojo_apptest/apptest.dart';
 import 'package:mojo/application.dart';
 import 'package:mojo/bindings.dart';
-import 'package:mojo/core.dart';
 import 'package:_mojo_for_test_only/test/echo_service.mojom.dart';
 
 class EchoServiceMock implements EchoService {
@@ -17,9 +16,9 @@ class EchoServiceMock implements EchoService {
     callback(value);
   }
 
-  void delayedEchoString(String value, int millis,
-                         void callback(String value)) {
-    new Timer(new Duration(milliseconds : millis), () => callback(value));
+  void delayedEchoString(
+      String value, int millis, void callback(String value)) {
+    new Timer(new Duration(milliseconds: millis), () => callback(value));
   }
 
   void swap() {}
@@ -139,7 +138,7 @@ echoApptests(Application application, String url) {
         fail("unreachable");
       } catch (e) {
         expect(e is ProxyError, isTrue);
-      };
+      }
 
       return new Future.delayed(
           new Duration(milliseconds: 10), () => echo.close());
@@ -251,7 +250,7 @@ echoApptests(Application application, String url) {
       try {
         await echo.responseOrError(c.future);
         fail('This should be unreachable');
-      } on ProxyError catch (e) {
+      } on ProxyError {
         caughtException = true;
       }
       expect(caughtException, isTrue);
@@ -279,7 +278,7 @@ echoApptests(Application application, String url) {
       try {
         await echo.responseOrError(c.future);
         fail('This should be unreachable');
-      } on ProxyError catch (e) {
+      } on ProxyError {
         caughtException = true;
       }
       expect(caughtException, isTrue);
@@ -293,7 +292,7 @@ echoApptests(Application application, String url) {
       try {
         await echo.responseOrError(c.future);
         fail('This should be unreachable');
-      } on ProxyError catch (e) {
+      } on ProxyError {
         caughtException = true;
       }
       expect(caughtException, isTrue);
@@ -444,7 +443,7 @@ echoApptests(Application application, String url) {
     });
 
     test('Mock', () async {
-      var echo = new EchoServiceInterface.fromMock(new EchoServiceMock());
+      var echo = new EchoServiceProxy.fromMock(new EchoServiceMock());
 
       var c = new Completer();
       echo.echoString("foo", (String value) {
@@ -476,7 +475,7 @@ echoApptests(Application application, String url) {
     });
 
     test('DontCareMock', () async {
-      var echo = new EchoServiceInterface.fromMock(new EchoServiceMock());
+      var echo = new EchoServiceProxy.fromMock(new EchoServiceMock());
 
       echo.ctrl.errorFuture.then((e) {
         fail("echo: $e");

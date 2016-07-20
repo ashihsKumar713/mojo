@@ -36,7 +36,6 @@ class _TcpServerSocketAcceptParams extends bindings.Struct {
       return null;
     }
     _TcpServerSocketAcceptParams result = new _TcpServerSocketAcceptParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -106,7 +105,6 @@ class TcpServerSocketAcceptResponseParams extends bindings.Struct {
       return null;
     }
     TcpServerSocketAcceptResponseParams result = new TcpServerSocketAcceptResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

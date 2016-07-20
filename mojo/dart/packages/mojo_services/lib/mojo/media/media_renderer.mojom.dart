@@ -30,8 +30,7 @@ class _MediaRendererGetSupportedMediaTypesParams extends bindings.Struct {
       return null;
     }
     _MediaRendererGetSupportedMediaTypesParams result = new _MediaRendererGetSupportedMediaTypesParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -77,7 +76,6 @@ class MediaRendererGetSupportedMediaTypesResponseParams extends bindings.Struct 
       return null;
     }
     MediaRendererGetSupportedMediaTypesResponseParams result = new MediaRendererGetSupportedMediaTypesResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -148,7 +146,6 @@ class _MediaRendererSetMediaTypeParams extends bindings.Struct {
       return null;
     }
     _MediaRendererSetMediaTypeParams result = new _MediaRendererSetMediaTypeParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -204,7 +201,6 @@ class _MediaRendererGetPacketConsumerParams extends bindings.Struct {
       return null;
     }
     _MediaRendererGetPacketConsumerParams result = new _MediaRendererGetPacketConsumerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -258,7 +254,6 @@ class _MediaRendererGetTimelineControlPointParams extends bindings.Struct {
       return null;
     }
     _MediaRendererGetTimelineControlPointParams result = new _MediaRendererGetTimelineControlPointParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

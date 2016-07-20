@@ -33,7 +33,6 @@ class _FilesOpenFileSystemParams extends bindings.Struct {
       return null;
     }
     _FilesOpenFileSystemParams result = new _FilesOpenFileSystemParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -94,7 +93,6 @@ class FilesOpenFileSystemResponseParams extends bindings.Struct {
       return null;
     }
     FilesOpenFileSystemResponseParams result = new FilesOpenFileSystemResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

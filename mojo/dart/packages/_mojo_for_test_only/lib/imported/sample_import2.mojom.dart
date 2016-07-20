@@ -87,7 +87,6 @@ class Size extends bindings.Struct {
       return null;
     }
     Size result = new Size();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -156,7 +155,6 @@ class Thing extends bindings.Struct {
       return null;
     }
     Thing result = new Thing();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -237,7 +235,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/8yXzW7TQBCA13VDgwolQKGhIMixpyzqKeLUEiIqtUIVzaWn4DrGXmRnLa8rpD4Bj8Ij8EgcOXKDdXZW2OO/NEpdVhpNnbX355vfdokaHdCvQePftW4jjd/7BronxUzN63WPQL+SsiNlfH46mhyPzt+wIORR7Ez7Q+7ziLyUc08L58/YlVP1/dhjM5cMYH99rr3UOQ0pn8zs8487xff5BfqAZIe+zwD0Hxj4PT3uS2lJUbdTd9uSgq6d219/50qZSKGXIqI+ty2fupy7vkM9Hjj0KrJowL/wfSoie/4XDS8vfGZTNoud6LNlO4JesNlUshE0dkQsqLCC0Hcm6gT7/eSjYL7/Wmr/npHl1yPVY1FORyXfb4LdPo7ezZ93pTzKcerr6RyvLTh/U7zquBgr4qL94O3J4fBY6hdStvNc9HSOy4OGufRQfvit49BcTTzdk7IuRWUDQp4AI5QmchwSX9q4xXjqGtn7D9D5WmSxUcaPpPil47bMn76yaewVcHoMOb4pTtflsb4ED6OCR5I3khLgOcz14jyP7YZ56LqE6yzB+bkkzsKN1dYtVVUL6hZMYF47DcfZHviE5vET4uy7mXWkIj9rpbjp8x8YNxt3wrPCovyUPD+8hTxN0Dn07zl7n6mDl/df6oUO+Gm7xE8xn+TOd+d1fzg+/PD+ZFTbJ6p9FrXnwLiZvKHtaUNfh+35rOG8UWbPbkkfWteHL2pHI1U3NvX6/9qR2n3q7IhHewk7rlXYsQNrJqaJGZ9hO+7+p3Y85XLhSr7qjevy7SzB16zgq/s1Af0a5vu84XpRxxf3l3X/j1bV63Rd+hsAAP//s/jsknAPAAA=";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/8yXzW7TQBCA101DgwolQKGhIMixpyziFHFKCRGRWqGK5tJTlTomXmR7g+0KxBPwCDwKj8SRIzcYd2eFM/baaZTWXWk0sdf7M9/szkxaTLUm6peo6XutG0TT776jboPUUv163iHqFyA7IKOTo8HpweDktfBnMoydSacvPRmy59D3OLf/WHxzisaPXBFMWRfX1/vaS+3TAvlam3/+dSvfnj+oe2y+aXu6qP9io9/pdhekDqKsU7ZtgRCzM+vrcT4ImM34eRRyT9pjj0+lnHoOd6XvcDEOPClsHn/mvvwkeRTa6sfs/MyD9yKInfDj2HYifiaCCRCKeOxEccSjsT/znFO1j1edZJCPHNbS/Kx5jm1W3BblNTSM30T/fRi8vXjeBXmQ4dXR3RluW7j/6+ZWxsdaER99Lt4c7vcPQD8D2c7y0d0ZPvcq4tMmcUMD6dVWc8/ugKyDqCjB2CNkRcJHhkdytjZuwD1rW/McumSfdbZYM3FkKY7p+2w6X1/EJHZzeD3EHHDdvC7LZX0JLlYBlySuJKnCdcTUjbNctiviovMYzcuMni/D/fuxsdo8p7JwTp7DDsptp6L7t4dnRHP5jTx+Yjxq1c33sZ7ip+0YWld7HyN3PMuLX8nz/QrjOSP70e8z/j9WBpjrN/VBE89tw3BuKafE9tsX9UJ/tP/+3eGgtM5U6yzq1551NfFE+9XGupD69UlF8cTk15ahni2r5xf1p5XKL5t6/v9lTOk6Zf6krbGEP9cK/NnEORMXxUIG1J+7N9yfRxKmLuSsvrgs5+YSnGsFnHWdF2GdRzk/rSiflHGm9WnZ/9yivJ7OW/8CAAD//yFC/FXIDwAA";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

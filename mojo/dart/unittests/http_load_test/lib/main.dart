@@ -1,10 +1,10 @@
 #!mojo mojo:dart_content_handler
-
 library test;
 
 import 'dart:async';
 import 'dart:mojo.internal';
 
+// ignore: unused_import
 import 'package:mojo_services/tracing/tracing.mojom.dart' as tracing;
 
 part 'src/part0.dart';

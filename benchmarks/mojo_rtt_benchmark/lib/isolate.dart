@@ -28,7 +28,6 @@ class IsolateMessageApp extends Application {
   RawReceivePort _receivePort;
   SendPort _sendPort;
   Completer _sendPortCompleter;
-  Isolate _isolate;
   List<Completer> _completers;
   bool _doEcho;
   bool _warmup;
@@ -45,7 +44,6 @@ class IsolateMessageApp extends Application {
     _receivePort = new RawReceivePort();
     _receivePort.handler = _isolateMessageHandler;
     Isolate.spawn(echoIsolate, _receivePort.sendPort).then((isolate) {
-      _isolate = isolate;
       _sendPortCompleter.future.then((sendPort) {
         _sendPort = sendPort;
         _run();

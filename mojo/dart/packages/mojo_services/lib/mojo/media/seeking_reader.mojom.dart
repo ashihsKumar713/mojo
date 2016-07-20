@@ -28,8 +28,7 @@ class _SeekingReaderDescribeParams extends bindings.Struct {
       return null;
     }
     _SeekingReaderDescribeParams result = new _SeekingReaderDescribeParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -79,7 +78,6 @@ class SeekingReaderDescribeResponseParams extends bindings.Struct {
       return null;
     }
     SeekingReaderDescribeResponseParams result = new SeekingReaderDescribeResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -154,7 +152,6 @@ class _SeekingReaderReadAtParams extends bindings.Struct {
       return null;
     }
     _SeekingReaderReadAtParams result = new _SeekingReaderReadAtParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -211,7 +208,6 @@ class SeekingReaderReadAtResponseParams extends bindings.Struct {
       return null;
     }
     SeekingReaderReadAtResponseParams result = new SeekingReaderReadAtResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

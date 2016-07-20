@@ -2,7 +2,6 @@
 // See $MOJO_SDK/tools/bindings/mojom_bindings_generator.py.
 
 library navigation_mojom;
-import 'dart:async';
 import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
@@ -91,7 +90,6 @@ class _NavigatorHostRequestNavigateParams extends bindings.Struct {
       return null;
     }
     _NavigatorHostRequestNavigateParams result = new _NavigatorHostRequestNavigateParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -157,7 +155,6 @@ class _NavigatorHostRequestNavigateHistoryParams extends bindings.Struct {
       return null;
     }
     _NavigatorHostRequestNavigateHistoryParams result = new _NavigatorHostRequestNavigateHistoryParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -212,7 +209,6 @@ class _NavigatorHostDidNavigateLocallyParams extends bindings.Struct {
       return null;
     }
     _NavigatorHostDidNavigateLocallyParams result = new _NavigatorHostDidNavigateLocallyParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

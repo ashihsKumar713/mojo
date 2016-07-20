@@ -29,7 +29,6 @@ class _AuthenticationServiceSelectAccountParams extends bindings.Struct {
       return null;
     }
     _AuthenticationServiceSelectAccountParams result = new _AuthenticationServiceSelectAccountParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -86,7 +85,6 @@ class AuthenticationServiceSelectAccountResponseParams extends bindings.Struct {
       return null;
     }
     AuthenticationServiceSelectAccountResponseParams result = new AuthenticationServiceSelectAccountResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -151,7 +149,6 @@ class _AuthenticationServiceGetOAuth2TokenParams extends bindings.Struct {
       return null;
     }
     _AuthenticationServiceGetOAuth2TokenParams result = new _AuthenticationServiceGetOAuth2TokenParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -231,7 +228,6 @@ class AuthenticationServiceGetOAuth2TokenResponseParams extends bindings.Struct 
       return null;
     }
     AuthenticationServiceGetOAuth2TokenResponseParams result = new AuthenticationServiceGetOAuth2TokenResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -294,7 +290,6 @@ class _AuthenticationServiceClearOAuth2TokenParams extends bindings.Struct {
       return null;
     }
     _AuthenticationServiceClearOAuth2TokenParams result = new _AuthenticationServiceClearOAuth2TokenParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

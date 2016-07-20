@@ -30,7 +30,6 @@ class ViewProperties extends bindings.Struct {
       return null;
     }
     ViewProperties result = new ViewProperties();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -95,7 +94,6 @@ class DisplayMetrics extends bindings.Struct {
       return null;
     }
     DisplayMetrics result = new DisplayMetrics();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -150,7 +148,6 @@ class ViewLayout extends bindings.Struct {
       return null;
     }
     ViewLayout result = new ViewLayout();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

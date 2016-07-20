@@ -33,7 +33,6 @@ class _HttpServerSetHandlerParams extends bindings.Struct {
       return null;
     }
     _HttpServerSetHandlerParams result = new _HttpServerSetHandlerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -94,7 +93,6 @@ class HttpServerSetHandlerResponseParams extends bindings.Struct {
       return null;
     }
     HttpServerSetHandlerResponseParams result = new HttpServerSetHandlerResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -147,8 +145,7 @@ class _HttpServerGetPortParams extends bindings.Struct {
       return null;
     }
     _HttpServerGetPortParams result = new _HttpServerGetPortParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -194,7 +191,6 @@ class HttpServerGetPortResponseParams extends bindings.Struct {
       return null;
     }
     HttpServerGetPortResponseParams result = new HttpServerGetPortResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -249,7 +245,6 @@ class _HttpHandlerHandleRequestParams extends bindings.Struct {
       return null;
     }
     _HttpHandlerHandleRequestParams result = new _HttpHandlerHandleRequestParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -304,7 +299,6 @@ class HttpHandlerHandleRequestResponseParams extends bindings.Struct {
       return null;
     }
     HttpHandlerHandleRequestResponseParams result = new HttpHandlerHandleRequestResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

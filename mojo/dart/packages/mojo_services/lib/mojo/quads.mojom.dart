@@ -465,7 +465,6 @@ class Color extends bindings.Struct {
       return null;
     }
     Color result = new Color();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -518,8 +517,7 @@ class CheckerboardQuadState extends bindings.Struct {
       return null;
     }
     CheckerboardQuadState result = new CheckerboardQuadState();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -563,8 +561,7 @@ class DebugBorderQuadState extends bindings.Struct {
       return null;
     }
     DebugBorderQuadState result = new DebugBorderQuadState();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -608,8 +605,7 @@ class IoSurfaceContentQuadState extends bindings.Struct {
       return null;
     }
     IoSurfaceContentQuadState result = new IoSurfaceContentQuadState();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -657,7 +653,6 @@ class RenderPassId extends bindings.Struct {
       return null;
     }
     RenderPassId result = new RenderPassId();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -728,7 +723,6 @@ class RenderPassQuadState extends bindings.Struct {
       return null;
     }
     RenderPassQuadState result = new RenderPassQuadState();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -821,7 +815,6 @@ class SolidColorQuadState extends bindings.Struct {
       return null;
     }
     SolidColorQuadState result = new SolidColorQuadState();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -885,7 +878,6 @@ class SurfaceQuadState extends bindings.Struct {
       return null;
     }
     SurfaceQuadState result = new SurfaceQuadState();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -955,7 +947,6 @@ class TextureQuadState extends bindings.Struct {
       return null;
     }
     TextureQuadState result = new TextureQuadState();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1077,7 +1068,6 @@ class TileQuadState extends bindings.Struct {
       return null;
     }
     TileQuadState result = new TileQuadState();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1164,8 +1154,7 @@ class StreamVideoQuadState extends bindings.Struct {
       return null;
     }
     StreamVideoQuadState result = new StreamVideoQuadState();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -1221,7 +1210,6 @@ class YuvVideoQuadState extends bindings.Struct {
       return null;
     }
     YuvVideoQuadState result = new YuvVideoQuadState();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1351,7 +1339,6 @@ class Quad extends bindings.Struct {
       return null;
     }
     Quad result = new Quad();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1557,7 +1544,6 @@ class SharedQuadState extends bindings.Struct {
       return null;
     }
     SharedQuadState result = new SharedQuadState();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1688,7 +1674,6 @@ class Pass extends bindings.Struct {
       return null;
     }
     Pass result = new Pass();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

@@ -100,7 +100,6 @@ class UrlRequest extends bindings.Struct {
       return null;
     }
     UrlRequest result = new UrlRequest();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

@@ -43,16 +43,25 @@ class _UnsignedEntry implements _Entry {
 
   void write(ByteData buffer, int offset, Map pointers) {
     switch (size) {
-      case 1: buffer.setUint8(offset, value); break;
-      case 2: buffer.setUint16(offset, value, Endianness.LITTLE_ENDIAN); break;
-      case 4: buffer.setUint32(offset, value, Endianness.LITTLE_ENDIAN); break;
-      case 8: buffer.setUint64(offset, value, Endianness.LITTLE_ENDIAN); break;
-      default: throw new ValidationParseError('Unexpected size: $size');
+      case 1:
+        buffer.setUint8(offset, value);
+        break;
+      case 2:
+        buffer.setUint16(offset, value, Endianness.LITTLE_ENDIAN);
+        break;
+      case 4:
+        buffer.setUint32(offset, value, Endianness.LITTLE_ENDIAN);
+        break;
+      case 8:
+        buffer.setUint64(offset, value, Endianness.LITTLE_ENDIAN);
+        break;
+      default:
+        throw new ValidationParseError('Unexpected size: $size');
     }
   }
 
   String toString() => "[u$size]$value";
-  bool operator==(_UnsignedEntry other) =>
+  bool operator ==(_UnsignedEntry other) =>
       (size == other.size) && (value == other.value);
 }
 
@@ -69,16 +78,25 @@ class _SignedEntry implements _Entry {
 
   void write(ByteData buffer, int offset, Map pointers) {
     switch (size) {
-      case 1: buffer.setInt8(offset, value); break;
-      case 2: buffer.setInt16(offset, value, Endianness.LITTLE_ENDIAN); break;
-      case 4: buffer.setInt32(offset, value, Endianness.LITTLE_ENDIAN); break;
-      case 8: buffer.setInt64(offset, value, Endianness.LITTLE_ENDIAN); break;
-      default: throw new ValidationParseError('Unexpected size: $size');
+      case 1:
+        buffer.setInt8(offset, value);
+        break;
+      case 2:
+        buffer.setInt16(offset, value, Endianness.LITTLE_ENDIAN);
+        break;
+      case 4:
+        buffer.setInt32(offset, value, Endianness.LITTLE_ENDIAN);
+        break;
+      case 8:
+        buffer.setInt64(offset, value, Endianness.LITTLE_ENDIAN);
+        break;
+      default:
+        throw new ValidationParseError('Unexpected size: $size');
     }
   }
 
   String toString() => "[s$size]$value";
-  bool operator==(_SignedEntry other) =>
+  bool operator ==(_SignedEntry other) =>
       (size == other.size) && (value == other.value);
 }
 
@@ -90,14 +108,19 @@ class _FloatEntry implements _Entry {
 
   void write(ByteData buffer, int offset, Map pointers) {
     switch (size) {
-      case 4: buffer.setFloat32(offset, value, Endianness.LITTLE_ENDIAN); break;
-      case 8: buffer.setFloat64(offset, value, Endianness.LITTLE_ENDIAN); break;
-      default: throw new ValidationParseError('Unexpected size: $size');
+      case 4:
+        buffer.setFloat32(offset, value, Endianness.LITTLE_ENDIAN);
+        break;
+      case 8:
+        buffer.setFloat64(offset, value, Endianness.LITTLE_ENDIAN);
+        break;
+      default:
+        throw new ValidationParseError('Unexpected size: $size');
     }
   }
 
   String toString() => "[f$size]$value";
-  bool operator==(_FloatEntry other) =>
+  bool operator ==(_FloatEntry other) =>
       (size == other.size) && (value == other.value);
 }
 
@@ -119,7 +142,7 @@ class _DistEntry implements _Entry {
   }
 
   String toString() => "[dist$size]$id matched = $matched";
-  bool operator==(_DistEntry other) =>
+  bool operator ==(_DistEntry other) =>
       (size == other.size) && (id == other.id);
 }
 
@@ -140,15 +163,20 @@ class _AnchrEntry implements _Entry {
     }
     int offset = dist.offset;
     switch (dist.size) {
-      case 4: buffer.setUint32(offset, value, Endianness.LITTLE_ENDIAN); break;
-      case 8: buffer.setUint64(offset, value, Endianness.LITTLE_ENDIAN); break;
-      default: throw new ValidationParseError('Unexpected size: $size');
+      case 4:
+        buffer.setUint32(offset, value, Endianness.LITTLE_ENDIAN);
+        break;
+      case 8:
+        buffer.setUint64(offset, value, Endianness.LITTLE_ENDIAN);
+        break;
+      default:
+        throw new ValidationParseError('Unexpected size: $size');
     }
     dist.matched = true;
   }
 
   String toString() => "[anchr]$id";
-  bool operator==(_AnchrEntry other) => (id == other.id);
+  bool operator ==(_AnchrEntry other) => (id == other.id);
 }
 
 class _HandlesEntry implements _Entry {
@@ -160,7 +188,7 @@ class _HandlesEntry implements _Entry {
   void write(ByteData buffer, int offset, Map pointers) {}
 
   String toString() => "[handles]$value";
-  bool operator==(_HandlesEntry other) => (value == other.value);
+  bool operator ==(_HandlesEntry other) => (value == other.value);
 }
 
 class _CommentEntry implements _Entry {
@@ -172,30 +200,27 @@ class _CommentEntry implements _Entry {
   void write(ByteData buffer, int offset, Map pointers) {}
 
   String toString() => "// $value";
-  bool operator==(_CommentEntry other) => (value == other.value);
+  bool operator ==(_CommentEntry other) => (value == other.value);
 }
 
 class _ValidationTestParser {
   static final RegExp newline = new RegExp(r'[\r\n]+');
   static final RegExp whitespace = new RegExp(r'[ \t\n\r]+');
   static final RegExp nakedUintRegExp =
-    new RegExp(r'^0$|^[1-9][0-9]*$|^0[xX][0-9a-fA-F]+$');
+      new RegExp(r'^0$|^[1-9][0-9]*$|^0[xX][0-9a-fA-F]+$');
   static final RegExp unsignedRegExp =
-    new RegExp(r'^\[u([1248])\](0$|[1-9][0-9]*$|0[xX][0-9a-fA-F]+$)');
+      new RegExp(r'^\[u([1248])\](0$|[1-9][0-9]*$|0[xX][0-9a-fA-F]+$)');
   static final RegExp signedRegExp = new RegExp(
       r'^\[s([1248])\]([-+]?0$|[-+]?[1-9][0-9]*$|[-+]?0[xX][0-9a-fA-F]+$)');
-  static final RegExp binaryRegExp =
-    new RegExp(r'^\[(b)\]([01]{8}$)');
+  static final RegExp binaryRegExp = new RegExp(r'^\[(b)\]([01]{8}$)');
   static final RegExp floatRegExp =
-    new RegExp(r'^\[([fd])\]([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$)');
+      new RegExp(r'^\[([fd])\]([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$)');
   static final RegExp distRegExp =
-    new RegExp(r'^\[dist([48])\]([0-9a-zA-Z_]+$)');
-  static final RegExp anchrRegExp =
-    new RegExp(r'^\[(anchr)\]([0-9a-zA-Z_]+$)');
+      new RegExp(r'^\[dist([48])\]([0-9a-zA-Z_]+$)');
+  static final RegExp anchrRegExp = new RegExp(r'^\[(anchr)\]([0-9a-zA-Z_]+$)');
   static final RegExp handlesRegExp =
-    new RegExp(r'^\[(handles)\](0$|([1-9][0-9]*$)|(0[xX][0-9a-fA-F]+$))');
-  static final RegExp commentRegExp =
-    new RegExp(r'//(.*)');
+      new RegExp(r'^\[(handles)\](0$|([1-9][0-9]*$)|(0[xX][0-9a-fA-F]+$))');
+  static final RegExp commentRegExp = new RegExp(r'//(.*)');
 
   String _input;
   Map<String, _DistEntry> _pointers;
@@ -205,11 +230,12 @@ class _ValidationTestParser {
   String _stripComment(String line) => line.replaceFirst(commentRegExp, "");
 
   ValidationParseResult parse() {
-    var entries = _input.split(newline)
-                        .map(_stripComment)
-                        .expand((s) => s.split(whitespace))
-                        .where((s) => s != "")
-                        .map(_parseLine);
+    var entries = _input
+        .split(newline)
+        .map(_stripComment)
+        .expand((s) => s.split(whitespace))
+        .where((s) => s != "")
+        .map(_parseLine);
     int size = _calculateSize(entries);
     var data = (size > 0) ? new ByteData(size) : null;
     int numHandles = 0;
@@ -301,138 +327,164 @@ parserTests() {
   }
   {
     var input = "[u1]0x10// hello world !! \n\r  \t [u2]65535 \n"
-                "[u4]65536 [u8]0xFFFFFFFFFFFFFFFF 0 0Xff";
+        "[u4]65536 [u8]0xFFFFFFFFFFFFFFFF 0 0Xff";
     var result = parse(input);
 
     // Check the parse results.
-    var expected = [new _UnsignedEntry(1, 0x10),
-                    new _UnsignedEntry(2, 65535),
-                    new _UnsignedEntry(4, 65536),
-                    new _UnsignedEntry(8, 0xFFFFFFFFFFFFFFFF),
-                    new _UnsignedEntry(1, 0),
-                    new _UnsignedEntry(1, 0xff)];
+    var expected = [
+      new _UnsignedEntry(1, 0x10),
+      new _UnsignedEntry(2, 65535),
+      new _UnsignedEntry(4, 65536),
+      new _UnsignedEntry(8, 0xFFFFFFFFFFFFFFFF),
+      new _UnsignedEntry(1, 0),
+      new _UnsignedEntry(1, 0xff)
+    ];
     assert(_listEquals(result._entries, expected));
 
     //Check the bits.
     var buffer = new ByteData(17);
     var offset = 0;
-    buffer.setUint8(offset, 0x10); offset++;
-    buffer.setUint16(offset, 65535, Endianness.LITTLE_ENDIAN); offset += 2;
-    buffer.setUint32(offset, 65536, Endianness.LITTLE_ENDIAN); offset += 4;
-    buffer.setUint64(offset, 0xFFFFFFFFFFFFFFFF, Endianness.LITTLE_ENDIAN); offset += 8;
-    buffer.setUint8(offset, 0); offset++;
-    buffer.setUint8(offset, 0xff); offset++;
-    assert(_listEquals(buffer.buffer.asUint8List(),
-                       result.data.buffer.asUint8List()));
+    buffer.setUint8(offset, 0x10);
+    offset++;
+    buffer.setUint16(offset, 65535, Endianness.LITTLE_ENDIAN);
+    offset += 2;
+    buffer.setUint32(offset, 65536, Endianness.LITTLE_ENDIAN);
+    offset += 4;
+    buffer.setUint64(offset, 0xFFFFFFFFFFFFFFFF, Endianness.LITTLE_ENDIAN);
+    offset += 8;
+    buffer.setUint8(offset, 0);
+    offset++;
+    buffer.setUint8(offset, 0xff);
+    offset++;
+    assert(_listEquals(
+        buffer.buffer.asUint8List(), result.data.buffer.asUint8List()));
   }
   {
     var input = "[s8]-0x800 [s1]-128\t[s2]+0 [s4]-40";
     var result = parse(input);
 
     // Check the parse results.
-    var expected = [new _SignedEntry(8, -0x800),
-                    new _SignedEntry(1, -128),
-                    new _SignedEntry(2, 0),
-                    new _SignedEntry(4, -40)];
+    var expected = [
+      new _SignedEntry(8, -0x800),
+      new _SignedEntry(1, -128),
+      new _SignedEntry(2, 0),
+      new _SignedEntry(4, -40)
+    ];
     assert(_listEquals(result._entries, expected));
 
     // Check the bits.
     var buffer = new ByteData(15);
     var offset = 0;
-    buffer.setInt64(offset, -0x800, Endianness.LITTLE_ENDIAN); offset += 8;
-    buffer.setInt8(offset, -128); offset += 1;
-    buffer.setInt16(offset, 0, Endianness.LITTLE_ENDIAN); offset += 2;
-    buffer.setInt32(offset, -40, Endianness.LITTLE_ENDIAN); offset += 4;
-    assert(_listEquals(buffer.buffer.asUint8List(),
-                       result.data.buffer.asUint8List()));
+    buffer.setInt64(offset, -0x800, Endianness.LITTLE_ENDIAN);
+    offset += 8;
+    buffer.setInt8(offset, -128);
+    offset += 1;
+    buffer.setInt16(offset, 0, Endianness.LITTLE_ENDIAN);
+    offset += 2;
+    buffer.setInt32(offset, -40, Endianness.LITTLE_ENDIAN);
+    offset += 4;
+    assert(_listEquals(
+        buffer.buffer.asUint8List(), result.data.buffer.asUint8List()));
   }
   {
     var input = "[b]00001011 [b]10000000  // hello world\r [b]00000000";
     var result = parse(input);
 
     // Check the parse results;
-    var expected = [new _UnsignedEntry(1, 11),
-                    new _UnsignedEntry(1, 128),
-                    new _UnsignedEntry(1, 0)];
+    var expected = [
+      new _UnsignedEntry(1, 11),
+      new _UnsignedEntry(1, 128),
+      new _UnsignedEntry(1, 0)
+    ];
     assert(_listEquals(result._entries, expected));
 
     // Check the bits.
     var buffer = new ByteData(3);
     var offset = 0;
-    buffer.setUint8(offset, 11); offset += 1;
-    buffer.setUint8(offset, 128); offset += 1;
-    buffer.setUint8(offset, 0); offset += 1;
-    assert(_listEquals(buffer.buffer.asUint8List(),
-                       result.data.buffer.asUint8List()));
+    buffer.setUint8(offset, 11);
+    offset += 1;
+    buffer.setUint8(offset, 128);
+    offset += 1;
+    buffer.setUint8(offset, 0);
+    offset += 1;
+    assert(_listEquals(
+        buffer.buffer.asUint8List(), result.data.buffer.asUint8List()));
   }
   {
     var input = "[f]+.3e9 [d]-10.03";
     var result = parse(input);
 
     // Check the parse results.
-    var expected = [new _FloatEntry(4, 0.3e9),
-                    new _FloatEntry(8,-10.03)];
+    var expected = [new _FloatEntry(4, 0.3e9), new _FloatEntry(8, -10.03)];
     assert(_listEquals(result._entries, expected));
 
     // Check the bits.
     var buffer = new ByteData(12);
     var offset = 0;
-    buffer.setFloat32(offset, 0.3e9, Endianness.LITTLE_ENDIAN); offset += 4;
-    buffer.setFloat64(offset, -10.03, Endianness.LITTLE_ENDIAN); offset += 8;
-    assert(_listEquals(buffer.buffer.asUint8List(),
-                       result.data.buffer.asUint8List()));
+    buffer.setFloat32(offset, 0.3e9, Endianness.LITTLE_ENDIAN);
+    offset += 4;
+    buffer.setFloat64(offset, -10.03, Endianness.LITTLE_ENDIAN);
+    offset += 8;
+    assert(_listEquals(
+        buffer.buffer.asUint8List(), result.data.buffer.asUint8List()));
   }
   {
     var input = "[dist4]foo 0 [dist8]bar 0 [anchr]foo [anchr]bar";
     var result = parse(input);
 
     // Check the parse results.
-    var expected = [new _DistEntry(4, "foo"),
-                    new _UnsignedEntry(1, 0),
-                    new _DistEntry(8, "bar"),
-                    new _UnsignedEntry(1, 0),
-                    new _AnchrEntry("foo"),
-                    new _AnchrEntry("bar")];
+    var expected = [
+      new _DistEntry(4, "foo"),
+      new _UnsignedEntry(1, 0),
+      new _DistEntry(8, "bar"),
+      new _UnsignedEntry(1, 0),
+      new _AnchrEntry("foo"),
+      new _AnchrEntry("bar")
+    ];
     assert(_listEquals(result._entries, expected));
 
     // Check the bits.
     var buffer = new ByteData(14);
     var offset = 0;
-    buffer.setUint32(offset, 14, Endianness.LITTLE_ENDIAN); offset += 4;
-    buffer.setUint8(offset, 0); offset += 1;
-    buffer.setUint64(offset, 9, Endianness.LITTLE_ENDIAN); offset += 8;
-    buffer.setUint8(offset, 0); offset += 1;
-    assert(_listEquals(buffer.buffer.asUint8List(),
-                       result.data.buffer.asUint8List()));
+    buffer.setUint32(offset, 14, Endianness.LITTLE_ENDIAN);
+    offset += 4;
+    buffer.setUint8(offset, 0);
+    offset += 1;
+    buffer.setUint64(offset, 9, Endianness.LITTLE_ENDIAN);
+    offset += 8;
+    buffer.setUint8(offset, 0);
+    offset += 1;
+    assert(_listEquals(
+        buffer.buffer.asUint8List(), result.data.buffer.asUint8List()));
   }
   {
     var input = "// This message has handles! \n[handles]50 [u8]2";
     var result = parse(input);
-    var expected = [new _HandlesEntry(50),
-                    new _UnsignedEntry(8, 2)];
+    var expected = [new _HandlesEntry(50), new _UnsignedEntry(8, 2)];
     assert(_listEquals(result._entries, expected));
   }
   {
-    var errorInputs = ["/ hello world",
-                       "[u1]x",
-                       "[u2]-1000",
-                       "[u1]0x100",
-                       "[s2]-0x8001",
-                       "[b]1",
-                       "[b]1111111k",
-                       "[dist4]unmatched",
-                       "[anchr]hello [dist8]hello",
-                       "[dist4]a [dist4]a [anchr]a",
-                       "[dist4]a [anchr]a [dist4]a [anchr]a",
-                       "0 [handles]50"];
+    var errorInputs = [
+      "/ hello world",
+      "[u1]x",
+      "[u2]-1000",
+      "[u1]0x100",
+      "[s2]-0x8001",
+      "[b]1",
+      "[b]1111111k",
+      "[dist4]unmatched",
+      "[anchr]hello [dist8]hello",
+      "[dist4]a [dist4]a [anchr]a",
+      "[dist4]a [anchr]a [dist4]a [anchr]a",
+      "0 [handles]50"
+    ];
     for (var input in errorInputs) {
       try {
-        var result = parse(input);
+        parse(input);
         assert(false);
-      } on ValidationParseError catch(e) {
+      } on ValidationParseError {
         // Pass.
       }
     }
   }
 }
-

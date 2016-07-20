@@ -32,7 +32,6 @@ class _ServiceDescriberDescribeServiceParams extends bindings.Struct {
       return null;
     }
     _ServiceDescriberDescribeServiceParams result = new _ServiceDescriberDescribeServiceParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -91,8 +90,7 @@ class _ServiceDescriptionGetTopLevelInterfaceParams extends bindings.Struct {
       return null;
     }
     _ServiceDescriptionGetTopLevelInterfaceParams result = new _ServiceDescriptionGetTopLevelInterfaceParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -138,7 +136,6 @@ class ServiceDescriptionGetTopLevelInterfaceResponseParams extends bindings.Stru
       return null;
     }
     ServiceDescriptionGetTopLevelInterfaceResponseParams result = new ServiceDescriptionGetTopLevelInterfaceResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -194,7 +191,6 @@ class _ServiceDescriptionGetTypeDefinitionParams extends bindings.Struct {
       return null;
     }
     _ServiceDescriptionGetTypeDefinitionParams result = new _ServiceDescriptionGetTypeDefinitionParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -249,7 +245,6 @@ class ServiceDescriptionGetTypeDefinitionResponseParams extends bindings.Struct 
       return null;
     }
     ServiceDescriptionGetTypeDefinitionResponseParams result = new ServiceDescriptionGetTypeDefinitionResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -302,8 +297,7 @@ class _ServiceDescriptionGetAllTypeDefinitionsParams extends bindings.Struct {
       return null;
     }
     _ServiceDescriptionGetAllTypeDefinitionsParams result = new _ServiceDescriptionGetAllTypeDefinitionsParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -349,7 +343,6 @@ class ServiceDescriptionGetAllTypeDefinitionsResponseParams extends bindings.Str
       return null;
     }
     ServiceDescriptionGetAllTypeDefinitionsResponseParams result = new ServiceDescriptionGetAllTypeDefinitionsResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

@@ -35,7 +35,6 @@ class FrameInfo extends bindings.Struct {
       return null;
     }
     FrameInfo result = new FrameInfo();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -112,8 +111,7 @@ class _FrameSchedulerScheduleFrameParams extends bindings.Struct {
       return null;
     }
     _FrameSchedulerScheduleFrameParams result = new _FrameSchedulerScheduleFrameParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -159,7 +157,6 @@ class FrameSchedulerScheduleFrameResponseParams extends bindings.Struct {
       return null;
     }
     FrameSchedulerScheduleFrameResponseParams result = new FrameSchedulerScheduleFrameResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

@@ -33,7 +33,6 @@ class FlogDescription extends bindings.Struct {
       return null;
     }
     FlogDescription result = new FlogDescription();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -110,7 +109,6 @@ class FlogEntry extends bindings.Struct {
       return null;
     }
     FlogEntry result = new FlogEntry();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -195,7 +193,6 @@ class FlogMojoLoggerMessageEntryDetails extends bindings.Struct {
       return null;
     }
     FlogMojoLoggerMessageEntryDetails result = new FlogMojoLoggerMessageEntryDetails();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -274,7 +271,6 @@ class FlogChannelCreationEntryDetails extends bindings.Struct {
       return null;
     }
     FlogChannelCreationEntryDetails result = new FlogChannelCreationEntryDetails();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -329,7 +325,6 @@ class FlogChannelMessageEntryDetails extends bindings.Struct {
       return null;
     }
     FlogChannelMessageEntryDetails result = new FlogChannelMessageEntryDetails();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -382,8 +377,7 @@ class FlogChannelDeletionEntryDetails extends bindings.Struct {
       return null;
     }
     FlogChannelDeletionEntryDetails result = new FlogChannelDeletionEntryDetails();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -431,7 +425,6 @@ class _FlogServiceCreateLoggerParams extends bindings.Struct {
       return null;
     }
     _FlogServiceCreateLoggerParams result = new _FlogServiceCreateLoggerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -490,8 +483,7 @@ class _FlogServiceGetLogDescriptionsParams extends bindings.Struct {
       return null;
     }
     _FlogServiceGetLogDescriptionsParams result = new _FlogServiceGetLogDescriptionsParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -537,7 +529,6 @@ class FlogServiceGetLogDescriptionsResponseParams extends bindings.Struct {
       return null;
     }
     FlogServiceGetLogDescriptionsResponseParams result = new FlogServiceGetLogDescriptionsResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -610,7 +601,6 @@ class _FlogServiceCreateReaderParams extends bindings.Struct {
       return null;
     }
     _FlogServiceCreateReaderParams result = new _FlogServiceCreateReaderParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -679,7 +669,6 @@ class _FlogLoggerLogMojoLoggerMessageParams extends bindings.Struct {
       return null;
     }
     _FlogLoggerLogMojoLoggerMessageParams result = new _FlogLoggerLogMojoLoggerMessageParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -770,7 +759,6 @@ class _FlogLoggerLogChannelCreationParams extends bindings.Struct {
       return null;
     }
     _FlogLoggerLogChannelCreationParams result = new _FlogLoggerLogChannelCreationParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -845,7 +833,6 @@ class _FlogLoggerLogChannelMessageParams extends bindings.Struct {
       return null;
     }
     _FlogLoggerLogChannelMessageParams result = new _FlogLoggerLogChannelMessageParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -918,7 +905,6 @@ class _FlogLoggerLogChannelDeletionParams extends bindings.Struct {
       return null;
     }
     _FlogLoggerLogChannelDeletionParams result = new _FlogLoggerLogChannelDeletionParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -983,7 +969,6 @@ class _FlogReaderGetEntriesParams extends bindings.Struct {
       return null;
     }
     _FlogReaderGetEntriesParams result = new _FlogReaderGetEntriesParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1046,7 +1031,6 @@ class FlogReaderGetEntriesResponseParams extends bindings.Struct {
       return null;
     }
     FlogReaderGetEntriesResponseParams result = new FlogReaderGetEntriesResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

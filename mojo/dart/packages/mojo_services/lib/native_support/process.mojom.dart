@@ -43,7 +43,6 @@ class _ProcessSpawnParams extends bindings.Struct {
       return null;
     }
     _ProcessSpawnParams result = new _ProcessSpawnParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -173,7 +172,6 @@ class ProcessSpawnResponseParams extends bindings.Struct {
       return null;
     }
     ProcessSpawnResponseParams result = new ProcessSpawnResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -240,7 +238,6 @@ class _ProcessSpawnWithTerminalParams extends bindings.Struct {
       return null;
     }
     _ProcessSpawnWithTerminalParams result = new _ProcessSpawnWithTerminalParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -356,7 +353,6 @@ class ProcessSpawnWithTerminalResponseParams extends bindings.Struct {
       return null;
     }
     ProcessSpawnWithTerminalResponseParams result = new ProcessSpawnWithTerminalResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -413,8 +409,7 @@ class _ProcessControllerWaitParams extends bindings.Struct {
       return null;
     }
     _ProcessControllerWaitParams result = new _ProcessControllerWaitParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -462,7 +457,6 @@ class ProcessControllerWaitResponseParams extends bindings.Struct {
       return null;
     }
     ProcessControllerWaitResponseParams result = new ProcessControllerWaitResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -529,7 +523,6 @@ class _ProcessControllerKillParams extends bindings.Struct {
       return null;
     }
     _ProcessControllerKillParams result = new _ProcessControllerKillParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -584,7 +577,6 @@ class ProcessControllerKillResponseParams extends bindings.Struct {
       return null;
     }
     ProcessControllerKillResponseParams result = new ProcessControllerKillResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

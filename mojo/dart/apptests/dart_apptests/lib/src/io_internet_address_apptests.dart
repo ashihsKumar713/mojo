@@ -4,13 +4,10 @@
 
 library io_internet_address_apptests;
 
-import 'dart:async';
 import 'dart:io';
 
 import 'package:mojo_apptest/apptest.dart';
 import 'package:mojo/application.dart';
-import 'package:mojo/bindings.dart';
-import 'package:mojo/core.dart';
 
 tests(Application application, String url) {
   group('InternetAddress Apptests', () {
@@ -27,17 +24,15 @@ tests(Application application, String url) {
       expect(result.host, equals('localhost'));
     });
     test('Lookup IPv4', () async {
-      var result =
-          await InternetAddress.lookup('localhost',
-                                       type:InternetAddressType.IP_V4);
+      var result = await InternetAddress.lookup('localhost',
+          type: InternetAddressType.IP_V4);
       expect(result.length, greaterThan(0));
       expect(result[0], equals(InternetAddress.LOOPBACK_IP_V4));
     });
     test('Lookup IPv6', () async {
       try {
-        var result =
-            await InternetAddress.lookup('localhost',
-                                         type:InternetAddressType.IP_V6);
+        var result = await InternetAddress.lookup('localhost',
+            type: InternetAddressType.IP_V6);
         expect(result.length, greaterThan(0));
         expect(result[0], equals(InternetAddress.LOOPBACK_IP_V6));
       } on OSError catch (e) {
@@ -45,19 +40,17 @@ tests(Application application, String url) {
       }
     });
     test('Lookup ANY', () async {
-      var result =
-          await InternetAddress.lookup('localhost',
-                                       type:InternetAddressType.ANY);
+      var result = await InternetAddress.lookup('localhost',
+          type: InternetAddressType.ANY);
       expect(result.length, greaterThan(0));
     });
     test('Lookup failure', () async {
-      var result;
       var exceptionCaught = false;
       try {
-        result = await InternetAddress.lookup('local.7778888');
+        await InternetAddress.lookup('local.7778888');
         // Not hit.
         expect(true, isFalse);
-      } on OSError catch(e) {
+      } on OSError catch (e) {
         exceptionCaught = true;
         expect(e.errorCode, isNot(equals(0)));
       }

@@ -9,8 +9,6 @@ import 'dart:isolate';
 
 import 'package:mojo_apptest/apptest.dart';
 import 'package:mojo/application.dart';
-import 'package:mojo/bindings.dart';
-import 'package:mojo/core.dart';
 
 void checkBaseUri(String uriBaseAsString) {
   Uri uri = Uri.parse(uriBaseAsString);
@@ -38,8 +36,7 @@ tests(Application application, String url) {
         rp.close();
         completer.complete(uriBaseAsString);
       };
-      Isolate childIso =
-          await Isolate.spawn(getBaseUri, rp.sendPort);
+      await Isolate.spawn(getBaseUri, rp.sendPort);
       String uriBaseAsString = await completer.future;
       checkBaseUri(uriBaseAsString);
     });

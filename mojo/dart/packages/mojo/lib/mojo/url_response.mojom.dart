@@ -50,7 +50,6 @@ class UrlResponse extends bindings.Struct {
       return null;
     }
     UrlResponse result = new UrlResponse();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

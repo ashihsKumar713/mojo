@@ -2,7 +2,6 @@
 // See $MOJO_SDK/tools/bindings/mojom_bindings_generator.py.
 
 library view_manager_mojom;
-import 'dart:async';
 import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
@@ -40,7 +39,6 @@ class _ViewManagerCreateViewParams extends bindings.Struct {
       return null;
     }
     _ViewManagerCreateViewParams result = new _ViewManagerCreateViewParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -119,7 +117,6 @@ class _ViewManagerCreateViewTreeParams extends bindings.Struct {
       return null;
     }
     _ViewManagerCreateViewTreeParams result = new _ViewManagerCreateViewTreeParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -191,7 +188,6 @@ class _ViewManagerRegisterViewAssociateParams extends bindings.Struct {
       return null;
     }
     _ViewManagerRegisterViewAssociateParams result = new _ViewManagerRegisterViewAssociateParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -257,8 +253,7 @@ class _ViewManagerFinishedRegisteringViewAssociatesParams extends bindings.Struc
       return null;
     }
     _ViewManagerFinishedRegisteringViewAssociatesParams result = new _ViewManagerFinishedRegisteringViewAssociatesParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 

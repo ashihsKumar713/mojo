@@ -29,7 +29,6 @@ class _AuthenticationAdminServiceGetOAuth2DeviceCodeParams extends bindings.Stru
       return null;
     }
     _AuthenticationAdminServiceGetOAuth2DeviceCodeParams result = new _AuthenticationAdminServiceGetOAuth2DeviceCodeParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -105,7 +104,6 @@ class AuthenticationAdminServiceGetOAuth2DeviceCodeResponseParams extends bindin
       return null;
     }
     AuthenticationAdminServiceGetOAuth2DeviceCodeResponseParams result = new AuthenticationAdminServiceGetOAuth2DeviceCodeResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -184,7 +182,6 @@ class _AuthenticationAdminServiceAddAccountParams extends bindings.Struct {
       return null;
     }
     _AuthenticationAdminServiceAddAccountParams result = new _AuthenticationAdminServiceAddAccountParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -241,7 +238,6 @@ class AuthenticationAdminServiceAddAccountResponseParams extends bindings.Struct
       return null;
     }
     AuthenticationAdminServiceAddAccountResponseParams result = new AuthenticationAdminServiceAddAccountResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -302,8 +298,7 @@ class _AuthenticationAdminServiceGetAllUsersParams extends bindings.Struct {
       return null;
     }
     _AuthenticationAdminServiceGetAllUsersParams result = new _AuthenticationAdminServiceGetAllUsersParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -351,7 +346,6 @@ class AuthenticationAdminServiceGetAllUsersResponseParams extends bindings.Struc
       return null;
     }
     AuthenticationAdminServiceGetAllUsersResponseParams result = new AuthenticationAdminServiceGetAllUsersResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

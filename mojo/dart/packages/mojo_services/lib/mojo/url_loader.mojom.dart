@@ -34,7 +34,6 @@ class UrlLoaderStatus extends bindings.Struct {
       return null;
     }
     UrlLoaderStatus result = new UrlLoaderStatus();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -98,7 +97,6 @@ class _UrlLoaderStartParams extends bindings.Struct {
       return null;
     }
     _UrlLoaderStartParams result = new _UrlLoaderStartParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -153,7 +151,6 @@ class UrlLoaderStartResponseParams extends bindings.Struct {
       return null;
     }
     UrlLoaderStartResponseParams result = new UrlLoaderStartResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -206,8 +203,7 @@ class _UrlLoaderFollowRedirectParams extends bindings.Struct {
       return null;
     }
     _UrlLoaderFollowRedirectParams result = new _UrlLoaderFollowRedirectParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -253,7 +249,6 @@ class UrlLoaderFollowRedirectResponseParams extends bindings.Struct {
       return null;
     }
     UrlLoaderFollowRedirectResponseParams result = new UrlLoaderFollowRedirectResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -306,8 +301,7 @@ class _UrlLoaderQueryStatusParams extends bindings.Struct {
       return null;
     }
     _UrlLoaderQueryStatusParams result = new _UrlLoaderQueryStatusParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -353,7 +347,6 @@ class UrlLoaderQueryStatusResponseParams extends bindings.Struct {
       return null;
     }
     UrlLoaderQueryStatusResponseParams result = new UrlLoaderQueryStatusResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

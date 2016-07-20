@@ -2,7 +2,6 @@
 // See $MOJO_SDK/tools/bindings/mojom_bindings_generator.py.
 
 library sample_import_mojom;
-import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
@@ -220,7 +219,6 @@ class Point extends bindings.Struct {
       return null;
     }
     Point result = new Point();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -281,8 +279,7 @@ class _ImportedInterfaceDoSomethingParams extends bindings.Struct {
       return null;
     }
     _ImportedInterfaceDoSomethingParams result = new _ImportedInterfaceDoSomethingParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -557,7 +554,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/8yYzW7TQBCA10kLKU1LEP1JfwAXChQQWcSp4tSqRCSiQlGbQ3qhTVO3NkriYDsS8AQ8Rh+FR+EReuQG63iW2OPdxIbUyUqjjb3jeOfbmdnx5onXctC/gh7f530G9ViPKP3/mWayBbdL0Heg/w79JfRPmNxnUj2qFI/fF4/eGK2OaTnaWWG3bTq6Zh3q9Y5GyAum80ioV4Yf5bajWef1htb73wdMloX6FdNoOwPGvRc+Y2MbwvEjzQlOrddqYHcO2e1ep5n8nOpfu6j0TJDfj9ng9eWdwZx3SLDx9eP3f0OrEHFbYJJlgk25x2SRiWQZQvO5C3afM/nIhHZtizbNRr1JL0zzoqlR3Wxp9JtVpy3zk/ma2laj94t2uqdNo0ENvmw2PTXaZ0b7wqaOZjs2teutTlM79mZScJ9pEaICTz6PEvA4SXk99zsV+zHo3SLx+NUk/NzlmWFyUNyr7n54t1+E+0/B94T8Cn1tzNFdj1SCHLlfch6YG26zQ7htR/S7eSY3mOyVD/ZcaJvs97qUF9cK+91iwryG8cmOiE8Ocmz1oNxzFJ4fxXy4VpjP0oTwySvBaxmfEuJzIuGzArEnzvqEPGSy6uclUcS8NiEWkuKF35/3+ZGC/EHx7buY85WEk4wz8XEW3Se+vO7G/FvzkNnt6MweIbfHCfuZinhdoT6K3W7blti9Brb77H5paZ+7bEbi/RhaUvZnJH6RR/PJID/h47+4H6Xj5asdCa852P+9qsrLO/P++IMBzM3dI28mHG8pf7yhOmobzW+aRGtR42xL8vwMrOMXSV2twlomxSkuj6l/4KFE4PFVwmMjYR6D4iwlyN+5iPkobnzx+jsUXzCA3z+bcF2+Bb6gorq8BnW5nh5cn2eUwOfNf3/fyOpzFdYqyK9fmGOO2THV5UrEujwV089KEevy0HcgKsgxp7kJq8fTI+KC63F+boC4/C3EMZf5MXPJcR9RRsslC/G+v3tY9ddNiAsfDnG5Pea6UUXxI1tn2fnQdZ3LLAMbfMoUyltIAc9nZcznMhXgoQ85l+F12ELMvH8SM+8/h29DGb8CegDzXB3TPrAQcR9YvKbzmdB5FuYGipjX2oTtB0sx+dQi7gf8nFjKp39EI/Sr9YQ5/QkAAP//SWnGfvgXAAA=";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/8yYz1PTQBTHN61okYJR+RF+qEFRUcfGI+MJBjvSkXE60EM5QSmRxkmTkIQZvHn0z+DP5KYb8tYmL7s00dJkZ95ss7tt3n727e63TyFhkaH+ADVuZ3UF1XgckQa/M0FtHZp3oHag/gX1JdSvqD2l1jpo1g+/1A8+Gn3Hdn39pLZl2X5Pd/d7HUcn5B0d84I7rgEfGpavu986Xf36d59RW+COb9qG5d/QH77wDe1b5fYf6H7ctevShnnLaN7Bc5lAJzwHqC4riHM1/qw84nOuAOdNEi9s/Vj7byhNwi+z1IJX4qk8oTZHTbAMCX8ew9RMaifUtHPP1Uy72zG1U9s+NXWtZ/d1zehYpm10Nf9M69vfbc1zu+EH5/zYpO0GWzxPOzasE8M69TRf93xP8zp9x9QPQ39qwXf6wXtV4Mr8aQIXpxTWLP5U5K8C4+6TbBzbAo4PqU1S26tvt7a+ft6tQ/triEEux9pgNOYZrEspB54sThkXzA+XqSH8NlLG4Qy1u9S2G3vbAbw1+nlFyI2NSsbhXE7chnGqjoiTDGdva69xHTjs3ORzYqOSnOYLxkmV4s8iTjuI05GA0yLsSf6tQMhzaktRboKBmNsa7I1xc8N+KJG4klB8SJH7GfO+EvAS8SYR3rx2Ejn/g7Pgk71P5+/36Iy4/F7mFHcq4naF6jTzD8qGYP7LwCAy//eufnZOfeLrJCjj5lARxImC/KqguFGQvtssZzvPNgXcpkE3hGosPJdmovsSOjC/4E69l9M+LEX8UJEO20B+TpB0Je3+Wxd8fxKW5kKgy1VY03Hzysrlzj9wkVJw+SHgspoTl5v2X4lzzsspz6us+47p+cS+gw78/qmcdP46xIaKdH4PdP7P8s16X5Zix9d//28S6X0V1izOcSD0Mc9qzjpfSqnzSxnjbielzk/8z0QCH/OaLqi+L4+ID9b3LD+B+PwV9pjPTEH4yOAHy1OMik8VzoHdrf1WVHchPqw7wedBQfSnivaVaN1FeanbygctACOc3Uqca2gA9mexIPmgNnC5GJIPYjpuNuP9cJTxfngL/z1FHGvoC5jrUs73xWzK+2LulvJCiXwa5gcDMbflgt4b8xk5tVPeGyxvLeQ0SA1x42wlJ15/AgAA///j+4KikBgAAA==";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

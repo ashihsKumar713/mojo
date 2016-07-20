@@ -31,7 +31,6 @@ class Photo extends bindings.Struct {
       return null;
     }
     Photo result = new Photo();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -90,8 +89,7 @@ class _CameraRollServiceUpdateParams extends bindings.Struct {
       return null;
     }
     _CameraRollServiceUpdateParams result = new _CameraRollServiceUpdateParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -135,8 +133,7 @@ class _CameraRollServiceGetCountParams extends bindings.Struct {
       return null;
     }
     _CameraRollServiceGetCountParams result = new _CameraRollServiceGetCountParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -182,7 +179,6 @@ class CameraRollServiceGetCountResponseParams extends bindings.Struct {
       return null;
     }
     CameraRollServiceGetCountResponseParams result = new CameraRollServiceGetCountResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -237,7 +233,6 @@ class _CameraRollServiceGetPhotoParams extends bindings.Struct {
       return null;
     }
     _CameraRollServiceGetPhotoParams result = new _CameraRollServiceGetPhotoParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -292,7 +287,6 @@ class CameraRollServiceGetPhotoResponseParams extends bindings.Struct {
       return null;
     }
     CameraRollServiceGetPhotoResponseParams result = new CameraRollServiceGetPhotoResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -345,8 +339,7 @@ class _CameraServiceGetLatestFrameParams extends bindings.Struct {
       return null;
     }
     _CameraServiceGetLatestFrameParams result = new _CameraServiceGetLatestFrameParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -392,7 +385,6 @@ class CameraServiceGetLatestFrameResponseParams extends bindings.Struct {
       return null;
     }
     CameraServiceGetLatestFrameResponseParams result = new CameraServiceGetLatestFrameResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

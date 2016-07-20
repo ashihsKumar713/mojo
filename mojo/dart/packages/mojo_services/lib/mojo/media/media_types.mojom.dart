@@ -541,7 +541,6 @@ class MediaType extends bindings.Struct {
       return null;
     }
     MediaType result = new MediaType();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -632,7 +631,6 @@ class MediaTypeSet extends bindings.Struct {
       return null;
     }
     MediaTypeSet result = new MediaTypeSet();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -730,7 +728,6 @@ class AudioMediaTypeDetails extends bindings.Struct {
       return null;
     }
     AudioMediaTypeDetails result = new AudioMediaTypeDetails();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -813,7 +810,6 @@ class AudioMediaTypeSetDetails extends bindings.Struct {
       return null;
     }
     AudioMediaTypeSetDetails result = new AudioMediaTypeSetDetails();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -916,7 +912,6 @@ class VideoMediaTypeDetails extends bindings.Struct {
       return null;
     }
     VideoMediaTypeDetails result = new VideoMediaTypeDetails();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1037,7 +1032,6 @@ class VideoMediaTypeSetDetails extends bindings.Struct {
       return null;
     }
     VideoMediaTypeSetDetails result = new VideoMediaTypeSetDetails();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -1114,8 +1108,7 @@ class TextMediaTypeDetails extends bindings.Struct {
       return null;
     }
     TextMediaTypeDetails result = new TextMediaTypeDetails();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -1159,8 +1152,7 @@ class TextMediaTypeSetDetails extends bindings.Struct {
       return null;
     }
     TextMediaTypeSetDetails result = new TextMediaTypeSetDetails();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -1204,8 +1196,7 @@ class SubpictureMediaTypeDetails extends bindings.Struct {
       return null;
     }
     SubpictureMediaTypeDetails result = new SubpictureMediaTypeDetails();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -1249,8 +1240,7 @@ class SubpictureMediaTypeSetDetails extends bindings.Struct {
       return null;
     }
     SubpictureMediaTypeSetDetails result = new SubpictureMediaTypeSetDetails();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 

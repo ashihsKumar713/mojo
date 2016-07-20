@@ -36,7 +36,6 @@ class MediaSourceStreamDescriptor extends bindings.Struct {
       return null;
     }
     MediaSourceStreamDescriptor result = new MediaSourceStreamDescriptor();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -109,7 +108,6 @@ class MediaSourceStatus extends bindings.Struct {
       return null;
     }
     MediaSourceStatus result = new MediaSourceStatus();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -163,8 +161,7 @@ class _MediaSourceGetStreamsParams extends bindings.Struct {
       return null;
     }
     _MediaSourceGetStreamsParams result = new _MediaSourceGetStreamsParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -210,7 +207,6 @@ class MediaSourceGetStreamsResponseParams extends bindings.Struct {
       return null;
     }
     MediaSourceGetStreamsResponseParams result = new MediaSourceGetStreamsResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -283,7 +279,6 @@ class _MediaSourceGetPacketProducerParams extends bindings.Struct {
       return null;
     }
     _MediaSourceGetPacketProducerParams result = new _MediaSourceGetPacketProducerParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -344,7 +339,6 @@ class _MediaSourceGetStatusParams extends bindings.Struct {
       return null;
     }
     _MediaSourceGetStatusParams result = new _MediaSourceGetStatusParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -401,7 +395,6 @@ class MediaSourceGetStatusResponseParams extends bindings.Struct {
       return null;
     }
     MediaSourceGetStatusResponseParams result = new MediaSourceGetStatusResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -463,8 +456,7 @@ class _MediaSourcePrepareParams extends bindings.Struct {
       return null;
     }
     _MediaSourcePrepareParams result = new _MediaSourcePrepareParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -508,8 +500,7 @@ class MediaSourcePrepareResponseParams extends bindings.Struct {
       return null;
     }
     MediaSourcePrepareResponseParams result = new MediaSourcePrepareResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -553,8 +544,7 @@ class _MediaSourcePrimeParams extends bindings.Struct {
       return null;
     }
     _MediaSourcePrimeParams result = new _MediaSourcePrimeParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -598,8 +588,7 @@ class MediaSourcePrimeResponseParams extends bindings.Struct {
       return null;
     }
     MediaSourcePrimeResponseParams result = new MediaSourcePrimeResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -643,8 +632,7 @@ class _MediaSourceFlushParams extends bindings.Struct {
       return null;
     }
     _MediaSourceFlushParams result = new _MediaSourceFlushParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -688,8 +676,7 @@ class MediaSourceFlushResponseParams extends bindings.Struct {
       return null;
     }
     MediaSourceFlushResponseParams result = new MediaSourceFlushResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -735,7 +722,6 @@ class _MediaSourceSeekParams extends bindings.Struct {
       return null;
     }
     _MediaSourceSeekParams result = new _MediaSourceSeekParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -788,8 +774,7 @@ class MediaSourceSeekResponseParams extends bindings.Struct {
       return null;
     }
     MediaSourceSeekResponseParams result = new MediaSourceSeekResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 

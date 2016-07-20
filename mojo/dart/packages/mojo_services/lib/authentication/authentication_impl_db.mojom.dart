@@ -29,7 +29,6 @@ class Db extends bindings.Struct {
       return null;
     }
     Db result = new Db();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

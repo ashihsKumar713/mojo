@@ -257,7 +257,6 @@ class Timespec extends bindings.Struct {
       return null;
     }
     Timespec result = new Timespec();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -322,7 +321,6 @@ class TimespecOrNow extends bindings.Struct {
       return null;
     }
     TimespecOrNow result = new TimespecOrNow();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -392,7 +390,6 @@ class FileInformation extends bindings.Struct {
       return null;
     }
     FileInformation result = new FileInformation();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -479,7 +476,6 @@ class DirectoryEntry extends bindings.Struct {
       return null;
     }
     DirectoryEntry result = new DirectoryEntry();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

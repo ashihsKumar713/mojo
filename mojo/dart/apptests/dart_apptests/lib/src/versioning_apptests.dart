@@ -8,8 +8,6 @@ import 'dart:async';
 
 import 'package:mojo_apptest/apptest.dart';
 import 'package:mojo/application.dart';
-import 'package:mojo/bindings.dart';
-import 'package:mojo/core.dart';
 import 'package:_mojo_for_test_only/mojo/test/versioning/versioning_test_client.mojom.dart';
 
 tests(Application application, String url) {

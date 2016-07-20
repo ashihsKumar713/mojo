@@ -5,7 +5,6 @@
 import 'dart:async';
 
 import 'package:mojo/application.dart';
-import 'package:mojo/bindings.dart';
 import 'package:mojo/core.dart';
 
 import 'package:_mojo_for_test_only/test/pingpong_service.mojom.dart';
@@ -28,12 +27,11 @@ class PingPongClientImpl implements PingPongClient {
 }
 
 class PingPongServiceImpl implements PingPongService {
-  PingPongService _service;
   Application _application;
   PingPongClient _pingPongClient;
 
   PingPongServiceImpl(this._application, MojoMessagePipeEndpoint endpoint) {
-    _service = new PingPongServiceInterface.fromEndpoint(endpoint, this);
+    new PingPongServiceInterface.fromEndpoint(endpoint, this);
   }
 
   void setClient(PingPongClientInterface client) {

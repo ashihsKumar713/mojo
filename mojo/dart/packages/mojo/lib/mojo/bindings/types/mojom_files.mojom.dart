@@ -40,7 +40,6 @@ class MojomFile extends bindings.Struct {
       return null;
     }
     MojomFile result = new MojomFile();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -183,7 +182,6 @@ class MojomFileGraph extends bindings.Struct {
       return null;
     }
     MojomFileGraph result = new MojomFileGraph();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -425,7 +423,6 @@ class KeysByType extends bindings.Struct {
       return null;
     }
     KeysByType result = new KeysByType();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

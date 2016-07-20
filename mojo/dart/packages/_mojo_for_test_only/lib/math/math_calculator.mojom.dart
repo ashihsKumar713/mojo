@@ -32,8 +32,7 @@ class _CalculatorClearParams extends bindings.Struct {
       return null;
     }
     _CalculatorClearParams result = new _CalculatorClearParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -79,7 +78,6 @@ class CalculatorClearResponseParams extends bindings.Struct {
       return null;
     }
     CalculatorClearResponseParams result = new CalculatorClearResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -134,7 +132,6 @@ class _CalculatorAddParams extends bindings.Struct {
       return null;
     }
     _CalculatorAddParams result = new _CalculatorAddParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -189,7 +186,6 @@ class CalculatorAddResponseParams extends bindings.Struct {
       return null;
     }
     CalculatorAddResponseParams result = new CalculatorAddResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -244,7 +240,6 @@ class _CalculatorMultiplyParams extends bindings.Struct {
       return null;
     }
     _CalculatorMultiplyParams result = new _CalculatorMultiplyParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -299,7 +294,6 @@ class CalculatorMultiplyResponseParams extends bindings.Struct {
       return null;
     }
     CalculatorMultiplyResponseParams result = new CalculatorMultiplyResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -724,7 +718,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+xXTY/TMBBtU5CyLR/lc8OtEpdeWK84rTgtQishISQOXHoqbmraICcOcYIEv5Zjj/wDcNpx6wwx/aC0YZWRRtM4tjLv9c1L6zUW0YV6DhWv6+qiivddGNdNY18P9r4fvLsavrkavAhpOj17RbmfcZqKxIP9+bmWca5vnC9Es3h5iW6fo/WfEK8b5XFfZVvlqqPF+qnKuypRu7/hduH8VOUHlSSTCeHCp5xMhJhwRqYiZORbQkkoPonnRCb+/BOJsxEPfBJEKUs+Up9JMgqicRBNJEmZTCXJHz30l48+y0+F+Pman4fAn6bIMe63jO8rvrGo30/KeZ5pXM5mPOPoW9Zvq7yZ88wZTUr0cwI9H4rHHtLxDNV1eLWubDw8AsxzvM8S9jlTvZTg1nEo3K5lTj3Uj4t0gXnSAvtbnh6rvGPwJGMRSXZ8njA/lyU+V2JH1tjX/HyhPGOW+Tk9Ij8esuhu48/+0msV+VvHTxPSxk8HfO7leFz6fmpXxF/2NTcPALPCa7hLPTfbzk0b3vNVm5t/rZ/898KtpX6069b62UU/T/9D33U25MeBtPHThV7eZjwNYv4V89O5Zr7rATaNV5tvPTfbzU0HPKjqvvsD/R/aVD8XFl6eqLxX1M/KfGv/3UlH/Qrq6FcAAAD//4oDU5NgEQAA";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+yXTavaQBSGTWwhjf2wn6Y7oRs3dVxKV5YiFEqhi25cyRhHTZlkNJMU+i/6U112107qGR3HDAb1SrzkwGGu4wyc8+Q9741ebRNNWHuw6vtydbRVP9dXPlvKuTac/T76Nhx/GY4+hDhZdD9h6qcUJyz24Hx2r67c6yj31XCs/c8D7fuetv8X4nMtP16IdEXuKtrst0Q+E6mVe9C3A/cjkTORKOUxoszHFM0Zm1OCFiwkKMARZYGPkhUK2Q+GeOxv/limEyr2gygh8Qz7hKNJEE2DaM5RQnjCUVbA2N8W0M1uhYf8JadXwLEGXG3l+7ry3H4/AM5uPu+1fM52Md56dAz7T0Q+zHhTguMcHT2Cmq/Ns63peq2tx/qWOjPxeA29/+/7fUxWqagmp38Z1+7fMcyvp8+fphOdV9O+DK83Ip8qvPiSRZyUh5fOaZDjg3IGi8Sl5uonpikxzFWrBJxUPVlKfSb/6df3OR7jZEGaODXABz9Op7n/x9yS+c+l5ukl9C76VtynmqdT58mF94OyztNd6yl7z3i81ZN050pP5+jp3Q37s12Qkw1p4tSEWr6mNAmW9JfOqXFP/dmDHmXf0qSreTptnhrgUbfiz3+031tF9dQ38Hkr8vm+nnYmXfn0WbrqlFhX/wIAAP//mQPY/tgRAAA=";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);

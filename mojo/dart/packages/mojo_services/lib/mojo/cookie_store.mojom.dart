@@ -29,7 +29,6 @@ class _CookieStoreGetParams extends bindings.Struct {
       return null;
     }
     _CookieStoreGetParams result = new _CookieStoreGetParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -84,7 +83,6 @@ class CookieStoreGetResponseParams extends bindings.Struct {
       return null;
     }
     CookieStoreGetResponseParams result = new CookieStoreGetResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -141,7 +139,6 @@ class _CookieStoreSetParams extends bindings.Struct {
       return null;
     }
     _CookieStoreSetParams result = new _CookieStoreSetParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -204,7 +201,6 @@ class CookieStoreSetResponseParams extends bindings.Struct {
       return null;
     }
     CookieStoreSetResponseParams result = new CookieStoreSetResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

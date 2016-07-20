@@ -29,7 +29,6 @@ class Point extends bindings.Struct {
       return null;
     }
     Point result = new Point();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -94,7 +93,6 @@ class PointF extends bindings.Struct {
       return null;
     }
     PointF result = new PointF();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -159,7 +157,6 @@ class Size extends bindings.Struct {
       return null;
     }
     Size result = new Size();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -228,7 +225,6 @@ class Rect extends bindings.Struct {
       return null;
     }
     Rect result = new Rect();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -313,7 +309,6 @@ class RectF extends bindings.Struct {
       return null;
     }
     RectF result = new RectF();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -414,7 +409,6 @@ class RRectF extends bindings.Struct {
       return null;
     }
     RRectF result = new RRectF();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -557,7 +551,6 @@ class Transform extends bindings.Struct {
       return null;
     }
     Transform result = new Transform();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

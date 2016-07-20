@@ -31,7 +31,6 @@ class PrevWordInfo extends bindings.Struct {
       return null;
     }
     PrevWordInfo result = new PrevWordInfo();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -96,7 +95,6 @@ class PredictionInfo extends bindings.Struct {
       return null;
     }
     PredictionInfo result = new PredictionInfo();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -175,7 +173,6 @@ class _PredictionServiceGetPredictionListParams extends bindings.Struct {
       return null;
     }
     _PredictionServiceGetPredictionListParams result = new _PredictionServiceGetPredictionListParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -231,7 +228,6 @@ class PredictionServiceGetPredictionListResponseParams extends bindings.Struct {
       return null;
     }
     PredictionServiceGetPredictionListResponseParams result = new PredictionServiceGetPredictionListResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

@@ -29,8 +29,7 @@ class _UdpSocketAllowAddressReuseParams extends bindings.Struct {
       return null;
     }
     _UdpSocketAllowAddressReuseParams result = new _UdpSocketAllowAddressReuseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -76,7 +75,6 @@ class UdpSocketAllowAddressReuseResponseParams extends bindings.Struct {
       return null;
     }
     UdpSocketAllowAddressReuseResponseParams result = new UdpSocketAllowAddressReuseResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -132,7 +130,6 @@ class _UdpSocketBindParams extends bindings.Struct {
       return null;
     }
     _UdpSocketBindParams result = new _UdpSocketBindParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -192,7 +189,6 @@ class UdpSocketBindResponseParams extends bindings.Struct {
       return null;
     }
     UdpSocketBindResponseParams result = new UdpSocketBindResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -262,7 +258,6 @@ class _UdpSocketConnectParams extends bindings.Struct {
       return null;
     }
     _UdpSocketConnectParams result = new _UdpSocketConnectParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -322,7 +317,6 @@ class UdpSocketConnectResponseParams extends bindings.Struct {
       return null;
     }
     UdpSocketConnectResponseParams result = new UdpSocketConnectResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -392,7 +386,6 @@ class _UdpSocketSetSendBufferSizeParams extends bindings.Struct {
       return null;
     }
     _UdpSocketSetSendBufferSizeParams result = new _UdpSocketSetSendBufferSizeParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -447,7 +440,6 @@ class UdpSocketSetSendBufferSizeResponseParams extends bindings.Struct {
       return null;
     }
     UdpSocketSetSendBufferSizeResponseParams result = new UdpSocketSetSendBufferSizeResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -503,7 +495,6 @@ class _UdpSocketSetReceiveBufferSizeParams extends bindings.Struct {
       return null;
     }
     _UdpSocketSetReceiveBufferSizeParams result = new _UdpSocketSetReceiveBufferSizeParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -558,7 +549,6 @@ class UdpSocketSetReceiveBufferSizeResponseParams extends bindings.Struct {
       return null;
     }
     UdpSocketSetReceiveBufferSizeResponseParams result = new UdpSocketSetReceiveBufferSizeResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -614,7 +604,6 @@ class _UdpSocketNegotiateMaxPendingSendRequestsParams extends bindings.Struct {
       return null;
     }
     _UdpSocketNegotiateMaxPendingSendRequestsParams result = new _UdpSocketNegotiateMaxPendingSendRequestsParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -669,7 +658,6 @@ class UdpSocketNegotiateMaxPendingSendRequestsResponseParams extends bindings.St
       return null;
     }
     UdpSocketNegotiateMaxPendingSendRequestsResponseParams result = new UdpSocketNegotiateMaxPendingSendRequestsResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -724,7 +712,6 @@ class _UdpSocketReceiveMoreParams extends bindings.Struct {
       return null;
     }
     _UdpSocketReceiveMoreParams result = new _UdpSocketReceiveMoreParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -781,7 +768,6 @@ class _UdpSocketSendToParams extends bindings.Struct {
       return null;
     }
     _UdpSocketSendToParams result = new _UdpSocketSendToParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -845,7 +831,6 @@ class UdpSocketSendToResponseParams extends bindings.Struct {
       return null;
     }
     UdpSocketSendToResponseParams result = new UdpSocketSendToResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -905,7 +890,6 @@ class _UdpSocketReceiverOnReceivedParams extends bindings.Struct {
       return null;
     }
     _UdpSocketReceiverOnReceivedParams result = new _UdpSocketReceiverOnReceivedParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

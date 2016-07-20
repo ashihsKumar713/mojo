@@ -68,7 +68,7 @@ abstract class ServiceConnector {
 }
 
 abstract class ProxyMessageHandler extends core.MojoEventHandler
-                                   implements MojoInterfaceControl {
+    implements MojoInterfaceControl {
   HashMap<int, Function> _callbackMap = new HashMap<int, Function>();
   Completer _errorCompleter = new Completer();
   Set<Completer> _errorCompleters;
@@ -192,8 +192,7 @@ abstract class ProxyMessageHandler extends core.MojoEventHandler
     }
     int requestId = message.header.requestId;
     if (!_callbackMap.containsKey(requestId)) {
-      proxyError(
-          "Message had unknown request Id: $requestId");
+      proxyError("Message had unknown request Id: $requestId");
       return null;
     }
     Function callback = _callbackMap[requestId];
@@ -216,7 +215,7 @@ abstract class ProxyMessageHandler extends core.MojoEventHandler
     params.reserved1 = 0;
     params.queryVersion = new icm.QueryVersion();
     sendMessageWithRequestId(
-        params, icm.kRunMessageId,  -1, MessageHeader.kMessageExpectsResponse,
+        params, icm.kRunMessageId, -1, MessageHeader.kMessageExpectsResponse,
         (r0, r1, queryResult) {
       _version = queryResult.version;
       completer.complete(_version);
@@ -418,11 +417,11 @@ abstract class FuturizedProxy<T extends Proxy> {
   @override
   dynamic noSuchMethod(Invocation invocation) =>
       mojoMethods.containsKey(invocation.memberName)
-      ? _Completerator.completerate(
-            mojoMethods[invocation.memberName],
-            invocation.positionalArguments,
-            mojoResponses[invocation.memberName])
-      : super.noSuchMethod(invocation);
+          ? _Completerator.completerate(
+              mojoMethods[invocation.memberName],
+              invocation.positionalArguments,
+              mojoResponses[invocation.memberName])
+          : super.noSuchMethod(invocation);
 }
 
 /// A class that acts like a function that can take up to 20 arguments, and
@@ -449,5 +448,6 @@ class DoNothingFunction extends _GenericFunction {
     if (invocation.memberName != #call) {
       return super.noSuchMethod(invocation);
     }
+    return null;
   }
 }

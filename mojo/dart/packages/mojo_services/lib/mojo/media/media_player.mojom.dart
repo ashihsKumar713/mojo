@@ -35,7 +35,6 @@ class MediaPlayerStatus extends bindings.Struct {
       return null;
     }
     MediaPlayerStatus result = new MediaPlayerStatus();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -106,8 +105,7 @@ class _MediaPlayerPlayParams extends bindings.Struct {
       return null;
     }
     _MediaPlayerPlayParams result = new _MediaPlayerPlayParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -151,8 +149,7 @@ class _MediaPlayerPauseParams extends bindings.Struct {
       return null;
     }
     _MediaPlayerPauseParams result = new _MediaPlayerPauseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -198,7 +195,6 @@ class _MediaPlayerSeekParams extends bindings.Struct {
       return null;
     }
     _MediaPlayerSeekParams result = new _MediaPlayerSeekParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -253,7 +249,6 @@ class _MediaPlayerGetStatusParams extends bindings.Struct {
       return null;
     }
     _MediaPlayerGetStatusParams result = new _MediaPlayerGetStatusParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -310,7 +305,6 @@ class MediaPlayerGetStatusResponseParams extends bindings.Struct {
       return null;
     }
     MediaPlayerGetStatusResponseParams result = new MediaPlayerGetStatusResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

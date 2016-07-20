@@ -32,7 +32,6 @@ class _HttpConnectionSetSendBufferSizeParams extends bindings.Struct {
       return null;
     }
     _HttpConnectionSetSendBufferSizeParams result = new _HttpConnectionSetSendBufferSizeParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -87,7 +86,6 @@ class HttpConnectionSetSendBufferSizeResponseParams extends bindings.Struct {
       return null;
     }
     HttpConnectionSetSendBufferSizeResponseParams result = new HttpConnectionSetSendBufferSizeResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -143,7 +141,6 @@ class _HttpConnectionSetReceiveBufferSizeParams extends bindings.Struct {
       return null;
     }
     _HttpConnectionSetReceiveBufferSizeParams result = new _HttpConnectionSetReceiveBufferSizeParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -198,7 +195,6 @@ class HttpConnectionSetReceiveBufferSizeResponseParams extends bindings.Struct {
       return null;
     }
     HttpConnectionSetReceiveBufferSizeResponseParams result = new HttpConnectionSetReceiveBufferSizeResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -254,7 +250,6 @@ class _HttpConnectionDelegateOnReceivedRequestParams extends bindings.Struct {
       return null;
     }
     _HttpConnectionDelegateOnReceivedRequestParams result = new _HttpConnectionDelegateOnReceivedRequestParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -309,7 +304,6 @@ class HttpConnectionDelegateOnReceivedRequestResponseParams extends bindings.Str
       return null;
     }
     HttpConnectionDelegateOnReceivedRequestResponseParams result = new HttpConnectionDelegateOnReceivedRequestResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -364,7 +358,6 @@ class _HttpConnectionDelegateOnReceivedWebSocketRequestParams extends bindings.S
       return null;
     }
     _HttpConnectionDelegateOnReceivedWebSocketRequestParams result = new _HttpConnectionDelegateOnReceivedWebSocketRequestParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -423,7 +416,6 @@ class HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams extends bin
       return null;
     }
     HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams result = new HttpConnectionDelegateOnReceivedWebSocketRequestResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

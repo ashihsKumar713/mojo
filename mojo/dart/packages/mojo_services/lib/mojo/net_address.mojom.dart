@@ -88,7 +88,6 @@ class NetAddressIPv4 extends bindings.Struct {
       return null;
     }
     NetAddressIPv4 result = new NetAddressIPv4();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -153,7 +152,6 @@ class NetAddressIPv6 extends bindings.Struct {
       return null;
     }
     NetAddressIPv6 result = new NetAddressIPv6();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -220,7 +218,6 @@ class NetAddress extends bindings.Struct {
       return null;
     }
     NetAddress result = new NetAddress();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

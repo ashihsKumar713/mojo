@@ -4,15 +4,11 @@
 
 library mojom.command.tree;
 
-import 'dart:async';
 import 'dart:io';
 
-import 'package:args/args.dart';
-import 'package:args/command_runner.dart';
 import 'package:mojom/src/commands/mojom_command.dart';
 import 'package:mojom/src/generate.dart';
 import 'package:mojom/src/utils.dart';
-import 'package:path/path.dart' as path;
 
 class GenCommand extends MojomCommand {
   String get name => 'gen';
@@ -34,9 +30,8 @@ class GenCommand extends MojomCommand {
   run() async {
     MojomCommand.setupLogging();
     await _validateArguments();
-    var treeGenerator =
-        new TreeGenerator(mojoSdk, mojomRoot, _dartRoot, skips, dryRun: dryRun,
-                          force: force);
+    var treeGenerator = new TreeGenerator(mojoSdk, mojomRoot, _dartRoot, skips,
+        dryRun: dryRun, force: force);
     await treeGenerator.generate();
     return treeGenerator.errors;
   }

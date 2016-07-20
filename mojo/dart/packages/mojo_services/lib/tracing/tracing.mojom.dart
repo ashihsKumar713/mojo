@@ -2,7 +2,6 @@
 // See $MOJO_SDK/tools/bindings/mojom_bindings_generator.py.
 
 library tracing_mojom;
-import 'dart:async';
 import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
@@ -31,7 +30,6 @@ class _TraceProviderStartTracingParams extends bindings.Struct {
       return null;
     }
     _TraceProviderStartTracingParams result = new _TraceProviderStartTracingParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -90,8 +88,7 @@ class _TraceProviderStopTracingParams extends bindings.Struct {
       return null;
     }
     _TraceProviderStopTracingParams result = new _TraceProviderStopTracingParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -137,7 +134,6 @@ class _TraceRecorderRecordParams extends bindings.Struct {
       return null;
     }
     _TraceRecorderRecordParams result = new _TraceRecorderRecordParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -194,7 +190,6 @@ class _TraceCollectorStartParams extends bindings.Struct {
       return null;
     }
     _TraceCollectorStartParams result = new _TraceCollectorStartParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -253,8 +248,7 @@ class _TraceCollectorStopAndFlushParams extends bindings.Struct {
       return null;
     }
     _TraceCollectorStopAndFlushParams result = new _TraceCollectorStopAndFlushParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 

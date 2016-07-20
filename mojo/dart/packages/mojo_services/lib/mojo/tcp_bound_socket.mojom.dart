@@ -33,7 +33,6 @@ class _TcpBoundSocketStartListeningParams extends bindings.Struct {
       return null;
     }
     _TcpBoundSocketStartListeningParams result = new _TcpBoundSocketStartListeningParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -87,7 +86,6 @@ class TcpBoundSocketStartListeningResponseParams extends bindings.Struct {
       return null;
     }
     TcpBoundSocketStartListeningResponseParams result = new TcpBoundSocketStartListeningResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -149,7 +147,6 @@ class _TcpBoundSocketConnectParams extends bindings.Struct {
       return null;
     }
     _TcpBoundSocketConnectParams result = new _TcpBoundSocketConnectParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -225,7 +222,6 @@ class TcpBoundSocketConnectResponseParams extends bindings.Struct {
       return null;
     }
     TcpBoundSocketConnectResponseParams result = new TcpBoundSocketConnectResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

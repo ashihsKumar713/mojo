@@ -27,8 +27,7 @@ class _InputClientOnBackButtonParams extends bindings.Struct {
       return null;
     }
     _InputClientOnBackButtonParams result = new _InputClientOnBackButtonParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -72,8 +71,7 @@ class InputClientOnBackButtonResponseParams extends bindings.Struct {
       return null;
     }
     InputClientOnBackButtonResponseParams result = new InputClientOnBackButtonResponseParams();
-
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
@@ -119,7 +117,6 @@ class _InputServiceSetClientParams extends bindings.Struct {
       return null;
     }
     _InputServiceSetClientParams result = new _InputServiceSetClientParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

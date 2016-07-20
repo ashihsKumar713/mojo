@@ -30,7 +30,6 @@ class _UrlResponseDiskCacheGetParams extends bindings.Struct {
       return null;
     }
     _UrlResponseDiskCacheGetParams result = new _UrlResponseDiskCacheGetParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -89,7 +88,6 @@ class UrlResponseDiskCacheGetResponseParams extends bindings.Struct {
       return null;
     }
     UrlResponseDiskCacheGetResponseParams result = new UrlResponseDiskCacheGetResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -158,7 +156,6 @@ class _UrlResponseDiskCacheValidateParams extends bindings.Struct {
       return null;
     }
     _UrlResponseDiskCacheValidateParams result = new _UrlResponseDiskCacheValidateParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -213,7 +210,6 @@ class _UrlResponseDiskCacheUpdateParams extends bindings.Struct {
       return null;
     }
     _UrlResponseDiskCacheUpdateParams result = new _UrlResponseDiskCacheUpdateParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -268,7 +264,6 @@ class _UrlResponseDiskCacheUpdateAndGetParams extends bindings.Struct {
       return null;
     }
     _UrlResponseDiskCacheUpdateAndGetParams result = new _UrlResponseDiskCacheUpdateAndGetParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -325,7 +320,6 @@ class UrlResponseDiskCacheUpdateAndGetResponseParams extends bindings.Struct {
       return null;
     }
     UrlResponseDiskCacheUpdateAndGetResponseParams result = new UrlResponseDiskCacheUpdateAndGetResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -388,7 +382,6 @@ class _UrlResponseDiskCacheUpdateAndGetExtractedParams extends bindings.Struct {
       return null;
     }
     _UrlResponseDiskCacheUpdateAndGetExtractedParams result = new _UrlResponseDiskCacheUpdateAndGetExtractedParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -445,7 +438,6 @@ class UrlResponseDiskCacheUpdateAndGetExtractedResponseParams extends bindings.S
       return null;
     }
     UrlResponseDiskCacheUpdateAndGetExtractedResponseParams result = new UrlResponseDiskCacheUpdateAndGetExtractedResponseParams();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

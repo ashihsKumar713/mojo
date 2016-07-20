@@ -39,7 +39,6 @@ class MediaMetadata extends bindings.Struct {
       return null;
     }
     MediaMetadata result = new MediaMetadata();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

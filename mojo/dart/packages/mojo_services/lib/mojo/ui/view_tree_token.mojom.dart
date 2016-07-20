@@ -27,7 +27,6 @@ class ViewTreeToken extends bindings.Struct {
       return null;
     }
     ViewTreeToken result = new ViewTreeToken();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       

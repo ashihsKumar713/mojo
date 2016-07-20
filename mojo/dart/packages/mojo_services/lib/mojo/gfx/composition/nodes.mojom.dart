@@ -98,7 +98,6 @@ class Node extends bindings.Struct {
       return null;
     }
     Node result = new Node();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -202,7 +201,6 @@ class RectNodeOp extends bindings.Struct {
       return null;
     }
     RectNodeOp result = new RectNodeOp();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -273,7 +271,6 @@ class ImageNodeOp extends bindings.Struct {
       return null;
     }
     ImageNodeOp result = new ImageNodeOp();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -357,7 +354,6 @@ class SceneNodeOp extends bindings.Struct {
       return null;
     }
     SceneNodeOp result = new SceneNodeOp();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -422,7 +418,6 @@ class LayerNodeOp extends bindings.Struct {
       return null;
     }
     LayerNodeOp result = new LayerNodeOp();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -493,7 +488,6 @@ class Color extends bindings.Struct {
       return null;
     }
     Color result = new Color();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -572,7 +566,6 @@ class Blend extends bindings.Struct {
       return null;
     }
     Blend result = new Blend();
-
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
