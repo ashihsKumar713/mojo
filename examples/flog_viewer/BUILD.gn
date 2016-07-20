@@ -6,7 +6,15 @@ import("//mojo/public/mojo_application.gni")
 
 mojo_native_application("flog_viewer") {
   sources = [
+    "accumulator.cc",
+    "accumulator.h",
+    "channel_handler.cc",
+    "channel_handler.h",
     "flog_viewer.cc",
+    "flog_viewer.h",
+    "flog_viewer_app.cc",
+    "handlers/default.cc",
+    "handlers/default.h",
   ]
 
   deps = [
