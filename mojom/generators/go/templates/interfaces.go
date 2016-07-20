@@ -13,12 +13,20 @@ const interfaceTmplText = `
 {{$interface := . -}}
 {{ template "InterfaceDecl" $interface }}
 
+{{ template "RuntimeTypeAccessors" $interface }}
+
 {{- range $method := $interface.Methods}}
 {{ template "Method" $method }}
 {{- end}}
 
 {{- if $interface.ServiceName}}
 {{ template "ServiceDecl" $interface }}
+{{- end}}
+
+{{ template "ServiceDescription" $interface }}
+
+{{- range $enum := $interface.NestedEnums }}
+{{ template "EnumDecl" $enum }}
 {{- end}}
 {{- end -}}
 `
@@ -61,7 +69,7 @@ type {{$interface.Name}}_Factory interface {
 }
 
 {{/* TODO(azani) This should only be defined for interfaces that have a ServiceName. */}}
-func (f *{{$interface.Name}}_ServiceFactory) ServiceDescription() service_describer.ServiceDescription {
+func (f *{{$interface.Name}}_ServiceFactory) ServiceDescription() {{DescPkg}}ServiceDescription {
 	return &{{$interface.Name}}_ServiceDescription{}
 }
 
@@ -92,6 +100,98 @@ func New{{$interface.Name}}Proxy(p {{$interface.Name}}_Pointer, waiter bindings.
 func (p *{{$interface.Name}}_Proxy) Close_Proxy() {
 	p.router.Close()
 }
+
+type {{$interface.PrivateName}}_Stub struct {
+	connector *bindings.Connector
+	impl {{$interface.Name}}
+}
+
+func New{{$interface.Name}}Stub(r {{$interface.Name}}_Request, impl {{$interface.Name}}, waiter bindings.AsyncWaiter) *bindings.Stub {
+	connector := bindings.NewConnector(r.PassMessagePipe(), waiter)
+	return bindings.NewStub(connector, &{{$interface.PrivateName}}_Stub{connector, impl})
+}
+
+func (f *{{$interface.Name}}_Request) ServiceDescription() {{DescPkg}}ServiceDescription {
+	return &{{$interface.Name}}_ServiceDescription{}
+}
+{{- end -}}
+`
+
+const serviceDescriptionTmplText = `
+{{- define "ServiceDescription" -}}
+{{- $interface := . -}}
+type {{$interface.Name}}_ServiceDescription struct{}
+
+func (sd *{{$interface.Name}}_ServiceDescription) GetTopLevelInterface() (outMojomInterface {{TypesPkg}}MojomInterface, err error) {
+	err = fmt.Errorf("GetTopLevelInterface not implemented")
+	return
+}
+
+func (sd *{{$interface.Name}}_ServiceDescription) GetTypeDefinition(inTypeKey string) (outType {{TypesPkg}}UserDefinedType, err error) {
+	err = fmt.Errorf("GetTypeDefinition not implemented")
+	return
+}
+
+func (sd *{{$interface.Name}}_ServiceDescription) GetAllTypeDefinitions() (outDefinitions *map[string]{{TypesPkg}}UserDefinedType, err error) {
+	err = fmt.Errorf("GetAllTypeDefinitions not implemented")
+	return
+}
+
+func (s *{{$interface.PrivateName}}_Stub) Accept(message *bindings.Message) (err error) {
+	switch message.Header.Type {
+{{- range $method := $interface.Methods}}
+{{ template "AcceptMethod" $method }}
+{{- end}}
+	default:
+		return &bindings.ValidationError{
+			bindings.MessageHeaderUnknownMethod,
+			fmt.Sprintf("unknown method %v", message.Header.Type),
+		}
+  }
+  return
+}
+{{- end -}}
+`
+
+const acceptMethodTmplText = `
+{{- define "AcceptMethod" -}}
+{{- $method := . -}}
+case {{$method.FullName}}_Ordinal:
+  if message.Header.Flags != bindings.MessageNoFlag {
+    return &bindings.ValidationError{bindings.MessageHeaderInvalidFlags,
+      fmt.Sprintf("invalid message header flag: %v", message.Header.Flags),
+    }
+  }
+  var request {{$method.FullName}}_Params
+  if err := message.DecodePayload(&request); err != nil {
+    return err
+  }
+{{ if $method.ResponseParams -}}
+var response {{$method.FullName}}_ResponseParams
+{{range $field := $method.ResponseParams.Fields -}}
+response.{{$field.Name}},
+{{- end -}}
+{{- end -}}
+  err = s.impl.{{$method.MethodName}}(
+{{- range $field := $method.Params.Fields -}}
+request.{{$field.Name}},
+{{- end -}}
+  )
+  if err != nil {
+    return
+  }
+{{ if $method.ResponseParams }}
+  header := bindings.MessageHeader{
+    Type: {{$method.FullName}}_Ordinal,
+    Flags: bindings.MessageIsResponseFlag,
+    RequestId: message.Header.RequestId,
+  }
+  message, err = bindings.EncodeMessage(header, &response)
+  if err != nil {
+    return err
+  }
+  return s.connector.WriteMessage(message)
+{{ end }}
 {{- end -}}
 `
 
@@ -189,7 +289,7 @@ func (p *{{$method.Interface.Name}}_Proxy) {{ template "MethodSignature" $method
 		return
 	}
 {{- range $param := $method.ResponseParams.Fields}}
-	out{{$param.Name}} = response.out{{$param.Name}}
+	out{{$param.Name}} = response.{{$param.Name}}
 {{- end -}}
 {{- else -}}
 	if err = p.router.Accept(message); err != nil {
@@ -226,10 +326,12 @@ func initInterfaceTemplates() {
 	template.Must(goFileTmpl.Parse(interfaceDeclTmplText))
 	template.Must(goFileTmpl.Parse(interfaceInterfaceDeclTmplText))
 	template.Must(goFileTmpl.Parse(interfaceOtherDeclTmplText))
+	template.Must(goFileTmpl.Parse(serviceDescriptionTmplText))
 	template.Must(goFileTmpl.Parse(serviceDeclTmplText))
 	template.Must(goFileTmpl.Parse(methodOrdinalsTmplText))
 	template.Must(goFileTmpl.Parse(methodParamsTmplText))
 	template.Must(goFileTmpl.Parse(methodSignatureTmplText))
 	template.Must(goFileTmpl.Parse(methodFuncTmplText))
 	template.Must(goFileTmpl.Parse(methodTmplText))
+	template.Must(goFileTmpl.Parse(acceptMethodTmplText))
 }

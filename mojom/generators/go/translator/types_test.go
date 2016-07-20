@@ -55,23 +55,23 @@ func TestTranslateType(t *testing.T) {
 		{"[10]float32", &mojom_types.TypeArrayType{mojom_types.ArrayType{
 			FixedLength: 10, Nullable: false,
 			ElementType: &mojom_types.TypeSimpleType{mojom_types.SimpleType_Float}}}},
-		{"[]float32", &mojom_types.TypeArrayType{mojom_types.ArrayType{
+		{"*[]float32", &mojom_types.TypeArrayType{mojom_types.ArrayType{
 			FixedLength: -1, Nullable: true,
 			ElementType: &mojom_types.TypeSimpleType{mojom_types.SimpleType_Float}}}},
-		{"[10]float32", &mojom_types.TypeArrayType{mojom_types.ArrayType{
+		{"*[10]float32", &mojom_types.TypeArrayType{mojom_types.ArrayType{
 			FixedLength: 10, Nullable: true,
 			ElementType: &mojom_types.TypeSimpleType{mojom_types.SimpleType_Float}}}},
 		{"map[uint32]float64", &mojom_types.TypeMapType{mojom_types.MapType{
 			KeyType:   &mojom_types.TypeSimpleType{mojom_types.SimpleType_Uint32},
 			ValueType: &mojom_types.TypeSimpleType{mojom_types.SimpleType_Double},
 			Nullable:  false}}},
-		{"map[uint32]float64", &mojom_types.TypeMapType{mojom_types.MapType{
+		{"*map[uint32]float64", &mojom_types.TypeMapType{mojom_types.MapType{
 			KeyType:   &mojom_types.TypeSimpleType{mojom_types.SimpleType_Uint32},
 			ValueType: &mojom_types.TypeSimpleType{mojom_types.SimpleType_Double},
 			Nullable:  true}}},
 	}
 
-	translator := translator{}
+	translator := NewTranslator(nil)
 	for _, testCase := range testCases {
 		checkEq(t, testCase.expected, translator.translateType(testCase.mojomType))
 	}
@@ -88,6 +88,40 @@ func TestTranslateReferenceType(t *testing.T) {
 	translator := NewTranslator(&fileGraph)
 
 	typeRef := &mojom_types.TypeTypeReference{mojom_types.TypeReference{TypeKey: &typeKey}}
+	checkEq(t, shortName, translator.translateType(typeRef))
+}
+
+func TestTranslateNullableStructReferenceType(t *testing.T) {
+	fileGraph := mojom_files.MojomFileGraph{}
+	shortName := "FooBar"
+	typeKey := "typeKey"
+	s := mojom_types.MojomStruct{
+		DeclData: &mojom_types.DeclarationData{ShortName: &shortName}}
+	fileGraph.ResolvedTypes = map[string]mojom_types.UserDefinedType{}
+	fileGraph.ResolvedTypes[typeKey] = &mojom_types.UserDefinedTypeStructType{s}
+	translator := NewTranslator(&fileGraph)
+
+	typeRef := &mojom_types.TypeTypeReference{mojom_types.TypeReference{
+		TypeKey:  &typeKey,
+		Nullable: true,
+	}}
+	checkEq(t, "*FooBar", translator.translateType(typeRef))
+}
+
+func TestTranslateNullableUnionReferenceType(t *testing.T) {
+	fileGraph := mojom_files.MojomFileGraph{}
+	shortName := "FooBar"
+	typeKey := "typeKey"
+	union := mojom_types.MojomUnion{
+		DeclData: &mojom_types.DeclarationData{ShortName: &shortName}}
+	fileGraph.ResolvedTypes = map[string]mojom_types.UserDefinedType{}
+	fileGraph.ResolvedTypes[typeKey] = &mojom_types.UserDefinedTypeUnionType{union}
+	translator := NewTranslator(&fileGraph)
+
+	typeRef := &mojom_types.TypeTypeReference{mojom_types.TypeReference{
+		TypeKey:  &typeKey,
+		Nullable: true,
+	}}
 	checkEq(t, shortName, translator.translateType(typeRef))
 }
 
@@ -123,5 +157,5 @@ func TestTranslateInterfaceRequestType(t *testing.T) {
 	}}
 
 	translator := NewTranslator(&fileGraph)
-	checkEq(t, "FooBar_Proxy", translator.translateType(typeRef))
+	checkEq(t, "FooBar_Request", translator.translateType(typeRef))
 }

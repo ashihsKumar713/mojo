@@ -17,6 +17,15 @@ const ampersandIfNullable = `
 {{- end -}}
 `
 
+const starIfNullable = `
+{{- define "StarIfNullable" -}}
+{{- $info := . -}}
+{{- if $info.IsNullable -}}
+*
+{{- end -}}
+{{- end -}}
+`
+
 const fieldDecodingTmplText = `
 {{- define "FieldDecodingTmpl" -}}
 {{- $info := . -}}
@@ -51,7 +60,7 @@ if err != nil {
 	return err
 }
 {{if $info.IsSimple -}}
-{{$info.Identifier}} = value
+{{$info.Identifier}} = {{template "AmpersandIfNullable" $info}}value
 {{- else -}}
 {{$info.Identifier}} = {{$info.GoType}}(value)
 {{- end -}}
@@ -73,7 +82,11 @@ if handle.IsValid() {
 }
 {{- else if $info.IsStruct -}}
 {{- if $info.IsNullable -}}
-{{$info.Identifier}} = new({{$info.GoType}})
+{{- if or $info.IsMap $info.IsArray -}}
+{{$info.Identifier}} = {{$info.BaseGoType}}{}
+{{- else -}}
+{{$info.Identifier}} = new({{$info.BaseGoType}})
+{{- end}}
 {{end -}}
 if err := {{$info.Identifier}}.Decode(decoder); err != nil {
 	return err
@@ -85,7 +98,7 @@ if err := decoder.StartNestedUnion(); err != nil {
 }
 {{end -}}
 var err error
-{{$info.Identifier}}, err = Decode{{$info.GoType}}(decoder)
+{{$info.Identifier}}, err = {{$info.UnionDecodeFunction}}(decoder)
 if err != nil {
 	return err
 }
@@ -104,11 +117,7 @@ if err != nil {
 }
 if handle.IsValid() {
 	handleOwner := bindings.NewMessagePipeHandleOwner(handle)
-{{- if $info.IsInterfaceRequest}}
-	{{$info.Identifier}} = {{template "AmpersandIfNullable" $info}}{{$info.GoType}}_Request{handleOwner}
-{{- else}}
-	{{$info.Identifier}} = {{template "AmpersandIfNullable" $info}}{{$info.GoType}}_Pointer{handleOwner}
-{{- end -}}
+  {{$info.Identifier}} = {{template "AmpersandIfNullable" $info}}{{$info.BaseGoType}}{handleOwner}
 } else {
 {{- if $info.IsNullable}}
 	{{$info.Identifier}} = nil
@@ -122,10 +131,13 @@ len0, err := decoder.StartArray({{$elInfo.BitSize}})
 if err != nil {
 	return err
 }
-{{$info.Identifier}} = make({{$info.GoType}}, len0)
+{{if not $info.HasFixedSize -}}
+{{$info.DerefIdentifier}} = make({{$info.BaseGoType}}, len0)
+{{- end}}
 for i := uint32(0); i < len0; i++ {
+  var {{$elInfo.Identifier}} {{$elInfo.GoType}}
 	{{ template "FieldDecodingTmpl" $elInfo }}
-	{{$info.Identifier}}[i] = {{$elInfo.Identifier}}
+	{{$info.DerefIdentifier}}[i] = {{$elInfo.Identifier}}
 }
 if err := decoder.Finish(); err != nil {
 	return nil
@@ -135,7 +147,14 @@ if err := decoder.Finish(); err != nil {
 {{ $keyElId := $info.KeyEncodingInfo.ElementEncodingInfo.Identifier -}}
 {{ $valueInfo := $info.ValueEncodingInfo -}}
 {{ $valueElId := $info.ValueEncodingInfo.ElementEncodingInfo.Identifier -}}
-{{$info.Identifier}} = new({{$info.GoType}})
+{{- if or $info.IsMap $info.IsArray -}}
+{{- if $info.IsNullable -}}
+{{$info.Identifier}} = new({{$info.BaseGoType}})
+{{- end}}
+{{$info.DerefIdentifier}} = {{$info.BaseGoType}}{}
+{{- else -}}
+{{$info.Identifier}} = new({{$info.BaseGoType}})
+{{- end}}
 if err := decoder.StartMap(); err != nil {
 	return err
 }
@@ -156,7 +175,7 @@ if len({{$keyInfo.Identifier}}) == len({{$valueInfo.Identifier}}) {
 		len({{$keyInfo.Identifier}}), len({{$valueInfo.Identifier}}))}
 }
 for i := 0; i < len({{$keyInfo.Identifier}}); i++ {
-	(*{{$info.Identifier}})[{{$keyInfo.Identifier}}[i]] = {{$valueInfo.Identifier}}[i]
+	{{$info.DerefIdentifier}}[{{$keyInfo.Identifier}}[i]] = {{$valueInfo.Identifier}}[i]
 }
 {{- end -}}
 {{- end -}}
@@ -166,4 +185,5 @@ func initDecodingTemplates() {
 	template.Must(goFileTmpl.Parse(nonNullableFieldDecodingTmplText))
 	template.Must(goFileTmpl.Parse(fieldDecodingTmplText))
 	template.Must(goFileTmpl.Parse(ampersandIfNullable))
+	template.Must(goFileTmpl.Parse(starIfNullable))
 }

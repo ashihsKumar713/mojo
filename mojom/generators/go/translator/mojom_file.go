@@ -4,20 +4,41 @@
 
 package translator
 
+import (
+	"fmt"
+	"strings"
+)
+
 // TmplFile contains all of the information needed by the templates to generate
 // the go bindings for one mojom file.
 type TmplFile struct {
-	PackageName string
-	Imports     []Import
-	Structs     []*StructTemplate
-	Unions      []*UnionTemplate
-	Enums       []*EnumTemplate
-	Interfaces  []*InterfaceTemplate
+	PackageName               string
+	Imports                   []Import
+	Structs                   []*StructTemplate
+	Unions                    []*UnionTemplate
+	Enums                     []*EnumTemplate
+	Interfaces                []*InterfaceTemplate
+	MojomImports              []string
+	SerializedRuntimeTypeInfo string
 }
 
 type Import struct {
 	PackagePath string
 	PackageName string
+}
+
+func (t *TmplFile) TypesPkg() string {
+	if t.PackageName != "mojom_types" {
+		return "mojom_types."
+	}
+	return ""
+}
+
+func (t *TmplFile) DescPkg() string {
+	if t.PackageName != "service_describer" {
+		return "service_describer."
+	}
+	return ""
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -42,6 +63,19 @@ type StructTemplate struct {
 
 	// Versions is the list of versions of the struct.
 	Versions []structVersion
+
+	// NestedEnums contains the enums nested in the struct.
+	NestedEnums []*EnumTemplate
+
+	TypeKey string
+}
+
+func (s *StructTemplate) ConcreteName() string {
+	return s.Name
+}
+
+func (s *StructTemplate) InterfaceName() string {
+	return s.Name
 }
 
 // StructFieldTemplate contains all the information necessary to generate
@@ -80,6 +114,8 @@ type UnionTemplate struct {
 
 	// Fields contains the list of fields of the union.
 	Fields []UnionFieldTemplate
+
+	TypeKey string
 }
 
 type UnionFieldTemplate struct {
@@ -99,6 +135,14 @@ type UnionFieldTemplate struct {
 	EncodingInfo EncodingInfo
 }
 
+func (u *UnionFieldTemplate) ConcreteName() string {
+	return u.Union.Name + u.Name
+}
+
+func (u *UnionFieldTemplate) InterfaceName() string {
+	return u.Union.Name
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 type EnumTemplate struct {
@@ -107,6 +151,16 @@ type EnumTemplate struct {
 
 	// Values contains the list of possible values for the enum.
 	Values []EnumValueTemplate
+
+	TypeKey string
+}
+
+func (e *EnumTemplate) ConcreteName() string {
+	return e.Name
+}
+
+func (e *EnumTemplate) InterfaceName() string {
+	return e.Name
 }
 
 type EnumValueTemplate struct {
@@ -131,6 +185,19 @@ type InterfaceTemplate struct {
 
 	// Methods contains the list of methods of the interface.
 	Methods []MethodTemplate
+
+	// NestedEnums contains the enums nested in the interface.
+	NestedEnums []*EnumTemplate
+
+	TypeKey string
+}
+
+func (i *InterfaceTemplate) ConcreteName() string {
+	return i.Name + "_Request"
+}
+
+func (i *InterfaceTemplate) InterfaceName() string {
+	return i.Name
 }
 
 type MethodTemplate struct {
@@ -191,6 +258,9 @@ type EncodingInfo interface {
 	IsNullable() bool
 	setNullable(nullable bool)
 
+	// HasFixedSize returns true if the field is an array with a fixed size.
+	HasFixedSize() bool
+
 	// ElementEncodingInfo returns the EncodingInfo of the elements on an array.
 	ElementEncodingInfo() EncodingInfo
 
@@ -213,11 +283,18 @@ type EncodingInfo interface {
 	GoType() string
 	setGoType(goType string)
 
+	// BaseGoType returns the base type of the field.
+	BaseGoType() string
+
 	// Identifier returns the qualified identifier referring to the field in
 	// question. If this is the encoding info of array elements, map keys or
 	// values, the Identifier is generated to facilitate iteration.
 	Identifier() string
 	setIdentifier(id string)
+
+	// DerefIdentifier returns the dereferenced qualified identifier to the field
+	// in question.
+	DerefIdentifier() string
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -231,6 +308,10 @@ type baseEncodingInfo struct {
 
 func (b *baseEncodingInfo) Identifier() string {
 	return b.identifier
+}
+
+func (b *baseEncodingInfo) DerefIdentifier() (id string) {
+	return b.Identifier()
 }
 
 func (b *baseEncodingInfo) setIdentifier(identifier string) {
@@ -277,6 +358,10 @@ func (b *baseEncodingInfo) IsMap() bool {
 	return false
 }
 
+func (b *baseEncodingInfo) HasFixedSize() bool {
+	return false
+}
+
 func (b *baseEncodingInfo) ElementEncodingInfo() EncodingInfo {
 	panic("Only arrays have elements!")
 }
@@ -306,11 +391,27 @@ func (b *baseEncodingInfo) setGoType(goType string) {
 	b.goType = goType
 }
 
+func (b *baseEncodingInfo) BaseGoType() string {
+	goType := b.GoType()
+	if goType[0] == '*' {
+		return goType[1:]
+	}
+	return goType
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 type baseNullableEncodingInfo struct {
 	baseEncodingInfo
 	nullable bool
+}
+
+func (b *baseNullableEncodingInfo) DerefIdentifier() (id string) {
+	id = b.Identifier()
+	if b.IsNullable() && !b.IsUnion() {
+		id = fmt.Sprintf("(*%s)", id)
+	}
+	return id
 }
 
 func (b *baseNullableEncodingInfo) IsNullable() bool {
@@ -410,10 +511,15 @@ func (t *handleTypeEncodingInfo) ReadFunction() string {
 type arrayTypeEncodingInfo struct {
 	basePointerEncodingInfo
 	elementEncodingInfo EncodingInfo
+	fixedSize           bool
 }
 
 func (t *arrayTypeEncodingInfo) IsArray() bool {
 	return true
+}
+
+func (t *arrayTypeEncodingInfo) HasFixedSize() bool {
+	return t.fixedSize
 }
 
 func (t *arrayTypeEncodingInfo) ElementEncodingInfo() EncodingInfo {
@@ -505,6 +611,14 @@ func (t *unionTypeEncodingInfo) WriteFunction() string {
 
 func (t *unionTypeEncodingInfo) ReadFunction() string {
 	panic("Unions don't have a read function.")
+}
+
+func (t *unionTypeEncodingInfo) UnionDecodeFunction() string {
+	goTypeSplit := strings.Split(t.BaseGoType(), ".")
+	if len(goTypeSplit) == 1 {
+		return fmt.Sprintf("Decode%s", goTypeSplit[0])
+	}
+	return fmt.Sprintf("%s.Decode%s", goTypeSplit[0], goTypeSplit[1])
 }
 
 ////////////////////////////////////////////////////////////////////////////////

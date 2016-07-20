@@ -102,7 +102,7 @@ if pointer == 0 {
 	if err != nil {
 		return err
 	}
-	s.FString = value
+	s.FString = &value
 }`
 
 	encodingInfo := mockEncodingInfo{
@@ -264,7 +264,7 @@ if handle.IsValid() {
 		isInterface:  true,
 		identifier:   "s.IntField",
 		readFunction: "ReadInterface",
-		goType:       "SomeInterface",
+		goType:       "SomeInterface_Pointer",
 	}
 
 	check(t, expected, "FieldDecodingTmpl", encodingInfo)
@@ -287,7 +287,7 @@ if handle.IsValid() {
 		isInterfaceRequest: true,
 		identifier:         "s.IntField",
 		readFunction:       "ReadMessagePipeHandle",
-		goType:             "SomeInterface",
+		goType:             "SomeInterface_Request",
 	}
 
 	check(t, expected, "FieldDecodingTmpl", encodingInfo)
@@ -311,7 +311,7 @@ if handle.IsValid() {
 		isNullable:         true,
 		identifier:         "s.IntField",
 		readFunction:       "ReadMessagePipeHandle",
-		goType:             "SomeInterface",
+		goType:             "SomeInterface_Request",
 	}
 
 	check(t, expected, "FieldDecodingTmpl", encodingInfo)

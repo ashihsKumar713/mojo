@@ -8,7 +8,9 @@ import (
 	"flag"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
+	"text/template"
 
 	"mojom/generators/common"
 	"mojom/generators/go/templates"
@@ -42,9 +44,49 @@ func (c goConfig) OutputDir() string {
 	}
 }
 
+// stripExt removes the extension of a file.
+func stripExt(fileName string) string {
+	return fileName[:len(fileName)-len(filepath.Ext(fileName))]
+}
+
+func outputFileByFileName(fileName string, config common.GeneratorConfig) string {
+	var err error
+	relFileName, err := filepath.Rel(config.SrcRootPath(), fileName)
+	base := stripExt(filepath.Base(fileName))
+
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	return filepath.Join(config.OutputDir(), filepath.Dir(relFileName), base, base+".mojom.go")
+}
+
+// createAndOpen opens for writing the specified file. If the file or any part
+// of the directory structure in its path does not exist, they are created.
+func createAndOpen(outPath string) (file common.Writer) {
+	// Create the directory that will contain the output.
+	outDir := path.Dir(outPath)
+	if err := os.MkdirAll(outDir, os.ModeDir|0777); err != nil && !os.IsExist(err) {
+		log.Fatalln(err.Error())
+	}
+
+	var err error
+	file, err = os.OpenFile(outPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	return
+}
+
 func WriteGoFile(fileName string, config common.GeneratorConfig) {
-	writer := common.OutputWriterByFilePath(fileName, config, ".mojom.go")
+	outputFile := outputFileByFileName(fileName, config)
+	writer := createAndOpen(outputFile)
 	goConfig := config.(goConfig)
 	fileTmpl := goConfig.translator.TranslateMojomFile(fileName)
-	writer.WriteString(templates.ExecuteTemplates(fileTmpl))
+	funcMap := template.FuncMap{
+		"TypesPkg":    fileTmpl.TypesPkg,
+		"DescPkg":     fileTmpl.DescPkg,
+		"GenTypeInfo": config.GenTypeInfo,
+	}
+	writer.WriteString(templates.ExecuteTemplates(fileTmpl, funcMap))
 }

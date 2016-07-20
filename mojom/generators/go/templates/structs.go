@@ -13,11 +13,17 @@ const structTmplText = `
 {{$struct := . -}}
 {{ template "StructDecl" $struct }}
 
+{{ template "RuntimeTypeAccessors" $struct }}
+
 {{ template "StructEncodingTmpl" $struct }}
 
 {{ template "StructVersions" $struct }}
 
 {{ template "StructDecodingTmpl" $struct }}
+
+{{- range $enum := $struct.NestedEnums }}
+{{ template "EnumDecl" $enum }}
+{{- end}}
 {{- end -}}
 `
 
@@ -89,6 +95,7 @@ func (s *{{$struct.Name}}) Decode(decoder *bindings.Decoder) error {
 		{{ template "FieldDecodingTmpl" $field.EncodingInfo }}
 	}
 	{{- end}}
+  return nil
 }
 {{- end -}}
 `

@@ -38,7 +38,7 @@ if err := encoder.WritePointer(); err != nil {
 }
 {{end -}}
 {{- if $info.IsSimple -}}
-if err := encoder.{{$info.WriteFunction}}({{$info.Identifier}}); err != nil {
+if err := encoder.{{$info.WriteFunction}}({{$info.DerefIdentifier}}); err != nil {
 	return err
 }
 {{- else if $info.IsEnum -}}
@@ -46,11 +46,7 @@ if err := encoder.WriteInt32(int32({{$info.Identifier}})); err != nil {
 	return err
 }
 {{- else if $info.IsHandle -}}
-{{- if $info.IsNullable -}}
-if err := encoder.WriteHandle(*({{$info.Identifier}})); err != nil {
-{{- else -}}
-if err := encoder.WriteHandle({{$info.Identifier}}); err != nil {
-{{- end -}}
+if err := encoder.WriteHandle({{$info.DerefIdentifier}}); err != nil {
 	return err
 }
 {{- else if $info.IsStruct -}}
@@ -78,8 +74,8 @@ if err := encoder.{{$info.WriteFunction}}({{$info.Identifier}}.PassMessagePipe()
 }
 {{- else if $info.IsArray -}}
 {{ $elInfo := $info.ElementEncodingInfo -}}
-encoder.StartArray(uint32(len({{$info.Identifier}})), {{$elInfo.BitSize}})
-for _, {{$elInfo.Identifier}} := range {{$info.Identifier}} {
+encoder.StartArray(uint32(len({{$info.DerefIdentifier}})), {{$elInfo.BitSize}})
+for _, {{$elInfo.Identifier}} := range {{$info.DerefIdentifier}} {
 	{{ template "FieldEncodingTmpl" $elInfo }}
 }
 if err := encoder.Finish(); err != nil {
@@ -94,14 +90,14 @@ encoder.StartMap()
 {
 	var {{$keyInfo.Identifier}} {{$keyInfo.GoType}}
 	var {{$valueInfo.Identifier}} {{$valueInfo.GoType}}
-	for {{$keyElId}} := range {{$info.Identifier}} {
-		{{$keyInfo.Identifier}} = append({{$keyInfo.Identifier}}, {{$keyElId}})
+	for {{$keyElId}} := range {{$info.DerefIdentifier}} {
+		{{$keyInfo.DerefIdentifier}} = append({{$keyInfo.Identifier}}, {{$keyElId}})
 	}
 	if encoder.Deterministic() {
 		bindings.SortMapKeys(&{{$keyInfo.Identifier}})
 	}
-	for {{$keyElId}} := range {{$keyInfo.Identifier}} {
-		{{$valueInfo.Identifier}} = append({{$valueInfo.Identifier}}, {{$info.Identifier}}[{{$keyElId}}])
+	for _, {{$keyElId}} := range {{$keyInfo.Identifier}} {
+		{{$valueInfo.Identifier}} = append({{$valueInfo.Identifier}}, {{$info.DerefIdentifier}}[{{$keyElId}}])
 	}
 	{{ template "FieldEncodingTmpl" $keyInfo }}
 	{{ template "FieldEncodingTmpl" $valueInfo }}

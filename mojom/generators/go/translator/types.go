@@ -16,7 +16,7 @@ func (t *translator) translateType(mojomType mojom_types.Type) (goType string) {
 	default:
 		panic("Not implemented yet!")
 	case *mojom_types.TypeSimpleType:
-		return t.translateSimpleType(m.Value)
+		goType = t.translateSimpleType(m.Value)
 	case *mojom_types.TypeStringType:
 		goType = t.translateStringType(m.Value)
 	case *mojom_types.TypeHandleType:
@@ -24,34 +24,11 @@ func (t *translator) translateType(mojomType mojom_types.Type) (goType string) {
 	case *mojom_types.TypeTypeReference:
 		goType = t.translateTypeReference(m.Value)
 	case *mojom_types.TypeArrayType:
-		return t.translateArrayType(m.Value)
+		goType = t.translateArrayType(m.Value)
 	case *mojom_types.TypeMapType:
-		return t.translateMapType(m.Value)
-	}
-	if t.isNullable(mojomType) {
-		goType = "*" + goType
+		goType = t.translateMapType(m.Value)
 	}
 	return
-}
-
-func (t *translator) isNullable(mojomType mojom_types.Type) bool {
-	switch m := mojomType.(type) {
-	default:
-		panic("Not implemented yet!")
-	case *mojom_types.TypeSimpleType:
-		return false
-	case *mojom_types.TypeStringType:
-		return m.Value.Nullable
-	case *mojom_types.TypeHandleType:
-		return m.Value.Nullable
-	case *mojom_types.TypeArrayType:
-		return m.Value.Nullable
-	case *mojom_types.TypeMapType:
-		return m.Value.Nullable
-	case *mojom_types.TypeTypeReference:
-		return m.Value.Nullable
-	}
-	panic("Non-handled mojom Type. This should never happen.")
 }
 
 func (t *translator) translateSimpleType(mojomType mojom_types.SimpleType) string {
@@ -83,25 +60,32 @@ func (t *translator) translateSimpleType(mojomType mojom_types.SimpleType) strin
 }
 
 func (t *translator) translateStringType(mojomType mojom_types.StringType) (goType string) {
+	if mojomType.Nullable {
+		return "*string"
+	}
 	return "string"
 }
 
 func (t *translator) translateHandleType(mojomType mojom_types.HandleType) (goType string) {
+	t.imports["system"] = "mojo/public/go/system"
 	switch mojomType.Kind {
 	default:
 		panic("Unknown handle type. This should never happen.")
 	case mojom_types.HandleType_Kind_Unspecified:
-		return "system.Handle"
+		goType = "system.Handle"
 	case mojom_types.HandleType_Kind_MessagePipe:
-		return "system.MessagePipeHandle"
+		goType = "system.MessagePipeHandle"
 	case mojom_types.HandleType_Kind_DataPipeConsumer:
-		return "system.ConsumerHandle"
+		goType = "system.ConsumerHandle"
 	case mojom_types.HandleType_Kind_DataPipeProducer:
-		return "system.ProducerHandle"
+		goType = "system.ProducerHandle"
 	case mojom_types.HandleType_Kind_SharedBuffer:
-		return "system.SharedBufferHandle"
+		goType = "system.SharedBufferHandle"
 	}
-	panic("Non-handled mojom HandleType. This should never happen.")
+	if mojomType.Nullable {
+		goType = "*" + goType
+	}
+	return
 }
 
 func (t *translator) translateArrayType(mojomType mojom_types.ArrayType) (goType string) {
@@ -113,12 +97,22 @@ func (t *translator) translateArrayType(mojomType mojom_types.ArrayType) (goType
 
 	goType += t.translateType(mojomType.ElementType)
 
+	if mojomType.Nullable {
+		goType = "*" + goType
+	}
+
 	return
 }
 
 func (t *translator) translateMapType(mojomType mojom_types.MapType) (goType string) {
-	return fmt.Sprintf("map[%s]%s",
+	goType = fmt.Sprintf("map[%s]%s",
 		t.translateType(mojomType.KeyType), t.translateType(mojomType.ValueType))
+
+	if mojomType.Nullable {
+		goType = "*" + goType
+	}
+
+	return
 }
 
 func (t *translator) translateTypeReference(typeRef mojom_types.TypeReference) (goType string) {
@@ -129,22 +123,26 @@ func (t *translator) translateTypeReference(typeRef mojom_types.TypeReference) (
 
 	if _, ok := userDefinedType.(*mojom_types.UserDefinedTypeInterfaceType); ok {
 		if typeRef.IsInterfaceRequest {
-			return fmt.Sprintf("%s_Proxy", typeName)
+			typeName = fmt.Sprintf("%s_Request", typeName)
 		} else {
-			return fmt.Sprintf("%s_Pointer", typeName)
+			typeName = fmt.Sprintf("%s_Pointer", typeName)
 		}
 	}
 
 	srcFileInfo := userDefinedTypeDeclData(userDefinedType).SourceFileInfo
-	if srcFileInfo != nil && srcFileInfo.FileName == t.currentFileName {
+	if srcFileInfo != nil && srcFileInfo.FileName != t.currentFileName {
 		pkgName := fileNameToPackageName(srcFileInfo.FileName)
 		pkgPath, err := filepath.Rel(t.Config.SrcRootPath(), srcFileInfo.FileName)
 		if err != nil {
 			panic(err.Error())
 		}
-		pkgPath = pkgPath[:len(pkgPath)-len(filepath.Ext(pkgPath))-1]
+		pkgPath = pkgPath[:len(pkgPath)-len(filepath.Ext(pkgPath))]
 		t.imports[pkgName] = pkgPath
 		typeName = fmt.Sprintf("%s.%s", pkgName, typeName)
+	}
+
+	if _, ok := userDefinedType.(*mojom_types.UserDefinedTypeUnionType); !ok && typeRef.Nullable {
+		typeName = "*" + typeName
 	}
 
 	return typeName

@@ -85,7 +85,7 @@ func formatName(name string) string {
 				partStart = i
 			}
 
-			if !unicode.IsUpper(curRune) && unicode.IsUpper(lastRune) && partStart != lastRuneStart {
+			if !(unicode.IsUpper(curRune) || unicode.IsDigit(curRune)) && unicode.IsUpper(lastRune) && partStart != lastRuneStart {
 				parts = append(parts, namePart[partStart:lastRuneStart])
 				partStart = lastRuneStart
 			}

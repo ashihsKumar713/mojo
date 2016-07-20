@@ -12,8 +12,7 @@ import (
 
 // This file implements the methods which create the EncodingInfo (see mojom_file.go)
 // for each type.
-
-func (t *translator) encodingInfo(mojomType mojom_types.Type) EncodingInfo {
+func (t *translator) encodingInfo(mojomType mojom_types.Type) (info EncodingInfo) {
 	return t.encodingInfoNested(mojomType, 0)
 }
 
@@ -49,10 +48,10 @@ func (t *translator) simpleTypeEncodingInfo(mojomType mojom_types.SimpleType) (i
 		typeSuffix = "Bool"
 		bitSize = 1
 	case mojom_types.SimpleType_Double:
-		typeSuffix = "Double"
+		typeSuffix = "Float64"
 		bitSize = 64
 	case mojom_types.SimpleType_Float:
-		typeSuffix = "Float"
+		typeSuffix = "Float32"
 		bitSize = 32
 	case mojom_types.SimpleType_Int8:
 		typeSuffix = "Int8"
@@ -111,9 +110,10 @@ func (t *translator) handleTypeEncodingInfo(mojomType mojom_types.HandleType) (i
 
 func (t *translator) arrayTypeEncodingInfo(mojomType mojom_types.ArrayType, level int) (info *arrayTypeEncodingInfo) {
 	info = new(arrayTypeEncodingInfo)
+	info.fixedSize = (mojomType.FixedLength >= 0)
 	info.nullable = mojomType.Nullable
 	info.elementEncodingInfo = t.encodingInfoNested(mojomType.ElementType, level+1)
-	info.elementEncodingInfo.setIdentifier(fmt.Sprintf("elem%v", level))
+	info.elementEncodingInfo.setIdentifier(fmt.Sprintf("elem%d", level))
 	return info
 }
 
@@ -124,16 +124,16 @@ func (t *translator) mapTypeEncodingInfo(mojomType mojom_types.MapType, level in
 	keyEncodingInfo := new(arrayTypeEncodingInfo)
 	info.keyEncodingInfo = keyEncodingInfo
 	keyEncodingInfo.elementEncodingInfo = t.encodingInfoNested(mojomType.KeyType, level+1)
-	keyEncodingInfo.setIdentifier(fmt.Sprintf("keys%v", level))
+	keyEncodingInfo.setIdentifier(fmt.Sprintf("keys%d", level))
 	keyEncodingInfo.setGoType(fmt.Sprintf("[]%v", keyEncodingInfo.elementEncodingInfo.GoType()))
-	keyEncodingInfo.elementEncodingInfo.setIdentifier(fmt.Sprintf("key%v", level))
+	keyEncodingInfo.elementEncodingInfo.setIdentifier(fmt.Sprintf("elem%d", level))
 
 	valueEncodingInfo := new(arrayTypeEncodingInfo)
 	info.valueEncodingInfo = valueEncodingInfo
 	valueEncodingInfo.elementEncodingInfo = t.encodingInfoNested(mojomType.ValueType, level+1)
-	valueEncodingInfo.setIdentifier(fmt.Sprintf("values%v", level))
+	valueEncodingInfo.setIdentifier(fmt.Sprintf("values%d", level))
 	valueEncodingInfo.setGoType(fmt.Sprintf("[]%v", valueEncodingInfo.elementEncodingInfo.GoType()))
-	valueEncodingInfo.elementEncodingInfo.setIdentifier(fmt.Sprintf("value%v", level))
+	valueEncodingInfo.elementEncodingInfo.setIdentifier(fmt.Sprintf("elem%d", level))
 
 	return info
 }

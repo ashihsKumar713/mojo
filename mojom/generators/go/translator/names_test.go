@@ -20,8 +20,9 @@ func TestFormatName(t *testing.T) {
 		{"Hello", "Hello"},
 		{"HelloWorld", "HelloWorld"},
 		{"HelloWorld", "hello_world"},
-		{"HttpWorld", "HTTPWorld"},
 		{"HttpWorld", "HTTP_World"},
+		{"NetAddressIPv4", "NetAddressIPv4"},
+		{"Ipv4", "IPV4"},
 	}
 
 	for _, testCase := range testCases {
@@ -85,4 +86,10 @@ func TestGoTypeNameNestedEnum(t *testing.T) {
 	translator := NewTranslator(&graph)
 
 	checkEq(t, "Foo_SomeEnum", translator.goTypeName(enumTypeKey))
+}
+
+func TestFileNameToPackageName(t *testing.T) {
+	fileName := "a/b/c/blah.mojom"
+	expected := "blah"
+	checkEq(t, expected, fileNameToPackageName(fileName))
 }

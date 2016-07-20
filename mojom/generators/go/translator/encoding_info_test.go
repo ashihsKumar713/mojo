@@ -21,8 +21,8 @@ func TestSimpleTypeEncodingInfo(t *testing.T) {
 		expected   expected
 	}{
 		{mojom_types.SimpleType_Bool, expected{"WriteBool", 1}},
-		{mojom_types.SimpleType_Float, expected{"WriteFloat", 32}},
-		{mojom_types.SimpleType_Double, expected{"WriteDouble", 64}},
+		{mojom_types.SimpleType_Float, expected{"WriteFloat32", 32}},
+		{mojom_types.SimpleType_Double, expected{"WriteFloat64", 64}},
 		{mojom_types.SimpleType_Int8, expected{"WriteInt8", 8}},
 		{mojom_types.SimpleType_Int16, expected{"WriteInt16", 16}},
 		{mojom_types.SimpleType_Int32, expected{"WriteInt32", 32}},
@@ -33,7 +33,7 @@ func TestSimpleTypeEncodingInfo(t *testing.T) {
 		{mojom_types.SimpleType_Uint64, expected{"WriteUint64", 64}},
 	}
 
-	translator := translator{}
+	translator := NewTranslator(nil)
 	for _, testCase := range testCases {
 		actual := translator.encodingInfo(&mojom_types.TypeSimpleType{testCase.simpleType})
 		checkEq(t, true, actual.IsSimple())
@@ -44,7 +44,7 @@ func TestSimpleTypeEncodingInfo(t *testing.T) {
 
 func TestStringTypeEncodingInfo(t *testing.T) {
 	mojomType := &mojom_types.TypeStringType{mojom_types.StringType{Nullable: false}}
-	translator := translator{}
+	translator := NewTranslator(nil)
 	info := translator.encodingInfo(mojomType)
 	checkEq(t, false, info.IsNullable())
 	checkEq(t, true, info.IsSimple())
@@ -68,7 +68,7 @@ func TestArrayTypeEncodingInfo(t *testing.T) {
 			},
 		}}
 
-	translator := translator{}
+	translator := NewTranslator(nil)
 	info := translator.encodingInfo(mojomType)
 
 	checkEq(t, false, info.IsNullable())
@@ -88,7 +88,7 @@ func TestHandleTypeEncodingInfo(t *testing.T) {
 		},
 	}
 
-	translator := translator{}
+	translator := NewTranslator(nil)
 	info := translator.encodingInfo(mojomType)
 
 	checkEq(t, false, info.IsNullable())
@@ -110,17 +110,17 @@ func TestMapTypeEncodingInfo(t *testing.T) {
 		},
 	}
 
-	translator := translator{}
+	translator := NewTranslator(nil)
 	info := translator.encodingInfo(mojomType)
 	checkEq(t, true, info.IsPointer())
 	checkEq(t, true, info.IsMap())
 	checkEq(t, true, info.IsNullable())
 	checkEq(t, "[]uint32", info.KeyEncodingInfo().GoType())
 	checkEq(t, "keys0", info.KeyEncodingInfo().Identifier())
-	checkEq(t, "key0", info.KeyEncodingInfo().ElementEncodingInfo().Identifier())
+	checkEq(t, "elem0", info.KeyEncodingInfo().ElementEncodingInfo().Identifier())
 	checkEq(t, "[]int16", info.ValueEncodingInfo().GoType())
 	checkEq(t, "values0", info.ValueEncodingInfo().Identifier())
-	checkEq(t, "value0", info.ValueEncodingInfo().ElementEncodingInfo().Identifier())
+	checkEq(t, "elem0", info.ValueEncodingInfo().ElementEncodingInfo().Identifier())
 }
 
 func TestStructTypeEncodingInfo(t *testing.T) {

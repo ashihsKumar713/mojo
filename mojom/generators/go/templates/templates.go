@@ -18,8 +18,9 @@ var goFileTmpl *template.Template
 
 // ExecuteTemplates accepts a translator.TmplFile and returns the formatted
 // source code for the go bindings.
-func ExecuteTemplates(tmplFile *translator.TmplFile) string {
+func ExecuteTemplates(tmplFile *translator.TmplFile, funcMap template.FuncMap) string {
 	buffer := &bytes.Buffer{}
+	goFileTmpl.Funcs(funcMap)
 	if err := goFileTmpl.ExecuteTemplate(buffer, "FileTemplate", tmplFile); err != nil {
 		panic(err)
 	}
@@ -38,6 +39,20 @@ func init() {
 	// We parse the subtemplates only once.
 	goFileTmpl = template.New("GoFileTemplate")
 
+	goFileTmpl.Funcs(template.FuncMap{
+		"TypesPkg":    func() string { return "mojom_types." },
+		"DescPkg":     func() string { return "service_describer." },
+		"GenTypeInfo": func() bool { return false },
+		"IsUnionField": func(templateType interface{}) bool {
+			_, ok := templateType.(translator.UnionFieldTemplate)
+			return ok
+		},
+		"IsInterface": func(templateType interface{}) bool {
+			_, ok := templateType.(translator.InterfaceTemplate)
+			return ok
+		},
+	})
+
 	template.Must(goFileTmpl.Parse(goFileTemplate))
 
 	initEncodingTemplates()
@@ -46,6 +61,7 @@ func init() {
 	initUnionTemplates()
 	initEnumTemplates()
 	initInterfaceTemplates()
+	initRuntimeTypeInfoTemplates()
 }
 
 const goFileTemplate = `
@@ -56,8 +72,10 @@ package {{$fileTmpl.PackageName}}
 import (
 	{{range $import := $fileTmpl.Imports}}
 	{{$import.PackageName}} "{{$import.PackagePath}}"
-	{{end}}
+	{{- end}}
 )
+
+{{ template "GetRuntimeTypeInfo" $fileTmpl }}
 
 {{- range $struct := $fileTmpl.Structs}}
 	{{ template "Struct" $struct }}

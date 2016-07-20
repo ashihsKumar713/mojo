@@ -13,6 +13,8 @@ const unionTmplText = `
 {{- $union := . }}
 {{ template "UnionInterfaceDecl" $union }}
 
+{{ template "StaticRuntimeTypeAccessor" $union }}
+
 {{ template "UnknownUnionFieldDecl" $union }}
 {{ template "UnknownUnionFieldEncode" $union }}
 
@@ -22,6 +24,10 @@ const unionTmplText = `
 {{ template "UnionFieldEncode" $field }}
 
 {{ template "UnionFieldDecode" $field }}
+
+{{- if and GenTypeInfo $union.TypeKey -}}
+{{ template "RuntimeTypeAccessor" $field }}
+{{- end -}}
 {{- end}}
 
 {{ template "UnionDecode" $union }}
@@ -35,7 +41,7 @@ const unionInterfaceDeclTmplText = `
 type {{$union.Name}} interface {
 	Tag() uint32
 	Interface() interface{}
-	__Reflect(__SomeUnionReflect)
+	__Reflect(__{{$union.Name}}Reflect)
 	Encode(encoder *bindings.Encoder) error
 }
 

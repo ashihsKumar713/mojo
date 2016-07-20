@@ -52,6 +52,23 @@ func (m mockEncodingInfo) WriteFunction() string                        { return
 func (m mockEncodingInfo) ReadFunction() string                         { return m.readFunction }
 func (m mockEncodingInfo) Identifier() string                           { return m.identifier }
 func (m mockEncodingInfo) GoType() string                               { return m.goType }
+func (m mockEncodingInfo) UnionDecodeFunction() string                  { return "Decode" + m.goType }
+
+func (m mockEncodingInfo) BaseGoType() string {
+	goType := m.GoType()
+	if goType[0] == '*' {
+		return goType[1:]
+	}
+	return goType
+}
+
+func (m mockEncodingInfo) DerefIdentifier() (id string) {
+	id = m.Identifier()
+	if m.IsNullable() && !m.IsUnion() {
+		id = "*" + id
+	}
+	return
+}
 
 func TestEncodingSimpleFieldEncoding(t *testing.T) {
 	expected := `if err := encoder.WriteUint8(s.Fuint8); err != nil {
@@ -84,7 +101,7 @@ func TestEncodingNullableHandleFieldEncoding(t *testing.T) {
 	expected := `if s.SomeHandle == nil {
 	encoder.WriteInvalidHandle()
 } else {
-	if err := encoder.WriteHandle(*(s.SomeHandle)); err != nil {
+	if err := encoder.WriteHandle(*s.SomeHandle); err != nil {
 		return err
 	}
 }`
@@ -123,7 +140,7 @@ func TestEncodingNullableStringFieldEncoding(t *testing.T) {
 	if err := encoder.WritePointer(); err != nil {
 		return err
 	}
-	if err := encoder.WriteString(s.FString); err != nil {
+	if err := encoder.WriteString(*s.FString); err != nil {
 		return err
 	}
 }`
@@ -144,12 +161,12 @@ func TestEncodingArrayOfArrayOfUint16(t *testing.T) {
 	return err
 }
 encoder.StartArray(uint32(len(s.ArrayOfArrayOfInt)), 64)
-for _, elem0 := range s.ArrayOfArrayOfInt {
+for _, elem := range s.ArrayOfArrayOfInt {
 	if err := encoder.WritePointer(); err != nil {
 		return err
 	}
-	encoder.StartArray(uint32(len(elem0)), 16)
-	for _, elem1 := range elem0 {
+	encoder.StartArray(uint32(len(elem)), 16)
+	for _, elem1 := range elem {
 		if err := encoder.WriteUint16(elem1); err != nil {
 			return err
 		}
@@ -170,7 +187,7 @@ if err := encoder.Finish(); err != nil {
 			isPointer:  true,
 			isArray:    true,
 			bitSize:    64,
-			identifier: "elem0",
+			identifier: "elem",
 			elementEncodingInfo: &mockEncodingInfo{
 				isSimple:      true,
 				bitSize:       16,
@@ -189,23 +206,23 @@ func TestEncodingMapUint16ToInt32(t *testing.T) {
 }
 encoder.StartMap()
 {
-	var keys0 []uint16
-	var values0 []int32
-	for key0 := range s.MapUint16ToInt32 {
-		keys0 = append(keys0, key0)
+	var keys []uint16
+	var values []int32
+	for key := range s.MapUint16ToInt32 {
+		keys = append(keys, key)
 	}
 	if encoder.Deterministic() {
-		bindings.SortMapKeys(&keys0)
+		bindings.SortMapKeys(&keys)
 	}
-	for key0 := range keys0 {
-		values0 = append(values0, s.MapUint16ToInt32[key0])
+	for _, key := range keys {
+		values = append(values, s.MapUint16ToInt32[key])
 	}
 	if err := encoder.WritePointer(); err != nil {
 		return err
 	}
-	encoder.StartArray(uint32(len(keys0)), 16)
-	for _, key0 := range keys0 {
-		if err := encoder.WriteUint16(key0); err != nil {
+	encoder.StartArray(uint32(len(keys)), 16)
+	for _, key := range keys {
+		if err := encoder.WriteUint16(key); err != nil {
 			return err
 		}
 	}
@@ -215,9 +232,9 @@ encoder.StartMap()
 	if err := encoder.WritePointer(); err != nil {
 		return err
 	}
-	encoder.StartArray(uint32(len(values0)), 32)
-	for _, value0 := range values0 {
-		if err := encoder.WriteInt32(value0); err != nil {
+	encoder.StartArray(uint32(len(values)), 32)
+	for _, value := range values {
+		if err := encoder.WriteInt32(value); err != nil {
 			return err
 		}
 	}
@@ -237,26 +254,26 @@ if err := encoder.Finish(); err != nil {
 			isPointer:  true,
 			isArray:    true,
 			bitSize:    64,
-			identifier: "keys0",
+			identifier: "keys",
 			goType:     "[]uint16",
 			elementEncodingInfo: &mockEncodingInfo{
 				isSimple:      true,
 				bitSize:       16,
 				writeFunction: "WriteUint16",
-				identifier:    "key0",
+				identifier:    "key",
 			},
 		},
 		valueEncodingInfo: &mockEncodingInfo{
 			isPointer:  true,
 			isArray:    true,
 			bitSize:    64,
-			identifier: "values0",
+			identifier: "values",
 			goType:     "[]int32",
 			elementEncodingInfo: &mockEncodingInfo{
 				isSimple:      true,
 				bitSize:       32,
 				writeFunction: "WriteInt32",
-				identifier:    "value0",
+				identifier:    "value",
 			},
 		},
 	}

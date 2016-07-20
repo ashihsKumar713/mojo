@@ -13,11 +13,14 @@ const enumDeclTmplText = `
 {{$enum := . -}}
 type {{$enum.Name}} int32
 
+{{ template "RuntimeTypeAccessors" $enum }}
+
 const (
 {{- range $value := $enum.Values -}}
 	{{$value.Name}} {{$enum.Name}} = {{$value.Value}}
 {{end}}
 )
+
 {{- end -}}
 `
 

@@ -24,6 +24,7 @@ type translator struct {
 	goTypeCache     map[string]string
 	imports         map[string]string
 	currentFileName string
+	pkgName         string
 	Config          common.GeneratorConfig
 }
 
@@ -31,6 +32,7 @@ func NewTranslator(fileGraph *mojom_files.MojomFileGraph) (t *translator) {
 	t = new(translator)
 	t.fileGraph = fileGraph
 	t.goTypeCache = map[string]string{}
+	t.imports = map[string]string{}
 	return t
 }
 
@@ -42,6 +44,10 @@ func (t *translator) TranslateMojomFile(fileName string) (tmplFile *TmplFile) {
 	file := t.fileGraph.Files[fileName]
 
 	tmplFile.PackageName = fileNameToPackageName(fileName)
+	if file.SerializedRuntimeTypeInfo != nil {
+		tmplFile.SerializedRuntimeTypeInfo = *file.SerializedRuntimeTypeInfo
+	}
+	t.pkgName = tmplFile.PackageName
 
 	if file.DeclaredMojomObjects.Structs == nil {
 		file.DeclaredMojomObjects.Structs = &[]string{}
@@ -76,18 +82,54 @@ func (t *translator) TranslateMojomFile(fileName string) (tmplFile *TmplFile) {
 		tmplFile.Enums[i+topLevelEnumsNum] = t.translateMojomEnum(typeKey)
 	}
 
+	methodDefined := false
 	if file.DeclaredMojomObjects.Interfaces == nil {
 		file.DeclaredMojomObjects.Interfaces = &[]string{}
 	}
 	tmplFile.Interfaces = make([]*InterfaceTemplate, len(*file.DeclaredMojomObjects.Interfaces))
 	for i, typeKey := range *file.DeclaredMojomObjects.Interfaces {
 		tmplFile.Interfaces[i] = t.translateMojomInterface(typeKey)
+		if len(tmplFile.Interfaces[i].Methods) > 0 {
+			methodDefined = true
+		}
 	}
 
-	tmplFile.Imports = []Import{
-		Import{PackagePath: "mojo/public/go/bindings", PackageName: "bindings"},
-		Import{PackagePath: "fmt", PackageName: "fmt"},
-		Import{PackagePath: "sort", PackageName: "sort"},
+	tmplFile.Imports = []Import{}
+	tmplFile.MojomImports = []string{}
+
+	for pkgName, pkgPath := range t.imports {
+		if pkgName != "service_describer" && pkgName != "mojom_types" && pkgPath != "mojo/public/go/system" {
+			tmplFile.MojomImports = append(tmplFile.MojomImports, pkgName)
+		}
+	}
+
+	if len(tmplFile.Structs) > 0 || len(tmplFile.Unions) > 0 || len(tmplFile.Interfaces) > 0 {
+		t.imports["fmt"] = "fmt"
+		t.imports["bindings"] = "mojo/public/go/bindings"
+	}
+	if len(tmplFile.Interfaces) > 0 {
+		t.imports["system"] = "mojo/public/go/system"
+		if tmplFile.PackageName != "service_describer" {
+			t.imports["service_describer"] = "mojo/public/interfaces/bindings/service_describer"
+		}
+		if tmplFile.PackageName != "mojom_types" {
+			t.imports["mojom_types"] = "mojo/public/interfaces/bindings/mojom_types"
+		}
+	}
+	if len(tmplFile.Structs) > 0 || methodDefined {
+		t.imports["sort"] = "sort"
+	}
+
+	if t.Config.GenTypeInfo() {
+		t.imports["bindings"] = "mojo/public/go/bindings"
+		t.imports["fmt"] = "fmt"
+		t.imports["base64"] = "encoding/base64"
+		t.imports["gzip"] = "compress/gzip"
+		t.imports["bytes"] = "bytes"
+		t.imports["ioutil"] = "io/ioutil"
+		if tmplFile.PackageName != "mojom_types" {
+			t.imports["mojom_types"] = "mojo/public/interfaces/bindings/mojom_types"
+		}
 	}
 
 	for pkgName, pkgPath := range t.imports {
@@ -96,6 +138,7 @@ func (t *translator) TranslateMojomFile(fileName string) (tmplFile *TmplFile) {
 			Import{PackagePath: pkgPath, PackageName: pkgName},
 		)
 	}
+
 	return tmplFile
 }
 
@@ -113,6 +156,15 @@ func (t *translator) translateMojomStruct(typeKey string) (m *StructTemplate) {
 	m = t.translateMojomStructObject(mojomStruct)
 	m.Name = t.goTypeName(typeKey)
 	m.PrivateName = privateName(m.Name)
+	m.TypeKey = typeKey
+
+	if mojomStruct.DeclData != nil && mojomStruct.DeclData.ContainedDeclarations != nil && mojomStruct.DeclData.ContainedDeclarations.Enums != nil {
+		nestedEnumTypeKeys := *mojomStruct.DeclData.ContainedDeclarations.Enums
+		m.NestedEnums = make([]*EnumTemplate, len(nestedEnumTypeKeys))
+		for i, typeKey := range *mojomStruct.DeclData.ContainedDeclarations.Enums {
+			m.NestedEnums[i] = t.translateMojomEnum(typeKey)
+		}
+	}
 
 	return m
 }
@@ -146,7 +198,8 @@ func (t *translator) translateStructField(mojomField *mojom_types.StructField) (
 	field.Type = t.translateType(mojomField.Type)
 	field.MinVersion = mojomField.MinVersion
 	field.EncodingInfo = t.encodingInfo(mojomField.Type)
-	field.EncodingInfo.setIdentifier("s." + field.Name)
+	id := "s." + field.Name
+	field.EncodingInfo.setIdentifier(id)
 	return
 }
 
@@ -158,6 +211,7 @@ func (t *translator) translateMojomUnion(typeKey string) (m *UnionTemplate) {
 		log.Panicf("%s is not a union.\n", userDefinedTypeShortName(u))
 	}
 	m.Name = t.goTypeName(typeKey)
+	m.TypeKey = typeKey
 
 	for _, field := range union.Fields {
 		m.Fields = append(m.Fields, t.translateUnionField(&field))
@@ -188,6 +242,7 @@ func (t *translator) translateMojomEnum(typeKey string) (m *EnumTemplate) {
 	}
 
 	m.Name = t.goTypeName(typeKey)
+	m.TypeKey = typeKey
 
 	for _, mojomValue := range enum.Values {
 		name := fmt.Sprintf("%s_%s", m.Name, formatName(*mojomValue.DeclData.ShortName))
@@ -208,9 +263,18 @@ func (t *translator) translateMojomInterface(typeKey string) (m *InterfaceTempla
 	m.Name = t.goTypeName(typeKey)
 	m.PrivateName = privateName(m.Name)
 	m.ServiceName = mojomInterface.ServiceName
+	m.TypeKey = typeKey
 
 	for _, mojomMethod := range mojomInterface.Methods {
 		m.Methods = append(m.Methods, *t.translateMojomMethod(mojomMethod, m))
+	}
+
+	if mojomInterface.DeclData != nil && mojomInterface.DeclData.ContainedDeclarations != nil && mojomInterface.DeclData.ContainedDeclarations.Enums != nil {
+		nestedEnumTypeKeys := *mojomInterface.DeclData.ContainedDeclarations.Enums
+		m.NestedEnums = make([]*EnumTemplate, len(nestedEnumTypeKeys))
+		for i, typeKey := range *mojomInterface.DeclData.ContainedDeclarations.Enums {
+			m.NestedEnums[i] = t.translateMojomEnum(typeKey)
+		}
 	}
 
 	return m
@@ -220,6 +284,7 @@ func (t *translator) translateMojomMethod(mojomMethod mojom_types.MojomMethod, i
 	m = new(MethodTemplate)
 	m.Interface = interfaceTemplate
 	m.MethodName = formatName(*mojomMethod.DeclData.ShortName)
+	m.Ordinal = mojomMethod.Ordinal
 	m.FullName = fmt.Sprintf("%s_%s", interfaceTemplate.PrivateName, m.MethodName)
 	m.Params = *t.translateMojomStructObject(mojomMethod.Parameters)
 	m.Params.Name = fmt.Sprintf("%s_Params", m.FullName)

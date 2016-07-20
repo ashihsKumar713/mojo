@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 )
 
+// TODO(vardhan): Delete this function and move it into the C generator.
 // OutputWriterByFilePath returns |Writer| that writes to a file whose relative
 // path from config.OutputDir() is equivalent to the relative path from
 // config.SrcRootPath() to fileName. Also, the extension of the file is changed
