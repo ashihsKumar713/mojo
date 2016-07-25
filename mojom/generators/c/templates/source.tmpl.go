@@ -29,22 +29,14 @@ const GenerateSourceFile = `
 const {{$const.Type}} {{$const.Name}} = {{$const.Value}};
 {{end -}}
 
-// Struct level constants:
-{{range $struct := .Structs -}}
-{{range $const := $struct.Constants -}}
-const {{$const.Type}} {{$const.Name}} = {{$const.Value}};
-{{end -}}
-{{end -}}
-
-// Interface level constants:
-{{range $interface := .Interfaces -}}
-{{range $const := $interface.Constants -}}
-const {{$const.Type}} {{$const.Name}} = {{$const.Value}};
-{{end -}}
-{{end -}}
-
+// Struct definitions.
 {{range $struct := .Structs -}}
 {{template "GenerateStructDefinitions" $struct}}
+{{end -}}
+
+// Interface definitions.
+{{range $interface := .Interfaces -}}
+{{template "GenerateInterfaceDefinitions" $interface}}
 {{end -}}
 
 {{end}}

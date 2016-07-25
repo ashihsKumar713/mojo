@@ -152,13 +152,36 @@ func (table *TypeTableTemplate) makeMapPointerTable(prefix string, f mojom_types
 	structTable := StructPointerTable{
 		Name: prefix + "__TypeDesc",
 	}
+
+	keyType := mojom_types.ArrayType{
+		Nullable:    false,
+		FixedLength: -1,
+		ElementType: f.KeyType,
+	}
+	valueType := mojom_types.ArrayType{
+		Nullable:    false,
+		FixedLength: -1,
+		ElementType: f.ValueType,
+	}
+	keyArray := table.makeArrayPointerEntry(prefix+"_Keys", keyType)
+	valueArray := table.makeArrayPointerEntry(prefix+"_Values", valueType)
+
 	// The key array has offset 0.
 	// The value array has offset 8.
-	structTable.Entries = append(structTable.Entries,
-		table.makeStructPointerTableEntry(fmt.Sprintf("%s_%d", prefix, 0), 0, 0, f.KeyType))
-	structTable.Entries = append(structTable.Entries,
-		table.makeStructPointerTableEntry(fmt.Sprintf("%s_%d", prefix, 8), 8, 0, f.ValueType))
-
+	structTable.Entries = append(structTable.Entries, StructPointerTableEntry{
+		ElemTable:  "&" + keyArray,
+		Offset:     0,
+		MinVersion: 0,
+		ElemType:   "MOJOM_TYPE_DESCRIPTOR_TYPE_ARRAY_PTR",
+		Nullable:   false,
+	})
+	structTable.Entries = append(structTable.Entries, StructPointerTableEntry{
+		ElemTable:  "&" + valueArray,
+		Offset:     8,
+		MinVersion: 0,
+		ElemType:   "MOJOM_TYPE_DESCRIPTOR_TYPE_ARRAY_PTR",
+		Nullable:   false,
+	})
 	table.Structs = append(table.Structs, structTable)
 	return structTable.Name
 }

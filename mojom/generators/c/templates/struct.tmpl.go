@@ -51,10 +51,6 @@ void {{$struct.Name}}_DecodePointersAndHandles(
   struct {{$struct.Name}}* inout_struct, uint32_t in_struct_size,
   MojoHandle inout_handles[], uint32_t in_num_handles);
 
-MojomValidationResult {{$struct.Name}}_Validate(
-  const void* in_buf, uint32_t in_buf_size,
-  const MojoHandle in_handles[], uint32_t in_num_handles);
-
 {{end}}
 `
 
@@ -63,6 +59,10 @@ const GenerateStructDefinitions = `
 {{- /* . (dot) refers to the Go type |cgen.StructTemplate| */ -}}
 {{define "GenerateStructDefinitions" -}}
 {{- $struct := . -}}
+
+{{range $const := $struct.Constants -}}
+const {{$const.Type}} {{$const.Name}} = {{$const.Value}};
+{{end -}}
 
 size_t {{$struct.Name}}_ComputeSerializedSize(
     const struct {{$struct.Name}}* in_data) {
@@ -88,5 +88,6 @@ void {{$struct.Name}}_DecodePointersAndHandles(
     (struct MojomStructHeader*)inout_struct, in_struct_size,
     inout_handles, in_num_handles);
 }
+
 {{end}}
 `

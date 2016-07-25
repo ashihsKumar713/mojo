@@ -41,8 +41,10 @@ struct MojomTypeDescriptorUnion {{$union.Name}};
 // Array type entry definitions.
 {{range $array := .Arrays -}}
 static struct MojomTypeDescriptorArray {{$array.Name}} = {
-  {{$array.ElemType}}, {{$array.ElemTable}},
-  {{$array.NumElements}}, {{$array.Nullable}},
+  .elem_type = {{$array.ElemType}},
+  .elem_descriptor = {{$array.ElemTable}},
+  .num_elements = {{$array.NumElements}},
+  .nullable = {{$array.Nullable}},
 };
 {{end -}}
 
@@ -51,14 +53,18 @@ static struct MojomTypeDescriptorArray {{$array.Name}} = {
 struct MojomTypeDescriptorStructEntry {{$struct.Name}}_Entries[] = {
 {{- range $entry := $struct.Entries}}
   {
-    {{$entry.ElemType}}, {{$entry.ElemTable}},
-    {{$entry.Offset}}, {{$entry.MinVersion}},
-    {{$entry.Nullable}},
+    .elem_type = {{$entry.ElemType}},
+    .elem_descriptor = {{$entry.ElemTable}},
+    .offset = {{$entry.Offset}},
+    .min_version = {{$entry.MinVersion}},
+    .nullable = {{$entry.Nullable}},
   },
 {{end -}}
 };
+
 struct MojomTypeDescriptorStruct {{$struct.Name}} = {
-  {{len $struct.Entries}}ul, {{$struct.Name}}_Entries, 
+  .num_entries = {{len $struct.Entries}}ul,
+  .entries = {{$struct.Name}}_Entries,
 };
 {{end -}}
 
@@ -67,13 +73,16 @@ struct MojomTypeDescriptorStruct {{$struct.Name}} = {
 struct MojomTypeDescriptorUnionEntry {{$union.Name}}_Entries[] = {
 {{- range $entry := $union.Entries}}
   {
-    {{$entry.ElemType}}, {{$entry.ElemTable}},
-    {{$entry.Tag}}, {{$entry.Nullable}},
+    .elem_type = {{$entry.ElemType}},
+    .elem_descriptor = {{$entry.ElemTable}},
+    .tag = {{$entry.Tag}},
+    .nullable = {{$entry.Nullable}},
   },
 {{end -}}
 };
 struct MojomTypeDescriptorUnion {{$union.Name}} = {
-  {{len $union.Entries}}ul, {{$union.Name}}_Entries, 
+  .num_entries = {{len $union.Entries}}ul,
+  .entries = {{$union.Name}}_Entries,
 };
 {{end}}
 

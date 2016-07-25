@@ -4,9 +4,9 @@
 
 package templates
 
-const GenerateInterface = `
+const GenerateInterfaceDeclarations = `
 {{- /* . (dot) refers to the Go type |cgen.InterfaceTemplate| */ -}}
-{{define "GenerateInterface" -}}
+{{define "GenerateInterfaceDeclarations" -}}
 {{- $interface := . -}}
 // --- {{$interface.Name}} ---
 #define {{$interface.Name}}__ServiceName ((const char*)"{{$interface.ServiceName}}")
@@ -30,12 +30,39 @@ extern const {{$const.Type}} {{$const.Name}};
 #define {{$interface.Name}}_{{$message.Name}}__MinVersion \
     ((uint32_t){{$message.MinVersion}})
 
+
 struct {{$message.RequestStruct.Name}};
 {{template "GenerateStructDeclarations" $message.RequestStruct}}
 {{if ne $message.ResponseStruct.Name "" -}}
+#define {{$interface.Name}}_{{$message.Name}}__HasResponse 1
 struct {{$message.ResponseStruct.Name}};
 {{template "GenerateStructDeclarations" $message.ResponseStruct}}
+{{else}}
+#define {{$interface.Name}}_{{$message.Name}}__HasResponse 0
 {{end}}
+{{end}}
+{{end}}
+`
+
+const GenerateInterfaceDefinitions = `
+{{- /* . (dot) refers to the Go type |cgen.InterfaceTemplate| */ -}}
+{{define "GenerateInterfaceDefinitions" -}}
+{{- $interface := . -}}
+{{range $const := $interface.Constants -}}
+const {{$const.Type}} {{$const.Name}} = {{$const.Value}};
+{{end -}}
+
+// Interface message struct definitions:
+{{range $message := $interface.Messages -}}
+// Message: {{$message.Name}}
+
+struct {{$message.RequestStruct.Name}};
+{{template "GenerateStructDefinitions" $message.RequestStruct}}
+{{if ne $message.ResponseStruct.Name "" -}}
+struct {{$message.ResponseStruct.Name}};
+{{template "GenerateStructDefinitions" $message.ResponseStruct}}
+{{end}}
+
 {{end}}
 {{end}}
 `

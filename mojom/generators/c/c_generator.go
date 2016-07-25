@@ -22,7 +22,8 @@ func main() {
 	template.Must(tmpls.Parse(templates.GenerateStructDeclarations))
 	template.Must(tmpls.Parse(templates.GenerateStructDefinitions))
 	template.Must(tmpls.Parse(templates.GenerateUnion))
-	template.Must(tmpls.Parse(templates.GenerateInterface))
+	template.Must(tmpls.Parse(templates.GenerateInterfaceDeclarations))
+	template.Must(tmpls.Parse(templates.GenerateInterfaceDefinitions))
 	template.Must(tmpls.Parse(templates.GenerateTypeTableDeclarations))
 	template.Must(tmpls.Parse(templates.GenerateTypeTableDefinitions))
 

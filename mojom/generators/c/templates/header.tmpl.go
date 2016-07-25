@@ -81,7 +81,7 @@ extern const {{$const.Type}} {{$const.Name}};
 
 // Interface definitions.
 {{range $interface := .Interfaces -}}
-{{template "GenerateInterface" $interface}}
+{{template "GenerateInterfaceDeclarations" $interface}}
 {{end}}
 
 // Type tables declarations for structs and unions.
