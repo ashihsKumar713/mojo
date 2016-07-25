@@ -13,4 +13,8 @@ mojom("interfaces") {
     "seeking_reader.mojom",
     "timeline_controller.mojom",
   ]
+
+  deps = [
+    "../../common/interfaces",
+  ]
 }
