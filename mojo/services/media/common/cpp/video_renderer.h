@@ -52,13 +52,15 @@ class VideoRenderer : public MediaPacketConsumerBase,
   void GetTimelineControlPoint(InterfaceRequest<MediaTimelineControlPoint>
                                    control_point_request) override;
 
-  // PacketConsumerBase overrides.
+  // MediaPacketConsumerBase overrides.
   void OnPacketSupplied(
       std::unique_ptr<SuppliedPacket> supplied_packet) override;
 
-  void OnFailure() override;
+  void OnPrimeRequested(const PrimeCallback& callback) override;
 
-  void Flush(const FlushCallback& callback) override;
+  void OnFlushRequested(const FlushCallback& callback) override;
+
+  void OnFailure() override;
 
   // MediaTimelineControlPoint implementation.
   void GetStatus(uint64_t version_last_seen,

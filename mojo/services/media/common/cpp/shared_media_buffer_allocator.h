@@ -8,6 +8,7 @@
 #include <memory>
 #include <mutex>  // NOLINT(build/c++11)
 
+#include "mojo/public/cpp/environment/logging.h"
 #include "mojo/services/media/common/cpp/fifo_allocator.h"
 #include "mojo/services/media/common/cpp/mapped_shared_buffer.h"
 
@@ -31,7 +32,11 @@ class SharedMediaBufferAllocator : public MappedSharedBuffer {
   // region could not be allocated, returns kNullOffset.
   uint64_t AllocateRegionByOffset(uint64_t size) {
     std::lock_guard<std::mutex> lock(lock_);
-    return fifo_allocator_.AllocateRegion(size);
+    uint64_t result = fifo_allocator_.AllocateRegion(size);
+    if (result == kNullOffset) {
+      MOJO_DLOG(WARNING) << "failed to allocate " << size << " bytes";
+    }
+    return result;
   }
 
   // Releases a region of the buffer previously allocated by calling
@@ -49,9 +54,7 @@ class SharedMediaBufferAllocator : public MappedSharedBuffer {
 
   // Releases a region of the buffer previously allocated by calling
   // AllocateRegion.
-  void ReleaseRegion(void* ptr) {
-    ReleaseRegionByOffset(OffsetFromPtr(ptr));
-  }
+  void ReleaseRegion(void* ptr) { ReleaseRegionByOffset(OffsetFromPtr(ptr)); }
 
  protected:
   void OnInit() override;

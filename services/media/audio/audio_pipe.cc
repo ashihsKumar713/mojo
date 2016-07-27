@@ -47,9 +47,6 @@ AudioPipe::~AudioPipe() {}
 
 void AudioPipe::OnPacketSupplied(SuppliedPacketPtr supplied_packet) {
   DCHECK(supplied_packet);
-  const MediaPacketPtr& packet = supplied_packet->packet();
-  DCHECK(packet);
-  DCHECK(packet->payload);
   DCHECK(owner_);
 
   // Start by making sure that the region we are receiving is made from an
@@ -60,8 +57,8 @@ void AudioPipe::OnPacketSupplied(SuppliedPacketPtr supplied_packet) {
   // alignment/allocation restrictions at the MediaPipe level of things.
   uint32_t frame_size = owner_->BytesPerFrame();
 
-  if ((frame_size > 1) && (packet->payload->length % frame_size)) {
-    LOG(ERROR) << "Region length (" << packet->payload->length
+  if ((frame_size > 1) && (supplied_packet->payload_size() % frame_size)) {
+    LOG(ERROR) << "Region length (" << supplied_packet->payload_size()
                << ") is not divisible by by audio frame size ("
                << frame_size << ")";
     Reset();
@@ -70,7 +67,7 @@ void AudioPipe::OnPacketSupplied(SuppliedPacketPtr supplied_packet) {
 
   static constexpr uint32_t kMaxFrames = std::numeric_limits<uint32_t>::max()
                                       >> AudioTrackImpl::PTS_FRACTIONAL_BITS;
-  uint32_t frame_count = (packet->payload->length / frame_size);
+  uint32_t frame_count = (supplied_packet->payload_size() / frame_size);
   if (frame_count > kMaxFrames) {
     LOG(ERROR) << "Audio frame count ("
                << frame_count << ") exceeds maximum allowed ("
@@ -81,13 +78,13 @@ void AudioPipe::OnPacketSupplied(SuppliedPacketPtr supplied_packet) {
 
   // Figure out the starting PTS.
   int64_t start_pts;
-  if (packet->pts != MediaPacket::kNoTimestamp) {
+  if (supplied_packet->packet()->pts != MediaPacket::kNoTimestamp) {
     // The user provided an explicit PTS for this audio.  Transform it into
     // units of fractional frames.
     LinearTransform tmp(0, owner_->FractionalFrameToMediaTimeRatio(), 0);
-    if (!tmp.DoForwardTransform(packet->pts, &start_pts)) {
+    if (!tmp.DoForwardTransform(supplied_packet->packet()->pts, &start_pts)) {
       LOG(ERROR) << "Overflow while transforming explicitly provided PTS ("
-                 << packet->pts
+                 << supplied_packet->packet()->pts
                  << ") during SendPacket on MediaPipe transporting audio data.";
       Reset();
       return;
@@ -121,16 +118,17 @@ void AudioPipe::OnPacketSupplied(SuppliedPacketPtr supplied_packet) {
    }
 }
 
-void AudioPipe::Prime(const PrimeCallback& cbk) {
+void AudioPipe::OnPrimeRequested(const PrimeCallback& cbk) {
   if (!prime_callback_.is_null()) {
     // Prime was already requested. Complete the old one and warn.
     LOG(WARNING) << "multiple prime requests received";
     prime_callback_.Run();
   }
   prime_callback_ = cbk;
+  SetDemand(4); // TODO(dalesat): Implement better demand strategy.
 }
 
-void AudioPipe::Flush(const FlushCallback& cbk) {
+void AudioPipe::OnFlushRequested(const FlushCallback& cbk) {
   DCHECK(owner_);
   next_pts_known_ = false;
   owner_->OnFlushRequested(cbk);

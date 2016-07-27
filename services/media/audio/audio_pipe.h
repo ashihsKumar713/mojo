@@ -18,6 +18,7 @@ namespace audio {
 class AudioPipe : public MediaPacketConsumerBase {
  public:
   class AudioPacketRef;
+  // TODO(dalesat): Preferred style eschews these aliases - remove them.
   using AudioPacketRefPtr = std::shared_ptr<AudioPacketRef>;
   using SuppliedPacketPtr =
       std::unique_ptr<MediaPacketConsumerBase::SuppliedPacket>;
@@ -78,8 +79,8 @@ class AudioPipe : public MediaPacketConsumerBase {
 
  protected:
   void OnPacketSupplied(SuppliedPacketPtr supplied_packet) override;
-  void Prime(const PrimeCallback& cbk) override;
-  void Flush(const FlushCallback& cbk) override;
+  void OnPrimeRequested(const PrimeCallback& cbk) override;
+  void OnFlushRequested(const FlushCallback& cbk) override;
 
  private:
   AudioTrackImpl* owner_;

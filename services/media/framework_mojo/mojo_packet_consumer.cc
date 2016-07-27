@@ -3,15 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "services/media/framework_mojo/mojo_packet_consumer.h"
 
 namespace mojo {
 namespace media {
-
-void MojoMediaPacketConsumerBase::Flush(const FlushCallback& callback) {
-  MediaPacketConsumerFlush(callback);
-}
 
 MojoPacketConsumer::MojoPacketConsumer() {}
 
@@ -34,26 +29,33 @@ void MojoPacketConsumer::SetFlushRequestedCallback(
 
 void MojoPacketConsumer::OnPacketSupplied(
     std::unique_ptr<SuppliedPacket> supplied_packet) {
-  DCHECK(supplied_packet);
-  DCHECK(supply_callback_);
+  MOJO_DCHECK(supplied_packet);
+  MOJO_DCHECK(supply_callback_);
   supply_callback_(PacketImpl::Create(std::move(supplied_packet)));
 }
 
-void MojoPacketConsumer::Prime(const PrimeCallback& callback) {
+void MojoPacketConsumer::OnPacketReturning() {
+  if (downstream_demand_ == Demand::kPositive) {
+    SetDemand(supplied_packets_outstanding() + 1);
+  } else {
+    SetDemand(supplied_packets_outstanding());
+  }
+}
+
+void MojoPacketConsumer::OnPrimeRequested(const PrimeCallback& callback) {
   if (prime_requested_callback_) {
     prime_requested_callback_(callback);
   } else {
-    LOG(WARNING) << "prime requested but no callback registered";
+    MOJO_DLOG(WARNING) << "prime requested but no callback registered";
     callback.Run();
   }
 }
 
-void MojoPacketConsumer::MediaPacketConsumerFlush(
-    const FlushCallback& callback) {
+void MojoPacketConsumer::OnFlushRequested(const FlushCallback& callback) {
   if (flush_requested_callback_) {
     flush_requested_callback_(callback);
   } else {
-    LOG(WARNING) << "flush requested but no callback registered";
+    MOJO_DLOG(WARNING) << "flush requested but no callback registered";
     callback.Run();
   }
 }
@@ -63,7 +65,7 @@ bool MojoPacketConsumer::can_accept_allocator() const {
 }
 
 void MojoPacketConsumer::set_allocator(PayloadAllocator* allocator) {
-  LOG(ERROR) << "set_allocator called on MojoPacketConsumer";
+  MOJO_DLOG(ERROR) << "set_allocator called on MojoPacketConsumer";
 }
 
 void MojoPacketConsumer::SetSupplyCallback(
@@ -71,7 +73,14 @@ void MojoPacketConsumer::SetSupplyCallback(
   supply_callback_ = supply_callback;
 }
 
-void MojoPacketConsumer::SetDownstreamDemand(Demand demand) {}
+void MojoPacketConsumer::SetDownstreamDemand(Demand demand) {
+  downstream_demand_ = demand;
+  if (demand == Demand::kPositive &&
+      supplied_packets_outstanding() >=
+          current_demand().min_packets_outstanding) {
+    SetDemand(supplied_packets_outstanding() + 1);
+  }
+}
 
 MojoPacketConsumer::PacketImpl::PacketImpl(
     std::unique_ptr<SuppliedPacket> supplied_packet)

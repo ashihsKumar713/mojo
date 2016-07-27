@@ -81,11 +81,12 @@ void ActiveSourceStage::Update(Engine* engine) {
 
   Demand demand = output_.demand();
 
-  source_->SetDownstreamDemand(demand);
-
   if (demand != Demand::kNegative && !packets_.empty()) {
     output_.SupplyPacket(std::move(packets_.front()), engine);
     packets_.pop_front();
+    source_->SetDownstreamDemand(Demand::kNegative);
+  } else {
+    source_->SetDownstreamDemand(demand);
   }
 }
 

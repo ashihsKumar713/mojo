@@ -106,6 +106,18 @@ void VideoRenderer::OnPacketSupplied(
   packet_queue_.push(std::move(supplied_packet));
 }
 
+void VideoRenderer::OnPrimeRequested(const PrimeCallback& callback) {
+  SetDemand(2);
+  callback.Run();
+}
+
+void VideoRenderer::OnFlushRequested(const FlushCallback& callback) {
+  while (!packet_queue_.empty()) {
+    packet_queue_.pop();
+  }
+  callback.Run();
+}
+
 void VideoRenderer::OnFailure() {
   // TODO(dalesat): Report this to our owner.
   if (renderer_binding_.is_bound()) {
@@ -121,13 +133,6 @@ void VideoRenderer::OnFailure() {
   }
 
   MediaPacketConsumerBase::OnFailure();
-}
-
-void VideoRenderer::Flush(const FlushCallback& callback) {
-  while (!packet_queue_.empty()) {
-    packet_queue_.pop();
-  }
-  callback.Run();
 }
 
 void VideoRenderer::GetStatus(uint64_t version_last_seen,

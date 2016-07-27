@@ -56,7 +56,7 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
   audio_renderer_ = audio_renderer.Pass();
   video_renderer_ = video_renderer.Pass();
 
-  demux_->Describe([this](mojo::Array<MediaTypePtr> stream_types) {
+  demux_->Describe([this](Array<MediaTypePtr> stream_types) {
     // Populate streams_ and enable the streams we want.
     std::shared_ptr<CallbackJoiner> callback_joiner = CallbackJoiner::Create();
 
@@ -198,8 +198,10 @@ void MediaPlayerImpl::Update() {
           // presentation timeline and transition to |kPlaying| when the
           // operation completes.
           state_ = State::kWaiting;
+          TimelineTransformPtr timeline_transform =
+              CreateTimelineTransform(1.0f);
           timeline_consumer_->SetTimelineTransform(
-              CreateTimelineTransform(1.0f), [this](bool completed) {
+              timeline_transform.Pass(), [this](bool completed) {
                 state_ = State::kPlaying;
                 // Now we're in |kPlaying|. Call |Update| to see if there's
                 // further action to be taken.
@@ -224,8 +226,10 @@ void MediaPlayerImpl::Update() {
           // we need to enter |kWaiting|, stop the presentation timeline and
           // transition to |kPrimed| when the operation completes.
           state_ = State::kWaiting;
+          TimelineTransformPtr timeline_transform =
+              CreateTimelineTransform(0.0f);
           timeline_consumer_->SetTimelineTransform(
-              CreateTimelineTransform(0.0f), [this](bool completed) {
+              timeline_transform.Pass(), [this](bool completed) {
                 state_ = State::kPrimed;
                 // Now we're in |kPrimed|. Call |Update| to see if there's
                 // further action to be taken.

@@ -16,9 +16,7 @@ MojoPacketProducer::MojoPacketProducer() : binding_(this) {
   DCHECK(task_runner_);
 }
 
-MojoPacketProducer::~MojoPacketProducer() {
-  base::AutoLock lock(lock_);
-}
+MojoPacketProducer::~MojoPacketProducer() {}
 
 void MojoPacketProducer::Bind(InterfaceRequest<MediaPacketProducer> request) {
   binding_.Bind(request.Pass());
@@ -26,21 +24,6 @@ void MojoPacketProducer::Bind(InterfaceRequest<MediaPacketProducer> request) {
 
 void MojoPacketProducer::PrimeConnection(
     const PrimeConnectionCallback& callback) {
-  Demand demand;
-
-  if (is_connected()) {
-    base::AutoLock lock(lock_);
-    max_pushes_outstanding_ = 4;  // TODO(dalesat): Made up!
-    demand = current_pushes_outstanding_ < max_pushes_outstanding_
-                 ? Demand::kPositive
-                 : Demand::kNegative;
-  } else {
-    demand = Demand::kNeutral;
-  }
-
-  DCHECK(demand_callback_);
-  demand_callback_(demand);
-
   if (is_connected()) {
     PrimeConsumer(callback);
   } else {
@@ -50,14 +33,6 @@ void MojoPacketProducer::PrimeConnection(
 
 void MojoPacketProducer::FlushConnection(
     const FlushConnectionCallback& callback) {
-  {
-    base::AutoLock lock(lock_);
-    max_pushes_outstanding_ = 0;
-  }
-
-  DCHECK(demand_callback_);
-  demand_callback_(Demand::kNegative);
-
   if (is_connected()) {
     FlushConsumer(callback);
   } else {
@@ -77,34 +52,18 @@ void MojoPacketProducer::SetDemandCallback(
 Demand MojoPacketProducer::SupplyPacket(PacketPtr packet) {
   DCHECK(packet);
 
+  bool end_of_stream = packet->end_of_stream();
+
   // If we're not connected, throw the packet away.
   if (!is_connected()) {
-    return packet->end_of_stream() ? Demand::kNegative : Demand::kNeutral;
-  }
-
-  Demand demand;
-
-  {
-    base::AutoLock lock(lock_);
-    DCHECK(current_pushes_outstanding_ < max_pushes_outstanding_);
-
-    ++current_pushes_outstanding_;
-
-    if (packet->end_of_stream()) {
-      demand = Demand::kNegative;
-      max_pushes_outstanding_ = 0;
-    } else {
-      demand = current_pushes_outstanding_ < max_pushes_outstanding_
-                   ? Demand::kPositive
-                   : Demand::kNegative;
-    }
+    return end_of_stream ? Demand::kNegative : CurrentDemand();
   }
 
   task_runner_->PostTask(FROM_HERE,
                          base::Bind(&MojoPacketProducer::SendPacket,
                                     base::Unretained(this), packet.release()));
 
-  return demand;
+  return end_of_stream ? Demand::kNegative : CurrentDemand(1);
 }
 
 void MojoPacketProducer::Connect(InterfaceHandle<MediaPacketConsumer> consumer,
@@ -130,25 +89,22 @@ void MojoPacketProducer::ReleasePayloadBuffer(void* buffer) {
   MediaPacketProducerBase::ReleasePayloadBuffer(buffer);
 }
 
+void MojoPacketProducer::OnDemandUpdated(uint32_t min_packets_outstanding,
+                                         int64_t min_pts) {
+  DCHECK(demand_callback_);
+  demand_callback_(CurrentDemand());
+}
+
 void MojoPacketProducer::SendPacket(Packet* packet_raw_ptr) {
   DCHECK(packet_raw_ptr);
 
-  ProducePacket(
-      packet_raw_ptr->payload(), packet_raw_ptr->size(), packet_raw_ptr->pts(),
-      packet_raw_ptr->end_of_stream(), [this, packet_raw_ptr]() {
-        PacketPtr packet = PacketPtr(packet_raw_ptr);
-        Demand demand;
-
-        {
-          base::AutoLock lock(lock_);
-          demand = --current_pushes_outstanding_ < max_pushes_outstanding_
-                       ? Demand::kPositive
-                       : Demand::kNegative;
-        }
-
-        DCHECK(demand_callback_);
-        demand_callback_(demand);
-      });
+  ProducePacket(packet_raw_ptr->payload(), packet_raw_ptr->size(),
+                packet_raw_ptr->pts(), packet_raw_ptr->end_of_stream(),
+                [this, packet_raw_ptr]() {
+                  PacketPtr packet = PacketPtr(packet_raw_ptr);
+                  DCHECK(demand_callback_);
+                  demand_callback_(CurrentDemand());
+                });
 }
 
 void MojoPacketProducer::Reset() {
@@ -157,6 +113,16 @@ void MojoPacketProducer::Reset() {
   }
 
   MediaPacketProducerBase::Reset();
+}
+
+Demand MojoPacketProducer::CurrentDemand(
+    uint32_t additional_packets_outstanding) {
+  if (!is_connected()) {
+    return Demand::kNeutral;
+  }
+
+  return ShouldProducePacket(additional_packets_outstanding) ? Demand::kPositive
+                                                             : Demand::kNeutral;
 }
 
 }  // namespace media

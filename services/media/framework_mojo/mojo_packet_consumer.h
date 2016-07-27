@@ -12,18 +12,8 @@
 namespace mojo {
 namespace media {
 
-// Implements MediaConsumer::Flush on behalf of MojoPacketConsumer to avoid name
-// conflict with Part::Flush.
-class MojoMediaPacketConsumerBase : public MediaPacketConsumerBase {
-  // MediaConsumer implementation.
-  void Flush(const FlushCallback& callback) override;
-
-  // Implements MediaConsumer::Flush.
-  virtual void MediaPacketConsumerFlush(const FlushCallback& callback) = 0;
-};
-
 // Implements MediaPacketConsumer to receive a stream from across mojo.
-class MojoPacketConsumer : public MojoMediaPacketConsumerBase,
+class MojoPacketConsumer : public MediaPacketConsumerBase,
                            public ActiveSource {
  public:
   using PrimeRequestedCallback = std::function<void(const PrimeCallback&)>;
@@ -46,13 +36,18 @@ class MojoPacketConsumer : public MojoMediaPacketConsumerBase,
   // MediaPacketConsumer client.
   void SetFlushRequestedCallback(const FlushRequestedCallback& callback);
 
+ private:
+  MojoPacketConsumer();
+
   // MediaPacketConsumerBase overrides.
   void OnPacketSupplied(
       std::unique_ptr<SuppliedPacket> supplied_packet) override;
 
-  void Prime(const PrimeCallback& callback) override;
+  void OnPacketReturning() override;
 
-  void MediaPacketConsumerFlush(const FlushCallback& callback) override;
+  void OnPrimeRequested(const PrimeCallback& callback) override;
+
+  void OnFlushRequested(const FlushCallback& callback) override;
 
   // ActiveSource implementation.
   bool can_accept_allocator() const override;
@@ -62,9 +57,6 @@ class MojoPacketConsumer : public MojoMediaPacketConsumerBase,
   void SetSupplyCallback(const SupplyCallback& supply_callback) override;
 
   void SetDownstreamDemand(Demand demand) override;
-
- private:
-  MojoPacketConsumer();
 
   // Specialized packet implementation.
   class PacketImpl : public Packet {
@@ -84,6 +76,7 @@ class MojoPacketConsumer : public MojoMediaPacketConsumerBase,
     std::unique_ptr<SuppliedPacket> supplied_packet_;
   };
 
+  Demand downstream_demand_ = Demand::kNegative;
   PrimeRequestedCallback prime_requested_callback_;
   FlushRequestedCallback flush_requested_callback_;
   SupplyCallback supply_callback_;

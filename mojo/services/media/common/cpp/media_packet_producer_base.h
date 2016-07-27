@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOJO_SERVICES_MEDIA_COMMON_CPP_PACKET_PRODUCER_BASE_H_
-#define MOJO_SERVICES_MEDIA_COMMON_CPP_PACKET_PRODUCER_BASE_H_
+#ifndef MOJO_SERVICES_MEDIA_COMMON_CPP_MEDIA_PACKET_PRODUCER_BASE_H_
+#define MOJO_SERVICES_MEDIA_COMMON_CPP_MEDIA_PACKET_PRODUCER_BASE_H_
+
+#include <limits>
+#include <mutex>
 
 #include "mojo/services/media/common/cpp/shared_media_buffer_allocator.h"
+#include "mojo/services/media/common/cpp/thread_checker.h"
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
 
 namespace mojo {
@@ -52,7 +56,23 @@ class MediaPacketProducerBase {
                      bool end_of_stream,
                      const ProducePacketCallback& callback);
 
+  // Gets the current demand.
+  const MediaPacketDemand& demand() const { return demand_; }
+
+  // Determines whether the consumer is currently demanding a packet. The
+  // |additional_packets_outstanding| parameter indicates the number of packets
+  // that should be added to the current outstanding packet count when
+  // determining demand. For example, a value of 1 means that the function
+  // should determine demand as if one additional packet was outstanding.
+  bool ShouldProducePacket(uint32_t additional_packets_outstanding);
+
  protected:
+  // Called when demand is updated. If demand is updated in a SupplyPacket
+  // callback, the DemandUpdatedCallback is called before the
+  // ProducePacketCallback. The default implementation does nothing.
+  virtual void OnDemandUpdated(uint32_t min_packets_outstanding,
+                               int64_t min_pts);
+
   // Called when a fatal error occurs. The default implementation does nothing.
   virtual void OnFailure();
 
@@ -61,11 +81,30 @@ class MediaPacketProducerBase {
   // could not be initialized.
   bool EnsureAllocatorInitialized();
 
+  // Handles a demand update callback or, if called with default parameters,
+  // initiates demand update requests.
+  void HandleDemandUpdate(MediaPacketDemandPtr demand = nullptr);
+
+  // Updates demand_ and calls demand_update_callback_ if it's set and demand
+  // has changed.
+  void UpdateDemand(const MediaPacketDemand& demand);
+
   SharedMediaBufferAllocator allocator_;
   MediaPacketConsumerPtr consumer_;
+  bool flush_in_progress_ = false;
+
+  mutable std::mutex lock_;
+  // Fields below are protected by lock_.
+  MediaPacketDemand demand_;
+  uint32_t packets_outstanding_ = 0;
+  int64_t pts_last_produced_ = std::numeric_limits<int64_t>::min();
+  bool end_of_stream_ = false;
+  // Fields above are protected by lock_.
+
+  DECLARE_THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace media
 }  // namespace mojo
 
-#endif  // MOJO_SERVICES_MEDIA_COMMON_CPP_PACKET_PRODUCER_BASE_H_
+#endif  // MOJO_SERVICES_MEDIA_COMMON_CPP_MEDIA_PACKET_PRODUCER_BASE_H_

@@ -9,70 +9,6 @@ import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as servic
 
 
 
-class MediaPacketRegion extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(24, 0)
-  ];
-  int offset = 0;
-  int length = 0;
-
-  MediaPacketRegion() : super(kVersions.last.size);
-
-  MediaPacketRegion.init(
-    int this.offset, 
-    int this.length
-  ) : super(kVersions.last.size);
-
-  static MediaPacketRegion deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static MediaPacketRegion decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    MediaPacketRegion result = new MediaPacketRegion();
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
-    if (mainDataHeader.version >= 0) {
-      
-      result.offset = decoder0.decodeUint64(8);
-    }
-    if (mainDataHeader.version >= 0) {
-      
-      result.length = decoder0.decodeUint64(16);
-    }
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaPacketRegion";
-    String fieldName;
-    try {
-      fieldName = "offset";
-      encoder0.encodeUint64(offset, 8);
-      fieldName = "length";
-      encoder0.encodeUint64(length, 16);
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "MediaPacketRegion("
-           "offset: $offset" ", "
-           "length: $length" ")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    map["offset"] = offset;
-    map["length"] = length;
-    return map;
-  }
-}
-
-
 class MediaPacket extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(40, 0)
@@ -80,16 +16,18 @@ class MediaPacket extends bindings.Struct {
   static const int kNoTimestamp = 9223372036854775807;
   int pts = 9223372036854775807;
   bool endOfStream = false;
-  MediaPacketRegion payload = null;
-  List<MediaPacketRegion> extraPayload = null;
+  int payloadBufferId = 0;
+  int payloadOffset = 0;
+  int payloadSize = 0;
 
   MediaPacket() : super(kVersions.last.size);
 
   MediaPacket.init(
     int this.pts, 
     bool this.endOfStream, 
-    MediaPacketRegion this.payload, 
-    List<MediaPacketRegion> this.extraPayload
+    int this.payloadBufferId, 
+    int this.payloadOffset, 
+    int this.payloadSize
   ) : super(kVersions.last.size);
 
   static MediaPacket deserialize(bindings.Message message) =>
@@ -111,23 +49,15 @@ class MediaPacket extends bindings.Struct {
     }
     if (mainDataHeader.version >= 0) {
       
-      var decoder1 = decoder0.decodePointer(24, false);
-      result.payload = MediaPacketRegion.decode(decoder1);
+      result.payloadBufferId = decoder0.decodeUint32(20);
     }
     if (mainDataHeader.version >= 0) {
       
-      var decoder1 = decoder0.decodePointer(32, true);
-      if (decoder1 == null) {
-        result.extraPayload = null;
-      } else {
-        var si1 = decoder1.decodeDataHeaderForPointerArray(bindings.kUnspecifiedArrayLength);
-        result.extraPayload = new List<MediaPacketRegion>(si1.numElements);
-        for (int i1 = 0; i1 < si1.numElements; ++i1) {
-          
-          var decoder2 = decoder1.decodePointer(bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i1, false);
-          result.extraPayload[i1] = MediaPacketRegion.decode(decoder2);
-        }
-      }
+      result.payloadOffset = decoder0.decodeUint64(24);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.payloadSize = decoder0.decodeUint64(32);
     }
     return result;
   }
@@ -141,17 +71,12 @@ class MediaPacket extends bindings.Struct {
       encoder0.encodeInt64(pts, 8);
       fieldName = "endOfStream";
       encoder0.encodeBool(endOfStream, 16, 0);
-      fieldName = "payload";
-      encoder0.encodeStruct(payload, 24, false);
-      fieldName = "extraPayload";
-      if (extraPayload == null) {
-        encoder0.encodeNullPointer(32, true);
-      } else {
-        var encoder1 = encoder0.encodePointerArray(extraPayload.length, 32, bindings.kUnspecifiedArrayLength);
-        for (int i0 = 0; i0 < extraPayload.length; ++i0) {
-          encoder1.encodeStruct(extraPayload[i0], bindings.ArrayDataHeader.kHeaderSize + bindings.kPointerSize * i0, false);
-        }
-      }
+      fieldName = "payloadBufferId";
+      encoder0.encodeUint32(payloadBufferId, 20);
+      fieldName = "payloadOffset";
+      encoder0.encodeUint64(payloadOffset, 24);
+      fieldName = "payloadSize";
+      encoder0.encodeUint64(payloadSize, 32);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -162,16 +87,82 @@ class MediaPacket extends bindings.Struct {
     return "MediaPacket("
            "pts: $pts" ", "
            "endOfStream: $endOfStream" ", "
-           "payload: $payload" ", "
-           "extraPayload: $extraPayload" ")";
+           "payloadBufferId: $payloadBufferId" ", "
+           "payloadOffset: $payloadOffset" ", "
+           "payloadSize: $payloadSize" ")";
   }
 
   Map toJson() {
     Map map = new Map();
     map["pts"] = pts;
     map["endOfStream"] = endOfStream;
-    map["payload"] = payload;
-    map["extraPayload"] = extraPayload;
+    map["payloadBufferId"] = payloadBufferId;
+    map["payloadOffset"] = payloadOffset;
+    map["payloadSize"] = payloadSize;
+    return map;
+  }
+}
+
+
+class MediaPacketDemand extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(24, 0)
+  ];
+  int minPacketsOutstanding = 0;
+  int minPts = 9223372036854775807;
+
+  MediaPacketDemand() : super(kVersions.last.size);
+
+  MediaPacketDemand.init(
+    int this.minPacketsOutstanding, 
+    int this.minPts
+  ) : super(kVersions.last.size);
+
+  static MediaPacketDemand deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
+
+  static MediaPacketDemand decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    MediaPacketDemand result = new MediaPacketDemand();
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    if (mainDataHeader.version >= 0) {
+      
+      result.minPacketsOutstanding = decoder0.decodeUint32(8);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.minPts = decoder0.decodeInt64(16);
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "MediaPacketDemand";
+    String fieldName;
+    try {
+      fieldName = "minPacketsOutstanding";
+      encoder0.encodeUint32(minPacketsOutstanding, 8);
+      fieldName = "minPts";
+      encoder0.encodeInt64(minPts, 16);
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "MediaPacketDemand("
+           "minPacketsOutstanding: $minPacketsOutstanding" ", "
+           "minPts: $minPts" ")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    map["minPacketsOutstanding"] = minPacketsOutstanding;
+    map["minPts"] = minPts;
     return map;
   }
 }
@@ -318,84 +309,31 @@ class _MediaPacketProducerDisconnectParams extends bindings.Struct {
 }
 
 
-class _MediaPacketConsumerSetBufferParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(16, 0)
-  ];
-  core.MojoSharedBuffer buffer = null;
-
-  _MediaPacketConsumerSetBufferParams() : super(kVersions.last.size);
-
-  _MediaPacketConsumerSetBufferParams.init(
-    core.MojoSharedBuffer this.buffer
-  ) : super(kVersions.last.size);
-
-  static _MediaPacketConsumerSetBufferParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static _MediaPacketConsumerSetBufferParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    _MediaPacketConsumerSetBufferParams result = new _MediaPacketConsumerSetBufferParams();
-    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
-    if (mainDataHeader.version >= 0) {
-      
-      result.buffer = decoder0.decodeSharedBufferHandle(8, false);
-    }
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaPacketConsumerSetBufferParams";
-    String fieldName;
-    try {
-      fieldName = "buffer";
-      encoder0.encodeSharedBufferHandle(buffer, 8, false);
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "_MediaPacketConsumerSetBufferParams("
-           "buffer: $buffer" ")";
-  }
-
-  Map toJson() {
-    throw new bindings.MojoCodecError(
-        'Object containing handles cannot be encoded to JSON.');
-  }
-}
-
-
-class MediaPacketConsumerSetBufferResponseParams extends bindings.Struct {
+class _MediaPacketConsumerPullDemandUpdateParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(8, 0)
   ];
 
-  MediaPacketConsumerSetBufferResponseParams() : super(kVersions.last.size);
+  _MediaPacketConsumerPullDemandUpdateParams() : super(kVersions.last.size);
 
-  MediaPacketConsumerSetBufferResponseParams.init(
+  _MediaPacketConsumerPullDemandUpdateParams.init(
   ) : super(kVersions.last.size);
 
-  static MediaPacketConsumerSetBufferResponseParams deserialize(bindings.Message message) =>
+  static _MediaPacketConsumerPullDemandUpdateParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static MediaPacketConsumerSetBufferResponseParams decode(bindings.Decoder decoder0) {
+  static _MediaPacketConsumerPullDemandUpdateParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    MediaPacketConsumerSetBufferResponseParams result = new MediaPacketConsumerSetBufferResponseParams();
+    _MediaPacketConsumerPullDemandUpdateParams result = new _MediaPacketConsumerPullDemandUpdateParams();
     bindings.Struct.checkVersion(decoder0, kVersions);
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaPacketConsumerSetBufferResponseParams";
+    const String structName = "_MediaPacketConsumerPullDemandUpdateParams";
     String fieldName;
     try {
     } on bindings.MojoCodecError catch(e) {
@@ -405,7 +343,7 @@ class MediaPacketConsumerSetBufferResponseParams extends bindings.Struct {
   }
 
   String toString() {
-    return "MediaPacketConsumerSetBufferResponseParams("")";
+    return "_MediaPacketConsumerPullDemandUpdateParams("")";
   }
 
   Map toJson() {
@@ -415,26 +353,197 @@ class MediaPacketConsumerSetBufferResponseParams extends bindings.Struct {
 }
 
 
-class _MediaPacketConsumerSendPacketParams extends bindings.Struct {
+class MediaPacketConsumerPullDemandUpdateResponseParams extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(16, 0)
+  ];
+  MediaPacketDemand demand = null;
+
+  MediaPacketConsumerPullDemandUpdateResponseParams() : super(kVersions.last.size);
+
+  MediaPacketConsumerPullDemandUpdateResponseParams.init(
+    MediaPacketDemand this.demand
+  ) : super(kVersions.last.size);
+
+  static MediaPacketConsumerPullDemandUpdateResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
+
+  static MediaPacketConsumerPullDemandUpdateResponseParams decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    MediaPacketConsumerPullDemandUpdateResponseParams result = new MediaPacketConsumerPullDemandUpdateResponseParams();
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    if (mainDataHeader.version >= 0) {
+      
+      var decoder1 = decoder0.decodePointer(8, true);
+      result.demand = MediaPacketDemand.decode(decoder1);
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "MediaPacketConsumerPullDemandUpdateResponseParams";
+    String fieldName;
+    try {
+      fieldName = "demand";
+      encoder0.encodeStruct(demand, 8, true);
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "MediaPacketConsumerPullDemandUpdateResponseParams("
+           "demand: $demand" ")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    map["demand"] = demand;
+    return map;
+  }
+}
+
+
+class _MediaPacketConsumerAddPayloadBufferParams extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(16, 0)
+  ];
+  int payloadBufferId = 0;
+  core.MojoSharedBuffer payloadBuffer = null;
+
+  _MediaPacketConsumerAddPayloadBufferParams() : super(kVersions.last.size);
+
+  _MediaPacketConsumerAddPayloadBufferParams.init(
+    int this.payloadBufferId, 
+    core.MojoSharedBuffer this.payloadBuffer
+  ) : super(kVersions.last.size);
+
+  static _MediaPacketConsumerAddPayloadBufferParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
+
+  static _MediaPacketConsumerAddPayloadBufferParams decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    _MediaPacketConsumerAddPayloadBufferParams result = new _MediaPacketConsumerAddPayloadBufferParams();
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    if (mainDataHeader.version >= 0) {
+      
+      result.payloadBufferId = decoder0.decodeUint32(8);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      result.payloadBuffer = decoder0.decodeSharedBufferHandle(12, false);
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaPacketConsumerAddPayloadBufferParams";
+    String fieldName;
+    try {
+      fieldName = "payloadBufferId";
+      encoder0.encodeUint32(payloadBufferId, 8);
+      fieldName = "payloadBuffer";
+      encoder0.encodeSharedBufferHandle(payloadBuffer, 12, false);
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "_MediaPacketConsumerAddPayloadBufferParams("
+           "payloadBufferId: $payloadBufferId" ", "
+           "payloadBuffer: $payloadBuffer" ")";
+  }
+
+  Map toJson() {
+    throw new bindings.MojoCodecError(
+        'Object containing handles cannot be encoded to JSON.');
+  }
+}
+
+
+class _MediaPacketConsumerRemovePayloadBufferParams extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(16, 0)
+  ];
+  int payloadBufferId = 0;
+
+  _MediaPacketConsumerRemovePayloadBufferParams() : super(kVersions.last.size);
+
+  _MediaPacketConsumerRemovePayloadBufferParams.init(
+    int this.payloadBufferId
+  ) : super(kVersions.last.size);
+
+  static _MediaPacketConsumerRemovePayloadBufferParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
+
+  static _MediaPacketConsumerRemovePayloadBufferParams decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    _MediaPacketConsumerRemovePayloadBufferParams result = new _MediaPacketConsumerRemovePayloadBufferParams();
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    if (mainDataHeader.version >= 0) {
+      
+      result.payloadBufferId = decoder0.decodeUint32(8);
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaPacketConsumerRemovePayloadBufferParams";
+    String fieldName;
+    try {
+      fieldName = "payloadBufferId";
+      encoder0.encodeUint32(payloadBufferId, 8);
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "_MediaPacketConsumerRemovePayloadBufferParams("
+           "payloadBufferId: $payloadBufferId" ")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    map["payloadBufferId"] = payloadBufferId;
+    return map;
+  }
+}
+
+
+class _MediaPacketConsumerSupplyPacketParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
   MediaPacket packet = null;
 
-  _MediaPacketConsumerSendPacketParams() : super(kVersions.last.size);
+  _MediaPacketConsumerSupplyPacketParams() : super(kVersions.last.size);
 
-  _MediaPacketConsumerSendPacketParams.init(
+  _MediaPacketConsumerSupplyPacketParams.init(
     MediaPacket this.packet
   ) : super(kVersions.last.size);
 
-  static _MediaPacketConsumerSendPacketParams deserialize(bindings.Message message) =>
+  static _MediaPacketConsumerSupplyPacketParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaPacketConsumerSendPacketParams decode(bindings.Decoder decoder0) {
+  static _MediaPacketConsumerSupplyPacketParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaPacketConsumerSendPacketParams result = new _MediaPacketConsumerSendPacketParams();
+    _MediaPacketConsumerSupplyPacketParams result = new _MediaPacketConsumerSupplyPacketParams();
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -446,7 +555,7 @@ class _MediaPacketConsumerSendPacketParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaPacketConsumerSendPacketParams";
+    const String structName = "_MediaPacketConsumerSupplyPacketParams";
     String fieldName;
     try {
       fieldName = "packet";
@@ -458,7 +567,7 @@ class _MediaPacketConsumerSendPacketParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaPacketConsumerSendPacketParams("
+    return "_MediaPacketConsumerSupplyPacketParams("
            "packet: $packet" ")";
   }
 
@@ -470,45 +579,42 @@ class _MediaPacketConsumerSendPacketParams extends bindings.Struct {
 }
 
 
-class MediaPacketConsumerSendPacketResponseParams extends bindings.Struct {
+class MediaPacketConsumerSupplyPacketResponseParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
-  MediaPacketConsumerSendResult result = null;
+  MediaPacketDemand demand = null;
 
-  MediaPacketConsumerSendPacketResponseParams() : super(kVersions.last.size);
+  MediaPacketConsumerSupplyPacketResponseParams() : super(kVersions.last.size);
 
-  MediaPacketConsumerSendPacketResponseParams.init(
-    MediaPacketConsumerSendResult this.result
+  MediaPacketConsumerSupplyPacketResponseParams.init(
+    MediaPacketDemand this.demand
   ) : super(kVersions.last.size);
 
-  static MediaPacketConsumerSendPacketResponseParams deserialize(bindings.Message message) =>
+  static MediaPacketConsumerSupplyPacketResponseParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static MediaPacketConsumerSendPacketResponseParams decode(bindings.Decoder decoder0) {
+  static MediaPacketConsumerSupplyPacketResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    MediaPacketConsumerSendPacketResponseParams result = new MediaPacketConsumerSendPacketResponseParams();
+    MediaPacketConsumerSupplyPacketResponseParams result = new MediaPacketConsumerSupplyPacketResponseParams();
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
-        result.result = MediaPacketConsumerSendResult.decode(decoder0, 8);
-        if (result.result == null) {
-          throw new bindings.MojoCodecError(
-            'Trying to decode null union for non-nullable MediaPacketConsumerSendResult.');
-        }
+      var decoder1 = decoder0.decodePointer(8, true);
+      result.demand = MediaPacketDemand.decode(decoder1);
     }
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaPacketConsumerSendPacketResponseParams";
+    const String structName = "MediaPacketConsumerSupplyPacketResponseParams";
     String fieldName;
     try {
-      fieldName = "result";
-      encoder0.encodeEnum(result, 8);
+      fieldName = "demand";
+      encoder0.encodeStruct(demand, 8, true);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -516,13 +622,13 @@ class MediaPacketConsumerSendPacketResponseParams extends bindings.Struct {
   }
 
   String toString() {
-    return "MediaPacketConsumerSendPacketResponseParams("
-           "result: $result" ")";
+    return "MediaPacketConsumerSupplyPacketResponseParams("
+           "demand: $demand" ")";
   }
 
   Map toJson() {
     Map map = new Map();
-    map["result"] = result;
+    map["demand"] = demand;
     return map;
   }
 }
@@ -994,62 +1100,12 @@ class MediaPacketProducerStub
   }
 }
 
-const int _mediaPacketConsumerMethodSetBufferName = 0;
-const int _mediaPacketConsumerMethodSendPacketName = 1;
-const int _mediaPacketConsumerMethodPrimeName = 2;
-const int _mediaPacketConsumerMethodFlushName = 3;
-  
-class MediaPacketConsumerSendResult extends bindings.MojoEnum {
-  static const MediaPacketConsumerSendResult consumed = const MediaPacketConsumerSendResult._(0);
-  static const MediaPacketConsumerSendResult flushed = const MediaPacketConsumerSendResult._(1);
-
-  const MediaPacketConsumerSendResult._(int v) : super(v);
-
-  static const Map<String, MediaPacketConsumerSendResult> valuesMap = const {
-    "consumed": consumed,
-    "flushed": flushed,
-  };
-  static const List<MediaPacketConsumerSendResult> values = const [
-    consumed,
-    flushed,
-  ];
-
-  static MediaPacketConsumerSendResult valueOf(String name) => valuesMap[name];
-
-  factory MediaPacketConsumerSendResult(int v) {
-    switch (v) {
-      case 0:
-        return MediaPacketConsumerSendResult.consumed;
-      case 1:
-        return MediaPacketConsumerSendResult.flushed;
-      default:
-        return null;
-    }
-  }
-
-  static MediaPacketConsumerSendResult decode(bindings.Decoder decoder0, int offset) {
-    int v = decoder0.decodeUint32(offset);
-    MediaPacketConsumerSendResult result = new MediaPacketConsumerSendResult(v);
-    if (result == null) {
-      throw new bindings.MojoCodecError(
-          'Bad value $v for enum MediaPacketConsumerSendResult.');
-    }
-    return result;
-  }
-
-  String toString() {
-    switch(this) {
-      case consumed:
-        return 'MediaPacketConsumerSendResult.consumed';
-      case flushed:
-        return 'MediaPacketConsumerSendResult.flushed';
-      default:
-        return null;
-    }
-  }
-
-  int toJson() => mojoEnumValue;
-}
+const int _mediaPacketConsumerMethodPullDemandUpdateName = 0;
+const int _mediaPacketConsumerMethodAddPayloadBufferName = 1;
+const int _mediaPacketConsumerMethodRemovePayloadBufferName = 2;
+const int _mediaPacketConsumerMethodSupplyPacketName = 3;
+const int _mediaPacketConsumerMethodPrimeName = 4;
+const int _mediaPacketConsumerMethodFlushName = 5;
 
 class _MediaPacketConsumerServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
@@ -1087,8 +1143,10 @@ abstract class MediaPacketConsumer {
     s.connectToService(url, p, name);
     return p;
   }
-  void setBuffer(core.MojoSharedBuffer buffer,void callback());
-  void sendPacket(MediaPacket packet,void callback(MediaPacketConsumerSendResult result));
+  void pullDemandUpdate(void callback(MediaPacketDemand demand));
+  void addPayloadBuffer(int payloadBufferId, core.MojoSharedBuffer payloadBuffer);
+  void removePayloadBuffer(int payloadBufferId);
+  void supplyPacket(MediaPacket packet,void callback(MediaPacketDemand demand));
   void prime(void callback());
   void flush(void callback());
   static const int kMaxBufferLen = 4611686018427387903;
@@ -1134,20 +1192,20 @@ class _MediaPacketConsumerProxyControl
 
   void handleResponse(bindings.ServiceMessage message) {
     switch (message.header.type) {
-      case _mediaPacketConsumerMethodSetBufferName:
+      case _mediaPacketConsumerMethodPullDemandUpdateName:
         Function callback = getCallback(message);
         if (callback != null) {
-          var r = MediaPacketConsumerSetBufferResponseParams.deserialize(
+          var r = MediaPacketConsumerPullDemandUpdateResponseParams.deserialize(
               message.payload);
-          callback();
+          callback(r.demand );
         }
         break;
-      case _mediaPacketConsumerMethodSendPacketName:
+      case _mediaPacketConsumerMethodSupplyPacketName:
         Function callback = getCallback(message);
         if (callback != null) {
-          var r = MediaPacketConsumerSendPacketResponseParams.deserialize(
+          var r = MediaPacketConsumerSupplyPacketResponseParams.deserialize(
               message.payload);
-          callback(r.result );
+          callback(r.demand );
         }
         break;
       case _mediaPacketConsumerMethodPrimeName:
@@ -1209,52 +1267,80 @@ class MediaPacketConsumerProxy
   }
 
 
-  void setBuffer(core.MojoSharedBuffer buffer,void callback()) {
+  void pullDemandUpdate(void callback(MediaPacketDemand demand)) {
     if (impl != null) {
-      impl.setBuffer(buffer,callback ?? bindings.DoNothingFunction.fn);
+      impl.pullDemandUpdate(callback ?? bindings.DoNothingFunction.fn);
       return;
     }
-    var params = new _MediaPacketConsumerSetBufferParams();
-    params.buffer = buffer;
+    var params = new _MediaPacketConsumerPullDemandUpdateParams();
     Function zonedCallback;
     if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
-      zonedCallback = (() {
+      zonedCallback = ((MediaPacketDemand demand) {
         z.bindCallback(() {
-          callback();
+          callback(demand);
         })();
       });
     }
     ctrl.sendMessageWithRequestId(
         params,
-        _mediaPacketConsumerMethodSetBufferName,
+        _mediaPacketConsumerMethodPullDemandUpdateName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
         zonedCallback);
   }
-  void sendPacket(MediaPacket packet,void callback(MediaPacketConsumerSendResult result)) {
+  void addPayloadBuffer(int payloadBufferId, core.MojoSharedBuffer payloadBuffer) {
     if (impl != null) {
-      impl.sendPacket(packet,callback ?? bindings.DoNothingFunction.fn);
+      impl.addPayloadBuffer(payloadBufferId, payloadBuffer);
       return;
     }
-    var params = new _MediaPacketConsumerSendPacketParams();
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaPacketConsumerAddPayloadBufferParams();
+    params.payloadBufferId = payloadBufferId;
+    params.payloadBuffer = payloadBuffer;
+    ctrl.sendMessage(params,
+        _mediaPacketConsumerMethodAddPayloadBufferName);
+  }
+  void removePayloadBuffer(int payloadBufferId) {
+    if (impl != null) {
+      impl.removePayloadBuffer(payloadBufferId);
+      return;
+    }
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _MediaPacketConsumerRemovePayloadBufferParams();
+    params.payloadBufferId = payloadBufferId;
+    ctrl.sendMessage(params,
+        _mediaPacketConsumerMethodRemovePayloadBufferName);
+  }
+  void supplyPacket(MediaPacket packet,void callback(MediaPacketDemand demand)) {
+    if (impl != null) {
+      impl.supplyPacket(packet,callback ?? bindings.DoNothingFunction.fn);
+      return;
+    }
+    var params = new _MediaPacketConsumerSupplyPacketParams();
     params.packet = packet;
     Function zonedCallback;
     if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
-      zonedCallback = ((MediaPacketConsumerSendResult result) {
+      zonedCallback = ((MediaPacketDemand demand) {
         z.bindCallback(() {
-          callback(result);
+          callback(demand);
         })();
       });
     }
     ctrl.sendMessageWithRequestId(
         params,
-        _mediaPacketConsumerMethodSendPacketName,
+        _mediaPacketConsumerMethodSupplyPacketName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
         zonedCallback);
@@ -1331,25 +1417,26 @@ class _MediaPacketConsumerStubControl
   String get serviceName => MediaPacketConsumer.serviceName;
 
 
-  Function _mediaPacketConsumerSetBufferResponseParamsResponder(
+  Function _mediaPacketConsumerPullDemandUpdateResponseParamsResponder(
       int requestId) {
-  return () {
-      var result = new MediaPacketConsumerSetBufferResponseParams();
+  return (MediaPacketDemand demand) {
+      var result = new MediaPacketConsumerPullDemandUpdateResponseParams();
+      result.demand = demand;
       sendResponse(buildResponseWithId(
           result,
-          _mediaPacketConsumerMethodSetBufferName,
+          _mediaPacketConsumerMethodPullDemandUpdateName,
           requestId,
           bindings.MessageHeader.kMessageIsResponse));
     };
   }
-  Function _mediaPacketConsumerSendPacketResponseParamsResponder(
+  Function _mediaPacketConsumerSupplyPacketResponseParamsResponder(
       int requestId) {
-  return (MediaPacketConsumerSendResult result) {
-      var result = new MediaPacketConsumerSendPacketResponseParams();
-      result.result = result;
+  return (MediaPacketDemand demand) {
+      var result = new MediaPacketConsumerSupplyPacketResponseParams();
+      result.demand = demand;
       sendResponse(buildResponseWithId(
           result,
-          _mediaPacketConsumerMethodSendPacketName,
+          _mediaPacketConsumerMethodSupplyPacketName,
           requestId,
           bindings.MessageHeader.kMessageIsResponse));
     };
@@ -1387,15 +1474,23 @@ class _MediaPacketConsumerStubControl
       throw new core.MojoApiError("$this has no implementation set");
     }
     switch (message.header.type) {
-      case _mediaPacketConsumerMethodSetBufferName:
-        var params = _MediaPacketConsumerSetBufferParams.deserialize(
-            message.payload);
-        _impl.setBuffer(params.buffer, _mediaPacketConsumerSetBufferResponseParamsResponder(message.header.requestId));
+      case _mediaPacketConsumerMethodPullDemandUpdateName:
+        _impl.pullDemandUpdate(_mediaPacketConsumerPullDemandUpdateResponseParamsResponder(message.header.requestId));
         break;
-      case _mediaPacketConsumerMethodSendPacketName:
-        var params = _MediaPacketConsumerSendPacketParams.deserialize(
+      case _mediaPacketConsumerMethodAddPayloadBufferName:
+        var params = _MediaPacketConsumerAddPayloadBufferParams.deserialize(
             message.payload);
-        _impl.sendPacket(params.packet, _mediaPacketConsumerSendPacketResponseParamsResponder(message.header.requestId));
+        _impl.addPayloadBuffer(params.payloadBufferId, params.payloadBuffer);
+        break;
+      case _mediaPacketConsumerMethodRemovePayloadBufferName:
+        var params = _MediaPacketConsumerRemovePayloadBufferParams.deserialize(
+            message.payload);
+        _impl.removePayloadBuffer(params.payloadBufferId);
+        break;
+      case _mediaPacketConsumerMethodSupplyPacketName:
+        var params = _MediaPacketConsumerSupplyPacketParams.deserialize(
+            message.payload);
+        _impl.supplyPacket(params.packet, _mediaPacketConsumerSupplyPacketResponseParamsResponder(message.header.requestId));
         break;
       case _mediaPacketConsumerMethodPrimeName:
         _impl.prime(_mediaPacketConsumerPrimeResponseParamsResponder(message.header.requestId));
@@ -1460,11 +1555,17 @@ class MediaPacketConsumerStub
   }
 
 
-  void setBuffer(core.MojoSharedBuffer buffer,void callback()) {
-    return impl.setBuffer(buffer,callback);
+  void pullDemandUpdate(void callback(MediaPacketDemand demand)) {
+    return impl.pullDemandUpdate(callback);
   }
-  void sendPacket(MediaPacket packet,void callback(MediaPacketConsumerSendResult result)) {
-    return impl.sendPacket(packet,callback);
+  void addPayloadBuffer(int payloadBufferId, core.MojoSharedBuffer payloadBuffer) {
+    return impl.addPayloadBuffer(payloadBufferId, payloadBuffer);
+  }
+  void removePayloadBuffer(int payloadBufferId) {
+    return impl.removePayloadBuffer(payloadBufferId);
+  }
+  void supplyPacket(MediaPacket packet,void callback(MediaPacketDemand demand)) {
+    return impl.supplyPacket(packet,callback);
   }
   void prime(void callback()) {
     return impl.prime(callback);

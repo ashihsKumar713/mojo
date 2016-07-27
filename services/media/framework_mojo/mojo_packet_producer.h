@@ -6,7 +6,6 @@
 #define SERVICES_MEDIA_FRAMEWORK_MOJO_MOJO_PACKET_PRODUCER_H_
 
 #include "base/single_thread_task_runner.h"
-#include "base/synchronization/lock.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/services/media/common/cpp/media_packet_producer_base.h"
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
@@ -60,6 +59,11 @@ class MojoPacketProducer : private MediaPacketProducerBase,
   // Releases a buffer previously allocated via AllocatePayloadBuffer.
   void ReleasePayloadBuffer(void* buffer) override;
 
+ protected:
+  // MediaPacketProducerBase overrides.
+  void OnDemandUpdated(uint32_t min_packets_outstanding,
+                       int64_t min_pts) override;
+
  private:
   MojoPacketProducer();
 
@@ -70,16 +74,17 @@ class MojoPacketProducer : private MediaPacketProducerBase,
   // Shuts down the producer.
   void Reset();
 
+  // Determines the current demand. The |additional_packets_outstanding|
+  // parameter indicates the number of packets that should be added to the
+  // current outstanding packet count when determining demand. For example, a
+  // value of 1 means that the function should determine demand as if one
+  // additional packet was outstanding.
+  Demand CurrentDemand(uint32_t additional_packets_outstanding = 0);
+
   Binding<MediaPacketProducer> binding_;
 
-  mutable base::Lock lock_;
-  // THE FIELDS BELOW SHOULD ONLY BE ACCESSED WITH lock_ TAKEN.
   DemandCallback demand_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  // TODO(dalesat): Base this logic on presentation time or duration.
-  uint32_t max_pushes_outstanding_ = 0;
-  uint32_t current_pushes_outstanding_ = 0;
-  // THE FIELDS ABOVE SHOULD ONLY BE ACCESSED WITH lock_ TAKEN.
 };
 
 }  // namespace media
