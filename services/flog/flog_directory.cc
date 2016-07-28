@@ -67,6 +67,18 @@ files::FilePtr FlogDirectory::GetFile(uint32_t id,
   return file.Pass();
 }
 
+void FlogDirectory::DeleteFile(uint32_t id, const std::string& label) {
+  file_system_->Delete(LogFileName(id, label), files::kDeleteFlagFileOnly,
+                       [this](files::Error error) {
+                         if (error != files::Error::OK) {
+                           DCHECK(false) << "Failed to Delete" << error;
+                           // TODO: Fail.
+                           return;
+                         }
+                       });
+  file_system_.WaitForIncomingResponse();
+}
+
 std::string FlogDirectory::LogFileName(uint32_t id, const std::string& label) {
   // Format is "<id>_<label>.flog" where <id> is the kLogIdWidth-digit,
   // zero-padded info.id_ and <label> is the label.

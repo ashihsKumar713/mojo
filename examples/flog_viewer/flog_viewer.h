@@ -50,6 +50,12 @@ class FlogViewer {
   // Process the log with the highest id.
   void ProcessLastLog(const std::string& label);
 
+  // Deletes the specified log file if it isn't currently open.
+  void DeleteLog(uint32_t log_id);
+
+  // Deletes all the existing logs files that aren't currently open.
+  void DeleteAllLogs();
+
  private:
   void ProcessEntries(uint32_t start_index);
 

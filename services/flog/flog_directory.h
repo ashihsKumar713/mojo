@@ -31,6 +31,9 @@ class FlogDirectory {
   // Gets a FilePtr for the indicated file.
   files::FilePtr GetFile(uint32_t id, const std::string& label, bool create);
 
+  // Deletes the indicated file.
+  void DeleteFile(uint32_t id, const std::string& label);
+
  private:
   static const size_t kLogIdWidth = 8;
 

@@ -641,6 +641,104 @@ class _FlogServiceCreateReaderParams extends bindings.Struct {
 }
 
 
+class _FlogServiceDeleteLogParams extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(16, 0)
+  ];
+  int logId = 0;
+
+  _FlogServiceDeleteLogParams() : super(kVersions.last.size);
+
+  _FlogServiceDeleteLogParams.init(
+    int this.logId
+  ) : super(kVersions.last.size);
+
+  static _FlogServiceDeleteLogParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
+
+  static _FlogServiceDeleteLogParams decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    _FlogServiceDeleteLogParams result = new _FlogServiceDeleteLogParams();
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    if (mainDataHeader.version >= 0) {
+      
+      result.logId = decoder0.decodeUint32(8);
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FlogServiceDeleteLogParams";
+    String fieldName;
+    try {
+      fieldName = "logId";
+      encoder0.encodeUint32(logId, 8);
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "_FlogServiceDeleteLogParams("
+           "logId: $logId" ")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    map["logId"] = logId;
+    return map;
+  }
+}
+
+
+class _FlogServiceDeleteAllLogsParams extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(8, 0)
+  ];
+
+  _FlogServiceDeleteAllLogsParams() : super(kVersions.last.size);
+
+  _FlogServiceDeleteAllLogsParams.init(
+  ) : super(kVersions.last.size);
+
+  static _FlogServiceDeleteAllLogsParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
+
+  static _FlogServiceDeleteAllLogsParams decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    _FlogServiceDeleteAllLogsParams result = new _FlogServiceDeleteAllLogsParams();
+    bindings.Struct.checkVersion(decoder0, kVersions);
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_FlogServiceDeleteAllLogsParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "_FlogServiceDeleteAllLogsParams("")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    return map;
+  }
+}
+
+
 class _FlogLoggerLogMojoLoggerMessageParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(40, 0)
@@ -1238,6 +1336,8 @@ class FlogEntryDetails extends bindings.Union {
 const int _flogServiceMethodCreateLoggerName = 0;
 const int _flogServiceMethodGetLogDescriptionsName = 1;
 const int _flogServiceMethodCreateReaderName = 2;
+const int _flogServiceMethodDeleteLogName = 3;
+const int _flogServiceMethodDeleteAllLogsName = 4;
 
 class _FlogServiceServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
@@ -1278,6 +1378,8 @@ abstract class FlogService {
   void createLogger(FlogLoggerInterfaceRequest logger, String label);
   void getLogDescriptions(void callback(List<FlogDescription> descriptions));
   void createReader(FlogReaderInterfaceRequest reader, int logId);
+  void deleteLog(int logId);
+  void deleteAllLogs();
 }
 
 abstract class FlogServiceInterface
@@ -1425,6 +1527,33 @@ class FlogServiceProxy
     ctrl.sendMessage(params,
         _flogServiceMethodCreateReaderName);
   }
+  void deleteLog(int logId) {
+    if (impl != null) {
+      impl.deleteLog(logId);
+      return;
+    }
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _FlogServiceDeleteLogParams();
+    params.logId = logId;
+    ctrl.sendMessage(params,
+        _flogServiceMethodDeleteLogName);
+  }
+  void deleteAllLogs() {
+    if (impl != null) {
+      impl.deleteAllLogs();
+      return;
+    }
+    if (!ctrl.isBound) {
+      ctrl.proxyError("The Proxy is closed.");
+      return;
+    }
+    var params = new _FlogServiceDeleteAllLogsParams();
+    ctrl.sendMessage(params,
+        _flogServiceMethodDeleteAllLogsName);
+  }
 }
 
 class _FlogServiceStubControl
@@ -1484,6 +1613,14 @@ class _FlogServiceStubControl
         var params = _FlogServiceCreateReaderParams.deserialize(
             message.payload);
         _impl.createReader(params.reader, params.logId);
+        break;
+      case _flogServiceMethodDeleteLogName:
+        var params = _FlogServiceDeleteLogParams.deserialize(
+            message.payload);
+        _impl.deleteLog(params.logId);
+        break;
+      case _flogServiceMethodDeleteAllLogsName:
+        _impl.deleteAllLogs();
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
@@ -1550,6 +1687,12 @@ class FlogServiceStub
   }
   void createReader(FlogReaderInterfaceRequest reader, int logId) {
     return impl.createReader(reader, logId);
+  }
+  void deleteLog(int logId) {
+    return impl.deleteLog(logId);
+  }
+  void deleteAllLogs() {
+    return impl.deleteAllLogs();
   }
 }
 

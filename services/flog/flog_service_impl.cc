@@ -89,5 +89,30 @@ void FlogServiceImpl::CreateReader(InterfaceRequest<FlogReader> reader,
   });
 }
 
+void FlogServiceImpl::DeleteLog(uint32_t log_id) {
+  ready_.When([this, log_id]() {
+    DCHECK(log_labels_by_id_);
+    auto iter = log_labels_by_id_->find(log_id);
+    if (iter == log_labels_by_id_->end()) {
+      return;
+    }
+
+    directory_->DeleteFile(log_id, iter->second);
+    log_labels_by_id_->erase(iter);
+  });
+}
+
+void FlogServiceImpl::DeleteAllLogs() {
+  ready_.When([this]() {
+    DCHECK(log_labels_by_id_);
+
+    for (const std::pair<uint32_t, std::string>& pair : *log_labels_by_id_) {
+      directory_->DeleteFile(pair.first, pair.second);
+    }
+
+    log_labels_by_id_->clear();
+  });
+}
+
 }  // namespace flog
 }  // namespace mojo

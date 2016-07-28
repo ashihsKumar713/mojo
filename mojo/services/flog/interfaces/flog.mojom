@@ -16,6 +16,12 @@ interface FlogService {
 
   // Gets a reader for the specified log.
   CreateReader(FlogReader& reader, uint32 log_id);
+
+  // Deletes the indicated log.
+  DeleteLog(uint32 log_id);
+
+  // Deletes all logs.
+  DeleteAllLogs();
 };
 
 // A logger that logs messages regarding multiple channels.

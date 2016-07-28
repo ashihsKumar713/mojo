@@ -38,6 +38,10 @@ class FlogServiceImpl : public util::FactoryServiceBase, public FlogService {
   void CreateReader(InterfaceRequest<FlogReader> reader,
                     uint32_t log_id) override;
 
+  void DeleteLog(uint32_t log_id) override;
+
+  void DeleteAllLogs() override;
+
  private:
   Incident ready_;
   BindingSet<FlogService> bindings_;

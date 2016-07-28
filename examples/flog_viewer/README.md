@@ -110,6 +110,22 @@ to be implemented for the type of channel in question. If no such handler is
 implemented, the default channel handler is used. It shows hex dumps of
 channel messages and produces no output in digest format.
 
+Specific log files can be deleted as follows:
+
+```
+$ mojo/devtools/common/mojo_run "mojo:flog_viewer --delete-logs=3,5"
+```
+
+All the logs can be deleted like this:
+```
+$ mojo/devtools/common/mojo_run "mojo:flog_viewer --delete-all-logs"
+```
+
+An attempt to delete a file that's currently being read or written will fail
+silently. The log service doesn't reuse log ids as long as it's running. If it
+terminates and recovers, however, it starts numbering new logs at the maximum
+existing log id plus one.
+
 # Implementing Channel Handlers
 
 A *channel handler* is an object instantiated by the log viewer to handle
@@ -120,7 +136,7 @@ ChannelHandler class and are instantiated by ChannelHandler::CreateHandler, a
 static method.
 
 To create a new channel handler, add code for the implementation class in
-flog_viewer/handlers and code to create instances of the class in
+flog_viewer/handlers, and add code to create instances of the class in
 ChannelHandler::CreateHandler.
 
 ChannelHandler defines two virtual methods (other than the destructor) that can
@@ -137,21 +153,16 @@ updates to accumulators.
 
 Accumulators have few common characteristics at the moment. They all implement
 a `Print` method. They also support the notion of 'problems' (errors that the
-channel handler has discovered in the message stream) and the notion of
-'suspense' (in-progress transitions that are due to resolve). For example, a
-message that appears out of order may be reported as a problem. Suspense is
-used to detect stuckness when a sequence of messages that describe a multi-step
-process has yet to be completed.
+channel handler has discovered in the message stream). For example, a
+message that appears out of order may be reported as a problem.
 
 # Intended Improvements
 
 1. Merged view of multiple log files.
 2. Unifying identity across message pipes (i.e. determining what channel is
    associated with the service represented by a mojo proxy).
-3. Use code generation to pretty-print log messages.
-4. Log file management methods (delete, etc).
-5. Concurrent read/write of log files.
-6. Interactive log browsing including accumulator display at any point in time.
-7. Use code generation or generated type reflection for printing channel
+3. Concurrent read/write of log files.
+4. Interactive log browsing including accumulator display at any point in time.
+5. Use code generation or generated type reflection for printing channel
    messages.
-8. Transition to Dart implementation with graphical UI.
+6. Transition to Dart implementation with graphical UI.

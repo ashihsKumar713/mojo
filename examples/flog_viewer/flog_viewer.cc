@@ -135,6 +135,16 @@ void FlogViewer::ProcessLastLog(const std::string& label) {
       });
 }
 
+void FlogViewer::DeleteLog(uint32_t log_id) {
+  MOJO_DCHECK(service_);
+  service_->DeleteLog(log_id);
+}
+
+void FlogViewer::DeleteAllLogs() {
+  MOJO_DCHECK(service_);
+  service_->DeleteAllLogs();
+}
+
 void FlogViewer::ProcessEntries(uint32_t start_index) {
   MOJO_DCHECK(reader_);
   reader_->GetEntries(start_index, kGetEntriesMaxCount,
