@@ -5,6 +5,8 @@
 #ifndef EXAMPLES_FLOG_VIEWER_ACCUMULATOR_H_
 #define EXAMPLES_FLOG_VIEWER_ACCUMULATOR_H_
 
+#include <limits>
+
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/services/flog/interfaces/flog.mojom.h"
 
@@ -20,13 +22,39 @@ namespace examples {
 // messages that have been handled.
 class Accumulator {
  public:
+  class Problem {
+   public:
+    Problem(uint32_t log_id, uint32_t channel_id, uint32_t entry_index);
+
+    Problem(Problem&& other)
+        : log_id_(other.log_id()),
+          channel_id_(other.channel_id()),
+          entry_index_(other.entry_index()) {
+      stream_ << other.message();
+    }
+
+    ~Problem();
+
+    uint32_t log_id() const { return log_id_; }
+    uint32_t channel_id() const { return channel_id_; }
+    uint32_t entry_index() const { return entry_index_; }
+    std::ostream& stream() { return stream_; }
+    std::string message() const { return stream_.str(); }
+
+   private:
+    uint32_t log_id_;
+    uint32_t channel_id_;
+    uint32_t entry_index_;
+    std::ostringstream stream_;
+  };
+
   virtual ~Accumulator();
 
   // Report a problem.
-  void ReportProblem(const std::string& description);
+  std::ostream& ReportProblem(uint32_t entry_index, const FlogEntryPtr& entry);
 
   // Prints reported problems.
-  void PrintProblems();
+  void PrintProblems(std::ostream& os);
 
   // Prints the contents of the accumulator to cout. The default implementation
   // calls PrintProblems.
@@ -36,7 +64,7 @@ class Accumulator {
   Accumulator();
 
  private:
-  std::vector<std::string> problems_;
+  std::vector<Problem> problems_;
 };
 
 }  // namespace examples

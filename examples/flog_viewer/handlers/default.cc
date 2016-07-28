@@ -19,9 +19,9 @@ Default::Default(const std::string& format)
 
 Default::~Default() {}
 
-void Default::HandleMessage(const FlogEntryPtr& entry, Message* message) {
+void Default::HandleMessage(Message* message) {
   if (terse_ || full_) {
-    PrintEntryProlog(entry);
+    PrintEntryProlog(entry());
     std::cout << "channel message, size " << message->data_num_bytes()
               << " name " << message->name() << std::endl;
     if (full_) {

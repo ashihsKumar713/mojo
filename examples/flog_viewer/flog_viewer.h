@@ -59,7 +59,7 @@ class FlogViewer {
  private:
   void ProcessEntries(uint32_t start_index);
 
-  void ProcessEntry(const FlogEntryPtr& entry);
+  void ProcessEntry(uint32_t entry_index, const FlogEntryPtr& entry);
 
   void PrintEntryProlog(const FlogEntryPtr& entry);
 
@@ -68,16 +68,20 @@ class FlogViewer {
 
   void PrintRemainingAccumulators();
 
-  void OnMojoLoggerMessage(const FlogEntryPtr& entry,
+  void OnMojoLoggerMessage(uint32_t entry_index,
+                           const FlogEntryPtr& entry,
                            const FlogMojoLoggerMessageEntryDetailsPtr& details);
 
-  void OnChannelCreated(const FlogEntryPtr& entry,
+  void OnChannelCreated(uint32_t entry_index,
+                        const FlogEntryPtr& entry,
                         const FlogChannelCreationEntryDetailsPtr& details);
 
-  void OnChannelMessage(const FlogEntryPtr& entry,
+  void OnChannelMessage(uint32_t entry_index,
+                        const FlogEntryPtr& entry,
                         const FlogChannelMessageEntryDetailsPtr& details);
 
-  void OnChannelDeleted(const FlogEntryPtr& entry,
+  void OnChannelDeleted(uint32_t entry_index,
+                        const FlogEntryPtr& entry,
                         const FlogChannelDeletionEntryDetailsPtr& details);
 
  private:

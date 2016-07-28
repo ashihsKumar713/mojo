@@ -149,8 +149,10 @@ void FlogViewer::ProcessEntries(uint32_t start_index) {
   MOJO_DCHECK(reader_);
   reader_->GetEntries(start_index, kGetEntriesMaxCount,
                       [this, start_index](Array<FlogEntryPtr> entries) {
+                        uint32_t entry_index = start_index;
                         for (const FlogEntryPtr& entry : entries) {
-                          ProcessEntry(entry);
+                          ProcessEntry(entry_index, entry);
+                          entry_index++;
                         }
 
                         if (entries.size() == kGetEntriesMaxCount) {
@@ -163,22 +165,25 @@ void FlogViewer::ProcessEntries(uint32_t start_index) {
                       });
 }
 
-void FlogViewer::ProcessEntry(const FlogEntryPtr& entry) {
+void FlogViewer::ProcessEntry(uint32_t entry_index, const FlogEntryPtr& entry) {
   if (channel_ != kAnyChannel && channel_ != entry->channel_id) {
     return;
   }
 
   if (entry->details->is_mojo_logger_message()) {
-    OnMojoLoggerMessage(entry, entry->details->get_mojo_logger_message());
+    OnMojoLoggerMessage(entry_index, entry,
+                        entry->details->get_mojo_logger_message());
     return;
   }
 
   if (entry->details->is_channel_creation()) {
-    OnChannelCreated(entry, entry->details->get_channel_creation());
+    OnChannelCreated(entry_index, entry,
+                     entry->details->get_channel_creation());
   } else if (entry->details->is_channel_message()) {
-    OnChannelMessage(entry, entry->details->get_channel_message());
+    OnChannelMessage(entry_index, entry, entry->details->get_channel_message());
   } else if (entry->details->is_channel_deletion()) {
-    OnChannelDeleted(entry, entry->details->get_channel_deletion());
+    OnChannelDeleted(entry_index, entry,
+                     entry->details->get_channel_deletion());
   } else {
     PrintEntryProlog(entry);
     std::cout << "NO KNOWN DETAILS" << std::endl;
@@ -216,6 +221,7 @@ void FlogViewer::PrintRemainingAccumulators() {
 }
 
 void FlogViewer::OnMojoLoggerMessage(
+    uint32_t entry_index,
     const FlogEntryPtr& entry,
     const FlogMojoLoggerMessageEntryDetailsPtr& details) {
   if (format_ != kFormatTerse && format_ != kFormatFull) {
@@ -229,6 +235,7 @@ void FlogViewer::OnMojoLoggerMessage(
 }
 
 void FlogViewer::OnChannelCreated(
+    uint32_t entry_index,
     const FlogEntryPtr& entry,
     const FlogChannelCreationEntryDetailsPtr& details) {
   if (format_ == kFormatTerse || format_ == kFormatFull) {
@@ -251,6 +258,7 @@ void FlogViewer::OnChannelCreated(
 }
 
 void FlogViewer::OnChannelMessage(
+    uint32_t entry_index,
     const FlogEntryPtr& entry,
     const FlogChannelMessageEntryDetailsPtr& details) {
   Message message;
@@ -262,11 +270,12 @@ void FlogViewer::OnChannelMessage(
     std::cout << "channel message, size " << details->data.size() << " name "
               << message.name() << std::endl;
   } else {
-    iter->second->HandleMessage(entry, &message);
+    iter->second->HandleMessage(entry_index, entry, &message);
   }
 }
 
 void FlogViewer::OnChannelDeleted(
+    uint32_t entry_index,
     const FlogEntryPtr& entry,
     const FlogChannelDeletionEntryDetailsPtr& details) {
   if (format_ == kFormatTerse || format_ == kFormatFull) {
@@ -283,6 +292,7 @@ void FlogViewer::OnChannelDeleted(
     channel_handlers_by_channel_id_.erase(iter);
   }
 }
+
 }  // namespace examples
 }  // namespace flog
 }  // namespace mojo

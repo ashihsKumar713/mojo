@@ -41,7 +41,9 @@ class ChannelHandler {
   virtual ~ChannelHandler();
 
   // Handles a channel message.
-  virtual void HandleMessage(const FlogEntryPtr& entry, Message* message) = 0;
+  void HandleMessage(uint32_t entry_index,
+                     const FlogEntryPtr& entry,
+                     Message* message);
 
   // Gets the accumulator from the handler, if there is one. The default
   // implementation returns a null pointer.
@@ -50,11 +52,31 @@ class ChannelHandler {
  protected:
   ChannelHandler();
 
+  virtual void HandleMessage(Message* message) = 0;
+
+  std::ostream& ReportProblem() {
+    MOJO_DCHECK(entry_) << "ReportProblem called outside of HandleMessage";
+    return GetAccumulator()->ReportProblem(entry_index(), entry());
+  }
+
+  uint32_t entry_index() {
+    MOJO_DCHECK(entry_) << "entry_index called outside of HandleMessage";
+    return entry_index_;
+  }
+
+  const FlogEntryPtr& entry() {
+    MOJO_DCHECK(entry_) << "entry called outside of HandleMessage";
+    return *entry_;
+  }
+
   // Writes an entry prolog to cout.
   void PrintEntryProlog(const FlogEntryPtr& entry);
 
  private:
   EntryPrologPrinter entry_prolog_printer_;
+  // These two fields are only used during calls to HandleMessage().
+  uint32_t entry_index_;
+  const FlogEntryPtr* entry_;
 };
 
 }  // namespace examples

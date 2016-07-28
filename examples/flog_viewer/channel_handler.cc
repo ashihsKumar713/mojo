@@ -33,6 +33,16 @@ ChannelHandler::ChannelHandler() {}
 
 ChannelHandler::~ChannelHandler() {}
 
+void ChannelHandler::HandleMessage(uint32_t entry_index,
+                                   const FlogEntryPtr& entry,
+                                   Message* message) {
+  entry_index_ = entry_index;
+  entry_ = &entry;
+  HandleMessage(message);
+  entry_index_ = 0;
+  entry_ = nullptr;
+}
+
 std::shared_ptr<Accumulator> ChannelHandler::GetAccumulator() {
   return nullptr;
 }

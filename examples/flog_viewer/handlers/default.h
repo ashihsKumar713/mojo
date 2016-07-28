@@ -24,8 +24,9 @@ class Default : public ChannelHandler {
 
   ~Default() override;
 
-  // ChannelHandler implementation.
-  void HandleMessage(const FlogEntryPtr& entry, Message* message) override;
+ protected:
+  // ChannelHandler overrides.
+  void HandleMessage(Message* message) override;
 
  private:
   bool terse_;
