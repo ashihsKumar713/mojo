@@ -121,8 +121,29 @@ Demand MojoPacketProducer::CurrentDemand(
     return Demand::kNeutral;
   }
 
-  return ShouldProducePacket(additional_packets_outstanding) ? Demand::kPositive
-                                                             : Demand::kNeutral;
+  // ShouldProducePacket tells us whether we should produce a packet based on
+  // demand the consumer has expressed using mojo packet transport demand
+  // semantics (min_packets_outstanding, min_pts). We need to translate this
+  // into the producer's demand using framework demand semantics
+  // (positive/neutral/negative).
+  //
+  // If we should send a packet, the producer signals positive demand so that
+  // upstream components will deliver the needed packet. If we shouldn't send a
+  // packet, the producer signals negative demand to prevent new packets from
+  // arriving at the producer.
+  //
+  // If we express neutral demand instead of negative demand, packets would flow
+  // freely downstream even though they're not demanded by the consumer. In
+  // multistream (e.g audio/video) scenarios, this would cause serious problems.
+  // If the demux has to produce a bunch of undemanded video packets in order to
+  // find a demanded audio packet, neutral demand here would cause those video
+  // packets to flow downstream, get decoded and queue up at the video renderer.
+  // This wastes memory, because the decoded frames are so large. We would
+  // rather the demux keep the undemanded video packets until they're demanded
+  // so we get only the decoded frames we need, hence negative demand here.
+  return ShouldProducePacket(additional_packets_outstanding)
+             ? Demand::kPositive
+             : Demand::kNegative;
 }
 
 }  // namespace media

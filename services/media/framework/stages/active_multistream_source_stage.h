@@ -5,6 +5,7 @@
 #ifndef SERVICES_MEDIA_FRAMEWORK_STAGES_ACTIVE_MULTISTREAM_SOURCE_STAGE_H_
 #define SERVICES_MEDIA_FRAMEWORK_STAGES_ACTIVE_MULTISTREAM_SOURCE_STAGE_H_
 
+#include <deque>
 #include <vector>
 
 #include "base/synchronization/lock.h"
@@ -46,12 +47,11 @@ class ActiveMultistreamSourceStage : public Stage {
 
  private:
   std::vector<Output> outputs_;
+  std::vector<std::deque<PacketPtr>> packets_per_output_;
   std::shared_ptr<ActiveMultistreamSource> source_;
   ActiveMultistreamSource::SupplyCallback supply_function_;
 
   mutable base::Lock lock_;
-  PacketPtr cached_packet_;
-  size_t cached_packet_output_index_;
   size_t ended_streams_ = 0;
   bool packet_request_outstanding_ = false;
 };

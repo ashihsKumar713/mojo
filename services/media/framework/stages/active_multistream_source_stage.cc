@@ -10,31 +10,44 @@ namespace media {
 
 ActiveMultistreamSourceStage::ActiveMultistreamSourceStage(
     std::shared_ptr<ActiveMultistreamSource> source)
-    : source_(source) {
+    : outputs_(source->stream_count()),
+      packets_per_output_(source->stream_count()),
+      source_(source) {
   DCHECK(source);
-  outputs_.resize(source->stream_count());
 
   supply_function_ = [this](size_t output_index, PacketPtr packet) {
     lock_.Acquire();
-    DCHECK(!cached_packet_) << "source supplied unrequested packet";
     DCHECK(output_index < outputs_.size());
+    DCHECK(outputs_.size() == packets_per_output_.size());
     DCHECK(packet);
     DCHECK(packet_request_outstanding_);
 
     packet_request_outstanding_ = false;
 
-    cached_packet_output_index_ = output_index;
-    cached_packet_ = std::move(packet);
-
-    if (cached_packet_->end_of_stream()) {
-      ended_streams_++;
+    if (packet->end_of_stream()) {
+      ++ended_streams_;
     }
 
-    Output& output = outputs_[cached_packet_output_index_];
-    if (output.demand() != Demand::kNegative) {
+    // We put new packets in per-output (per-stream) queues. That way, when
+    // we get a bunch of undemanded packets for a particular stream, we can
+    // queue them up here until they're demanded.
+    std::deque<PacketPtr>& packets = packets_per_output_[output_index];
+    packets.push_back(std::move(packet));
+
+    if (packets.size() == 1 &&
+        outputs_[output_index].demand() != Demand::kNegative) {
+      // We have a packet for an output with non-negative demand that didn't
+      // have one before. Request an update. Update will request another
+      // packet, if needed.
       lock_.Release();
       RequestUpdate();
     } else {
+      // We got a packet, but it doesn't change matters, either because the
+      // output in question already had a packet queued or because that output
+      // has negative demand and wasn't the one we wanted a packet for.
+      // We can request another packet without having to go through an update.
+      source_->RequestPacket();
+      packet_request_outstanding_ = true;
       lock_.Release();
     }
   };
@@ -92,17 +105,29 @@ void ActiveMultistreamSourceStage::Update(Engine* engine) {
   base::AutoLock lock(lock_);
   DCHECK(engine);
 
-  if (cached_packet_) {
-    Output& output = outputs_[cached_packet_output_index_];
-    if (output.demand() != Demand::kNegative) {
-      // cached_packet_ is intended for an output which will accept packets.
-      output.SupplyPacket(std::move(cached_packet_), engine);
+  DCHECK(outputs_.size() == packets_per_output_.size());
+
+  bool need_packet = false;
+
+  for (size_t i = 0; i < outputs_.size(); i++) {
+    Output& output = outputs_[i];
+    std::deque<PacketPtr>& packets = packets_per_output_[i];
+
+    if (packets.empty()) {
+      if (output.demand() == Demand::kPositive) {
+        // The output has positive demand and no packets queued. Request another
+        // packet so we can meet the demand.
+        need_packet = true;
+      }
+    } else if (output.demand() != Demand::kNegative) {
+      // The output has non-negative demand and packets queued. Send a packet
+      // downstream now.
+      output.SupplyPacket(std::move(packets.front()), engine);
+      packets.pop_front();
     }
   }
 
-  if (!cached_packet_ && HasPositiveDemand(outputs_) &&
-      !packet_request_outstanding_) {
-    // We have no cached packet and positive demand. Request a packet.
+  if (need_packet && !packet_request_outstanding_) {
     source_->RequestPacket();
     packet_request_outstanding_ = true;
   }
@@ -119,8 +144,7 @@ void ActiveMultistreamSourceStage::FlushOutput(size_t index) {
   DCHECK(index < outputs_.size());
   DCHECK(source_);
   outputs_[index].Flush();
-  cached_packet_.reset(nullptr);
-  cached_packet_output_index_ = 0;
+  packets_per_output_[index].clear();
   ended_streams_ = 0;
   packet_request_outstanding_ = false;
 }
