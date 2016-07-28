@@ -16,6 +16,7 @@ mojo_native_application("flog_viewer") {
     "flog_viewer_app.cc",
     "handlers/default.cc",
     "handlers/default.h",
+    "tracked.h",
   ]
 
   deps = [
