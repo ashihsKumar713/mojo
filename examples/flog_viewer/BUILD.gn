@@ -10,6 +10,7 @@ mojo_native_application("flog_viewer") {
     "accumulator.h",
     "channel_handler.cc",
     "channel_handler.h",
+    "counted.h",
     "flog_viewer.cc",
     "flog_viewer.h",
     "flog_viewer_app.cc",
