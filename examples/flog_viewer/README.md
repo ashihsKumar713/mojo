@@ -91,6 +91,12 @@ $ mojo/devtools/common/mojo_run "mojo:flog_viewer --last=media_factory"
 
 The two command lines above display logs 4 and 3 respectively.
 
+To see only specific channels, use the 'channels' option:
+
+```
+$ mojo/devtools/common/mojo_run "mojo:flog_viewer --last --channels=1,3,7"
+```
+
 Logs are viewed in a particular format. Currently, there are three defined
 formats:
 

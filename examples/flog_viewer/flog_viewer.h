@@ -6,6 +6,7 @@
 #define EXAMPLES_FLOG_VIEWER_FLOG_VIEWER_H_
 
 #include <map>
+#include <unordered_set>
 
 #include "examples/flog_viewer/channel_handler.h"
 #include "mojo/services/flog/interfaces/flog.mojom.h"
@@ -23,15 +24,12 @@ class FlogViewer {
   static const std::string kFormatTerse;
   static const std::string kFormatFull;
   static const std::string kFormatDigest;
-  static const uint32_t kAnyChannel = std::numeric_limits<uint32_t>::max();
 
   FlogViewer();
 
   ~FlogViewer();
 
-  uint32_t channel() { return channel_; }
-
-  void set_channel(uint32_t channel) { channel_ = channel; }
+  void AddChannel(uint32_t channel) { channels_.insert(channel); }
 
   std::string format() { return format_; }
 
@@ -87,7 +85,7 @@ class FlogViewer {
  private:
   static const uint32_t kGetEntriesMaxCount = 1024;
 
-  uint32_t channel_ = kAnyChannel;
+  std::unordered_set<uint32_t> channels_;
   std::string format_ = kFormatTerse;
   std::function<void()> terminate_callback_;
   FlogServicePtr service_;

@@ -166,7 +166,7 @@ void FlogViewer::ProcessEntries(uint32_t start_index) {
 }
 
 void FlogViewer::ProcessEntry(uint32_t entry_index, const FlogEntryPtr& entry) {
-  if (channel_ != kAnyChannel && channel_ != entry->channel_id) {
+  if (!channels_.empty() && channels_.count(entry->channel_id) == 0) {
     return;
   }
 

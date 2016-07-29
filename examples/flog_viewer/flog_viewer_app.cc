@@ -59,8 +59,11 @@ class FlogViewerApp : public ApplicationImplBase {
 
       if (MatchOption(arg, "format", &string_value)) {
         viewer_.set_format(string_value);
-      } else if (MatchOption(arg, "channel", &numeric_value)) {
-        viewer_.set_channel(numeric_value);
+      } else if (MatchOption(arg, "channel", &numeric_values) ||
+                 MatchOption(arg, "channels", &numeric_values)) {
+        for (uint32_t value : numeric_values) {
+          viewer_.AddChannel(value);
+        }
       } else if (MatchOption(arg, "last", &string_value)) {
         process_last_label_ = string_value;
       } else if (MatchOption(arg, "last")) {
@@ -97,12 +100,15 @@ class FlogViewerApp : public ApplicationImplBase {
     std::cout << std::endl;
     std::cout << "    --format=<format>           terse (default), full, digest"
               << std::endl;
-    std::cout << "    --channel=<channel id>      process only one channel"
-              << std::endl;
+    std::cout
+        << "    --channel(s)=<channel ids>  process only the indicated channels"
+        << std::endl;
     std::cout << "    --delete-log(s)=<log ids>   delete the indicated logs"
               << std::endl;
     std::cout << "    --delete-all-logs           delete all logs" << std::endl;
-    std::cout << "If no log is specified, a list of logs is printed"
+    std::cout << "If no log is specified, a list of logs is printed."
+              << std::endl;
+    std::cout << "Value lists are comma-separated (channel ids, log ids)."
               << std::endl;
     std::cout << std::endl;
     Terminate(MOJO_RESULT_OK);
@@ -127,21 +133,6 @@ class FlogViewerApp : public ApplicationImplBase {
     *string_out = arg.substr(2 + option.size() + 1);
 
     return true;
-  }
-
-  bool MatchOption(const std::string& arg,
-                   const std::string& option,
-                   uint32_t* uint32_out) {
-    MOJO_DCHECK(uint32_out);
-
-    if (arg.compare(0, 2, "--") != 0 ||
-        arg.compare(2, option.size(), option) != 0 ||
-        arg.compare(2 + option.size(), 1, "=") != 0) {
-      return false;
-    }
-
-    std::istringstream istream(arg.substr(2 + option.size() + 1));
-    return static_cast<bool>(istream >> *uint32_out);
   }
 
   bool MatchOption(const std::string& arg,
