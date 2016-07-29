@@ -57,6 +57,7 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
   video_renderer_ = video_renderer.Pass();
 
   demux_->Describe([this](Array<MediaTypePtr> stream_types) {
+    FLOG(log_channel_, ReceivedDemuxDescription(stream_types.Clone()));
     // Populate streams_ and enable the streams we want.
     std::shared_ptr<CallbackJoiner> callback_joiner = CallbackJoiner::Create();
 
@@ -85,9 +86,11 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
     }
 
     callback_joiner->WhenJoined([this]() {
+      FLOG(log_channel_, StreamsPrepared());
       // The enabled streams are prepared.
       factory_.reset();
       state_ = State::kFlushed;
+      FLOG(log_channel_, Flushed());
       Update();
     });
   });
@@ -136,10 +139,12 @@ void MediaPlayerImpl::Update() {
           // We want to seek. Enter |kWaiting| state until the operation is
           // complete.
           state_ = State::kWaiting;
+          FLOG(log_channel_, Seeking(target_position_));
           demux_->Seek(target_position_, [this]() {
             transform_subject_time_ = target_position_;
             target_position_ = kUnspecifiedTime;
             state_ = State::kFlushed;
+            FLOG(log_channel_, Flushed());
             // Back in |kFlushed|. Call |Update| to see if there's further
             // action to be taken.
             Update();
@@ -157,8 +162,10 @@ void MediaPlayerImpl::Update() {
           // |Prime| request and transition to |kPrimed| when the operation is
           // complete.
           state_ = State::kWaiting;
+          FLOG(log_channel_, Priming());
           demux_->Prime([this]() {
             state_ = State::kPrimed;
+            FLOG(log_channel_, Primed());
             // Now we're in |kPrimed|. Call |Update| to see if there's further
             // action to be taken.
             Update();
@@ -181,8 +188,10 @@ void MediaPlayerImpl::Update() {
           // We transition to |kWaiting|, issue the |Flush| request and
           // transition to |kFlushed| when the operation is complete.
           state_ = State::kWaiting;
+          FLOG(log_channel_, Flushing());
           demux_->Flush([this]() {
             state_ = State::kFlushed;
+            FLOG(log_channel_, Flushed());
             // Now we're in |kFlushed|. Call |Update| to see if there's further
             // action to be taken.
             Update();
@@ -200,9 +209,12 @@ void MediaPlayerImpl::Update() {
           state_ = State::kWaiting;
           TimelineTransformPtr timeline_transform =
               CreateTimelineTransform(1.0f);
+          FLOG(log_channel_,
+               SettingTimelineTransform(timeline_transform.Clone()));
           timeline_consumer_->SetTimelineTransform(
               timeline_transform.Pass(), [this](bool completed) {
                 state_ = State::kPlaying;
+                FLOG(log_channel_, Playing());
                 // Now we're in |kPlaying|. Call |Update| to see if there's
                 // further action to be taken.
                 Update();
@@ -228,9 +240,12 @@ void MediaPlayerImpl::Update() {
           state_ = State::kWaiting;
           TimelineTransformPtr timeline_transform =
               CreateTimelineTransform(0.0f);
+          FLOG(log_channel_,
+               SettingTimelineTransform(timeline_transform.Clone()));
           timeline_consumer_->SetTimelineTransform(
               timeline_transform.Pass(), [this](bool completed) {
                 state_ = State::kPrimed;
+                FLOG(log_channel_, Primed());
                 // Now we're in |kPrimed|. Call |Update| to see if there's
                 // further action to be taken.
                 Update();
@@ -246,6 +261,7 @@ void MediaPlayerImpl::Update() {
           // itself, so we just need to transition to |kPrimed|.
           target_state_ = State::kPrimed;
           state_ = State::kPrimed;
+          FLOG(log_channel_, Primed());
           // Loop around to check if there's more work to do.
           break;
         }
@@ -280,16 +296,19 @@ void MediaPlayerImpl::GetStatus(uint64_t version_last_seen,
 }
 
 void MediaPlayerImpl::Play() {
+  FLOG(log_channel_, PlayRequested());
   target_state_ = State::kPlaying;
   Update();
 }
 
 void MediaPlayerImpl::Pause() {
+  FLOG(log_channel_, PauseRequested());
   target_state_ = State::kPrimed;
   Update();
 }
 
 void MediaPlayerImpl::Seek(int64_t position) {
+  FLOG(log_channel_, SeekRequested(position));
   target_position_ = position;
   Update();
 }

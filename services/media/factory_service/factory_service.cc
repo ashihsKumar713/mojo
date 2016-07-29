@@ -5,6 +5,7 @@
 #include "services/media/factory_service/factory_service.h"
 
 #include "mojo/public/cpp/application/service_provider_impl.h"
+#include "mojo/services/flog/cpp/flog.h"
 #include "services/media/factory_service/media_decoder_impl.h"
 #include "services/media/factory_service/media_demux_impl.h"
 #include "services/media/factory_service/media_player_impl.h"
@@ -18,7 +19,13 @@ namespace media {
 
 MediaFactoryService::MediaFactoryService() {}
 
-MediaFactoryService::~MediaFactoryService() {}
+MediaFactoryService::~MediaFactoryService() {
+  FLOG_DESTROY();
+}
+
+void MediaFactoryService::OnInitialize() {
+  FLOG_INITIALIZE(shell(), "media_factory");
+}
 
 bool MediaFactoryService::OnAcceptConnection(
     ServiceProviderImpl* service_provider_impl) {

@@ -20,6 +20,8 @@ class MediaFactoryService : public util::FactoryServiceBase,
   ~MediaFactoryService() override;
 
   // ApplicationImplBase override.
+  void OnInitialize() override;
+
   bool OnAcceptConnection(ServiceProviderImpl* service_provider_impl) override;
 
   // MediaFactory implementation.

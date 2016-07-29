@@ -9,12 +9,14 @@
 #include <vector>
 
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/services/flog/cpp/flog.h"
 #include "mojo/services/media/common/cpp/timeline.h"
 #include "mojo/services/media/common/cpp/timeline_function.h"
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
 #include "mojo/services/media/control/interfaces/media_factory.mojom.h"
 #include "mojo/services/media/core/interfaces/seeking_reader.mojom.h"
 #include "mojo/services/media/core/interfaces/timeline_controller.mojom.h"
+#include "mojo/services/media/logs/interfaces/media_player_channel.mojom.h"
 #include "services/media/common/mojo_publisher.h"
 #include "services/media/factory_service/factory_service.h"
 #include "services/media/framework/util/callback_joiner.h"
@@ -141,6 +143,8 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
   // problems.
   InterfaceHandle<MediaRenderer> audio_renderer_;
   InterfaceHandle<MediaRenderer> video_renderer_;
+
+  FLOG_CHANNEL(logs::MediaPlayerChannel, log_channel_);
 };
 
 }  // namespace media
