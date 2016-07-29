@@ -7,6 +7,7 @@
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
+#include "mojo/services/flog/cpp/flog.h"
 #include "services/media/audio/audio_server_app.h"
 
 namespace mojo {
@@ -15,9 +16,12 @@ namespace audio {
 
 AudioServerApp::AudioServerApp() {}
 
-AudioServerApp::~AudioServerApp() {}
+AudioServerApp::~AudioServerApp() {
+  FLOG_DESTROY();
+}
 
 void AudioServerApp::OnInitialize() {
+  FLOG_INITIALIZE(shell(), "audio_service");
   server_impl_.Initialize();
 }
 

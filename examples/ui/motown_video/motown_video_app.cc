@@ -8,12 +8,19 @@
 
 #include "examples/ui/motown_video/motown_video_view.h"
 #include "mojo/public/cpp/application/connect.h"
+#include "mojo/services/flog/cpp/flog.h"
 
 namespace examples {
 
 MotownVideoApp::MotownVideoApp() {}
 
-MotownVideoApp::~MotownVideoApp() {}
+MotownVideoApp::~MotownVideoApp() {
+  FLOG_DESTROY();
+}
+
+void MotownVideoApp::OnInitialize() {
+  FLOG_INITIALIZE(shell(), "motown_video");
+}
 
 void MotownVideoApp::CreateView(
     const std::string& connection_url,

@@ -15,6 +15,7 @@ mojo_native_application("audio_server") {
   deps = [
     "//base",
     "//mojo/application",
+    "//mojo/services/flog/cpp",
     "//mojo/services/media/audio/interfaces",
     "//mojo/services/media/common/cpp",
     "//mojo/services/media/common/interfaces",

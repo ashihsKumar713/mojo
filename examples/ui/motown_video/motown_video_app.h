@@ -16,6 +16,8 @@ class MotownVideoApp : public mojo::ui::ViewProviderApp {
   MotownVideoApp();
   ~MotownVideoApp() override;
 
+  void OnInitialize() override;
+
   void CreateView(
       const std::string& connection_url,
       mojo::InterfaceRequest<mojo::ui::ViewOwner> view_owner_request,
