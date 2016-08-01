@@ -73,6 +73,11 @@ MediaSinkImpl::MediaSinkImpl(InterfaceHandle<MediaRenderer> renderer,
       return;
     }
 
+    FLOG(log_channel_,
+         Config(MediaType::From(input_stream_type_),
+                MediaType::From(producer_stream_type),
+                FLOG_ADDRESS(consumer_.get()), FLOG_ADDRESS(producer_.get())));
+
     graph_.ConnectOutputToPart(out, producer_ref);
 
     renderer_->SetMediaType(MediaType::From(std::move(producer_stream_type)));

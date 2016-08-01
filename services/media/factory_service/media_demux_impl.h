@@ -11,8 +11,10 @@
 
 #include "base/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/services/flog/cpp/flog.h"
 #include "mojo/services/media/core/interfaces/media_demux.mojom.h"
 #include "mojo/services/media/core/interfaces/seeking_reader.mojom.h"
+#include "mojo/services/media/logs/interfaces/media_demux_channel.mojom.h"
 #include "services/media/common/mojo_publisher.h"
 #include "services/media/factory_service/factory_service.h"
 #include "services/media/framework/graph.h"
@@ -66,8 +68,11 @@ class MediaDemuxImpl : public MediaFactoryService::Product<MediaDemux>,
     // Gets the media type of the stream.
     MediaTypePtr media_type() const;
 
-    // Gets the producer.
-    void GetPacketProducer(InterfaceRequest<MediaPacketProducer> producer);
+    // Returns the stream's producer.
+    std::shared_ptr<MojoPacketProducer> producer() const { return producer_; }
+
+    // Binds the producer.
+    void BindPacketProducer(InterfaceRequest<MediaPacketProducer> producer);
 
     // Tells the producer to prime its connection.
     void PrimeConnection(
@@ -96,6 +101,8 @@ class MediaDemuxImpl : public MediaFactoryService::Product<MediaDemux>,
   Incident init_complete_;
   std::vector<std::unique_ptr<Stream>> streams_;
   MojoPublisher<GetMetadataCallback> metadata_publisher_;
+
+  FLOG_CHANNEL(logs::MediaDemuxChannel, log_channel_);
 };
 
 }  // namespace media

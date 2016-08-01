@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/services/flog/cpp/flog.h"
 #include "mojo/services/media/control/interfaces/media_sink.mojom.h"
 #include "mojo/services/media/core/interfaces/timeline_controller.mojom.h"
+#include "mojo/services/media/logs/interfaces/media_sink_channel.mojom.h"
 #include "services/media/factory_service/factory_service.h"
 #include "services/media/framework/graph.h"
 #include "services/media/framework/parts/decoder.h"
@@ -54,6 +56,8 @@ class MediaSinkImpl : public MediaFactoryService::Product<MediaSink>,
   // The following fields are just temporaries used to solve lambda capture
   // problems.
   std::unique_ptr<StreamType> input_stream_type_;
+
+  FLOG_CHANNEL(logs::MediaSinkChannel, log_channel_);
 };
 
 }  // namespace media

@@ -64,6 +64,11 @@ namespace flog {
 // be acquired from the FlogService using CreateLogger.
 //
 
+// Converts a pointer to a uint64_t for channel messages that have address
+// parameters. Addresses can't be accessed by log consumers, but they can be
+// used for identification.
+#define FLOG_ADDRESS(p) reinterpret_cast<uintptr_t>(p)
+
 #if defined(NDEBUG)
 
 #define FLOG_INITIALIZE(shell, label) ((void)0)

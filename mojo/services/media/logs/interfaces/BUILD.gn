@@ -7,10 +7,14 @@ import("$mojo_sdk_root/mojo/public/tools/bindings/mojom.gni")
 
 mojom("interfaces") {
   sources = [
+    "media_decoder_channel.mojom",
+    "media_demux_channel.mojom",
     "media_player_channel.mojom",
+    "media_sink_channel.mojom",
   ]
 
   deps = [
     "../../common/interfaces",
+    "../../core/interfaces",
   ]
 }

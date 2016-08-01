@@ -74,6 +74,9 @@ void MediaDemuxImpl::OnDemuxInitialized(Result result) {
     streams_.push_back(std::unique_ptr<Stream>(
         new Stream(demux_part_.output(demux_stream->index()),
                    demux_stream->stream_type(), &graph_)));
+    FLOG(log_channel_,
+         NewStream(streams_.size() - 1, streams_.back()->media_type(),
+                   FLOG_ADDRESS(streams_.back()->producer().get())));
   }
 
   graph_.Prepare();
@@ -105,7 +108,7 @@ void MediaDemuxImpl::GetPacketProducer(
     return;
   }
 
-  streams_[stream_index]->GetPacketProducer(producer.Pass());
+  streams_[stream_index]->BindPacketProducer(producer.Pass());
 }
 
 void MediaDemuxImpl::GetMetadata(uint64_t version_last_seen,
@@ -169,7 +172,7 @@ MediaTypePtr MediaDemuxImpl::Stream::media_type() const {
   return MediaType::From(stream_type_);
 }
 
-void MediaDemuxImpl::Stream::GetPacketProducer(
+void MediaDemuxImpl::Stream::BindPacketProducer(
     InterfaceRequest<MediaPacketProducer> producer) {
   DCHECK(producer_);
   producer_->Bind(producer.Pass());

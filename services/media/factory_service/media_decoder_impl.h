@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/services/flog/cpp/flog.h"
 #include "mojo/services/media/core/interfaces/media_type_converter.mojom.h"
+#include "mojo/services/media/logs/interfaces/media_decoder_channel.mojom.h"
 #include "services/media/factory_service/factory_service.h"
 #include "services/media/framework/graph.h"
 #include "services/media/framework/parts/decoder.h"
@@ -48,6 +50,8 @@ class MediaDecoderImpl
   std::shared_ptr<MojoPacketConsumer> consumer_;
   std::shared_ptr<Decoder> decoder_;
   std::shared_ptr<MojoPacketProducer> producer_;
+
+  FLOG_CHANNEL(logs::MediaDecoderChannel, log_channel_);
 };
 
 }  // namespace media

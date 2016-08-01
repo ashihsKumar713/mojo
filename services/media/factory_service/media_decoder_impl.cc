@@ -37,6 +37,11 @@ MediaDecoderImpl::MediaDecoderImpl(MediaTypePtr input_media_type,
     return;
   }
 
+  FLOG(log_channel_,
+       Config(input_media_type.Pass(),
+              MediaType::From(decoder_->output_stream_type()),
+              FLOG_ADDRESS(consumer_.get()), FLOG_ADDRESS(producer_.get())));
+
   PartRef consumer_ref = graph_.Add(consumer_);
   PartRef decoder_ref = graph_.Add(decoder_);
   PartRef producer_ref = graph_.Add(producer_);
