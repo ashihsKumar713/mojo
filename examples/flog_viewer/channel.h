@@ -1,0 +1,61 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef EXAMPLES_FLOG_VIEWER_CHANNEL_H_
+#define EXAMPLES_FLOG_VIEWER_CHANNEL_H_
+
+#include "examples/flog_viewer/channel_handler.h"
+
+namespace mojo {
+namespace flog {
+namespace examples {
+
+class Channel {
+ public:
+  // Creates a channel.
+  static std::shared_ptr<Channel> Create(
+      uint32_t log_id,
+      uint32_t channel_id,
+      uint32_t creation_entry_index,
+      std::unique_ptr<ChannelHandler> handler);
+
+  ~Channel();
+
+  uint32_t log_id() const { return log_id_; }
+  uint32_t channel_id() const { return channel_id_; }
+  uint32_t creation_entry_index() const { return creation_entry_index_; }
+  const std::unique_ptr<ChannelHandler>& handler() const { return handler_; }
+
+  // Determines if the channel has an accumulator.
+  bool has_accumulator() const {
+    return static_cast<bool>(handler()->GetAccumulator());
+  }
+
+  // Prints the accumulator.
+  void PrintAccumulator(std::ostream& os) const;
+
+  // Determines if the channel has a parent.
+  bool has_parent() const { return has_parent_; }
+
+  // Indicates that the channel has a parent.
+  void SetHasParent() { has_parent_ = true; }
+
+ private:
+  Channel(uint32_t log_id,
+          uint32_t channel_id,
+          uint32_t creation_entry_index,
+          std::unique_ptr<ChannelHandler> handler);
+
+  uint32_t log_id_;
+  uint32_t channel_id_;
+  uint32_t creation_entry_index_;
+  std::unique_ptr<ChannelHandler> handler_;
+  bool has_parent_ = false;
+};
+
+}  // namespace examples
+}  // namespace flog
+}  // namespace mojo
+
+#endif  // EXAMPLES_FLOG_VIEWER_CHANNEL_H_

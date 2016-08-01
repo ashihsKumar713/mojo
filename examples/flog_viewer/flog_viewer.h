@@ -8,6 +8,7 @@
 #include <map>
 #include <unordered_set>
 
+#include "examples/flog_viewer/channel.h"
 #include "examples/flog_viewer/channel_handler.h"
 #include "mojo/services/flog/interfaces/flog.mojom.h"
 
@@ -59,9 +60,6 @@ class FlogViewer {
 
   void ProcessEntry(uint32_t entry_index, const FlogEntryPtr& entry);
 
-  void PrintAccumulator(uint32_t channel_id,
-                        std::shared_ptr<ChannelHandler> channel_handler);
-
   void PrintRemainingAccumulators();
 
   void OnMojoLoggerMessage(uint32_t entry_index,
@@ -88,8 +86,7 @@ class FlogViewer {
   std::function<void()> terminate_callback_;
   FlogServicePtr service_;
   FlogReaderPtr reader_;
-  std::map<uint32_t, std::shared_ptr<ChannelHandler>>
-      channel_handlers_by_channel_id_;
+  std::map<uint32_t, std::shared_ptr<Channel>> channels_by_channel_id_;
 };
 
 }  // namespace examples

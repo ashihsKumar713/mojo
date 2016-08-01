@@ -142,21 +142,14 @@ void FlogViewer::ProcessEntry(uint32_t entry_index, const FlogEntryPtr& entry) {
   }
 }
 
-void FlogViewer::PrintAccumulator(
-    uint32_t channel_id,
-    std::shared_ptr<ChannelHandler> channel_handler) {
-  std::shared_ptr<Accumulator> accumulator = channel_handler->GetAccumulator();
-  if (accumulator) {
-    std::cout << "CHANNEL " << channel_id << ": ";
-    accumulator->Print(std::cout);
-    std::cout << std::endl;
-  }
-}
-
 void FlogViewer::PrintRemainingAccumulators() {
-  for (std::pair<uint32_t, std::shared_ptr<ChannelHandler>> pair :
-       channel_handlers_by_channel_id_) {
-    PrintAccumulator(pair.first, pair.second);
+  for (std::pair<uint32_t, std::shared_ptr<Channel>> pair :
+       channels_by_channel_id_) {
+    if (pair.second->has_accumulator() && !pair.second->has_parent()) {
+      std::cout << pair.second << " ";
+      pair.second->PrintAccumulator(std::cout);
+      std::cout << std::endl;
+    }
   }
 }
 
@@ -182,16 +175,17 @@ void FlogViewer::OnChannelCreated(
               << std::endl;
   }
 
-  auto iter = channel_handlers_by_channel_id_.find(entry->channel_id);
-  if (iter != channel_handlers_by_channel_id_.end()) {
+  auto iter = channels_by_channel_id_.find(entry->channel_id);
+  if (iter != channels_by_channel_id_.end()) {
     std::cout << entry << "    ERROR: CHANNEL ALREADY EXISTS" << std::endl;
   }
 
-  std::shared_ptr<ChannelHandler> handler = ChannelHandler::Create(
-      details->type_name, format_);
-  MOJO_DCHECK(handler);
-  channel_handlers_by_channel_id_.insert(
-      std::make_pair(entry->channel_id, handler));
+  std::shared_ptr<ChannelHandler> handler =
+      ChannelHandler::Create(details->type_name, format_);
+  std::shared_ptr<Channel> channel =
+      Channel::Create(entry->log_id, entry->channel_id, entry_index,
+                      ChannelHandler::Create(details->type_name, format_));
+  channels_by_channel_id_.insert(std::make_pair(entry->channel_id, channel));
 }
 
 void FlogViewer::OnChannelMessage(
@@ -202,13 +196,13 @@ void FlogViewer::OnChannelMessage(
   message.AllocUninitializedData(details->data.size());
   memcpy(message.mutable_data(), details->data.data(), details->data.size());
 
-  auto iter = channel_handlers_by_channel_id_.find(entry->channel_id);
-  if (iter == channel_handlers_by_channel_id_.end()) {
-    std::cout << "channel message, size " << details->data.size() << " name "
-              << message.name() << std::endl;
-  } else {
-    iter->second->HandleMessage(entry_index, entry, &message);
+  auto iter = channels_by_channel_id_.find(entry->channel_id);
+  if (iter == channels_by_channel_id_.end()) {
+    std::cout << entry << "    ERROR: CHANNEL DOESN'T EXIST" << std::endl;
+    return;
   }
+
+  iter->second->handler()->HandleMessage(entry_index, entry, &message);
 }
 
 void FlogViewer::OnChannelDeleted(
@@ -219,14 +213,16 @@ void FlogViewer::OnChannelDeleted(
     std::cout << entry << "channel deleted" << std::endl;
   }
 
-  auto iter = channel_handlers_by_channel_id_.find(entry->channel_id);
-  if (iter == channel_handlers_by_channel_id_.end()) {
+  auto iter = channels_by_channel_id_.find(entry->channel_id);
+  if (iter == channels_by_channel_id_.end()) {
     std::cout << entry << "    ERROR: CHANNEL DOESN'T EXIST" << std::endl;
     return;
   }
 
-  PrintAccumulator(entry->channel_id, iter->second);
-  channel_handlers_by_channel_id_.erase(iter);
+  if (iter->second->has_accumulator()) {
+    iter->second->PrintAccumulator(std::cout);
+  }
+  channels_by_channel_id_.erase(iter);
 }
 
 }  // namespace examples

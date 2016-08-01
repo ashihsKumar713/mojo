@@ -7,6 +7,7 @@
 
 #include <ostream>
 
+#include "examples/flog_viewer/channel.h"
 #include "mojo/services/flog/interfaces/flog.mojom.h"
 
 //
@@ -70,6 +71,8 @@ struct AsLogLevel {
 };
 
 std::ostream& operator<<(std::ostream& os, AsLogLevel value);
+
+std::ostream& operator<<(std::ostream& os, const Channel& value);
 
 }  // namespace examples
 

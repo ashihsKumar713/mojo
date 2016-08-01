@@ -12,7 +12,7 @@ namespace flog {
 namespace examples {
 
 // static
-std::shared_ptr<ChannelHandler> ChannelHandler::Create(
+std::unique_ptr<ChannelHandler> ChannelHandler::Create(
     const std::string& type_name,
     const std::string& format) {
   ChannelHandler* handler = nullptr;

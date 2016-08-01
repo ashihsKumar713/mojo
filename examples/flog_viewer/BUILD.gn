@@ -8,6 +8,8 @@ mojo_native_application("flog_viewer") {
   sources = [
     "accumulator.cc",
     "accumulator.h",
+    "channel.cc",
+    "channel.h",
     "channel_handler.cc",
     "channel_handler.h",
     "counted.h",

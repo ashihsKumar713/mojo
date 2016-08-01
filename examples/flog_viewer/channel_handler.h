@@ -26,7 +26,7 @@ namespace examples {
 // to provide callers access to the accumulator.
 class ChannelHandler {
  public:
-  static std::shared_ptr<ChannelHandler> Create(const std::string& type_name,
+  static std::unique_ptr<ChannelHandler> Create(const std::string& type_name,
                                                 const std::string& format);
 
   virtual ~ChannelHandler();

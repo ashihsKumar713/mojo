@@ -66,6 +66,11 @@ std::ostream& operator<<(std::ostream& os, AsLogLevel value) {
   }
 }
 
+std::ostream& operator<<(std::ostream& os, const Channel& value) {
+  return os << "CHANNEL " << value.log_id() << "." << std::setw(2)
+            << std::setfill('0') << value.channel_id();
+}
+
 }  // namespace examples
 
 int ostream_entry_second_index() {
