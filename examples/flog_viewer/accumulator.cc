@@ -7,6 +7,8 @@
 #include <iomanip>
 #include <iostream>
 
+#include "examples/flog_viewer/formatting.h"
+
 namespace mojo {
 namespace flog {
 namespace examples {
@@ -29,7 +31,7 @@ std::ostream& Accumulator::ReportProblem(uint32_t entry_index,
 
 void Accumulator::PrintProblems(std::ostream& os) {
   for (const Problem& problem : problems_) {
-    os << "PROBLEM: " << problem << std::endl;
+    os << begl << "PROBLEM: " << problem << std::endl;
   }
 }
 

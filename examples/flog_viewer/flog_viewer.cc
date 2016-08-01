@@ -4,63 +4,16 @@
 
 #include "examples/flog_viewer/flog_viewer.h"
 
-#include <chrono>
 #include <iomanip>
 #include <iostream>
 
+#include "examples/flog_viewer/formatting.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {
 namespace flog {
 namespace examples {
-
-struct AsNiceDateTime {
-  explicit AsNiceDateTime(uint64_t time_us) : time_us_(time_us) {}
-  uint64_t time_us_;
-};
-
-std::ostream& operator<<(std::ostream& os, AsNiceDateTime value) {
-  std::time_t time = std::chrono::system_clock::to_time_t(
-      std::chrono::time_point<std::chrono::system_clock>(
-          std::chrono::microseconds(value.time_us_)));
-  std::tm* tm = localtime(&time);
-  return os << std::setw(4) << tm->tm_year + 1900 << "/" << std::setw(2)
-            << std::setfill('0') << tm->tm_mon + 1 << "/" << std::setw(2)
-            << tm->tm_mday << " " << std::setw(2) << tm->tm_hour << ":"
-            << std::setw(2) << tm->tm_min << ":" << std::setw(2) << tm->tm_sec;
-}
-
-struct AsMicroseconds {
-  explicit AsMicroseconds(uint64_t time_us) : time_us_(time_us) {}
-  uint64_t time_us_;
-};
-
-std::ostream& operator<<(std::ostream& os, AsMicroseconds value) {
-  return os << std::setfill('0') << std::setw(6) << value.time_us_ % 1000000ull;
-}
-
-struct AsLogLevel {
-  explicit AsLogLevel(uint32_t level) : level_(level) {}
-  uint32_t level_;
-};
-
-std::ostream& operator<<(std::ostream& os, AsLogLevel value) {
-  switch (value.level_) {
-    case MOJO_LOG_LEVEL_VERBOSE:
-      return os << "VERBOSE";
-    case MOJO_LOG_LEVEL_INFO:
-      return os << "INFO";
-    case MOJO_LOG_LEVEL_WARNING:
-      return os << "WARNING";
-    case MOJO_LOG_LEVEL_ERROR:
-      return os << "ERROR";
-    case MOJO_LOG_LEVEL_FATAL:
-      return os << "FATAL";
-    default:
-      return os << "UNKNOWN LEVEL " << value.level_;
-  }
-}
 
 // static
 const std::string FlogViewer::kFormatTerse = "terse";

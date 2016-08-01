@@ -14,6 +14,8 @@ mojo_native_application("flog_viewer") {
     "flog_viewer.cc",
     "flog_viewer.h",
     "flog_viewer_app.cc",
+    "formatting.cc",
+    "formatting.h",
     "handlers/default.cc",
     "handlers/default.h",
     "tracked.h",
