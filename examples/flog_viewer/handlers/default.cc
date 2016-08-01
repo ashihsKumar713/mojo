@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "examples/flog_viewer/flog_viewer.h"
+#include "examples/flog_viewer/formatting.h"
 #include "examples/flog_viewer/handlers/default.h"
 
 namespace mojo {
@@ -21,9 +22,9 @@ Default::~Default() {}
 
 void Default::HandleMessage(Message* message) {
   if (terse_ || full_) {
-    PrintEntryProlog(entry());
-    std::cout << "channel message, size " << message->data_num_bytes()
-              << " name " << message->name() << std::endl;
+    std::cout << entry() << "channel message, size "
+              << message->data_num_bytes() << " name " << message->name()
+              << std::endl;
     if (full_) {
       PrintData(message->data(), message->data_num_bytes());
     }

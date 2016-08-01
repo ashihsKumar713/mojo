@@ -58,7 +58,7 @@ class Accumulator {
 
   // Prints the contents of the accumulator to cout. The default implementation
   // calls PrintProblems.
-  virtual void Print();
+  virtual void Print(std::ostream& os);
 
  protected:
   Accumulator();

@@ -138,21 +138,8 @@ void FlogViewer::ProcessEntry(uint32_t entry_index, const FlogEntryPtr& entry) {
     OnChannelDeleted(entry_index, entry,
                      entry->details->get_channel_deletion());
   } else {
-    PrintEntryProlog(entry);
-    std::cout << "NO KNOWN DETAILS" << std::endl;
+    std::cout << entry << "NO KNOWN DETAILS" << std::endl;
   }
-}
-
-void FlogViewer::PrintEntryProlog(const FlogEntryPtr& entry) {
-  if (previous_time_us_ / 1000000ull != entry->time_us / 1000000ull) {
-    std::cout << AsNiceDateTime(entry->time_us) << std::endl;
-  }
-
-  previous_time_us_ = entry->time_us;
-
-  std::cout << AsMicroseconds(entry->time_us) << " ";
-
-  std::cout << entry->channel_id << " ";
 }
 
 void FlogViewer::PrintAccumulator(
@@ -161,7 +148,7 @@ void FlogViewer::PrintAccumulator(
   std::shared_ptr<Accumulator> accumulator = channel_handler->GetAccumulator();
   if (accumulator) {
     std::cout << "CHANNEL " << channel_id << ": ";
-    accumulator->Print();
+    accumulator->Print(std::cout);
     std::cout << std::endl;
   }
 }
@@ -181,10 +168,9 @@ void FlogViewer::OnMojoLoggerMessage(
     return;
   }
 
-  PrintEntryProlog(entry);
-  std::cout << AsLogLevel(details->log_level) << ":" << details->source_file
-            << "#" << details->source_line << " " << details->message
-            << std::endl;
+  std::cout << entry << AsLogLevel(details->log_level) << ":"
+            << details->source_file << "#" << details->source_line << " "
+            << details->message << std::endl;
 }
 
 void FlogViewer::OnChannelCreated(
@@ -192,19 +178,17 @@ void FlogViewer::OnChannelCreated(
     const FlogEntryPtr& entry,
     const FlogChannelCreationEntryDetailsPtr& details) {
   if (format_ == kFormatTerse || format_ == kFormatFull) {
-    PrintEntryProlog(entry);
-    std::cout << "channel created, type " << details->type_name << std::endl;
+    std::cout << entry << "channel created, type " << details->type_name
+              << std::endl;
   }
 
   auto iter = channel_handlers_by_channel_id_.find(entry->channel_id);
   if (iter != channel_handlers_by_channel_id_.end()) {
-    PrintEntryProlog(entry);
-    std::cout << "    ERROR: CHANNEL ALREADY EXISTS" << std::endl;
+    std::cout << entry << "    ERROR: CHANNEL ALREADY EXISTS" << std::endl;
   }
 
-  std::shared_ptr<ChannelHandler> handler = ChannelHandler::CreateHandler(
-      details->type_name, format_,
-      [this](const FlogEntryPtr& entry) { PrintEntryProlog(entry); });
+  std::shared_ptr<ChannelHandler> handler = ChannelHandler::Create(
+      details->type_name, format_);
   MOJO_DCHECK(handler);
   channel_handlers_by_channel_id_.insert(
       std::make_pair(entry->channel_id, handler));
@@ -232,18 +216,17 @@ void FlogViewer::OnChannelDeleted(
     const FlogEntryPtr& entry,
     const FlogChannelDeletionEntryDetailsPtr& details) {
   if (format_ == kFormatTerse || format_ == kFormatFull) {
-    PrintEntryProlog(entry);
-    std::cout << "channel deleted" << std::endl;
+    std::cout << entry << "channel deleted" << std::endl;
   }
 
   auto iter = channel_handlers_by_channel_id_.find(entry->channel_id);
   if (iter == channel_handlers_by_channel_id_.end()) {
-    PrintEntryProlog(entry);
-    std::cout << "    ERROR: CHANNEL DOESN'T EXIST" << std::endl;
-  } else {
-    PrintAccumulator(entry->channel_id, iter->second);
-    channel_handlers_by_channel_id_.erase(iter);
+    std::cout << entry << "    ERROR: CHANNEL DOESN'T EXIST" << std::endl;
+    return;
   }
+
+  PrintAccumulator(entry->channel_id, iter->second);
+  channel_handlers_by_channel_id_.erase(iter);
 }
 
 }  // namespace examples

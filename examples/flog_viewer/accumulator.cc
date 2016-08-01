@@ -35,8 +35,8 @@ void Accumulator::PrintProblems(std::ostream& os) {
   }
 }
 
-void Accumulator::Print() {
-  PrintProblems(std::cout);
+void Accumulator::Print(std::ostream& os) {
+  PrintProblems(os);
 }
 
 Accumulator::Problem::Problem(uint32_t log_id,

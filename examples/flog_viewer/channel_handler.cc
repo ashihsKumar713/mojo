@@ -12,21 +12,18 @@ namespace flog {
 namespace examples {
 
 // static
-std::shared_ptr<ChannelHandler> ChannelHandler::CreateHandler(
+std::shared_ptr<ChannelHandler> ChannelHandler::Create(
     const std::string& type_name,
-    const std::string& format,
-    const EntryPrologPrinter& entry_prolog_printer) {
-  std::shared_ptr<ChannelHandler> handler;
+    const std::string& format) {
+  ChannelHandler* handler = nullptr;
 
   // When implementing a new handler, add logic here for creating an instance.
 
-  if (!handler) {
-    handler = std::make_shared<handlers::Default>(format);
+  if (handler == nullptr) {
+    handler = new handlers::Default(format);
   }
 
-  handler->entry_prolog_printer_ = entry_prolog_printer;
-
-  return handler;
+  return std::unique_ptr<ChannelHandler>(handler);
 }
 
 ChannelHandler::ChannelHandler() {}
@@ -45,10 +42,6 @@ void ChannelHandler::HandleMessage(uint32_t entry_index,
 
 std::shared_ptr<Accumulator> ChannelHandler::GetAccumulator() {
   return nullptr;
-}
-
-void ChannelHandler::PrintEntryProlog(const FlogEntryPtr& entry) {
-  entry_prolog_printer_(entry);
 }
 
 }  // namespace examples

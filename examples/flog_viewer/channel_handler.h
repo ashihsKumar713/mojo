@@ -20,23 +20,14 @@ namespace examples {
 // type and format. If there's no specific handler for the type/format, the
 // default handler is used.
 //
-// Some channel handlers (particularly the ones for 'terse' and 'full' formats)
-// will pretty-print messages to cout. The PrintEntryProlog method is available
-// to print the prolog for a message in however the caller of CreateHandler
-// wants it done.
-//
 // Some channel handlers (particularly the ones for the 'digest' format) will
 // produce an 'accumulator', which reflects the handler's understanding of the
 // messages that have been handled. The GetAccumulator method can be overridden
 // to provide callers access to the accumulator.
 class ChannelHandler {
  public:
-  using EntryPrologPrinter = std::function<void(const FlogEntryPtr&)>;
-
-  static std::shared_ptr<ChannelHandler> CreateHandler(
-      const std::string& type_name,
-      const std::string& format,
-      const EntryPrologPrinter& entry_prolog_printer);
+  static std::shared_ptr<ChannelHandler> Create(const std::string& type_name,
+                                                const std::string& format);
 
   virtual ~ChannelHandler();
 
@@ -69,11 +60,7 @@ class ChannelHandler {
     return *entry_;
   }
 
-  // Writes an entry prolog to cout.
-  void PrintEntryProlog(const FlogEntryPtr& entry);
-
  private:
-  EntryPrologPrinter entry_prolog_printer_;
   // These two fields are only used during calls to HandleMessage().
   uint32_t entry_index_;
   const FlogEntryPtr* entry_;

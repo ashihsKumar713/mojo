@@ -59,8 +59,6 @@ class FlogViewer {
 
   void ProcessEntry(uint32_t entry_index, const FlogEntryPtr& entry);
 
-  void PrintEntryProlog(const FlogEntryPtr& entry);
-
   void PrintAccumulator(uint32_t channel_id,
                         std::shared_ptr<ChannelHandler> channel_handler);
 
@@ -90,7 +88,6 @@ class FlogViewer {
   std::function<void()> terminate_callback_;
   FlogServicePtr service_;
   FlogReaderPtr reader_;
-  uint64_t previous_time_us_ = 0;
   std::map<uint32_t, std::shared_ptr<ChannelHandler>>
       channel_handlers_by_channel_id_;
 };
