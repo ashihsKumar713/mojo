@@ -56,6 +56,7 @@ void MediaPacketConsumerBase::SetDemand(uint32_t min_packets_outstanding,
   demand_.min_packets_outstanding = min_packets_outstanding;
   demand_.min_pts = min_pts;
 
+  FLOG(log_channel_, DemandSet(demand_.Clone()));
   demand_update_required_ = true;
 
   MaybeCompletePullDemandUpdate();
@@ -63,6 +64,7 @@ void MediaPacketConsumerBase::SetDemand(uint32_t min_packets_outstanding,
 
 void MediaPacketConsumerBase::Reset() {
   CHECK_THREAD(thread_checker_);
+  FLOG(log_channel_, Reset());
   if (binding_.is_bound()) {
     binding_.Close();
   }
@@ -82,6 +84,7 @@ void MediaPacketConsumerBase::Reset() {
 
 void MediaPacketConsumerBase::Fail() {
   CHECK_THREAD(thread_checker_);
+  FLOG(log_channel_, Failed());
   Reset();
   OnFailure();
 }
@@ -108,6 +111,7 @@ void MediaPacketConsumerBase::PullDemandUpdate(
     // that the client doesn't know what it's doing.
     MOJO_DLOG(WARNING) << "PullDemandUpdate was called when another "
                           "PullDemandUpdate call was pending";
+    FLOG(log_channel_, RespondingToGetDemandUpdate(demand_.Clone()));
     get_demand_update_callback_.Run(demand_.Clone());
   }
 
@@ -125,12 +129,15 @@ void MediaPacketConsumerBase::AddPayloadBuffer(
   RCHECK(payload_buffer_id == 0, "payload_buffer_id must be 0 for now");
   RCHECK(!buffer_.initialized(), "buffer already set");
   MojoResult result = buffer_.InitFromHandle(payload_buffer.Pass());
+  FLOG(log_channel_,
+       AddPayloadBufferRequested(payload_buffer_id, buffer_.size()));
   RCHECK(result == MOJO_RESULT_OK, "failed to map buffer");
 }
 
 void MediaPacketConsumerBase::RemovePayloadBuffer(uint32_t payload_buffer_id) {
   CHECK_THREAD(thread_checker_);
   // TODO(dalesat): Implement RemovePayloadBuffer.
+  FLOG(log_channel_, RemovePayloadBufferRequested(payload_buffer_id));
   RCHECK(false, "RemovePayloadBuffer not implemented");
 }
 
@@ -153,22 +160,34 @@ void MediaPacketConsumerBase::SupplyPacket(
     payload = buffer_.PtrFromOffset(media_packet->payload_offset);
   }
 
-  OnPacketSupplied(std::unique_ptr<SuppliedPacket>(
-      new SuppliedPacket(media_packet.Pass(), payload, callback, counter_)));
+  uint64_t label = ++prev_packet_label_;
+  FLOG(log_channel_,
+       PacketSupplied(label, media_packet.Clone(), FLOG_ADDRESS(payload),
+                      counter_->packets_outstanding() + 1));
+  OnPacketSupplied(std::unique_ptr<SuppliedPacket>(new SuppliedPacket(
+      label, media_packet.Pass(), payload, callback, counter_)));
 }
 
 void MediaPacketConsumerBase::Prime(const PrimeCallback& callback) {
   CHECK_THREAD(thread_checker_);
+  FLOG(log_channel_, PrimeRequested());
 
   demand_.min_packets_outstanding = 0;
   demand_.min_pts = MediaPacket::kNoTimestamp;
 
-  OnPrimeRequested([this, callback]() { callback.Run(); });
+  OnPrimeRequested([this, callback]() {
+    FLOG(log_channel_, CompletingPrime());
+    callback.Run();
+  });
 }
 
 void MediaPacketConsumerBase::Flush(const FlushCallback& callback) {
   CHECK_THREAD(thread_checker_);
-  OnFlushRequested([this, callback]() { callback.Run(); });
+  FLOG(log_channel_, FlushRequested());
+  OnFlushRequested([this, callback]() {
+    FLOG(log_channel_, CompletingFlush());
+    callback.Run();
+  });
 }
 
 void MediaPacketConsumerBase::MaybeCompletePullDemandUpdate() {
@@ -181,13 +200,17 @@ void MediaPacketConsumerBase::MaybeCompletePullDemandUpdate() {
     return;
   }
 
+  FLOG(log_channel_, RespondingToGetDemandUpdate(demand_.Clone()));
   demand_update_required_ = false;
   get_demand_update_callback_.Run(demand_.Clone());
   get_demand_update_callback_.reset();
 }
 
-MediaPacketDemandPtr MediaPacketConsumerBase::GetDemandForPacketDeparture() {
+MediaPacketDemandPtr MediaPacketConsumerBase::GetDemandForPacketDeparture(
+    uint64_t label) {
   CHECK_THREAD(thread_checker_);
+
+  FLOG(log_channel_, ReturningPacket(label, counter_->packets_outstanding()));
 
   // Note that we're returning a packet so that MaybeCompletePullDemandUpdate
   // won't try to send a packet update via a PullDemandUpdate callback.
@@ -205,11 +228,13 @@ MediaPacketDemandPtr MediaPacketConsumerBase::GetDemandForPacketDeparture() {
 }
 
 MediaPacketConsumerBase::SuppliedPacket::SuppliedPacket(
+    uint64_t label,
     MediaPacketPtr packet,
     void* payload,
     const SupplyPacketCallback& callback,
     std::shared_ptr<SuppliedPacketCounter> counter)
-    : packet_(packet.Pass()),
+    : label_(label),
+      packet_(packet.Pass()),
       payload_(payload),
       callback_(callback),
       counter_(counter) {
@@ -221,7 +246,7 @@ MediaPacketConsumerBase::SuppliedPacket::SuppliedPacket(
 
 MediaPacketConsumerBase::SuppliedPacket::~SuppliedPacket() {
   CHECK_THREAD(thread_checker_);
-  callback_.Run(counter_->OnPacketDeparture());
+  callback_.Run(counter_->OnPacketDeparture(label_));
 }
 
 MediaPacketConsumerBase::SuppliedPacketCounter::SuppliedPacketCounter(

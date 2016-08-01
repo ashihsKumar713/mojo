@@ -6,9 +6,11 @@
 #define MOJO_SERVICES_MEDIA_COMMON_CPP_MEDIA_PACKET_CONSUMER_BASE_H_
 
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/services/flog/cpp/flog.h"
 #include "mojo/services/media/common/cpp/mapped_shared_buffer.h"
 #include "mojo/services/media/common/cpp/thread_checker.h"
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
+#include "mojo/services/media/logs/interfaces/media_packet_consumer_channel.mojom.h"
 
 namespace mojo {
 namespace media {
@@ -35,11 +37,13 @@ class MediaPacketConsumerBase : public MediaPacketConsumer {
     uint64_t payload_size() { return packet_->payload_size; }
 
    private:
-    SuppliedPacket(MediaPacketPtr packet,
+    SuppliedPacket(uint64_t label,
+                   MediaPacketPtr packet,
                    void* payload,
                    const SupplyPacketCallback& callback,
                    std::shared_ptr<SuppliedPacketCounter> counter);
 
+    uint64_t label_;
     MediaPacketPtr packet_;
     void* payload_;
     SupplyPacketCallback callback_;
@@ -137,11 +141,11 @@ class MediaPacketConsumerBase : public MediaPacketConsumer {
 
     // Records the departure of a packet and returns the current demand update,
     // if any.
-    MediaPacketDemandPtr OnPacketDeparture() {
+    MediaPacketDemandPtr OnPacketDeparture(uint64_t label) {
       CHECK_THREAD(thread_checker_);
       --packets_outstanding_;
       return (owner_ == nullptr) ? nullptr
-                                 : owner_->GetDemandForPacketDeparture();
+                                 : owner_->GetDemandForPacketDeparture(label);
     }
 
     // Returns number of packets currently outstanding.
@@ -163,7 +167,7 @@ class MediaPacketConsumerBase : public MediaPacketConsumer {
 
   // Returns the demand update, if any, to be included in a SupplyPacket
   // callback.
-  MediaPacketDemandPtr GetDemandForPacketDeparture();
+  MediaPacketDemandPtr GetDemandForPacketDeparture(uint64_t label);
 
   Binding<MediaPacketConsumer> binding_;
   MappedSharedBuffer buffer_;
@@ -172,8 +176,11 @@ class MediaPacketConsumerBase : public MediaPacketConsumer {
   bool returning_packet_ = false;
   PullDemandUpdateCallback get_demand_update_callback_;
   std::shared_ptr<SuppliedPacketCounter> counter_;
+  uint64_t prev_packet_label_ = 0;
 
   DECLARE_THREAD_CHECKER(thread_checker_);
+
+  FLOG_CHANNEL(logs::MediaPacketConsumerChannel, log_channel_);
 };
 
 }  // namespace media
