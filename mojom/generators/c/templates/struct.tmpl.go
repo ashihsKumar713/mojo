@@ -51,6 +51,10 @@ void {{$struct.Name}}_DecodePointersAndHandles(
   struct {{$struct.Name}}* inout_struct, uint32_t in_struct_size,
   MojoHandle inout_handles[], uint32_t in_num_handles);
 
+MojomValidationResult {{$struct.Name}}_Validate(
+  const struct {{$struct.Name}}* in_struct, uint32_t in_struct_size,
+  uint32_t in_num_handles);
+
 {{end}}
 `
 
@@ -87,6 +91,19 @@ void {{$struct.Name}}_DecodePointersAndHandles(
     &{{$struct.Name}}__TypeDesc,
     (struct MojomStructHeader*)inout_struct, in_struct_size,
     inout_handles, in_num_handles);
+}
+
+MojomValidationResult {{$struct.Name}}_Validate(
+  const struct {{$struct.Name}}* in_struct, uint32_t in_struct_size,
+  uint32_t in_num_handles) {
+  struct MojomValidationContext context = {
+    .next_handle_index = 0,
+    .next_pointer = (char*)in_struct + in_struct->header_.num_bytes,
+  };
+  return MojomStruct_Validate(
+    &{{$struct.Name}}__TypeDesc,
+    (struct MojomStructHeader*)in_struct, in_struct_size, in_num_handles,
+    &context);
 }
 
 {{end}}

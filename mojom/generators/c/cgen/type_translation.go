@@ -267,7 +267,8 @@ func mojomTypeIsUnion(typ mojom_types.Type, fileGraph *mojom_files.MojomFileGrap
 	return false
 }
 
-func mojomTypeSize(typ mojom_types.Type, fileGraph *mojom_files.MojomFileGraph) uint32 {
+// Returns the inlined (in a struct or array) size of a type in bytes.
+func mojomTypeByteSize(typ mojom_types.Type, fileGraph *mojom_files.MojomFileGraph) uint32 {
 	switch typ.(type) {
 	case *mojom_types.TypeSimpleType:
 		switch typ.Interface().(mojom_types.SimpleType) {
@@ -312,6 +313,7 @@ func mojomTypeSize(typ mojom_types.Type, fileGraph *mojom_files.MojomFileGraph) 
 	return 0
 }
 
+// Returns the inlined (in a struct or array) size of a reference type.
 func referenceTypeSize(typ mojom_types.TypeReference, fileGraph *mojom_files.MojomFileGraph) uint32 {
 	if typ.IsInterfaceRequest {
 		return 4
@@ -330,4 +332,17 @@ func referenceTypeSize(typ mojom_types.TypeReference, fileGraph *mojom_files.Moj
 	}
 	log.Fatal("Uhoh, should not be here.", udt.Interface())
 	return 0
+}
+
+// Same as mojomTypeByteSize, but in bits.
+func mojomTypeBitSize(typ mojom_types.Type, fileGraph *mojom_files.MojomFileGraph) uint32 {
+	switch typ.(type) {
+	case *mojom_types.TypeSimpleType:
+		switch typ.Interface().(mojom_types.SimpleType) {
+		case mojom_types.SimpleType_Bool:
+			return 1
+		}
+	}
+
+	return 8 * mojomTypeByteSize(typ, fileGraph)
 }

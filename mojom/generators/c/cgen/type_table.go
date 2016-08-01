@@ -12,6 +12,7 @@ import (
 	"log"
 	"mojom/generated/mojom_files"
 	"mojom/generated/mojom_types"
+	"sort"
 )
 
 type StructPointerTableEntry struct {
@@ -35,11 +36,20 @@ type ArrayPointerTableEntry struct {
 	NumElements uint32
 	Nullable    bool
 	ElemType    string
+	ElemNumBits uint32
 }
 
+type StructVersion struct {
+	Version  uint32
+	NumBytes uint32
+}
+type StructVersions []StructVersion
+
 type StructPointerTable struct {
-	Name    string
-	Entries []StructPointerTableEntry
+	Name string
+	// List of version -> struct sizes, ordered by increasing version.
+	Versions StructVersions
+	Entries  []StructPointerTableEntry
 }
 type UnionPointerTable struct {
 	Name    string
@@ -61,6 +71,10 @@ type TypeTableTemplate struct {
 	// Used to look up user-defined references.
 	fileGraph *mojom_files.MojomFileGraph
 }
+
+func (a StructVersions) Len() int           { return len(a) }
+func (a StructVersions) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a StructVersions) Less(i, j int) bool { return a[i].Version < a[j].Version }
 
 func (table *TypeTableTemplate) getTableForUDT(typeRef mojom_types.TypeReference) (elemTable string, elemType string, nullable bool) {
 	nullable = typeRef.Nullable
@@ -111,7 +125,7 @@ func (table *TypeTableTemplate) makeTableForType(prefix string, dataType mojom_t
 		table.counter++
 		typ := dataType.Interface().(mojom_types.MapType)
 		elemTable = "&" + table.makeMapPointerTable(mapTableName, typ)
-		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_STRUCT_PTR"
+		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_MAP_PTR"
 		nullable = typ.Nullable
 	case *mojom_types.TypeHandleType:
 		typ := dataType.Interface().(mojom_types.HandleType)
@@ -123,6 +137,7 @@ func (table *TypeTableTemplate) makeTableForType(prefix string, dataType mojom_t
 	case *mojom_types.TypeSimpleType:
 		elemTable = "NULL"
 		elemType = "MOJOM_TYPE_DESCRIPTOR_TYPE_POD"
+		nullable = false
 	default:
 		log.Fatal("uhoh, should not be here.")
 	}
@@ -140,6 +155,7 @@ func (table *TypeTableTemplate) makeArrayPointerEntry(prefix string, f mojom_typ
 	entry := ArrayPointerTableEntry{
 		Name:        prefix + "__TypeDesc",
 		NumElements: numElements,
+		ElemNumBits: mojomTypeBitSize(f.ElementType, table.fileGraph),
 		Nullable:    f.Nullable,
 	}
 	entry.ElemTable, entry.ElemType, entry.Nullable = table.makeTableForType(prefix, f.ElementType)
@@ -151,6 +167,12 @@ func (table *TypeTableTemplate) makeArrayPointerEntry(prefix string, f mojom_typ
 func (table *TypeTableTemplate) makeMapPointerTable(prefix string, f mojom_types.MapType) string {
 	structTable := StructPointerTable{
 		Name: prefix + "__TypeDesc",
+		Versions: []StructVersion{
+			{
+				Version:  0,
+				NumBytes: 24, // A map has a struct header, and 2 pointers to arrays.
+			},
+		},
 	}
 
 	keyType := mojom_types.ArrayType{
@@ -241,6 +263,17 @@ func (table *TypeTableTemplate) insertStructPointerTable(s mojom_types.MojomStru
 	structTable := StructPointerTable{
 		Name: structTablePrefix + "__TypeDesc",
 	}
+	if s.VersionInfo != nil {
+		for _, structVersion := range *s.VersionInfo {
+			structTable.Versions = append(structTable.Versions, StructVersion{
+				Version:  structVersion.VersionNumber,
+				NumBytes: structVersion.NumBytes,
+			})
+		}
+		// Sort by verion number in increasing order.
+		sort.Sort(structTable.Versions)
+	}
+
 	for _, field := range s.Fields {
 		if table.isPointerOrHandle(field.Type) {
 			structTable.Entries = append(structTable.Entries, table.makeStructPointerTableEntry(

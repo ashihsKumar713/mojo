@@ -43,6 +43,7 @@ struct MojomTypeDescriptorUnion {{$union.Name}};
 static struct MojomTypeDescriptorArray {{$array.Name}} = {
   .elem_type = {{$array.ElemType}},
   .elem_descriptor = {{$array.ElemTable}},
+  .elem_num_bits = {{$array.ElemNumBits}},
   .num_elements = {{$array.NumElements}},
   .nullable = {{$array.Nullable}},
 };
@@ -62,7 +63,15 @@ struct MojomTypeDescriptorStructEntry {{$struct.Name}}_Entries[] = {
 {{end -}}
 };
 
+struct MojomTypeDescriptorStructVersion {{$struct.Name}}_Versions[] = {
+{{- range $version := $struct.Versions}}
+  { .version = {{$version.Version}}, .num_bytes = {{$version.NumBytes}} },
+{{end -}}
+};
+
 struct MojomTypeDescriptorStruct {{$struct.Name}} = {
+  .num_versions = {{len $struct.Versions}}ul,
+  .versions = {{$struct.Name}}_Versions,
   .num_entries = {{len $struct.Entries}}ul,
   .entries = {{$struct.Name}}_Entries,
 };

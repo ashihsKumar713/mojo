@@ -447,7 +447,7 @@ func getPaddingAfter(fields []mojom_types.StructField, i int, fileGraph *mojom_f
 	// Calculate the remaining padding for the last field
 	if i == len(fields)-1 {
 		// m = (field offset + field size) % kAlignment
-		m := (fields[i].Offset + mojomTypeSize(fields[i].Type, fileGraph)) & (kAlignment - 1)
+		m := (fields[i].Offset + mojomTypeByteSize(fields[i].Type, fileGraph)) & (kAlignment - 1)
 		if m != 0 {
 			return kAlignment - m
 		}
@@ -456,7 +456,7 @@ func getPaddingAfter(fields []mojom_types.StructField, i int, fileGraph *mojom_f
 
 	// (next element's offset)
 	//  - (current element's offset + current element's size)
-	diff := int64(fields[i+1].Offset) - (int64(fields[i].Offset) + int64(mojomTypeSize(fields[i].Type, fileGraph)))
+	diff := int64(fields[i+1].Offset) - (int64(fields[i].Offset) + int64(mojomTypeByteSize(fields[i].Type, fileGraph)))
 	if diff <= 0 {
 		return 0
 	}
