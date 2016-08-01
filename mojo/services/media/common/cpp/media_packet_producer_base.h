@@ -8,9 +8,11 @@
 #include <limits>
 #include <mutex>
 
+#include "mojo/services/flog/cpp/flog.h"
 #include "mojo/services/media/common/cpp/shared_media_buffer_allocator.h"
 #include "mojo/services/media/common/cpp/thread_checker.h"
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
+#include "mojo/services/media/logs/interfaces/media_packet_producer_channel.mojom.h"
 
 namespace mojo {
 namespace media {
@@ -92,6 +94,7 @@ class MediaPacketProducerBase {
   SharedMediaBufferAllocator allocator_;
   MediaPacketConsumerPtr consumer_;
   bool flush_in_progress_ = false;
+  uint64_t prev_packet_label_ = 0;
 
   mutable std::mutex lock_;
   // Fields below are protected by lock_.
@@ -102,6 +105,8 @@ class MediaPacketProducerBase {
   // Fields above are protected by lock_.
 
   DECLARE_THREAD_CHECKER(thread_checker_);
+
+  FLOG_CHANNEL(logs::MediaPacketProducerChannel, log_channel_);
 };
 
 }  // namespace media

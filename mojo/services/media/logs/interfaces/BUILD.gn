@@ -10,6 +10,7 @@ mojom("interfaces") {
     "media_decoder_channel.mojom",
     "media_demux_channel.mojom",
     "media_packet_consumer_channel.mojom",
+    "media_packet_producer_channel.mojom",
     "media_player_channel.mojom",
     "media_sink_channel.mojom",
   ]
