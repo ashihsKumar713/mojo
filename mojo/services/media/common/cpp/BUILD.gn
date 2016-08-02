@@ -19,6 +19,8 @@ mojo_sdk_source_set("cpp") {
     "media_packet_consumer_base.h",
     "media_packet_producer_base.cc",
     "media_packet_producer_base.h",
+    "shared_buffer_set.cc",
+    "shared_buffer_set.h",
     "shared_media_buffer_allocator.cc",
     "shared_media_buffer_allocator.h",
     "thread_checker.h",

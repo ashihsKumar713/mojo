@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "mojo/public/cpp/system/buffer.h"
-#include "mojo/services/media/common/cpp/fifo_allocator.h"
 
 namespace mojo {
 namespace media {
