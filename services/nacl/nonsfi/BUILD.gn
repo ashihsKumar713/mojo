@@ -60,6 +60,7 @@ if (!is_nacl) {
         "//base",
         "//mojo/nacl/nonsfi:irt_mojo",
         "//mojo/public/cpp/application:standalone",
+        "//mojo/public/cpp/bindings",
         "//native_client/src/nonsfi/loader:elf_loader",
       ]
     }
@@ -75,6 +76,7 @@ if (!is_nacl) {
         "//base",
         "//mojo/nacl/nonsfi:irt_mojo",
         "//mojo/public/cpp/application:standalone",
+        "//mojo/public/cpp/bindings",
         "//native_client/src/nonsfi/loader:elf_loader",
       ]
     }

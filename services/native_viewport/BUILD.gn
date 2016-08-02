@@ -112,6 +112,7 @@ source_set("lib") {
     "//mojo/converters/input_events",
     "//mojo/converters/native_viewport",
     "//mojo/environment:chromium",
+    "//mojo/public/cpp/bindings",
     "//mojo/services/geometry/interfaces",
     "//mojo/services/native_viewport/interfaces",
     "//services/gles2",

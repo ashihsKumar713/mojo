@@ -12,6 +12,7 @@ mojo_native_application("notification_generator") {
   deps = [
     "//base",
     "//mojo/application",
+    "//mojo/public/cpp/bindings",
     "//mojo/public/interfaces/application:application__generator",
     "//mojo/services/notifications/interfaces",
   ]

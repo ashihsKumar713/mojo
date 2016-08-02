@@ -57,10 +57,11 @@ static_library("irt_mojo") {
     "//mojo/public/c/gpu:MGL_onscreen",
     "//mojo/public/c/gpu:MGL_signal_sync_point",
     "//mojo/public/c/system",
+    "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/utility",
     "//mojo/public/platform/nacl:mojo_irt_header",
-    "//mojo/public/platform/native:mgl_thunks",
     "//mojo/public/platform/native:mgl_onscreen_thunks",
+    "//mojo/public/platform/native:mgl_thunks",
     "//mojo/services/files/interfaces",
     "//native_client/src/nonsfi/irt:irt_interfaces",
     "//services/nacl/nonsfi:pnacl_translator_irt",
@@ -147,8 +148,8 @@ action("prepend_shebang_to_nexe") {
 group("monacl_test_nexes") {
   testonly = true
   deps = [
-    ":translate_mojo_pnacl_tests_to_native",
     ":prepend_shebang_to_nexe",
+    ":translate_mojo_pnacl_tests_to_native",
   ]
 }
 

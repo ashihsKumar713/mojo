@@ -13,6 +13,7 @@ source_set("log_impl") {
   deps = [
     "//base",
     "//mojo/public/cpp/application",
+    "//mojo/public/cpp/bindings",
     "//mojo/services/log/interfaces",
   ]
 }
@@ -41,11 +42,11 @@ mojo_native_application("apptests") {
   deps = [
     ":log_impl",
     "//base",
+    "//base/test:test_config",
     "//mojo/application",
     "//mojo/application:test_support",
     "//mojo/public/cpp/bindings",
     "//mojo/services/log/interfaces",
     "//testing/gtest",
-    "//base/test:test_config",
   ]
 }

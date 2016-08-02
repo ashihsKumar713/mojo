@@ -68,6 +68,7 @@ test("dart_to_cpp_unittests") {
     ":dart_test",
     ":dart_test_deps",
     ":dart_to_cpp_bindings",
+    "//mojo/public/cpp/bindings",
   ]
 }
 

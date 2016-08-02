@@ -39,7 +39,7 @@ source_set("lib") {
     "//base",
     "//mojo/application",
     "//mojo/public/cpp/application",
-    "//mojo/public/cpp/bindings:callback",
+    "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//mojo/services/files/interfaces",
   ]

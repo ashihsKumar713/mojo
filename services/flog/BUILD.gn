@@ -21,6 +21,7 @@ mojo_native_application("flog") {
     "//base",
     "//mojo/application",
     "//mojo/public/cpp/application",
+    "//mojo/public/cpp/bindings",
     "//mojo/services/files/interfaces",
     "//mojo/services/flog/interfaces",
     "//services/util/cpp",
