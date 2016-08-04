@@ -1,0 +1,23 @@
+# Copyright 2015 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/mojo_application.gni")
+
+group("echo_client") {
+  deps = [
+    ":c_echo_client",
+  ]
+}
+
+mojo_native_application("c_echo_client") {
+  sources = [
+    "echo_client.c",
+  ]
+
+  deps = [
+    "//examples/echo:bindings_c",
+    "//mojo/public/c/system",
+    "//mojo/public/interfaces/application:application_c",
+  ]
+}
