@@ -54,7 +54,8 @@ class FlogLoggerImpl : public FlogServiceImpl::ProductBase,
 
   void LogChannelCreation(int64_t time_us,
                           uint32_t channel_id,
-                          const String& type_name) override;
+                          const String& type_name,
+                          uint64_t subject_address) override;
 
   void LogChannelMessage(int64_t time_us,
                          uint32_t channel_id,

@@ -102,7 +102,7 @@ class MediaDemuxImpl : public MediaFactoryService::Product<MediaDemux>,
   std::vector<std::unique_ptr<Stream>> streams_;
   MojoPublisher<GetMetadataCallback> metadata_publisher_;
 
-  FLOG_CHANNEL(logs::MediaDemuxChannel, log_channel_);
+  FLOG_INSTANCE_CHANNEL(logs::MediaDemuxChannel, log_channel_);
 };
 
 }  // namespace media

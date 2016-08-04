@@ -144,7 +144,7 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
   InterfaceHandle<MediaRenderer> audio_renderer_;
   InterfaceHandle<MediaRenderer> video_renderer_;
 
-  FLOG_CHANNEL(logs::MediaPlayerChannel, log_channel_);
+  FLOG_INSTANCE_CHANNEL(logs::MediaPlayerChannel, log_channel_);
 };
 
 }  // namespace media

@@ -71,9 +71,13 @@ class MediaPacketProducerBase {
  protected:
   // Called when demand is updated. If demand is updated in a SupplyPacket
   // callback, the DemandUpdatedCallback is called before the
-  // ProducePacketCallback. The default implementation does nothing.
+  // ProducePacketCallback.
+  // NOTE: We could provide a default implementation, but that makes 'this'
+  // have a null value during member initialization, thereby breaking
+  // FLOG_INSTANCE_CHANNEL. As a workaround, this method has been made pure
+  // virtual.
   virtual void OnDemandUpdated(uint32_t min_packets_outstanding,
-                               int64_t min_pts);
+                               int64_t min_pts) = 0;
 
   // Called when a fatal error occurs. The default implementation does nothing.
   virtual void OnFailure();
@@ -106,7 +110,7 @@ class MediaPacketProducerBase {
 
   DECLARE_THREAD_CHECKER(thread_checker_);
 
-  FLOG_CHANNEL(logs::MediaPacketProducerChannel, log_channel_);
+  FLOG_INSTANCE_CHANNEL(logs::MediaPacketProducerChannel, log_channel_);
 };
 
 }  // namespace media

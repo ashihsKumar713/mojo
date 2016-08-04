@@ -35,7 +35,8 @@ interface FlogLogger {
       uint32 source_line);
 
   // Logs the creation of a channel.
-  LogChannelCreation(int64 time_us, uint32 channel_id, string type_name);
+  LogChannelCreation(int64 time_us, uint32 channel_id, string type_name,
+      uint64 subject_address);
 
   // Logs a message sent to an existing channel.
   LogChannelMessage(int64 time_us, uint32 channel_id, array<uint8> data);
@@ -91,6 +92,7 @@ struct FlogMojoLoggerMessageEntryDetails {
 
 struct FlogChannelCreationEntryDetails {
   string type_name;
+  uint64 subject_address;
 };
 
 struct FlogChannelMessageEntryDetails {

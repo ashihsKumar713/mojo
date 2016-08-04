@@ -172,6 +172,7 @@ void FlogViewer::OnChannelCreated(
     const FlogChannelCreationEntryDetailsPtr& details) {
   if (format_ == kFormatTerse || format_ == kFormatFull) {
     std::cout << entry << "channel created, type " << details->type_name
+              << ", address " << AsAddress(details->subject_address)
               << std::endl;
   }
 
@@ -180,11 +181,32 @@ void FlogViewer::OnChannelCreated(
     std::cout << entry << "    ERROR: CHANNEL ALREADY EXISTS" << std::endl;
   }
 
-  std::shared_ptr<ChannelHandler> handler =
-      ChannelHandler::Create(details->type_name, format_);
-  std::shared_ptr<Channel> channel =
-      Channel::Create(entry->log_id, entry->channel_id, entry_index,
-                      ChannelHandler::Create(details->type_name, format_));
+  std::shared_ptr<Channel> channel;
+
+  auto subject_iter =
+      channels_by_subject_address_.find(details->subject_address);
+  if (subject_iter != channels_by_subject_address_.end()) {
+    if (subject_iter->second->resolved()) {
+      std::cout << entry
+                << "    ERROR: NEW CHANNEL SHARES SUBJECT ADDRESS WITH "
+                   "EXISTING CHANNEL "
+                << subject_iter->second << std::endl;
+    } else {
+      channel = subject_iter->second;
+      channel->Resolve(entry->log_id, entry->channel_id, entry_index,
+                       ChannelHandler::Create(details->type_name, format_));
+    }
+  }
+
+  if (!channel) {
+    channel = Channel::Create(
+        entry->log_id, entry->channel_id, entry_index, details->subject_address,
+        ChannelHandler::Create(details->type_name, format_));
+    if (details->subject_address != 0) {
+      channels_by_subject_address_.insert(
+          std::make_pair(details->subject_address, channel));
+    }
+  }
   channels_by_channel_id_.insert(std::make_pair(entry->channel_id, channel));
 }
 
@@ -202,7 +224,23 @@ void FlogViewer::OnChannelMessage(
     return;
   }
 
-  iter->second->handler()->HandleMessage(entry_index, entry, &message);
+  iter->second->handler()->HandleMessage(
+      entry_index, entry, &message, [this](uint64_t subject_address) {
+        if (subject_address == 0) {
+          return std::shared_ptr<Channel>();
+        }
+
+        auto iter = channels_by_subject_address_.find(subject_address);
+        if (iter != channels_by_subject_address_.end()) {
+          return iter->second;
+        }
+
+        std::shared_ptr<Channel> channel =
+            Channel::CreateUnresolved(subject_address);
+        channels_by_subject_address_.insert(
+            std::make_pair(subject_address, channel));
+        return channel;
+      });
 }
 
 void FlogViewer::OnChannelDeleted(

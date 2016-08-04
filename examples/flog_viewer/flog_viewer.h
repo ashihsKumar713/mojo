@@ -87,6 +87,7 @@ class FlogViewer {
   FlogServicePtr service_;
   FlogReaderPtr reader_;
   std::map<uint32_t, std::shared_ptr<Channel>> channels_by_channel_id_;
+  std::map<uint64_t, std::shared_ptr<Channel>> channels_by_subject_address_;
 };
 
 }  // namespace examples

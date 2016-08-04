@@ -240,11 +240,13 @@ void FlogReaderImpl::LogMojoLoggerMessage(int64_t time_us,
 
 void FlogReaderImpl::LogChannelCreation(int64_t time_us,
                                         uint32_t channel_id,
-                                        const String& type_name) {
+                                        const String& type_name,
+                                        uint64_t subject_address) {
   entry_ = CreateEntry(time_us, channel_id);
   FlogChannelCreationEntryDetailsPtr details =
       FlogChannelCreationEntryDetails::New();
   details->type_name = type_name;
+  details->subject_address = subject_address;
   entry_->details->set_channel_creation(details.Pass());
 }
 

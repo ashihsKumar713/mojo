@@ -28,12 +28,14 @@ void Flog::Initialize(Shell* shell, const std::string& label) {
 
 // static
 void Flog::LogChannelCreation(uint32_t channel_id,
-                              const char* channel_type_name) {
+                              const char* channel_type_name,
+                              uint64_t subject_address) {
   if (!logger_) {
     return;
   }
 
-  logger_->LogChannelCreation(GetTime(), channel_id, channel_type_name);
+  logger_->LogChannelCreation(GetTime(), channel_id, channel_type_name,
+                              subject_address);
 }
 
 // static
@@ -105,9 +107,10 @@ FlogLoggerPtr Flog::logger_;
 // static
 const MojoLogger* Flog::fallback_logger_;
 
-FlogChannel::FlogChannel(const char* channel_type_name)
+FlogChannel::FlogChannel(const char* channel_type_name,
+                         uint64_t subject_address)
     : id_(Flog::AllocateChannelId()) {
-  Flog::LogChannelCreation(id_, channel_type_name);
+  Flog::LogChannelCreation(id_, channel_type_name, subject_address);
 }
 
 FlogChannel::~FlogChannel() {

@@ -67,6 +67,10 @@ std::ostream& operator<<(std::ostream& os, AsLogLevel value) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Channel& value) {
+  if (!value.resolved()) {
+    return os << "unresolved address " << AsAddress(value.subject_address());
+  }
+
   return os << "CHANNEL " << value.log_id() << "." << std::setw(2)
             << std::setfill('0') << value.channel_id();
 }

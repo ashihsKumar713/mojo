@@ -186,11 +186,6 @@ void MediaPacketProducerBase::OnFailure() {
   CHECK_THREAD(thread_checker_);
 }
 
-void MediaPacketProducerBase::OnDemandUpdated(uint32_t min_packets_outstanding,
-                                              int64_t min_pts) {
-  CHECK_THREAD(thread_checker_);
-}
-
 bool MediaPacketProducerBase::EnsureAllocatorInitialized() {
   if (allocator_.initialized()) {
     return true;

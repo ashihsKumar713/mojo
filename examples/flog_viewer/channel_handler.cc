@@ -30,18 +30,30 @@ ChannelHandler::ChannelHandler() {}
 
 ChannelHandler::~ChannelHandler() {}
 
-void ChannelHandler::HandleMessage(uint32_t entry_index,
-                                   const FlogEntryPtr& entry,
-                                   Message* message) {
+void ChannelHandler::HandleMessage(
+    uint32_t entry_index,
+    const FlogEntryPtr& entry,
+    Message* message,
+    const ChannelLookupCallback& channel_lookup_callback) {
   entry_index_ = entry_index;
   entry_ = &entry;
+  channel_lookup_callback_ = channel_lookup_callback;
   HandleMessage(message);
   entry_index_ = 0;
   entry_ = nullptr;
+  channel_lookup_callback_ = nullptr;
 }
 
 std::shared_ptr<Accumulator> ChannelHandler::GetAccumulator() {
   return nullptr;
+}
+
+std::shared_ptr<Channel> ChannelHandler::AsChannel(uint64_t subject_address) {
+  if (!channel_lookup_callback_) {
+    return nullptr;
+  }
+
+  return channel_lookup_callback_(subject_address);
 }
 
 }  // namespace examples

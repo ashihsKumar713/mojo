@@ -80,16 +80,21 @@ bool FlogLoggerImpl::Accept(Message* message) {
   DCHECK(message->data_num_bytes() > 0);
   DCHECK(message->data() != nullptr);
 
-  uint32_t message_size = message->data_num_bytes();
+    uint32_t message_size = message->data_num_bytes();
 
   WriteData(sizeof(message_size), &message_size);
   WriteData(message_size, message->data());
 
   // Call the stub to output mojo logger messages to stderr. This has to
   // happen after we write the message to the file, because deserialization
-  // mutates the message.
+  // mutates the message. We only do this for LogMojoLoggerMessage.
   // TODO(dalesat): Provide a switch to turn this off.
-  stub_.Accept(message);
+  if (static_cast<mojo::flog::internal::FlogLogger_Base::MessageOrdinals>(
+          message->header()->name) ==
+      mojo::flog::internal::FlogLogger_Base::MessageOrdinals::
+          LogMojoLoggerMessage) {
+    stub_.Accept(message);
+  }
 
   return true;
 }
@@ -126,7 +131,8 @@ void FlogLoggerImpl::LogMojoLoggerMessage(int64_t time_us,
 
 void FlogLoggerImpl::LogChannelCreation(int64_t time_us,
                                         uint32_t channel_id,
-                                        const String& type_name) {}
+                                        const String& type_name,
+                                        uint64_t subject_address) {}
 
 void FlogLoggerImpl::LogChannelMessage(int64_t time_us,
                                        uint32_t channel_id,

@@ -180,7 +180,7 @@ class MediaPacketConsumerBase : public MediaPacketConsumer {
 
   DECLARE_THREAD_CHECKER(thread_checker_);
 
-  FLOG_CHANNEL(logs::MediaPacketConsumerChannel, log_channel_);
+  FLOG_INSTANCE_CHANNEL(logs::MediaPacketConsumerChannel, log_channel_);
 };
 
 }  // namespace media

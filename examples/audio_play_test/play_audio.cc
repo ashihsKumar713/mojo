@@ -168,6 +168,10 @@ PlayAudioApp::MediaPacketProducer::MediaPacketProducer() {}
 
 PlayAudioApp::MediaPacketProducer::~MediaPacketProducer() {}
 
+void PlayAudioApp::MediaPacketProducer::OnDemandUpdated(
+    uint32_t min_packets_outstanding,
+    int64_t min_pts) {}
+
 void PlayAudioApp::MediaPacketProducer::OnFailure() {
   if (failure_callback_) {
     failure_callback_();

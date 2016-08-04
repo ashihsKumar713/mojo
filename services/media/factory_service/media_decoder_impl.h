@@ -51,7 +51,7 @@ class MediaDecoderImpl
   std::shared_ptr<Decoder> decoder_;
   std::shared_ptr<MojoPacketProducer> producer_;
 
-  FLOG_CHANNEL(logs::MediaDecoderChannel, log_channel_);
+  FLOG_INSTANCE_CHANNEL(logs::MediaDecoderChannel, log_channel_);
 };
 
 }  // namespace media

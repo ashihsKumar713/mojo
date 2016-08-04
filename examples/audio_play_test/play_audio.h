@@ -63,6 +63,9 @@ class PlayAudioApp : public ApplicationImplBase {
     }
 
    protected:
+    void OnDemandUpdated(uint32_t min_packets_outstanding,
+                         int64_t min_pts) override;
+
     void OnFailure() override;
 
    private:

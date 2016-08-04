@@ -253,14 +253,16 @@ class FlogMojoLoggerMessageEntryDetails extends bindings.Struct {
 
 class FlogChannelCreationEntryDetails extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(16, 0)
+    const bindings.StructDataHeader(24, 0)
   ];
   String typeName = null;
+  int subjectAddress = 0;
 
   FlogChannelCreationEntryDetails() : super(kVersions.last.size);
 
   FlogChannelCreationEntryDetails.init(
-    String this.typeName
+    String this.typeName, 
+    int this.subjectAddress
   ) : super(kVersions.last.size);
 
   static FlogChannelCreationEntryDetails deserialize(bindings.Message message) =>
@@ -276,6 +278,10 @@ class FlogChannelCreationEntryDetails extends bindings.Struct {
       
       result.typeName = decoder0.decodeString(8, false);
     }
+    if (mainDataHeader.version >= 0) {
+      
+      result.subjectAddress = decoder0.decodeUint64(16);
+    }
     return result;
   }
 
@@ -286,6 +292,8 @@ class FlogChannelCreationEntryDetails extends bindings.Struct {
     try {
       fieldName = "typeName";
       encoder0.encodeString(typeName, 8, false);
+      fieldName = "subjectAddress";
+      encoder0.encodeUint64(subjectAddress, 16);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -294,12 +302,14 @@ class FlogChannelCreationEntryDetails extends bindings.Struct {
 
   String toString() {
     return "FlogChannelCreationEntryDetails("
-           "typeName: $typeName" ")";
+           "typeName: $typeName" ", "
+           "subjectAddress: $subjectAddress" ")";
   }
 
   Map toJson() {
     Map map = new Map();
     map["typeName"] = typeName;
+    map["subjectAddress"] = subjectAddress;
     return map;
   }
 }
@@ -835,18 +845,20 @@ class _FlogLoggerLogMojoLoggerMessageParams extends bindings.Struct {
 
 class _FlogLoggerLogChannelCreationParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(32, 0)
+    const bindings.StructDataHeader(40, 0)
   ];
   int timeUs = 0;
   int channelId = 0;
   String typeName = null;
+  int subjectAddress = 0;
 
   _FlogLoggerLogChannelCreationParams() : super(kVersions.last.size);
 
   _FlogLoggerLogChannelCreationParams.init(
     int this.timeUs, 
     int this.channelId, 
-    String this.typeName
+    String this.typeName, 
+    int this.subjectAddress
   ) : super(kVersions.last.size);
 
   static _FlogLoggerLogChannelCreationParams deserialize(bindings.Message message) =>
@@ -870,6 +882,10 @@ class _FlogLoggerLogChannelCreationParams extends bindings.Struct {
       
       result.typeName = decoder0.decodeString(24, false);
     }
+    if (mainDataHeader.version >= 0) {
+      
+      result.subjectAddress = decoder0.decodeUint64(32);
+    }
     return result;
   }
 
@@ -884,6 +900,8 @@ class _FlogLoggerLogChannelCreationParams extends bindings.Struct {
       encoder0.encodeUint32(channelId, 16);
       fieldName = "typeName";
       encoder0.encodeString(typeName, 24, false);
+      fieldName = "subjectAddress";
+      encoder0.encodeUint64(subjectAddress, 32);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -894,7 +912,8 @@ class _FlogLoggerLogChannelCreationParams extends bindings.Struct {
     return "_FlogLoggerLogChannelCreationParams("
            "timeUs: $timeUs" ", "
            "channelId: $channelId" ", "
-           "typeName: $typeName" ")";
+           "typeName: $typeName" ", "
+           "subjectAddress: $subjectAddress" ")";
   }
 
   Map toJson() {
@@ -902,6 +921,7 @@ class _FlogLoggerLogChannelCreationParams extends bindings.Struct {
     map["timeUs"] = timeUs;
     map["channelId"] = channelId;
     map["typeName"] = typeName;
+    map["subjectAddress"] = subjectAddress;
     return map;
   }
 }
@@ -1738,7 +1758,7 @@ abstract class FlogLogger {
     return p;
   }
   void logMojoLoggerMessage(int timeUs, int logLevel, String message, String sourceFile, int sourceLine);
-  void logChannelCreation(int timeUs, int channelId, String typeName);
+  void logChannelCreation(int timeUs, int channelId, String typeName, int subjectAddress);
   void logChannelMessage(int timeUs, int channelId, List<int> data);
   void logChannelDeletion(int timeUs, int channelId);
 }
@@ -1844,9 +1864,9 @@ class FlogLoggerProxy
     ctrl.sendMessage(params,
         _flogLoggerMethodLogMojoLoggerMessageName);
   }
-  void logChannelCreation(int timeUs, int channelId, String typeName) {
+  void logChannelCreation(int timeUs, int channelId, String typeName, int subjectAddress) {
     if (impl != null) {
-      impl.logChannelCreation(timeUs, channelId, typeName);
+      impl.logChannelCreation(timeUs, channelId, typeName, subjectAddress);
       return;
     }
     if (!ctrl.isBound) {
@@ -1857,6 +1877,7 @@ class FlogLoggerProxy
     params.timeUs = timeUs;
     params.channelId = channelId;
     params.typeName = typeName;
+    params.subjectAddress = subjectAddress;
     ctrl.sendMessage(params,
         _flogLoggerMethodLogChannelCreationName);
   }
@@ -1934,7 +1955,7 @@ class _FlogLoggerStubControl
       case _flogLoggerMethodLogChannelCreationName:
         var params = _FlogLoggerLogChannelCreationParams.deserialize(
             message.payload);
-        _impl.logChannelCreation(params.timeUs, params.channelId, params.typeName);
+        _impl.logChannelCreation(params.timeUs, params.channelId, params.typeName, params.subjectAddress);
         break;
       case _flogLoggerMethodLogChannelMessageName:
         var params = _FlogLoggerLogChannelMessageParams.deserialize(
@@ -2006,8 +2027,8 @@ class FlogLoggerStub
   void logMojoLoggerMessage(int timeUs, int logLevel, String message, String sourceFile, int sourceLine) {
     return impl.logMojoLoggerMessage(timeUs, logLevel, message, sourceFile, sourceLine);
   }
-  void logChannelCreation(int timeUs, int channelId, String typeName) {
-    return impl.logChannelCreation(timeUs, channelId, typeName);
+  void logChannelCreation(int timeUs, int channelId, String typeName, int subjectAddress) {
+    return impl.logChannelCreation(timeUs, channelId, typeName, subjectAddress);
   }
   void logChannelMessage(int timeUs, int channelId, List<int> data) {
     return impl.logChannelMessage(timeUs, channelId, data);

@@ -57,7 +57,7 @@ class MediaSinkImpl : public MediaFactoryService::Product<MediaSink>,
   // problems.
   std::unique_ptr<StreamType> input_stream_type_;
 
-  FLOG_CHANNEL(logs::MediaSinkChannel, log_channel_);
+  FLOG_INSTANCE_CHANNEL(logs::MediaSinkChannel, log_channel_);
 };
 
 }  // namespace media

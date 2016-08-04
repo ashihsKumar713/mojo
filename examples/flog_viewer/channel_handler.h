@@ -13,6 +13,8 @@ namespace mojo {
 namespace flog {
 namespace examples {
 
+class Channel;
+
 // Handler for channel messages.
 //
 // A channel handler is created for each channel that appears in a viewed log.
@@ -26,6 +28,9 @@ namespace examples {
 // to provide callers access to the accumulator.
 class ChannelHandler {
  public:
+  using ChannelLookupCallback =
+      std::function<std::shared_ptr<Channel>(uint64_t)>;
+
   static std::unique_ptr<ChannelHandler> Create(const std::string& type_name,
                                                 const std::string& format);
 
@@ -34,7 +39,8 @@ class ChannelHandler {
   // Handles a channel message.
   void HandleMessage(uint32_t entry_index,
                      const FlogEntryPtr& entry,
-                     Message* message);
+                     Message* message,
+                     const ChannelLookupCallback& channel_lookup_callback);
 
   // Gets the accumulator from the handler, if there is one. The default
   // implementation returns a null pointer.
@@ -60,10 +66,13 @@ class ChannelHandler {
     return *entry_;
   }
 
+  std::shared_ptr<Channel> AsChannel(uint64_t subject_address);
+
  private:
-  // These two fields are only used during calls to HandleMessage().
+  // These fields are only used during calls to HandleMessage().
   uint32_t entry_index_;
   const FlogEntryPtr* entry_;
+  ChannelLookupCallback channel_lookup_callback_;
 };
 
 }  // namespace examples
