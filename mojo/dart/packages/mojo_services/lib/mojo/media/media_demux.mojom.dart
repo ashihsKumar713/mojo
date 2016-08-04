@@ -9,7 +9,74 @@ import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as servic
 import 'package:mojo_services/mojo/media/media_metadata.mojom.dart' as media_metadata_mojom;
 import 'package:mojo_services/mojo/media/media_transport.mojom.dart' as media_transport_mojom;
 import 'package:mojo_services/mojo/media/media_types.mojom.dart' as media_types_mojom;
+import 'package:mojo_services/mojo/media/problem.mojom.dart' as problem_mojom;
 
+
+
+class MediaDemuxStatus extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(24, 0)
+  ];
+  media_metadata_mojom.MediaMetadata metadata = null;
+  problem_mojom.Problem problem = null;
+
+  MediaDemuxStatus() : super(kVersions.last.size);
+
+  MediaDemuxStatus.init(
+    media_metadata_mojom.MediaMetadata this.metadata, 
+    problem_mojom.Problem this.problem
+  ) : super(kVersions.last.size);
+
+  static MediaDemuxStatus deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
+
+  static MediaDemuxStatus decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    MediaDemuxStatus result = new MediaDemuxStatus();
+    var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
+    if (mainDataHeader.version >= 0) {
+      
+      var decoder1 = decoder0.decodePointer(8, true);
+      result.metadata = media_metadata_mojom.MediaMetadata.decode(decoder1);
+    }
+    if (mainDataHeader.version >= 0) {
+      
+      var decoder1 = decoder0.decodePointer(16, true);
+      result.problem = problem_mojom.Problem.decode(decoder1);
+    }
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "MediaDemuxStatus";
+    String fieldName;
+    try {
+      fieldName = "metadata";
+      encoder0.encodeStruct(metadata, 8, true);
+      fieldName = "problem";
+      encoder0.encodeStruct(problem, 16, true);
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "MediaDemuxStatus("
+           "metadata: $metadata" ", "
+           "problem: $problem" ")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    map["metadata"] = metadata;
+    map["problem"] = problem;
+    return map;
+  }
+}
 
 
 class _MediaDemuxDescribeParams extends bindings.Struct {
@@ -188,26 +255,26 @@ class _MediaDemuxGetPacketProducerParams extends bindings.Struct {
 }
 
 
-class _MediaDemuxGetMetadataParams extends bindings.Struct {
+class _MediaDemuxGetStatusParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(16, 0)
   ];
   int versionLastSeen = 0;
 
-  _MediaDemuxGetMetadataParams() : super(kVersions.last.size);
+  _MediaDemuxGetStatusParams() : super(kVersions.last.size);
 
-  _MediaDemuxGetMetadataParams.init(
+  _MediaDemuxGetStatusParams.init(
     int this.versionLastSeen
   ) : super(kVersions.last.size);
 
-  static _MediaDemuxGetMetadataParams deserialize(bindings.Message message) =>
+  static _MediaDemuxGetStatusParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static _MediaDemuxGetMetadataParams decode(bindings.Decoder decoder0) {
+  static _MediaDemuxGetStatusParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    _MediaDemuxGetMetadataParams result = new _MediaDemuxGetMetadataParams();
+    _MediaDemuxGetStatusParams result = new _MediaDemuxGetStatusParams();
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -218,7 +285,7 @@ class _MediaDemuxGetMetadataParams extends bindings.Struct {
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaDemuxGetMetadataParams";
+    const String structName = "_MediaDemuxGetStatusParams";
     String fieldName;
     try {
       fieldName = "versionLastSeen";
@@ -230,7 +297,7 @@ class _MediaDemuxGetMetadataParams extends bindings.Struct {
   }
 
   String toString() {
-    return "_MediaDemuxGetMetadataParams("
+    return "_MediaDemuxGetStatusParams("
            "versionLastSeen: $versionLastSeen" ")";
   }
 
@@ -242,28 +309,28 @@ class _MediaDemuxGetMetadataParams extends bindings.Struct {
 }
 
 
-class MediaDemuxGetMetadataResponseParams extends bindings.Struct {
+class MediaDemuxGetStatusResponseParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(24, 0)
   ];
   int version = 0;
-  media_metadata_mojom.MediaMetadata metadata = null;
+  MediaDemuxStatus status = null;
 
-  MediaDemuxGetMetadataResponseParams() : super(kVersions.last.size);
+  MediaDemuxGetStatusResponseParams() : super(kVersions.last.size);
 
-  MediaDemuxGetMetadataResponseParams.init(
+  MediaDemuxGetStatusResponseParams.init(
     int this.version, 
-    media_metadata_mojom.MediaMetadata this.metadata
+    MediaDemuxStatus this.status
   ) : super(kVersions.last.size);
 
-  static MediaDemuxGetMetadataResponseParams deserialize(bindings.Message message) =>
+  static MediaDemuxGetStatusResponseParams deserialize(bindings.Message message) =>
       bindings.Struct.deserialize(decode, message);
 
-  static MediaDemuxGetMetadataResponseParams decode(bindings.Decoder decoder0) {
+  static MediaDemuxGetStatusResponseParams decode(bindings.Decoder decoder0) {
     if (decoder0 == null) {
       return null;
     }
-    MediaDemuxGetMetadataResponseParams result = new MediaDemuxGetMetadataResponseParams();
+    MediaDemuxGetStatusResponseParams result = new MediaDemuxGetStatusResponseParams();
     var mainDataHeader = bindings.Struct.checkVersion(decoder0, kVersions);
     if (mainDataHeader.version >= 0) {
       
@@ -271,21 +338,21 @@ class MediaDemuxGetMetadataResponseParams extends bindings.Struct {
     }
     if (mainDataHeader.version >= 0) {
       
-      var decoder1 = decoder0.decodePointer(16, true);
-      result.metadata = media_metadata_mojom.MediaMetadata.decode(decoder1);
+      var decoder1 = decoder0.decodePointer(16, false);
+      result.status = MediaDemuxStatus.decode(decoder1);
     }
     return result;
   }
 
   void encode(bindings.Encoder encoder) {
     var encoder0 = encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaDemuxGetMetadataResponseParams";
+    const String structName = "MediaDemuxGetStatusResponseParams";
     String fieldName;
     try {
       fieldName = "version";
       encoder0.encodeUint64(version, 8);
-      fieldName = "metadata";
-      encoder0.encodeStruct(metadata, 16, true);
+      fieldName = "status";
+      encoder0.encodeStruct(status, 16, false);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -293,15 +360,15 @@ class MediaDemuxGetMetadataResponseParams extends bindings.Struct {
   }
 
   String toString() {
-    return "MediaDemuxGetMetadataResponseParams("
+    return "MediaDemuxGetStatusResponseParams("
            "version: $version" ", "
-           "metadata: $metadata" ")";
+           "status: $status" ")";
   }
 
   Map toJson() {
     Map map = new Map();
     map["version"] = version;
-    map["metadata"] = metadata;
+    map["status"] = status;
     return map;
   }
 }
@@ -494,7 +561,7 @@ class MediaDemuxSeekResponseParams extends bindings.Struct {
 
 const int _mediaDemuxMethodDescribeName = 0;
 const int _mediaDemuxMethodGetPacketProducerName = 1;
-const int _mediaDemuxMethodGetMetadataName = 2;
+const int _mediaDemuxMethodGetStatusName = 2;
 const int _mediaDemuxMethodFlushName = 3;
 const int _mediaDemuxMethodSeekName = 4;
 
@@ -536,7 +603,7 @@ abstract class MediaDemux {
   }
   void describe(void callback(List<media_types_mojom.MediaType> streamTypes));
   void getPacketProducer(int streamIndex, media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer);
-  void getMetadata(int versionLastSeen,void callback(int version, media_metadata_mojom.MediaMetadata metadata));
+  void getStatus(int versionLastSeen,void callback(int version, MediaDemuxStatus status));
   void flush(void callback());
   void seek(int position,void callback());
   static const int kInitialMetadata = 0;
@@ -590,12 +657,12 @@ class _MediaDemuxProxyControl
           callback(r.streamTypes );
         }
         break;
-      case _mediaDemuxMethodGetMetadataName:
+      case _mediaDemuxMethodGetStatusName:
         Function callback = getCallback(message);
         if (callback != null) {
-          var r = MediaDemuxGetMetadataResponseParams.deserialize(
+          var r = MediaDemuxGetStatusResponseParams.deserialize(
               message.payload);
-          callback(r.version , r.metadata );
+          callback(r.version , r.status );
         }
         break;
       case _mediaDemuxMethodFlushName:
@@ -696,27 +763,27 @@ class MediaDemuxProxy
     ctrl.sendMessage(params,
         _mediaDemuxMethodGetPacketProducerName);
   }
-  void getMetadata(int versionLastSeen,void callback(int version, media_metadata_mojom.MediaMetadata metadata)) {
+  void getStatus(int versionLastSeen,void callback(int version, MediaDemuxStatus status)) {
     if (impl != null) {
-      impl.getMetadata(versionLastSeen,callback ?? bindings.DoNothingFunction.fn);
+      impl.getStatus(versionLastSeen,callback ?? bindings.DoNothingFunction.fn);
       return;
     }
-    var params = new _MediaDemuxGetMetadataParams();
+    var params = new _MediaDemuxGetStatusParams();
     params.versionLastSeen = versionLastSeen;
     Function zonedCallback;
     if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
       zonedCallback = callback;
     } else {
       Zone z = Zone.current;
-      zonedCallback = ((int version, media_metadata_mojom.MediaMetadata metadata) {
+      zonedCallback = ((int version, MediaDemuxStatus status) {
         z.bindCallback(() {
-          callback(version, metadata);
+          callback(version, status);
         })();
       });
     }
     ctrl.sendMessageWithRequestId(
         params,
-        _mediaDemuxMethodGetMetadataName,
+        _mediaDemuxMethodGetStatusName,
         -1,
         bindings.MessageHeader.kMessageExpectsResponse,
         zonedCallback);
@@ -806,15 +873,15 @@ class _MediaDemuxStubControl
           bindings.MessageHeader.kMessageIsResponse));
     };
   }
-  Function _mediaDemuxGetMetadataResponseParamsResponder(
+  Function _mediaDemuxGetStatusResponseParamsResponder(
       int requestId) {
-  return (int version, media_metadata_mojom.MediaMetadata metadata) {
-      var result = new MediaDemuxGetMetadataResponseParams();
+  return (int version, MediaDemuxStatus status) {
+      var result = new MediaDemuxGetStatusResponseParams();
       result.version = version;
-      result.metadata = metadata;
+      result.status = status;
       sendResponse(buildResponseWithId(
           result,
-          _mediaDemuxMethodGetMetadataName,
+          _mediaDemuxMethodGetStatusName,
           requestId,
           bindings.MessageHeader.kMessageIsResponse));
     };
@@ -860,10 +927,10 @@ class _MediaDemuxStubControl
             message.payload);
         _impl.getPacketProducer(params.streamIndex, params.packetProducer);
         break;
-      case _mediaDemuxMethodGetMetadataName:
-        var params = _MediaDemuxGetMetadataParams.deserialize(
+      case _mediaDemuxMethodGetStatusName:
+        var params = _MediaDemuxGetStatusParams.deserialize(
             message.payload);
-        _impl.getMetadata(params.versionLastSeen, _mediaDemuxGetMetadataResponseParamsResponder(message.header.requestId));
+        _impl.getStatus(params.versionLastSeen, _mediaDemuxGetStatusResponseParamsResponder(message.header.requestId));
         break;
       case _mediaDemuxMethodFlushName:
         _impl.flush(_mediaDemuxFlushResponseParamsResponder(message.header.requestId));
@@ -936,8 +1003,8 @@ class MediaDemuxStub
   void getPacketProducer(int streamIndex, media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer) {
     return impl.getPacketProducer(streamIndex, packetProducer);
   }
-  void getMetadata(int versionLastSeen,void callback(int version, media_metadata_mojom.MediaMetadata metadata)) {
-    return impl.getMetadata(versionLastSeen,callback);
+  void getStatus(int versionLastSeen,void callback(int version, MediaDemuxStatus status)) {
+    return impl.getStatus(versionLastSeen,callback);
   }
   void flush(void callback()) {
     return impl.flush(callback);

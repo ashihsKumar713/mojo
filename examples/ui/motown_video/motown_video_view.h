@@ -105,6 +105,7 @@ class MotownVideoView : public mojo::ui::GLView,
   mojo::media::MediaMetadataPtr metadata_;
   mojo::RectF progress_bar_rect_;
   bool metadata_shown_ = false;
+  bool problem_shown_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(MotownVideoView);
 };

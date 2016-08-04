@@ -93,11 +93,14 @@ class MediaSourceImpl : public MediaFactoryService::Product<MediaSource>,
     std::shared_ptr<NullSink> null_sink_;
   };
 
+  // Runs a seek callback.
+  static void RunSeekCallback(const SeekCallback& callback);
+
   // Handles the completion of demux initialization.
   void OnDemuxInitialized(Result result);
 
-  // Runs a seek callback.
-  static void RunSeekCallback(const SeekCallback& callback);
+  // Reports a problem via status.
+  void ReportProblem(const std::string& type, const std::string& details);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   Array<MediaTypeSetPtr> allowed_media_types_;
@@ -107,6 +110,8 @@ class MediaSourceImpl : public MediaFactoryService::Product<MediaSource>,
   Incident init_complete_;
   std::vector<std::unique_ptr<Stream>> streams_;
   MojoPublisher<GetStatusCallback> status_publisher_;
+  MediaMetadataPtr metadata_;
+  ProblemPtr problem_;
 };
 
 }  // namespace media

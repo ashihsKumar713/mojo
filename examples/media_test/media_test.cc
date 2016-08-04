@@ -61,6 +61,10 @@ const MediaMetadataPtr& MediaTest::metadata() const {
   return metadata_;
 }
 
+const ProblemPtr& MediaTest::problem() const {
+  return problem_;
+}
+
 void MediaTest::HandleStatusUpdates(uint64_t version,
                                     MediaPlayerStatusPtr status) {
   if (status) {
@@ -79,6 +83,7 @@ void MediaTest::HandleStatusUpdates(uint64_t version,
     }
 
     metadata_ = status->metadata.Pass();
+    problem_ = status->problem.Pass();
 
     if (update_callback_ != nullptr) {
       update_callback_();

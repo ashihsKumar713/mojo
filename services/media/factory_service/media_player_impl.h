@@ -94,11 +94,10 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
                   const MediaTypePtr& input_media_type,
                   const std::function<void()>& callback);
 
-  // Handles a metadata update from the demux. When called with the default
-  // argument values, initiates demux metadata updates.
-  void HandleDemuxMetadataUpdates(
-      uint64_t version = MediaDemux::kInitialMetadata,
-      MediaMetadataPtr metadata = nullptr);
+  // Handles a status update from the demux. When called with the default
+  // argument values, initiates demux status updates.
+  void HandleDemuxStatusUpdates(uint64_t version = MediaDemux::kInitialMetadata,
+                                MediaDemuxStatusPtr status = nullptr);
 
   // Handles a status update from the control point. When called with the
   // default argument values, initiates control point. status updates.
@@ -137,6 +136,7 @@ class MediaPlayerImpl : public MediaFactoryService::Product<MediaPlayer>,
 
   CallbackJoiner set_transform_joiner_;
   MediaMetadataPtr metadata_;
+  ProblemPtr demux_problem_;
   MojoPublisher<GetStatusCallback> status_publisher_;
 
   // The following fields are just temporaries used to solve lambda capture

@@ -9,6 +9,7 @@ import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as servic
 import 'package:mojo_services/mojo/media/media_metadata.mojom.dart' as media_metadata_mojom;
 import 'package:mojo_services/mojo/media/media_transport.mojom.dart' as media_transport_mojom;
 import 'package:mojo_services/mojo/media/media_types.mojom.dart' as media_types_mojom;
+import 'package:mojo_services/mojo/media/problem.mojom.dart' as problem_mojom;
 
 
 
@@ -90,14 +91,16 @@ class MediaSourceStreamDescriptor extends bindings.Struct {
 
 class MediaSourceStatus extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(16, 0)
+    const bindings.StructDataHeader(24, 0)
   ];
   media_metadata_mojom.MediaMetadata metadata = null;
+  problem_mojom.Problem problem = null;
 
   MediaSourceStatus() : super(kVersions.last.size);
 
   MediaSourceStatus.init(
-    media_metadata_mojom.MediaMetadata this.metadata
+    media_metadata_mojom.MediaMetadata this.metadata, 
+    problem_mojom.Problem this.problem
   ) : super(kVersions.last.size);
 
   static MediaSourceStatus deserialize(bindings.Message message) =>
@@ -114,6 +117,11 @@ class MediaSourceStatus extends bindings.Struct {
       var decoder1 = decoder0.decodePointer(8, true);
       result.metadata = media_metadata_mojom.MediaMetadata.decode(decoder1);
     }
+    if (mainDataHeader.version >= 0) {
+      
+      var decoder1 = decoder0.decodePointer(16, true);
+      result.problem = problem_mojom.Problem.decode(decoder1);
+    }
     return result;
   }
 
@@ -124,6 +132,8 @@ class MediaSourceStatus extends bindings.Struct {
     try {
       fieldName = "metadata";
       encoder0.encodeStruct(metadata, 8, true);
+      fieldName = "problem";
+      encoder0.encodeStruct(problem, 16, true);
     } on bindings.MojoCodecError catch(e) {
       bindings.Struct.fixErrorMessage(e, fieldName, structName);
       rethrow;
@@ -132,12 +142,14 @@ class MediaSourceStatus extends bindings.Struct {
 
   String toString() {
     return "MediaSourceStatus("
-           "metadata: $metadata" ")";
+           "metadata: $metadata" ", "
+           "problem: $problem" ")";
   }
 
   Map toJson() {
     Map map = new Map();
     map["metadata"] = metadata;
+    map["problem"] = problem;
     return map;
   }
 }

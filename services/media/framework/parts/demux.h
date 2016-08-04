@@ -23,6 +23,10 @@ namespace media {
 class Demux : public ActiveMultistreamSource {
  public:
   using SeekCallback = std::function<void()>;
+  using StatusCallback =
+      std::function<void(const std::unique_ptr<Metadata>& metadata,
+                         const std::string& problem_type,
+                         const std::string& problem_details)>;
 
   // Represents a stream produced by the demux.
   class DemuxStream {
@@ -41,13 +45,12 @@ class Demux : public ActiveMultistreamSource {
 
   ~Demux() override {}
 
+  // Sets a callback to call when metadata or problem changes occur.
+  virtual void SetStatusCallback(const StatusCallback& callback) = 0;
+
   // Calls the callback when the initial streams and metadata have
   // established. THE CALLBACK MAY BE CALLED ON AN ARBITRARY THREAD.
   virtual void WhenInitialized(std::function<void(Result)> callback) = 0;
-
-  // Gets the current metadata. This method should not be called until the
-  // WhenInitialized callback has been called.
-  virtual std::unique_ptr<Metadata> metadata() const = 0;
 
   // Gets the stream collection. This method should not be called until the
   // WhenInitialized callback has been called.

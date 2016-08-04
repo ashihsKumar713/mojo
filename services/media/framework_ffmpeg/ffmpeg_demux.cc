@@ -7,7 +7,9 @@
 #include <mutex>
 #include <thread>
 
+#include "base/bind.h"
 #include "base/logging.h"
+#include "base/message_loop/message_loop.h"
 #include "services/media/framework/util/safe_clone.h"
 #include "services/media/framework_ffmpeg/av_codec_context.h"
 #include "services/media/framework_ffmpeg/av_format_context.h"
@@ -26,9 +28,9 @@ class FfmpegDemuxImpl : public FfmpegDemux {
   ~FfmpegDemuxImpl() override;
 
   // Demux implementation.
-  void WhenInitialized(std::function<void(Result)> callback) override;
+  void SetStatusCallback(const StatusCallback& callback) override;
 
-  std::unique_ptr<Metadata> metadata() const override;
+  void WhenInitialized(std::function<void(Result)> callback) override;
 
   const std::vector<DemuxStream*>& streams() const override;
 
@@ -103,6 +105,12 @@ class FfmpegDemuxImpl : public FfmpegDemux {
   void CopyMetadata(AVDictionary* source,
                     std::map<std::string, std::string>& map);
 
+  // Calls the status callback, if there is one.
+  void SendStatus();
+
+  // Sets the problem values and sends status.
+  void ReportProblem(const std::string& type, const std::string& details);
+
   std::mutex mutex_;
   std::condition_variable condition_variable_;
   std::thread ffmpeg_thread_;
@@ -112,12 +120,16 @@ class FfmpegDemuxImpl : public FfmpegDemux {
   SeekCallback seek_callback_;
   bool packet_requested_ = false;
   bool terminating_ = false;
+  std::unique_ptr<Metadata> metadata_;
+  std::string problem_type_;
+  std::string problem_details_;
 
   // These should be stable after init until the desctructor terminates.
   std::shared_ptr<Reader> reader_;
   std::vector<DemuxStream*> streams_;
   Incident init_complete_;
   Result result_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // After Init, only the ffmpeg thread accesses these.
   AvFormatContextPtr format_context_;
@@ -126,7 +138,7 @@ class FfmpegDemuxImpl : public FfmpegDemux {
   int next_stream_to_end_ = -1;  // -1: don't end, streams_.size(): stop.
 
   SupplyCallback supply_callback_;
-  std::unique_ptr<Metadata> metadata_;
+  StatusCallback status_callback_;
 };
 
 // static
@@ -136,6 +148,8 @@ std::shared_ptr<Demux> FfmpegDemux::Create(std::shared_ptr<Reader> reader) {
 
 FfmpegDemuxImpl::FfmpegDemuxImpl(std::shared_ptr<Reader> reader)
     : reader_(reader) {
+  task_runner_ = base::MessageLoop::current()->task_runner();
+  DCHECK(task_runner_);
   ffmpeg_thread_ = std::thread(std::bind(&FfmpegDemuxImpl::Worker, this));
 }
 
@@ -151,12 +165,12 @@ FfmpegDemuxImpl::~FfmpegDemuxImpl() {
   }
 }
 
-void FfmpegDemuxImpl::WhenInitialized(std::function<void(Result)> callback) {
-  init_complete_.When([this, callback]() { callback(result_); });
+void FfmpegDemuxImpl::SetStatusCallback(const StatusCallback& callback) {
+  status_callback_ = callback;
 }
 
-std::unique_ptr<Metadata> FfmpegDemuxImpl::metadata() const {
-  return SafeClone(metadata_);
+void FfmpegDemuxImpl::WhenInitialized(std::function<void(Result)> callback) {
+  init_complete_.When([this, callback]() { callback(result_); });
 }
 
 const std::vector<Demux::DemuxStream*>& FfmpegDemuxImpl::streams() const {
@@ -191,6 +205,7 @@ void FfmpegDemuxImpl::Worker() {
   if (!io_context_) {
     LOG(ERROR) << "AvIoContext::Create failed";
     result_ = Result::kInternalError;
+    ReportProblem("ProblemInternal", "AvIoContext::Create failed");
     init_complete_.Occur();
     return;
   }
@@ -199,6 +214,7 @@ void FfmpegDemuxImpl::Worker() {
   if (!format_context_) {
     LOG(ERROR) << "AvFormatContext::OpenInput failed";
     result_ = Result::kInternalError;
+    ReportProblem("ProblemAssetNotFound", "");
     init_complete_.Occur();
     return;
   }
@@ -207,6 +223,7 @@ void FfmpegDemuxImpl::Worker() {
   if (r < 0) {
     LOG(ERROR) << "avformat_find_stream_info failed, result " << r;
     result_ = Result::kInternalError;
+    ReportProblem("ProblemInternal", "avformat_find_stream_info failed");
     init_complete_.Occur();
     return;
   }
@@ -219,14 +236,20 @@ void FfmpegDemuxImpl::Worker() {
     CopyMetadata(format_context_->streams[i]->metadata, metadata_map);
   }
 
-  metadata_ =
-      Metadata::Create(format_context_->duration * kNanosecondsPerMicrosecond,
-                       metadata_map["TITLE"], metadata_map["ARTIST"],
-                       metadata_map["ALBUM"], metadata_map["PUBLISHER"],
-                       metadata_map["GENRE"], metadata_map["COMPOSER"]);
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
+    metadata_ =
+        Metadata::Create(format_context_->duration * kNanosecondsPerMicrosecond,
+                         metadata_map["TITLE"], metadata_map["ARTIST"],
+                         metadata_map["ALBUM"], metadata_map["PUBLISHER"],
+                         metadata_map["GENRE"], metadata_map["COMPOSER"]);
+  }
 
   result_ = Result::kOk;
   init_complete_.Occur();
+
+  task_runner_->PostTask(FROM_HERE, base::Bind(&FfmpegDemuxImpl::SendStatus,
+                                               base::Unretained(this)));
 
   while (true) {
     bool packet_requested;
@@ -328,6 +351,36 @@ void FfmpegDemuxImpl::CopyMetadata(AVDictionary* source,
       map.emplace(entry->key, entry->value);
     }
   }
+}
+
+void FfmpegDemuxImpl::SendStatus() {
+  if (!status_callback_) {
+    return;
+  }
+
+  std::unique_ptr<Metadata> metadata;
+  std::string problem_type;
+  std::string problem_details;
+
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
+    metadata = SafeClone(metadata_);
+    problem_type = problem_type_;
+    problem_details = problem_details_;
+  }
+
+  status_callback_(metadata, problem_type, problem_details);
+}
+
+void FfmpegDemuxImpl::ReportProblem(const std::string& type,
+                                    const std::string& details) {
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
+    problem_type_ = type;
+    problem_details_ = details;
+  }
+  task_runner_->PostTask(FROM_HERE, base::Bind(&FfmpegDemuxImpl::SendStatus,
+                                               base::Unretained(this)));
 }
 
 FfmpegDemuxImpl::FfmpegDemuxStream::FfmpegDemuxStream(

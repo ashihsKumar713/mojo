@@ -43,8 +43,8 @@ class MediaDemuxImpl : public MediaFactoryService::Product<MediaDemux>,
       uint32_t stream_index,
       InterfaceRequest<MediaPacketProducer> producer) override;
 
-  void GetMetadata(uint64_t version_last_seen,
-                   const GetMetadataCallback& callback) override;
+  void GetStatus(uint64_t version_last_seen,
+                 const GetStatusCallback& callback) override;
 
   void Flush(const FlushCallback& callback) override;
 
@@ -83,10 +83,14 @@ class MediaDemuxImpl : public MediaFactoryService::Product<MediaDemux>,
     std::shared_ptr<MojoPacketProducer> producer_;
   };
 
+  // Runs the seek callback.
+  static void RunSeekCallback(const SeekCallback& callback);
+
   // Handles the completion of demux initialization.
   void OnDemuxInitialized(Result result);
 
-  static void RunSeekCallback(const SeekCallback& callback);
+  // Reports a problem via status.
+  void ReportProblem(const std::string& type, const std::string& details);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   Graph graph_;
@@ -94,7 +98,9 @@ class MediaDemuxImpl : public MediaFactoryService::Product<MediaDemux>,
   std::shared_ptr<Demux> demux_;
   Incident init_complete_;
   std::vector<std::unique_ptr<Stream>> streams_;
-  MojoPublisher<GetMetadataCallback> metadata_publisher_;
+  MojoPublisher<GetStatusCallback> status_publisher_;
+  MediaMetadataPtr metadata_;
+  ProblemPtr problem_;
 
   FLOG_INSTANCE_CHANNEL(logs::MediaDemuxChannel, log_channel_);
 };

@@ -55,6 +55,9 @@ class MediaTest {
   // Returns the current media metadata, if there is any.
   const MediaMetadataPtr& metadata() const;
 
+  // Returns the current problem, if there is any.
+  const ProblemPtr& problem() const;
+
  private:
   MediaTest(mojo::Shell* shell, const std::string& input_file_name);
 
@@ -68,6 +71,7 @@ class MediaTest {
   State state_ = State::kPaused;
   TimelineFunction timeline_function_;
   MediaMetadataPtr metadata_;
+  ProblemPtr problem_;
   UpdateCallback update_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaTest);

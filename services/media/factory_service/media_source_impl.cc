@@ -41,8 +41,8 @@ MediaSourceImpl::MediaSourceImpl(
   status_publisher_.SetCallbackRunner(
       [this](const GetStatusCallback& callback, uint64_t version) {
         MediaSourceStatusPtr status = MediaSourceStatus::New();
-        status->metadata =
-            demux_ ? MediaMetadata::From(demux_->metadata()) : nullptr;
+        status->metadata = metadata_.Clone();
+        status->problem = problem_.Clone();
         callback.Run(version, status.Pass());
       });
 
@@ -59,6 +59,19 @@ MediaSourceImpl::MediaSourceImpl(
     // TODO(dalesat): Add problem reporting.
     return;
   }
+
+  demux_->SetStatusCallback([this](const std::unique_ptr<Metadata>& metadata,
+                                   const std::string& problem_type,
+                                   const std::string& problem_details) {
+    metadata_ = MediaMetadata::From(metadata);
+    if (problem_type.empty()) {
+      problem_.reset();
+      status_publisher_.SendUpdates();
+    } else {
+      ReportProblem(problem_type, problem_details);
+      // ReportProblem calls status_publisher_.SendUpdates();
+    }
+  });
 
   demux_->WhenInitialized([this](Result result) {
     task_runner_->PostTask(FROM_HERE,
@@ -84,6 +97,14 @@ void MediaSourceImpl::OnDemuxInitialized(Result result) {
   allowed_media_types_.reset();
 
   init_complete_.Occur();
+}
+
+void MediaSourceImpl::ReportProblem(const std::string& type,
+                                    const std::string& details) {
+  problem_ = Problem::New();
+  problem_->type = type;
+  problem_->details = details;
+  status_publisher_.SendUpdates();
 }
 
 void MediaSourceImpl::GetStreams(const GetStreamsCallback& callback) {

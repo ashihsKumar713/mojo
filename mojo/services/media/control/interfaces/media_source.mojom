@@ -8,6 +8,7 @@ module mojo.media;
 import "mojo/services/media/common/interfaces/media_metadata.mojom";
 import "mojo/services/media/common/interfaces/media_transport.mojom";
 import "mojo/services/media/common/interfaces/media_types.mojom";
+import "mojo/services/media/common/interfaces/problem.mojom";
 
 // Produces media streams delivered from a specified origin.
 interface MediaSource {
@@ -49,8 +50,11 @@ struct MediaSourceStreamDescriptor {
   MediaType original_media_type;
 };
 
-// Describes the media source.
+// Describes the status of the media source.
 struct MediaSourceStatus {
   // Describes the media.
   MediaMetadata? metadata;
+
+  // Indicates a problem preventing intended operation.
+  Problem? problem;
 };

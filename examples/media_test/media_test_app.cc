@@ -98,6 +98,7 @@ class MediaTestApp : public mojo::ApplicationImplBase {
     media_test_ = MediaTest::Create(shell(), *input_file_names_iter_);
 
     metadata_shown_ = false;
+    problem_shown_ = false;
     media_test_->RegisterUpdateCallback(
         [this]() { HandleMediaTestUpdateCallback(); });
 
@@ -115,6 +116,7 @@ class MediaTestApp : public mojo::ApplicationImplBase {
     }
 
     const MediaMetadataPtr& metadata = media_test_->metadata();
+    const ProblemPtr& problem = media_test_->problem();
 
     if (metadata) {
       duration_ns_ = metadata->duration;
@@ -127,41 +129,62 @@ class MediaTestApp : public mojo::ApplicationImplBase {
                 << kUp;
     }
 
-    if (!paint_ && metadata_shown_) {
-      // Do nothing.
-    } else if (metadata) {
-      metadata_shown_ = true;
-      std::cout << "    duration   " << std::fixed << std::setprecision(1)
-                << double(metadata->duration) / ns_per_second << " seconds"
-                << clear_line() << std::endl
-                << "    title      "
-                << (metadata->title ? metadata->title : "<none>")
-                << clear_line() << std::endl
-                << "    artist     "
-                << (metadata->artist ? metadata->artist : "<none>")
-                << clear_line() << std::endl
-                << "    album      "
-                << (metadata->album ? metadata->album : "<none>")
-                << clear_line() << std::endl
-                << "    publisher  "
-                << (metadata->publisher ? metadata->publisher : "<none>")
-                << clear_line() << std::endl
-                << "    genre      "
-                << (metadata->genre ? metadata->genre : "<none>")
-                << clear_line() << std::endl
-                << "    composer   "
-                << (metadata->composer ? metadata->composer : "<none>")
-                << clear_line() << std::endl
-                << std::endl;
-    } else if (paint_) {
-      std::cout << "    duration   <none>" << kClearLine << std::endl
-                << "    title      <none>" << kClearLine << std::endl
-                << "    artist     <none>" << kClearLine << std::endl
-                << "    album      <none>" << kClearLine << std::endl
-                << "    publisher  <none>" << kClearLine << std::endl
-                << "    genre      <none>" << kClearLine << std::endl
-                << "    composer   <none>" << kClearLine << std::endl
-                << std::endl;
+    if (problem) {
+      if (!paint_ && problem_shown_) {
+        // Do nothing.
+      } else if (problem) {
+        problem_shown_ = true;
+        std::cout << "    PROBLEM" << clear_line() << std::endl
+                  << "    type:    " << problem->type << clear_line()
+                  << std::endl
+                  << "    details: " << problem->details << clear_line()
+                  << std::endl
+                  << clear_line() << std::endl;
+        if (paint_) {
+          std::cout << clear_line() << std::endl
+                    << clear_line() << std::endl
+                    << clear_line() << std::endl
+                    << clear_line() << std::endl;
+        }
+      }
+    } else {
+      problem_shown_ = false;
+      if (!paint_ && metadata_shown_) {
+        // Do nothing.
+      } else if (metadata) {
+        metadata_shown_ = true;
+        std::cout << "    duration   " << std::fixed << std::setprecision(1)
+                  << double(metadata->duration) / ns_per_second << " seconds"
+                  << clear_line() << std::endl
+                  << "    title      "
+                  << (metadata->title ? metadata->title : "<none>")
+                  << clear_line() << std::endl
+                  << "    artist     "
+                  << (metadata->artist ? metadata->artist : "<none>")
+                  << clear_line() << std::endl
+                  << "    album      "
+                  << (metadata->album ? metadata->album : "<none>")
+                  << clear_line() << std::endl
+                  << "    publisher  "
+                  << (metadata->publisher ? metadata->publisher : "<none>")
+                  << clear_line() << std::endl
+                  << "    genre      "
+                  << (metadata->genre ? metadata->genre : "<none>")
+                  << clear_line() << std::endl
+                  << "    composer   "
+                  << (metadata->composer ? metadata->composer : "<none>")
+                  << clear_line() << std::endl
+                  << std::endl;
+      } else if (paint_) {
+        std::cout << "    duration   <none>" << kClearLine << std::endl
+                  << "    title      <none>" << kClearLine << std::endl
+                  << "    artist     <none>" << kClearLine << std::endl
+                  << "    album      <none>" << kClearLine << std::endl
+                  << "    publisher  <none>" << kClearLine << std::endl
+                  << "    genre      <none>" << kClearLine << std::endl
+                  << "    composer   <none>" << kClearLine << std::endl
+                  << std::endl;
+      }
     }
     std::cout << "    " << state_string() << clear_line() << std::endl;
   }
@@ -300,6 +323,7 @@ class MediaTestApp : public mojo::ApplicationImplBase {
   bool quit_ = false;
   bool paint_ = true;
   bool metadata_shown_ = false;
+  bool problem_shown_ = false;
   uint64_t duration_ns_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaTestApp);

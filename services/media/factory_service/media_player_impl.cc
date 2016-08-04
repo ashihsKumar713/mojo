@@ -38,6 +38,7 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
     status->timeline_transform = TimelineTransform::From(timeline_function_);
     status->end_of_stream = end_of_stream_;
     status->metadata = metadata_.Clone();
+    status->problem = demux_problem_.Clone();
     callback.Run(version, status.Pass());
   });
 
@@ -46,7 +47,7 @@ MediaPlayerImpl::MediaPlayerImpl(InterfaceHandle<SeekingReader> reader,
   ConnectToService(owner->shell(), "mojo:media_factory", GetProxy(&factory_));
 
   factory_->CreateDemux(reader.Pass(), GetProxy(&demux_));
-  HandleDemuxMetadataUpdates();
+  HandleDemuxStatusUpdates();
 
   factory_->CreateTimelineController(GetProxy(&timeline_controller_));
   timeline_controller_->GetControlPoint(GetProxy(&timeline_control_point_));
@@ -383,17 +384,18 @@ void MediaPlayerImpl::CreateSink(Stream* stream,
                                      });
 }
 
-void MediaPlayerImpl::HandleDemuxMetadataUpdates(uint64_t version,
-                                                 MediaMetadataPtr metadata) {
-  if (metadata) {
-    metadata_ = metadata.Pass();
+void MediaPlayerImpl::HandleDemuxStatusUpdates(uint64_t version,
+                                               MediaDemuxStatusPtr status) {
+  if (status) {
+    metadata_ = status->metadata.Pass();
+    demux_problem_ = status->problem.Pass();
     status_publisher_.SendUpdates();
   }
 
-  demux_->GetMetadata(version,
-                      [this](uint64_t version, MediaMetadataPtr metadata) {
-                        HandleDemuxMetadataUpdates(version, metadata.Pass());
-                      });
+  demux_->GetStatus(version,
+                    [this](uint64_t version, MediaDemuxStatusPtr status) {
+                      HandleDemuxStatusUpdates(version, status.Pass());
+                    });
 }
 
 void MediaPlayerImpl::HandleTimelineControlPointStatusUpdates(

@@ -32,30 +32,45 @@ MediaDemuxImpl::MediaDemuxImpl(InterfaceHandle<SeekingReader> reader,
   task_runner_ = base::MessageLoop::current()->task_runner();
   DCHECK(task_runner_);
 
-  metadata_publisher_.SetCallbackRunner(
-      [this](const GetMetadataCallback& callback, uint64_t version) {
-        callback.Run(version, demux_ ? MediaMetadata::From(demux_->metadata())
-                                     : nullptr);
+  status_publisher_.SetCallbackRunner(
+      [this](const GetStatusCallback& callback, uint64_t version) {
+        MediaDemuxStatusPtr status = MediaDemuxStatus::New();
+        status->metadata = metadata_.Clone();
+        status->problem = problem_.Clone();
+        callback.Run(version, status.Pass());
       });
 
   std::shared_ptr<Reader> reader_ptr = MojoReader::Create(reader.Pass());
   if (!reader_ptr) {
-    NOTREACHED() << "couldn't create reader";
+    ReportProblem(Problem::kProblemInternal, "couldn't create reader");
     return;
   }
 
   std::shared_ptr<ReaderCache> reader_cache_ptr =
       ReaderCache::Create(reader_ptr);
   if (!reader_cache_ptr) {
-    NOTREACHED() << "couldn't create reader cache";
+    ReportProblem(Problem::kProblemInternal, "couldn't create reader cache");
     return;
   }
 
   demux_ = Demux::Create(std::shared_ptr<Reader>(reader_cache_ptr));
   if (!demux_) {
-    NOTREACHED() << "couldn't create demux";
+    ReportProblem(Problem::kProblemInternal, "couldn't create demux");
     return;
   }
+
+  demux_->SetStatusCallback([this](const std::unique_ptr<Metadata>& metadata,
+                                   const std::string& problem_type,
+                                   const std::string& problem_details) {
+    metadata_ = MediaMetadata::From(metadata);
+    if (problem_type.empty()) {
+      problem_.reset();
+      status_publisher_.SendUpdates();
+    } else {
+      ReportProblem(problem_type, problem_details);
+      // ReportProblem calls status_publisher_.SendUpdates();
+    }
+  });
 
   demux_->WhenInitialized([this](Result result) {
     task_runner_->PostTask(FROM_HERE,
@@ -81,9 +96,17 @@ void MediaDemuxImpl::OnDemuxInitialized(Result result) {
 
   graph_.Prepare();
 
-  metadata_publisher_.SendUpdates();
+  status_publisher_.SendUpdates();
 
   init_complete_.Occur();
+}
+
+void MediaDemuxImpl::ReportProblem(const std::string& type,
+                                   const std::string& details) {
+  problem_ = Problem::New();
+  problem_->type = type;
+  problem_->details = details;
+  status_publisher_.SendUpdates();
 }
 
 void MediaDemuxImpl::Describe(const DescribeCallback& callback) {
@@ -111,9 +134,9 @@ void MediaDemuxImpl::GetPacketProducer(
   streams_[stream_index]->BindPacketProducer(producer.Pass());
 }
 
-void MediaDemuxImpl::GetMetadata(uint64_t version_last_seen,
-                                 const GetMetadataCallback& callback) {
-  metadata_publisher_.Get(version_last_seen, callback);
+void MediaDemuxImpl::GetStatus(uint64_t version_last_seen,
+                               const GetStatusCallback& callback) {
+  status_publisher_.Get(version_last_seen, callback);
 }
 
 void MediaDemuxImpl::Flush(const FlushCallback& callback) {

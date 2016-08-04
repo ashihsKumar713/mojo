@@ -336,6 +336,16 @@ void MotownVideoView::HandleStatusUpdates(
       state_ = State::kPlaying;
     }
 
+    if (status->problem) {
+      if (!problem_shown_) {
+        MOJO_DLOG(INFO) << "PROBLEM: " << status->problem->type << ", "
+                        << status->problem->details;
+        problem_shown_ = true;
+      }
+    } else {
+      problem_shown_ = false;
+    }
+
     metadata_ = status->metadata.Pass();
 
     if (metadata_ && !metadata_shown_) {
