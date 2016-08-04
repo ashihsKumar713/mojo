@@ -79,6 +79,9 @@ class FifoAllocator {
   // Releases a previously-allocated region.
   void ReleaseRegion(uint64_t offset);
 
+  // Determines if there are currently any allocated regions.
+  bool AnyCurrentAllocatedRegions() const;
+
  private:
   // List element to track allocated and free regions.
   struct Region {

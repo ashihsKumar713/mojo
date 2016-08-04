@@ -74,9 +74,11 @@ void FifoAllocator::ReleaseRegion(uint64_t offset) {
   MOJO_DCHECK(released);
 }
 
-bool FifoAllocator::Release(uint64_t offset,
-                            Region* begin,
-                            Region* end) {
+bool FifoAllocator::AnyCurrentAllocatedRegions() const {
+  return front_ != back_ || front_ != active_;
+}
+
+bool FifoAllocator::Release(uint64_t offset, Region* begin, Region* end) {
   MOJO_DCHECK(begin != nullptr || end == nullptr);
   for (Region* region = begin; region != end; region = region->next) {
     if (region->offset == offset) {

@@ -27,6 +27,7 @@ mojo_native_application("apptests") {
   testonly = true
 
   sources = [
+    "test/shared_buffer_set_allocator_test.cc",
     "test/shared_buffer_set_test.cc",
     "test/timeline_function_test.cc",
     "test/timeline_rate_test.cc",
