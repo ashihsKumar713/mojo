@@ -38,7 +38,7 @@ void {{$struct.Name}}_CloseAllHandles(
 
 struct {{$struct.Name}}* {{$struct.Name}}_DeepCopy(
   struct MojomBuffer* in_buffer,
-  struct {{$struct.Name}}* in_data);
+  struct {{$struct.Name}}* in_struct);
 
 size_t {{$struct.Name}}_ComputeSerializedSize(
   const struct {{$struct.Name}}* in_data);
@@ -67,6 +67,19 @@ const GenerateStructDefinitions = `
 {{range $const := $struct.Constants -}}
 const {{$const.Type}} {{$const.Name}} = {{$const.Value}};
 {{end -}}
+
+struct {{$struct.Name}}* {{$struct.Name}}_DeepCopy(
+  struct MojomBuffer* in_buffer,
+  struct {{$struct.Name}}* in_struct) {
+  struct {{$struct.Name}}* out_struct = NULL;
+  if (!MojomStruct_DeepCopy(
+      in_buffer, &{{$struct.Name}}__TypeDesc,
+      (struct MojomStructHeader*)in_struct,
+      (struct MojomStructHeader**)&out_struct)) {
+    return NULL;
+  }
+  return out_struct;
+}
 
 size_t {{$struct.Name}}_ComputeSerializedSize(
     const struct {{$struct.Name}}* in_data) {

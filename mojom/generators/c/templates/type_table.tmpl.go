@@ -90,6 +90,7 @@ struct MojomTypeDescriptorUnionEntry {{$union.Name}}_Entries[] = {
 {{end -}}
 };
 struct MojomTypeDescriptorUnion {{$union.Name}} = {
+  .num_fields = {{$union.NumFields}}ul,
   .num_entries = {{len $union.Entries}}ul,
   .entries = {{$union.Name}}_Entries,
 };

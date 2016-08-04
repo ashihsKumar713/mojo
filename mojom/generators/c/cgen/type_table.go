@@ -52,8 +52,12 @@ type StructPointerTable struct {
 	Entries  []StructPointerTableEntry
 }
 type UnionPointerTable struct {
-	Name    string
+	Name string
+	// Entries only includes entries for pointer and handle types.
 	Entries []UnionPointerTableEntry
+	// The number of fields in the union (this can be used to determine valid tag
+	// numbers).
+	NumFields uint32
 }
 
 type TypeTableTemplate struct {
@@ -303,7 +307,8 @@ func (table *TypeTableTemplate) makeUnionPointerTableEntry(prefix string, tag ui
 func (table *TypeTableTemplate) insertUnionPointerTable(u mojom_types.MojomUnion) {
 	unionTablePrefix := mojomToCName(*u.DeclData.FullIdentifier)
 	unionTable := UnionPointerTable{
-		Name: unionTablePrefix + "__TypeDesc",
+		Name:      unionTablePrefix + "__TypeDesc",
+		NumFields: uint32(len(u.Fields)),
 	}
 	for _, field := range u.Fields {
 		if table.isPointerOrHandle(field.Type) {
