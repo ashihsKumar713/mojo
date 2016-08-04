@@ -51,7 +51,7 @@ class NetworkReaderImpl : public MediaFactoryService::Product<SeekingReader>,
   std::string url_;
   URLLoaderPtr url_loader_;
   MediaResult result_ = MediaResult::OK;
-  uint64 size_ = kUnknownSize;
+  uint64_t size_ = kUnknownSize;
   bool can_seek_ = false;
   Incident ready_;
 };

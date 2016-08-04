@@ -92,6 +92,7 @@ group("tests") {
 
   # TODO: fix ffmpeg build
   if (!is_fnl) {
+    deps += [ "//services/media/factory_service:apptests" ]
     deps += [ "//services/media/framework:apptests" ]
   }
 
