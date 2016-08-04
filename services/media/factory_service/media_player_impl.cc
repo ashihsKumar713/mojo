@@ -163,7 +163,7 @@ void MediaPlayerImpl::Update() {
           // complete.
           state_ = State::kWaiting;
           FLOG(log_channel_, Priming());
-          demux_->Prime([this]() {
+          timeline_control_point_->Prime([this]() {
             state_ = State::kPrimed;
             FLOG(log_channel_, Primed());
             // Now we're in |kPrimed|. Call |Update| to see if there's further

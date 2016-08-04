@@ -76,14 +76,6 @@ void MediaPacketConsumerFull::RemovePayloadBufferRequested(uint32_t id) {
   std::cout << outdent;
 }
 
-void MediaPacketConsumerFull::PrimeRequested() {
-  std::cout << entry() << "MediaPacketConsumer.PrimeRequested" << std::endl;
-}
-
-void MediaPacketConsumerFull::CompletingPrime() {
-  std::cout << entry() << "MediaPacketConsumer.CompletingPrime" << std::endl;
-}
-
 void MediaPacketConsumerFull::FlushRequested() {
   std::cout << entry() << "MediaPacketConsumer.FlushRequested" << std::endl;
 }

@@ -130,18 +130,6 @@ void MediaSourceImpl::Prepare(const PrepareCallback& callback) {
   status_publisher_.SendUpdates();
 }
 
-void MediaSourceImpl::Prime(const PrimeCallback& callback) {
-  RCHECK(init_complete_.occurred());
-
-  std::shared_ptr<CallbackJoiner> callback_joiner = CallbackJoiner::Create();
-
-  for (std::unique_ptr<Stream>& stream : streams_) {
-    stream->PrimeConnection(callback_joiner->NewCallback());
-  }
-
-  callback_joiner->WhenJoined(callback);
-}
-
 void MediaSourceImpl::Flush(const FlushCallback& callback) {
   RCHECK(init_complete_.occurred());
 
@@ -218,15 +206,6 @@ void MediaSourceImpl::Stream::EnsureSink() {
   if (producer_ == nullptr) {
     null_sink_ = NullSink::Create();
     graph_->ConnectOutputToPart(output_, graph_->Add(null_sink_));
-  }
-}
-
-void MediaSourceImpl::Stream::PrimeConnection(
-    const MojoPacketProducer::PrimeConnectionCallback callback) {
-  if (producer_ != nullptr) {
-    producer_->PrimeConnection(callback);
-  } else {
-    callback.Run();
   }
 }
 

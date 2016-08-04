@@ -11,8 +11,6 @@ import "mojo/services/media/common/interfaces/media_transport.mojom";
 interface MediaPacketProducerChannel {
   Connecting();
   Resetting();
-  RequestingPrime();
-  PrimeCompleted();
   RequestingFlush();
   FlushCompleted();
   AllocatingPayloadBuffer(uint32 index, uint64 size, uint64 buffer_address);

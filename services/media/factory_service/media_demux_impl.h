@@ -46,8 +46,6 @@ class MediaDemuxImpl : public MediaFactoryService::Product<MediaDemux>,
   void GetMetadata(uint64_t version_last_seen,
                    const GetMetadataCallback& callback) override;
 
-  void Prime(const PrimeCallback& callback) override;
-
   void Flush(const FlushCallback& callback) override;
 
   void Seek(int64_t position, const SeekCallback& callback) override;
@@ -73,10 +71,6 @@ class MediaDemuxImpl : public MediaFactoryService::Product<MediaDemux>,
 
     // Binds the producer.
     void BindPacketProducer(InterfaceRequest<MediaPacketProducer> producer);
-
-    // Tells the producer to prime its connection.
-    void PrimeConnection(
-        const MojoPacketProducer::PrimeConnectionCallback callback);
 
     // Tells the producer to flush its connection.
     void FlushConnection(

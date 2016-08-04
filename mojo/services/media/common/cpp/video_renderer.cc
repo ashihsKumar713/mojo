@@ -106,11 +106,6 @@ void VideoRenderer::OnPacketSupplied(
   packet_queue_.push(std::move(supplied_packet));
 }
 
-void VideoRenderer::OnPrimeRequested(const PrimeCallback& callback) {
-  SetDemand(2);
-  callback.Run();
-}
-
 void VideoRenderer::OnFlushRequested(const FlushCallback& callback) {
   while (!packet_queue_.empty()) {
     packet_queue_.pop();
@@ -147,6 +142,11 @@ void VideoRenderer::GetStatus(uint64_t version_last_seen,
 void VideoRenderer::GetTimelineConsumer(
     InterfaceRequest<TimelineConsumer> timeline_consumer_request) {
   timeline_consumer_binding_.Bind(timeline_consumer_request.Pass());
+}
+
+void VideoRenderer::Prime(const PrimeCallback& callback) {
+  SetDemand(2);
+  callback.Run();  // TODO(dalesat): Wait until we get packets.
 }
 
 void VideoRenderer::SetTimelineTransform(

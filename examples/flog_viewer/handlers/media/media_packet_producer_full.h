@@ -33,10 +33,6 @@ class MediaPacketProducerFull
 
   void Resetting() override;
 
-  void RequestingPrime() override;
-
-  void PrimeCompleted() override;
-
   void RequestingFlush() override;
 
   void FlushCompleted() override;

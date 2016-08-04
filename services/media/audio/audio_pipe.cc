@@ -45,6 +45,18 @@ AudioPipe::AudioPipe(AudioTrackImpl* owner,
 
 AudioPipe::~AudioPipe() {}
 
+void AudioPipe::PrimeRequested(
+    const MediaTimelineControlPoint::PrimeCallback& cbk) {
+  if (!prime_callback_.is_null()) {
+    // Prime was already requested. Complete the old one and warn.
+    LOG(WARNING) << "multiple prime requests received";
+    prime_callback_.Run();
+  }
+  prime_callback_ = cbk;
+  SetDemand(kDemandMinPacketsOutstanding);
+  // TODO(dalesat): Implement better demand strategy.
+}
+
 void AudioPipe::OnPacketSupplied(SuppliedPacketPtr supplied_packet) {
   DCHECK(supplied_packet);
   DCHECK(owner_);
@@ -117,17 +129,6 @@ void AudioPipe::OnPacketSupplied(SuppliedPacketPtr supplied_packet) {
     prime_callback_.Run();
     prime_callback_.reset();
   }
-}
-
-void AudioPipe::OnPrimeRequested(const PrimeCallback& cbk) {
-  if (!prime_callback_.is_null()) {
-    // Prime was already requested. Complete the old one and warn.
-    LOG(WARNING) << "multiple prime requests received";
-    prime_callback_.Run();
-  }
-  prime_callback_ = cbk;
-  SetDemand(kDemandMinPacketsOutstanding);
-  // TODO(dalesat): Implement better demand strategy.
 }
 
 void AudioPipe::OnFlushRequested(const FlushCallback& cbk) {

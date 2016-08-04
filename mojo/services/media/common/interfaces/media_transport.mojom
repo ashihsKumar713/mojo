@@ -96,11 +96,6 @@ interface MediaPacketConsumer {
   // response if it has changed.
   SupplyPacket(MediaPacket packet) => (MediaPacketDemand? demand);
 
-  // Primes the stream. The callback signals that the prime operation is
-  // complete.
-  // TODO(dalesat): Obsolete. Priming should just be a demand change.
-  Prime() => ();
-
   // Flushes the stream. The callback signals that the flush operation is
   // complete.
   Flush() => ();

@@ -27,9 +27,6 @@ interface MediaDemux {
   GetMetadata(uint64 version_last_seen) =>
       (uint64 version, MediaMetadata? metadata);
 
-  // Primes the demux and downstream components.
-  Prime() => ();
-
   // Flushes the demux and downstream components.
   Flush() => ();
 

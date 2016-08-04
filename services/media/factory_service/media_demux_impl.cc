@@ -116,18 +116,6 @@ void MediaDemuxImpl::GetMetadata(uint64_t version_last_seen,
   metadata_publisher_.Get(version_last_seen, callback);
 }
 
-void MediaDemuxImpl::Prime(const PrimeCallback& callback) {
-  RCHECK(init_complete_.occurred());
-
-  std::shared_ptr<CallbackJoiner> callback_joiner = CallbackJoiner::Create();
-
-  for (std::unique_ptr<Stream>& stream : streams_) {
-    stream->PrimeConnection(callback_joiner->NewCallback());
-  }
-
-  callback_joiner->WhenJoined(callback);
-}
-
 void MediaDemuxImpl::Flush(const FlushCallback& callback) {
   RCHECK(init_complete_.occurred());
 
@@ -176,12 +164,6 @@ void MediaDemuxImpl::Stream::BindPacketProducer(
     InterfaceRequest<MediaPacketProducer> producer) {
   DCHECK(producer_);
   producer_->Bind(producer.Pass());
-}
-
-void MediaDemuxImpl::Stream::PrimeConnection(
-    const MojoPacketProducer::PrimeConnectionCallback callback) {
-  DCHECK(producer_);
-  producer_->PrimeConnection(callback);
 }
 
 void MediaDemuxImpl::Stream::FlushConnection(

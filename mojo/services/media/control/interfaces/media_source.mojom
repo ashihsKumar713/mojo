@@ -30,9 +30,6 @@ interface MediaSource {
   // Prepares the source.
   Prepare() => ();
 
-  // Primes the source and downstream components.
-  Prime() => ();
-
   // Flushes the source and downstream components.
   Flush() => ();
 

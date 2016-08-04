@@ -40,17 +40,6 @@ void MediaPacketProducerBase::Reset() {
   allocator_.Reset();
 }
 
-void MediaPacketProducerBase::PrimeConsumer(
-    const MediaPacketConsumer::PrimeCallback& callback) {
-  CHECK_THREAD(thread_checker_);
-  MOJO_DCHECK(consumer_.is_bound());
-  FLOG(log_channel_, RequestingPrime());
-  consumer_->Prime([this, callback]() {
-    FLOG(log_channel_, PrimeCompleted());
-    callback.Run();
-  });
-}
-
 void MediaPacketProducerBase::FlushConsumer(
     const MediaPacketConsumer::FlushCallback& callback) {
   CHECK_THREAD(thread_checker_);

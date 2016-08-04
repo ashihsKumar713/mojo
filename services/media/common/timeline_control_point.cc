@@ -73,8 +73,8 @@ void TimelineControlPoint::Reset() {
 }
 
 void TimelineControlPoint::SnapshotCurrentFunction(int64_t reference_time,
-                                                  TimelineFunction* out,
-                                                  uint32_t* generation) {
+                                                   TimelineFunction* out,
+                                                   uint32_t* generation) {
   DCHECK(out);
   base::AutoLock lock(lock_);
   ApplyPendingChangesUnsafe(reference_time);
@@ -108,7 +108,7 @@ bool TimelineControlPoint::ReachedEndOfStreamUnsafe() {
 }
 
 void TimelineControlPoint::GetStatus(uint64_t version_last_seen,
-                                    const GetStatusCallback& callback) {
+                                     const GetStatusCallback& callback) {
   status_publisher_.Get(version_last_seen, callback);
 }
 
@@ -119,6 +119,14 @@ void TimelineControlPoint::GetTimelineConsumer(
   }
 
   consumer_binding_.Bind(timeline_consumer.Pass());
+}
+
+void TimelineControlPoint::Prime(const PrimeCallback& callback) {
+  if (prime_requested_callback_) {
+    prime_requested_callback_(callback);
+  } else {
+    callback.Run();
+  }
 }
 
 void TimelineControlPoint::SetTimelineTransform(
@@ -193,7 +201,7 @@ void TimelineControlPoint::ResetUnsafe() {
 
 // static
 void TimelineControlPoint::RunCallback(SetTimelineTransformCallback callback,
-                                      bool completed) {
+                                       bool completed) {
   callback.Run(completed);
 }
 

@@ -85,8 +85,6 @@ class FakeRenderer : public MediaPacketConsumerBase,
   void OnPacketSupplied(
       std::unique_ptr<SuppliedPacket> supplied_packet) override;
 
-  void OnPrimeRequested(const PrimeCallback& callback) override;
-
   void OnFlushRequested(const FlushCallback& callback) override;
 
   void OnFailure() override;
@@ -97,6 +95,8 @@ class FakeRenderer : public MediaPacketConsumerBase,
 
   void GetTimelineConsumer(
       InterfaceRequest<TimelineConsumer> timeline_consumer_request) override;
+
+  void Prime(const PrimeCallback& callback) override;
 
   // TimelineConsumer implementation.
   void SetTimelineTransform(

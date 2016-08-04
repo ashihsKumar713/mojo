@@ -526,94 +526,6 @@ class MediaSourcePrepareResponseParams extends bindings.Struct {
 }
 
 
-class _MediaSourcePrimeParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(8, 0)
-  ];
-
-  _MediaSourcePrimeParams() : super(kVersions.last.size);
-
-  _MediaSourcePrimeParams.init(
-  ) : super(kVersions.last.size);
-
-  static _MediaSourcePrimeParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static _MediaSourcePrimeParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    _MediaSourcePrimeParams result = new _MediaSourcePrimeParams();
-    bindings.Struct.checkVersion(decoder0, kVersions);
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaSourcePrimeParams";
-    String fieldName;
-    try {
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "_MediaSourcePrimeParams("")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    return map;
-  }
-}
-
-
-class MediaSourcePrimeResponseParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(8, 0)
-  ];
-
-  MediaSourcePrimeResponseParams() : super(kVersions.last.size);
-
-  MediaSourcePrimeResponseParams.init(
-  ) : super(kVersions.last.size);
-
-  static MediaSourcePrimeResponseParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static MediaSourcePrimeResponseParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    MediaSourcePrimeResponseParams result = new MediaSourcePrimeResponseParams();
-    bindings.Struct.checkVersion(decoder0, kVersions);
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaSourcePrimeResponseParams";
-    String fieldName;
-    try {
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "MediaSourcePrimeResponseParams("")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    return map;
-  }
-}
-
-
 class _MediaSourceFlushParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(8, 0)
@@ -803,9 +715,8 @@ const int _mediaSourceMethodGetStreamsName = 0;
 const int _mediaSourceMethodGetPacketProducerName = 1;
 const int _mediaSourceMethodGetStatusName = 2;
 const int _mediaSourceMethodPrepareName = 3;
-const int _mediaSourceMethodPrimeName = 4;
-const int _mediaSourceMethodFlushName = 5;
-const int _mediaSourceMethodSeekName = 6;
+const int _mediaSourceMethodFlushName = 4;
+const int _mediaSourceMethodSeekName = 5;
 
 class _MediaSourceServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
@@ -847,7 +758,6 @@ abstract class MediaSource {
   void getPacketProducer(int streamIndex, media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer);
   void getStatus(int versionLastSeen,void callback(int version, MediaSourceStatus status));
   void prepare(void callback());
-  void prime(void callback());
   void flush(void callback());
   void seek(int position,void callback());
   static const int kInitialStatus = 0;
@@ -913,14 +823,6 @@ class _MediaSourceProxyControl
         Function callback = getCallback(message);
         if (callback != null) {
           var r = MediaSourcePrepareResponseParams.deserialize(
-              message.payload);
-          callback();
-        }
-        break;
-      case _mediaSourceMethodPrimeName:
-        Function callback = getCallback(message);
-        if (callback != null) {
-          var r = MediaSourcePrimeResponseParams.deserialize(
               message.payload);
           callback();
         }
@@ -1072,30 +974,6 @@ class MediaSourceProxy
         bindings.MessageHeader.kMessageExpectsResponse,
         zonedCallback);
   }
-  void prime(void callback()) {
-    if (impl != null) {
-      impl.prime(callback ?? bindings.DoNothingFunction.fn);
-      return;
-    }
-    var params = new _MediaSourcePrimeParams();
-    Function zonedCallback;
-    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
-      zonedCallback = callback;
-    } else {
-      Zone z = Zone.current;
-      zonedCallback = (() {
-        z.bindCallback(() {
-          callback();
-        })();
-      });
-    }
-    ctrl.sendMessageWithRequestId(
-        params,
-        _mediaSourceMethodPrimeName,
-        -1,
-        bindings.MessageHeader.kMessageExpectsResponse,
-        zonedCallback);
-  }
   void flush(void callback()) {
     if (impl != null) {
       impl.flush(callback ?? bindings.DoNothingFunction.fn);
@@ -1205,17 +1083,6 @@ class _MediaSourceStubControl
           bindings.MessageHeader.kMessageIsResponse));
     };
   }
-  Function _mediaSourcePrimeResponseParamsResponder(
-      int requestId) {
-  return () {
-      var result = new MediaSourcePrimeResponseParams();
-      sendResponse(buildResponseWithId(
-          result,
-          _mediaSourceMethodPrimeName,
-          requestId,
-          bindings.MessageHeader.kMessageIsResponse));
-    };
-  }
   Function _mediaSourceFlushResponseParamsResponder(
       int requestId) {
   return () {
@@ -1264,9 +1131,6 @@ class _MediaSourceStubControl
         break;
       case _mediaSourceMethodPrepareName:
         _impl.prepare(_mediaSourcePrepareResponseParamsResponder(message.header.requestId));
-        break;
-      case _mediaSourceMethodPrimeName:
-        _impl.prime(_mediaSourcePrimeResponseParamsResponder(message.header.requestId));
         break;
       case _mediaSourceMethodFlushName:
         _impl.flush(_mediaSourceFlushResponseParamsResponder(message.header.requestId));
@@ -1344,9 +1208,6 @@ class MediaSourceStub
   }
   void prepare(void callback()) {
     return impl.prepare(callback);
-  }
-  void prime(void callback()) {
-    return impl.prime(callback);
   }
   void flush(void callback()) {
     return impl.flush(callback);

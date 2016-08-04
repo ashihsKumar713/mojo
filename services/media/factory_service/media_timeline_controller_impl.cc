@@ -5,6 +5,7 @@
 #include "base/logging.h"
 #include "mojo/services/media/common/cpp/timeline.h"
 #include "services/media/factory_service/media_timeline_controller_impl.h"
+#include "services/media/framework/util/callback_joiner.h"
 #include "services/media/framework_mojo/mojo_type_conversions.h"
 
 namespace mojo {
@@ -72,6 +73,17 @@ void MediaTimelineControllerImpl::GetTimelineConsumer(
   }
 
   consumer_binding_.Bind(timeline_consumer.Pass());
+}
+
+void MediaTimelineControllerImpl::Prime(const PrimeCallback& callback) {
+  std::shared_ptr<CallbackJoiner> callback_joiner = CallbackJoiner::Create();
+
+  for (const std::unique_ptr<ControlPointState>& control_point_state :
+       control_point_states_) {
+    control_point_state->control_point_->Prime(callback_joiner->NewCallback());
+  }
+
+  callback_joiner->WhenJoined(callback);
 }
 
 void MediaTimelineControllerImpl::SetTimelineTransform(

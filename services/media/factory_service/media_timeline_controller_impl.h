@@ -47,6 +47,8 @@ class MediaTimelineControllerImpl
   void GetTimelineConsumer(
       InterfaceRequest<TimelineConsumer> timeline_consumer) override;
 
+  void Prime(const PrimeCallback& callback) override;
+
   // TimelineConsumer implementation.
   void SetTimelineTransform(
       TimelineTransformPtr timeline_transform,

@@ -35,14 +35,6 @@ void MediaPacketProducerFull::Resetting() {
   std::cout << entry() << "MediaPacketProducer.Resetting" << std::endl;
 }
 
-void MediaPacketProducerFull::RequestingPrime() {
-  std::cout << entry() << "MediaPacketProducer.RequestingPrime" << std::endl;
-}
-
-void MediaPacketProducerFull::PrimeCompleted() {
-  std::cout << entry() << "MediaPacketProducer.PrimeCompleted" << std::endl;
-}
-
 void MediaPacketProducerFull::RequestingFlush() {
   std::cout << entry() << "MediaPacketProducer.RequestingFlush" << std::endl;
 }

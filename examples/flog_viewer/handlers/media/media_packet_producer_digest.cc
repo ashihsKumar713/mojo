@@ -44,21 +44,6 @@ void MediaPacketProducerDigest::Resetting() {
   accumulator_->connected_ = false;
 }
 
-void MediaPacketProducerDigest::RequestingPrime() {
-  if (accumulator_->prime_requests_.outstanding_count() != 0) {
-    ReportProblem() << "RequestingPrime when another prime was outstanding";
-  }
-  accumulator_->prime_requests_.Add();
-}
-
-void MediaPacketProducerDigest::PrimeCompleted() {
-  if (accumulator_->prime_requests_.outstanding_count() == 0) {
-    ReportProblem() << "PrimeCompleted when no prime was outstanding";
-  } else {
-    accumulator_->prime_requests_.Remove();
-  }
-}
-
 void MediaPacketProducerDigest::RequestingFlush() {
   if (accumulator_->flush_requests_.outstanding_count() != 0) {
     ReportProblem() << "RequestingFlush when another flush was outstanding";
@@ -151,7 +136,6 @@ void MediaPacketProducerAccumulator::Print(std::ostream& os) {
   os << "MediaPacketProducer" << std::endl;
   os << indent;
   os << begl << "connected: " << connected_ << std::endl;
-  os << begl << "primes: " << prime_requests_.count() << std::endl;
   os << begl << "flushes: " << flush_requests_.count() << std::endl;
 
   os << begl << "current demand: " << current_demand_;

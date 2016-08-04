@@ -48,8 +48,6 @@ class MediaSourceImpl : public MediaFactoryService::Product<MediaSource>,
 
   void Prepare(const PrepareCallback& callback) override;
 
-  void Prime(const PrimeCallback& callback) override;
-
   void Flush(const FlushCallback& callback) override;
 
   void Seek(int64_t position, const SeekCallback& callback) override;
@@ -81,10 +79,6 @@ class MediaSourceImpl : public MediaFactoryService::Product<MediaSource>,
 
     // Makes sure the stream has a sink.
     void EnsureSink();
-
-    // Tells the producer to prime its connection.
-    void PrimeConnection(
-        const MojoPacketProducer::PrimeConnectionCallback callback);
 
     // Tells the producer to flush its connection.
     void FlushConnection(

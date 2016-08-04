@@ -634,94 +634,6 @@ class MediaPacketConsumerSupplyPacketResponseParams extends bindings.Struct {
 }
 
 
-class _MediaPacketConsumerPrimeParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(8, 0)
-  ];
-
-  _MediaPacketConsumerPrimeParams() : super(kVersions.last.size);
-
-  _MediaPacketConsumerPrimeParams.init(
-  ) : super(kVersions.last.size);
-
-  static _MediaPacketConsumerPrimeParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static _MediaPacketConsumerPrimeParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    _MediaPacketConsumerPrimeParams result = new _MediaPacketConsumerPrimeParams();
-    bindings.Struct.checkVersion(decoder0, kVersions);
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaPacketConsumerPrimeParams";
-    String fieldName;
-    try {
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "_MediaPacketConsumerPrimeParams("")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    return map;
-  }
-}
-
-
-class MediaPacketConsumerPrimeResponseParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(8, 0)
-  ];
-
-  MediaPacketConsumerPrimeResponseParams() : super(kVersions.last.size);
-
-  MediaPacketConsumerPrimeResponseParams.init(
-  ) : super(kVersions.last.size);
-
-  static MediaPacketConsumerPrimeResponseParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static MediaPacketConsumerPrimeResponseParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    MediaPacketConsumerPrimeResponseParams result = new MediaPacketConsumerPrimeResponseParams();
-    bindings.Struct.checkVersion(decoder0, kVersions);
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaPacketConsumerPrimeResponseParams";
-    String fieldName;
-    try {
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "MediaPacketConsumerPrimeResponseParams("")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    return map;
-  }
-}
-
-
 class _MediaPacketConsumerFlushParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(8, 0)
@@ -1104,8 +1016,7 @@ const int _mediaPacketConsumerMethodPullDemandUpdateName = 0;
 const int _mediaPacketConsumerMethodAddPayloadBufferName = 1;
 const int _mediaPacketConsumerMethodRemovePayloadBufferName = 2;
 const int _mediaPacketConsumerMethodSupplyPacketName = 3;
-const int _mediaPacketConsumerMethodPrimeName = 4;
-const int _mediaPacketConsumerMethodFlushName = 5;
+const int _mediaPacketConsumerMethodFlushName = 4;
 
 class _MediaPacketConsumerServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
@@ -1147,7 +1058,6 @@ abstract class MediaPacketConsumer {
   void addPayloadBuffer(int payloadBufferId, core.MojoSharedBuffer payloadBuffer);
   void removePayloadBuffer(int payloadBufferId);
   void supplyPacket(MediaPacket packet,void callback(MediaPacketDemand demand));
-  void prime(void callback());
   void flush(void callback());
   static const int kMaxBufferLen = 4611686018427387903;
 }
@@ -1206,14 +1116,6 @@ class _MediaPacketConsumerProxyControl
           var r = MediaPacketConsumerSupplyPacketResponseParams.deserialize(
               message.payload);
           callback(r.demand );
-        }
-        break;
-      case _mediaPacketConsumerMethodPrimeName:
-        Function callback = getCallback(message);
-        if (callback != null) {
-          var r = MediaPacketConsumerPrimeResponseParams.deserialize(
-              message.payload);
-          callback();
         }
         break;
       case _mediaPacketConsumerMethodFlushName:
@@ -1345,30 +1247,6 @@ class MediaPacketConsumerProxy
         bindings.MessageHeader.kMessageExpectsResponse,
         zonedCallback);
   }
-  void prime(void callback()) {
-    if (impl != null) {
-      impl.prime(callback ?? bindings.DoNothingFunction.fn);
-      return;
-    }
-    var params = new _MediaPacketConsumerPrimeParams();
-    Function zonedCallback;
-    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
-      zonedCallback = callback;
-    } else {
-      Zone z = Zone.current;
-      zonedCallback = (() {
-        z.bindCallback(() {
-          callback();
-        })();
-      });
-    }
-    ctrl.sendMessageWithRequestId(
-        params,
-        _mediaPacketConsumerMethodPrimeName,
-        -1,
-        bindings.MessageHeader.kMessageExpectsResponse,
-        zonedCallback);
-  }
   void flush(void callback()) {
     if (impl != null) {
       impl.flush(callback ?? bindings.DoNothingFunction.fn);
@@ -1441,17 +1319,6 @@ class _MediaPacketConsumerStubControl
           bindings.MessageHeader.kMessageIsResponse));
     };
   }
-  Function _mediaPacketConsumerPrimeResponseParamsResponder(
-      int requestId) {
-  return () {
-      var result = new MediaPacketConsumerPrimeResponseParams();
-      sendResponse(buildResponseWithId(
-          result,
-          _mediaPacketConsumerMethodPrimeName,
-          requestId,
-          bindings.MessageHeader.kMessageIsResponse));
-    };
-  }
   Function _mediaPacketConsumerFlushResponseParamsResponder(
       int requestId) {
   return () {
@@ -1491,9 +1358,6 @@ class _MediaPacketConsumerStubControl
         var params = _MediaPacketConsumerSupplyPacketParams.deserialize(
             message.payload);
         _impl.supplyPacket(params.packet, _mediaPacketConsumerSupplyPacketResponseParamsResponder(message.header.requestId));
-        break;
-      case _mediaPacketConsumerMethodPrimeName:
-        _impl.prime(_mediaPacketConsumerPrimeResponseParamsResponder(message.header.requestId));
         break;
       case _mediaPacketConsumerMethodFlushName:
         _impl.flush(_mediaPacketConsumerFlushResponseParamsResponder(message.header.requestId));
@@ -1566,9 +1430,6 @@ class MediaPacketConsumerStub
   }
   void supplyPacket(MediaPacket packet,void callback(MediaPacketDemand demand)) {
     return impl.supplyPacket(packet,callback);
-  }
-  void prime(void callback()) {
-    return impl.prime(callback);
   }
   void flush(void callback()) {
     return impl.flush(callback);

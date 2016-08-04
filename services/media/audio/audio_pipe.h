@@ -9,6 +9,7 @@
 
 #include "mojo/services/media/common/cpp/linear_transform.h"
 #include "mojo/services/media/common/cpp/media_packet_consumer_base.h"
+#include "mojo/services/media/core/interfaces/timeline_controller.mojom.h"
 #include "services/media/audio/fwd_decls.h"
 
 namespace mojo {
@@ -77,9 +78,12 @@ class AudioPipe : public MediaPacketConsumerBase {
   AudioPipe(AudioTrackImpl* owner, AudioServerImpl* server);
   ~AudioPipe() override;
 
+  // Indicates the priming was requested. The pipe is responsible for calling
+  // the callback when priming is complete.
+  void PrimeRequested(const MediaTimelineControlPoint::PrimeCallback& callback);
+
  protected:
   void OnPacketSupplied(SuppliedPacketPtr supplied_packet) override;
-  void OnPrimeRequested(const PrimeCallback& cbk) override;
   void OnFlushRequested(const FlushCallback& cbk) override;
 
  private:
@@ -88,11 +92,11 @@ class AudioPipe : public MediaPacketConsumerBase {
   AudioTrackImpl* owner_;
   AudioServerImpl* server_;
 
+  MediaTimelineControlPoint::PrimeCallback prime_callback_;
+
   // State used for timestamp interpolation
   bool next_pts_known_ = 0;
   int64_t next_pts_;
-
-  PrimeCallback prime_callback_;
 };
 
 }  // namespace audio

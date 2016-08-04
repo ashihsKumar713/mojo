@@ -22,15 +22,6 @@ void MojoPacketProducer::Bind(InterfaceRequest<MediaPacketProducer> request) {
   binding_.Bind(request.Pass());
 }
 
-void MojoPacketProducer::PrimeConnection(
-    const PrimeConnectionCallback& callback) {
-  if (is_connected()) {
-    PrimeConsumer(callback);
-  } else {
-    callback.Run();
-  }
-}
-
 void MojoPacketProducer::FlushConnection(
     const FlushConnectionCallback& callback) {
   if (is_connected()) {

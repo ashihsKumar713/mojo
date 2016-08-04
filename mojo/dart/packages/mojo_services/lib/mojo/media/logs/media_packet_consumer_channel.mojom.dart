@@ -325,94 +325,6 @@ class _MediaPacketConsumerChannelRemovePayloadBufferRequestedParams extends bind
 }
 
 
-class _MediaPacketConsumerChannelPrimeRequestedParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(8, 0)
-  ];
-
-  _MediaPacketConsumerChannelPrimeRequestedParams() : super(kVersions.last.size);
-
-  _MediaPacketConsumerChannelPrimeRequestedParams.init(
-  ) : super(kVersions.last.size);
-
-  static _MediaPacketConsumerChannelPrimeRequestedParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static _MediaPacketConsumerChannelPrimeRequestedParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    _MediaPacketConsumerChannelPrimeRequestedParams result = new _MediaPacketConsumerChannelPrimeRequestedParams();
-    bindings.Struct.checkVersion(decoder0, kVersions);
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaPacketConsumerChannelPrimeRequestedParams";
-    String fieldName;
-    try {
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "_MediaPacketConsumerChannelPrimeRequestedParams("")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    return map;
-  }
-}
-
-
-class _MediaPacketConsumerChannelCompletingPrimeParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(8, 0)
-  ];
-
-  _MediaPacketConsumerChannelCompletingPrimeParams() : super(kVersions.last.size);
-
-  _MediaPacketConsumerChannelCompletingPrimeParams.init(
-  ) : super(kVersions.last.size);
-
-  static _MediaPacketConsumerChannelCompletingPrimeParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static _MediaPacketConsumerChannelCompletingPrimeParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    _MediaPacketConsumerChannelCompletingPrimeParams result = new _MediaPacketConsumerChannelCompletingPrimeParams();
-    bindings.Struct.checkVersion(decoder0, kVersions);
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaPacketConsumerChannelCompletingPrimeParams";
-    String fieldName;
-    try {
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "_MediaPacketConsumerChannelCompletingPrimeParams("")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    return map;
-  }
-}
-
-
 class _MediaPacketConsumerChannelFlushRequestedParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(8, 0)
@@ -655,12 +567,10 @@ const int _mediaPacketConsumerChannelMethodFailedName = 2;
 const int _mediaPacketConsumerChannelMethodRespondingToGetDemandUpdateName = 3;
 const int _mediaPacketConsumerChannelMethodAddPayloadBufferRequestedName = 4;
 const int _mediaPacketConsumerChannelMethodRemovePayloadBufferRequestedName = 5;
-const int _mediaPacketConsumerChannelMethodPrimeRequestedName = 6;
-const int _mediaPacketConsumerChannelMethodCompletingPrimeName = 7;
-const int _mediaPacketConsumerChannelMethodFlushRequestedName = 8;
-const int _mediaPacketConsumerChannelMethodCompletingFlushName = 9;
-const int _mediaPacketConsumerChannelMethodPacketSuppliedName = 10;
-const int _mediaPacketConsumerChannelMethodReturningPacketName = 11;
+const int _mediaPacketConsumerChannelMethodFlushRequestedName = 6;
+const int _mediaPacketConsumerChannelMethodCompletingFlushName = 7;
+const int _mediaPacketConsumerChannelMethodPacketSuppliedName = 8;
+const int _mediaPacketConsumerChannelMethodReturningPacketName = 9;
 
 class _MediaPacketConsumerChannelServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
@@ -704,8 +614,6 @@ abstract class MediaPacketConsumerChannel {
   void respondingToGetDemandUpdate(media_transport_mojom.MediaPacketDemand demand);
   void addPayloadBufferRequested(int id, int size);
   void removePayloadBufferRequested(int id);
-  void primeRequested();
-  void completingPrime();
   void flushRequested();
   void completingFlush();
   void packetSupplied(int label, media_transport_mojom.MediaPacket packet, int payloadAddress, int packetsOutstanding);
@@ -878,32 +786,6 @@ class MediaPacketConsumerChannelProxy
     ctrl.sendMessage(params,
         _mediaPacketConsumerChannelMethodRemovePayloadBufferRequestedName);
   }
-  void primeRequested() {
-    if (impl != null) {
-      impl.primeRequested();
-      return;
-    }
-    if (!ctrl.isBound) {
-      ctrl.proxyError("The Proxy is closed.");
-      return;
-    }
-    var params = new _MediaPacketConsumerChannelPrimeRequestedParams();
-    ctrl.sendMessage(params,
-        _mediaPacketConsumerChannelMethodPrimeRequestedName);
-  }
-  void completingPrime() {
-    if (impl != null) {
-      impl.completingPrime();
-      return;
-    }
-    if (!ctrl.isBound) {
-      ctrl.proxyError("The Proxy is closed.");
-      return;
-    }
-    var params = new _MediaPacketConsumerChannelCompletingPrimeParams();
-    ctrl.sendMessage(params,
-        _mediaPacketConsumerChannelMethodCompletingPrimeName);
-  }
   void flushRequested() {
     if (impl != null) {
       impl.flushRequested();
@@ -1023,12 +905,6 @@ class _MediaPacketConsumerChannelStubControl
             message.payload);
         _impl.removePayloadBufferRequested(params.id);
         break;
-      case _mediaPacketConsumerChannelMethodPrimeRequestedName:
-        _impl.primeRequested();
-        break;
-      case _mediaPacketConsumerChannelMethodCompletingPrimeName:
-        _impl.completingPrime();
-        break;
       case _mediaPacketConsumerChannelMethodFlushRequestedName:
         _impl.flushRequested();
         break;
@@ -1119,12 +995,6 @@ class MediaPacketConsumerChannelStub
   }
   void removePayloadBufferRequested(int id) {
     return impl.removePayloadBufferRequested(id);
-  }
-  void primeRequested() {
-    return impl.primeRequested();
-  }
-  void completingPrime() {
-    return impl.completingPrime();
   }
   void flushRequested() {
     return impl.flushRequested();

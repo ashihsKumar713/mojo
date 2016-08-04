@@ -40,9 +40,6 @@ class MediaPacketProducerBase {
   void Reset();
 
   // Flushes the consumer.
-  void PrimeConsumer(const MediaPacketConsumer::PrimeCallback& callback);
-
-  // Primes the consumer.
   void FlushConsumer(const MediaPacketConsumer::FlushCallback& callback);
 
   // Allocates a payload buffer of the specified size.

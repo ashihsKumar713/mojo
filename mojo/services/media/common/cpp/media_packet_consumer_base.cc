@@ -106,10 +106,6 @@ void MediaPacketConsumerBase::Fail() {
 
 void MediaPacketConsumerBase::OnPacketReturning() {}
 
-void MediaPacketConsumerBase::OnPrimeRequested(const PrimeCallback& callback) {
-  callback.Run();
-}
-
 void MediaPacketConsumerBase::OnFlushRequested(const FlushCallback& callback) {
   callback.Run();
 }
@@ -180,22 +176,13 @@ void MediaPacketConsumerBase::SupplyPacket(
       label, media_packet.Pass(), payload, callback, counter_)));
 }
 
-void MediaPacketConsumerBase::Prime(const PrimeCallback& callback) {
+void MediaPacketConsumerBase::Flush(const FlushCallback& callback) {
   CHECK_THREAD(thread_checker_);
-  FLOG(log_channel_, PrimeRequested());
+  FLOG(log_channel_, FlushRequested());
 
   demand_.min_packets_outstanding = 0;
   demand_.min_pts = MediaPacket::kNoTimestamp;
 
-  OnPrimeRequested([this, callback]() {
-    FLOG(log_channel_, CompletingPrime());
-    callback.Run();
-  });
-}
-
-void MediaPacketConsumerBase::Flush(const FlushCallback& callback) {
-  CHECK_THREAD(thread_checker_);
-  FLOG(log_channel_, FlushRequested());
   OnFlushRequested([this, callback]() {
     FLOG(log_channel_, CompletingFlush());
     callback.Run();

@@ -85,10 +85,6 @@ class MediaPacketConsumerBase : public MediaPacketConsumer {
   // implementation does nothing.
   virtual void OnPacketReturning();
 
-  // Called when the consumer is asked to prime. The default implementation
-  // just runs the callback.
-  virtual void OnPrimeRequested(const PrimeCallback& callback);
-
   // Called when the consumer is asked to flush. The default implementation
   // just runs the callback.
   virtual void OnFlushRequested(const FlushCallback& callback);
@@ -111,8 +107,6 @@ class MediaPacketConsumerBase : public MediaPacketConsumer {
 
   void SupplyPacket(MediaPacketPtr packet,
                     const SupplyPacketCallback& callback) final;
-
-  void Prime(const PrimeCallback& callback) final;
 
   void Flush(const FlushCallback& callback) final;
 

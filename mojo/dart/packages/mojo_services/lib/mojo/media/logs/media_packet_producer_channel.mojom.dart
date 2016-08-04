@@ -97,94 +97,6 @@ class _MediaPacketProducerChannelResettingParams extends bindings.Struct {
 }
 
 
-class _MediaPacketProducerChannelRequestingPrimeParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(8, 0)
-  ];
-
-  _MediaPacketProducerChannelRequestingPrimeParams() : super(kVersions.last.size);
-
-  _MediaPacketProducerChannelRequestingPrimeParams.init(
-  ) : super(kVersions.last.size);
-
-  static _MediaPacketProducerChannelRequestingPrimeParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static _MediaPacketProducerChannelRequestingPrimeParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    _MediaPacketProducerChannelRequestingPrimeParams result = new _MediaPacketProducerChannelRequestingPrimeParams();
-    bindings.Struct.checkVersion(decoder0, kVersions);
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaPacketProducerChannelRequestingPrimeParams";
-    String fieldName;
-    try {
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "_MediaPacketProducerChannelRequestingPrimeParams("")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    return map;
-  }
-}
-
-
-class _MediaPacketProducerChannelPrimeCompletedParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(8, 0)
-  ];
-
-  _MediaPacketProducerChannelPrimeCompletedParams() : super(kVersions.last.size);
-
-  _MediaPacketProducerChannelPrimeCompletedParams.init(
-  ) : super(kVersions.last.size);
-
-  static _MediaPacketProducerChannelPrimeCompletedParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static _MediaPacketProducerChannelPrimeCompletedParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    _MediaPacketProducerChannelPrimeCompletedParams result = new _MediaPacketProducerChannelPrimeCompletedParams();
-    bindings.Struct.checkVersion(decoder0, kVersions);
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaPacketProducerChannelPrimeCompletedParams";
-    String fieldName;
-    try {
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "_MediaPacketProducerChannelPrimeCompletedParams("")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    return map;
-  }
-}
-
-
 class _MediaPacketProducerChannelRequestingFlushParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(8, 0)
@@ -680,16 +592,14 @@ class _MediaPacketProducerChannelRetiringPacketParams extends bindings.Struct {
 
 const int _mediaPacketProducerChannelMethodConnectingName = 0;
 const int _mediaPacketProducerChannelMethodResettingName = 1;
-const int _mediaPacketProducerChannelMethodRequestingPrimeName = 2;
-const int _mediaPacketProducerChannelMethodPrimeCompletedName = 3;
-const int _mediaPacketProducerChannelMethodRequestingFlushName = 4;
-const int _mediaPacketProducerChannelMethodFlushCompletedName = 5;
-const int _mediaPacketProducerChannelMethodAllocatingPayloadBufferName = 6;
-const int _mediaPacketProducerChannelMethodPayloadBufferAllocationFailureName = 7;
-const int _mediaPacketProducerChannelMethodReleasingPayloadBufferName = 8;
-const int _mediaPacketProducerChannelMethodDemandUpdatedName = 9;
-const int _mediaPacketProducerChannelMethodProducingPacketName = 10;
-const int _mediaPacketProducerChannelMethodRetiringPacketName = 11;
+const int _mediaPacketProducerChannelMethodRequestingFlushName = 2;
+const int _mediaPacketProducerChannelMethodFlushCompletedName = 3;
+const int _mediaPacketProducerChannelMethodAllocatingPayloadBufferName = 4;
+const int _mediaPacketProducerChannelMethodPayloadBufferAllocationFailureName = 5;
+const int _mediaPacketProducerChannelMethodReleasingPayloadBufferName = 6;
+const int _mediaPacketProducerChannelMethodDemandUpdatedName = 7;
+const int _mediaPacketProducerChannelMethodProducingPacketName = 8;
+const int _mediaPacketProducerChannelMethodRetiringPacketName = 9;
 
 class _MediaPacketProducerChannelServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
@@ -729,8 +639,6 @@ abstract class MediaPacketProducerChannel {
   }
   void connecting();
   void resetting();
-  void requestingPrime();
-  void primeCompleted();
   void requestingFlush();
   void flushCompleted();
   void allocatingPayloadBuffer(int index, int size, int bufferAddress);
@@ -849,32 +757,6 @@ class MediaPacketProducerChannelProxy
     var params = new _MediaPacketProducerChannelResettingParams();
     ctrl.sendMessage(params,
         _mediaPacketProducerChannelMethodResettingName);
-  }
-  void requestingPrime() {
-    if (impl != null) {
-      impl.requestingPrime();
-      return;
-    }
-    if (!ctrl.isBound) {
-      ctrl.proxyError("The Proxy is closed.");
-      return;
-    }
-    var params = new _MediaPacketProducerChannelRequestingPrimeParams();
-    ctrl.sendMessage(params,
-        _mediaPacketProducerChannelMethodRequestingPrimeName);
-  }
-  void primeCompleted() {
-    if (impl != null) {
-      impl.primeCompleted();
-      return;
-    }
-    if (!ctrl.isBound) {
-      ctrl.proxyError("The Proxy is closed.");
-      return;
-    }
-    var params = new _MediaPacketProducerChannelPrimeCompletedParams();
-    ctrl.sendMessage(params,
-        _mediaPacketProducerChannelMethodPrimeCompletedName);
   }
   void requestingFlush() {
     if (impl != null) {
@@ -1035,12 +917,6 @@ class _MediaPacketProducerChannelStubControl
       case _mediaPacketProducerChannelMethodResettingName:
         _impl.resetting();
         break;
-      case _mediaPacketProducerChannelMethodRequestingPrimeName:
-        _impl.requestingPrime();
-        break;
-      case _mediaPacketProducerChannelMethodPrimeCompletedName:
-        _impl.primeCompleted();
-        break;
       case _mediaPacketProducerChannelMethodRequestingFlushName:
         _impl.requestingFlush();
         break;
@@ -1139,12 +1015,6 @@ class MediaPacketProducerChannelStub
   }
   void resetting() {
     return impl.resetting();
-  }
-  void requestingPrime() {
-    return impl.requestingPrime();
-  }
-  void primeCompleted() {
-    return impl.primeCompleted();
   }
   void requestingFlush() {
     return impl.requestingFlush();

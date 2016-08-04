@@ -49,11 +49,6 @@ MediaDecoderImpl::MediaDecoderImpl(MediaTypePtr input_media_type,
   graph_.ConnectParts(consumer_ref, decoder_ref);
   graph_.ConnectParts(decoder_ref, producer_ref);
 
-  consumer_->SetPrimeRequestedCallback(
-      [this](const MediaPacketConsumer::PrimeCallback& callback) {
-        DCHECK(producer_);
-        producer_->PrimeConnection(callback);
-      });
   consumer_->SetFlushRequestedCallback(
       [this, consumer_ref](const MediaPacketConsumer::FlushCallback& callback) {
         DCHECK(producer_);

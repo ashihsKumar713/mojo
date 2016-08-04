@@ -34,13 +34,6 @@ MediaSinkImpl::MediaSinkImpl(InterfaceHandle<MediaRenderer> renderer,
   PartRef consumer_ref = graph_.Add(consumer_);
   PartRef producer_ref = graph_.Add(producer_);
 
-  consumer_->SetPrimeRequestedCallback(
-      [this](const MediaPacketConsumer::PrimeCallback& callback) {
-        ready_.When([this, callback]() {
-          DCHECK(producer_);
-          producer_->PrimeConnection(callback);
-        });
-      });
   consumer_->SetFlushRequestedCallback(
       [this, consumer_ref](const MediaPacketConsumer::FlushCallback& callback) {
         ready_.When([this, consumer_ref, callback]() {

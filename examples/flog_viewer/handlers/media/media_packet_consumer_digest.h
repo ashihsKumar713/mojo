@@ -51,10 +51,6 @@ class MediaPacketConsumerDigest
 
   void RemovePayloadBufferRequested(uint32_t id) override;
 
-  void PrimeRequested() override;
-
-  void CompletingPrime() override;
-
   void FlushRequested() override;
 
   void CompletingFlush() override;
@@ -104,7 +100,6 @@ class MediaPacketConsumerAccumulator : public Accumulator {
 
   bool failed_ = false;
   uint64_t get_demand_update_responses_ = 0;
-  Counted prime_requests_;
   Counted flush_requests_;
   mojo::media::MediaPacketDemandPtr current_demand_;
   uint32_t min_packets_outstanding_highest_ = 0;

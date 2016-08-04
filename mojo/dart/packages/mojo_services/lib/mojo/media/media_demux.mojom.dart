@@ -307,94 +307,6 @@ class MediaDemuxGetMetadataResponseParams extends bindings.Struct {
 }
 
 
-class _MediaDemuxPrimeParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(8, 0)
-  ];
-
-  _MediaDemuxPrimeParams() : super(kVersions.last.size);
-
-  _MediaDemuxPrimeParams.init(
-  ) : super(kVersions.last.size);
-
-  static _MediaDemuxPrimeParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static _MediaDemuxPrimeParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    _MediaDemuxPrimeParams result = new _MediaDemuxPrimeParams();
-    bindings.Struct.checkVersion(decoder0, kVersions);
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "_MediaDemuxPrimeParams";
-    String fieldName;
-    try {
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "_MediaDemuxPrimeParams("")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    return map;
-  }
-}
-
-
-class MediaDemuxPrimeResponseParams extends bindings.Struct {
-  static const List<bindings.StructDataHeader> kVersions = const [
-    const bindings.StructDataHeader(8, 0)
-  ];
-
-  MediaDemuxPrimeResponseParams() : super(kVersions.last.size);
-
-  MediaDemuxPrimeResponseParams.init(
-  ) : super(kVersions.last.size);
-
-  static MediaDemuxPrimeResponseParams deserialize(bindings.Message message) =>
-      bindings.Struct.deserialize(decode, message);
-
-  static MediaDemuxPrimeResponseParams decode(bindings.Decoder decoder0) {
-    if (decoder0 == null) {
-      return null;
-    }
-    MediaDemuxPrimeResponseParams result = new MediaDemuxPrimeResponseParams();
-    bindings.Struct.checkVersion(decoder0, kVersions);
-    return result;
-  }
-
-  void encode(bindings.Encoder encoder) {
-    encoder.getStructEncoderAtOffset(kVersions.last);
-    const String structName = "MediaDemuxPrimeResponseParams";
-    String fieldName;
-    try {
-    } on bindings.MojoCodecError catch(e) {
-      bindings.Struct.fixErrorMessage(e, fieldName, structName);
-      rethrow;
-    }
-  }
-
-  String toString() {
-    return "MediaDemuxPrimeResponseParams("")";
-  }
-
-  Map toJson() {
-    Map map = new Map();
-    return map;
-  }
-}
-
-
 class _MediaDemuxFlushParams extends bindings.Struct {
   static const List<bindings.StructDataHeader> kVersions = const [
     const bindings.StructDataHeader(8, 0)
@@ -583,9 +495,8 @@ class MediaDemuxSeekResponseParams extends bindings.Struct {
 const int _mediaDemuxMethodDescribeName = 0;
 const int _mediaDemuxMethodGetPacketProducerName = 1;
 const int _mediaDemuxMethodGetMetadataName = 2;
-const int _mediaDemuxMethodPrimeName = 3;
-const int _mediaDemuxMethodFlushName = 4;
-const int _mediaDemuxMethodSeekName = 5;
+const int _mediaDemuxMethodFlushName = 3;
+const int _mediaDemuxMethodSeekName = 4;
 
 class _MediaDemuxServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
@@ -626,7 +537,6 @@ abstract class MediaDemux {
   void describe(void callback(List<media_types_mojom.MediaType> streamTypes));
   void getPacketProducer(int streamIndex, media_transport_mojom.MediaPacketProducerInterfaceRequest packetProducer);
   void getMetadata(int versionLastSeen,void callback(int version, media_metadata_mojom.MediaMetadata metadata));
-  void prime(void callback());
   void flush(void callback());
   void seek(int position,void callback());
   static const int kInitialMetadata = 0;
@@ -686,14 +596,6 @@ class _MediaDemuxProxyControl
           var r = MediaDemuxGetMetadataResponseParams.deserialize(
               message.payload);
           callback(r.version , r.metadata );
-        }
-        break;
-      case _mediaDemuxMethodPrimeName:
-        Function callback = getCallback(message);
-        if (callback != null) {
-          var r = MediaDemuxPrimeResponseParams.deserialize(
-              message.payload);
-          callback();
         }
         break;
       case _mediaDemuxMethodFlushName:
@@ -819,30 +721,6 @@ class MediaDemuxProxy
         bindings.MessageHeader.kMessageExpectsResponse,
         zonedCallback);
   }
-  void prime(void callback()) {
-    if (impl != null) {
-      impl.prime(callback ?? bindings.DoNothingFunction.fn);
-      return;
-    }
-    var params = new _MediaDemuxPrimeParams();
-    Function zonedCallback;
-    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
-      zonedCallback = callback;
-    } else {
-      Zone z = Zone.current;
-      zonedCallback = (() {
-        z.bindCallback(() {
-          callback();
-        })();
-      });
-    }
-    ctrl.sendMessageWithRequestId(
-        params,
-        _mediaDemuxMethodPrimeName,
-        -1,
-        bindings.MessageHeader.kMessageExpectsResponse,
-        zonedCallback);
-  }
   void flush(void callback()) {
     if (impl != null) {
       impl.flush(callback ?? bindings.DoNothingFunction.fn);
@@ -941,17 +819,6 @@ class _MediaDemuxStubControl
           bindings.MessageHeader.kMessageIsResponse));
     };
   }
-  Function _mediaDemuxPrimeResponseParamsResponder(
-      int requestId) {
-  return () {
-      var result = new MediaDemuxPrimeResponseParams();
-      sendResponse(buildResponseWithId(
-          result,
-          _mediaDemuxMethodPrimeName,
-          requestId,
-          bindings.MessageHeader.kMessageIsResponse));
-    };
-  }
   Function _mediaDemuxFlushResponseParamsResponder(
       int requestId) {
   return () {
@@ -997,9 +864,6 @@ class _MediaDemuxStubControl
         var params = _MediaDemuxGetMetadataParams.deserialize(
             message.payload);
         _impl.getMetadata(params.versionLastSeen, _mediaDemuxGetMetadataResponseParamsResponder(message.header.requestId));
-        break;
-      case _mediaDemuxMethodPrimeName:
-        _impl.prime(_mediaDemuxPrimeResponseParamsResponder(message.header.requestId));
         break;
       case _mediaDemuxMethodFlushName:
         _impl.flush(_mediaDemuxFlushResponseParamsResponder(message.header.requestId));
@@ -1074,9 +938,6 @@ class MediaDemuxStub
   }
   void getMetadata(int versionLastSeen,void callback(int version, media_metadata_mojom.MediaMetadata metadata)) {
     return impl.getMetadata(versionLastSeen,callback);
-  }
-  void prime(void callback()) {
-    return impl.prime(callback);
   }
   void flush(void callback()) {
     return impl.flush(callback);

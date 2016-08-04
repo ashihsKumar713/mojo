@@ -17,11 +17,6 @@ void MojoPacketConsumer::Bind(
   MediaPacketConsumerBase::Bind(packet_consumer_request.Pass());
 }
 
-void MojoPacketConsumer::SetPrimeRequestedCallback(
-    const PrimeRequestedCallback& callback) {
-  prime_requested_callback_ = callback;
-}
-
 void MojoPacketConsumer::SetFlushRequestedCallback(
     const FlushRequestedCallback& callback) {
   flush_requested_callback_ = callback;
@@ -39,15 +34,6 @@ void MojoPacketConsumer::OnPacketReturning() {
     SetDemand(supplied_packets_outstanding() + 1);
   } else {
     SetDemand(supplied_packets_outstanding());
-  }
-}
-
-void MojoPacketConsumer::OnPrimeRequested(const PrimeCallback& callback) {
-  if (prime_requested_callback_) {
-    prime_requested_callback_(callback);
-  } else {
-    MOJO_DLOG(WARNING) << "prime requested but no callback registered";
-    callback.Run();
   }
 }
 

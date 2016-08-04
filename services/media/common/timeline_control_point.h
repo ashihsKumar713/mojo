@@ -17,8 +17,9 @@ namespace media {
 
 // MediaTimelineControlPoint implementation.
 class TimelineControlPoint : public MediaTimelineControlPoint,
-                            public TimelineConsumer {
+                             public TimelineConsumer {
  public:
+  using PrimeRequestedCallback = std::function<void(const PrimeCallback&)>;
   TimelineControlPoint();
 
   ~TimelineControlPoint() override;
@@ -31,6 +32,11 @@ class TimelineControlPoint : public MediaTimelineControlPoint,
 
   // Unbinds from clients and resets to initial state.
   void Reset();
+
+  // Sets a callback to be called when priming is requested.
+  void SetPrimeRequestedCallback(const PrimeRequestedCallback& callback) {
+    prime_requested_callback_ = callback;
+  }
 
   // Get the TimelineFunction for the reference_time (which should be 'now',
   // approximately).
@@ -47,6 +53,8 @@ class TimelineControlPoint : public MediaTimelineControlPoint,
 
   void GetTimelineConsumer(
       InterfaceRequest<TimelineConsumer> timeline_consumer) override;
+
+  void Prime(const PrimeCallback& callback) override;
 
   // TimelineConsumer implementation.
   void SetTimelineTransform(
@@ -79,6 +87,7 @@ class TimelineControlPoint : public MediaTimelineControlPoint,
   Binding<MediaTimelineControlPoint> control_point_binding_;
   Binding<TimelineConsumer> consumer_binding_;
   MojoPublisher<GetStatusCallback> status_publisher_;
+  PrimeRequestedCallback prime_requested_callback_;
 
   base::Lock lock_;
   // BEGIN fields synchronized using lock_.

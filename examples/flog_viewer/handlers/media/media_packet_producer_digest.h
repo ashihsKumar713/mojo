@@ -42,10 +42,6 @@ class MediaPacketProducerDigest
 
   void Resetting() override;
 
-  void RequestingPrime() override;
-
-  void PrimeCompleted() override;
-
   void RequestingFlush() override;
 
   void FlushCompleted() override;
@@ -106,7 +102,6 @@ class MediaPacketProducerAccumulator : public Accumulator {
   };
 
   bool connected_ = false;
-  Counted prime_requests_;
   Counted flush_requests_;
   mojo::media::MediaPacketDemandPtr current_demand_;
   uint32_t min_packets_outstanding_highest_ = 0;

@@ -13,10 +13,8 @@ namespace mojo {
 namespace media {
 
 // Implements MediaPacketConsumer to receive a stream from across mojo.
-class MojoPacketConsumer : public MediaPacketConsumerBase,
-                           public ActiveSource {
+class MojoPacketConsumer : public MediaPacketConsumerBase, public ActiveSource {
  public:
-  using PrimeRequestedCallback = std::function<void(const PrimeCallback&)>;
   using FlushRequestedCallback = std::function<void(const FlushCallback&)>;
 
   static std::shared_ptr<MojoPacketConsumer> Create() {
@@ -27,10 +25,6 @@ class MojoPacketConsumer : public MediaPacketConsumerBase,
 
   // Binds.
   void Bind(InterfaceRequest<MediaPacketConsumer> packet_consumer_request);
-
-  // Sets a callback signalling that a prime has been requested from the
-  // MediaPacketConsumer client.
-  void SetPrimeRequestedCallback(const PrimeRequestedCallback& callback);
 
   // Sets a callback signalling that a flush has been requested from the
   // MediaPacketConsumer client.
@@ -44,8 +38,6 @@ class MojoPacketConsumer : public MediaPacketConsumerBase,
       std::unique_ptr<SuppliedPacket> supplied_packet) override;
 
   void OnPacketReturning() override;
-
-  void OnPrimeRequested(const PrimeCallback& callback) override;
 
   void OnFlushRequested(const FlushCallback& callback) override;
 
@@ -77,7 +69,6 @@ class MojoPacketConsumer : public MediaPacketConsumerBase,
   };
 
   Demand downstream_demand_ = Demand::kNegative;
-  PrimeRequestedCallback prime_requested_callback_;
   FlushRequestedCallback flush_requested_callback_;
   SupplyCallback supply_callback_;
 };

@@ -139,11 +139,6 @@ void FakeRenderer::OnPacketSupplied(
   }
 }
 
-void FakeRenderer::OnPrimeRequested(const PrimeCallback& callback) {
-  SetDemand(demand_min_packets_outstanding_);
-  callback.Run();
-}
-
 void FakeRenderer::OnFlushRequested(const FlushCallback& callback) {
   while (!packet_queue_.empty()) {
     packet_queue_.pop();
@@ -179,6 +174,11 @@ void FakeRenderer::GetStatus(uint64_t version_last_seen,
 void FakeRenderer::GetTimelineConsumer(
     InterfaceRequest<TimelineConsumer> timeline_consumer_request) {
   timeline_consumer_binding_.Bind(timeline_consumer_request.Pass());
+}
+
+void FakeRenderer::Prime(const PrimeCallback& callback) {
+  SetDemand(demand_min_packets_outstanding_);
+  callback.Run();
 }
 
 void FakeRenderer::SetTimelineTransform(

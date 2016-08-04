@@ -76,21 +76,6 @@ void MediaPacketConsumerDigest::RemovePayloadBufferRequested(uint32_t id) {
   accumulator_->outstanding_payload_buffers_.erase(iter);
 }
 
-void MediaPacketConsumerDigest::PrimeRequested() {
-  if (accumulator_->prime_requests_.outstanding_count() != 0) {
-    ReportProblem() << "PrimeRequested when another prime was outstanding";
-  }
-  accumulator_->prime_requests_.Add();
-}
-
-void MediaPacketConsumerDigest::CompletingPrime() {
-  if (accumulator_->prime_requests_.outstanding_count() == 0) {
-    ReportProblem() << "CompletingPrime when no prime was outstanding";
-  } else {
-    accumulator_->prime_requests_.Remove();
-  }
-}
-
 void MediaPacketConsumerDigest::FlushRequested() {
   if (accumulator_->flush_requests_.outstanding_count() != 0) {
     ReportProblem() << "FlushRequested when another flush was outstanding";
@@ -144,7 +129,6 @@ void MediaPacketConsumerAccumulator::Print(std::ostream& os) {
   os << indent;
   os << begl << "GetDemandUpdate responses: " << get_demand_update_responses_
      << std::endl;
-  os << begl << "primes: " << prime_requests_.count() << std::endl;
   os << begl << "flushes: " << flush_requests_.count() << std::endl;
 
   os << begl << "current demand: " << current_demand_;

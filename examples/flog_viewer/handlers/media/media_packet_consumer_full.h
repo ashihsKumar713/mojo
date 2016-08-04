@@ -42,10 +42,6 @@ class MediaPacketConsumerFull
 
   void RemovePayloadBufferRequested(uint32_t id) override;
 
-  void PrimeRequested() override;
-
-  void CompletingPrime() override;
-
   void FlushRequested() override;
 
   void CompletingFlush() override;

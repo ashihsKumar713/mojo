@@ -52,16 +52,23 @@ AudioTrackImpl::AudioTrackImpl(InterfaceRequest<AudioTrack> track_request,
     renderer_binding_(this, renderer_request.Pass()),
     pipe_(this, owner) {
   CHECK(nullptr != owner_);
+
   track_binding_.set_connection_error_handler([this]() -> void {
     if (!renderer_binding_.is_bound()) {
       Shutdown();
     }
   });
+
   renderer_binding_.set_connection_error_handler([this]() -> void {
     if (!track_binding_.is_bound()) {
       Shutdown();
     }
   });
+
+  timeline_control_point_.SetPrimeRequestedCallback(
+      [this](const TimelineControlPoint::PrimeCallback& callback) {
+        pipe_.PrimeRequested(callback);
+      });
 }
 
 AudioTrackImpl::~AudioTrackImpl() {

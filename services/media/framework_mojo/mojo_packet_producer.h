@@ -21,7 +21,6 @@ class MojoPacketProducer : private MediaPacketProducerBase,
                            public ActiveSink,
                            public PayloadAllocator {
  public:
-  using PrimeConnectionCallback = mojo::Callback<void()>;
   using FlushConnectionCallback = mojo::Callback<void()>;
 
   static std::shared_ptr<MojoPacketProducer> Create() {
@@ -33,11 +32,7 @@ class MojoPacketProducer : private MediaPacketProducerBase,
   // Binds.
   void Bind(InterfaceRequest<MediaPacketProducer> request);
 
-  // Initiates demand to provide downstream parties with enough content to
-  // start without starving.
-  void PrimeConnection(const PrimeConnectionCallback& callback);
-
-  // Unprimes and tells the connected consumer to flush.
+  // Flushes and tells the connected consumer to flush.
   void FlushConnection(const FlushConnectionCallback& callback);
 
   // ActiveSink implementation.

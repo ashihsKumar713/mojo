@@ -352,6 +352,94 @@ class _MediaTimelineControlPointGetTimelineConsumerParams extends bindings.Struc
   }
 }
 
+
+class _MediaTimelineControlPointPrimeParams extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(8, 0)
+  ];
+
+  _MediaTimelineControlPointPrimeParams() : super(kVersions.last.size);
+
+  _MediaTimelineControlPointPrimeParams.init(
+  ) : super(kVersions.last.size);
+
+  static _MediaTimelineControlPointPrimeParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
+
+  static _MediaTimelineControlPointPrimeParams decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    _MediaTimelineControlPointPrimeParams result = new _MediaTimelineControlPointPrimeParams();
+    bindings.Struct.checkVersion(decoder0, kVersions);
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "_MediaTimelineControlPointPrimeParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "_MediaTimelineControlPointPrimeParams("")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    return map;
+  }
+}
+
+
+class MediaTimelineControlPointPrimeResponseParams extends bindings.Struct {
+  static const List<bindings.StructDataHeader> kVersions = const [
+    const bindings.StructDataHeader(8, 0)
+  ];
+
+  MediaTimelineControlPointPrimeResponseParams() : super(kVersions.last.size);
+
+  MediaTimelineControlPointPrimeResponseParams.init(
+  ) : super(kVersions.last.size);
+
+  static MediaTimelineControlPointPrimeResponseParams deserialize(bindings.Message message) =>
+      bindings.Struct.deserialize(decode, message);
+
+  static MediaTimelineControlPointPrimeResponseParams decode(bindings.Decoder decoder0) {
+    if (decoder0 == null) {
+      return null;
+    }
+    MediaTimelineControlPointPrimeResponseParams result = new MediaTimelineControlPointPrimeResponseParams();
+    bindings.Struct.checkVersion(decoder0, kVersions);
+    return result;
+  }
+
+  void encode(bindings.Encoder encoder) {
+    encoder.getStructEncoderAtOffset(kVersions.last);
+    const String structName = "MediaTimelineControlPointPrimeResponseParams";
+    String fieldName;
+    try {
+    } on bindings.MojoCodecError catch(e) {
+      bindings.Struct.fixErrorMessage(e, fieldName, structName);
+      rethrow;
+    }
+  }
+
+  String toString() {
+    return "MediaTimelineControlPointPrimeResponseParams("")";
+  }
+
+  Map toJson() {
+    Map map = new Map();
+    return map;
+  }
+}
+
 const int _mediaTimelineControllerMethodAddControlPointName = 0;
 const int _mediaTimelineControllerMethodGetControlPointName = 1;
 
@@ -618,6 +706,7 @@ class MediaTimelineControllerStub
 
 const int _mediaTimelineControlPointMethodGetStatusName = 0;
 const int _mediaTimelineControlPointMethodGetTimelineConsumerName = 1;
+const int _mediaTimelineControlPointMethodPrimeName = 2;
 
 class _MediaTimelineControlPointServiceDescription implements service_describer.ServiceDescription {
   void getTopLevelInterface(Function responder) {
@@ -657,6 +746,7 @@ abstract class MediaTimelineControlPoint {
   }
   void getStatus(int versionLastSeen,void callback(int version, MediaTimelineControlPointStatus status));
   void getTimelineConsumer(timelines_mojom.TimelineConsumerInterfaceRequest timelineConsumer);
+  void prime(void callback());
   static const int kInitialStatus = 0;
 }
 
@@ -706,6 +796,14 @@ class _MediaTimelineControlPointProxyControl
           var r = MediaTimelineControlPointGetStatusResponseParams.deserialize(
               message.payload);
           callback(r.version , r.status );
+        }
+        break;
+      case _mediaTimelineControlPointMethodPrimeName:
+        Function callback = getCallback(message);
+        if (callback != null) {
+          var r = MediaTimelineControlPointPrimeResponseParams.deserialize(
+              message.payload);
+          callback();
         }
         break;
       default:
@@ -790,6 +888,30 @@ class MediaTimelineControlPointProxy
     ctrl.sendMessage(params,
         _mediaTimelineControlPointMethodGetTimelineConsumerName);
   }
+  void prime(void callback()) {
+    if (impl != null) {
+      impl.prime(callback ?? bindings.DoNothingFunction.fn);
+      return;
+    }
+    var params = new _MediaTimelineControlPointPrimeParams();
+    Function zonedCallback;
+    if ((callback == null) || identical(Zone.current, Zone.ROOT)) {
+      zonedCallback = callback;
+    } else {
+      Zone z = Zone.current;
+      zonedCallback = (() {
+        z.bindCallback(() {
+          callback();
+        })();
+      });
+    }
+    ctrl.sendMessageWithRequestId(
+        params,
+        _mediaTimelineControlPointMethodPrimeName,
+        -1,
+        bindings.MessageHeader.kMessageExpectsResponse,
+        zonedCallback);
+  }
 }
 
 class _MediaTimelineControlPointStubControl
@@ -827,6 +949,17 @@ class _MediaTimelineControlPointStubControl
           bindings.MessageHeader.kMessageIsResponse));
     };
   }
+  Function _mediaTimelineControlPointPrimeResponseParamsResponder(
+      int requestId) {
+  return () {
+      var result = new MediaTimelineControlPointPrimeResponseParams();
+      sendResponse(buildResponseWithId(
+          result,
+          _mediaTimelineControlPointMethodPrimeName,
+          requestId,
+          bindings.MessageHeader.kMessageIsResponse));
+    };
+  }
 
   void handleMessage(bindings.ServiceMessage message) {
     if (bindings.ControlMessageHandler.isControlMessage(message)) {
@@ -847,6 +980,9 @@ class _MediaTimelineControlPointStubControl
         var params = _MediaTimelineControlPointGetTimelineConsumerParams.deserialize(
             message.payload);
         _impl.getTimelineConsumer(params.timelineConsumer);
+        break;
+      case _mediaTimelineControlPointMethodPrimeName:
+        _impl.prime(_mediaTimelineControlPointPrimeResponseParamsResponder(message.header.requestId));
         break;
       default:
         throw new bindings.MojoCodecError("Unexpected message name");
@@ -910,6 +1046,9 @@ class MediaTimelineControlPointStub
   }
   void getTimelineConsumer(timelines_mojom.TimelineConsumerInterfaceRequest timelineConsumer) {
     return impl.getTimelineConsumer(timelineConsumer);
+  }
+  void prime(void callback()) {
+    return impl.prime(callback);
   }
 }
 

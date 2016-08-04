@@ -15,8 +15,6 @@ interface MediaPacketConsumerChannel {
   RespondingToGetDemandUpdate(MediaPacketDemand demand);
   AddPayloadBufferRequested(uint32 id, uint64 size);
   RemovePayloadBufferRequested(uint32 id);
-  PrimeRequested();
-  CompletingPrime();
   FlushRequested();
   CompletingFlush();
   PacketSupplied(
