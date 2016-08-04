@@ -146,7 +146,7 @@ void FlogViewer::PrintRemainingAccumulators() {
   for (std::pair<uint32_t, std::shared_ptr<Channel>> pair :
        channels_by_channel_id_) {
     if (pair.second->has_accumulator() && !pair.second->has_parent()) {
-      std::cout << pair.second << " ";
+      std::cout << *pair.second << " ";
       pair.second->PrintAccumulator(std::cout);
       std::cout << std::endl;
     }

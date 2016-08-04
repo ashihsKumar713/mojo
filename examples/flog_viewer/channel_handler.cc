@@ -6,6 +6,18 @@
 
 #include "examples/flog_viewer/flog_viewer.h"
 #include "examples/flog_viewer/handlers/default.h"
+#include "examples/flog_viewer/handlers/media/media_decoder_digest.h"
+#include "examples/flog_viewer/handlers/media/media_decoder_full.h"
+#include "examples/flog_viewer/handlers/media/media_demux_digest.h"
+#include "examples/flog_viewer/handlers/media/media_demux_full.h"
+#include "examples/flog_viewer/handlers/media/media_packet_consumer_digest.h"
+#include "examples/flog_viewer/handlers/media/media_packet_consumer_full.h"
+#include "examples/flog_viewer/handlers/media/media_packet_producer_digest.h"
+#include "examples/flog_viewer/handlers/media/media_packet_producer_full.h"
+#include "examples/flog_viewer/handlers/media/media_player_digest.h"
+#include "examples/flog_viewer/handlers/media/media_player_full.h"
+#include "examples/flog_viewer/handlers/media/media_sink_digest.h"
+#include "examples/flog_viewer/handlers/media/media_sink_full.h"
 
 namespace mojo {
 namespace flog {
@@ -18,6 +30,50 @@ std::unique_ptr<ChannelHandler> ChannelHandler::Create(
   ChannelHandler* handler = nullptr;
 
   // When implementing a new handler, add logic here for creating an instance.
+  if (type_name == handlers::media::MediaPlayerFull::Name_) {
+    if (format == FlogViewer::kFormatTerse ||
+        format == FlogViewer::kFormatFull) {
+      handler = new handlers::media::MediaPlayerFull(format);
+    } else if (format == FlogViewer::kFormatDigest) {
+      handler = new handlers::media::MediaPlayerDigest(format);
+    }
+  } else if (type_name == handlers::media::MediaDecoderFull::Name_) {
+    if (format == FlogViewer::kFormatTerse ||
+        format == FlogViewer::kFormatFull) {
+      handler = new handlers::media::MediaDecoderFull(format);
+    } else if (format == FlogViewer::kFormatDigest) {
+      handler = new handlers::media::MediaDecoderDigest(format);
+    }
+  } else if (type_name == handlers::media::MediaDemuxFull::Name_) {
+    if (format == FlogViewer::kFormatTerse ||
+        format == FlogViewer::kFormatFull) {
+      handler = new handlers::media::MediaDemuxFull(format);
+    } else if (format == FlogViewer::kFormatDigest) {
+      handler = new handlers::media::MediaDemuxDigest(format);
+    }
+  } else if (type_name == handlers::media::MediaPacketProducerFull::Name_) {
+    if (format == FlogViewer::kFormatTerse ||
+        format == FlogViewer::kFormatFull) {
+      handler = new handlers::media::MediaPacketProducerFull(format);
+    }
+    if (format == FlogViewer::kFormatDigest) {
+      handler = new handlers::media::MediaPacketProducerDigest(format);
+    }
+  } else if (type_name == handlers::media::MediaPacketConsumerFull::Name_) {
+    if (format == FlogViewer::kFormatTerse ||
+        format == FlogViewer::kFormatFull) {
+      handler = new handlers::media::MediaPacketConsumerFull(format);
+    } else if (format == FlogViewer::kFormatDigest) {
+      handler = new handlers::media::MediaPacketConsumerDigest(format);
+    }
+  } else if (type_name == handlers::media::MediaSinkFull::Name_) {
+    if (format == FlogViewer::kFormatTerse ||
+        format == FlogViewer::kFormatFull) {
+      handler = new handlers::media::MediaSinkFull(format);
+    } else if (format == FlogViewer::kFormatDigest) {
+      handler = new handlers::media::MediaSinkDigest(format);
+    }
+  }
 
   if (handler == nullptr) {
     handler = new handlers::Default(format);
