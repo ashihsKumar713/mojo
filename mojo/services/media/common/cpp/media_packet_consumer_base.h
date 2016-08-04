@@ -7,7 +7,6 @@
 
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/services/flog/cpp/flog.h"
-#include "mojo/services/media/common/cpp/mapped_shared_buffer.h"
 #include "mojo/services/media/common/cpp/shared_buffer_set.h"
 #include "mojo/services/media/common/cpp/thread_checker.h"
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"

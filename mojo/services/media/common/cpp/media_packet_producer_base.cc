@@ -29,13 +29,6 @@ void MediaPacketProducerBase::Connect(
   consumer_ = consumer.Pass();
   consumer_.set_connection_error_handler([this]() { OnFailure(); });
 
-  if (!EnsureAllocatorInitialized()) {
-    callback.Run();
-    return;
-  }
-
-  // TODO(dalesat): Implement dynamic buffer allocation.
-  consumer_->AddPayloadBuffer(0, allocator_.GetDuplicateHandle());
   HandleDemandUpdate();
   callback.Run();
 }
@@ -84,10 +77,6 @@ void MediaPacketProducerBase::FlushConsumer(
 }
 
 void* MediaPacketProducerBase::AllocatePayloadBuffer(size_t size) {
-  if (!EnsureAllocatorInitialized()) {
-    return nullptr;
-  }
-
   void* result = allocator_.AllocateRegion(size);
   if (result == nullptr) {
     FLOG(log_channel_, PayloadBufferAllocationFailure(0, size));
@@ -116,11 +105,13 @@ void MediaPacketProducerBase::ProducePacket(
     return;
   }
 
+  SharedBufferSet::Locator locator = allocator_.LocatorFromPtr(payload);
+
   MediaPacketPtr media_packet = MediaPacket::New();
   media_packet->pts = pts;
   media_packet->end_of_stream = end_of_stream;
-  media_packet->payload_buffer_id = 0;
-  media_packet->payload_offset = allocator_.OffsetFromPtr(payload);
+  media_packet->payload_buffer_id = locator.buffer_id();
+  media_packet->payload_offset = locator.offset();
   media_packet->payload_size = size;
 
   uint32_t packets_outstanding;
@@ -138,6 +129,17 @@ void MediaPacketProducerBase::ProducePacket(
        ProducingPacket(label, media_packet.Clone(), FLOG_ADDRESS(payload),
                        packets_outstanding));
   (void)packets_outstanding;  // Avoids 'unused' error in release builds.
+
+  // Make sure the consumer is up-to-date with respect to buffers.
+  uint32_t buffer_id;
+  ScopedSharedBufferHandle handle;
+  while (allocator_.PollForBufferUpdate(&buffer_id, &handle)) {
+    if (handle.is_valid()) {
+      consumer_->AddPayloadBuffer(buffer_id, handle.Pass());
+    } else {
+      consumer_->RemovePayloadBuffer(buffer_id);
+    }
+  }
 
   consumer_->SupplyPacket(
       media_packet.Pass(),
@@ -184,21 +186,6 @@ bool MediaPacketProducerBase::ShouldProducePacket(
 
 void MediaPacketProducerBase::OnFailure() {
   CHECK_THREAD(thread_checker_);
-}
-
-bool MediaPacketProducerBase::EnsureAllocatorInitialized() {
-  if (allocator_.initialized()) {
-    return true;
-  }
-
-  // TODO(dalesat): Made up allocation.
-  if (allocator_.InitNew(4096 * 1024) == MOJO_RESULT_OK) {
-    return true;
-  }
-
-  Reset();
-  OnFailure();
-  return false;
 }
 
 void MediaPacketProducerBase::HandleDemandUpdate(MediaPacketDemandPtr demand) {

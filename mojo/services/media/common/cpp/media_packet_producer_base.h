@@ -9,7 +9,7 @@
 #include <mutex>
 
 #include "mojo/services/flog/cpp/flog.h"
-#include "mojo/services/media/common/cpp/shared_media_buffer_allocator.h"
+#include "mojo/services/media/common/cpp/shared_buffer_set_allocator.h"
 #include "mojo/services/media/common/cpp/thread_checker.h"
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
 #include "mojo/services/media/logs/interfaces/media_packet_producer_channel.mojom.h"
@@ -83,10 +83,6 @@ class MediaPacketProducerBase {
   virtual void OnFailure();
 
  private:
-  // Ensures that the allocator is initialized. Returns false if the allocator
-  // could not be initialized.
-  bool EnsureAllocatorInitialized();
-
   // Handles a demand update callback or, if called with default parameters,
   // initiates demand update requests.
   void HandleDemandUpdate(MediaPacketDemandPtr demand = nullptr);
@@ -95,7 +91,7 @@ class MediaPacketProducerBase {
   // has changed.
   void UpdateDemand(const MediaPacketDemand& demand);
 
-  SharedMediaBufferAllocator allocator_;
+  SharedBufferSetAllocator allocator_;
   MediaPacketConsumerPtr consumer_;
   bool flush_in_progress_ = false;
   uint64_t prev_packet_label_ = 0;

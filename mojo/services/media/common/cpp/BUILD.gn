@@ -23,8 +23,6 @@ mojo_sdk_source_set("cpp") {
     "shared_buffer_set.h",
     "shared_buffer_set_allocator.cc",
     "shared_buffer_set_allocator.h",
-    "shared_media_buffer_allocator.cc",
-    "shared_media_buffer_allocator.h",
     "thread_checker.h",
     "timeline.h",
     "timeline_function.cc",
