@@ -110,12 +110,13 @@ void AudioPipe::OnPacketSupplied(SuppliedPacketPtr supplied_packet) {
                            next_pts_,
                            frame_count)));
 
-   if (!prime_callback_.is_null()) {
-     // Prime was requested. Call the callback to indicate priming is complete.
-     // TODO(dalesat): Don't do this until low water mark is reached.
-     prime_callback_.Run();
-     prime_callback_.reset();
-   }
+  if (!prime_callback_.is_null() &&
+      supplied_packets_outstanding() >= kDemandMinPacketsOutstanding) {
+    // Prime was requested. Call the callback to indicate priming is complete.
+    // TODO(dalesat): Don't do this until low water mark is reached.
+    prime_callback_.Run();
+    prime_callback_.reset();
+  }
 }
 
 void AudioPipe::OnPrimeRequested(const PrimeCallback& cbk) {
@@ -125,7 +126,8 @@ void AudioPipe::OnPrimeRequested(const PrimeCallback& cbk) {
     prime_callback_.Run();
   }
   prime_callback_ = cbk;
-  SetDemand(4); // TODO(dalesat): Implement better demand strategy.
+  SetDemand(kDemandMinPacketsOutstanding);
+  // TODO(dalesat): Implement better demand strategy.
 }
 
 void AudioPipe::OnFlushRequested(const FlushCallback& cbk) {

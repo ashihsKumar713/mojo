@@ -8,6 +8,22 @@
 namespace mojo {
 namespace media {
 
+#if !defined(NDEBUG)
+
+namespace {
+
+// Gets the size of a shared buffer.
+uint64_t SizeOf(const ScopedSharedBufferHandle& handle) {
+  MojoBufferInformation info;
+  MojoResult result =
+      MojoGetBufferInformation(handle.get().value(), &info, sizeof(info));
+  return result == MOJO_RESULT_OK ? info.num_bytes : 0;
+}
+
+}  // namespace
+
+#endif // !defined(NDEBUG)
+
 // For checking preconditions when handling mojo requests.
 // Checks the condition, and, if it's false, calls Fail and returns.
 #define RCHECK(condition, message) \
@@ -37,6 +53,7 @@ void MediaPacketConsumerBase::Bind(
     InterfaceRequest<MediaPacketConsumer> request) {
   CHECK_THREAD(thread_checker_);
   binding_.Bind(request.Pass());
+  binding_.set_connection_error_handler([this]() { Reset(); });
 }
 
 bool MediaPacketConsumerBase::is_bound() {
@@ -68,8 +85,6 @@ void MediaPacketConsumerBase::Reset() {
   if (binding_.is_bound()) {
     binding_.Close();
   }
-
-  buffer_.Reset();
 
   demand_.min_packets_outstanding = 0;
   demand_.min_pts = MediaPacket::kNoTimestamp;
@@ -125,20 +140,17 @@ void MediaPacketConsumerBase::AddPayloadBuffer(
     ScopedSharedBufferHandle payload_buffer) {
   CHECK_THREAD(thread_checker_);
   MOJO_DCHECK(payload_buffer.is_valid());
-  // TODO(dalesat): Fully support the semantics.
-  RCHECK(payload_buffer_id == 0, "payload_buffer_id must be 0 for now");
-  RCHECK(!buffer_.initialized(), "buffer already set");
-  MojoResult result = buffer_.InitFromHandle(payload_buffer.Pass());
   FLOG(log_channel_,
-       AddPayloadBufferRequested(payload_buffer_id, buffer_.size()));
+       AddPayloadBufferRequested(payload_buffer_id, SizeOf(payload_buffer)));
+  MojoResult result = counter_->buffer_set().AddBuffer(payload_buffer_id,
+                                                       payload_buffer.Pass());
   RCHECK(result == MOJO_RESULT_OK, "failed to map buffer");
 }
 
 void MediaPacketConsumerBase::RemovePayloadBuffer(uint32_t payload_buffer_id) {
   CHECK_THREAD(thread_checker_);
-  // TODO(dalesat): Implement RemovePayloadBuffer.
   FLOG(log_channel_, RemovePayloadBufferRequested(payload_buffer_id));
-  RCHECK(false, "RemovePayloadBuffer not implemented");
+  counter_->buffer_set().RemoveBuffer(payload_buffer_id);
 }
 
 void MediaPacketConsumerBase::SupplyPacket(
@@ -146,18 +158,18 @@ void MediaPacketConsumerBase::SupplyPacket(
     const SupplyPacketCallback& callback) {
   CHECK_THREAD(thread_checker_);
   MOJO_DCHECK(media_packet);
-  RCHECK(media_packet->payload_buffer_id == 0,
-         "payload_buffer_id must be 0 for now");
-  RCHECK(buffer_.initialized(), "need to AddPayloadBuffer before SupplyPacket");
 
   void* payload;
   if (media_packet->payload_size == 0) {
     payload = nullptr;
   } else {
-    RCHECK(buffer_.Validate(media_packet->payload_offset,
-                            media_packet->payload_size),
+    RCHECK(counter_->buffer_set().Validate(
+               SharedBufferSet::Locator(media_packet->payload_buffer_id,
+                                        media_packet->payload_offset),
+               media_packet->payload_size),
            "invalid buffer region");
-    payload = buffer_.PtrFromOffset(media_packet->payload_offset);
+    payload = counter_->buffer_set().PtrFromLocator(SharedBufferSet::Locator(
+        media_packet->payload_buffer_id, media_packet->payload_offset));
   }
 
   uint64_t label = ++prev_packet_label_;

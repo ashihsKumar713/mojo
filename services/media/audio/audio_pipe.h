@@ -83,6 +83,8 @@ class AudioPipe : public MediaPacketConsumerBase {
   void OnFlushRequested(const FlushCallback& cbk) override;
 
  private:
+  static constexpr uint32_t kDemandMinPacketsOutstanding = 4;
+
   AudioTrackImpl* owner_;
   AudioServerImpl* server_;
 

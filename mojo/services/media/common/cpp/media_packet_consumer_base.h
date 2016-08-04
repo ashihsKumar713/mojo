@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/services/flog/cpp/flog.h"
 #include "mojo/services/media/common/cpp/mapped_shared_buffer.h"
+#include "mojo/services/media/common/cpp/shared_buffer_set.h"
 #include "mojo/services/media/common/cpp/thread_checker.h"
 #include "mojo/services/media/common/interfaces/media_transport.mojom.h"
 #include "mojo/services/media/logs/interfaces/media_packet_consumer_channel.mojom.h"
@@ -154,8 +155,12 @@ class MediaPacketConsumerBase : public MediaPacketConsumer {
       return packets_outstanding_;
     }
 
+    SharedBufferSet& buffer_set() { return buffer_set_; }
+
    private:
     MediaPacketConsumerBase* owner_;
+    // We keep the buffer set here, because it needs to outlive SuppliedPackets.
+    SharedBufferSet buffer_set_;
     size_t packets_outstanding_ = 0;
 
     DECLARE_THREAD_CHECKER(thread_checker_);
@@ -170,7 +175,6 @@ class MediaPacketConsumerBase : public MediaPacketConsumer {
   MediaPacketDemandPtr GetDemandForPacketDeparture(uint64_t label);
 
   Binding<MediaPacketConsumer> binding_;
-  MappedSharedBuffer buffer_;
   MediaPacketDemand demand_;
   bool demand_update_required_ = false;
   bool returning_packet_ = false;
