@@ -15,6 +15,7 @@ const GenerateHeaderFile = `
 
 #include <assert.h>
 #include <math.h>
+#include <mojo/macros.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -26,7 +27,6 @@ const GenerateHeaderFile = `
 #include "mojo/public/c/bindings/string.h"
 #include "mojo/public/c/bindings/validation.h"
 #include "mojo/public/c/system/handle.h"
-#include "mojo/public/c/system/macros.h"
 
 // Imports.
 {{range $import := .Imports -}}

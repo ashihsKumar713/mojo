@@ -4,6 +4,8 @@
 
 #include "mojo/edk/system/shared_buffer_dispatcher.h"
 
+#include <mojo/macros.h>
+
 #include <limits>
 #include <utility>
 
@@ -14,7 +16,6 @@
 #include "mojo/edk/system/configuration.h"
 #include "mojo/edk/system/memory.h"
 #include "mojo/edk/system/options_validation.h"
-#include "mojo/public/c/system/macros.h"
 
 using mojo::platform::PlatformSharedBuffer;
 using mojo::platform::PlatformSharedBufferMapping;

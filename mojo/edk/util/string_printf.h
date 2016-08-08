@@ -10,11 +10,10 @@
 #ifndef MOJO_EDK_UTIL_STRING_PRINTF_H_
 #define MOJO_EDK_UTIL_STRING_PRINTF_H_
 
+#include <mojo/macros.h>
 #include <stdarg.h>
 
 #include <string>
-
-#include "mojo/public/c/system/macros.h"
 
 namespace mojo {
 namespace util {

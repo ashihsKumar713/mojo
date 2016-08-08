@@ -9,13 +9,13 @@
 // encoding order and can be error-prone, but fast.
 
 #include <assert.h>
+#include <mojo/macros.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "examples/echo/echo.mojom-c.h"
 #include "mojo/public/c/bindings/buffer.h"
 #include "mojo/public/c/bindings/message.h"
-#include "mojo/public/c/system/macros.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/c/system/result.h"

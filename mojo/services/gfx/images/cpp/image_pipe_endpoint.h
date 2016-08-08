@@ -11,7 +11,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "mojo/public/c/system/macros.h"
+#include "mojo/public/cpp/system/macros.h"
 #include "mojo/services/gfx/images/interfaces/image_pipe.mojom.h"
 
 namespace image_pipe {
@@ -75,7 +75,10 @@ class ImagePipeEndpoint {
   bool is_producer_;
   bool is_checked_;
   std::function<void()> fatal_error_handler_;
+
+  MOJO_DISALLOW_COPY_AND_ASSIGN(ImagePipeEndpoint);
 };
-}
+
+}  // namespace image_pipe
 
 #endif  // MOJO_SERVICES_GFX_IMAGES_CPP_IMAGE_PIPE_ENDPOINT_H_

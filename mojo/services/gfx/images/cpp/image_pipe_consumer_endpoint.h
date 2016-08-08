@@ -5,8 +5,8 @@
 #define MOJO_SERVICES_GFX_IMAGES_INTERFACES_IMAGE_PIPE_CONSUMER_ENDPOINT_H_
 
 #include "image_pipe_endpoint.h"
-#include "mojo/public/c/system/macros.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/system/macros.h"
 #include "mojo/services/gfx/images/cpp/image_pipe_consumer_delegate.h"
 #include "mojo/services/gfx/images/interfaces/image_pipe.mojom.h"
 

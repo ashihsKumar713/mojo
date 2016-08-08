@@ -6,7 +6,7 @@
 #define MOJO_SERVICES_GFX_IMAGES_INTERFACES_IMAGE_PIPE_PRODUCER_ENDPOINT_H_
 
 #include "image_pipe_endpoint.h"
-#include "mojo/public/c/system/macros.h"
+#include "mojo/public/cpp/system/macros.h"
 #include "mojo/services/gfx/images/interfaces/image_pipe.mojom.h"
 
 namespace image_pipe {
@@ -63,6 +63,8 @@ class ImagePipeProducerEndpoint : public mojo::gfx::ImagePipe {
   ImagePipeEndpoint state_tracker_;
   mojo::gfx::ImagePipePtr image_pipe_ptr_;
   std::function<void()> endpoint_closed_callback_;
+
+  MOJO_DISALLOW_COPY_AND_ASSIGN(ImagePipeProducerEndpoint);
 };
 
 }  // namespace image_pipe

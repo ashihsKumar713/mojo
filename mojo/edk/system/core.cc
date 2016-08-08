@@ -4,6 +4,8 @@
 
 #include "mojo/edk/system/core.h"
 
+#include <mojo/macros.h>
+
 #include <limits>
 #include <memory>
 #include <utility>
@@ -27,7 +29,6 @@
 #include "mojo/edk/system/shared_buffer_dispatcher.h"
 #include "mojo/edk/system/wait_set_dispatcher.h"
 #include "mojo/edk/system/waiter.h"
-#include "mojo/public/c/system/macros.h"
 #include "mojo/public/cpp/system/macros.h"
 
 using mojo::platform::GetTimeTicks;

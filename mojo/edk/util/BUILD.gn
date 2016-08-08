@@ -38,7 +38,10 @@ mojo_edk_source_set("util") {
     "weak_ptr_internal.h",
   ]
 
-  mojo_sdk_public_deps = [ "mojo/public/cpp/system" ]
+  mojo_sdk_public_deps = [
+    "mojo/public/c:common",
+    "mojo/public/cpp/system",
+  ]
 }
 
 # Unit tests for :util. For testing purposes, allow dependence on
