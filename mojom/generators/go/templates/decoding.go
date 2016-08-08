@@ -126,12 +126,20 @@ if handle.IsValid() {
 {{- end -}}
 }
 {{- else if $info.IsArray -}}
-{{ $elInfo := $info.ElementEncodingInfo -}}
+{{- if $info.IsNullable -}}
+{{$info.Identifier}} = new({{$info.BaseGoType}})
+{{- end -}}
+{{ $elInfo := $info.ElementEncodingInfo }}
 len0, err := decoder.StartArray({{$elInfo.BitSize}})
 if err != nil {
 	return err
 }
-{{if not $info.HasFixedSize -}}
+{{if $info.HasFixedSize -}}
+if len0 != {{$info.FixedSize}} {
+	return &bindings.ValidationError{bindings.UnexpectedArrayHeader,
+		fmt.Sprintf("invalid array length: expected %d, got %d", {{$info.FixedSize}}, len0)}
+}
+{{else -}}
 {{$info.DerefIdentifier}} = make({{$info.BaseGoType}}, len0)
 {{- end}}
 for i := uint32(0); i < len0; i++ {
@@ -169,7 +177,7 @@ var {{$valueInfo.Identifier}} {{$valueInfo.GoType}}
 if err := decoder.Finish(); err != nil {
 	return nil
 }
-if len({{$keyInfo.Identifier}}) == len({{$valueInfo.Identifier}}) {
+if len({{$keyInfo.Identifier}}) != len({{$valueInfo.Identifier}}) {
 	return &bindings.ValidationError{bindings.DifferentSizedArraysInMap,
 		fmt.Sprintf("Number of keys %d is different from number of values %d",
 		len({{$keyInfo.Identifier}}), len({{$valueInfo.Identifier}}))}

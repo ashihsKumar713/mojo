@@ -34,7 +34,7 @@ func TestTranslateMojomStruct(t *testing.T) {
 		Fields: []mojom_types.StructField{field2, field1},
 		VersionInfo: &[]mojom_types.StructVersion{mojom_types.StructVersion{
 			VersionNumber: 10,
-			NumBytes:      16,
+			NumBytes:      24,
 		}},
 	}
 

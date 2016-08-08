@@ -366,7 +366,8 @@ if s.FUnion == nil {
 	if err := s.FUnion.Encode(encoder); err != nil {
 		return err
 	}
-}`
+}
+encoder.Finish()`
 
 	encodingInfo := mockEncodingInfo{
 		isPointer:  true,
@@ -388,7 +389,8 @@ if s.FUnion == nil {
 	if err := s.FUnion.Encode(encoder); err != nil {
 		return err
 	}
-}`
+}
+encoder.Finish()`
 
 	encodingInfo := mockEncodingInfo{
 		isNullable: true,

@@ -175,7 +175,8 @@ func (t *translator) translateMojomStructObject(mojomStruct mojom_types.MojomStr
 		log.Fatalln(m.Name, "does not have any version_info!")
 	}
 	curVersion := (*mojomStruct.VersionInfo)[len(*mojomStruct.VersionInfo)-1]
-	m.CurVersionSize = curVersion.NumBytes
+	// The parser outputs the total size of the struct but we want the size minus the header.
+	m.CurVersionSize = curVersion.NumBytes - 8
 	m.CurVersionNumber = curVersion.VersionNumber
 
 	sorter := structFieldSerializationSorter(mojomStruct.Fields)
@@ -186,6 +187,7 @@ func (t *translator) translateMojomStructObject(mojomStruct mojom_types.MojomStr
 
 	for _, version := range *mojomStruct.VersionInfo {
 		m.Versions = append(m.Versions, structVersion{
+			// The parser outputs the total size of the struct but we want the size minus the header.
 			NumBytes: version.NumBytes,
 			Version:  version.VersionNumber,
 		})

@@ -110,7 +110,7 @@ func (t *translator) handleTypeEncodingInfo(mojomType mojom_types.HandleType) (i
 
 func (t *translator) arrayTypeEncodingInfo(mojomType mojom_types.ArrayType, level int) (info *arrayTypeEncodingInfo) {
 	info = new(arrayTypeEncodingInfo)
-	info.fixedSize = (mojomType.FixedLength >= 0)
+	info.fixedSize = mojomType.FixedLength
 	info.nullable = mojomType.Nullable
 	info.elementEncodingInfo = t.encodingInfoNested(mojomType.ElementType, level+1)
 	info.elementEncodingInfo.setIdentifier(fmt.Sprintf("elem%d", level))
@@ -123,6 +123,7 @@ func (t *translator) mapTypeEncodingInfo(mojomType mojom_types.MapType, level in
 
 	keyEncodingInfo := new(arrayTypeEncodingInfo)
 	info.keyEncodingInfo = keyEncodingInfo
+	keyEncodingInfo.fixedSize = -1
 	keyEncodingInfo.elementEncodingInfo = t.encodingInfoNested(mojomType.KeyType, level+1)
 	keyEncodingInfo.setIdentifier(fmt.Sprintf("keys%d", level))
 	keyEncodingInfo.setGoType(fmt.Sprintf("[]%v", keyEncodingInfo.elementEncodingInfo.GoType()))
@@ -130,6 +131,7 @@ func (t *translator) mapTypeEncodingInfo(mojomType mojom_types.MapType, level in
 
 	valueEncodingInfo := new(arrayTypeEncodingInfo)
 	info.valueEncodingInfo = valueEncodingInfo
+	valueEncodingInfo.fixedSize = -1
 	valueEncodingInfo.elementEncodingInfo = t.encodingInfoNested(mojomType.ValueType, level+1)
 	valueEncodingInfo.setIdentifier(fmt.Sprintf("values%d", level))
 	valueEncodingInfo.setGoType(fmt.Sprintf("[]%v", valueEncodingInfo.elementEncodingInfo.GoType()))

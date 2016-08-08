@@ -68,6 +68,9 @@ if {{$info.Identifier}} == nil {
 		return err
 	}
 }
+{{- if $info.IsPointer}}
+encoder.Finish()
+{{- end -}}
 {{- else if $info.IsInterface -}}
 if err := encoder.{{$info.WriteFunction}}({{$info.Identifier}}.PassMessagePipe()); err != nil {
 	return err

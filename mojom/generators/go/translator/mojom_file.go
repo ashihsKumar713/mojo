@@ -258,6 +258,9 @@ type EncodingInfo interface {
 	IsNullable() bool
 	setNullable(nullable bool)
 
+	// FixedSize returns the fixed size of an array if there is one.
+	FixedSize() int32
+
 	// HasFixedSize returns true if the field is an array with a fixed size.
 	HasFixedSize() bool
 
@@ -356,6 +359,10 @@ func (b *baseEncodingInfo) IsArray() bool {
 
 func (b *baseEncodingInfo) IsMap() bool {
 	return false
+}
+
+func (b *baseEncodingInfo) FixedSize() int32 {
+	panic("Only arrays can have a fixed size.")
 }
 
 func (b *baseEncodingInfo) HasFixedSize() bool {
@@ -511,7 +518,7 @@ func (t *handleTypeEncodingInfo) ReadFunction() string {
 type arrayTypeEncodingInfo struct {
 	basePointerEncodingInfo
 	elementEncodingInfo EncodingInfo
-	fixedSize           bool
+	fixedSize           int32
 }
 
 func (t *arrayTypeEncodingInfo) IsArray() bool {
@@ -519,6 +526,13 @@ func (t *arrayTypeEncodingInfo) IsArray() bool {
 }
 
 func (t *arrayTypeEncodingInfo) HasFixedSize() bool {
+	return (t.fixedSize >= 0)
+}
+
+func (t *arrayTypeEncodingInfo) FixedSize() int32 {
+	if t.fixedSize < 0 {
+		panic("Array does not have fixed size.")
+	}
 	return t.fixedSize
 }
 

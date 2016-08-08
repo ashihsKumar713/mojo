@@ -122,6 +122,7 @@ const serviceDescriptionTmplText = `
 {{- $interface := . -}}
 type {{$interface.Name}}_ServiceDescription struct{}
 
+{{if not GenTypeInfo}}
 func (sd *{{$interface.Name}}_ServiceDescription) GetTopLevelInterface() (outMojomInterface {{TypesPkg}}MojomInterface, err error) {
 	err = fmt.Errorf("GetTopLevelInterface not implemented")
 	return
@@ -136,6 +137,25 @@ func (sd *{{$interface.Name}}_ServiceDescription) GetAllTypeDefinitions() (outDe
 	err = fmt.Errorf("GetAllTypeDefinitions not implemented")
 	return
 }
+{{else}}
+func (sd *{{$interface.Name}}_ServiceDescription) GetTopLevelInterface() (outMojomInterface {{TypesPkg}}MojomInterface, err error) {
+	interfaceTypeKey := getRuntimeTypeInfo().Services["{{$interface.ServiceName}}"]
+	userDefinedType := getRuntimeTypeInfo().TypeMap[interfaceTypeKey].(*{{TypesPkg}}UserDefinedTypeInterfaceType)
+	return userDefinedType.Value, nil
+}
+
+func (sd *{{$interface.Name}}_ServiceDescription) GetTypeDefinition(inTypeKey string) (outType {{TypesPkg}}UserDefinedType, err error) {
+	if udt, ok := GetAllMojomTypeDefinitions()[inTypeKey]; ok {
+		return udt, nil
+	}
+	return nil, fmt.Errorf("%s_ServiceDescription does not recognize %s", "{{$interface.Name}}", inTypeKey)
+}
+
+func (sd *{{$interface.Name}}_ServiceDescription) GetAllTypeDefinitions() (outDefinitions *map[string]{{TypesPkg}}UserDefinedType, err error) {
+	o := GetAllMojomTypeDefinitions()
+	return &o, nil
+}
+{{end}}
 
 func (s *{{$interface.PrivateName}}_Stub) Accept(message *bindings.Message) (err error) {
 	switch message.Header.Type {
@@ -157,7 +177,11 @@ const acceptMethodTmplText = `
 {{- define "AcceptMethod" -}}
 {{- $method := . -}}
 case {{$method.FullName}}_Ordinal:
+{{ if $method.ResponseParams -}}
+  if message.Header.Flags != bindings.MessageExpectsResponseFlag {
+{{ else }}
   if message.Header.Flags != bindings.MessageNoFlag {
+{{ end }}
     return &bindings.ValidationError{bindings.MessageHeaderInvalidFlags,
       fmt.Sprintf("invalid message header flag: %v", message.Header.Flags),
     }
@@ -254,9 +278,11 @@ func (p *{{$method.Interface.Name}}_Proxy) {{ template "MethodSignature" $method
 
 	header := bindings.MessageHeader{
 		Type: {{$method.FullName}}_Ordinal,
-		Flags: bindings.MessageExpectsResponseFlag,
 {{- if $method.ResponseParams}}
+		Flags: bindings.MessageExpectsResponseFlag,
 		RequestId: p.ids.Count(),
+{{- else}}
+		Flags: bindings.MessageNoFlag,
 {{- end}}
 	}
 	var message *bindings.Message

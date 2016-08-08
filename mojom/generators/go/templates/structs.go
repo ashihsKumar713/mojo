@@ -95,7 +95,11 @@ func (s *{{$struct.Name}}) Decode(decoder *bindings.Decoder) error {
 		{{ template "FieldDecodingTmpl" $field.EncodingInfo }}
 	}
 	{{- end}}
-  return nil
+
+	if err := decoder.Finish(); err != nil {
+		return err
+	}
+	return nil
 }
 {{- end -}}
 `
