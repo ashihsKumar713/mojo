@@ -56,7 +56,6 @@ static_library("irt_mojo") {
     "//mojo/public/c/gpu:MGL",
     "//mojo/public/c/gpu:MGL_onscreen",
     "//mojo/public/c/gpu:MGL_signal_sync_point",
-    "//mojo/public/c/system",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/utility",
     "//mojo/public/platform/nacl:mojo_irt_header",
@@ -65,6 +64,11 @@ static_library("irt_mojo") {
     "//mojo/services/files/interfaces",
     "//native_client/src/nonsfi/irt:irt_interfaces",
     "//services/nacl/nonsfi:pnacl_translator_irt",
+  ]
+
+  public_deps = [
+    "//mojo/public/c:system",
+    "//mojo/public/c/system",
   ]
 }
 

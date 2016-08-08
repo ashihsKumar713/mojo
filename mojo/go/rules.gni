@@ -97,7 +97,11 @@ template("go_test_binary") {
              rebase_path(target_out_dir, root_build_dir) + "/${target_name}",
              rebase_path("//", root_build_dir),
              rebase_path(root_out_dir, root_build_dir),
-             "-I" + rebase_path("//"),
+
+             # TODO(vtl): Manually adding //mojo/public/c/include is a total
+             # hack!
+             "-I" + rebase_path("//") + " -I" +
+                 rebase_path("//mojo/public/c/include"),
              "-L" + rebase_path(target_out_dir) + " -l" + static_library_name +
                  " -lstdc++ -lpthread -lm -lglib-2.0 -lrt",
              "test",
@@ -248,7 +252,9 @@ template("go_mojo_application") {
       rebase_path(target_out_dir, root_build_dir) + "/${target_name}",
       rebase_path("//", root_build_dir),
       rebase_path(root_out_dir, root_build_dir),
-      "-I" + rebase_path("//"),
+
+      # TODO(vtl): Manually adding //mojo/public/c/include is a total hack!
+      "-I" + rebase_path("//") + " -I" + rebase_path("//mojo/public/c/include"),
       "-L" + rebase_path(target_out_dir) + " -l" + static_library_name + "",
       "build",
       "-tags",

@@ -5,13 +5,13 @@
 #ifndef MOJO_EDK_SYSTEM_WAITER_H_
 #define MOJO_EDK_SYSTEM_WAITER_H_
 
+#include <mojo/result.h>
 #include <stdint.h>
 
 #include "mojo/edk/system/awakable.h"
 #include "mojo/edk/util/cond_var.h"
 #include "mojo/edk/util/mutex.h"
 #include "mojo/edk/util/thread_annotations.h"
-#include "mojo/public/c/system/result.h"
 #include "mojo/public/c/system/time.h"
 #include "mojo/public/cpp/system/macros.h"
 

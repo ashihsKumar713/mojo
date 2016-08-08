@@ -5,6 +5,7 @@
 #ifndef MOJO_EDK_SYSTEM_DISPATCHER_H_
 #define MOJO_EDK_SYSTEM_DISPATCHER_H_
 
+#include <mojo/result.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -25,7 +26,6 @@
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/handle.h"
 #include "mojo/public/c/system/message_pipe.h"
-#include "mojo/public/c/system/result.h"
 #include "mojo/public/c/system/wait_set.h"
 #include "mojo/public/cpp/system/macros.h"
 

@@ -5,6 +5,7 @@
 #ifndef MOJO_EDK_SYSTEM_MESSAGE_PIPE_ENDPOINT_H_
 #define MOJO_EDK_SYSTEM_MESSAGE_PIPE_ENDPOINT_H_
 
+#include <mojo/result.h>
 #include <stdint.h>
 
 #include <memory>
@@ -16,7 +17,6 @@
 #include "mojo/edk/system/message_in_transit.h"
 #include "mojo/public/c/system/handle.h"
 #include "mojo/public/c/system/message_pipe.h"
-#include "mojo/public/c/system/result.h"
 #include "mojo/public/cpp/system/macros.h"
 
 namespace mojo {

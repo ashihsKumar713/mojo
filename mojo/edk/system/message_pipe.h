@@ -5,6 +5,7 @@
 #ifndef MOJO_EDK_SYSTEM_MESSAGE_PIPE_H_
 #define MOJO_EDK_SYSTEM_MESSAGE_PIPE_H_
 
+#include <mojo/result.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -24,7 +25,6 @@
 #include "mojo/edk/util/thread_annotations.h"
 #include "mojo/public/c/system/handle.h"
 #include "mojo/public/c/system/message_pipe.h"
-#include "mojo/public/c/system/result.h"
 #include "mojo/public/cpp/system/macros.h"
 
 namespace mojo {

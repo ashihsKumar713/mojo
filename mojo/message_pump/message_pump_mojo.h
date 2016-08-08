@@ -5,6 +5,8 @@
 #ifndef MOJO_MESSAGE_PUMP_MESSAGE_PUMP_MOJO_H_
 #define MOJO_MESSAGE_PUMP_MESSAGE_PUMP_MOJO_H_
 
+#include <mojo/result.h>
+
 #include <map>
 #include <utility>
 #include <vector>
@@ -15,7 +17,6 @@
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
-#include "mojo/public/c/system/result.h"
 #include "mojo/public/c/system/time.h"
 #include "mojo/public/cpp/system/handle.h"
 

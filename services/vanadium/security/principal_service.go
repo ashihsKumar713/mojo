@@ -22,8 +22,8 @@ import (
 	vpkg "mojo/services/vanadium/security/interfaces/principal"
 )
 
+//#include <mojo/result.h>
 //#include "mojo/public/c/system/handle.h"
-//#include "mojo/public/c/system/result.h"
 import "C"
 
 const blesserURL = "https://dev.v.io/auth/google/bless"

@@ -4,6 +4,8 @@
 
 #include "mojo/android/system/core_impl.h"
 
+#include <mojo/result.h>
+
 #include <memory>
 
 #include "base/android/base_jni_registrar.h"
@@ -19,7 +21,6 @@
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/handle.h"
 #include "mojo/public/c/system/message_pipe.h"
-#include "mojo/public/c/system/result.h"
 #include "mojo/public/c/system/time.h"
 #include "mojo/public/c/system/wait.h"
 #include "mojo/public/cpp/environment/environment.h"

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <mojo/result.h>
 #include <stdint.h>
 
 #include "base/at_exit.h"
@@ -13,7 +14,6 @@
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/handle.h"
 #include "mojo/public/c/system/message_pipe.h"
-#include "mojo/public/c/system/result.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "services/js/system/mojo_runner_delegate.h"
 #include "services/js/system/tests/js_to_cpp.mojom.h"

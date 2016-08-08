@@ -10,6 +10,7 @@
 
 #include <assert.h>
 #include <mojo/macros.h>
+#include <mojo/result.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -18,7 +19,6 @@
 #include "mojo/public/c/bindings/message.h"
 #include "mojo/public/c/system/main.h"
 #include "mojo/public/c/system/message_pipe.h"
-#include "mojo/public/c/system/result.h"
 #include "mojo/public/c/system/wait.h"
 #include "mojo/public/interfaces/application/application.mojom-c.h"
 #include "mojo/public/interfaces/application/application_connector.mojom-c.h"

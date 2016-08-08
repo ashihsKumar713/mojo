@@ -5,10 +5,10 @@
 #ifndef MOJO_EDK_SYSTEM_AWAKABLE_H_
 #define MOJO_EDK_SYSTEM_AWAKABLE_H_
 
+#include <mojo/result.h>
 #include <stdint.h>
 
 #include "mojo/edk/system/handle_signals_state.h"
-#include "mojo/public/c/system/result.h"
 
 namespace mojo {
 namespace system {

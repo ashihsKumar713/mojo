@@ -15,8 +15,9 @@ source_set("message_pump") {
     "time_helper.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
+    "//mojo/public/c:system",
     "//mojo/public/cpp/system",
   ]
 }

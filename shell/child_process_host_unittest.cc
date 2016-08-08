@@ -11,7 +11,6 @@
 #include "base/message_loop/message_loop.h"
 #include "build/build_config.h"
 #include "mojo/message_pump/message_pump_mojo.h"
-#include "mojo/public/c/system/result.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "shell/application_manager/native_application_options.h"
 #include "shell/context.h"

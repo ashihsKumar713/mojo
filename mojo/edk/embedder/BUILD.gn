@@ -33,7 +33,10 @@ mojo_edk_source_set("embedder") {
     ":platform",
   ]
 
-  mojo_sdk_public_deps = [ "mojo/public/cpp/system" ]
+  mojo_sdk_public_deps = [
+    "mojo/public/c:system",
+    "mojo/public/cpp/system",
+  ]
 
   mojo_edk_public_deps = [ "mojo/edk/platform" ]
 

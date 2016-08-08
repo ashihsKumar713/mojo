@@ -15,8 +15,8 @@ import (
 	"examples/echo/echo"
 )
 
+//#include <mojo/result.h>
 //#include "mojo/public/c/system/handle.h"
-//#include "mojo/public/c/system/result.h"
 import "C"
 
 type EchoClientDelegate struct{}

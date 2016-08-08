@@ -10,6 +10,7 @@ mojo_native_application("tiny") {
   ]
 
   deps = [
+    "//mojo/public/c:system",
     "//mojo/public/c/system",
   ]
 }
