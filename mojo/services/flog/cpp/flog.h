@@ -5,10 +5,11 @@
 #ifndef MOJO_SERVICES_FLOG_CPP_FLOG_H_
 #define MOJO_SERVICES_FLOG_CPP_FLOG_H_
 
+#include <mojo/environment/logger.h>
+
 #include <atomic>
 #include <memory>
 
-#include "mojo/public/c/environment/logger.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/bindings/array.h"
 #include "mojo/public/cpp/bindings/message.h"

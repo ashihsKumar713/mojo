@@ -5,11 +5,11 @@
 #ifndef SERVICES_JS_SYSTEM_DRAIN_DATA_H_
 #define SERVICES_JS_SYSTEM_DRAIN_DATA_H_
 
+#include <mojo/environment/async_waiter.h>
 #include <mojo/result.h>
 
 #include "base/memory/scoped_vector.h"
 #include "gin/runner.h"
-#include "mojo/public/c/environment/async_waiter.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "v8/include/v8.h"

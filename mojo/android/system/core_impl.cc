@@ -4,6 +4,7 @@
 
 #include "mojo/android/system/core_impl.h"
 
+#include <mojo/environment/async_waiter.h>
 #include <mojo/result.h>
 #include <mojo/system/buffer.h>
 #include <mojo/system/data_pipe.h>
@@ -22,7 +23,6 @@
 #include "base/bind.h"
 #include "base/message_loop/message_loop.h"
 #include "jni/CoreImpl_jni.h"
-#include "mojo/public/c/environment/async_waiter.h"
 #include "mojo/public/cpp/environment/environment.h"
 
 namespace {
