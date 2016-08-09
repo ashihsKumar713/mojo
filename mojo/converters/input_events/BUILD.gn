@@ -14,7 +14,7 @@ component("input_events") {
   deps = [
     "//base",
     "//mojo/converters/geometry",
-    "//mojo/public/c/system",
+    "//mojo/public/c:system",
     "//mojo/services/geometry/interfaces",
     "//mojo/services/input_events/interfaces",
     "//ui/events",

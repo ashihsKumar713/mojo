@@ -5,11 +5,12 @@
 #ifndef SERVICES_JS_SYSTEM_HANDLE_H_
 #define SERVICES_JS_SYSTEM_HANDLE_H_
 
+#include <mojo/system/handle.h>
+
 #include "base/observer_list.h"
 #include "gin/converter.h"
 #include "gin/handle.h"
 #include "gin/wrappable.h"
-#include "mojo/public/c/system/handle.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 

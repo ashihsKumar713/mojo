@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include <mojo/result.h>
+#include <mojo/system/data_pipe.h>
+#include <mojo/system/handle.h>
+#include <mojo/system/message_pipe.h>
 #include <stdint.h>
 
 #include "base/at_exit.h"
@@ -11,9 +14,6 @@
 #include "base/run_loop.h"
 #include "gin/array_buffer.h"
 #include "gin/public/isolate_holder.h"
-#include "mojo/public/c/system/data_pipe.h"
-#include "mojo/public/c/system/handle.h"
-#include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "services/js/system/mojo_runner_delegate.h"
 #include "services/js/system/tests/js_to_cpp.mojom.h"

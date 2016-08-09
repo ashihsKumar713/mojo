@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include <assert.h>
+#include <mojo/system/main.h>
 
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "examples/spinning_cube/gles2_client_impl.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/application/run_application.h"

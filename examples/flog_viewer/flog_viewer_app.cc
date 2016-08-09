@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <mojo/system/main.h>
+
 #include <iostream>
 #include <limits>
 #include <vector>
@@ -10,7 +12,6 @@
 #include "examples/flog_viewer/channel_handler.h"
 #include "examples/flog_viewer/flog_viewer.h"
 #include "mojo/environment/scoped_chromium_init.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/run_application.h"
 

@@ -5,9 +5,10 @@
 #ifndef SERVICES_JS_SYSTEM_MOJO_RUNNER_DELEGATE_H_
 #define SERVICES_JS_SYSTEM_MOJO_RUNNER_DELEGATE_H_
 
+#include <mojo/system/handle.h>
+
 #include "base/macros.h"
 #include "gin/modules/module_runner_delegate.h"
-#include "mojo/public/c/system/handle.h"
 
 namespace mojo {
 namespace js {

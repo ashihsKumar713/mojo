@@ -5,6 +5,7 @@
 #include "shell/android/android_handler.h"
 
 #include <fcntl.h>
+#include <mojo/system/main.h>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -18,7 +19,6 @@
 #include "base/trace_event/trace_event.h"
 #include "jni/AndroidHandler_jni.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "shell/android/run_android_application_function.h"

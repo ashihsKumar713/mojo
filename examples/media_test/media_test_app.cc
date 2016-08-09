@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <mojo/system/main.h>
+
 #include <deque>
 #include <iomanip>
 #include <iostream>
@@ -11,7 +13,6 @@
 #include "examples/media_test/keystroke.h"
 #include "examples/media_test/media_test.h"
 #include "mojo/environment/scoped_chromium_init.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/run_application.h"
 

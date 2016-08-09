@@ -115,7 +115,8 @@ MojoResult DataPipeProducerDispatcher::GetDataPipeProducerOptionsImplNoLock(
 
   // Note: If/when |MojoDataPipeProducerOptions| is extended beyond its initial
   // definition, more work will be necessary. (See the definition of
-  // |MojoGetDataPipeProducerOptions()| in mojo/public/c/system/data_pipe.h.)
+  // |MojoGetDataPipeProducerOptions()| in
+  // mojo/public/c/include/mojo/system/data_pipe.h.)
   static_assert(sizeof(MojoDataPipeProducerOptions) == 8u,
                 "MojoDataPipeProducerOptions has been extended!");
 

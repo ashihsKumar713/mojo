@@ -5,8 +5,8 @@
 #include "services/test_service/test_service_application.h"
 
 #include <assert.h>
+#include <mojo/system/main.h>
 
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/test_service/test_service_impl.h"

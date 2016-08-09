@@ -4,6 +4,8 @@
 
 #include "services/java_handler/java_handler.h"
 
+#include <mojo/system/main.h>
+
 #include "base/android/base_jni_onload.h"
 #include "base/android/base_jni_registrar.h"
 #include "base/android/jni_android.h"
@@ -20,7 +22,6 @@
 #include "mojo/android/system/core_impl.h"
 #include "mojo/application/content_handler_factory.h"
 #include "mojo/environment/scoped_chromium_init.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"

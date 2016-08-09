@@ -47,7 +47,7 @@ source_set("dart_controller_no_snapshot") {
     "//dart/runtime/bin:libdart_embedder_noio",
     "//dart/runtime/observatory:embedded_observatory_archive",
     "//mojo/message_pump",
-    "//mojo/public/c/system",
+    "//mojo/public/c:system",
     "//mojo/public/cpp/environment",
     "//mojo/public/cpp/system",
     "//mojo/public/platform/dart:mojo_internal_impl",

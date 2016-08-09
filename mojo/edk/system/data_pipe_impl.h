@@ -7,6 +7,7 @@
 
 #include <mojo/macros.h>
 #include <mojo/result.h>
+#include <mojo/system/data_pipe.h>
 #include <stdint.h>
 
 #include <utility>
@@ -17,7 +18,6 @@
 #include "mojo/edk/system/handle_signals_state.h"
 #include "mojo/edk/system/memory.h"
 #include "mojo/edk/util/thread_annotations.h"
-#include "mojo/public/c/system/data_pipe.h"
 
 namespace mojo {
 namespace system {

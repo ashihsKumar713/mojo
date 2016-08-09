@@ -11,7 +11,7 @@ source_set("ozone_drm_gpu") {
   deps = [
     "//base",
     "//mojo/converters/geometry",
-    "//mojo/public/c/system",
+    "//mojo/public/c:system",
     "//mojo/services/ozone_drm_gpu/interfaces",
     "//ui/ozone:ozone_common_message_types",
   ]

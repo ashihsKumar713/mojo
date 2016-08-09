@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <mojo/system/main.h>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -10,7 +12,6 @@
 #include "base/trace_event/trace_event.h"
 #include "mojo/common/tracing_impl.h"
 #include "mojo/environment/scoped_chromium_init.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"

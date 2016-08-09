@@ -20,7 +20,7 @@ import (
 )
 
 //#include <mojo/result.h>
-//#include "mojo/public/c/system/handle.h"
+//#include <mojo/system/handle.h>
 import "C"
 
 type HttpHandler struct{}

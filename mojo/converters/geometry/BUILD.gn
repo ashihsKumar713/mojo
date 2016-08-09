@@ -10,7 +10,7 @@ component("geometry") {
     "//ui/gfx",
   ]
   deps = [
-    "//mojo/public/c/system",
+    "//mojo/public/c:system",
     "//mojo/services/geometry/interfaces",
     "//skia",
     "//ui/gfx/geometry",

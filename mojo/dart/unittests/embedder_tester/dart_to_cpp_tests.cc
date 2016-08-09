@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <mojo/system/data_pipe.h>
+#include <mojo/system/message_pipe.h>
 #include <stdint.h>
 
 #include "base/bind.h"
@@ -15,8 +17,6 @@
 #include "mojo/dart/embedder/dart_controller.h"
 #include "mojo/dart/unittests/embedder_tester/dart_test.h"
 #include "mojo/dart/unittests/embedder_tester/dart_to_cpp.mojom.h"
-#include "mojo/public/c/system/data_pipe.h"
-#include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

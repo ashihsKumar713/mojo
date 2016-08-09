@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <mojo/system/main.h>
 #include <stdlib.h>
-
-#include "mojo/public/c/system/main.h"
 
 MojoResult MojoMain(MojoHandle application_request) {
   // Terminate the process as soon as we reach the application entrypoint. The

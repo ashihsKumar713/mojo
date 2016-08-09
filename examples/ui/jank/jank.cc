@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <mojo/system/main.h>
 #include <unistd.h>
 
 #include <string>
@@ -9,7 +10,6 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "mojo/environment/scoped_chromium_init.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/application/run_application.h"
 #include "mojo/ui/ganesh_view.h"

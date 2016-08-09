@@ -263,7 +263,8 @@ MojoResult SharedBufferDispatcher::GetBufferInformationImplNoLock(
 
   // Note: If/when |MojoBufferInformation| is extended beyond its initial
   // definition, more work will be necessary. (See the definition of
-  // |MojoGetBufferInformation()| in mojo/public/c/system/buffer.h.)
+  // |MojoGetBufferInformation()| in
+  // mojo/public/c/include/mojo/system/buffer.h.)
   static_assert(sizeof(MojoBufferInformation) == 16u,
                 "MojoBufferInformation has been extended!");
 

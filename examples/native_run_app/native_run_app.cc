@@ -13,6 +13,7 @@
 // TODO(vtl): Maybe it should optionally be able to extract the binary path (and
 // args) from the connection URL?
 
+#include <mojo/system/main.h>
 #include <string.h>
 
 #include <string>
@@ -24,7 +25,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "mojo/environment/scoped_chromium_init.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/application/run_application.h"

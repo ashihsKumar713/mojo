@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <dlfcn.h>
+#include <mojo/system/main.h>
 #include <python2.7/Python.h>
 
 #include "base/files/file_path.h"
@@ -13,7 +14,6 @@
 #include "mojo/application/content_handler_factory.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
 #include "mojo/environment/scoped_chromium_init.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/python/src/common.h"

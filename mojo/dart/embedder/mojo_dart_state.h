@@ -5,12 +5,13 @@
 #ifndef MOJO_DART_EMBEDDER_DART_STATE_H_
 #define MOJO_DART_EMBEDDER_DART_STATE_H_
 
+#include <mojo/system/handle.h>
+
 #include <set>
 #include <string>
 
 #include "base/callback.h"
 #include "base/message_loop/message_loop.h"
-#include "mojo/public/c/system/handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/services/network/interfaces/network_service.mojom.h"
 #include "tonic/dart_library_provider.h"

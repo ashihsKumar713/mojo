@@ -5,6 +5,7 @@
 // This is a simple example application (with an embeddable view), which embeds
 // the Moterm view, uses it to prompt the user, etc.
 
+#include <mojo/system/main.h>
 #include <string.h>
 
 #include <algorithm>
@@ -16,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "mojo/environment/scoped_chromium_init.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/bindings/array.h"

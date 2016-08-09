@@ -23,10 +23,11 @@
 //  - build/android/adb_run_mojo_shell
 //        http://127.0.0.1:4444/obj/examples/device_name/device_name.mojo
 
+#include <mojo/system/main.h>
+#include <mojo/system/time.h>
+
 #include "base/android/jni_string.h"
 #include "jni/DeviceName_jni.h"
-#include "mojo/public/c/system/main.h"
-#include "mojo/public/c/system/time.h"
 
 namespace mojo {
 

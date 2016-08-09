@@ -116,7 +116,8 @@ MojoResult DataPipeConsumerDispatcher::GetDataPipeConsumerOptionsImplNoLock(
 
   // Note: If/when |MojoDataPipeConsumerOptions| is extended beyond its initial
   // definition, more work will be necessary. (See the definition of
-  // |MojoGetDataPipeConsumerOptions()| in mojo/public/c/system/data_pipe.h.)
+  // |MojoGetDataPipeConsumerOptions()| in
+  // mojo/public/c/include/mojo/system/data_pipe.h.)
   static_assert(sizeof(MojoDataPipeConsumerOptions) == 8u,
                 "MojoDataPipeConsumerOptions has been extended!");
 

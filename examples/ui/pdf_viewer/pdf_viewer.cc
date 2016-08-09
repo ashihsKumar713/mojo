@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <mojo/system/main.h>
 #include <memory>
 #include <string>
 
@@ -10,7 +11,6 @@
 #include "base/memory/scoped_ptr.h"
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
 #include "mojo/environment/scoped_chromium_init.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/application/run_application.h"
 #include "mojo/ui/content_viewer_app.h"

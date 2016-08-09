@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 #include <mojo/result.h>
-
-#include "mojo/public/c/system/main.h"
-#include "mojo/public/c/system/handle.h"
+#include <mojo/system/main.h>
+#include <mojo/system/handle.h>
 
 MojoResult MojoMain(MojoHandle app_request) {
   return MojoClose(app_request);

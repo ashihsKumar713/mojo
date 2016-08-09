@@ -6,6 +6,7 @@
 #define MOJO_EDK_SYSTEM_HANDLE_TABLE_H_
 
 #include <mojo/result.h>
+#include <mojo/system/handle.h>
 #include <stddef.h>
 
 #include <unordered_map>
@@ -14,7 +15,6 @@
 
 #include "mojo/edk/system/handle.h"
 #include "mojo/edk/util/ref_ptr.h"
-#include "mojo/public/c/system/handle.h"
 #include "mojo/public/cpp/system/macros.h"
 
 namespace mojo {

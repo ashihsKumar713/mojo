@@ -11,7 +11,7 @@
 #include "mojo/edk/system/simple_dispatcher.h"
 #include "mojo/edk/util/ref_ptr.h"
 #include "mojo/edk/util/thread_annotations.h"
-#include "mojo/public/c/system/handle.h"
+#include <mojo/system/handle.h>
 #include "mojo/public/cpp/system/macros.h"
 
 namespace mojo {

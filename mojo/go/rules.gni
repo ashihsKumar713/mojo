@@ -226,7 +226,7 @@ template("go_mojo_application") {
              ":${static_library_name}",
              "//mojo/go:application",
              "//mojo/go:platform_cgo",
-             "//mojo/public/c/system",
+             "//mojo/public/c:system",
            ]
     script = "//mojo/go/go.py"
     inputs = invoker.sources
@@ -254,7 +254,7 @@ template("go_mojo_application") {
       rebase_path(root_out_dir, root_build_dir),
 
       # TODO(vtl): Manually adding //mojo/public/c/include is a total hack!
-      "-I" + rebase_path("//") + " -I" + rebase_path("//mojo/public/c/include"),
+      "-I" + rebase_path("//mojo/public/c/include"),
       "-L" + rebase_path(target_out_dir) + " -l" + static_library_name + "",
       "build",
       "-tags",

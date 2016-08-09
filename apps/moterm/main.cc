@@ -6,9 +6,10 @@
 // services to the thing embedding it. (This is not very useful as a "top-level"
 // application.)
 
+#include <mojo/system/main.h>
+
 #include "apps/moterm/moterm_app.h"
 #include "mojo/environment/scoped_chromium_init.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/run_application.h"
 
 MojoResult MojoMain(MojoHandle application_request) {

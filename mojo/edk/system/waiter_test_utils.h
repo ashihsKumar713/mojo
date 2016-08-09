@@ -6,6 +6,8 @@
 #define MOJO_EDK_SYSTEM_WAITER_TEST_UTILS_H_
 
 #include <mojo/result.h>
+#include <mojo/system/handle.h>
+#include <mojo/system/time.h>
 #include <stdint.h>
 
 #include "mojo/edk/system/dispatcher.h"
@@ -13,8 +15,6 @@
 #include "mojo/edk/system/test/simple_test_thread.h"
 #include "mojo/edk/system/waiter.h"
 #include "mojo/edk/util/ref_ptr.h"
-#include "mojo/public/c/system/handle.h"
-#include "mojo/public/c/system/time.h"
 #include "mojo/public/cpp/system/macros.h"
 
 namespace mojo {

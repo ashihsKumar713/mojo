@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <fcntl.h>
+#include <mojo/system/main.h>
 
 #include "base/files/file_util.h"
 #include "base/message_loop/message_loop.h"
@@ -15,7 +16,6 @@
 #include "mojo/message_pump/message_pump_mojo.h"
 #include "mojo/nacl/nonsfi/file_util.h"
 #include "mojo/nacl/nonsfi/nexe_launcher_nonsfi.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/application/run_application.h"

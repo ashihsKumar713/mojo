@@ -68,7 +68,6 @@ static_library("irt_mojo") {
 
   public_deps = [
     "//mojo/public/c:system",
-    "//mojo/public/c/system",
   ]
 }
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <mojo/system/handle.h>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
@@ -19,7 +21,6 @@
 #include "mojo/dart/embedder/observatory_archive.h"
 #include "mojo/dart/embedder/vmservice.h"
 #include "mojo/message_pump/message_pump_mojo.h"
-#include "mojo/public/c/system/handle.h"
 #include "mojo/public/platform/dart/dart_handle_watcher.h"
 #include "tonic/dart_converter.h"
 #include "tonic/dart_debugger.h"

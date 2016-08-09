@@ -5,12 +5,13 @@
 #ifndef MOJO_MESSAGE_PUMP_HANDLE_WATCHER_H_
 #define MOJO_MESSAGE_PUMP_HANDLE_WATCHER_H_
 
+#include <mojo/system/time.h>
+
 #include <memory>
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "mojo/public/c/system/time.h"
 #include "mojo/public/cpp/system/handle.h"
 
 namespace base {

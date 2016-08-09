@@ -5,11 +5,12 @@
 #ifndef MOJO_EDK_SYSTEM_CORE_TEST_BASE_H_
 #define MOJO_EDK_SYSTEM_CORE_TEST_BASE_H_
 
+#include <mojo/system/handle.h>
+
 #include <memory>
 
 #include "mojo/edk/util/mutex.h"
 #include "mojo/edk/util/thread_annotations.h"
-#include "mojo/public/c/system/handle.h"
 #include "mojo/public/cpp/system/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

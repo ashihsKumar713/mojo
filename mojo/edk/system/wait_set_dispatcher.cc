@@ -344,9 +344,9 @@ MojoResult WaitSetDispatcher::WaitSetWaitImpl(
         NOTREACHED();
         wait_set_result.wait_result = MOJO_RESULT_INTERNAL;
       }
-      // TODO(vtl): The comment in mojo/public/c/system/wait_set.h indicates
-      // that we may have to provide |MOJO_RESULT_BUSY|, but we never do that
-      // here. Is that right or am I missing something?
+      // TODO(vtl): The comment in mojo/public/c/include/mojo/system/wait_set.h
+      // indicates that we may have to provide |MOJO_RESULT_BUSY|, but we never
+      // do that here. Is that right or am I missing something?
 
       entry = entry->triggered_next;
     }

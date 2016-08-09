@@ -4,7 +4,8 @@
 
 #include "services/test_service/test_request_tracker_application.h"
 
-#include "mojo/public/c/system/main.h"
+#include <mojo/system/main.h>
+
 #include "mojo/public/cpp/application/run_application.h"
 #include "mojo/public/cpp/application/service_provider_impl.h"
 #include "services/test_service/test_time_service_impl.h"

@@ -6,12 +6,12 @@
 #define MOJO_EDK_EMBEDDER_EMBEDDER_H_
 
 #include <mojo/result.h>
+#include <mojo/system/handle.h>
 
 #include <functional>
 #include <memory>
 
 #include "mojo/edk/platform/scoped_platform_handle.h"
-#include "mojo/public/c/system/handle.h"
 
 namespace mojo {
 

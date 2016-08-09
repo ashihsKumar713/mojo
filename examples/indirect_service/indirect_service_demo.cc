@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <cstdlib>
+#include <mojo/system/main.h>
+#include <stdlib.h>
 
 #include "base/bind.h"
 #include "base/message_loop/message_loop.h"
@@ -11,7 +12,6 @@
 #include "examples/indirect_service/indirect_service_demo.mojom.h"
 #include "mojo/environment/scoped_chromium_init.h"
 #include "mojo/message_pump/message_pump_mojo.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/application_impl_base.h"
 #include "mojo/public/cpp/application/connect.h"
 #include "mojo/public/cpp/application/run_application.h"

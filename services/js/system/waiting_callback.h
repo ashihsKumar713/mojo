@@ -6,13 +6,13 @@
 #define SERVICES_JS_SYSTEM_WAITING_CALLBACK_H_
 
 #include <mojo/result.h>
+#include <mojo/system/handle.h>
 
 #include "base/memory/weak_ptr.h"
 #include "gin/handle.h"
 #include "gin/runner.h"
 #include "gin/wrappable.h"
 #include "mojo/public/c/environment/async_waiter.h"
-#include "mojo/public/c/system/handle.h"
 #include "services/js/system/handle.h"
 #include "services/js/system/handle_close_observer.h"
 

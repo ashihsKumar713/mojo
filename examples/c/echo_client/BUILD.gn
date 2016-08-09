@@ -17,8 +17,7 @@ mojo_native_application("c_echo_client") {
 
   deps = [
     "//examples/echo:bindings_c",
-    "//mojo/public/c",
-    "//mojo/public/c/system",
+    "//mojo/public/c:system",
     "//mojo/public/interfaces/application:application_c",
   ]
 }

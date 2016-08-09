@@ -6,6 +6,7 @@
 #define MOJO_MESSAGE_PUMP_MESSAGE_PUMP_MOJO_H_
 
 #include <mojo/result.h>
+#include <mojo/system/time.h>
 
 #include <map>
 #include <utility>
@@ -17,7 +18,6 @@
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
-#include "mojo/public/c/system/time.h"
 #include "mojo/public/cpp/system/handle.h"
 
 namespace mojo {

@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <mojo/system/main.h>
+
 #include "examples/audio_play_test/play_audio.h"
-#include "mojo/public/c/system/main.h"
 #include "mojo/public/cpp/application/run_application.h"
 
 namespace mojo {

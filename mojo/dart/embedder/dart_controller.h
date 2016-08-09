@@ -5,12 +5,13 @@
 #ifndef MOJO_DART_EMBEDDER_DART_CONTROLLER_H_
 #define MOJO_DART_EMBEDDER_DART_CONTROLLER_H_
 
+#include <mojo/system/handle.h>
+
 #include <unordered_set>
 
 #include "base/synchronization/lock.h"
 #include "dart/runtime/include/dart_api.h"
 #include "mojo/dart/embedder/mojo_dart_state.h"
-#include "mojo/public/c/system/handle.h"
 
 namespace tonic {
 class DartDependency;
