@@ -48,7 +48,7 @@ test("mojo_environment_perftests") {
     "//base/test:test_support",
     "//mojo/edk/test:run_all_perftests",
     "//mojo/message_pump",
-    "//mojo/public/c/environment/tests:perftest_helpers",
+    "//mojo/public/c:environment_perftest_helpers",
     "//mojo/public/cpp/environment",
     "//testing/gtest",
   ]
