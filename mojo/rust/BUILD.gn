@@ -36,6 +36,7 @@ action("rust_mojo_lib") {
   lib_name = "lib" + target_name + ".rlib"
   deps = [
     "//mojo:system_thunks",
+    "//mojo/public/interfaces/bindings/tests:validation_parser",
     "//mojo/rust:rust_embedder",
   ]
   script = "//mojo/rust/cargo.py"
