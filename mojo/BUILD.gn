@@ -125,7 +125,7 @@ group("public_tests") {
 test("mojo_public_c_bindings_unittests") {
   deps = [
     "//mojo/edk/test:run_all_unittests",
-    "//mojo/public/c/bindings/tests",
+    "//mojo/public/c:bindings_unittests",
   ]
 }
 
