@@ -12,7 +12,9 @@ if (is_nacl) {
     testonly = true
     sources = []
     deps = [
-      "//mojo/public/c/system/tests",
+      "//mojo/public/c:common_unittests",
+      "//mojo/public/c:compile_unittests",
+      "//mojo/public/c:system_unittests",
       "//mojo/public/platform/nacl:mojo",
       "//testing/gtest",
       "//testing/gtest:gtest_main",

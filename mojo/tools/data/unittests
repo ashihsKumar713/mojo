@@ -30,6 +30,12 @@ tests = [
     "test": "mojo_public_c_bindings_unittests",
   },
   {
+    "test": "mojo_public_c_common_unittests",
+  },
+  {
+    "test": "mojo_public_c_compile_unittests",
+  },
+  {
     "test": "mojo_public_c_system_unittests",
   },
   {
