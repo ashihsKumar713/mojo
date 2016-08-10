@@ -10,10 +10,9 @@ const GenerateSourceFile = `
 
 #include "{{.HeaderFile}}"
 
+#include <mojo/bindings/internal/type_descriptor.h>
 #include <mojo/system/handle.h>
 #include <stdbool.h>
-
-#include "mojo/public/c/bindings/lib/type_descriptor.h"
 
 // Imports.
 {{range $import := .Imports -}}

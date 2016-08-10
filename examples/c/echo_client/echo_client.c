@@ -9,6 +9,8 @@
 // encoding order and can be error-prone, but fast.
 
 #include <assert.h>
+#include <mojo/bindings/buffer.h>
+#include <mojo/bindings/message.h>
 #include <mojo/macros.h>
 #include <mojo/result.h>
 #include <mojo/system/main.h>
@@ -18,8 +20,6 @@
 #include <string.h>
 
 #include "examples/echo/echo.mojom-c.h"
-#include "mojo/public/c/bindings/buffer.h"
-#include "mojo/public/c/bindings/message.h"
 #include "mojo/public/interfaces/application/application.mojom-c.h"
 #include "mojo/public/interfaces/application/application_connector.mojom-c.h"
 #include "mojo/public/interfaces/application/shell.mojom-c.h"

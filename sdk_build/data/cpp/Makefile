@@ -84,7 +84,7 @@ MOJO_PUBLIC_MOJOM_FILES := \
 MOJO_PUBLIC_MOJOM_CC_FILES := \
 		$(call cc_files_from_mojom_files,$(MOJO_PUBLIC_MOJOM_FILES))
 MOJO_PUBLIC_C_FILES := \
-		$(wildcard mojo/public/c/bindings/lib/*.c)
+		$(wildcard mojo/public/c/lib/bindings/*.c)
 MOJO_PUBLIC_CC_FILES := \
 		$(wildcard mojo/public/cpp/application/lib/*.cc) \
 		$(wildcard mojo/public/cpp/bindings/lib/*.cc) \

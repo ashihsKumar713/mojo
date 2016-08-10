@@ -15,18 +15,17 @@ const GenerateHeaderFile = `
 
 #include <assert.h>
 #include <math.h>
+#include <mojo/bindings/array.h>
+#include <mojo/bindings/buffer.h>
+#include <mojo/bindings/interface.h>
+#include <mojo/bindings/internal/type_descriptor.h>
+#include <mojo/bindings/map.h>
+#include <mojo/bindings/string.h>
+#include <mojo/bindings/validation.h>
 #include <mojo/macros.h>
 #include <mojo/system/handle.h>
 #include <stdbool.h>
 #include <stdint.h>
-
-#include "mojo/public/c/bindings/array.h"
-#include "mojo/public/c/bindings/buffer.h"
-#include "mojo/public/c/bindings/interface.h"
-#include "mojo/public/c/bindings/lib/type_descriptor.h"
-#include "mojo/public/c/bindings/map.h"
-#include "mojo/public/c/bindings/string.h"
-#include "mojo/public/c/bindings/validation.h"
 
 // Imports.
 {{range $import := .Imports -}}
