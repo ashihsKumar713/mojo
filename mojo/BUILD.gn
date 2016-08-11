@@ -90,7 +90,7 @@ group("tests") {
 static_library("system_thunks") {
   complete_static_lib = true
   deps = [
-    "//mojo/public/platform/native:system",
+    "//mojo/public/platform/native:system_thunks",
   ]
 }
 

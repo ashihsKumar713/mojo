@@ -16,7 +16,7 @@ mojo_native_application("jank") {
     "//mojo/application",
     "//mojo/environment:chromium",
     "//mojo/gpu",
-    "//mojo/public/c/gpu",
+    "//mojo/public/c:gpu",
     "//mojo/public/cpp/bindings",
     "//mojo/services/geometry/interfaces",
     "//mojo/services/gfx/composition/interfaces",

@@ -6,8 +6,8 @@
 // Mojo application by the shell.
 
 #include "mojo/gles2/control_thunks_impl.h"
-#include "mojo/public/c/gpu/MGL/mgl.h"
-#include "mojo/public/c/gpu/MGL/mgl_onscreen.h"
+#include "mojo/public/c/include/MGL/mgl.h"
+#include "mojo/public/c/include/MGL/mgl_onscreen.h"
 
 extern "C" {
 

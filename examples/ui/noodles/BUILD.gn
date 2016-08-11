@@ -24,7 +24,7 @@ mojo_native_application("noodles") {
     "//mojo/application",
     "//mojo/environment:chromium",
     "//mojo/gpu",
-    "//mojo/public/c/gpu",
+    "//mojo/public/c:gpu",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/environment",
     "//mojo/public/cpp/system",

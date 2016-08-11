@@ -20,8 +20,8 @@ source_set("skia") {
     ":skia_bindings",
     "//base",
     "//mojo/gpu",
-    "//mojo/public/c/gpu",
-    "//mojo/public/c/gpu:MGL",
+    "//mojo/public/c:MGL",
+    "//mojo/public/c:gpu",
     "//mojo/services/geometry/interfaces",
     "//skia",
   ]
@@ -33,8 +33,8 @@ source_set("skia_bindings") {
     "gl_bindings_skia.h",
   ]
   deps = [
-    "//mojo/public/c/gpu",
-    "//mojo/public/c/gpu:GLES2",
+    "//mojo/public/c:GLES2",
+    "//mojo/public/c:gpu",
     "//skia",
   ]
 }

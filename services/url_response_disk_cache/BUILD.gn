@@ -107,7 +107,7 @@ test("unittests") {
     "//mojo/environment:chromium",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
-    "//mojo/public/platform/native:system",
+    "//mojo/public/platform/native:system_thunks",
     "//testing/gtest",
   ]
 }

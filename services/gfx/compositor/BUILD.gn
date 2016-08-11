@@ -60,7 +60,7 @@ source_set("common") {
     "//mojo/common:tracing_impl",
     "//mojo/converters/geometry",
     "//mojo/gpu",
-    "//mojo/public/c/gpu",
+    "//mojo/public/c:gpu",
     "//mojo/public/cpp/bindings:bindings",
     "//mojo/services/geometry/cpp",
     "//mojo/services/geometry/interfaces",

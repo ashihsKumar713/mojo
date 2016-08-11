@@ -274,6 +274,7 @@ source_set("native_application_support") {
 
   deps = [
     "//base",
+    "//mojo/edk/system",
     "//mojo/gles2:control_thunks",
     "//mojo/gles2:gles2",
     "//mojo/gles2:mgl",
@@ -287,6 +288,8 @@ source_set("native_application_support") {
   # Suppress include checking so we can still check the rest of the targets in
   # this file.
   check_includes = false
+
+  configs += [ "//mojo/public/c:c_config" ]
 }
 
 if (is_android) {

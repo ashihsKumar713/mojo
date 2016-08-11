@@ -10442,7 +10442,7 @@ const size_t GLES2Util::enum_to_string_table_len_ =
 #include <stddef.h>
 
 #define GL_GLEXT_PROTOTYPES
-#include "mojo/public/c/gpu/GLES2/gl2extmojo.h"
+#include <GLES2/gl2extmojo.h>
 
 // Specifies the frozen API for the %(extension)s extension.
 #pragma pack(push, 8)

@@ -21,6 +21,6 @@ source_set("vfx") {
 
   deps = [
     "//base",
-    "//mojo/public/c/gpu",
+    "//mojo/public/c:gpu",
   ]
 }

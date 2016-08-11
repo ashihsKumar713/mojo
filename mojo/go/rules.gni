@@ -216,7 +216,7 @@ template("go_mojo_application") {
   static_library(static_library_name) {
     complete_static_lib = true
     deps = [
-      "//mojo/public/platform/native:system",
+      "//mojo/public/platform/native:system_thunks",
     ]
   }
 

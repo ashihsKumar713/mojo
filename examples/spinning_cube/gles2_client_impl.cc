@@ -8,13 +8,13 @@
 
 #include "examples/spinning_cube/gles2_client_impl.h"
 
-#include <math.h>
+#include <MGL/mgl.h>
+#include <MGL/mgl_onscreen.h>
 #include <stdlib.h>
+
 #include <cmath>
 #include <utility>
 
-#include "mojo/public/c/gpu/MGL/mgl.h"
-#include "mojo/public/c/gpu/MGL/mgl_onscreen.h"
 #include "mojo/public/cpp/environment/environment.h"
 #include "mojo/public/cpp/system/time.h"
 #include "mojo/public/cpp/utility/run_loop.h"
@@ -31,7 +31,7 @@ static inline constexpr bool operator &(const mojo::EventFlags& f1,
 
 float CalculateDragDistance(const mojo::PointF& start,
                             const mojo::PointF& end) {
-  return hypot(start.x - end.x, start.y - end.y);
+  return std::hypot(start.x - end.x, start.y - end.y);
 }
 
 float GetRandomColor() {

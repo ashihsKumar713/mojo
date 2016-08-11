@@ -10,9 +10,9 @@
 #include "base/macros.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "mojo/gles2/command_buffer_client_impl.h"
-#include "mojo/public/c/gpu/MGL/mgl_echo.h"
-#include "mojo/public/c/gpu/MGL/mgl_signal_sync_point.h"
-#include "mojo/public/c/gpu/MGL/mgl_types.h"
+#include "mojo/public/c/include/MGL/mgl_echo.h"
+#include "mojo/public/c/include/MGL/mgl_signal_sync_point.h"
+#include "mojo/public/c/include/MGL/mgl_types.h"
 
 struct MGLContextPrivate {};
 

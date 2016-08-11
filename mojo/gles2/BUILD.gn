@@ -30,11 +30,11 @@ source_set("control_thunks") {
     "//gpu/command_buffer/client:gles2_cmd_helper_sources",
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/common",
+    "//mojo/public/c:MGL",
+    "//mojo/public/c:MGL_echo",
+    "//mojo/public/c:MGL_onscreen",
+    "//mojo/public/c:MGL_signal_sync_point",
     "//mojo/public/c:system",
-    "//mojo/public/c/gpu:MGL",
-    "//mojo/public/c/gpu:MGL_echo",
-    "//mojo/public/c/gpu:MGL_onscreen",
-    "//mojo/public/c/gpu:MGL_signal_sync_point",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//mojo/services/gpu/interfaces",
@@ -47,10 +47,7 @@ source_set("gles2") {
     "gles2_impl.cc",
   ]
 
-  defines = [
-    "GL_GLEXT_PROTOTYPES",
-    "MOJO_GLES2_IMPLEMENTATION",
-  ]
+  defines = [ "GL_GLEXT_PROTOTYPES" ]
 
   configs += [
     ":gles2_use_mojo",
@@ -62,8 +59,8 @@ source_set("gles2") {
   deps = [
     ":control_thunks",
     "//gpu/command_buffer/client:gles2_interface",
-    "//mojo/public/c/gpu:GLES2",
-    "//mojo/public/c/gpu:MGL",
+    "//mojo/public/c:GLES2",
+    "//mojo/public/c:MGL",
   ]
 }
 
@@ -77,8 +74,8 @@ source_set("mgl") {
   deps = [
     ":control_thunks",
     ":gles2",
-    "//mojo/public/c/gpu:MGL",
-    "//mojo/public/c/gpu:MGL_onscreen",
+    "//mojo/public/c:MGL",
+    "//mojo/public/c:MGL_onscreen",
     "//mojo/public/cpp/system",
   ]
 }
@@ -89,7 +86,7 @@ test("mgl_unittests") {
     "//mojo/edk/base_edk",
     "//mojo/edk/system",
     "//mojo/edk/test:run_all_unittests",
-    "//mojo/public/c/gpu:MGL",
+    "//mojo/public/c:MGL",
     "//mojo/public/cpp/environment:standalone",
     "//testing/gtest:gtest",
   ]
