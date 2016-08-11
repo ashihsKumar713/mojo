@@ -100,11 +100,23 @@ pub enum {{$req_option}} {
 }
 
 impl MojomMessageOption for {{$req_option}} {
-    fn decode_payload(ordinal: u32, buffer: &[u8], handles: Vec<UntypedHandle>) -> Self {
-         match ordinal {
-{{range $message := $interface.Messages}}             {{$message.Name}}::ORDINAL => {{$req_option}}::{{$message.Name}}({{$message.RequestStruct.Name}}::deserialize(buffer, handles)),
-{{end}}             _ => panic!("Unknown message found: {}", ordinal),
-         }
+    fn decode_payload(header: MessageHeader, buffer: &[u8], handles: Vec<UntypedHandle>) -> Result<Self, ValidationError> {
+         match header.name {
+{{range $message := $interface.Messages}}             {{$message.Name}}::ORDINAL => {
+                if header.flags != {{- if eq $message.ResponseStruct.Name "" -}}
+		           message::MESSAGE_HEADER_NO_FLAG
+			   {{- else -}}
+                           message::MESSAGE_HEADER_EXPECT_RESPONSE
+			   {{- end -}} {
+                    return Err(ValidationError::MessageHeaderInvalidFlags);
+                }
+                match {{$message.RequestStruct.Name}}::deserialize(buffer, handles) {
+                    Ok(value) => Ok({{$req_option}}::{{$message.Name}}(value)),
+                    Err(err) => return Err(err),
+                }
+            },
+{{end}}             _ => Err(ValidationError::MessageHeaderUnknownMethod),
+        }
     }
 }
 
@@ -116,13 +128,21 @@ pub enum {{$rsp_option}} {
 }
 
 impl MojomMessageOption for {{$rsp_option}} {
-    fn decode_payload(ordinal: u32, buffer: &[u8], handles: Vec<UntypedHandle>) -> Self {
-         match ordinal {
+    fn decode_payload(header: MessageHeader, buffer: &[u8], handles: Vec<UntypedHandle>) -> Result<Self, ValidationError> {
+        if header.flags != message::MESSAGE_HEADER_IS_RESPONSE {
+            return Err(ValidationError::MessageHeaderInvalidFlags);
+        }
+        match header.name {
 {{range $message := $interface.Messages}}
-{{- if ne $message.ResponseStruct.Name ""}}             {{$message.Name}}::ORDINAL => {{$rsp_option}}::{{$message.Name}}({{$message.ResponseStruct.Name}}::deserialize(buffer, handles)),
+{{- if ne $message.ResponseStruct.Name ""}}             {{$message.Name}}::ORDINAL => {
+                match {{$message.ResponseStruct.Name}}::deserialize(buffer, handles) {
+                    Ok(value) => Ok({{$rsp_option}}::{{$message.Name}}(value)),
+                    Err(err) => return Err(err),
+                }
+            },
 {{end -}}
-{{end}}             _ => panic!("Unknown message found, or message has no response: {}", ordinal),
-         }
+{{end}}             _ => Err(ValidationError::MessageHeaderUnknownMethod),
+        }
     }
 }
 

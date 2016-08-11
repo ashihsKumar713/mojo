@@ -232,8 +232,14 @@ func mojomToRustType(t mojom_types.Type, context *Context) string {
 			len_str := strconv.Itoa(int(array_type.FixedLength))
 			type_str = "[" + elem_type_str + "; " + len_str + "]"
 		} else {
+			log.Fatal("Rust doesn't currently support arrays of " +
+				  "fixed size greater than 32. The reason for this is " +
+				  "the lack of generics over array length in the type " +
+				  "system. Since we cannot encode the length in the type " +
+				  "there is no way for nested decode routines to know " +
+				  "what length it should be. Sorry. :(")
 			// Fixed length array, but user has to validate the length themselves.
-			type_str = "Box<[" + elem_type_str + "]>"
+			//type_str = "Box<[" + elem_type_str + "]>"
 		}
 		if array_type.Nullable {
 			return "Option<" + type_str + ">"

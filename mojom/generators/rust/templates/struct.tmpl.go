@@ -41,26 +41,32 @@ impl MojomPointer for {{$struct.Name}} {
 {{range $field := $struct.Fields}}        MojomEncodable::encode(self.{{$field.Name}}, encoder, context.clone());
 {{end}}
     }
-    fn decode_value(decoder: &mut Decoder, context: Context) -> Self {
-        // TODO(mknyszek): Validate bytes and version
-        let (_bytes, version) = {
+    fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
+        let version = {
             let mut state = decoder.get_mut(&context);
-            let bytes = state.decode::<u32>();
-            let version = state.decode::<u32>();
-            (bytes, version)
+            match state.decode_struct_header(&{{$struct.Name}}Versions) {
+                Ok(header) => header.data(),
+                Err(err) => return Err(err),
+            }
         };
 {{range $field := $struct.Fields}}        let {{$field.Name}} = {{if ne $field.MinVersion 0 -}}
 	if version >= {{$field.MinVersion}} {
-            <{{$field.Type}}>::decode(decoder, context.clone())
+            match <{{$field.Type}}>::decode(decoder, context.clone()) {
+                Ok(value) => value,
+                Err(err) => return Err(err),
+            }
         } else {
             Default::default()
         };
 	{{- else -}}
-	<{{$field.Type}}>::decode(decoder, context.clone());
+        match <{{$field.Type}}>::decode(decoder, context.clone()) {
+            Ok(value) => value,
+            Err(err) => return Err(err),
+        };
 	{{- end}}
-{{end}}        {{$struct.Name}} {
+{{end}}        Ok({{$struct.Name}} {
 {{range $field := $struct.Fields}}            {{$field.Name}}: {{$field.Name}},
-{{end}}        }
+{{end}}        })
     }
 }
 

@@ -12,7 +12,8 @@ const GenerateSourceFile = `
 #![allow(unused_variables)]
 #![allow(dead_code)]
 
-use mojo::bindings::decoding::Decoder;
+use mojo::bindings::decoding;
+use mojo::bindings::decoding::{Decoder, ValidationError};
 use mojo::bindings::encoding;
 use mojo::bindings::encoding::{Context, DataHeaderValue, DATA_HEADER_SIZE, Encoder};
 use mojo::bindings::message;
