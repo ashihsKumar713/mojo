@@ -31,6 +31,19 @@ impl MojomUnion for {{$union.Name}} {
 {{end}}            {{$union.Name}}::_Unknown(val) => MojomEncodable::encode(val, encoder, context.clone()),
         }
     }
+    fn decode_value(decoder: &mut Decoder, context: Context) -> Self {
+        // TODO(mknyszek): Validate bytes and tag
+        let (_bytes, tag) = {
+            let mut state = decoder.get_mut(&context);
+            let bytes = state.decode::<u32>();
+	    let tag = state.decode::<u32>();
+	    (bytes, tag)
+        };
+        match tag {
+{{range $field := $union.Fields}}            {{$union.TagsEnum.Name}}_{{$field.Name}} => {{$union.Name}}::{{$field.Name}}(<{{$field.Type}}>::decode(decoder, context.clone())),
+{{end}}        _ => {{$union.Name}}::_Unknown(u64::decode(decoder, context.clone())),
+        }
+    }
 }
 
 impl MojomEncodable for {{$union.Name}} {

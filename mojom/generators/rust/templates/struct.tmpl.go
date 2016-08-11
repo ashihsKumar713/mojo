@@ -25,7 +25,8 @@ pub const {{$const.Name}}: {{$const.Type}} = {{$const.Value}};
 {{$versions := len $struct.Versions -}}
 const {{$struct.Name}}Versions: [(u32, u32); {{$versions}}] = [
 {{range $version := $struct.Versions}}    ({{$version.Version}}, {{$version.Size}}),
-{{end -}}];
+{{end -}}
+];
 
 // Struct definition
 pub struct {{$struct.Name}} {
@@ -38,7 +39,29 @@ impl MojomPointer for {{$struct.Name}} {
     fn serialized_size(&self, _context: &Context) -> usize { {{$struct.Size}} }
     fn encode_value(self, encoder: &mut Encoder, context: Context) {
 {{range $field := $struct.Fields}}        MojomEncodable::encode(self.{{$field.Name}}, encoder, context.clone());
-{{end}}    }
+{{end}}
+    }
+    fn decode_value(decoder: &mut Decoder, context: Context) -> Self {
+        // TODO(mknyszek): Validate bytes and version
+        let (_bytes, version) = {
+            let mut state = decoder.get_mut(&context);
+            let bytes = state.decode::<u32>();
+            let version = state.decode::<u32>();
+            (bytes, version)
+        };
+{{range $field := $struct.Fields}}        let {{$field.Name}} = {{if ne $field.MinVersion 0 -}}
+	if version >= {{$field.MinVersion}} {
+            <{{$field.Type}}>::decode(decoder, context.clone())
+        } else {
+            Default::default()
+        };
+	{{- else -}}
+	<{{$field.Type}}>::decode(decoder, context.clone());
+	{{- end}}
+{{end}}        {{$struct.Name}} {
+{{range $field := $struct.Fields}}            {{$field.Name}}: {{$field.Name}},
+{{end}}        }
+    }
 }
 
 impl MojomEncodable for {{$struct.Name}} {

@@ -48,7 +48,7 @@ pub mod {{$interface.Name}} {
     pub const VERSION: u32 = {{$interface.Version}};
 }
 
-{{- $client := printf "%s%s" $interface.Name "Client" -}}
+{{$client := printf "%s%s" $interface.Name "Client" -}}
 {{template "GenerateEndpoint" $client}}
 
 impl MojomInterface for {{$client}} {
@@ -59,8 +59,11 @@ impl MojomInterface for {{$client}} {
 }
 
 impl<R: {{$interface.Name}}Request> MojomInterfaceSend<R> for {{$client}} {}
+impl MojomInterfaceRecv for {{$client}} {
+    type Container = {{$interface.Name}}ResponseOption;
+}
 
-{{- $server := printf "%s%s" $interface.Name "Server" -}}
+{{$server := printf "%s%s" $interface.Name "Server" -}}
 {{template "GenerateEndpoint" $server}}
 
 impl MojomInterface for {{$server}} {
@@ -71,6 +74,9 @@ impl MojomInterface for {{$server}} {
 }
 
 impl<R: {{$interface.Name}}Response> MojomInterfaceSend<R> for {{$server}} {}
+impl MojomInterfaceRecv for {{$server}} {
+    type Container = {{$interface.Name}}RequestOption;
+}
 
 // Enums
 {{range $enum := $interface.Enums -}}
@@ -84,6 +90,41 @@ pub const {{$const.Name}}: {{$const.Type}} = {{$const.Value}};
 
 pub trait {{$interface.Name}}Request: MojomMessage {}
 pub trait {{$interface.Name}}Response: MojomMessage {}
+
+{{- $req_option := printf "%s%s" $interface.Name "RequestOption" }}
+{{- $rsp_option := printf "%s%s" $interface.Name "ResponseOption" }}
+
+pub enum {{$req_option}} {
+{{range $message := $interface.Messages}}    {{$message.Name}}({{$message.RequestStruct.Name}}),
+{{end}}
+}
+
+impl MojomMessageOption for {{$req_option}} {
+    fn decode_payload(ordinal: u32, buffer: &[u8], handles: Vec<UntypedHandle>) -> Self {
+         match ordinal {
+{{range $message := $interface.Messages}}             {{$message.Name}}::ORDINAL => {{$req_option}}::{{$message.Name}}({{$message.RequestStruct.Name}}::deserialize(buffer, handles)),
+{{end}}             _ => panic!("Unknown message found: {}", ordinal),
+         }
+    }
+}
+
+pub enum {{$rsp_option}} {
+{{range $message := $interface.Messages}}
+{{- if ne $message.ResponseStruct.Name ""}}    {{$message.Name}}({{$message.ResponseStruct.Name}}),
+{{end -}}
+{{end}}
+}
+
+impl MojomMessageOption for {{$rsp_option}} {
+    fn decode_payload(ordinal: u32, buffer: &[u8], handles: Vec<UntypedHandle>) -> Self {
+         match ordinal {
+{{range $message := $interface.Messages}}
+{{- if ne $message.ResponseStruct.Name ""}}             {{$message.Name}}::ORDINAL => {{$rsp_option}}::{{$message.Name}}({{$message.ResponseStruct.Name}}::deserialize(buffer, handles)),
+{{end -}}
+{{end}}             _ => panic!("Unknown message found, or message has no response: {}", ordinal),
+         }
+    }
+}
 
 {{range $message := $interface.Messages -}}
 /// Message: {{$message.Name}}
