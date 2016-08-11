@@ -15,7 +15,7 @@ import builder
 
 
 def main():
-  all_generators = set(['deps', 'go', 'c'])
+  all_generators = set(['deps', 'go', 'c', 'rust'])
   parser = builder.get_arg_parser('Build the mojom generators.')
   parser.add_argument('--generators', dest='generators', type=str,
       default=','.join(all_generators), action='store',
