@@ -7,22 +7,41 @@ package templates
 const GenerateEndpoint = `
 {{- /* . (dot) refers to a string which is the endpoint's name */ -}}
 {{- define "GenerateEndpoint" -}}
-{{- $endpoint := . -}}
+{{- $endpoint := .Name -}}
+{{- $interface := .Interface -}}
 
 pub struct {{$endpoint}} {
     pipe: message_pipe::MessageEndpoint,
+    version: u32,
 }
 
 impl {{$endpoint}} {
     pub fn new(pipe: message_pipe::MessageEndpoint) -> {{$endpoint}} {
-        {{$endpoint}} { pipe: pipe }
+        {{$endpoint}} {
+            pipe: pipe,
+            version: {{$interface}}::VERSION,
+        }
     }
+    pub fn with_version(pipe: message_pipe::MessageEndpoint, version: u32) -> {{$endpoint}} {
+        {{$endpoint}} {
+            pipe: pipe,
+            version: version,
+        }
+    }
+}
+
+impl MojomInterface for {{$endpoint}} {
+    fn service_name() -> &'static str { {{$interface}}::SERVICE_NAME }
+    fn version(&self) -> u32 { self.version }
+    fn pipe(&self) -> &message_pipe::MessageEndpoint { &self.pipe }
+    fn unwrap(self) -> message_pipe::MessageEndpoint { self.pipe }
 }
 
 impl CastHandle for {{$endpoint}} {
     unsafe fn from_untyped(handle: system::UntypedHandle) -> {{$endpoint}} {
         {{$endpoint}} {
             pipe: message_pipe::MessageEndpoint::from_untyped(handle),
+            version: 0, // Since we have no other information, assume its the base
         }
     }
     fn as_untyped(self) -> system::UntypedHandle {
@@ -48,33 +67,19 @@ pub mod {{$interface.Name}} {
     pub const VERSION: u32 = {{$interface.Version}};
 }
 
-{{$client := printf "%s%s" $interface.Name "Client" -}}
+{{$client := $interface.Client -}}
 {{template "GenerateEndpoint" $client}}
 
-impl MojomInterface for {{$client}} {
-    fn service_name() -> &'static str { {{$interface.Name}}::SERVICE_NAME }
-    fn version() -> u32 { {{$interface.Name}}::VERSION }
-    fn pipe(&self) -> &message_pipe::MessageEndpoint { &self.pipe }
-    fn unwrap(self) -> message_pipe::MessageEndpoint { self.pipe }
-}
-
-impl<R: {{$interface.Name}}Request> MojomInterfaceSend<R> for {{$client}} {}
-impl MojomInterfaceRecv for {{$client}} {
+impl<R: {{$interface.Name}}Request> MojomInterfaceSend<R> for {{$client.Name}} {}
+impl MojomInterfaceRecv for {{$client.Name}} {
     type Container = {{$interface.Name}}ResponseOption;
 }
 
-{{$server := printf "%s%s" $interface.Name "Server" -}}
+{{$server := $interface.Server -}}
 {{template "GenerateEndpoint" $server}}
 
-impl MojomInterface for {{$server}} {
-    fn service_name() -> &'static str { {{$interface.Name}}::SERVICE_NAME }
-    fn version() -> u32 { {{$interface.Name}}::VERSION }
-    fn pipe(&self) -> &message_pipe::MessageEndpoint { &self.pipe }
-    fn unwrap(self) -> message_pipe::MessageEndpoint { self.pipe }
-}
-
-impl<R: {{$interface.Name}}Response> MojomInterfaceSend<R> for {{$server}} {}
-impl MojomInterfaceRecv for {{$server}} {
+impl<R: {{$interface.Name}}Response> MojomInterfaceSend<R> for {{$server.Name}} {}
+impl MojomInterfaceRecv for {{$server.Name}} {
     type Container = {{$interface.Name}}RequestOption;
 }
 
@@ -154,12 +159,16 @@ pub mod {{$message.Name}} {
 }
 {{template "GenerateStruct" $message.RequestStruct}}
 impl MojomMessage for {{$message.RequestStruct.Name}} {
+    fn min_version() -> u32 { {{$message.Name}}::MIN_VERSION }
     fn create_header() -> MessageHeader {
-        MessageHeader::new({{$interface.Name}}::VERSION,
-	                   {{$message.Name}}::ORDINAL,
+        MessageHeader::new(
 {{- if eq $message.ResponseStruct.Name "" -}}
+                           0,
+	                   {{$message.Name}}::ORDINAL,
                            message::MESSAGE_HEADER_NO_FLAG)
 {{else}}
+                           1,
+	                   {{$message.Name}}::ORDINAL,
                            message::MESSAGE_HEADER_EXPECT_RESPONSE)
 {{end}}
     }
@@ -170,13 +179,14 @@ impl {{$interface.Name}}Request for {{$message.RequestStruct.Name}} {}
 {{template "GenerateStruct" $message.ResponseStruct}}
 
 impl MojomMessage for {{$message.ResponseStruct.Name}} {
+    fn min_version() -> u32 { {{$message.Name}}::MIN_VERSION }
     fn create_header() -> MessageHeader {
-        MessageHeader::new({{$interface.Name}}::VERSION,
+        MessageHeader::new(1,
 	                   {{$message.Name}}::ORDINAL,
 			   message::MESSAGE_HEADER_IS_RESPONSE)
     }
 }
-impl {{$interface.Name}}Response for {{$message.RequestStruct.Name}} {}
+impl {{$interface.Name}}Response for {{$message.ResponseStruct.Name}} {}
 
 {{- end}}
 {{- end -}}

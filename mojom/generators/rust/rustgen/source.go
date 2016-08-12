@@ -82,6 +82,11 @@ type EnumTemplate struct {
 	Signed bool
 }
 
+type EndpointTemplate struct {
+	Name string
+	Interface string
+}
+
 type InterfaceMessageTemplate struct {
 	Name string
 	// This is the ordinal name (denoted by '@x' in the IDL).
@@ -95,6 +100,8 @@ type InterfaceMessageTemplate struct {
 type InterfaceTemplate struct {
 	Name        string
 	ServiceName string
+	Client      EndpointTemplate
+	Server      EndpointTemplate
 	Version     uint32
 	Messages    []InterfaceMessageTemplate
 	Enums       []EnumTemplate
@@ -296,6 +303,14 @@ func NewInterfaceTemplate(context *Context, mojomInterface *mojom_types.MojomInt
 	if mojomInterface.ServiceName != nil {
 		service_name = *mojomInterface.ServiceName
 	}
+	client := EndpointTemplate{
+		Name: interface_name + "Client",
+		Interface: interface_name,
+	}
+	server := EndpointTemplate{
+		Name: interface_name + "Server",
+		Interface: interface_name,
+	}
 
 	// Generate templates for the containing constants and enums
 	var constants []ConstantTemplate
@@ -324,10 +339,11 @@ func NewInterfaceTemplate(context *Context, mojomInterface *mojom_types.MojomInt
 			ResponseStruct: resp_struct,
 		})
 	}
-
 	return InterfaceTemplate{
 		Name:        interface_name,
 		ServiceName: service_name,
+		Client:	     client,
+		Server:      server,
 		Version:     mojomInterface.CurrentVersion,
 		Enums:       enums,
 		Constants:   constants,
