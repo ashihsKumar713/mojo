@@ -6,7 +6,6 @@ package translator
 
 import (
 	"fmt"
-	"path/filepath"
 
 	"mojom/generated/mojom_types"
 )
@@ -132,12 +131,7 @@ func (t *translator) translateTypeReference(typeRef mojom_types.TypeReference) (
 	srcFileInfo := userDefinedTypeDeclData(userDefinedType).SourceFileInfo
 	if srcFileInfo != nil && srcFileInfo.FileName != t.currentFileName {
 		pkgName := fileNameToPackageName(srcFileInfo.FileName)
-		pkgPath, err := filepath.Rel(t.Config.SrcRootPath(), srcFileInfo.FileName)
-		if err != nil {
-			panic(err.Error())
-		}
-		pkgPath = pkgPath[:len(pkgPath)-len(filepath.Ext(pkgPath))]
-		t.imports[pkgName] = pkgPath
+		t.importMojomFile(srcFileInfo.FileName)
 		typeName = fmt.Sprintf("%s.%s", pkgName, typeName)
 	}
 

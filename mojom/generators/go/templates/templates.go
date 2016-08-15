@@ -92,5 +92,9 @@ import (
 {{- range $interface := $fileTmpl.Interfaces}}
 	{{ template "Interface" $interface }}
 {{- end}}
+
+{{- range $constant := $fileTmpl.Constants}}
+const {{$constant.Name}} {{$constant.Type}} = {{$constant.Value}}
+{{end}}
 {{- end -}}
 `

@@ -21,17 +21,19 @@ type Translator interface {
 type translator struct {
 	fileGraph *mojom_files.MojomFileGraph
 	// goTypeCache maps type keys to go type strings.
-	goTypeCache     map[string]string
-	imports         map[string]string
-	currentFileName string
-	pkgName         string
-	Config          common.GeneratorConfig
+	goTypeCache      map[string]string
+	goConstNameCache map[string]string
+	imports          map[string]string
+	currentFileName  string
+	pkgName          string
+	Config           common.GeneratorConfig
 }
 
 func NewTranslator(fileGraph *mojom_files.MojomFileGraph) (t *translator) {
 	t = new(translator)
 	t.fileGraph = fileGraph
 	t.goTypeCache = map[string]string{}
+	t.goConstNameCache = map[string]string{}
 	t.imports = map[string]string{}
 	return t
 }
@@ -91,6 +93,25 @@ func (t *translator) TranslateMojomFile(fileName string) (tmplFile *TmplFile) {
 		tmplFile.Interfaces[i] = t.translateMojomInterface(typeKey)
 		if len(tmplFile.Interfaces[i].Methods) > 0 {
 			methodDefined = true
+		}
+	}
+
+	if file.DeclaredMojomObjects.TopLevelConstants == nil {
+		file.DeclaredMojomObjects.TopLevelConstants = &[]string{}
+	}
+	if file.DeclaredMojomObjects.EmbeddedConstants == nil {
+		file.DeclaredMojomObjects.EmbeddedConstants = &[]string{}
+	}
+	for _, constKey := range *file.DeclaredMojomObjects.TopLevelConstants {
+		c := t.translateDeclaredConstant(constKey)
+		if c != nil {
+			tmplFile.Constants = append(tmplFile.Constants, c)
+		}
+	}
+	for _, constKey := range *file.DeclaredMojomObjects.EmbeddedConstants {
+		c := t.translateDeclaredConstant(constKey)
+		if c != nil {
+			tmplFile.Constants = append(tmplFile.Constants, c)
 		}
 	}
 
@@ -297,6 +318,20 @@ func (t *translator) translateMojomMethod(mojomMethod mojom_types.MojomMethod, i
 		m.ResponseParams.PrivateName = privateName(m.ResponseParams.Name)
 	}
 	return m
+}
+
+func (t *translator) translateDeclaredConstant(constKey string) (c *ConstantTemplate) {
+	declaredConstant := t.fileGraph.ResolvedConstants[constKey]
+	resolvedValue := t.resolveConstRef(declaredConstant.Value)
+	if _, ok := resolvedValue.(*mojom_types.ValueBuiltinValue); ok {
+		// There is no way to have a constant NaN, or infinity in go.
+		return nil
+	}
+	c = new(ConstantTemplate)
+	c.Name = t.goConstName(constKey)
+	c.Type = t.translateType(declaredConstant.Type)
+	c.Value = t.translateValue(declaredConstant.Value)
+	return c
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -36,10 +36,36 @@ func (t *translator) goTypeName(typeKey string) string {
 	return goType
 }
 
+func (t *translator) goConstName(constKey string) (name string) {
+	if cachedName, ok := t.goConstNameCache[constKey]; ok {
+		return cachedName
+	}
+
+	declaredConstant := t.fileGraph.ResolvedConstants[constKey]
+
+	name = formatName(*declaredConstant.DeclData.ShortName)
+	if declaredConstant.DeclData.ContainerTypeKey != nil {
+		containerName := t.goTypeName(*declaredConstant.DeclData.ContainerTypeKey)
+		name = fmt.Sprintf("%s_%s", containerName, name)
+	}
+
+	return
+}
+
 func fileNameToPackageName(fileName string) string {
 	base := filepath.Base(fileName)
 	ext := filepath.Ext(base)
 	return base[:len(base)-len(ext)]
+}
+
+func (t *translator) importMojomFile(fileName string) {
+	pkgName := fileNameToPackageName(fileName)
+	pkgPath, err := filepath.Rel(t.Config.SrcRootPath(), fileName)
+	if err != nil {
+		panic(err.Error())
+	}
+	pkgPath = pkgPath[:len(pkgPath)-len(filepath.Ext(pkgPath))]
+	t.imports[pkgName] = pkgPath
 }
 
 func userDefinedTypeDeclData(userDefinedType mojom_types.UserDefinedType) *mojom_types.DeclarationData {

@@ -18,6 +18,7 @@ type TmplFile struct {
 	Unions                    []*UnionTemplate
 	Enums                     []*EnumTemplate
 	Interfaces                []*InterfaceTemplate
+	Constants                 []*ConstantTemplate
 	MojomImports              []string
 	SerializedRuntimeTypeInfo string
 }
@@ -218,6 +219,14 @@ type MethodTemplate struct {
 
 	// Interface is the interface that contains this method.
 	Interface *InterfaceTemplate
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+type ConstantTemplate struct {
+	Name  string
+	Type  string
+	Value string
 }
 
 ////////////////////////////////////////////////////////////////////////////////
