@@ -19,6 +19,7 @@
 
 vars = {
   'chromium_git': 'https://chromium.googlesource.com',
+  'mojo_public_revision': 'da7adf03fa17561fa257306664651fc89a451f41',
   'skia_revision': '8cc209111876b7c78b5ec577c9221d8ed5e21024',
   'v8_revision': '3f036fc0ba4ca4483fe77822f8605c277d37ee24',
   'base_revision': '9e74307b276b2f9988005c0e97e85ee222586f79',
@@ -40,6 +41,7 @@ vars = {
 allowed_hosts = [
   'boringssl.googlesource.com',
   'chromium.googlesource.com',
+  'fuchsia.googlesource.com',
   'pdfium.googlesource.com',
 ]
 
@@ -49,6 +51,9 @@ deps = {
 
   'src/buildtools':
     Var('chromium_git') + '/chromium/buildtools.git' + '@' + Var('buildtools_revision'),
+
+  'src/mojo/public':
+    'https://fuchsia.googlesource.com/mojo/public.git' + '@' + Var('mojo_public_revision'),
 
   'src/testing/gtest':
     Var('chromium_git') + '/external/googletest.git' + '@' + '9855a87157778d39b95eccfb201a9dc90f6d61c6', # from svn revision 746

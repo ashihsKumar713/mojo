@@ -26,6 +26,7 @@ v8.log
 /buildtools/
 /dart/
 /dart-pub-cache/
+/mojo/public/
 /native_client/
 /out/
 /out_*/
