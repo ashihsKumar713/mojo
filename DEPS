@@ -19,7 +19,9 @@
 
 vars = {
   'chromium_git': 'https://chromium.googlesource.com',
+  'fuchsia_git': 'https://fuchsia.googlesource.com',
   'mojo_public_revision': 'ed06c931e04424c6121da4ad6c809b3983b40387',
+  'mojom_revision': '0c5a059cbc0b13fa73070f67224ccff091dc92e6',
   'skia_revision': '8cc209111876b7c78b5ec577c9221d8ed5e21024',
   'v8_revision': '3f036fc0ba4ca4483fe77822f8605c277d37ee24',
   'base_revision': '9e74307b276b2f9988005c0e97e85ee222586f79',
@@ -53,7 +55,10 @@ deps = {
     Var('chromium_git') + '/chromium/buildtools.git' + '@' + Var('buildtools_revision'),
 
   'src/mojo/public':
-    'https://fuchsia.googlesource.com/mojo/public.git' + '@' + Var('mojo_public_revision'),
+    Var('fuchsia_git') + '/mojo/public.git' + '@' + Var('mojo_public_revision'),
+
+  'src/mojom':
+    Var('fuchsia_git') + '/mojom.git' + '@' + Var('mojom_revision'),
 
   'src/testing/gtest':
     Var('chromium_git') + '/external/googletest.git' + '@' + '9855a87157778d39b95eccfb201a9dc90f6d61c6', # from svn revision 746
