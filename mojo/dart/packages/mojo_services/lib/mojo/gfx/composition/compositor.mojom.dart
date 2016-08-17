@@ -6,10 +6,10 @@ import 'dart:async';
 import 'package:mojo/bindings.dart' as bindings;
 import 'package:mojo/core.dart' as core;
 import 'package:mojo/mojo/bindings/types/service_describer.mojom.dart' as service_describer;
+import 'package:mojo_services/mojo/context_provider.mojom.dart' as context_provider_mojom;
 import 'package:mojo_services/mojo/gfx/composition/renderers.mojom.dart' as renderers_mojom;
 import 'package:mojo_services/mojo/gfx/composition/scene_token.mojom.dart' as scene_token_mojom;
 import 'package:mojo_services/mojo/gfx/composition/scenes.mojom.dart' as scenes_mojom;
-import 'package:mojom/mojo/context_provider.mojom.dart' as context_provider_mojom;
 const int kLabelMaxLength = 32;
 
 

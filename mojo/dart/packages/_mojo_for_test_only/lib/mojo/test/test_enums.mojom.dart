@@ -156,7 +156,7 @@ mojom_types.RuntimeTypeInfo  _initRuntimeTypeInfo() {
   // serializedRuntimeTypeInfo contains the bytes of the Mojo serialization of
   // a mojom_types.RuntimeTypeInfo struct describing the Mojom types in this
   // file. The string contains the base64 encoding of the gzip-compressed bytes.
-  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+SWTU/yQBDH+wI8PIIG342vJHrw1DWciCc0qSHxANGGhBNCrVgsbdMWP4MfwW+ru+2UwLoLJDaWhEn+ne5m2B1+zM5yIERWAn8Fnp6PfZ7ydJw7MS8x1j3HOsLS2k21c6+2r4fOwFECww8UDT9UezQM4y6wjmfHVUjcJbUPnY+Q48yLkasJ0xbnWQX/BVYX2FYCFnFSh/h9C4vztX7kIWNlsd6wdCw08j1kOXrXQn3H6VsGenWGBnoPLOR6zsDQAx+RtZHv6dGLO+pZpo5MOzC8l65u+Khn2s+m3fcR2T96dgycga+QD0SJEG4ZrDLkUQcerhT5T1kYxwkTceM6EKc5/JZjEfLR1EeNjM+w9pkclTCE5piBOvhrjiX4DWObx0tMiNd/WKsFY3JWdti8Wqy6y6bMS1yQl5QQrwLse9dohONTrD02rzCE5pVLmZe0IC85YV63Nw/zeIUhNK9/KfOSOfdBfk7fr1F8mhw+m3AGpy4juNu2mZwqzHzWlqT/V4HLExTaB6f/8yzp/l8GVgyO4QVAcyykVG9p9fsTrF0Onxajzoor3u/5/ycqYcOnea2veL+fxYvE0Lw2lqTffwcAAP//RuYKcNAMAAA=";
+  var serializedRuntimeTypeInfo = "H4sIAAAJbogC/+SWS0/CQBDH+wBfoMG38UmiB09dwsl4QpMaEw8QbUjwglAr1pSWtHDx5Mf0o3jT2XYaYd0FEht6YJJ/p7sZdmZ/3U7ZkyIroC+hZ+djv8R4Nq43NK9w1j0FHYCMRk1v3umNy6735ml9K+hrBlx0d9AN485Ah+PjyjTunMnD1vOZ5c9/oa9IoxbXeYH+G+1W4lsBWcRF7cP9BkiwrT91qCBaYhv0CCKDwCeOZ7Yc0vG8jmORV69rkXe/ReiSJPDN6KY3aDu2SWy3b/kvLdMKSNt2n223ExCaNro2LUgcaPQHmJ/yyoCK8f7lyD8pkf9Qf+Okobi4Xkke3f9/+eWxHkN/MOj4BLTL5aeFISy/DD7/WfEr4DOLbRInOSFOy7hWHcf03djic6rzzlk2JU7ylJyUhDjlMO9NtRqOj0E7fE5hCMtpISVOypSc1IQ5XV/dT+IUhrCcFlPipAr6fMxHxKXCcKkJuKzjuzbykcFv1iaXT5lbz0rKfb2EPGp4sHqCvi6ypPt6ERlx+IWNneWXm/H5SquPH4G2BVzqnHOVn9M+Lv5fUA4bOctpdU77+DhONIbltJZyH/8JAAD//6sqR8uADAAA";
 
   // Deserialize RuntimeTypeInfo
   var bytes = BASE64.decode(serializedRuntimeTypeInfo);
