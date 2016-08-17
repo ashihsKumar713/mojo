@@ -1,8 +1,8 @@
 author: Chromium Authors <mojo-dev@googlegroups.com>
 dependencies:
-  mojo: 0.4.27
-  mojo_services: 0.4.34
+  mojo: 0.4.28
+  mojo_services: 0.4.35
 description: A meta package for the Dart Mojo SDK
 homepage: https://github.com/domokit/mojo
 name: mojo_sdk
-version: 0.2.31
+version: 0.2.32
