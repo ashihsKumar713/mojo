@@ -103,12 +103,15 @@ def _build_package_map():
 def _find_mojoms_for_package(package_name):
   # Run git grep for all .mojom files with DartPackage="package_name"
   try:
-    output = run(SRC_DIR, ['git',
-                           'grep',
-                           '--name-only',
-                           'DartPackage="' + package_name + '"',
-                           '--',
-                           '*.mojom'])
+    git_grep = ['git',
+                'grep',
+                '--name-only',
+                'DartPackage="' + package_name + '"',
+                '--',
+                '*.mojom']
+    output = run(SRC_DIR, git_grep)
+    mojo_public = os.path.join(SRC_DIR, 'mojo', 'public')
+    public_output = run(mojo_public, git_grep)
   except subprocess.CalledProcessError as e:
     # git grep exits with code 1 if nothing was found.
     if e.returncode == 1:
@@ -122,6 +125,11 @@ def _find_mojoms_for_package(package_name):
     if not line:
       continue
     mojoms.append(line)
+  for line in public_output.splitlines():
+    line = line.strip()
+    if not line:
+      continue
+    mojoms.append('mojo/public/{0}'.format(line))
   return mojoms
 
 
