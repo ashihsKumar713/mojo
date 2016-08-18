@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import base64
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -17,6 +19,11 @@ _SHELL_FILE_NAME = {
     'android-arm': 'MojoShell.apk'
 }
 
+_MOJO_PUBLIC_REVISION = re.compile(r"""\s*
+                                       'mojo_public_revision'
+                                       \s*:\s*
+                                       '(?P<commit>\w+)'""", re.X)
+
 
 def _get_artifacts_to_download(mojo_version, platform, verbose):
   """Returns a list of tuples of (gs_path, file_name) to be downloaded."""
@@ -26,11 +33,21 @@ def _get_artifacts_to_download(mojo_version, platform, verbose):
       (shell_gs_path, _SHELL_FILE_NAME[platform])
   )
   if platform == 'linux-x64':
+    # First, find the mojo/public version that mojo is using.
+    deps_url = ('https://raw.githubusercontent.com/domokit/mojo/' +
+                mojo_version + '/DEPS')
+    deps_content = urllib2.urlopen(deps_url).read()
+    match = _MOJO_PUBLIC_REVISION.search(deps_content)
+    mojo_public_version = match.group('commit')
+    if not mojo_public_version:
+      raise Exception('Unable to find revision of mojo/public in mojo DEPS.')
+
+    # Second, find the network service version that |mojo_public_version| is on.
     network_service_version_url = (
-        'https://raw.githubusercontent.com/domokit/mojo/' +
-        mojo_version + '/mojo/public/tools/NETWORK_SERVICE_VERSION')
-    network_service_version = (
-        urllib2.urlopen(network_service_version_url).read().strip())
+        'https://fuchsia.googlesource.com/mojo/public/+/' +
+        mojo_public_version + '/tools/NETWORK_SERVICE_VERSION?format=TEXT')
+    network_service_version = base64.b64decode(
+        urllib2.urlopen(network_service_version_url).read()).strip()
     if verbose:
       print('Looked up the network service version for mojo at %s as: %s ' % (
           mojo_version, network_service_version))
