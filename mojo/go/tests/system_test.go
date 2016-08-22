@@ -77,7 +77,7 @@ func TestMessagePipe(t *testing.T) {
 	}
 
 	r, state = h0.Wait(system.MOJO_HANDLE_SIGNAL_READABLE, 0)
-	if r != system.MOJO_RESULT_DEADLINE_EXCEEDED {
+	if r != system.MOJO_SYSTEM_RESULT_DEADLINE_EXCEEDED {
 		t.Fatalf("h0 should not be readable:%v", r)
 	}
 	if state.SatisfiedSignals != system.MOJO_HANDLE_SIGNAL_WRITABLE {
@@ -98,7 +98,7 @@ func TestMessagePipe(t *testing.T) {
 		t.Fatalf("state should allow all signals after core.Wait:%v", state.SatisfiableSignals)
 	}
 
-	if r, _, _ = h0.ReadMessage(system.MOJO_READ_MESSAGE_FLAG_NONE); r != system.MOJO_RESULT_SHOULD_WAIT {
+	if r, _, _ = h0.ReadMessage(system.MOJO_READ_MESSAGE_FLAG_NONE); r != system.MOJO_SYSTEM_RESULT_SHOULD_WAIT {
 		t.Fatalf("Read on h0 did not return wait:%v", r)
 	}
 	kHello := []byte("hello")
@@ -129,11 +129,11 @@ func TestMessagePipe(t *testing.T) {
 	}
 
 	r, index, states := core.WaitMany([]system.Handle{h0}, []system.MojoHandleSignals{system.MOJO_HANDLE_SIGNAL_READABLE}, 10)
-	if r != system.MOJO_RESULT_DEADLINE_EXCEEDED {
+	if r != system.MOJO_SYSTEM_RESULT_DEADLINE_EXCEEDED {
 		t.Fatalf("h0 should not be readable after reading message:%v", r)
 	}
 	if index != -1 {
-		t.Fatalf("should be no index after MOJO_RESULT_DEADLINE_EXCEEDED:%v", index)
+		t.Fatalf("should be no index after MOJO_SYSTEM_RESULT_DEADLINE_EXCEEDED:%v", index)
 	}
 	if len(states) != 1 {
 		t.Fatalf("states should be set after WaitMany:%v", states)
@@ -150,7 +150,7 @@ func TestMessagePipe(t *testing.T) {
 	}
 
 	r, state = h1.Wait(MOJO_HANDLE_SIGNAL_READWRITABLE, system.MOJO_DEADLINE_INDEFINITE)
-	if r != system.MOJO_RESULT_FAILED_PRECONDITION {
+	if r != system.MOJO_SYSTEM_RESULT_FAILED_PRECONDITION {
 		t.Fatalf("h1 should not be readable/writable after Close(h0):%v", r)
 	}
 	if state.SatisfiedSignals != system.MOJO_HANDLE_SIGNAL_PEER_CLOSED {
@@ -176,7 +176,7 @@ func TestDataPipe(t *testing.T) {
 	if !hp.IsValid() || !hc.IsValid() {
 		t.Fatalf("CreateDataPipe returned invalid handles hp:%v hc:%v", hp, hc)
 	}
-	if r, _ = hc.Wait(system.MOJO_HANDLE_SIGNAL_READABLE, 0); r != system.MOJO_RESULT_DEADLINE_EXCEEDED {
+	if r, _ = hc.Wait(system.MOJO_HANDLE_SIGNAL_READABLE, 0); r != system.MOJO_SYSTEM_RESULT_DEADLINE_EXCEEDED {
 		t.Fatalf("hc should not be readable:%v", r)
 	}
 	if r, _ = hp.Wait(system.MOJO_HANDLE_SIGNAL_WRITABLE, system.MOJO_DEADLINE_INDEFINITE); r != system.MOJO_RESULT_OK {
@@ -213,10 +213,10 @@ func TestDataPipe(t *testing.T) {
 		t.Fatalf("Buffer size(%d) should be at least %d", len(buf), len(kHello))
 	}
 	copy(buf, kHello)
-	if r, _ := hp.WriteData(kHello, system.MOJO_WRITE_DATA_FLAG_NONE); r != system.MOJO_RESULT_BUSY {
+	if r, _ := hp.WriteData(kHello, system.MOJO_WRITE_DATA_FLAG_NONE); r != system.MOJO_SYSTEM_RESULT_BUSY {
 		t.Fatalf("hp should be busy during a two-phase write: %v", r)
 	}
-	if r, _ = hc.Wait(system.MOJO_HANDLE_SIGNAL_READABLE, 0); r != system.MOJO_RESULT_DEADLINE_EXCEEDED {
+	if r, _ = hc.Wait(system.MOJO_HANDLE_SIGNAL_READABLE, 0); r != system.MOJO_SYSTEM_RESULT_DEADLINE_EXCEEDED {
 		t.Fatalf("hc shouldn't be readable before EndWriteData on hp:%v", r)
 	}
 	if r := hp.EndWriteData(len(kHello)); r != system.MOJO_RESULT_OK {
@@ -232,7 +232,7 @@ func TestDataPipe(t *testing.T) {
 	if len(buf) != len(kHello) {
 		t.Fatalf("Buffer size(%d) should be equal to %d", len(buf), len(kHello))
 	}
-	if r, _ := hc.ReadData(system.MOJO_READ_DATA_FLAG_NONE); r != system.MOJO_RESULT_BUSY {
+	if r, _ := hc.ReadData(system.MOJO_READ_DATA_FLAG_NONE); r != system.MOJO_SYSTEM_RESULT_BUSY {
 		t.Fatalf("hc should be busy during a two-phase read: %v", r)
 	}
 	if !bytes.Equal(buf, kHello) {
@@ -245,7 +245,7 @@ func TestDataPipe(t *testing.T) {
 	if r = hp.Close(); r != system.MOJO_RESULT_OK {
 		t.Fatalf("Close on hp failed:%v", r)
 	}
-	if r, _ = hc.Wait(system.MOJO_HANDLE_SIGNAL_READABLE, system.MOJO_DEADLINE_INDEFINITE); r != system.MOJO_RESULT_FAILED_PRECONDITION {
+	if r, _ = hc.Wait(system.MOJO_HANDLE_SIGNAL_READABLE, system.MOJO_DEADLINE_INDEFINITE); r != system.MOJO_SYSTEM_RESULT_FAILED_PRECONDITION {
 		t.Fatalf("hc should not be readable after hp closed:%v", r)
 	}
 	if r = hc.Close(); r != system.MOJO_RESULT_OK {

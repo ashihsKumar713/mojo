@@ -27,23 +27,23 @@ class CoreTest(mojo_unittest.MojoTestCase):
 
   def testResults(self):
     self.assertEquals(system.RESULT_OK, 0)
-    self.assertGreater(system.RESULT_CANCELLED, 0)
-    self.assertGreater(system.RESULT_UNKNOWN, 0)
-    self.assertGreater(system.RESULT_INVALID_ARGUMENT, 0)
-    self.assertGreater(system.RESULT_DEADLINE_EXCEEDED, 0)
-    self.assertGreater(system.RESULT_NOT_FOUND, 0)
-    self.assertGreater(system.RESULT_ALREADY_EXISTS, 0)
-    self.assertGreater(system.RESULT_PERMISSION_DENIED, 0)
-    self.assertGreater(system.RESULT_RESOURCE_EXHAUSTED, 0)
-    self.assertGreater(system.RESULT_FAILED_PRECONDITION, 0)
-    self.assertGreater(system.RESULT_ABORTED, 0)
-    self.assertGreater(system.RESULT_OUT_OF_RANGE, 0)
-    self.assertGreater(system.RESULT_UNIMPLEMENTED, 0)
-    self.assertGreater(system.RESULT_INTERNAL, 0)
-    self.assertGreater(system.RESULT_UNAVAILABLE, 0)
-    self.assertGreater(system.RESULT_DATA_LOSS, 0)
-    self.assertGreater(system.RESULT_BUSY, 0)
-    self.assertGreater(system.RESULT_SHOULD_WAIT, 0)
+    self.assertGreater(system.SYSTEM_RESULT_CANCELLED, 0)
+    self.assertGreater(system.SYSTEM_RESULT_UNKNOWN, 0)
+    self.assertGreater(system.SYSTEM_RESULT_INVALID_ARGUMENT, 0)
+    self.assertGreater(system.SYSTEM_RESULT_DEADLINE_EXCEEDED, 0)
+    self.assertGreater(system.SYSTEM_RESULT_NOT_FOUND, 0)
+    self.assertGreater(system.SYSTEM_RESULT_ALREADY_EXISTS, 0)
+    self.assertGreater(system.SYSTEM_RESULT_PERMISSION_DENIED, 0)
+    self.assertGreater(system.SYSTEM_RESULT_RESOURCE_EXHAUSTED, 0)
+    self.assertGreater(system.SYSTEM_RESULT_FAILED_PRECONDITION, 0)
+    self.assertGreater(system.SYSTEM_RESULT_ABORTED, 0)
+    self.assertGreater(system.SYSTEM_RESULT_OUT_OF_RANGE, 0)
+    self.assertGreater(system.SYSTEM_RESULT_UNIMPLEMENTED, 0)
+    self.assertGreater(system.SYSTEM_RESULT_INTERNAL, 0)
+    self.assertGreater(system.SYSTEM_RESULT_UNAVAILABLE, 0)
+    self.assertGreater(system.SYSTEM_RESULT_DATA_LOSS, 0)
+    self.assertGreater(system.SYSTEM_RESULT_BUSY, 0)
+    self.assertGreater(system.SYSTEM_RESULT_SHOULD_WAIT, 0)
 
   def testConstants(self):
     self.assertGreaterEqual(system.DEADLINE_INDEFINITE, 0)
@@ -101,7 +101,7 @@ class CoreTest(mojo_unittest.MojoTestCase):
     self.assertEquals(CoreTest.HANDLE_SIGNAL_ALL, states[1])
 
     (res, states) = handle.Wait(system.HANDLE_SIGNAL_READABLE, 0)
-    self.assertEquals(system.RESULT_DEADLINE_EXCEEDED, res)
+    self.assertEquals(system.SYSTEM_RESULT_DEADLINE_EXCEEDED, res)
     self.assertEquals(system.HANDLE_SIGNAL_WRITABLE, states[0])
     self.assertEquals(CoreTest.HANDLE_SIGNAL_ALL, states[1])
 
@@ -119,7 +119,7 @@ class CoreTest(mojo_unittest.MojoTestCase):
             [(system.Handle(0), system.HANDLE_SIGNAL_WRITABLE),
              (system.Handle(0), system.HANDLE_SIGNAL_WRITABLE)],
             system.DEADLINE_INDEFINITE)
-    self.assertEquals(system.RESULT_INVALID_ARGUMENT, res)
+    self.assertEquals(system.SYSTEM_RESULT_INVALID_ARGUMENT, res)
     self.assertEquals(0, index)
     self.assertEquals(states, None)
 
@@ -142,7 +142,7 @@ class CoreTest(mojo_unittest.MojoTestCase):
     (res, index, states) = system.WaitMany(
             [(handle0, system.HANDLE_SIGNAL_READABLE),
              (handle1, system.HANDLE_SIGNAL_READABLE)], 0)
-    self.assertEquals(system.RESULT_DEADLINE_EXCEEDED, res)
+    self.assertEquals(system.SYSTEM_RESULT_DEADLINE_EXCEEDED, res)
     self.assertEquals(None, index)
     self.assertEquals(system.HANDLE_SIGNAL_WRITABLE, states[0][0])
     self.assertEquals(CoreTest.HANDLE_SIGNAL_ALL, states[0][1])
@@ -167,7 +167,7 @@ class CoreTest(mojo_unittest.MojoTestCase):
     data = _GetRandomBuffer(DATA_SIZE)
     handles.handle0.WriteMessage(data)
     (res, buffers, next_message) = handles.handle1.ReadMessage()
-    self.assertEquals(system.RESULT_RESOURCE_EXHAUSTED, res)
+    self.assertEquals(system.SYSTEM_RESULT_RESOURCE_EXHAUSTED, res)
     self.assertEquals(None, buffers)
     self.assertEquals((DATA_SIZE, 0), next_message)
     result = bytearray(DATA_SIZE)
@@ -204,7 +204,7 @@ class CoreTest(mojo_unittest.MojoTestCase):
     for handle in handles:
       self.assertTrue(handle.IsValid())
       (res, buffers, next_message) = handle.ReadMessage()
-      self.assertEquals(system.RESULT_SHOULD_WAIT, res)
+      self.assertEquals(system.SYSTEM_RESULT_SHOULD_WAIT, res)
 
     for handle in handles:
       handle.WriteMessage()
@@ -243,7 +243,8 @@ class CoreTest(mojo_unittest.MojoTestCase):
     options.capacity_num_bytes = DATA_SIZE
     with self.assertRaises(system.MojoException) as cm:
       self._TestDataHandleCreation(system.DataPipe(options))
-    self.assertEquals(system.RESULT_INVALID_ARGUMENT, cm.exception.mojo_result)
+    self.assertEquals(system.SYSTEM_RESULT_INVALID_ARGUMENT,
+                      cm.exception.mojo_result)
 
   def testSendEmptyDataOverDataPipe(self):
     pipes = system.DataPipe()

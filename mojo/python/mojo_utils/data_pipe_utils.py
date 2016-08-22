@@ -55,14 +55,14 @@ def CopyFromDataPipe(data_pipe, deadline):
           self.index += len(read_bytes)
         del read_bytes
 
-      if result == mojo_system.RESULT_SHOULD_WAIT:
+      if result == mojo_system.SYSTEM_RESULT_SHOULD_WAIT:
         data_pipe.AsyncWait(mojo_system.HANDLE_SIGNAL_READABLE,
                             self._ComputeCurrentDeadline(),
                             self.CopyFromDataPipeAsync)
         return
 
       # Treat a failed precondition as EOF.
-      if result == mojo_system.RESULT_FAILED_PRECONDITION:
+      if result == mojo_system.SYSTEM_RESULT_FAILED_PRECONDITION:
         self.resolve(self.data[:self.index])
         return
 

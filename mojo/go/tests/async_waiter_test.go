@@ -33,7 +33,7 @@ func checkCancel(handle system.Handle, wg *sync.WaitGroup) {
 	go func() {
 		waiter.CancelWait(id)
 		response := <-responseChan
-		if expected := system.MOJO_RESULT_ABORTED; expected != response.Result {
+		if expected := system.MOJO_SYSTEM_RESULT_ABORTED; expected != response.Result {
 			panic(fmt.Sprintf("unexpected wait result: expected %v, got %v", expected, response.Result))
 		}
 		wg.Done()
@@ -57,7 +57,7 @@ func TestAsyncWait(t *testing.T) {
 	}
 	defer h1.Close()
 	h0.Close()
-	checkWait(h0, system.MOJO_HANDLE_SIGNAL_PEER_CLOSED, system.MOJO_RESULT_INVALID_ARGUMENT, &wg)
+	checkWait(h0, system.MOJO_HANDLE_SIGNAL_PEER_CLOSED, system.MOJO_SYSTEM_RESULT_INVALID_ARGUMENT, &wg)
 	checkWait(h1, system.MOJO_HANDLE_SIGNAL_PEER_CLOSED, system.MOJO_RESULT_OK, &wg)
 
 	if r, h0, h1 = core.CreateMessagePipe(nil); r != system.MOJO_RESULT_OK {
@@ -65,8 +65,8 @@ func TestAsyncWait(t *testing.T) {
 	}
 	defer h1.Close()
 	h0.Close()
-	checkWait(h0, system.MOJO_HANDLE_SIGNAL_PEER_CLOSED, system.MOJO_RESULT_INVALID_ARGUMENT, &wg)
-	checkWait(h1, system.MOJO_HANDLE_SIGNAL_READABLE, system.MOJO_RESULT_FAILED_PRECONDITION, &wg)
+	checkWait(h0, system.MOJO_HANDLE_SIGNAL_PEER_CLOSED, system.MOJO_SYSTEM_RESULT_INVALID_ARGUMENT, &wg)
+	checkWait(h1, system.MOJO_HANDLE_SIGNAL_READABLE, system.MOJO_SYSTEM_RESULT_FAILED_PRECONDITION, &wg)
 	wg.Wait()
 }
 

@@ -67,12 +67,12 @@ class ConnectorTest(mojo_unittest.MojoTestCase):
     self.assertFalse(self.received_messages)
     self.assertTrue(self.received_errors)
     self.assertEquals(self.received_errors[0],
-                      system.RESULT_FAILED_PRECONDITION)
+                      system.SYSTEM_RESULT_FAILED_PRECONDITION)
 
   def testConnectorDeleteConnector(self):
     self.connector = None
     (result, _, _) = self.handle.ReadMessage()
-    self.assertEquals(result, system.RESULT_FAILED_PRECONDITION)
+    self.assertEquals(result, system.SYSTEM_RESULT_FAILED_PRECONDITION)
 
   def testConnectorWriteHandle(self):
     new_handles = system.MessagePipe()
