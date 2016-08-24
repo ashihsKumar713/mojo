@@ -239,7 +239,7 @@ TEST_F(CoreTest, Basic) {
   EXPECT_EQ(0u, hss.satisfied_signals);
   EXPECT_EQ(0u, hss.satisfiable_signals);
 
-  constexpr MojoHandleRights kRightsToRemove = MOJO_HANDLE_RIGHT_MAP_EXECUTABLE;
+  constexpr MojoHandleRights kRightsToRemove = MOJO_HANDLE_RIGHT_EXECUTE;
   static_assert(kDefaultMockHandleRights & kRightsToRemove,
                 "Oops, reducing rights will be a no-op");
   MojoHandle h_replacement = MOJO_HANDLE_INVALID;

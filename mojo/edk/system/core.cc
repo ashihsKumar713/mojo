@@ -721,11 +721,9 @@ MojoResult Core::MapBuffer(MojoHandle buffer_handle,
                            MojoMapBufferFlags flags) {
   RefPtr<Dispatcher> dispatcher;
   // TODO(vtl): Currently we can only map read/write. So both
-  // |MOJO_HANDLE_RIGHT_MAP_READABLE| and |MOJO_HANDLE_RIGHT_MAP_WRITABLE| are
-  // required.
+  // |MOJO_HANDLE_RIGHT_READ| and |MOJO_HANDLE_RIGHT_WRITE| are required.
   MojoResult result = GetDispatcherAndCheckRights(
-      buffer_handle,
-      MOJO_HANDLE_RIGHT_MAP_READABLE | MOJO_HANDLE_RIGHT_MAP_WRITABLE,
+      buffer_handle, MOJO_HANDLE_RIGHT_READ | MOJO_HANDLE_RIGHT_WRITE,
       EntrypointClass::BUFFER, &dispatcher);
   if (result != MOJO_RESULT_OK)
     return result;

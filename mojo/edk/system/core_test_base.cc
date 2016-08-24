@@ -264,13 +264,12 @@ void CoreTestBase::TearDown() {
 MojoHandle CoreTestBase::CreateMockHandle(CoreTestBase::MockHandleInfo* info) {
   CHECK(core_);
   auto dispatcher = MockDispatcher::Create(info);
-  MojoHandle rv = core_->AddHandle(Handle(
-      std::move(dispatcher),
-      MOJO_HANDLE_RIGHT_DUPLICATE | MOJO_HANDLE_RIGHT_TRANSFER |
-          MOJO_HANDLE_RIGHT_READ | MOJO_HANDLE_RIGHT_WRITE |
-          MOJO_HANDLE_RIGHT_GET_OPTIONS | MOJO_HANDLE_RIGHT_SET_OPTIONS |
-          MOJO_HANDLE_RIGHT_MAP_READABLE | MOJO_HANDLE_RIGHT_MAP_WRITABLE |
-          MOJO_HANDLE_RIGHT_MAP_EXECUTABLE));
+  MojoHandle rv = core_->AddHandle(
+      Handle(std::move(dispatcher),
+             MOJO_HANDLE_RIGHT_DUPLICATE | MOJO_HANDLE_RIGHT_TRANSFER |
+                 MOJO_HANDLE_RIGHT_READ | MOJO_HANDLE_RIGHT_WRITE |
+                 MOJO_HANDLE_RIGHT_EXECUTE | MOJO_HANDLE_RIGHT_GET_OPTIONS |
+                 MOJO_HANDLE_RIGHT_SET_OPTIONS));
   CHECK_NE(rv, MOJO_HANDLE_INVALID);
   return rv;
 }
