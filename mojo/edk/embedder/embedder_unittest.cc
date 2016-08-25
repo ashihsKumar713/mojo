@@ -4,8 +4,8 @@
 
 #include "mojo/edk/embedder/embedder.h"
 
-#include <mojo/result.h>
 #include <mojo/system/handle.h>
+#include <mojo/system/result.h>
 
 #include "base/logging.h"
 #include "mojo/edk/embedder/test_embedder.h"
@@ -50,7 +50,7 @@ class EmbedderTest : public testing::Test {
 
 class TestAsyncWaiter {
  public:
-  TestAsyncWaiter() : wait_result_(MOJO_RESULT_UNKNOWN) {}
+  TestAsyncWaiter() : wait_result_(MOJO_SYSTEM_RESULT_UNKNOWN) {}
 
   void Awake(MojoResult result) {
     MutexLocker l(&wait_result_mutex_);
@@ -103,7 +103,7 @@ TEST_F(EmbedderTest, AsyncWait) {
 
   // If message is in the queue, it does't allow us to wait.
   TestAsyncWaiter waiter_that_doesnt_wait;
-  EXPECT_EQ(MOJO_RESULT_ALREADY_EXISTS,
+  EXPECT_EQ(MOJO_SYSTEM_RESULT_ALREADY_EXISTS,
             AsyncWait(client_mp.get().value(), MOJO_HANDLE_SIGNAL_READABLE,
                       [&waiter_that_doesnt_wait](MojoResult result) {
                         waiter_that_doesnt_wait.Awake(result);
@@ -131,7 +131,7 @@ TEST_F(EmbedderTest, AsyncWait) {
   }
 
   EXPECT_TRUE(unsatisfiable_waiter.TryWait());
-  EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
+  EXPECT_EQ(MOJO_SYSTEM_RESULT_FAILED_PRECONDITION,
             unsatisfiable_waiter.wait_result());
 }
 

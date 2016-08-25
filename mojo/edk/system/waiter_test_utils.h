@@ -5,8 +5,8 @@
 #ifndef MOJO_EDK_SYSTEM_WAITER_TEST_UTILS_H_
 #define MOJO_EDK_SYSTEM_WAITER_TEST_UTILS_H_
 
-#include <mojo/result.h>
 #include <mojo/system/handle.h>
+#include <mojo/system/result.h>
 #include <mojo/system/time.h>
 #include <stdint.h>
 

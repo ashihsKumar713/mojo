@@ -4,6 +4,8 @@
 
 #include "mojo/edk/embedder/embedder.h"
 
+#include <mojo/system/result.h>
+
 #include "base/logging.h"
 #include "mojo/edk/embedder/embedder_internal.h"
 #include "mojo/edk/system/configuration.h"
@@ -61,7 +63,7 @@ MojoResult CreatePlatformHandleWrapper(
   if (h == MOJO_HANDLE_INVALID) {
     LOG(ERROR) << "Handle table full";
     dispatcher->Close();
-    return MOJO_RESULT_RESOURCE_EXHAUSTED;
+    return MOJO_SYSTEM_RESULT_RESOURCE_EXHAUSTED;
   }
 
   *platform_handle_wrapper_handle = h;
@@ -80,10 +82,10 @@ MojoResult PassWrappedPlatformHandle(MojoHandle platform_handle_wrapper_handle,
     return result;
 
   if (h.dispatcher->GetType() != system::Dispatcher::Type::PLATFORM_HANDLE)
-    return MOJO_RESULT_INVALID_ARGUMENT;
+    return MOJO_SYSTEM_RESULT_INVALID_ARGUMENT;
 
   if (!h.has_all_rights(MOJO_HANDLE_RIGHT_READ | MOJO_HANDLE_RIGHT_WRITE))
-    return MOJO_RESULT_PERMISSION_DENIED;
+    return MOJO_SYSTEM_RESULT_PERMISSION_DENIED;
 
   *platform_handle =
       static_cast<system::PlatformHandleDispatcher*>(h.dispatcher.get())

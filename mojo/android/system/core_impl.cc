@@ -5,11 +5,11 @@
 #include "mojo/android/system/core_impl.h"
 
 #include <mojo/environment/async_waiter.h>
-#include <mojo/result.h>
 #include <mojo/system/buffer.h>
 #include <mojo/system/data_pipe.h>
 #include <mojo/system/handle.h>
 #include <mojo/system/message_pipe.h>
+#include <mojo/system/result.h>
 #include <mojo/system/time.h>
 #include <mojo/system/wait.h>
 
@@ -382,8 +382,8 @@ static ScopedJavaLocalRef<jobject> AsyncWait(
     cancel_id = kInvalidHandleCancelID;
     base::MessageLoop::current()->PostTask(
         FROM_HERE,
-        base::Bind(
-            &AsyncWaitCallback, callback_data, MOJO_RESULT_INVALID_ARGUMENT));
+        base::Bind(&AsyncWaitCallback, callback_data,
+                   MOJO_SYSTEM_RESULT_INVALID_ARGUMENT));
   }
   base::android::ScopedJavaLocalRef<jobject> cancellable =
       Java_CoreImpl_newAsyncWaiterCancellableImpl(

@@ -6,8 +6,8 @@
 #define MOJO_EDK_SYSTEM_DATA_PIPE_IMPL_H_
 
 #include <mojo/macros.h>
-#include <mojo/result.h>
 #include <mojo/system/data_pipe.h>
+#include <mojo/system/result.h>
 #include <stdint.h>
 
 #include <utility>

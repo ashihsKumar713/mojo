@@ -4,6 +4,7 @@
 
 #include "mojo/data_pipe_utils/data_pipe_utils.h"
 
+#include <mojo/system/result.h>
 #include <stdio.h>
 
 #include "base/message_loop/message_loop.h"
@@ -40,14 +41,14 @@ bool BlockingCopyHelper(
                    << ") in BlockingCopyHelper";
         return false;
       }
-    } else if (result == MOJO_RESULT_SHOULD_WAIT) {
+    } else if (result == MOJO_SYSTEM_RESULT_SHOULD_WAIT) {
       result = Wait(source.get(), MOJO_HANDLE_SIGNAL_READABLE,
                     MOJO_DEADLINE_INDEFINITE, nullptr);
       if (result != MOJO_RESULT_OK) {
         // If the producer handle was closed, then treat as EOF.
-        return result == MOJO_RESULT_FAILED_PRECONDITION;
+        return result == MOJO_SYSTEM_RESULT_FAILED_PRECONDITION;
       }
-    } else if (result == MOJO_RESULT_FAILED_PRECONDITION) {
+    } else if (result == MOJO_SYSTEM_RESULT_FAILED_PRECONDITION) {
       // If the producer handle was closed, then treat as EOF.
       return true;
     } else {
@@ -98,16 +99,16 @@ bool BlockingCopyFromString(const std::string& source,
       EndWriteDataRaw(destination.get(), byte_index);
       if (it == source.end())
         return true;
-    } else if (result == MOJO_RESULT_SHOULD_WAIT) {
+    } else if (result == MOJO_SYSTEM_RESULT_SHOULD_WAIT) {
       result = Wait(destination.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
                     MOJO_DEADLINE_INDEFINITE, nullptr);
       if (result != MOJO_RESULT_OK) {
         // If the consumer handle was closed, then treat as EOF.
-        return result == MOJO_RESULT_FAILED_PRECONDITION;
+        return result == MOJO_SYSTEM_RESULT_FAILED_PRECONDITION;
       }
     } else {
       // If the consumer handle was closed, then treat as EOF.
-      return result == MOJO_RESULT_FAILED_PRECONDITION;
+      return result == MOJO_SYSTEM_RESULT_FAILED_PRECONDITION;
     }
   }
 }

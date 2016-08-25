@@ -4,6 +4,8 @@
 
 #include "mojo/message_pump/handle_watcher.h"
 
+#include <mojo/system/result.h>
+
 #include <map>
 
 #include "base/atomic_sequence_num.h"
@@ -94,7 +96,7 @@ WatcherBackend::~WatcherBackend() {
 }
 
 void WatcherBackend::StartWatching(const WatchData& data) {
-  RemoveAndNotify(data.handle, MOJO_RESULT_CANCELLED);
+  RemoveAndNotify(data.handle, MOJO_SYSTEM_RESULT_CANCELLED);
 
   DCHECK_EQ(0u, handle_to_data_.count(data.handle));
 
@@ -337,7 +339,7 @@ class HandleWatcher::StateBase : public base::MessageLoop::DestructionObserver {
  private:
   void WillDestroyCurrentMessageLoop() override {
     // The current thread is exiting. Simulate a watch error.
-    NotifyAndDestroy(MOJO_RESULT_ABORTED);
+    NotifyAndDestroy(MOJO_SYSTEM_RESULT_ABORTED);
   }
 
   void NotifyAndDestroy(MojoResult result) {

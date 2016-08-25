@@ -5,6 +5,7 @@
 #include "mojo/edk/embedder/multiprocess_embedder.h"
 
 #include <mojo/system/handle.h>
+#include <mojo/system/result.h>
 #include <mojo/system/time.h>
 #include <mojo/system/wait.h>
 #include <string.h>
@@ -568,7 +569,7 @@ TEST_F(MultiprocessEmbedderTest, MAYBE_MultiprocessChannels) {
 // 12. Wait on |mp2| (which should eventually fail) and then close it.
 // TODO(vtl): crbug.com/351768
 #if 0
-    EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
+    EXPECT_EQ(MOJO_SYSTEM_RESULT_FAILED_PRECONDITION,
               MojoWait(mp2, MOJO_HANDLE_SIGNAL_READABLE,
                        MOJO_DEADLINE_INDEFINITE,
                        &state));
@@ -691,7 +692,7 @@ MOJO_MULTIPROCESS_TEST_CHILD_TEST(MultiprocessChannelsClient) {
     EXPECT_STREQ(kFoo, buffer);
 
     // 11. Wait on |mp1| (which should eventually fail) and then close it.
-    EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
+    EXPECT_EQ(MOJO_SYSTEM_RESULT_FAILED_PRECONDITION,
               MojoWait(mp1, MOJO_HANDLE_SIGNAL_READABLE,
                        MOJO_DEADLINE_INDEFINITE, &state));
     EXPECT_EQ(MOJO_HANDLE_SIGNAL_PEER_CLOSED, state.satisfied_signals);

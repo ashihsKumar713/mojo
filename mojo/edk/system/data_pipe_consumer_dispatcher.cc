@@ -97,7 +97,7 @@ MojoResult DataPipeConsumerDispatcher::SetDataPipeConsumerOptionsImplNoLock(
   if (!options.IsNull()) {
     UserOptionsReader<MojoDataPipeConsumerOptions> reader(options);
     if (!reader.is_valid())
-      return MOJO_RESULT_INVALID_ARGUMENT;
+      return MOJO_SYSTEM_RESULT_INVALID_ARGUMENT;
 
     if (!OPTIONS_STRUCT_HAS_MEMBER(MojoDataPipeConsumerOptions,
                                    read_threshold_num_bytes, reader))
@@ -122,7 +122,7 @@ MojoResult DataPipeConsumerDispatcher::GetDataPipeConsumerOptionsImplNoLock(
                 "MojoDataPipeConsumerOptions has been extended!");
 
   if (options_num_bytes < sizeof(MojoDataPipeConsumerOptions))
-    return MOJO_RESULT_INVALID_ARGUMENT;
+    return MOJO_SYSTEM_RESULT_INVALID_ARGUMENT;
 
   uint32_t read_threshold_num_bytes = 0;
   data_pipe_->ConsumerGetOptions(&read_threshold_num_bytes);
@@ -144,7 +144,7 @@ MojoResult DataPipeConsumerDispatcher::ReadDataImplNoLock(
     // These flags are mutally exclusive.
     if ((flags & MOJO_READ_DATA_FLAG_QUERY) ||
         (flags & MOJO_READ_DATA_FLAG_PEEK))
-      return MOJO_RESULT_INVALID_ARGUMENT;
+      return MOJO_SYSTEM_RESULT_INVALID_ARGUMENT;
     DVLOG_IF(2, !elements.IsNull())
         << "Discard mode: ignoring non-null |elements|";
     return data_pipe_->ConsumerDiscardData(
@@ -153,7 +153,7 @@ MojoResult DataPipeConsumerDispatcher::ReadDataImplNoLock(
 
   if ((flags & MOJO_READ_DATA_FLAG_QUERY)) {
     if ((flags & MOJO_READ_DATA_FLAG_PEEK))
-      return MOJO_RESULT_INVALID_ARGUMENT;
+      return MOJO_SYSTEM_RESULT_INVALID_ARGUMENT;
     DCHECK(!(flags & MOJO_READ_DATA_FLAG_DISCARD));  // Handled above.
     DVLOG_IF(2, !elements.IsNull())
         << "Query mode: ignoring non-null |elements|";
@@ -175,7 +175,7 @@ MojoResult DataPipeConsumerDispatcher::BeginReadDataImplNoLock(
   if ((flags & MOJO_READ_DATA_FLAG_ALL_OR_NONE) ||
       (flags & MOJO_READ_DATA_FLAG_DISCARD) ||
       (flags & MOJO_READ_DATA_FLAG_QUERY) || (flags & MOJO_READ_DATA_FLAG_PEEK))
-    return MOJO_RESULT_INVALID_ARGUMENT;
+    return MOJO_SYSTEM_RESULT_INVALID_ARGUMENT;
 
   return data_pipe_->ConsumerBeginReadData(buffer, buffer_num_bytes);
 }

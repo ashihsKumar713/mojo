@@ -39,7 +39,7 @@ class HandleWatcher {
   // notified when the handle is ready, invalid or deadline has passed and is
   // notified on the thread Start() was invoked on. If the current thread exits
   // before the handle is ready, then |callback| is invoked with a result of
-  // MOJO_RESULT_ABORTED.
+  // MOJO_SYSTEM_RESULT_ABORTED.
   void Start(const Handle& handle,
              MojoHandleSignals handle_signals,
              MojoDeadline deadline,

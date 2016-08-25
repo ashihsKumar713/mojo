@@ -5,9 +5,9 @@
 #ifndef MOJO_EDK_SYSTEM_MESSAGE_PIPE_H_
 #define MOJO_EDK_SYSTEM_MESSAGE_PIPE_H_
 
-#include <mojo/result.h>
 #include <mojo/system/handle.h>
 #include <mojo/system/message_pipe.h>
+#include <mojo/system/result.h>
 #include <stddef.h>
 #include <stdint.h>
 

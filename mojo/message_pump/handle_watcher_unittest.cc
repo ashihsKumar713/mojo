@@ -4,6 +4,8 @@
 
 #include "mojo/message_pump/handle_watcher.h"
 
+#include <mojo/system/result.h>
+
 #include <string>
 
 #include "base/at_exit.h"
@@ -370,7 +372,7 @@ TEST_P(HandleWatcherTest, AbortedOnMessageLoopDestruction) {
   TearDownMessageLoop();
 
   EXPECT_TRUE(was_signaled);
-  EXPECT_EQ(MOJO_RESULT_ABORTED, result);
+  EXPECT_EQ(MOJO_SYSTEM_RESULT_ABORTED, result);
 }
 
 void NeverReached(MojoResult result) {

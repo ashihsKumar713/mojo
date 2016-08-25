@@ -4,6 +4,8 @@
 
 #include "mojo/message_pump/message_pump_mojo.h"
 
+#include <mojo/system/result.h>
+
 #include <algorithm>
 #include <memory>
 #include <vector>
@@ -206,16 +208,16 @@ bool MessagePumpMojo::DoInternalWork(const RunState& run_state, bool block) {
     }
   } else {
     switch (result) {
-      case MOJO_RESULT_FAILED_PRECONDITION:
+      case MOJO_SYSTEM_RESULT_FAILED_PRECONDITION:
         RemoveInvalidHandle(*run_state_->wait_state, result,
                             wait_many_result.index);
         break;
-      case MOJO_RESULT_DEADLINE_EXCEEDED:
+      case MOJO_SYSTEM_RESULT_DEADLINE_EXCEEDED:
         did_work = false;
         break;
-      case MOJO_RESULT_INVALID_ARGUMENT:
-      case MOJO_RESULT_CANCELLED:
-      case MOJO_RESULT_BUSY:
+      case MOJO_SYSTEM_RESULT_INVALID_ARGUMENT:
+      case MOJO_SYSTEM_RESULT_CANCELLED:
+      case MOJO_SYSTEM_RESULT_BUSY:
         // These results indicate a bug in "our" code (e.g., race conditions).
         // Fall through.
       default:
@@ -255,7 +257,8 @@ bool MessagePumpMojo::DoInternalWork(const RunState& run_state, bool block) {
         handlers_.find(i->first) != handlers_.end() &&
         handlers_[i->first].id == i->second.id) {
       WillSignalHandler();
-      i->second.handler->OnHandleError(i->first, MOJO_RESULT_DEADLINE_EXCEEDED);
+      i->second.handler->OnHandleError(i->first,
+                                       MOJO_SYSTEM_RESULT_DEADLINE_EXCEEDED);
       DidSignalHandler();
       handlers_.erase(i->first);
       did_work = true;
@@ -272,8 +275,8 @@ void MessagePumpMojo::RemoveInvalidHandle(const WaitState& wait_state,
                                           MojoResult result,
                                           uint32_t index) {
   // TODO(sky): deal with control pipe going bad.
-  CHECK(result == MOJO_RESULT_FAILED_PRECONDITION ||
-        result == MOJO_RESULT_CANCELLED);
+  CHECK(result == MOJO_SYSTEM_RESULT_FAILED_PRECONDITION ||
+        result == MOJO_SYSTEM_RESULT_CANCELLED);
   CHECK_NE(index, 0u);  // Indicates the control pipe went bad.
 
   // Remove the handle first, this way if OnHandleError() tries to remove the

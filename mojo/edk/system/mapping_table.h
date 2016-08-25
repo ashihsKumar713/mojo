@@ -5,7 +5,7 @@
 #ifndef MOJO_EDK_SYSTEM_MAPPING_TABLE_H_
 #define MOJO_EDK_SYSTEM_MAPPING_TABLE_H_
 
-#include <mojo/result.h>
+#include <mojo/system/result.h>
 #include <stdint.h>
 
 #include <memory>

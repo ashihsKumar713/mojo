@@ -5,11 +5,11 @@
 #ifndef MOJO_EDK_SYSTEM_CORE_H_
 #define MOJO_EDK_SYSTEM_CORE_H_
 
-#include <mojo/result.h>
 #include <mojo/system/buffer.h>
 #include <mojo/system/data_pipe.h>
 #include <mojo/system/handle.h>
 #include <mojo/system/message_pipe.h>
+#include <mojo/system/result.h>
 #include <mojo/system/time.h>
 #include <mojo/system/wait_set.h>
 #include <stdint.h>
@@ -59,9 +59,9 @@ class Core {
 
   // Gets the handle for the given handle value. On success, returns
   // |MOJO_RESULT_OK| (and sets |*h|). On failure, returns an appropriate result
-  // (and leaves |*h| alone), namely |MOJO_RESULT_INVALID_ARGUMENT| if the
-  // handle value is invalid or |MOJO_RESULT_BUSY| if the handle is marked as
-  // busy.
+  // (and leaves |*h| alone), namely |MOJO_SYSTEM_RESULT_INVALID_ARGUMENT| if
+  // the handle value is invalid or |MOJO_SYSTEM_RESULT_BUSY| if the handle is
+  // marked as busy.
   MojoResult GetHandle(MojoHandle handle, Handle* h);
 
   // Like |GetHandle()|, but on success also removes the handle from the
@@ -73,14 +73,15 @@ class Core {
   //
   // On success, returns |MOJO_RESULT_OK| and sets |*dispatcher| appropriately.
   // On failure, returns:
-  //   - |MOJO_RESULT_INVALID_ARGUMENT| if there's no handle for the given
-  //     handle value (or the handle value was |MOJO_HANDLE_INVALID|),
-  //   - |MOJO_RESULT_BUSY| if the handle is marked as busy,
-  //   - |MOJO_RESULT_PERMISSION_DENIED| if the handle does not have the
+  //   - |MOJO_SYSTEM_RESULT_INVALID_ARGUMENT| if there's no handle for the
+  //     given handle value (or the handle value was |MOJO_HANDLE_INVALID|),
+  //   - |MOJO_SYSTEM_RESULT_BUSY| if the handle is marked as busy,
+  //   - |MOJO_SYSTEM_RESULT_PERMISSION_DENIED| if the handle does not have the
   //     required rights *and* the dispatcher supports the specified
   //     |entrypoint_class|, or
-  //   - |MOJO_RESULT_INVALID_ARGUMENT| if the handle does not have the required
-  //     rights *but* the dispatcher does not support |entrypoint_class|.
+  //   - |MOJO_SYSTEM_RESULT_INVALID_ARGUMENT| if the handle does not have the
+  //     required rights *but* the dispatcher does not support
+  //     |entrypoint_class|.
   // (Warning: if the handle has the required rights, then its dispatcher will
   // be returned even if the dispatcher does not support |entrypoint_class|.)
   MojoResult GetDispatcherAndCheckRights(

@@ -96,7 +96,7 @@ MojoResult DataPipeProducerDispatcher::SetDataPipeProducerOptionsImplNoLock(
   if (!options.IsNull()) {
     UserOptionsReader<MojoDataPipeProducerOptions> reader(options);
     if (!reader.is_valid())
-      return MOJO_RESULT_INVALID_ARGUMENT;
+      return MOJO_SYSTEM_RESULT_INVALID_ARGUMENT;
 
     if (!OPTIONS_STRUCT_HAS_MEMBER(MojoDataPipeProducerOptions,
                                    write_threshold_num_bytes, reader))
@@ -121,7 +121,7 @@ MojoResult DataPipeProducerDispatcher::GetDataPipeProducerOptionsImplNoLock(
                 "MojoDataPipeProducerOptions has been extended!");
 
   if (options_num_bytes < sizeof(MojoDataPipeProducerOptions))
-    return MOJO_RESULT_INVALID_ARGUMENT;
+    return MOJO_SYSTEM_RESULT_INVALID_ARGUMENT;
 
   uint32_t write_threshold_num_bytes = 0;
   data_pipe_->ProducerGetOptions(&write_threshold_num_bytes);
@@ -150,7 +150,7 @@ MojoResult DataPipeProducerDispatcher::BeginWriteDataImplNoLock(
 
   // This flag may not be used in two-phase mode.
   if ((flags & MOJO_WRITE_DATA_FLAG_ALL_OR_NONE))
-    return MOJO_RESULT_INVALID_ARGUMENT;
+    return MOJO_SYSTEM_RESULT_INVALID_ARGUMENT;
 
   return data_pipe_->ProducerBeginWriteData(buffer, buffer_num_bytes);
 }
