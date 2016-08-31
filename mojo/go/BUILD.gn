@@ -7,9 +7,9 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 go_library("application") {
   sources = [
-    "//mojo/public/go/application/application_impl.go",
-    "//mojo/public/go/application/connection.go",
-    "//mojo/public/go/application/describer.go",
+    "//mojo/public/go/src/mojo/public/go/application/application_impl.go",
+    "//mojo/public/go/src/mojo/public/go/application/connection.go",
+    "//mojo/public/go/src/mojo/public/go/application/describer.go",
   ]
   deps = [
     ":bindings",
@@ -21,16 +21,16 @@ go_library("application") {
 
 go_library("bindings") {
   sources = [
-    "//mojo/public/go/bindings/async_waiter.go",
-    "//mojo/public/go/bindings/connector.go",
-    "//mojo/public/go/bindings/decoder.go",
-    "//mojo/public/go/bindings/encoder.go",
-    "//mojo/public/go/bindings/interface.go",
-    "//mojo/public/go/bindings/invalid_handle.go",
-    "//mojo/public/go/bindings/message.go",
-    "//mojo/public/go/bindings/router.go",
-    "//mojo/public/go/bindings/stub.go",
-    "//mojo/public/go/bindings/util.go",
+    "//mojo/public/go/src/mojo/public/go/bindings/async_waiter.go",
+    "//mojo/public/go/src/mojo/public/go/bindings/connector.go",
+    "//mojo/public/go/src/mojo/public/go/bindings/decoder.go",
+    "//mojo/public/go/src/mojo/public/go/bindings/encoder.go",
+    "//mojo/public/go/src/mojo/public/go/bindings/interface.go",
+    "//mojo/public/go/src/mojo/public/go/bindings/invalid_handle.go",
+    "//mojo/public/go/src/mojo/public/go/bindings/message.go",
+    "//mojo/public/go/src/mojo/public/go/bindings/router.go",
+    "//mojo/public/go/src/mojo/public/go/bindings/stub.go",
+    "//mojo/public/go/src/mojo/public/go/bindings/util.go",
   ]
   deps = [
     ":system",
@@ -39,16 +39,16 @@ go_library("bindings") {
 
 go_library("system") {
   sources = [
-    "//mojo/public/go/system/core.go",
-    "//mojo/public/go/system/data_pipe.go",
-    "//mojo/public/go/system/handle.go",
-    "//mojo/public/go/system/message_pipe.go",
-    "//mojo/public/go/system/mojo_types.go",
-    "//mojo/public/go/system/shared_buffer.go",
-    "//mojo/public/go/system/system.go",
-    "//mojo/public/go/system/system_android.go",
-    "//mojo/public/go/system/system_linux.go",
-    "//mojo/public/go/system/system_nacl.go",
+    "//mojo/public/go/src/mojo/public/go/system/core.go",
+    "//mojo/public/go/src/mojo/public/go/system/data_pipe.go",
+    "//mojo/public/go/src/mojo/public/go/system/handle.go",
+    "//mojo/public/go/src/mojo/public/go/system/message_pipe.go",
+    "//mojo/public/go/src/mojo/public/go/system/mojo_types.go",
+    "//mojo/public/go/src/mojo/public/go/system/shared_buffer.go",
+    "//mojo/public/go/src/mojo/public/go/system/system.go",
+    "//mojo/public/go/src/mojo/public/go/system/system_android.go",
+    "//mojo/public/go/src/mojo/public/go/system/system_linux.go",
+    "//mojo/public/go/src/mojo/public/go/system/system_nacl.go",
   ]
 }
 

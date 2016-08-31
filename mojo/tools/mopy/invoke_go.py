@@ -54,6 +54,8 @@ def InvokeGo(go_tool, go_options, work_dir=None, src_root=None,
     src_root = os.path.abspath(src_root)
     # GOPATH must be absolute, and point to one directory up from |src_Root|
     go_path = os.path.abspath(os.path.join(src_root, '..'))
+    # GOPATH also includes mojo/public/go.
+    go_path += ':' +  os.path.join(src_root, 'mojo', 'public', 'go')
     # GOPATH also includes any third_party/go libraries that have been imported
     go_path += ':' +  os.path.join(src_root, 'third_party', 'go')
 
