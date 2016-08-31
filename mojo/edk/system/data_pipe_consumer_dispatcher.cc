@@ -18,6 +18,10 @@ using mojo::util::RefPtr;
 namespace mojo {
 namespace system {
 
+constexpr MojoReadDataFlags kKnownReadFlags =
+    MOJO_READ_DATA_FLAG_ALL_OR_NONE | MOJO_READ_DATA_FLAG_DISCARD |
+    MOJO_READ_DATA_FLAG_QUERY | MOJO_READ_DATA_FLAG_PEEK;
+
 // static
 constexpr MojoHandleRights DataPipeConsumerDispatcher::kDefaultHandleRights;
 
@@ -140,6 +144,10 @@ MojoResult DataPipeConsumerDispatcher::ReadDataImplNoLock(
     MojoReadDataFlags flags) {
   mutex().AssertHeld();
 
+  // Unknown flag set.
+  if ((flags & ~kKnownReadFlags))
+    return MOJO_SYSTEM_RESULT_UNIMPLEMENTED;
+
   if ((flags & MOJO_READ_DATA_FLAG_DISCARD)) {
     // These flags are mutally exclusive.
     if ((flags & MOJO_READ_DATA_FLAG_QUERY) ||
@@ -171,11 +179,15 @@ MojoResult DataPipeConsumerDispatcher::BeginReadDataImplNoLock(
     MojoReadDataFlags flags) {
   mutex().AssertHeld();
 
-  // These flags may not be used in two-phase mode.
-  if ((flags & MOJO_READ_DATA_FLAG_ALL_OR_NONE) ||
-      (flags & MOJO_READ_DATA_FLAG_DISCARD) ||
-      (flags & MOJO_READ_DATA_FLAG_QUERY) || (flags & MOJO_READ_DATA_FLAG_PEEK))
+  // Currently, no flags are supported in two-phase mode.
+  if (flags) {
+    // Unknown flag set.
+    if ((flags & ~kKnownReadFlags))
+      return MOJO_SYSTEM_RESULT_UNIMPLEMENTED;
+
+    // Known flag.
     return MOJO_SYSTEM_RESULT_INVALID_ARGUMENT;
+  }
 
   return data_pipe_->ConsumerBeginReadData(buffer, buffer_num_bytes);
 }

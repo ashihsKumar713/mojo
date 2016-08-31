@@ -18,6 +18,9 @@ using mojo::util::RefPtr;
 namespace mojo {
 namespace system {
 
+constexpr MojoWriteDataFlags kKnownWriteFlags =
+    MOJO_WRITE_DATA_FLAG_ALL_OR_NONE;
+
 // static
 constexpr MojoHandleRights DataPipeProducerDispatcher::kDefaultHandleRights;
 
@@ -138,6 +141,11 @@ MojoResult DataPipeProducerDispatcher::WriteDataImplNoLock(
     UserPointer<uint32_t> num_bytes,
     MojoWriteDataFlags flags) {
   mutex().AssertHeld();
+
+  // Unknown flag set.
+  if ((flags & ~kKnownWriteFlags))
+    return MOJO_SYSTEM_RESULT_UNIMPLEMENTED;
+
   return data_pipe_->ProducerWriteData(
       elements, num_bytes, (flags & MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
 }
@@ -148,9 +156,15 @@ MojoResult DataPipeProducerDispatcher::BeginWriteDataImplNoLock(
     MojoWriteDataFlags flags) {
   mutex().AssertHeld();
 
-  // This flag may not be used in two-phase mode.
-  if ((flags & MOJO_WRITE_DATA_FLAG_ALL_OR_NONE))
+  // Currently, no flags are supported in two-phase mode.
+  if (flags) {
+    // Unknown flag set.
+    if ((flags & ~kKnownWriteFlags))
+      return MOJO_SYSTEM_RESULT_UNIMPLEMENTED;
+
+    // Known flag.
     return MOJO_SYSTEM_RESULT_INVALID_ARGUMENT;
+  }
 
   return data_pipe_->ProducerBeginWriteData(buffer, buffer_num_bytes);
 }
