@@ -4,8 +4,8 @@
 
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "mojo/gles2/control_thunks_impl.h"
-#include "mojo/public/c/include/GLES2/gl2.h"
-#include "mojo/public/c/include/MGL/mgl.h"
+#include "mojo/public/c/gpu/include/GLES2/gl2.h"
+#include "mojo/public/c/gpu/include/MGL/mgl.h"
 
 extern "C" {
 

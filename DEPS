@@ -20,7 +20,7 @@
 vars = {
   'chromium_git': 'https://chromium.googlesource.com',
   'fuchsia_git': 'https://fuchsia.googlesource.com',
-  'mojo_public_revision': '894957e01e63bb617cbc4cebd28b6328c949cb05',
+  'mojo_public_revision': 'c648ca3ac5c9fa20326bfe832f2d25d042307a34',
   'skia_revision': '8cc209111876b7c78b5ec577c9221d8ed5e21024',
   'v8_revision': '3f036fc0ba4ca4483fe77822f8605c277d37ee24',
   'base_revision': '9e74307b276b2f9988005c0e97e85ee222586f79',

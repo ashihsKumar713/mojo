@@ -287,7 +287,10 @@ source_set("native_application_support") {
   # this file.
   check_includes = false
 
-  configs += [ "//mojo/public/c:c_config" ]
+  configs += [
+    "//mojo/public/c:c_config",
+    "//mojo/public/c:gpu_config",
+  ]
 }
 
 if (is_android) {

@@ -9,9 +9,9 @@
 #include "base/threading/thread_local.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "mojo/gles2/gles2_context.h"
-#include "mojo/public/c/include/MGL/mgl.h"
-#include "mojo/public/c/include/MGL/mgl_echo.h"
-#include "mojo/public/c/include/MGL/mgl_signal_sync_point.h"
+#include "mojo/public/c/gpu/include/MGL/mgl.h"
+#include "mojo/public/c/gpu/include/MGL/mgl_echo.h"
+#include "mojo/public/c/gpu/include/MGL/mgl_signal_sync_point.h"
 
 namespace gpu {
 namespace gles2 {
