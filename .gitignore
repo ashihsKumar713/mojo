@@ -27,6 +27,7 @@ v8.log
 /dart/
 /dart-pub-cache/
 /mojo/public/
+/mojo/prebuilt/
 /mojom/
 /native_client/
 /out/

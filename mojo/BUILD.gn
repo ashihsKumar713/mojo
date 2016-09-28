@@ -16,6 +16,7 @@ group("mojo") {
   # Meta-target, don't link into production code.
   testonly = true
   deps = [
+    ":copy_network_service",
     ":system_thunks",
     ":tests",
     "//mojo/dart",
@@ -39,10 +40,6 @@ group("mojo") {
     deps += [ "//mojo/rust" ]
   }
 
-  if (is_linux && !is_fnl) {
-    deps += [ "//mojo/python" ]
-  }
-
   if (mojo_use_nacl) {
     if (mojo_use_nacl_nonsfi) {
       deps += [
@@ -56,6 +53,7 @@ group("mojo") {
 group("tests") {
   testonly = true
   deps = [
+    ":copy_network_service_apptests",
     ":public_tests",
     "//mojo/common:mojo_common_apptests",
     "//mojo/converters:mojo_converters_unittests",
@@ -80,10 +78,44 @@ group("tests") {
     "//mojo/ui:apptests",
     "//mojo/ui/associates:apptests",
   ]
+}
 
-  if (mojo_use_prebuilt_network_service) {
-    deps += [ "//mojo/public/tools:copy_network_service_apptests" ]
+copy("copy_network_service") {
+  filename = "network_service.mojo"
+  if (is_android) {
+    assert(current_cpu == "arm",
+           "Only arm version prebuilt netowrk_service.mojo is available.")
+    sources = [
+      "prebuilt/network_service/android-arm/$filename",
+    ]
+  } else {
+    assert(is_linux)
+    sources = [
+      "prebuilt/network_service/linux-x64/$filename",
+    ]
   }
+  outputs = [
+    "$root_out_dir/$filename",
+  ]
+}
+copy("copy_network_service_apptests") {
+  filename = "network_service_apptests.mojo"
+  if (is_android) {
+    assert(
+        target_cpu == "arm",
+        "Only arm version prebuilt netowrk_service_apptests.mojo is available.")
+    sources = [
+      "prebuilt/network_service_apptests/android-arm/$filename",
+    ]
+  } else {
+    assert(is_linux)
+    sources = [
+      "prebuilt/network_service_apptests/linux-x64/$filename",
+    ]
+  }
+  outputs = [
+    "$root_out_dir/$filename",
+  ]
 }
 
 # This archives the system thunks implementation for exporting to SDK consumers.

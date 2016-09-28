@@ -116,13 +116,6 @@ def GetTestList(config, verbose_count=0):
              [os.path.join(build_dir, "obj", "mojo", "go", "system_test")],
              env={'GODEBUG' : 'cgocheck=2'})
 
-    # Pure Go unit tests:
-    assert paths.go_tool_path is not None
-    go_tool = paths.go_tool_path
-    AddEntry("Go unit tests",
-             ["python", os.path.join("mojo", "tools", "run_pure_go_tests.py"),
-              go_tool, os.path.join("mojo", "tools", "data", "gotests")])
-
   # Rust unit tests (Linux-only):
   if (target_os == Config.OS_LINUX and
       config.sanitizer != Config.SANITIZER_ASAN and
@@ -155,12 +148,6 @@ def GetTestList(config, verbose_count=0):
       ShouldRunTest(Config.TEST_TYPE_DEFAULT, Config.TEST_TYPE_UNIT,
                     "python") and
       config.sanitizer != Config.SANITIZER_ASAN):
-    AddEntry("Python bindings tests",
-             ["python",
-              os.path.join("mojo", "tools",
-                           "run_mojo_python_bindings_tests.py"),
-              "--build-dir=" + build_dir])
-
     AddEntry("Mojom translator python tests",
              ["python",
               os.path.join("mojo", "tools",

@@ -76,10 +76,6 @@ group("examples") {
     deps += [ "//examples/rust" ]
   }
 
-  if (is_linux && !is_fnl) {
-    deps += [ "//examples/python" ]
-  }
-
   if (mojo_use_nacl && (is_linux || is_android) && !is_asan) {
     deps += [ ":portable_examples(//build/toolchain/nacl:newlib_pnacl)" ]
   }

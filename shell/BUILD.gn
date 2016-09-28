@@ -51,104 +51,102 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-if (!mojo_use_prebuilt_mojo_shell) {
-  shell_common_deps = [
-    ":parent_lib",
+shell_common_deps = [
+  ":parent_lib",
+  "//base",
+  "//base/allocator",
+  "//build/config/sanitizers:deps",
+  "//mojo/environment:chromium",
+  "//mojo/message_pump",
+]
+shell_common_data_deps = [ ":mojo_shell_child" ]
+
+# TODO(cstout): fix breakpad build for fnl/musl
+# (see comment above)
+if ((is_android || is_linux) && !is_fnl) {
+  shell_common_deps += [ "//shell/crash" ]
+}
+
+if (is_android) {
+  shared_library("mojo_shell") {
+    sources = [
+      "android/library_loader.cc",
+      "android/main.cc",
+      "android/main.h",
+    ]
+
+    deps = shell_common_deps + [
+             ":jni_headers",
+             "//gpu/config",
+             "//mojo/android:libsystem_java",
+             "//services/native_viewport:lib",
+             "//services/ui/launcher:bindings",
+             "//shell/application_manager",
+             "//ui/gl",
+           ]
+
+    data_deps = shell_common_data_deps
+  }
+} else {
+  executable("mojo_shell") {
+    sources = [
+      "desktop/main.cc",
+    ]
+
+    deps = shell_common_deps + [ ":mojo_shell_child_32_bit" ]
+
+    data_deps = shell_common_data_deps
+  }
+}
+
+executable("mojo_shell_child") {
+  sources = [
+    "child_main.cc",
+  ]
+
+  deps = [
+    ":child_controller_bindings",
+    ":common_lib",
     "//base",
     "//base/allocator",
     "//build/config/sanitizers:deps",
+    "//mojo/edk/base_edk",
+    "//mojo/edk/system",
     "//mojo/environment:chromium",
     "//mojo/message_pump",
   ]
-  shell_common_data_deps = [ ":mojo_shell_child" ]
+}
 
-  # TODO(cstout): fix breakpad build for fnl/musl
-  # (see comment above)
-  if ((is_android || is_linux) && !is_fnl) {
-    shell_common_deps += [ "//shell/crash" ]
-  }
-
-  if (is_android) {
-    shared_library("mojo_shell") {
-      sources = [
-        "android/library_loader.cc",
-        "android/main.cc",
-        "android/main.h",
-      ]
-
-      deps = shell_common_deps + [
-               ":jni_headers",
-               "//gpu/config",
-               "//mojo/android:libsystem_java",
-               "//services/native_viewport:lib",
-               "//services/ui/launcher:bindings",
-               "//shell/application_manager",
-               "//ui/gl",
-             ]
-
-      data_deps = shell_common_data_deps
-    }
-  } else {
-    executable("mojo_shell") {
-      sources = [
-        "desktop/main.cc",
-      ]
-
-      deps = shell_common_deps + [ ":mojo_shell_child_32_bit" ]
-
-      data_deps = shell_common_data_deps
-    }
-  }
-
-  executable("mojo_shell_child") {
+if (current_cpu == "x86") {
+  # The 32-bit version of the mojo_shell_child should be accessible in the
+  # root build directory, just like the regular mojo_shell_child, so that
+  # the 32-bit version can be accessed by simply adding a suffix to the path.
+  copy("mojo_shell_child_32_bit_copy") {
     sources = [
-      "child_main.cc",
+      "${root_out_dir}/mojo_shell_child",
     ]
-
+    outputs = [
+      "${root_build_dir}/mojo_shell_child_32",
+    ]
     deps = [
-      ":child_controller_bindings",
-      ":common_lib",
-      "//base",
-      "//base/allocator",
-      "//build/config/sanitizers:deps",
-      "//mojo/edk/base_edk",
-      "//mojo/edk/system",
-      "//mojo/environment:chromium",
-      "//mojo/message_pump",
+      ":mojo_shell_child",
     ]
   }
+}
 
-  if (current_cpu == "x86") {
-    # The 32-bit version of the mojo_shell_child should be accessible in the
-    # root build directory, just like the regular mojo_shell_child, so that
-    # the 32-bit version can be accessed by simply adding a suffix to the path.
-    copy("mojo_shell_child_32_bit_copy") {
-      sources = [
-        "${root_out_dir}/mojo_shell_child",
-      ]
-      outputs = [
-        "${root_build_dir}/mojo_shell_child_32",
-      ]
-      deps = [
-        ":mojo_shell_child",
-      ]
-    }
+group("mojo_shell_child_32_bit") {
+  # This group is required to run any 32-bit child process.
+  deps = []
+  if ((target_cpu == "x64" || target_cpu == "x86") && is_linux && !is_fnl) {
+    # The toolchain is hardcoded as 32-bit clang here -- although it must
+    # be 32 bit (for nonsfi), it assumes clang. Ideally, the toolchain would
+    # be defined as the 32 bit variant of whatever is being used (be it clang,
+    # gcc, or something else).
+    deps = [
+      ":mojo_shell_child_32_bit_copy(//build/toolchain/linux:clang_x86)",
+    ]
   }
-
-  group("mojo_shell_child_32_bit") {
-    # This group is required to run any 32-bit child process.
-    deps = []
-    if ((target_cpu == "x64" || target_cpu == "x86") && is_linux && !is_fnl) {
-      # The toolchain is hardcoded as 32-bit clang here -- although it must
-      # be 32 bit (for nonsfi), it assumes clang. Ideally, the toolchain would
-      # be defined as the 32 bit variant of whatever is being used (be it clang,
-      # gcc, or something else).
-      deps = [
-        ":mojo_shell_child_32_bit_copy(//build/toolchain/linux:clang_x86)",
-      ]
-    }
-  }
-}  # !mojo_use_prebuilt_mojo_shell
+}
 
 # Files used both by mojo_shell and mojo_shell_child (and tests).
 source_set("common_lib") {
@@ -420,7 +418,7 @@ if (is_android) {
       ":bootstrap",
       ":bootstrap_java",
       ":mojo_shell_child",
-      "//mojo/public/tools:copy_network_service",
+      "//mojo:copy_network_service",
     ]
 
     if (!is_debug) {
