@@ -78,8 +78,7 @@ def upload(config, source, dest, dry_run, gzip=False):
     # pylint: disable=F0401
     import find_depot_tools
     depot_tools_path = find_depot_tools.add_depot_tools_to_path()
-    gsutil_exe = os.path.join(
-                            depot_tools_path, "third_party", "gsutil", "gsutil")
+    gsutil_exe = os.path.join(depot_tools_path, "gsutil.py")
 
   command_line = [gsutil_exe, "cp"]
   if gzip and "." in source:
